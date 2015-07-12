@@ -160,7 +160,7 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
-  protected void endEdit(final boolean commit) {
+  public void endEdit(final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
         final String text = this.textEditor.getText();

@@ -267,6 +267,7 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
       @Override
       public void componentResized(ComponentEvent e) {
+          pp.endEdit(false);
           pp.revalidate();
           pp.repaint();
       }
