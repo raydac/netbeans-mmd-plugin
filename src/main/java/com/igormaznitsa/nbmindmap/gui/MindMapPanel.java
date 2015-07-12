@@ -67,7 +67,7 @@ public final class MindMapPanel extends JPanel {
               endEdit(true);
             }
             else {
-              textEditor.insert("\n",textEditor.getCaretPosition());
+              textEditor.insert("\n", textEditor.getCaretPosition());
             }
           }
           break;
@@ -321,10 +321,6 @@ public final class MindMapPanel extends JPanel {
     widget.updateBlockSize(cfg);
   }
 
-  private void callParentRevalidate() {
-    super.revalidate();
-  }
-
   protected void revalidateWholeTree(final Graphics2D gfx, final Configuration cfg, final MindMap model) {
     if (gfx.getFontMetrics() != null) {
       revalidateTopicTree(gfx, cfg, model.getRoot(), 0);
@@ -353,7 +349,7 @@ public final class MindMapPanel extends JPanel {
 
         final Dimension2D leftBlock = rootWidget.getLeftBlockSize();
 
-        rootWidget.alignElementAndChildren(cfg, true, xOff + scaledPageMargin + leftBlock.getWidth(), yOff + scaledPageMargin + (blockSize.getHeight() - rootWidget.getBounds().getHeight())/2);
+        rootWidget.alignElementAndChildren(cfg, true, xOff + scaledPageMargin + leftBlock.getWidth(), yOff + scaledPageMargin + (blockSize.getHeight() - rootWidget.getBounds().getHeight()) / 2);
 
         for (final MindMapListener l : this.mindMapListeners) {
           l.onMindMapModelRealigned(this, diagramSize);
@@ -368,16 +364,11 @@ public final class MindMapPanel extends JPanel {
     final Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        try {
-          if (!isValid()) {
-            final Graphics2D gfx = (Graphics2D) getGraphics();
-            if (gfx != null) {
-              revalidateWholeTree(gfx, config, model);
-            }
+        if (!isValid()) {
+          final Graphics2D gfx = (Graphics2D) getGraphics();
+          if (gfx != null) {
+            revalidateWholeTree(gfx, config, model);
           }
-        }
-        finally {
-          thePanel.callParentRevalidate();
         }
       }
     };
