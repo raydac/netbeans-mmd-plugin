@@ -71,12 +71,27 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
     this.mindMapPanel = new MindMapPanel();
     this.setViewportView(this.mindMapPanel);
+    this.addComponentListener(new ComponentAdapter() {
 
+      @Override
+      public void componentResized(ComponentEvent e) {
+        processEditorResizing(mindMapPanel);
+      }
+      
+    });
+    
     this.mindMapPanel.addMindMapListener(this);
     
     this.repaint();
   }
 
+  private static void processEditorResizing(final MindMapPanel panel) {
+    panel.endEdit(false);
+    panel.revalidate();
+    panel.repaint();
+  }
+
+  
   @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
     updateDataInEditors();
@@ -267,9 +282,7 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
       @Override
       public void componentResized(ComponentEvent e) {
-          pp.endEdit(false);
-          pp.revalidate();
-          pp.repaint();
+        MMDEditor.processEditorResizing(pp);
       }
 
     });
