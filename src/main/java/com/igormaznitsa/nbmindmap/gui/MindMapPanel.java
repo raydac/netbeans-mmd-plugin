@@ -67,7 +67,7 @@ public final class MindMapPanel extends JPanel {
               endEdit(true);
             }
             else {
-              textEditor.append("\n");
+              textEditor.insert("\n",textEditor.getCaretPosition());
             }
           }
           break;

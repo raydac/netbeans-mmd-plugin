@@ -11,7 +11,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <nb.platform>RELEASE74</nb.platform>
+    <nb.platform>RELEASE72</nb.platform>
   </properties>
 
   <inceptionYear>2015</inceptionYear>
