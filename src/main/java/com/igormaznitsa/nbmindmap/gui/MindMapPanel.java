@@ -111,6 +111,25 @@ public final class MindMapPanel extends JPanel {
 
     super.setOpaque(true);
 
+    final KeyAdapter keyAdapter = new KeyAdapter() {
+
+      @Override
+      public void keyReleased(final KeyEvent e) {
+        switch(e.getKeyCode()){
+          case KeyEvent.VK_TAB : {
+            
+          }break;
+          case KeyEvent.VK_DELETE : {
+            deleteSelectedTopics();
+          }break;
+          case KeyEvent.VK_ENTER : {
+            
+          }break;
+        }
+      }
+      
+    };
+    
     final MouseAdapter adapter = new MouseAdapter() {
 
       @Override
@@ -171,6 +190,7 @@ public final class MindMapPanel extends JPanel {
 
     addMouseWheelListener(adapter);
     addMouseListener(adapter);
+    addKeyListener(keyAdapter);
 
     this.textEditorPanel.setVisible(false);
     this.add(this.textEditorPanel);
@@ -182,6 +202,23 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
+  protected void deleteSelectedTopics(){
+    if (!this.selectedTopics.isEmpty()){
+      for(final MindMapTopic t : this.selectedTopics){
+        this.model.removeTopic(t);
+      }
+      this.selectedTopics.clear();
+      invalidate();
+      revalidate();
+      fireNotificationMindMapChanged();
+      repaint();
+    }
+  }
+  
+  public boolean hasOnlyTopicSelected(){
+    return this.selectedTopics.size() == 1;
+  }
+  
   public void resetSelected() {
     this.selectedTopics.clear();
     repaint();
@@ -318,7 +355,7 @@ public final class MindMapPanel extends JPanel {
   private void drawSelection(final Graphics2D g, final Configuration cfg) {
     if (!this.selectedTopics.isEmpty()) {
       g.setColor(cfg.getSelectLineColor());
-      final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+      final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{3*cfg.getScale()}, 0);
       g.setStroke(dashed);
       final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
       final double dblLineGap = selectLineGap * 2;

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -433,6 +434,26 @@ public final class MindMapTopic implements Serializable, Constants {
     }finally{
       this.map.unlock();
     }
+  }
+
+  boolean removeTopic(final MindMapTopic topic) {
+    final Iterator<MindMapTopic> iterator = this.children.iterator();
+    while(iterator.hasNext()){
+      final MindMapTopic t = iterator.next();
+      if (t == topic){
+        iterator.remove();
+        return true;
+      }else{
+        if (t.removeTopic(topic)){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public void removeAllChildren() {
+    this.children.clear();
   }
 
 }

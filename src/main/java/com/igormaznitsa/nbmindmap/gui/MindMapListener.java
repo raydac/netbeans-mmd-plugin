@@ -15,10 +15,10 @@
  */
 package com.igormaznitsa.nbmindmap.gui;
 
+import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Dimension;
 
 public interface MindMapListener {
   void onMindMapModelChanged(MindMapPanel source);
   void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
-  
 }
