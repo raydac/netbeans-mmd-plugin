@@ -117,6 +117,7 @@ public final class MindMapPanel extends JPanel {
       public void mouseWheelMoved(final MouseWheelEvent e) {
         if (e.isControlDown()) {
           setScale(getScale() + (SCALE_STEP * -e.getWheelRotation()));
+          invalidate();
           revalidate();
           repaint();
         }
