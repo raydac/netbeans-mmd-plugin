@@ -17,15 +17,17 @@ package com.igormaznitsa.nbmindmap.gui.mmview;
 
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ElementRoot extends AbstractElement {
 
@@ -236,6 +238,63 @@ public final class ElementRoot extends AbstractElement {
   @Override
   public boolean hasDirection() {
     return true;
+  }
+
+  @Override
+  public MindMapTopic findTopicBeforePoint(final Configuration cfg, final Point point) {
+
+    MindMapTopic result = null;
+    if (this.hasChildren()) {
+      if (this.isCollapsed()) {
+        return this.getModel().getLast();
+      }
+      else {
+        double py = point.getY();
+        final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
+        double curY = calcBlockY();
+
+        MindMapTopic prev = null;
+
+        final List<MindMapTopic> childForDirection = new ArrayList<MindMapTopic>();
+        if (point.getX()<this.bounds.getCenterX()) {
+          for(final MindMapTopic t : this.model.getChildren()){
+            if (((AbstractElement)t.getPayload()).isLeftDirection()){
+              childForDirection.add(t);
+            }
+          }
+        }else{
+          for (final MindMapTopic t : this.model.getChildren()) {
+            if (!((AbstractElement) t.getPayload()).isLeftDirection()) {
+              childForDirection.add(t);
+            }
+          }
+        }
+        
+        final MindMapTopic lastOne = childForDirection.isEmpty() ?  null : childForDirection.get(childForDirection.size()-1);
+        
+        for (final MindMapTopic t : childForDirection) {
+          final AbstractElement el = (AbstractElement) t.getPayload();
+
+          final double childStartBlockY = el.calcBlockY();
+          final double childEndBlockY = childStartBlockY + el.getBlockSize().getHeight() + vertInset;
+
+          if (py < childEndBlockY) {
+            result = py < el.getBounds().getCenterY() ? prev : t;
+            break;
+          }
+          else {
+            if (t == lastOne) {
+              result = t;
+              break;
+            }
+          }
+
+          curY = childEndBlockY;
+          prev = t;
+        }
+      }
+    }
+    return result;
   }
 
 }

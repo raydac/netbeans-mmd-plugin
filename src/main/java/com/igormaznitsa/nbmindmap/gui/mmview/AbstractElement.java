@@ -142,6 +142,73 @@ public abstract class AbstractElement {
     return result;
   }
   
+  public MindMapTopic findTopicBeforePoint(final Configuration cfg, final Point point){
+    
+    MindMapTopic result = null;
+    if (this.hasChildren()){
+      if (this.isCollapsed()){
+        return this.getModel().getLast();
+      }else{
+        double py = point.getY();
+        final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
+        double curY = calcBlockY();
+        
+        MindMapTopic prev = null;
+        
+        for(final MindMapTopic t : this.model.getChildren()){
+          final AbstractElement el = (AbstractElement) t.getPayload();
+          
+          final double childStartBlockY = el.calcBlockY();
+          final double childEndBlockY = childStartBlockY + el.getBlockSize().getHeight()+vertInset;
+          
+          if (py < childEndBlockY){
+            result = py < el.getBounds().getCenterY() ? prev : t;
+            break;
+          }else{
+            if (this.model.isLastChild(t)){
+              result = t;
+              break;
+            }
+          }
+          
+          curY = childEndBlockY;
+          prev = t;
+        }
+      }
+    } 
+    return result;
+  }
+  
+  protected double calcBlockY(){
+    return this.bounds.getY() - (this.blockSize.getHeight() - this.bounds.getHeight())/2;
+  }
+  
+  protected double calcBlockX(){
+    return this.bounds.getX() - (this.isLeftDirection() ? this.blockSize.getWidth() - this.bounds.getWidth() : 0.0d);
+  }
+  
+  public AbstractElement findTopicBlockForPoint(final Point point){
+    AbstractElement result = null;
+    if (point != null){
+      final double px = point.getX();
+      final double py = point.getY();
+      
+      if (px>=calcBlockX() && py>=calcBlockY() && px<this.bounds.getX()+this.blockSize.getWidth() && py<this.bounds.getY()+this.blockSize.getHeight()){
+        if (this.isCollapsed()){
+          result = this;
+        }else{
+          AbstractElement foundChild = null;
+          for(final MindMapTopic t : this.model.getChildren()){
+            foundChild = t.getPayload() == null ? null : ((AbstractElement)t.getPayload()).findTopicBlockForPoint(point);
+            if (foundChild != null) break;
+          }
+          result = foundChild == null ? this : foundChild;
+        }
+      }
+    }
+    return result;
+  }
+  
   public AbstractElement findForPoint(final Point point) {
     AbstractElement result = null;
     if (point != null) {

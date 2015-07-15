@@ -27,6 +27,7 @@ public class Configuration {
   private int firstLevelVerticalInset = 32;
   private int firstLevelHorizontalInset = 48;
   private int paperMargins = 20;
+  private int selectLineGap = 5;
   
   private boolean drawBackground = true;
   private Color paperColor = new Color(0x617B94);
@@ -44,10 +45,12 @@ public class Configuration {
   private Color shadowColor = new Color(0x30000000, true);
   private Color collapsatorBorderColor = Color.DARK_GRAY;
   private Color collapsatorBackgroundColor = Color.WHITE;
+  private Color selectLineColor = Color.ORANGE;
 
   private float elementBorderWidth = 1.0f;
   private float collapsatorBorderWidth = 1.0f;
   private float connectorWidth = 1.5f;
+  private float selectLineWidth = 2.0f;
 
   private Font font = new Font("Arial", Font.BOLD, 14);
   private float scale = 1.0f;
@@ -63,6 +66,22 @@ public class Configuration {
     return this.panel;
   }
 
+  public float getSelectLineWidth(){
+    return this.selectLineWidth;
+  }
+  
+  public void setSelectLineWidth(final float f){
+    this.selectLineWidth = f;
+  }
+  
+  public Color getSelectLineColor(){
+    return this.selectLineColor;
+  }
+  
+  public void setSelectLineColor(final Color color){
+    this.selectLineColor = color;
+  }
+  
   public void setPaperMargins(final int size){
     this.paperMargins = size;
   }
@@ -293,6 +312,14 @@ public class Configuration {
   
   public void setTextMargins(final int value){
     this.textMargins = value;
+  }
+
+  public int getSelectLineGap() {
+    return this.selectLineGap;
+  }
+  
+  public void setSelectLineGap(final int value) {
+    this.selectLineGap = value;
   }
   
   

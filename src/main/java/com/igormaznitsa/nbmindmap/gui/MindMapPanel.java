@@ -26,6 +26,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JPanel;
@@ -50,6 +51,8 @@ public final class MindMapPanel extends JPanel {
   private final JTextArea textEditor = new JTextArea();
   private final JPanel textEditorPanel = new JPanel(new BorderLayout(0, 0));
   private AbstractElement elementUnderEdit = null;
+
+  private final List<MindMapTopic> selectedTopics = new ArrayList<MindMapTopic>();
 
   public MindMapPanel() {
     super(null);
@@ -143,6 +146,24 @@ public final class MindMapPanel extends JPanel {
           else if (e.getClickCount() > 1) {
             startEdit(element);
           }
+          else {
+            if (element != null) {
+              if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0) {
+                // only
+                resetSelected();
+                select(element.getModel(), false);
+              }
+              else {
+                // group
+                if (selectedTopics.isEmpty()) {
+                  select(element.getModel(), false);
+                }
+                else {
+                  select(element.getModel(), true);
+                }
+             }
+            }
+          }
         }
       }
     };
@@ -157,6 +178,28 @@ public final class MindMapPanel extends JPanel {
   protected void fireNotificationMindMapChanged() {
     for (final MindMapListener l : mindMapListeners) {
       l.onMindMapModelChanged(this);
+    }
+  }
+
+  public void resetSelected() {
+    this.selectedTopics.clear();
+    repaint();
+  }
+
+  public void removeFromSelected(final MindMapTopic t) {
+    if (this.selectedTopics.contains(t)) {
+      this.selectedTopics.remove(t);
+      repaint();
+    }
+  }
+
+  public void select(final MindMapTopic t, final boolean removeIfPresented) {
+    if (!this.selectedTopics.contains(t)) {
+      this.selectedTopics.add(t);
+      repaint();
+    }
+    else if (removeIfPresented) {
+      removeFromSelected(t);
     }
   }
 
@@ -232,7 +275,7 @@ public final class MindMapPanel extends JPanel {
     return this.config.getScale();
   }
 
-  public void drawOnGraphicsForConfiguration(final Graphics2D g, final Configuration config, final MindMap map) {
+  public void drawOnGraphicsForConfiguration(final Graphics2D g, final Configuration config, final MindMap map, final boolean drawSelection) {
     final Rectangle clipBounds = g.getClipBounds();
 
     if (config.isDrawBackground()) {
@@ -268,6 +311,24 @@ public final class MindMapPanel extends JPanel {
     }
 
     drawTopics(g, config, map);
+    if (drawSelection) drawSelection(g, config);
+  }
+
+  private void drawSelection(final Graphics2D g, final Configuration cfg) {
+    if (!this.selectedTopics.isEmpty()) {
+      g.setColor(cfg.getSelectLineColor());
+      final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+      g.setStroke(dashed);
+      final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
+      final double dblLineGap = selectLineGap * 2;
+
+      for (final MindMapTopic s : this.selectedTopics) {
+        final AbstractElement e = (AbstractElement) s.getPayload();
+        if (e != null) {
+          g.drawRect((int) Math.round(e.getBounds().getX() - selectLineGap), (int) Math.round(e.getBounds().getY() - selectLineGap), (int) Math.round(e.getBounds().getWidth() + dblLineGap), (int) Math.round(e.getBounds().getHeight() + dblLineGap));
+        }
+      }
+    }
   }
 
   private void drawTopics(final Graphics2D g, final Configuration cfg, final MindMap map) {
@@ -360,7 +421,6 @@ public final class MindMapPanel extends JPanel {
 
   @Override
   public void revalidate() {
-    final MindMapPanel thePanel = this;
     final Runnable runnable = new Runnable() {
       @Override
       public void run() {
@@ -436,10 +496,18 @@ public final class MindMapPanel extends JPanel {
       if (!isValid()) {
         revalidateWholeTree(gfx, this.config, this.model);
       }
-      drawOnGraphicsForConfiguration(gfx, this.config, this.model);
+      drawOnGraphicsForConfiguration(gfx, this.config, this.model, true);
     }
 
     paintChildren(g);
+  }
+
+  public AbstractElement findSubtreeUnderPoint(final Point point) {
+    AbstractElement result = null;
+    if (this.model != null) {
+
+    }
+    return result;
   }
 
   public AbstractElement findTopicUnderPoint(final Point point) {

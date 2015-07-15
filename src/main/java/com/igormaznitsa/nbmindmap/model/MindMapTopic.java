@@ -221,6 +221,14 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
+  public MindMapTopic getFirst(){
+    return this.children.isEmpty() ? null : this.children.get(0);
+  }
+  
+  public MindMapTopic getLast(){
+    return this.children.isEmpty() ? null : this.children.get(this.children.size()-1);
+  }
+  
   public List<MindMapTopic> getChildren() {
     return Collections.unmodifiableList(this.children);
   }
@@ -272,6 +280,14 @@ public final class MindMapTopic implements Serializable, Constants {
     return this.text;
   }
 
+  public boolean isFirstChild(final MindMapTopic t){
+    return !this.children.isEmpty() && this.children.get(0) == t;
+  }
+  
+  public boolean isLastChild(final MindMapTopic t){
+    return !this.children.isEmpty() && this.children.get(this.children.size()-1) == t;
+  }
+  
   public void setText(final String text) {
     this.map.lock();
     try {
