@@ -355,10 +355,10 @@ public final class MindMapPanel extends JPanel {
   private void drawSelection(final Graphics2D g, final Configuration cfg) {
     if (!this.selectedTopics.isEmpty()) {
       g.setColor(cfg.getSelectLineColor());
-      final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{3*cfg.getScale()}, 0);
+      final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{1*cfg.getScale(),4 * cfg.getScale()}, 0);
       g.setStroke(dashed);
       final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
-      final double dblLineGap = selectLineGap * 2;
+      final double dblLineGap = selectLineGap * 2.0d;
 
       for (final MindMapTopic s : this.selectedTopics) {
         final AbstractElement e = (AbstractElement) s.getPayload();
