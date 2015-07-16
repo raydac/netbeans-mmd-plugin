@@ -17,7 +17,9 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.gui.MindMapListener;
 import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
+import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
 import com.igormaznitsa.nbmindmap.model.MindMap;
+import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -99,10 +101,13 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
   @Override
   public void onMindMapModelRealigned(final MindMapPanel source, final Dimension coveredAreaSize) {
-    System.out.println("DETECTED "+coveredAreaSize);
     this.getViewport().revalidate();
   }
-  
+
+  @Override
+  public void onEnsureVisibilityOfTopic(final MindMapPanel source, final MindMapTopic topic) {
+  }
+
   @Override
   public String getName() {
     return "MindMapMarkdownEditor";
@@ -288,11 +293,15 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
     });
 
 //    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n##rrr\n##rrr\n###GGG\n####HHH\n#####JJKKLL\n## leve1.1\n> leftSide=\"true\"\n## leve1.1\n> leftSide=\"true\"\n"));
-    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n## Some\n## Some\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n"));
-//    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n"));
+//    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n## Some\n## Some\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n"));
+    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n"));
     pp.setModel(map);
 
     pp.addMindMapListener(new MindMapListener (){
+
+      @Override
+      public void onEnsureVisibilityOfTopic(MindMapPanel source, MindMapTopic topic) {
+      }
 
       @Override
       public void onMindMapModelChanged(MindMapPanel source) {

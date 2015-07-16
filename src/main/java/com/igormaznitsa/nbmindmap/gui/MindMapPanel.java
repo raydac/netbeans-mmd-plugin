@@ -63,6 +63,13 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void keyPressed(final KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+          e.consume();
+        }
+      }
+
+      @Override
+      public void keyReleased(final KeyEvent e) {
         switch (e.getKeyCode()) {
           case KeyEvent.VK_ENTER: {
             e.consume();
@@ -115,26 +122,34 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void keyReleased(final KeyEvent e) {
-        switch(e.getKeyCode()){
-          case KeyEvent.VK_TAB : {
-            
-          }break;
-          case KeyEvent.VK_DELETE : {
+        switch (e.getKeyCode()) {
+          case KeyEvent.VK_TAB: {
+            if (hasOnlyTopicSelected()) {
+              makeNewChildAndStartEdit(selectedTopics.get(0), null);
+            }
+          }
+          break;
+          case KeyEvent.VK_DELETE: {
             deleteSelectedTopics();
-          }break;
-          case KeyEvent.VK_ENTER : {
-            
-          }break;
+          }
+          break;
+          case KeyEvent.VK_ENTER: {
+            if (!hasActiveEditor() && hasOnlyTopicSelected()) {
+              final MindMapTopic selectedTopic = selectedTopics.get(0);
+              makeNewChildAndStartEdit(selectedTopic.getParent() == null ? selectedTopic : selectedTopic.getParent(), selectedTopic);
+            }
+          }
+          break;
         }
       }
-      
     };
-    
+
     final MouseAdapter adapter = new MouseAdapter() {
 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
         if (e.isControlDown()) {
+          endEdit(false);
           setScale(getScale() + (SCALE_STEP * -e.getWheelRotation()));
           invalidate();
           revalidate();
@@ -181,7 +196,7 @@ public final class MindMapPanel extends JPanel {
                 else {
                   select(element.getModel(), true);
                 }
-             }
+              }
             }
           }
         }
@@ -196,15 +211,37 @@ public final class MindMapPanel extends JPanel {
     this.add(this.textEditorPanel);
   }
 
+  private boolean hasActiveEditor() {
+    return this.elementUnderEdit != null;
+  }
+
+  private void makeNewChildAndStartEdit(final MindMapTopic parent, final MindMapTopic after) {
+    if (parent != null) {
+      this.selectedTopics.clear();
+      final MindMapTopic newTopic = parent.makeChild("",after);
+      select(newTopic, false);
+      invalidate();
+      revalidate();
+      fireNotificationMindMapChanged();
+      startEdit((AbstractElement) newTopic.getPayload());
+    }
+  }
+
   protected void fireNotificationMindMapChanged() {
     for (final MindMapListener l : mindMapListeners) {
       l.onMindMapModelChanged(this);
     }
   }
 
-  protected void deleteSelectedTopics(){
-    if (!this.selectedTopics.isEmpty()){
-      for(final MindMapTopic t : this.selectedTopics){
+  protected void fireNotificationEnsureTopicVisibility(final MindMapTopic topic) {
+    for (final MindMapListener l : mindMapListeners) {
+      l.onEnsureVisibilityOfTopic(this, topic);
+    }
+  }
+
+  protected void deleteSelectedTopics() {
+    if (!this.selectedTopics.isEmpty()) {
+      for (final MindMapTopic t : this.selectedTopics) {
         this.model.removeTopic(t);
       }
       this.selectedTopics.clear();
@@ -214,11 +251,11 @@ public final class MindMapPanel extends JPanel {
       repaint();
     }
   }
-  
-  public boolean hasOnlyTopicSelected(){
+
+  public boolean hasOnlyTopicSelected() {
     return this.selectedTopics.size() == 1;
   }
-  
+
   public void resetSelected() {
     this.selectedTopics.clear();
     repaint();
@@ -269,6 +306,10 @@ public final class MindMapPanel extends JPanel {
       final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
       this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
       this.textEditor.setMinimumSize(textBlockSize);
+  
+      this.scrollRectToVisible(textEditorPanel.getBounds());
+      this.fireNotificationEnsureTopicVisibility(this.elementUnderEdit.getModel());
+      
       this.textEditorPanel.setVisible(true);
       this.textEditor.requestFocus();
     }
@@ -349,13 +390,15 @@ public final class MindMapPanel extends JPanel {
     }
 
     drawTopics(g, config, map);
-    if (drawSelection) drawSelection(g, config);
+    if (drawSelection) {
+      drawSelection(g, config);
+    }
   }
 
   private void drawSelection(final Graphics2D g, final Configuration cfg) {
     if (!this.selectedTopics.isEmpty()) {
       g.setColor(cfg.getSelectLineColor());
-      final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{1*cfg.getScale(),4 * cfg.getScale()}, 0);
+      final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{1 * cfg.getScale(), 4 * cfg.getScale()}, 0);
       g.setStroke(dashed);
       final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
       final double dblLineGap = selectLineGap * 2.0d;

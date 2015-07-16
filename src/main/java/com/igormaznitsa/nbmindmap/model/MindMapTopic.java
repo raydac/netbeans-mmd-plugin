@@ -40,7 +40,7 @@ public final class MindMapTopic implements Serializable, Constants {
 
   private final MindMapTopic parent;
   private final EnumMap<Extra.ExtraType, Extra<?>> extras = new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
-  private final Map<String,String> attributes = new HashMap<String, String>();
+  private final Map<String, String> attributes = new HashMap<String, String>();
   private volatile String text;
   private final List<MindMapTopic> children = new ArrayList<MindMapTopic>();
   private transient Object payload;
@@ -59,12 +59,12 @@ public final class MindMapTopic implements Serializable, Constants {
 
   private final MindMap map;
 
-  private MindMapTopic(final MindMapTopic base){
+  private MindMapTopic(final MindMapTopic base) {
     this(base.map, base.parent, base.text);
     this.attributes.putAll(base.attributes);
     this.extras.putAll(base.extras);
   }
-  
+
   public MindMapTopic(final MindMap map, final MindMapTopic parent, final String text, final Extra<?>... extras) {
     this.map = map;
     this.parent = parent;
@@ -81,32 +81,32 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
-  public Object getPayload(){
+  public Object getPayload() {
     return this.payload;
   }
-  
-  public void setPayload(final Object value){
+
+  public void setPayload(final Object value) {
     this.payload = value;
   }
-  
-  private Object readResolve(){
+
+  private Object readResolve() {
     return new MindMapTopic(this);
   }
-  
+
   public MindMap getMap() {
     return this.map;
   }
 
-  public int getTopicLevel(){
+  public int getTopicLevel() {
     MindMapTopic topic = this.parent;
     int result = 0;
-    while(topic!=null){
+    while (topic != null) {
       topic = topic.parent;
-      result ++;
+      result++;
     }
     return result;
   }
-  
+
   public MindMapTopic findParentForDepth(int depth) {
     this.map.lock();
     try {
@@ -222,14 +222,14 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
-  public MindMapTopic getFirst(){
+  public MindMapTopic getFirst() {
     return this.children.isEmpty() ? null : this.children.get(0);
   }
-  
-  public MindMapTopic getLast(){
-    return this.children.isEmpty() ? null : this.children.get(this.children.size()-1);
+
+  public MindMapTopic getLast() {
+    return this.children.isEmpty() ? null : this.children.get(this.children.size() - 1);
   }
-  
+
   public List<MindMapTopic> getChildren() {
     return Collections.unmodifiableList(this.children);
   }
@@ -281,14 +281,14 @@ public final class MindMapTopic implements Serializable, Constants {
     return this.text;
   }
 
-  public boolean isFirstChild(final MindMapTopic t){
+  public boolean isFirstChild(final MindMapTopic t) {
     return !this.children.isEmpty() && this.children.get(0) == t;
   }
-  
-  public boolean isLastChild(final MindMapTopic t){
-    return !this.children.isEmpty() && this.children.get(this.children.size()-1) == t;
+
+  public boolean isLastChild(final MindMapTopic t) {
+    return !this.children.isEmpty() && this.children.get(this.children.size() - 1) == t;
   }
-  
+
   public void setText(final String text) {
     this.map.lock();
     try {
@@ -340,7 +340,7 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
-  public void placeBefore(final MindMapTopic topic) {
+  public void moveBefore(final MindMapTopic topic) {
     this.map.lock();
     try {
       if (this.parent != null) {
@@ -357,7 +357,7 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
-  public void placeAfter(final MindMapTopic topic) {
+  public void moveAfter(final MindMapTopic topic) {
     this.map.lock();
     try {
       if (this.parent != null) {
@@ -401,7 +401,7 @@ public final class MindMapTopic implements Serializable, Constants {
 
   @Override
   public int hashCode() {
-    return (int)((this.localUID >>> 32) ^ (this.localUID & 0xFFFFFFFFL));
+    return (int) ((this.localUID >>> 32) ^ (this.localUID & 0xFFFFFFFFL));
   }
 
   @Override
@@ -413,7 +413,7 @@ public final class MindMapTopic implements Serializable, Constants {
       return true;
     }
     if (topic instanceof MindMapTopic) {
-      return this.localUID == ((MindMapTopic)topic).localUID;
+      return this.localUID == ((MindMapTopic) topic).localUID;
     }
     return false;
   }
@@ -429,22 +429,24 @@ public final class MindMapTopic implements Serializable, Constants {
 
   public boolean hasChildren() {
     this.map.lock();
-    try{
+    try {
       return !this.children.isEmpty();
-    }finally{
+    }
+    finally {
       this.map.unlock();
     }
   }
 
   boolean removeTopic(final MindMapTopic topic) {
     final Iterator<MindMapTopic> iterator = this.children.iterator();
-    while(iterator.hasNext()){
+    while (iterator.hasNext()) {
       final MindMapTopic t = iterator.next();
-      if (t == topic){
+      if (t == topic) {
         iterator.remove();
         return true;
-      }else{
-        if (t.removeTopic(topic)){
+      }
+      else {
+        if (t.removeTopic(topic)) {
           return true;
         }
       }
@@ -454,6 +456,21 @@ public final class MindMapTopic implements Serializable, Constants {
 
   public void removeAllChildren() {
     this.children.clear();
+  }
+
+  public MindMapTopic makeChild(final String text, final MindMapTopic afterTheTopic) {
+    this.map.lock();
+    try {
+      final int index = afterTheTopic == null ? -1 : this.children.indexOf(afterTheTopic);
+      MindMapTopic result = new MindMapTopic(this.map, this, text == null ? "" : text);
+      if (index>=0){
+        result.moveAfter(afterTheTopic);
+      }
+      return result;
+    }
+    finally {
+      this.map.unlock();
+    }
   }
 
 }
