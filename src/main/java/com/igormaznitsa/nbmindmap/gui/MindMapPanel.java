@@ -48,11 +48,15 @@ public final class MindMapPanel extends JPanel {
 
   private final float SCALE_STEP = 0.5f;
 
+  private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
+
   private final JTextArea textEditor = new JTextArea();
   private final JPanel textEditorPanel = new JPanel(new BorderLayout(0, 0));
   private AbstractElement elementUnderEdit = null;
 
   private final List<MindMapTopic> selectedTopics = new ArrayList<MindMapTopic>();
+
+  private MouseSelectedArea mouseDragSelection = null;
 
   public MindMapPanel() {
     super(null);
@@ -144,7 +148,56 @@ public final class MindMapPanel extends JPanel {
       }
     };
 
+    this.setFocusTraversalKeysEnabled(false);
+
     final MouseAdapter adapter = new MouseAdapter() {
+
+      @Override
+      public void mousePressed(final MouseEvent e) {
+        mouseDragSelection = null;
+        MindMap theMap = model;
+        AbstractElement element = null;
+        if (theMap != null) {
+          element = findTopicUnderPoint(e.getPoint());
+          if (element == null) {
+            mouseDragSelection = new MouseSelectedArea(e.getPoint());
+          }
+        }
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        if (mouseDragSelection != null) {
+          final List<MindMapTopic> covered = mouseDragSelection.getAllSelectedElements(model);
+          if ((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
+            for (final MindMapTopic m : covered) {
+              select(m, false);
+            }
+          }
+          else if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+            for (final MindMapTopic m : covered) {
+              select(m, true);
+            }
+          }
+          else {
+            selectedTopics.clear();
+            for (final MindMapTopic m : covered) {
+              select(m, false);
+            }
+          }
+
+          mouseDragSelection = null;
+          repaint();
+        }
+      }
+
+      @Override
+      public void mouseDragged(final MouseEvent e) {
+        if (mouseDragSelection != null) {
+          mouseDragSelection.update(e);
+          repaint();
+        }
+      }
 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
@@ -171,21 +224,23 @@ public final class MindMapPanel extends JPanel {
         else {
           final ElementPart part = element == null ? ElementPart.NONE : element.findPartForPoint(e.getPoint());
           if (part == ElementPart.COLLAPSATOR) {
+            mouseDragSelection = null;
+            removeSelection();
             ((AbstractCollapsableElement) element).setCollapse(!element.isCollapsed());
-
-            fireNotificationMindMapChanged();
-
             invalidate();
+            fireNotificationMindMapChanged();
             repaint();
           }
           else if (e.getClickCount() > 1) {
+            mouseDragSelection = null;
             startEdit(element);
           }
           else {
             if (element != null) {
+              mouseDragSelection = null;
               if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0) {
                 // only
-                resetSelected();
+                removeSelection();
                 select(element.getModel(), false);
               }
               else {
@@ -205,10 +260,16 @@ public final class MindMapPanel extends JPanel {
 
     addMouseWheelListener(adapter);
     addMouseListener(adapter);
+    addMouseMotionListener(adapter);
     addKeyListener(keyAdapter);
 
     this.textEditorPanel.setVisible(false);
     this.add(this.textEditorPanel);
+  }
+
+  public void removeSelection() {
+    this.selectedTopics.clear();
+    repaint();
   }
 
   private boolean hasActiveEditor() {
@@ -218,7 +279,7 @@ public final class MindMapPanel extends JPanel {
   private void makeNewChildAndStartEdit(final MindMapTopic parent, final MindMapTopic after) {
     if (parent != null) {
       this.selectedTopics.clear();
-      final MindMapTopic newTopic = parent.makeChild("",after);
+      final MindMapTopic newTopic = parent.makeChild("", after);
       select(newTopic, false);
       invalidate();
       revalidate();
@@ -244,7 +305,7 @@ public final class MindMapPanel extends JPanel {
       for (final MindMapTopic t : this.selectedTopics) {
         this.model.removeTopic(t);
       }
-      this.selectedTopics.clear();
+      removeSelection();
       invalidate();
       revalidate();
       fireNotificationMindMapChanged();
@@ -254,11 +315,6 @@ public final class MindMapPanel extends JPanel {
 
   public boolean hasOnlyTopicSelected() {
     return this.selectedTopics.size() == 1;
-  }
-
-  public void resetSelected() {
-    this.selectedTopics.clear();
-    repaint();
   }
 
   public void removeFromSelected(final MindMapTopic t) {
@@ -306,10 +362,10 @@ public final class MindMapPanel extends JPanel {
       final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
       this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
       this.textEditor.setMinimumSize(textBlockSize);
-  
+
       this.scrollRectToVisible(textEditorPanel.getBounds());
       this.fireNotificationEnsureTopicVisibility(this.elementUnderEdit.getModel());
-      
+
       this.textEditorPanel.setVisible(true);
       this.textEditor.requestFocus();
     }
@@ -581,6 +637,11 @@ public final class MindMapPanel extends JPanel {
     }
 
     paintChildren(g);
+
+    if (this.mouseDragSelection != null) {
+      gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
+      gfx.fill(this.mouseDragSelection.asRectangle());
+    }
   }
 
   public AbstractElement findSubtreeUnderPoint(final Point point) {
