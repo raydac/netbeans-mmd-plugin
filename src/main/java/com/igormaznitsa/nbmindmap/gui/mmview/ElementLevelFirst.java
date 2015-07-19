@@ -63,14 +63,4 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
     return true;
   }
 
-  @Override
-  public boolean isFocusable() {
-    return true;
-  }
-
-  @Override
-  public boolean isRemovable() {
-    return true;
-  }
-
 }

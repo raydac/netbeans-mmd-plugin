@@ -119,10 +119,6 @@ public abstract class AbstractElement {
 
   public abstract boolean isMoveable();
 
-  public abstract boolean isFocusable();
-
-  public abstract boolean isRemovable();
-
   public abstract boolean isCollapsed();
 
   public abstract void alignElementAndChildren(Configuration cfg, boolean leftSide, double x, double y);

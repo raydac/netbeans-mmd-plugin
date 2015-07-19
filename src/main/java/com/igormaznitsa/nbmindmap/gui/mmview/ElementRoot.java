@@ -22,34 +22,26 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.input.KeyCode;
 
 public final class ElementRoot extends AbstractElement {
 
   private final Dimension2D leftBlockSize = new Dimension();
   private final Dimension2D rightBlockSize = new Dimension();
-  
+
   public ElementRoot(final MindMapTopic topic) {
     super(topic);
   }
 
   @Override
   public boolean isMoveable() {
-    return false;
-  }
-
-  @Override
-  public boolean isFocusable() {
-    return true;
-  }
-
-  @Override
-  public boolean isRemovable() {
     return false;
   }
 
@@ -81,7 +73,7 @@ public final class ElementRoot extends AbstractElement {
 
     g.setColor(cfg.getRootTextColor());
     this.textBlock.paint(g);
-    
+
 //    g.setColor(Color.white);
 //    g.drawRect((int) (-this.leftBlockSize.getWidth()), -(int) (this.leftBlockSize.getHeight() - this.bounds.getHeight()) / 2, (int) this.leftBlockSize.getWidth(), (int) this.leftBlockSize.getHeight());
 //    g.drawRect((int) this.bounds.getWidth(), -(int) (this.rightBlockSize.getHeight() - this.bounds.getHeight()) / 2, (int) this.rightBlockSize.getWidth(), (int) this.rightBlockSize.getHeight());
@@ -91,21 +83,22 @@ public final class ElementRoot extends AbstractElement {
   public void drawConnector(final Graphics2D g, final Rectangle2D source, final Rectangle2D destination, final boolean leftDirection, final Configuration cfg) {
     g.setStroke(new BasicStroke(cfg.getConnectorWidth() * cfg.getScale()));
     g.setColor(cfg.getConnectorColor());
-    
+
     final Path2D path = new Path2D.Double();
-    
+
     final double startX;
-    if (destination.getCenterX()<source.getCenterX()){
+    if (destination.getCenterX() < source.getCenterX()) {
       // left
-      startX = source.getCenterX()-source.getWidth()/4;
-    }else{
-      // right
-      startX = source.getCenterX()+source.getWidth()/4;
+      startX = source.getCenterX() - source.getWidth() / 4;
     }
-    
+    else {
+      // right
+      startX = source.getCenterX() + source.getWidth() / 4;
+    }
+
     path.moveTo(startX, source.getCenterY());
     path.curveTo(startX, destination.getCenterY(), startX, destination.getCenterY(), destination.getCenterX(), destination.getCenterY());
-    
+
     g.draw(path);
   }
 
@@ -115,7 +108,7 @@ public final class ElementRoot extends AbstractElement {
     for (final MindMapTopic t : this.model.getChildren()) {
       final AbstractCollapsableElement w = (AbstractCollapsableElement) t.getPayload();
       final boolean lft = w.isLeftDirection();
-      if ((left && lft) || (!left && !lft)){
+      if ((left && lft) || (!left && !lft)) {
         if (nonfirst) {
           result += vertInset;
         }
@@ -136,26 +129,26 @@ public final class ElementRoot extends AbstractElement {
 
     final int textMargin = Math.round(cfg.getScale() * cfg.getTextMargins());
     this.textBlock.setCoordOffset(textMargin, textMargin);
-    
+
     final double insetVert = cfg.getFirstLevelVerticalInset() * cfg.getScale();
     final double insetHorz = cfg.getFirstLevelHorizontalInset() * cfg.getScale();
 
     final double leftHeight = calcTotalChildrenHeight(insetVert, true);
     final double rightHeight = calcTotalChildrenHeight(insetVert, false);
-    
-    if (leftHeight>0.0d){
+
+    if (leftHeight > 0.0d) {
       final double ddx = dx - insetHorz;
-      double ddy = dy - (leftHeight-this.bounds.getHeight())/2;
-      for(final MindMapTopic t : this.model.getChildren()){
-        final AbstractCollapsableElement c = (AbstractCollapsableElement)t.getPayload();
-        if (c.isLeftDirection()){
+      double ddy = dy - (leftHeight - this.bounds.getHeight()) / 2;
+      for (final MindMapTopic t : this.model.getChildren()) {
+        final AbstractCollapsableElement c = (AbstractCollapsableElement) t.getPayload();
+        if (c.isLeftDirection()) {
           c.alignElementAndChildren(cfg, true, ddx - c.getBlockSize().getWidth(), ddy);
           ddy += c.getBlockSize().getHeight() + insetVert;
         }
       }
     }
-    
-    if (rightHeight>0.0d){
+
+    if (rightHeight > 0.0d) {
       final double ddx = dx + this.bounds.getWidth() + insetHorz;
       double ddy = dy - (rightHeight - this.bounds.getHeight()) / 2;
       for (final MindMapTopic t : this.model.getChildren()) {
@@ -175,14 +168,14 @@ public final class ElementRoot extends AbstractElement {
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
   }
 
-  public Dimension2D getLeftBlockSize(){
+  public Dimension2D getLeftBlockSize() {
     return this.leftBlockSize;
   }
-  
-  public Dimension2D getRightBlockSize(){
+
+  public Dimension2D getRightBlockSize() {
     return this.rightBlockSize;
   }
-  
+
   @Override
   public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size) {
     final float insetV = cfg.getScale() * cfg.getFirstLevelVerticalInset();
@@ -200,9 +193,9 @@ public final class ElementRoot extends AbstractElement {
 
     for (final MindMapTopic t : this.model.getChildren()) {
       final ElementLevelFirst w = (ElementLevelFirst) t.getPayload();
-      
+
       w.calcBlockSize(cfg, result);
-      
+
       if (w.isLeftDirection()) {
         leftWidth = Math.max(leftWidth, result.getWidth());
         leftHeight += result.getHeight();
@@ -227,10 +220,10 @@ public final class ElementRoot extends AbstractElement {
 
     leftWidth += nonfirstOnLeft ? insetH : 0.0d;
     rightWidth += nonfirstOnRight ? insetH : 0.0d;
-    
+
     this.leftBlockSize.setSize(leftWidth, leftHeight);
     this.rightBlockSize.setSize(rightWidth, rightHeight);
-    
+
     result.setSize(leftWidth + rightWidth + this.bounds.getWidth(), Math.max(this.bounds.getHeight(), Math.max(leftHeight, rightHeight)));
     return result;
   }
@@ -256,22 +249,23 @@ public final class ElementRoot extends AbstractElement {
         MindMapTopic prev = null;
 
         final List<MindMapTopic> childForDirection = new ArrayList<MindMapTopic>();
-        if (point.getX()<this.bounds.getCenterX()) {
-          for(final MindMapTopic t : this.model.getChildren()){
-            if (((AbstractElement)t.getPayload()).isLeftDirection()){
+        if (point.getX() < this.bounds.getCenterX()) {
+          for (final MindMapTopic t : this.model.getChildren()) {
+            if (((AbstractElement) t.getPayload()).isLeftDirection()) {
               childForDirection.add(t);
             }
           }
-        }else{
+        }
+        else {
           for (final MindMapTopic t : this.model.getChildren()) {
             if (!((AbstractElement) t.getPayload()).isLeftDirection()) {
               childForDirection.add(t);
             }
           }
         }
-        
-        final MindMapTopic lastOne = childForDirection.isEmpty() ?  null : childForDirection.get(childForDirection.size()-1);
-        
+
+        final MindMapTopic lastOne = childForDirection.isEmpty() ? null : childForDirection.get(childForDirection.size() - 1);
+
         for (final MindMapTopic t : childForDirection) {
           final AbstractElement el = (AbstractElement) t.getPayload();
 

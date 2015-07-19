@@ -137,6 +137,13 @@ public final class MindMapPanel extends JPanel {
             deleteSelectedTopics();
           }
           break;
+          case KeyEvent.VK_LEFT : 
+          case KeyEvent.VK_RIGHT : 
+          case KeyEvent.VK_UP : 
+          case KeyEvent.VK_DOWN : 
+          {
+            processMoveFocusByKey(e.getKeyCode());
+          }break;
           case KeyEvent.VK_ENTER: {
             if (!hasActiveEditor() && hasOnlyTopicSelected()) {
               final MindMapTopic selectedTopic = selectedTopics.get(0);
@@ -267,6 +274,78 @@ public final class MindMapPanel extends JPanel {
     this.add(this.textEditorPanel);
   }
 
+  private void processMoveFocusByKey(final int key){
+    if (hasOnlyTopicSelected()){
+      final AbstractElement current = (AbstractElement)this.selectedTopics.get(0).getPayload();
+      if (current == null) return;
+
+      AbstractElement nextFocused = null;
+      
+      if (current.isMoveable()){
+        boolean processFirstChild = false;
+        switch(key){
+          case KeyEvent.VK_LEFT :{
+            if (current.isLeftDirection()){
+              processFirstChild = true;
+            }else{
+              nextFocused = (AbstractElement)current.getModel().getParent().getPayload();
+            }
+          }break;
+          case KeyEvent.VK_RIGHT :{
+            if (current.isLeftDirection()){
+              nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
+            }else{
+              processFirstChild = true;
+            }
+          }break;
+        }
+        
+        if (processFirstChild){
+          if (current.hasChildren()){
+            boolean uncollapsed = false;
+            if (current.isCollapsed()){
+              ((AbstractCollapsableElement)current).setCollapse(false);
+              uncollapsed = true;
+            }
+          
+            nextFocused = (AbstractElement)(current.getModel().getChildren().get(0)).getPayload();
+          
+            if (uncollapsed){
+              invalidate();
+              fireNotificationMindMapChanged();
+            }
+          }
+        }
+      }else{
+        switch(key){
+          case KeyEvent.VK_LEFT : {
+            for(final MindMapTopic t : current.getModel().getChildren()){
+              final AbstractElement e = (AbstractElement)t.getPayload();
+              if (e!=null && e.isLeftDirection()){
+                nextFocused = e;
+                break;
+              }
+            }
+          }break;
+          case KeyEvent.VK_RIGHT : {
+            for (final MindMapTopic t : current.getModel().getChildren()) {
+              final AbstractElement e = (AbstractElement) t.getPayload();
+              if (e != null && !e.isLeftDirection()) {
+                nextFocused = e;
+                break;
+              }
+            }
+          }break;
+        }
+      }
+      
+      if (nextFocused!=null){
+        removeSelection();
+        select(nextFocused.getModel(), false);
+      }
+    }
+  }
+  
   public void removeSelection() {
     this.selectedTopics.clear();
     repaint();
