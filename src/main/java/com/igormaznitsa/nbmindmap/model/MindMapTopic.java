@@ -235,6 +235,10 @@ public final class MindMapTopic implements Serializable, Constants {
     return Collections.unmodifiableList(this.children);
   }
 
+  public int getNumberOfExtras(){
+    return this.extras.size();
+  }
+  
   public Map<Extra.ExtraType, Extra<?>> getExtras() {
     return Collections.unmodifiableMap(this.extras);
   }

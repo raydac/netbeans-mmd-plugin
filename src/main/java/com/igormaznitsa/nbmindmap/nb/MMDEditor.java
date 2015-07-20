@@ -313,7 +313,7 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
 //    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n##rrr\n##rrr\n###GGG\n####HHH\n#####JJKKLL\n## leve1.1\n> leftSide=\"true\"\n## leve1.1\n> leftSide=\"true\"\n"));
 //    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n## Some\n## Some\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n"));
-    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n"));
+    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n- LINK\n```http://www.color.com```\n- NOTE\n```Hello world note```\n## Some\n"));
     pp.setModel(map);
 
     pp.addMindMapListener(new MindMapListener() {

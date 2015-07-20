@@ -22,14 +22,12 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.input.KeyCode;
 
 public final class ElementRoot extends AbstractElement {
 
@@ -74,6 +72,8 @@ public final class ElementRoot extends AbstractElement {
     g.setColor(cfg.getRootTextColor());
     this.textBlock.paint(g);
 
+    drawExtraIcons(g, this.textBlock.getBounds().getMaxX(), 0.0d, cfg);
+    
 //    g.setColor(Color.white);
 //    g.drawRect((int) (-this.leftBlockSize.getWidth()), -(int) (this.leftBlockSize.getHeight() - this.bounds.getHeight()) / 2, (int) this.leftBlockSize.getWidth(), (int) this.leftBlockSize.getHeight());
 //    g.drawRect((int) this.bounds.getWidth(), -(int) (this.rightBlockSize.getHeight() - this.bounds.getHeight()) / 2, (int) this.rightBlockSize.getWidth(), (int) this.rightBlockSize.getHeight());
