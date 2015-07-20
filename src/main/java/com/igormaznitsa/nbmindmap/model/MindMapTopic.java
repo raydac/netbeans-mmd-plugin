@@ -463,7 +463,7 @@ public final class MindMapTopic implements Serializable, Constants {
     try {
       final int index = afterTheTopic == null ? -1 : this.children.indexOf(afterTheTopic);
       MindMapTopic result = new MindMapTopic(this.map, this, text == null ? "" : text);
-      if (index>=0){
+      if (index >= 0) {
         result.moveAfter(afterTheTopic);
       }
       return result;
@@ -473,43 +473,40 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
-  public MindMapTopic findNext(){
+  public MindMapTopic findNext() {
     this.map.lock();
-    try{
-      MindMapTopic result = null;
-      
-      result = this.getParent();
-      if (result!=null){
+    try {
+      MindMapTopic result = this.getParent();
+      if (result != null) {
         final int indexThis = result.children.indexOf(this);
-        if (indexThis>=0){
-          result = result.children.size()-1>indexThis ? result.children.get(indexThis+1) : null;
+        if (indexThis >= 0) {
+          result = result.children.size() - 1 > indexThis ? result.children.get(indexThis + 1) : null;
         }
       }
-      
-      return result;
-    }finally{
-      this.map.unlock();
-    }
-  }
-  
 
-  public MindMapTopic findPrev(){
-    this.map.lock();
-    try{
-      MindMapTopic result = null;
-      
-      result = this.getParent();
-      if (result!=null){
-        final int indexThis = result.children.indexOf(this);
-        if (indexThis>=0){
-          result = indexThis > 0 ? result.children.get(indexThis-1) : null;
-        }
-      }
-      
       return result;
-    }finally{
+    }
+    finally {
       this.map.unlock();
     }
   }
-  
+
+  public MindMapTopic findPrev() {
+    this.map.lock();
+    try {
+      MindMapTopic result = this.getParent();
+      if (result != null) {
+        final int indexThis = result.children.indexOf(this);
+        if (indexThis >= 0) {
+          result = indexThis > 0 ? result.children.get(indexThis - 1) : null;
+        }
+      }
+
+      return result;
+    }
+    finally {
+      this.map.unlock();
+    }
+  }
+
 }
