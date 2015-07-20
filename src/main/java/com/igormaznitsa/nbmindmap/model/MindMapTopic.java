@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
+import com.igormaznitsa.nbmindmap.gui.mmview.TopicChecker;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
@@ -327,19 +328,6 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
-  public void attachTo(final MindMapTopic topic) {
-    this.map.lock();
-    try {
-      delete();
-      if (topic != null) {
-        topic.children.add(this);
-      }
-    }
-    finally {
-      this.map.unlock();
-    }
-  }
-
   public void moveBefore(final MindMapTopic topic) {
     this.map.lock();
     try {
@@ -473,14 +461,24 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
-  public MindMapTopic findNext() {
+  public MindMapTopic findNext(final TopicChecker checker) {
     this.map.lock();
     try {
-      MindMapTopic result = this.getParent();
-      if (result != null) {
-        final int indexThis = result.children.indexOf(this);
+      MindMapTopic result = null;
+      MindMapTopic current = this.getParent();
+      if (current != null) {
+        final int indexThis = current.children.indexOf(this);
         if (indexThis >= 0) {
-          result = result.children.size() - 1 > indexThis ? result.children.get(indexThis + 1) : null;
+          for (int i = indexThis + 1; i < current.children.size(); i++) {
+            if (checker == null) {
+              result = current.children.get(i);
+              break;
+            }
+            else if (checker.check(current.children.get(i))) {
+              result = current.children.get(i);
+              break;
+            }
+          }
         }
       }
 
@@ -491,14 +489,24 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
-  public MindMapTopic findPrev() {
+  public MindMapTopic findPrev(final TopicChecker checker) {
     this.map.lock();
     try {
-      MindMapTopic result = this.getParent();
-      if (result != null) {
-        final int indexThis = result.children.indexOf(this);
+      MindMapTopic result = null;
+      MindMapTopic current = this.getParent();
+      if (current != null) {
+        final int indexThis = current.children.indexOf(this);
         if (indexThis >= 0) {
-          result = indexThis > 0 ? result.children.get(indexThis - 1) : null;
+          for (int i = indexThis - 1; i >=0; i--) {
+            if (checker == null) {
+              result = current.children.get(i);
+              break;
+            }
+            else if (checker.check(current.children.get(i))) {
+              result = current.children.get(i);
+              break;
+            }
+          }
         }
       }
 

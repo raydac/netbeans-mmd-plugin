@@ -113,7 +113,7 @@ public abstract class AbstractElement {
     return compo;
   }
   
-  protected abstract void drawComponent(Graphics2D g, Configuration cfg);
+  public abstract void drawComponent(Graphics2D g, Configuration cfg);
 
   public abstract void drawConnector(Graphics2D g, Rectangle2D source, Rectangle2D destination, boolean leftDirection, Configuration cfg);
 

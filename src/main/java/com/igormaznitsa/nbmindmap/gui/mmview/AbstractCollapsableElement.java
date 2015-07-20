@@ -76,13 +76,25 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public boolean isLeftDirection() {
-    return "true".equals(this.model.getAttribute("leftSide"));
+    return isLeftSidedTopic(this.model);
   }
 
   public void setLeftDirection(final boolean leftSide) {
-    this.model.setAttribute("leftSide", leftSide ? "true" : null);
+    makeTopicLeftSided(this.model, leftSide); 
   }
 
+  public static boolean isLeftSidedTopic(final MindMapTopic t){
+    return "true".equals(t.getAttribute("leftSide"));
+  }
+  
+  public static void makeTopicLeftSided(final MindMapTopic topic, final boolean left){
+    if (left){
+      topic.setAttribute("leftSide", "true");
+    }else{
+      topic.setAttribute("leftSide", null);
+    }
+  }
+  
   @Override
   public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size) {
     final Dimension2D result = size == null ? new Dimension() : size;

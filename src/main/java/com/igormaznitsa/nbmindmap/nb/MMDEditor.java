@@ -52,7 +52,7 @@ import org.openide.windows.TopComponent;
         mimeType = "text/x-mmd+markdown",
         persistenceType = TopComponent.PERSISTENCE_NEVER,
         preferredID = "com.igormaznitsa.MMDEditor",
-        position = 2000
+        position = 1
 )
 @Messages("LBL_NBMMap_VISUAL=Visual")
 public final class MMDEditor extends JScrollPane implements MultiViewElement, UndoRedo, MindMapListener {

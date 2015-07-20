@@ -32,7 +32,7 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
   }
 
   @Override
-  protected void drawComponent(final Graphics2D g, final Configuration cfg) {
+  public void drawComponent(final Graphics2D g, final Configuration cfg) {
     g.setStroke(new BasicStroke(cfg.getScale() * cfg.getElementBorderWidth()));
 
     final Shape shape = makeShape(0f, 0f);

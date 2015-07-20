@@ -57,6 +57,8 @@ public final class MindMapPanel extends JPanel {
   private final List<MindMapTopic> selectedTopics = new ArrayList<MindMapTopic>();
 
   private MouseSelectedArea mouseDragSelection = null;
+  private AbstractElement draggedElement = null;
+  private Point draggedElementPoint = null;
 
   public MindMapPanel() {
     super(null);
@@ -161,6 +163,7 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void mousePressed(final MouseEvent e) {
+        endEdit(false);
         mouseDragSelection = null;
         MindMap theMap = model;
         AbstractElement element = null;
@@ -174,26 +177,43 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void mouseReleased(MouseEvent e) {
-        if (mouseDragSelection != null) {
-          final List<MindMapTopic> covered = mouseDragSelection.getAllSelectedElements(model);
-          if ((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
-            for (final MindMapTopic m : covered) {
-              select(m, false);
+        try {
+          if (draggedElementPoint != null) {
+            try {
+              final AbstractElement block = ((AbstractElement) model.getRoot().getPayload()).findTopicBlockForPoint(e.getPoint());
+              System.out.println("HHH: " + block);
+            }
+            finally {
+              invalidate();
+              fireNotificationMindMapChanged();
+              repaint();
             }
           }
-          else if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-            for (final MindMapTopic m : covered) {
-              select(m, true);
+          else if (mouseDragSelection != null) {
+            final List<MindMapTopic> covered = mouseDragSelection.getAllSelectedElements(model);
+            if ((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
+              for (final MindMapTopic m : covered) {
+                select(m, false);
+              }
+            }
+            else if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+              for (final MindMapTopic m : covered) {
+                select(m, true);
+              }
+            }
+            else {
+              selectedTopics.clear();
+              for (final MindMapTopic m : covered) {
+                select(m, false);
+              }
             }
           }
-          else {
-            selectedTopics.clear();
-            for (final MindMapTopic m : covered) {
-              select(m, false);
-            }
-          }
-
+        }
+        finally {
           mouseDragSelection = null;
+          draggedElement = null;
+          draggedElementPoint = null;
+
           repaint();
         }
       }
@@ -204,21 +224,40 @@ public final class MindMapPanel extends JPanel {
           mouseDragSelection.update(e);
           repaint();
         }
-      }
-
-      @Override
-      public void mouseWheelMoved(final MouseWheelEvent e) {
-        if (e.isControlDown()) {
-          endEdit(false);
-          setScale(getScale() + (SCALE_STEP * -e.getWheelRotation()));
-          invalidate();
-          revalidate();
+        else if (draggedElementPoint == null) {
+          draggedElement = findTopicUnderPoint(e.getPoint());
+          if (draggedElement != null && draggedElement.isMoveable()) {
+            draggedElementPoint = e.getPoint();
+            repaint();
+          }
+        }
+        else {
+          draggedElementPoint.setLocation(e.getPoint());
           repaint();
         }
       }
 
       @Override
+      public void mouseWheelMoved(final MouseWheelEvent e) {
+        mouseDragSelection = null;
+        draggedElement = null;
+        draggedElementPoint = null;
+
+        if (e.isControlDown()) {
+          endEdit(false);
+          setScale(getScale() + (SCALE_STEP * -e.getWheelRotation()));
+          invalidate();
+          revalidate();
+        }
+        repaint();
+      }
+
+      @Override
       public void mouseClicked(final MouseEvent e) {
+        mouseDragSelection = null;
+        draggedElement = null;
+        draggedElementPoint = null;
+
         MindMap theMap = model;
         AbstractElement element = null;
         if (theMap != null) {
@@ -231,7 +270,6 @@ public final class MindMapPanel extends JPanel {
         else {
           final ElementPart part = element == null ? ElementPart.NONE : element.findPartForPoint(e.getPoint());
           if (part == ElementPart.COLLAPSATOR) {
-            mouseDragSelection = null;
             removeSelection();
             ((AbstractCollapsableElement) element).setCollapse(!element.isCollapsed());
             invalidate();
@@ -239,12 +277,10 @@ public final class MindMapPanel extends JPanel {
             repaint();
           }
           else if (e.getClickCount() > 1) {
-            mouseDragSelection = null;
             startEdit(element);
           }
           else {
             if (element != null) {
-              mouseDragSelection = null;
               if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0) {
                 // only
                 removeSelection();
@@ -304,13 +340,29 @@ public final class MindMapPanel extends JPanel {
             }
           }
           break;
+          case KeyEvent.VK_UP:
           case KeyEvent.VK_DOWN: {
-            final MindMapTopic topic = current.getModel().findNext();
-            nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
-          }
-          break;
-          case KeyEvent.VK_UP: {
-            final MindMapTopic topic = current.getModel().findPrev();
+            final boolean firstLevel = current instanceof ElementLevelFirst;
+            final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(current.getModel());
+            
+            final TopicChecker checker = new TopicChecker() {
+              @Override
+              public boolean check(final MindMapTopic topic) {
+                if (!firstLevel) {
+                  return true;
+                }
+                else {
+                  if (currentLeft) {
+                    return AbstractCollapsableElement.isLeftSidedTopic(topic);
+                  }
+                  else {
+                    return !AbstractCollapsableElement.isLeftSidedTopic(topic);
+                  }
+                }
+              }
+            };
+            
+            final MindMapTopic topic = key == KeyEvent.VK_UP ? current.getModel().findPrev(checker) : current.getModel().findNext(checker);
             nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
           }
           break;
@@ -382,6 +434,24 @@ public final class MindMapPanel extends JPanel {
     if (parent != null) {
       this.selectedTopics.clear();
       final MindMapTopic newTopic = parent.makeChild("", after);
+
+      if (parent.getParent() == null && after == null) {
+        int numLeft = 0;
+        int numRight = 0;
+        for (final MindMapTopic t : parent.getChildren()) {
+          if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
+            numLeft++;
+          }
+          else {
+            numRight++;
+          }
+        }
+        
+        if (numLeft<numRight){
+          AbstractCollapsableElement.makeTopicLeftSided(newTopic, true);
+        }
+      }
+
       select(newTopic, false);
       invalidate();
       revalidate();
@@ -740,18 +810,21 @@ public final class MindMapPanel extends JPanel {
 
     paintChildren(g);
 
-    if (this.mouseDragSelection != null) {
+    if (this.draggedElement != null) {
+      final int px = this.draggedElementPoint.x - ((int) this.draggedElement.getBounds().getWidth()) / 2;
+      final int py = this.draggedElementPoint.y - ((int) this.draggedElement.getBounds().getHeight()) / 2;
+      gfx.translate(px, py);
+      try {
+        this.draggedElement.drawComponent(gfx, this.config);
+      }
+      finally {
+        gfx.translate(-px, -py);
+      }
+    }
+    else if (this.mouseDragSelection != null) {
       gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
       gfx.fill(this.mouseDragSelection.asRectangle());
     }
-  }
-
-  public AbstractElement findSubtreeUnderPoint(final Point point) {
-    AbstractElement result = null;
-    if (this.model != null) {
-
-    }
-    return result;
   }
 
   public AbstractElement findTopicUnderPoint(final Point point) {

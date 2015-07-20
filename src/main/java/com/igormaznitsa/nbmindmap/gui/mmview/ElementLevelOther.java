@@ -17,7 +17,6 @@ package com.igormaznitsa.nbmindmap.gui.mmview;
 
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
@@ -34,7 +33,7 @@ public class ElementLevelOther extends ElementLevelFirst {
   }
 
   @Override
-  protected void drawComponent(final Graphics2D g, final Configuration cfg) {
+  public void drawComponent(final Graphics2D g, final Configuration cfg) {
     g.setStroke(new BasicStroke(cfg.getScale() * cfg.getElementBorderWidth()));
 
     final Shape shape = makeShape(0f, 0f);
