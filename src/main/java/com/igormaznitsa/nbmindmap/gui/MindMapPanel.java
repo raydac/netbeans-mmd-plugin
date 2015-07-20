@@ -137,13 +137,13 @@ public final class MindMapPanel extends JPanel {
             deleteSelectedTopics();
           }
           break;
-          case KeyEvent.VK_LEFT : 
-          case KeyEvent.VK_RIGHT : 
-          case KeyEvent.VK_UP : 
-          case KeyEvent.VK_DOWN : 
-          {
+          case KeyEvent.VK_LEFT:
+          case KeyEvent.VK_RIGHT:
+          case KeyEvent.VK_UP:
+          case KeyEvent.VK_DOWN: {
             processMoveFocusByKey(e.getKeyCode());
-          }break;
+          }
+          break;
           case KeyEvent.VK_ENTER: {
             if (!hasActiveEditor() && hasOnlyTopicSelected()) {
               final MindMapTopic selectedTopic = selectedTopics.get(0);
@@ -274,60 +274,78 @@ public final class MindMapPanel extends JPanel {
     this.add(this.textEditorPanel);
   }
 
-  private void processMoveFocusByKey(final int key){
-    if (hasOnlyTopicSelected()){
-      final AbstractElement current = (AbstractElement)this.selectedTopics.get(0).getPayload();
-      if (current == null) return;
+  private void processMoveFocusByKey(final int key) {
+    if (hasOnlyTopicSelected()) {
+      final AbstractElement current = (AbstractElement) this.selectedTopics.get(0).getPayload();
+      if (current == null) {
+        return;
+      }
 
       AbstractElement nextFocused = null;
-      
-      if (current.isMoveable()){
+
+      if (current.isMoveable()) {
         boolean processFirstChild = false;
-        switch(key){
-          case KeyEvent.VK_LEFT :{
-            if (current.isLeftDirection()){
+        switch (key) {
+          case KeyEvent.VK_LEFT: {
+            if (current.isLeftDirection()) {
               processFirstChild = true;
-            }else{
-              nextFocused = (AbstractElement)current.getModel().getParent().getPayload();
             }
-          }break;
-          case KeyEvent.VK_RIGHT :{
-            if (current.isLeftDirection()){
+            else {
               nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
-            }else{
+            }
+          }
+          break;
+          case KeyEvent.VK_RIGHT: {
+            if (current.isLeftDirection()) {
+              nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
+            }
+            else {
               processFirstChild = true;
             }
-          }break;
+          }
+          break;
+          case KeyEvent.VK_DOWN: {
+            final MindMapTopic topic = current.getModel().findNext();
+            nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
+          }
+          break;
+          case KeyEvent.VK_UP: {
+            final MindMapTopic topic = current.getModel().findPrev();
+            nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
+          }
+          break;
         }
-        
-        if (processFirstChild){
-          if (current.hasChildren()){
+
+        if (processFirstChild) {
+          if (current.hasChildren()) {
             boolean uncollapsed = false;
-            if (current.isCollapsed()){
-              ((AbstractCollapsableElement)current).setCollapse(false);
+            if (current.isCollapsed()) {
+              ((AbstractCollapsableElement) current).setCollapse(false);
               uncollapsed = true;
             }
-          
-            nextFocused = (AbstractElement)(current.getModel().getChildren().get(0)).getPayload();
-          
-            if (uncollapsed){
+
+            nextFocused = (AbstractElement) (current.getModel().getChildren().get(0)).getPayload();
+
+            if (uncollapsed) {
               invalidate();
               fireNotificationMindMapChanged();
             }
           }
         }
-      }else{
-        switch(key){
-          case KeyEvent.VK_LEFT : {
-            for(final MindMapTopic t : current.getModel().getChildren()){
-              final AbstractElement e = (AbstractElement)t.getPayload();
-              if (e!=null && e.isLeftDirection()){
+      }
+      else {
+        switch (key) {
+          case KeyEvent.VK_LEFT: {
+            for (final MindMapTopic t : current.getModel().getChildren()) {
+              final AbstractElement e = (AbstractElement) t.getPayload();
+              if (e != null && e.isLeftDirection()) {
                 nextFocused = e;
                 break;
               }
             }
-          }break;
-          case KeyEvent.VK_RIGHT : {
+          }
+          break;
+          case KeyEvent.VK_RIGHT: {
             for (final MindMapTopic t : current.getModel().getChildren()) {
               final AbstractElement e = (AbstractElement) t.getPayload();
               if (e != null && !e.isLeftDirection()) {
@@ -335,17 +353,22 @@ public final class MindMapPanel extends JPanel {
                 break;
               }
             }
-          }break;
+          }
+          break;
         }
       }
-      
-      if (nextFocused!=null){
+
+      if (nextFocused != null) {
         removeSelection();
         select(nextFocused.getModel(), false);
       }
     }
   }
-  
+
+  private void ensureVisibility(final AbstractElement e) {
+    fireNotificationEnsureTopicVisibility(e.getModel());
+  }
+
   public void removeSelection() {
     this.selectedTopics.clear();
     repaint();
@@ -406,6 +429,7 @@ public final class MindMapPanel extends JPanel {
   public void select(final MindMapTopic t, final boolean removeIfPresented) {
     if (!this.selectedTopics.contains(t)) {
       this.selectedTopics.add(t);
+      fireNotificationEnsureTopicVisibility(t);
       repaint();
     }
     else if (removeIfPresented) {
@@ -442,8 +466,7 @@ public final class MindMapPanel extends JPanel {
       this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
       this.textEditor.setMinimumSize(textBlockSize);
 
-      this.scrollRectToVisible(textEditorPanel.getBounds());
-      this.fireNotificationEnsureTopicVisibility(this.elementUnderEdit.getModel());
+      ensureVisibility(this.elementUnderEdit);
 
       this.textEditorPanel.setVisible(true);
       this.textEditor.requestFocus();

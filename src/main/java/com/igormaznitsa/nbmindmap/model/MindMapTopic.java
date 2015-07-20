@@ -473,4 +473,43 @@ public final class MindMapTopic implements Serializable, Constants {
     }
   }
 
+  public MindMapTopic findNext(){
+    this.map.lock();
+    try{
+      MindMapTopic result = null;
+      
+      result = this.getParent();
+      if (result!=null){
+        final int indexThis = result.children.indexOf(this);
+        if (indexThis>=0){
+          result = result.children.size()-1>indexThis ? result.children.get(indexThis+1) : null;
+        }
+      }
+      
+      return result;
+    }finally{
+      this.map.unlock();
+    }
+  }
+  
+
+  public MindMapTopic findPrev(){
+    this.map.lock();
+    try{
+      MindMapTopic result = null;
+      
+      result = this.getParent();
+      if (result!=null){
+        final int indexThis = result.children.indexOf(this);
+        if (indexThis>=0){
+          result = indexThis > 0 ? result.children.get(indexThis-1) : null;
+        }
+      }
+      
+      return result;
+    }finally{
+      this.map.unlock();
+    }
+  }
+  
 }

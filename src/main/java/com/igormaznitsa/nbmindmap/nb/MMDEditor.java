@@ -21,6 +21,8 @@ import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
@@ -79,11 +81,11 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
       public void componentResized(ComponentEvent e) {
         processEditorResizing(mindMapPanel);
       }
-      
+
     });
-    
+
     this.mindMapPanel.addMindMapListener(this);
-    
+
     this.repaint();
   }
 
@@ -93,7 +95,6 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
     panel.repaint();
   }
 
-  
   @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
     updateDataInEditors();
@@ -106,6 +107,7 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
   @Override
   public void onEnsureVisibilityOfTopic(final MindMapPanel source, final MindMapTopic topic) {
+    moveVisibleRectToElement(this, source, topic == null ? null : (AbstractElement)topic.getPayload());
   }
 
   @Override
@@ -194,16 +196,33 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
       this.mindMapPanel.setModel(map);
       this.mindMapPanel.setErrorText(null);
     }
-    catch (IllegalArgumentException ex){
+    catch (IllegalArgumentException ex) {
       this.mindMapPanel.setErrorText("Can't find topics, may be wrong format");
     }
     catch (Exception ex) {
       ex.printStackTrace();
       this.mindMapPanel.setErrorText("Error during parsing");
     }
-    
+
     revalidate();
     repaint();
+  }
+
+  private static void moveVisibleRectToElement(final JScrollPane pane, final MindMapPanel mmPanel, final AbstractElement e) {
+    if (e != null) {
+      final Rectangle componentRect = e.getBounds().getBounds();
+
+      final Rectangle visibleRect = pane.getViewport().getViewRect();
+
+      final int xoffset = (visibleRect.width - componentRect.width) / 2;
+      final int yoffset = (visibleRect.height - componentRect.height) / 2;
+
+      int px = Math.max(0, componentRect.x - xoffset);
+      int py = Math.max(0, componentRect.y - yoffset);
+
+      final Dimension preferredSize = mmPanel.getPreferredSize();
+      pane.getViewport().setViewPosition(new Point(px,py));
+    }
   }
 
   @Override
@@ -297,10 +316,11 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
     final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n"));
     pp.setModel(map);
 
-    pp.addMindMapListener(new MindMapListener (){
+    pp.addMindMapListener(new MindMapListener() {
 
       @Override
       public void onEnsureVisibilityOfTopic(MindMapPanel source, MindMapTopic topic) {
+        moveVisibleRectToElement(panel, source, (AbstractElement) topic.getPayload());
       }
 
       @Override
@@ -311,9 +331,9 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
       public void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize) {
         panel.getViewport().revalidate();
       }
-      
+
     });
-    
+
     panel.setViewportView(pp);
 
     frame.setContentPane(panel);
