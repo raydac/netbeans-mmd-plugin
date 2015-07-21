@@ -18,6 +18,7 @@ package com.igormaznitsa.nbmindmap.nb;
 import com.igormaznitsa.nbmindmap.gui.MindMapListener;
 import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
 import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
+import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Dimension;
@@ -108,6 +109,10 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
   @Override
   public void onEnsureVisibilityOfTopic(final MindMapPanel source, final MindMapTopic topic) {
     moveVisibleRectToElement(this, source, topic == null ? null : (AbstractElement)topic.getPayload());
+  }
+
+  @Override
+  public void onClickOnExtra(final MindMapPanel panel, final MindMapTopic topic, final Extra<?> extra) {
   }
 
   @Override
@@ -330,6 +335,11 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
       @Override
       public void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize) {
         panel.getViewport().revalidate();
+      }
+
+      @Override
+      public void onClickOnExtra(MindMapPanel panel, MindMapTopic topic, Extra<?> extra) {
+        System.out.println("EXTRAS: "+extra);
       }
 
     });

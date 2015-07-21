@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
+import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -246,5 +247,9 @@ public abstract class AbstractElement {
 
   public TextBlock getTextBlock() {
     return this.textBlock;
+  }
+
+  public IconBlock getIconBlock() {
+    return this.iconBlock;
   }
 }

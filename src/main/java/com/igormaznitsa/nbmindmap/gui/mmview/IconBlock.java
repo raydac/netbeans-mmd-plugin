@@ -99,7 +99,7 @@ public class IconBlock {
     Extra<?> result = null;
     if (this.hasContent()  && this.bounds.contains(x,y)){
       final double iconWidth = this.scale * ScalableIcon.BASE_WIDTH;
-      final int index = (int)Math.round(y / iconWidth);
+      final int index = (int)((x-this.bounds.getX()) / iconWidth);
       result = index >=0 && index < this.currentExtras.length ? this.currentExtras[index] : null;
     }
     return result;

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.gui;
 
+import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Dimension;
 
@@ -22,4 +23,5 @@ public interface MindMapListener {
   void onMindMapModelChanged(MindMapPanel source);
   void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
   void onEnsureVisibilityOfTopic(MindMapPanel source, MindMapTopic topic);
+  void onClickOnExtra(MindMapPanel panel, MindMapTopic topic, Extra<?> extra);
 }

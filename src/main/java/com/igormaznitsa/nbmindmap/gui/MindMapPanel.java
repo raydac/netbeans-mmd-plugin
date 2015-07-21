@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.gui;
 
 import com.igormaznitsa.nbmindmap.gui.mmview.*;
+import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.*;
@@ -162,6 +163,22 @@ public final class MindMapPanel extends JPanel {
     final MouseAdapter adapter = new MouseAdapter() {
 
       @Override
+      public void mouseEntered(final MouseEvent e) {
+        setCursor(Cursor.getDefaultCursor());
+      }
+
+      @Override
+      public void mouseMoved(final MouseEvent e) {
+        final AbstractElement element = findTopicUnderPoint(e.getPoint());
+        if (element == null){
+          setCursor(Cursor.getDefaultCursor());
+        }else{
+          final ElementPart part = element.findPartForPoint(e.getPoint());
+          setCursor(part == ElementPart.ICONS || part == ElementPart.COLLAPSATOR ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+        }
+      }
+
+      @Override
       public void mousePressed(final MouseEvent e) {
         endEdit(false);
         mouseDragSelection = null;
@@ -278,6 +295,12 @@ public final class MindMapPanel extends JPanel {
           }
           else if (part != ElementPart.ICONS && e.getClickCount() > 1) {
             startEdit(element);
+          }
+          else if (part == ElementPart.ICONS){
+            final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX()-element.getBounds().getX(), e.getPoint().getY()-element.getBounds().getY());
+            if (extra != null){
+              fireNotificationClickOnExtra(element.getModel(), extra);
+            }
           }
           else {
             if (element != null) {
@@ -463,6 +486,12 @@ public final class MindMapPanel extends JPanel {
   protected void fireNotificationMindMapChanged() {
     for (final MindMapListener l : mindMapListeners) {
       l.onMindMapModelChanged(this);
+    }
+  }
+
+  protected void fireNotificationClickOnExtra(final MindMapTopic topic, final Extra<?> extra) {
+    for (final MindMapListener l : mindMapListeners) {
+      l.onClickOnExtra(this, topic, extra);
     }
   }
 
