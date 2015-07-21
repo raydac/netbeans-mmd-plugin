@@ -66,7 +66,14 @@ public abstract class AbstractElement {
     this.textBlock.updateSize(gfx, cfg);
     this.iconBlock.updateSize(gfx, cfg);
     
-    this.bounds.setRect(0d, 0d, this.textBlock.getBounds().getWidth()+this.iconBlock.getBounds().getWidth(), Math.max(this.textBlock.getBounds().getHeight(),this.iconBlock.getBounds().getHeight()));
+    final double width;
+    if (this.iconBlock.hasContent()){
+      width = this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap() + this.iconBlock.getBounds().getWidth();
+    }else{
+      width = this.textBlock.getBounds().getWidth();
+    }
+    
+    this.bounds.setRect(0d, 0d, width, Math.max(this.textBlock.getBounds().getHeight(),this.iconBlock.getBounds().getHeight()));
   }
 
   public void updateBlockSize(final Configuration cfg) {

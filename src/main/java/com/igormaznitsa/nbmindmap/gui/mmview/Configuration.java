@@ -28,6 +28,7 @@ public class Configuration {
   private int firstLevelHorizontalInset = 48;
   private int paperMargins = 20;
   private int selectLineGap = 5;
+  private int horizontalBlockGap = 5;
   
   private boolean drawBackground = true;
   private Color paperColor = new Color(0x617B94);
@@ -60,6 +61,14 @@ public class Configuration {
   
   public Configuration(final MindMapPanel panel){
     this.panel = panel;
+  }
+  
+  public int getHorizontalBlockGap(){
+    return this.horizontalBlockGap;
+  }
+  
+  public void setHorizontalBlockGap(final int gap){
+    this.horizontalBlockGap = gap;
   }
   
   public MindMapPanel getPanel(){

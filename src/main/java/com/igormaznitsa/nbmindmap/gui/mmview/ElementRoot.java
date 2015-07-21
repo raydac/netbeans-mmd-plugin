@@ -124,7 +124,7 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public void alignElementAndChildren(Configuration cfg, final boolean leftSide, final double cx, final double cy) {
+  public void alignElementAndChildren(final Configuration cfg, final boolean leftSide, final double cx, final double cy) {
     final double dx = cx;
     final double dy = cy;
     this.moveTo(dx, dy);
@@ -133,8 +133,10 @@ public final class ElementRoot extends AbstractElement {
     final double centralLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.iconBlock.getBounds().getHeight()) / 2;
 
     this.textBlock.setCoordOffset(textMargin, centralLineY - this.textBlock.getBounds().getHeight()/2);
-    this.iconBlock.setCoordOffset(textMargin+this.textBlock.getBounds().getWidth(), centralLineY - this.iconBlock.getBounds().getHeight()/2);
-
+    if (this.iconBlock.hasContent()){
+      this.iconBlock.setCoordOffset(textMargin+this.textBlock.getBounds().getWidth()+cfg.getScale()*cfg.getHorizontalBlockGap(), centralLineY - this.iconBlock.getBounds().getHeight()/2);
+    }
+    
     final double insetVert = cfg.getFirstLevelVerticalInset() * cfg.getScale();
     final double insetHorz = cfg.getFirstLevelHorizontalInset() * cfg.getScale();
 

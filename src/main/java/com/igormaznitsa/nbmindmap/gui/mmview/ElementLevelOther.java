@@ -54,6 +54,10 @@ public class ElementLevelOther extends ElementLevelFirst {
     g.setColor(cfg.getOtherLeveltextColor());
     this.textBlock.paint(g);
     
+    if (this.iconBlock.hasContent()) {
+      this.iconBlock.paint(g);
+    }
+
     if (this.hasChildren()){
       drawCollapsator(g,  cfg,this.isCollapsed());
     }

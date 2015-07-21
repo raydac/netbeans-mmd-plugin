@@ -20,7 +20,6 @@ import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
@@ -163,7 +162,12 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     }
 
     final int textMargin = Math.round(cfg.getScale() * cfg.getTextMargins());
-    this.textBlock.setCoordOffset(textMargin, textMargin);
+    final double centralLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.iconBlock.getBounds().getHeight()) / 2;
+
+    this.textBlock.setCoordOffset(textMargin, centralLineY - this.textBlock.getBounds().getHeight() / 2);
+    if (this.iconBlock.hasContent()) {
+      this.iconBlock.setCoordOffset(textMargin + this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap(), centralLineY - this.iconBlock.getBounds().getHeight() / 2);
+    }
 
     this.collapsatorZone.setRect(collapsatorX, (this.bounds.getHeight() - COLLAPSATORSIZE) / 2, COLLAPSATORSIZE, COLLAPSATORSIZE);
 
