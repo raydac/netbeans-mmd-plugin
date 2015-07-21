@@ -24,12 +24,15 @@ import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.SRC_POSITION;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Map;
 
 public class IconBlock {
   private final Rectangle2D bounds = new Rectangle2D.Double();
   private final MindMapTopic model;
   private float scale = 1.0f;
   private boolean contentPresented;
+  
+  private Extra<?> [] currentExtras = null;
   
   public IconBlock(final MindMapTopic model){
     this.model = model;
@@ -50,11 +53,16 @@ public class IconBlock {
       final double scaledIconHeight = ScalableIcon.BASE_HEIGHT * this.scale;
       this.bounds.setRect(0d, 0d, scaledIconWidth * numberOfIcons, scaledIconHeight);
       this.contentPresented = true;
+      this.currentExtras = new Extra<?>[numberOfIcons];
+      int index = 0;
+      for(final Extra<?> e : this.model.getExtras().values()){
+        this.currentExtras[index++] = e;
+      }
     }
   }
 
   public boolean hasContent(){
-    return this.contentPresented;
+    return this.currentExtras!=null && this.contentPresented;
   }
   
   public void paint(final Graphics2D gfx) {
@@ -63,9 +71,9 @@ public class IconBlock {
       double offsetX = this.bounds.getX();
       final int offsetY = (int)Math.round(this.bounds.getY());
       final double scaledIconWidth = ScalableIcon.BASE_WIDTH * this.scale;
-      for(final Extra.ExtraType e : this.model.getExtras().keySet()){
+      for(final Extra<?> e : this.currentExtras){
         final ScalableIcon ico;
-        switch (e) {
+        switch (e.getType()) {
           case FILE:
             ico = ScalableIcon.FILE;
             break;
@@ -87,6 +95,16 @@ public class IconBlock {
     }
   }
 
+  public Extra<?> findExtraForPoint(final double x, final double y){
+    Extra<?> result = null;
+    if (this.hasContent()  && this.bounds.contains(x,y)){
+      final double iconWidth = this.scale * ScalableIcon.BASE_WIDTH;
+      final int index = (int)Math.round(y / iconWidth);
+      result = index >=0 && index < this.currentExtras.length ? this.currentExtras[index] : null;
+    }
+    return result;
+  }
+  
   public Rectangle2D getBounds() {
     return this.bounds;
   }
