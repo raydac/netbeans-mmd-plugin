@@ -72,8 +72,10 @@ public final class ElementRoot extends AbstractElement {
     g.setColor(cfg.getRootTextColor());
     this.textBlock.paint(g);
 
-    drawExtraIcons(g, this.textBlock.getBounds().getMaxX(), 0.0d, cfg);
-    
+    if (this.iconBlock.hasContent()) {
+      this.iconBlock.paint(g);
+    }
+
 //    g.setColor(Color.white);
 //    g.drawRect((int) (-this.leftBlockSize.getWidth()), -(int) (this.leftBlockSize.getHeight() - this.bounds.getHeight()) / 2, (int) this.leftBlockSize.getWidth(), (int) this.leftBlockSize.getHeight());
 //    g.drawRect((int) this.bounds.getWidth(), -(int) (this.rightBlockSize.getHeight() - this.bounds.getHeight()) / 2, (int) this.rightBlockSize.getWidth(), (int) this.rightBlockSize.getHeight());
@@ -128,7 +130,10 @@ public final class ElementRoot extends AbstractElement {
     this.moveTo(dx, dy);
 
     final int textMargin = Math.round(cfg.getScale() * cfg.getTextMargins());
-    this.textBlock.setCoordOffset(textMargin, textMargin);
+    final double centralLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.iconBlock.getBounds().getHeight()) / 2;
+
+    this.textBlock.setCoordOffset(textMargin, centralLineY - this.textBlock.getBounds().getHeight()/2);
+    this.iconBlock.setCoordOffset(textMargin+this.textBlock.getBounds().getWidth(), centralLineY - this.iconBlock.getBounds().getHeight()/2);
 
     final double insetVert = cfg.getFirstLevelVerticalInset() * cfg.getScale();
     final double insetHorz = cfg.getFirstLevelHorizontalInset() * cfg.getScale();

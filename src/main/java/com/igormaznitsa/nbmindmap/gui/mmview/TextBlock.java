@@ -82,7 +82,7 @@ public final class TextBlock {
     this.bounds.setFrame(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
   
-  public void updateUI(final Graphics2D gfx, final Configuration cfg) {
+  public void updateSize(final Graphics2D gfx, final Configuration cfg) {
       this.font = cfg.getFont().deriveFont(cfg.getFont().getSize2D() * cfg.getScale());
       final FontMetrics metrics = gfx.getFontMetrics(this.font);
 

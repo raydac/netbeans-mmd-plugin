@@ -15,15 +15,12 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import com.igormaznitsa.nbmindmap.gui.icons.ScalableIcon;
-import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Map;
 import javax.swing.text.JTextComponent;
 
 public abstract class AbstractElement {
@@ -31,7 +28,8 @@ public abstract class AbstractElement {
   protected final MindMapTopic model;
 
   protected final TextBlock textBlock;
-
+  protected final IconBlock iconBlock;
+  
   protected final Rectangle2D bounds = new Rectangle2D.Float();
   protected final Dimension2D blockSize = new Dimension();
 
@@ -48,6 +46,7 @@ public abstract class AbstractElement {
     this.model = model;
     this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
     this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align")));
+    this.iconBlock = new IconBlock(model);
   }
 
   public MindMapTopic getModel() {
@@ -64,14 +63,10 @@ public abstract class AbstractElement {
   }
 
   public void updateElementBounds(final Graphics2D gfx, final Configuration cfg) {
-    this.textBlock.updateUI(gfx, cfg);
-    this.bounds.setRect(this.textBlock.getBounds());
+    this.textBlock.updateSize(gfx, cfg);
+    this.iconBlock.updateSize(gfx, cfg);
     
-    if (this.model.getNumberOfExtras()>0){
-      final double iconWidth = ScalableIcon.BASE_WIDTH * cfg.getScale();
-      final double iconHeight = ScalableIcon.BASE_HEIGHT * cfg.getScale();
-      this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth()+iconWidth * this.model.getNumberOfExtras(), Math.max(iconHeight, this.bounds.getHeight()));
-    }
+    this.bounds.setRect(0d, 0d, this.textBlock.getBounds().getWidth()+this.iconBlock.getBounds().getWidth(), Math.max(this.textBlock.getBounds().getHeight(),this.iconBlock.getBounds().getHeight()));
   }
 
   public void updateBlockSize(final Configuration cfg) {
@@ -120,29 +115,6 @@ public abstract class AbstractElement {
   public JTextComponent fillByTextAndFont(final JTextComponent compo){
     this.textBlock.fillByTextAndFont(compo);
     return compo;
-  }
-  
-  protected void drawExtraIcons(final Graphics2D g, final double x, final double y, final Configuration cfg) {
-    final int extrasNumber = this.model.getNumberOfExtras();
-    if (extrasNumber>0){
-      
-      double xoffset = x;
-      final double imageWidth = cfg.getScale() * ScalableIcon.BASE_WIDTH;
-      final int imageY = (int)Math.round(y+((this.getBounds().getBounds().getHeight()-cfg.getScale() * ScalableIcon.BASE_HEIGHT)/2));
-      
-      for(final Map.Entry<Extra.ExtraType, Extra<?>> e : this.model.getExtras().entrySet()){
-        final ScalableIcon ico;
-        switch(e.getKey()){
-          case FILE : ico = ScalableIcon.FILE;break;
-          case LINK : ico = ScalableIcon.LINK;break;
-          case NOTE : ico = ScalableIcon.TEXT;break;
-          case SRC_POSITION : ico = ScalableIcon.SOURCE;break;
-          default: throw new Error("Unexpected extras");
-        }
-        g.drawImage(ico.getImage(cfg.getScale()), (int)Math.round(xoffset), imageY, null);
-        xoffset += imageWidth;
-      }
-    }
   }
   
   public abstract void drawComponent(Graphics2D g, Configuration cfg);
