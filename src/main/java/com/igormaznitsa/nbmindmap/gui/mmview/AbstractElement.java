@@ -141,9 +141,14 @@ public abstract class AbstractElement {
   public ElementPart findPartForPoint(final Point point){
     ElementPart result = ElementPart.NONE;
     if (this.bounds.contains(point)){
+      final double offX = point.getX() - this.bounds.getX();
+      final double offY = point.getY() - this.bounds.getY();
+      
       result = ElementPart.AREA;
-      if (this.textBlock.getBounds().contains(point.getX()-this.bounds.getX(), point.getY() - this.bounds.getY())) {
+      if (this.textBlock.getBounds().contains(offX,offY)) {
         result = ElementPart.TEXT;
+      } else if (this.iconBlock.getBounds().contains(offX,offY)){
+        result = ElementPart.ICONS;
       }
     }
     return result;

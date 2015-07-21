@@ -19,5 +19,6 @@ public enum ElementPart {
   NONE,
   AREA,
   TEXT,
+  ICONS,
   COLLAPSATOR
 }

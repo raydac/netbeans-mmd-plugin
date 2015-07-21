@@ -276,7 +276,7 @@ public final class MindMapPanel extends JPanel {
             fireNotificationMindMapChanged();
             repaint();
           }
-          else if (e.getClickCount() > 1) {
+          else if (part != ElementPart.ICONS && e.getClickCount() > 1) {
             startEdit(element);
           }
           else {
