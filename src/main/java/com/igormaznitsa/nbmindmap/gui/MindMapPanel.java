@@ -66,6 +66,7 @@ public final class MindMapPanel extends JPanel {
     this.config = new Configuration(this);
 
     this.textEditor.setMargin(new Insets(5, 5, 5, 5));
+    this.textEditor.setTabSize(4);
     this.textEditor.addKeyListener(new KeyAdapter() {
 
       @Override
@@ -78,6 +79,12 @@ public final class MindMapPanel extends JPanel {
       @Override
       public void keyReleased(final KeyEvent e) {
         switch (e.getKeyCode()) {
+          case KeyEvent.VK_TAB : {
+            e.consume();
+            final MindMapTopic edited = elementUnderEdit.getModel();
+            endEdit(true);
+            makeNewChildAndStartEdit(edited, null);
+          }break;
           case KeyEvent.VK_ENTER: {
             e.consume();
             if (((KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK) & e.getModifiersEx()) == 0) {
