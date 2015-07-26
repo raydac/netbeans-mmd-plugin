@@ -205,8 +205,7 @@ public final class MindMapPanel extends JPanel {
         try {
           if (draggedElementPoint != null) {
             try {
-              final AbstractElement block = ((AbstractElement) model.getRoot().getPayload()).findTopicBlockForPoint(e.getPoint());
-              System.out.println("HHH: " + block);
+              processDragOfElement(draggedElementPoint, draggedElement, destinationElement);
             }
             finally {
               invalidate();
@@ -343,6 +342,23 @@ public final class MindMapPanel extends JPanel {
     this.add(this.textEditorPanel);
   }
 
+  private void processDragOfElement(final Point dropPoint, final AbstractElement element, final AbstractElement destination){
+    final boolean same = element.getModel() == destination.getModel();
+    if (same) return;
+    
+    final boolean sameParent = element.getModel().getParent() == destination.getModel();
+    
+    if (destination.getModel().getParent() == null) {
+      // root
+      if (sameParent){
+        final AbstractCollapsableElement collapsable = (AbstractCollapsableElement) element;
+        collapsable.setLeftDirection(dropPoint.getX() < destination.getBounds().getCenterX());
+      }
+    } else {
+      
+    }
+  }
+  
   private void processMoveFocusByKey(final int key) {
     if (hasOnlyTopicSelected()) {
       final AbstractElement current = (AbstractElement) this.selectedTopics.get(0).getPayload();
@@ -584,7 +600,8 @@ public final class MindMapPanel extends JPanel {
 
   private void findDestinationElementForDragged(){
     if (this.draggedElementPoint!=null && this.draggedElement!=null){
-      this.destinationElement = (AbstractElement)this.draggedElement.getModel().getParent().getPayload();
+      final AbstractElement root = (AbstractElement)this.model.getRoot().getPayload();
+      this.destinationElement = root.findNearestTopic(this.draggedElementPoint);
     }else{
       this.destinationElement = null;
     }

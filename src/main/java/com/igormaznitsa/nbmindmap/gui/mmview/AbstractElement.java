@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -198,6 +197,33 @@ public abstract class AbstractElement {
   
   protected double calcBlockX(){
     return this.bounds.getX() - (this.isLeftDirection() ? this.blockSize.getWidth() - this.bounds.getWidth() : 0.0d);
+  }
+
+  public AbstractElement findNearestTopic(final Point point){
+    return findNearestTopic(calcDistanceToPoint(point), point);
+  }
+  
+  private AbstractElement findNearestTopic(final double lessThanDistance, final Point point){
+    double curDistance = calcDistanceToPoint(point);
+    AbstractElement result = curDistance <= lessThanDistance ? this : null;
+    for(final MindMapTopic t : this.model.getChildren()){
+      final AbstractElement element = t.getPayload() == null ? null : (AbstractElement)t.getPayload();
+      if (element!=null){
+        final AbstractElement nearestChild = element.findNearestTopic(curDistance , point);
+        if (nearestChild!=null){
+          final double dist = nearestChild.calcDistanceToPoint(point);
+          if (dist < curDistance){
+            curDistance = dist;
+            result = nearestChild;
+          }
+        }
+      }
+    }
+    return result;
+  }
+  
+  public double calcDistanceToPoint(final Point point) {
+    return Math.sqrt(Math.pow(this.bounds.getCenterX()-point.getX(),2.0d)+Math.pow(this.bounds.getCenterY() - point.getY(), 2.0d));
   }
   
   public AbstractElement findTopicBlockForPoint(final Point point){
