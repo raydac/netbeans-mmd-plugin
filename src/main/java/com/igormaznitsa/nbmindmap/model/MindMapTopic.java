@@ -39,7 +39,7 @@ public final class MindMapTopic implements Serializable, Constants {
 
   private static final AtomicLong LOCALUID_GENERATOR = new AtomicLong();
 
-  private final MindMapTopic parent;
+  private MindMapTopic parent;
   private final EnumMap<Extra.ExtraType, Extra<?>> extras = new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
   private final Map<String, String> attributes = new HashMap<String, String>();
   private volatile String text;
@@ -235,10 +235,10 @@ public final class MindMapTopic implements Serializable, Constants {
     return Collections.unmodifiableList(this.children);
   }
 
-  public int getNumberOfExtras(){
+  public int getNumberOfExtras() {
     return this.extras.size();
   }
-  
+
   public Map<Extra.ExtraType, Extra<?>> getExtras() {
     return Collections.unmodifiableMap(this.extras);
   }
@@ -450,6 +450,24 @@ public final class MindMapTopic implements Serializable, Constants {
     this.children.clear();
   }
 
+  public boolean moveToNewParent(final MindMapTopic newParent) {
+    this.map.lock();
+    try {
+      if (newParent == null || this == newParent || this.getParent() == newParent || this.children.contains(newParent)) {
+        return false;
+      }
+      
+      this.parent.children.remove(this);
+      newParent.children.add(this);
+      this.parent = newParent;
+      
+      return true;
+    }
+    finally {
+      this.map.unlock();
+    }
+  }
+
   public MindMapTopic makeChild(final String text, final MindMapTopic afterTheTopic) {
     this.map.lock();
     try {
@@ -501,7 +519,7 @@ public final class MindMapTopic implements Serializable, Constants {
       if (current != null) {
         final int indexThis = current.children.indexOf(this);
         if (indexThis >= 0) {
-          for (int i = indexThis - 1; i >=0; i--) {
+          for (int i = indexThis - 1; i >= 0; i--) {
             if (checker == null) {
               result = current.children.get(i);
               break;
