@@ -367,6 +367,7 @@ public final class MindMapPanel extends JPanel {
         element.getModel().moveToNewParent(destination.getModel());
         element.getModel().moveAfter(prevTopic);
         element.getModel().setPayload(null);
+        AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), left);
       }
     }
     else {
