@@ -157,8 +157,8 @@ public final class MindMapPanel extends JPanel {
           break;
           case KeyEvent.VK_ENTER: {
             if (!hasActiveEditor() && hasOnlyTopicSelected()) {
-              final MindMapTopic selectedTopic = selectedTopics.get(0);
-              makeNewChildAndStartEdit(selectedTopic.getParent() == null ? selectedTopic : selectedTopic.getParent(), selectedTopic);
+              final MindMapTopic baseTopic = selectedTopics.get(0);
+              makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
             }
           }
           break;
@@ -479,12 +479,12 @@ public final class MindMapPanel extends JPanel {
     return this.elementUnderEdit != null;
   }
 
-  private void makeNewChildAndStartEdit(final MindMapTopic parent, final MindMapTopic after) {
+  private void makeNewChildAndStartEdit(final MindMapTopic parent, final MindMapTopic baseTopic) {
     if (parent != null) {
       this.selectedTopics.clear();
-      final MindMapTopic newTopic = parent.makeChild("", after);
+      final MindMapTopic newTopic = parent.makeChild("", baseTopic);
 
-      if (parent.getParent() == null && after == null) {
+      if (parent.getParent() == null && baseTopic == null) {
         int numLeft = 0;
         int numRight = 0;
         for (final MindMapTopic t : parent.getChildren()) {
@@ -498,6 +498,11 @@ public final class MindMapPanel extends JPanel {
         
         if (numLeft<numRight){
           AbstractCollapsableElement.makeTopicLeftSided(newTopic, true);
+        }
+      } else {
+        if (baseTopic!=null && baseTopic.getPayload()!=null){
+          final AbstractElement element = (AbstractElement) baseTopic.getPayload();
+          AbstractCollapsableElement.makeTopicLeftSided(newTopic, element.isLeftDirection());
         }
       }
 
