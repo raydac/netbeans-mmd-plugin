@@ -60,7 +60,8 @@ public final class MindMapPanel extends JPanel {
   private MouseSelectedArea mouseDragSelection = null;
   private AbstractElement draggedElement = null;
   private Point draggedElementPoint = null;
-
+  private AbstractElement destinationElement = null;
+  
   public MindMapPanel() {
     super(null);
     this.config = new Configuration(this);
@@ -237,7 +238,7 @@ public final class MindMapPanel extends JPanel {
           mouseDragSelection = null;
           draggedElement = null;
           draggedElementPoint = null;
-
+          destinationElement = null;
           repaint();
         }
       }
@@ -252,11 +253,13 @@ public final class MindMapPanel extends JPanel {
           draggedElement = findTopicUnderPoint(e.getPoint());
           if (draggedElement != null && draggedElement.isMoveable()) {
             draggedElementPoint = e.getPoint();
+            findDestinationElementForDragged();
             repaint();
           }
         }
         else {
           draggedElementPoint.setLocation(e.getPoint());
+          findDestinationElementForDragged();
           repaint();
         }
       }
@@ -579,6 +582,14 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
+  private void findDestinationElementForDragged(){
+    if (this.draggedElementPoint!=null && this.draggedElement!=null){
+      this.destinationElement = (AbstractElement)this.draggedElement.getModel().getParent().getPayload();
+    }else{
+      this.destinationElement = null;
+    }
+  }
+  
   protected void processPopUp(final Point point, final AbstractElement element) {
 
   }
@@ -659,6 +670,20 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
+  private void drawDestinationElement(final Graphics2D g, final Configuration cfg){
+    if (this.destinationElement != null){
+      final Rectangle2D elementBounds = this.destinationElement.getBounds();
+      
+      g.setColor(cfg.getSelectLineColor());
+      g.setStroke(new BasicStroke(3.0f*this.config.getScale()));
+
+      final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
+      final double dblLineGap = selectLineGap * 2.0d;
+      
+      g.drawRect((int)Math.round(elementBounds.getX() - selectLineGap), (int) Math.round(elementBounds.getY() - selectLineGap), (int) Math.round(elementBounds.getWidth() + dblLineGap), (int) Math.round(elementBounds.getHeight() + dblLineGap));
+    }
+  }
+  
   private void drawSelection(final Graphics2D g, final Configuration cfg) {
     if (!this.selectedTopics.isEmpty()) {
       g.setColor(cfg.getSelectLineColor());
@@ -842,6 +867,7 @@ public final class MindMapPanel extends JPanel {
         revalidateWholeTree(gfx, this.config, this.model);
       }
       drawOnGraphicsForConfiguration(gfx, this.config, this.model, true);
+      drawDestinationElement(gfx, this.config);
     }
 
     paintChildren(g);
