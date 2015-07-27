@@ -336,8 +336,13 @@ public final class MindMapTopic implements Serializable, Constants {
     this.map.lock();
     try {
       if (this.parent != null) {
-        final int thatIndex = this.parent.children.indexOf(topic);
+        int thatIndex = this.parent.children.indexOf(topic);
         final int thisIndex = this.parent.children.indexOf(this);
+        
+        if (thatIndex > thisIndex) {
+          thatIndex --;
+        }
+        
         if (thatIndex >= 0 && thisIndex >= 0) {
           this.parent.children.remove(this);
           this.parent.children.add(thatIndex, this);
@@ -353,11 +358,16 @@ public final class MindMapTopic implements Serializable, Constants {
     this.map.lock();
     try {
       if (this.parent != null) {
-        final int thatIndex = this.parent.children.indexOf(topic);
-        final int thisIndex = this.parent.children.indexOf(this);
+        int thatIndex = this.parent.children.indexOf(topic);
+        int thisIndex = this.parent.children.indexOf(this);
+
+        if (thatIndex > thisIndex) {
+          thatIndex--;
+        }
+        
         if (thatIndex >= 0 && thisIndex >= 0) {
           this.parent.children.remove(this);
-          this.parent.children.add(thatIndex + 1, this);
+          this.parent.children.add(thatIndex+1, this);
         }
       }
     }

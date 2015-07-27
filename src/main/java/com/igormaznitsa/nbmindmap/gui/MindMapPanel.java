@@ -353,7 +353,10 @@ public final class MindMapPanel extends JPanel {
 
     final boolean sameParent = element.getModel().getParent() == destination.getModel();
 
-    if (destination.getModel().getParent() == null) {
+    final boolean pointInsideDestination = destination.getBounds().contains(dropPoint);
+    final boolean destinationIsRoot = destination instanceof ElementRoot;
+
+    if (destinationIsRoot) {
       // root
       final boolean left = dropPoint.getX() < destination.getBounds().getCenterX();
       if (sameParent) {
@@ -371,10 +374,22 @@ public final class MindMapPanel extends JPanel {
       }
     }
     else {
-      final MindMapTopic prevTopic = destination.findTopicBeforePoint(this.config, dropPoint);
-      element.getModel().moveToNewParent(destination.getModel());
-      element.getModel().moveAfter(prevTopic);
-      element.getModel().setPayload(null);
+      if (pointInsideDestination) {
+        // attach as child
+        element.getModel().moveToNewParent(destination.getModel());
+        element.getModel().setPayload(null);
+      }
+      else {
+        // add as sibling
+        element.getModel().moveToNewParent(destination.getModel().getParent());
+        if (dropPoint.getY()<element.getBounds().getCenterY()){
+          // before
+          element.getModel().moveBefore(destination.getModel());
+        }else{
+          // after
+          element.getModel().moveAfter(destination.getModel());
+        }
+      }
     }
   }
 
