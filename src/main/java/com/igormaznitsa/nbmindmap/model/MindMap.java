@@ -171,6 +171,7 @@ public final class MindMap implements Serializable, Constants {
   public void removeTopic(final MindMapTopic topic) {
     if (this.mainTopic == topic){
       this.mainTopic.setText("");
+      this.mainTopic.removeExtras();
       this.mainTopic.setPayload(null);
       this.mainTopic.removeAllChildren();
     }else{
