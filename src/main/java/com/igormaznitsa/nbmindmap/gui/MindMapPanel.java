@@ -369,7 +369,6 @@ public final class MindMapPanel extends JPanel {
         final MindMapTopic prevTopic = destination.findTopicBeforePoint(this.config, dropPoint);
         element.getModel().moveToNewParent(destination.getModel());
         element.getModel().moveAfter(prevTopic);
-        element.getModel().setPayload(null);
         AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), left);
       }
     }
@@ -389,8 +388,14 @@ public final class MindMapPanel extends JPanel {
           // after
           element.getModel().moveAfter(destination.getModel());
         }
+        
+        if (destination instanceof ElementLevelFirst){
+          AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), destination.isLeftDirection());
+        }
+        
       }
     }
+    element.getModel().setPayload(null);
   }
 
   private void processMoveFocusByKey(final int key) {
