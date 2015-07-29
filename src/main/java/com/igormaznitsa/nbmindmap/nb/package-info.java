@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@TemplateRegistration(folder = "Mind maps", displayName = "Markdown Mind map", content = "MarkdownMindMapTemplate.mmd")
+@TemplateRegistration(folder = "Other", iconBase = "com/igormaznitsa/nbmindmap/nb/nbmm16.png", displayName = "Text Mind map", description = "templateDescription.html", content = "MDMindMapTemplate.mmd")
 package com.igormaznitsa.nbmindmap.nb;
 
 import org.netbeans.api.templates.TemplateRegistration;

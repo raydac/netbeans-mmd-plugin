@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.nb.gui;
 
 import com.igormaznitsa.nbmindmap.gui.MindMapListener;
 import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
@@ -21,57 +21,44 @@ import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeListener;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.netbeans.core.spi.multiview.CloseOperationState;
+import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.openide.awt.UndoRedo;
-import org.openide.cookies.EditorCookie;
+import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
-import org.openide.util.NbBundle.Messages;
-import org.openide.util.lookup.Lookups;
+import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 
-@MultiViewElement.Registration(
-        displayName = "#LBL_NBMMap_VISUAL",
-        iconBase = "com/igormaznitsa/nbmindmap/icons/nbmm16.png",
-        mimeType = "text/x-mmd+markdown",
-        persistenceType = TopComponent.PERSISTENCE_NEVER,
-        preferredID = "com.igormaznitsa.MMDEditor",
-        position = 1
-)
-@Messages("LBL_NBMMap_VISUAL=Visual")
-public final class MMDEditor extends JScrollPane implements MultiViewElement, UndoRedo, MindMapListener {
+public final class MMDGGGEditor extends JScrollPane implements MultiViewElement, MultiViewDescription, UndoRedo, MindMapListener {
 
   private static final long serialVersionUID = 3782425854129291887L;
 
-  private final MMDDataObject dataObject;
+  private final MMDEditorSupport editorSupport;
   private transient MultiViewElementCallback callback;
-  private final EditorCookie editorCookie;
   private final MindMapPanel mindMapPanel;
 
-  public MMDEditor(final Lookup lkp) throws IOException {
-    this.dataObject = lkp.lookup(MMDDataObject.class);
-    assert this.dataObject != null;
-
-    this.editorCookie = lkp.lookup(EditorCookie.class);
-    assert this.editorCookie != null;
-
+  public MMDGGGEditor(final MMDEditorSupport editorSupport) {
+    this.editorSupport = editorSupport;
+    
     initComponents();
 
     this.mindMapPanel = new MindMapPanel();
@@ -98,7 +85,6 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
   @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
-    updateDataInEditors();
   }
 
   @Override
@@ -133,30 +119,6 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
     mainToolBar.setRollover(true);
   }// </editor-fold>//GEN-END:initComponents
 
-  private void updateDataInEditors() {
-    final String text;
-    if (this.mindMapPanel.getErrorText() == null) {
-      try {
-        final StringWriter writer = new StringWriter(16384);
-        this.mindMapPanel.getModel().write(writer);
-        text = writer.toString();
-      }
-      catch (IOException ex) {
-        ex.printStackTrace();
-        return;
-      }
-
-      if (this.editorCookie != null) {
-        final JEditorPane[] editors = this.editorCookie.getOpenedPanes();
-        if (editors != null && editors.length != 0) {
-          for (final JEditorPane p : editors) {
-            p.setText(text);
-          }
-        }
-      }
-    }
-  }
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JToolBar mainToolBar;
   // End of variables declaration//GEN-END:variables
@@ -173,7 +135,9 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
   @Override
   public Action[] getActions() {
     if (this.callback == null) {
-      return new Action[0];
+      final List<Action> result = new ArrayList();
+      result.addAll(Utilities.actionsForPath("Editors/TabActions"));
+      return result.toArray(new Action[result.size()]);
     }
     else {
       return this.callback.createDefaultActions();
@@ -182,7 +146,7 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
   @Override
   public Lookup getLookup() {
-    return Lookups.singleton(this);
+    return null;
   }
 
   @Override
@@ -195,9 +159,13 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
   @Override
   public void componentShowing() {
+    updateDisplayText();
+    
+    this.mindMapPanel.removeAllSelection();
+    
     MindMap map = null;
     try {
-      map = new MindMap(new StringReader(this.dataObject.getPrimaryFile().asText("UTF-8")));
+      map = null;//new MindMap(new StringReader(this.dataObject.getPrimaryFile().asText("UTF-8")));
       this.mindMapPanel.setModel(map);
       this.mindMapPanel.setErrorText(null);
     }
@@ -213,6 +181,13 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
     repaint();
   }
 
+  private void updateDisplayText() {
+    if (this.callback != null) {
+      final TopComponent tc = this.callback.getTopComponent();
+//      tc.setDisplayName(this.dataObject.getPrimaryFile().getNameExt());
+    }
+  }
+  
   private static void moveVisibleRectToElement(final JScrollPane pane, final MindMapPanel mmPanel, final AbstractElement e) {
     if (e != null) {
       final Rectangle componentRect = e.getBounds().getBounds();
@@ -311,7 +286,7 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
       @Override
       public void componentResized(ComponentEvent e) {
-        MMDEditor.processEditorResizing(pp);
+        MMDGGGEditor.processEditorResizing(pp);
       }
 
     });
@@ -350,6 +325,36 @@ public final class MMDEditor extends JScrollPane implements MultiViewElement, Un
 
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setVisible(true);
+  }
+
+  @Override
+  public int getPersistenceType() {
+    return TopComponent.PERSISTENCE_NEVER;
+  }
+
+  @Override
+  public String getDisplayName() {
+    return "Graph";
+  }
+
+  @Override
+  public Image getIcon() {
+    return null;
+  }
+
+  @Override
+  public HelpCtx getHelpCtx() {
+    return null;
+  }
+
+  @Override
+  public String preferredID() {
+    return null;
+  }
+
+  @Override
+  public MultiViewElement createElement() {
+    return null;
   }
 
 }

@@ -971,4 +971,9 @@ public final class MindMapPanel extends JPanel {
 
   }
 
+  public void removeAllSelection() {
+    this.selectedTopics.clear();
+    repaint();
+  }
+
 }

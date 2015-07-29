@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
+  <folder name="Loaders">
+    <folder name="text">
+      <folder name="x-mmd+markdown">
+        <folder name="Actions">
+          <file name="org-openide-actions-OpenAction.instance"/>
+          <attr name="org-openide-actions-OpenAction.instance/org-openide-actions-FileSystemAction.instance" boolvalue="true"/>
+          <file name="org-openide-actions-FileSystemAction.instance"/>
+          <attr name="org-openide-actions-FileSystemAction.instance/sep-1.instance" boolvalue="true"/>
+          <file name="sep-1.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+          </file>
+          <attr name="sep-1.instance/org-openide-actions-CutAction.instance" boolvalue="true"/>
+          <file name="org-openide-actions-CutAction.instance"/>
+          <attr name="org-openide-actions-CutAction.instance/org-openide-actions-CopyAction.instance" boolvalue="true"/>
+          <file name="org-openide-actions-CopyAction.instance"/>
+          <attr name="org-openide-actions-CopyAction.instance/sep-2.instance" boolvalue="true"/>
+          <file name="sep-2.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+          </file>
+          <attr name="sep-2.instance/org-openide-actions-DeleteAction.instance" boolvalue="true"/>
+          <file name="org-openide-actions-DeleteAction.instance"/>
+          <attr name="org-openide-actions-DeleteAction.instance/org-openide-actions-RenameAction.instance" boolvalue="true"/>
+          <file name="org-openide-actions-RenameAction.instance"/>
+          <attr name="org-openide-actions-RenameAction.instance/sep-3.instance" boolvalue="true"/>
+          <file name="sep-3.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+          </file>
+          <attr name="sep-3.instance/org-openide-actions-SaveAsTemplateAction.instance" boolvalue="true"/>
+          <file name="org-openide-actions-SaveAsTemplateAction.instance"/>
+          <attr name="org-openide-actions-SaveAsTemplateAction.instance/sep-4.instance" boolvalue="true"/>
+          <file name="sep-4.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+          </file>
+          <attr name="sep-4.instance/org-openide-actions-ToolsAction.instance" boolvalue="true"/>
+          <file name="org-openide-actions-ToolsAction.instance"/>
+          <attr name="org-openide-actions-ToolsAction.instance/org-openide-actions-PropertiesAction.instance" boolvalue="true"/>
+          <file name="org-openide-actions-PropertiesAction.instance"/>
+        </folder>
+      </folder>
+    </folder>
+  </folder>
 </filesystem>
-  
