@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb.dataobj;
+package com.igormaznitsa.nbmindmap.nb.gui;
 
+import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
 import com.igormaznitsa.nbmindmap.nb.gui.MMDTextEditor;
 import java.awt.EventQueue;
 import java.awt.Image;
@@ -25,13 +26,13 @@ import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.windows.TopComponent;
 
-public class MMDTextView implements MultiViewDescription, Serializable {
+public class MMDTextPanel implements MultiViewDescription, Serializable {
   private static final long serialVersionUID = -5606801495357672062L;
 
   private MMDTextEditor editor;
   private final MMDEditorSupport support;
   
-  public MMDTextView(final MMDEditorSupport editorSupport){
+  public MMDTextPanel(final MMDEditorSupport editorSupport){
     this.support = editorSupport;
   }
   

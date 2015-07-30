@@ -109,8 +109,8 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
   }
 
   @Override
-  public String getDisplayName() {
-    return "Text";
+  public int getPersistenceType() {
+    return PERSISTENCE_NEVER;
   }
 
   @Override

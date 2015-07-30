@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public final class MindMapPanel extends JPanel {
+public final class MindMapPanel extends JPanel implements Configuration.ConfigurationListener {
 
   private static final long serialVersionUID = 7474413542713752159L;
 
@@ -65,7 +65,8 @@ public final class MindMapPanel extends JPanel {
   public MindMapPanel() {
     super(null);
     this.config = new Configuration(this);
-
+    this.config.addConfigurationListener(this);
+    
     this.textEditor.setMargin(new Insets(5, 5, 5, 5));
     this.textEditor.setTabSize(4);
     this.textEditor.addKeyListener(new KeyAdapter() {
@@ -299,7 +300,7 @@ public final class MindMapPanel extends JPanel {
         else {
           final ElementPart part = element == null ? ElementPart.NONE : element.findPartForPoint(e.getPoint());
           if (part == ElementPart.COLLAPSATOR) {
-            removeSelection();
+            removeAllSelection();
             ((AbstractCollapsableElement) element).setCollapse(!element.isCollapsed());
             invalidate();
             fireNotificationMindMapChanged();
@@ -318,7 +319,7 @@ public final class MindMapPanel extends JPanel {
             if (element != null) {
               if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0) {
                 // only
-                removeSelection();
+                removeAllSelection();
                 select(element.getModel(), false);
               }
               else {
@@ -344,6 +345,13 @@ public final class MindMapPanel extends JPanel {
     this.textEditorPanel.setVisible(false);
     this.add(this.textEditorPanel);
   }
+
+  @Override
+  public void onConfigurationPropertyChanged(final Configuration source) {
+    invalidate();
+    repaint();
+  }
+
 
   private void endDragOfElement(final Point dropPoint, final AbstractElement element, final AbstractElement destination) {
     final boolean same = element.getModel() == destination.getModel();
@@ -381,18 +389,19 @@ public final class MindMapPanel extends JPanel {
       else {
         // add as sibling
         element.getModel().moveToNewParent(destination.getModel().getParent());
-        if (dropPoint.getY()<element.getBounds().getCenterY()){
+        if (dropPoint.getY() < element.getBounds().getCenterY()) {
           // before
           element.getModel().moveBefore(destination.getModel());
-        }else{
+        }
+        else {
           // after
           element.getModel().moveAfter(destination.getModel());
         }
-        
-        if (destination instanceof ElementLevelFirst){
+
+        if (destination instanceof ElementLevelFirst) {
           AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), destination.isLeftDirection());
         }
-        
+
       }
     }
     element.getModel().setPayload(null);
@@ -499,7 +508,7 @@ public final class MindMapPanel extends JPanel {
       }
 
       if (nextFocused != null) {
-        removeSelection();
+        removeAllSelection();
         select(nextFocused.getModel(), false);
       }
     }
@@ -509,18 +518,13 @@ public final class MindMapPanel extends JPanel {
     fireNotificationEnsureTopicVisibility(e.getModel());
   }
 
-  public void removeSelection() {
-    this.selectedTopics.clear();
-    repaint();
-  }
-
   private boolean hasActiveEditor() {
     return this.elementUnderEdit != null;
   }
 
   private void makeNewChildAndStartEdit(final MindMapTopic parent, final MindMapTopic baseTopic) {
     if (parent != null) {
-      this.selectedTopics.clear();
+      removeAllSelection();
       final MindMapTopic newTopic = parent.makeChild("", baseTopic);
 
       if (parent.getParent() == null && baseTopic == null) {
@@ -554,20 +558,27 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
+  protected void fireNotificationSelectionChanged() {
+    final MindMapTopic[] selected = this.selectedTopics.toArray(new MindMapTopic[this.selectedTopics.size()]);
+    for (final MindMapListener l : this.mindMapListeners) {
+      l.onChangedSelection(this, selected);
+    }
+  }
+
   protected void fireNotificationMindMapChanged() {
-    for (final MindMapListener l : mindMapListeners) {
+    for (final MindMapListener l : this.mindMapListeners) {
       l.onMindMapModelChanged(this);
     }
   }
 
   protected void fireNotificationClickOnExtra(final MindMapTopic topic, final Extra<?> extra) {
-    for (final MindMapListener l : mindMapListeners) {
+    for (final MindMapListener l : this.mindMapListeners) {
       l.onClickOnExtra(this, topic, extra);
     }
   }
 
   protected void fireNotificationEnsureTopicVisibility(final MindMapTopic topic) {
-    for (final MindMapListener l : mindMapListeners) {
+    for (final MindMapListener l : this.mindMapListeners) {
       l.onEnsureVisibilityOfTopic(this, topic);
     }
   }
@@ -577,7 +588,7 @@ public final class MindMapPanel extends JPanel {
       for (final MindMapTopic t : this.selectedTopics) {
         this.model.removeTopic(t);
       }
-      removeSelection();
+      removeAllSelection();
       invalidate();
       revalidate();
       fireNotificationMindMapChanged();
@@ -589,21 +600,25 @@ public final class MindMapPanel extends JPanel {
     return this.selectedTopics.size() == 1;
   }
 
-  public void removeFromSelected(final MindMapTopic t) {
+  public void removeFromSelection(final MindMapTopic t) {
     if (this.selectedTopics.contains(t)) {
-      this.selectedTopics.remove(t);
+      if (this.selectedTopics.remove(t)) {
+        fireNotificationSelectionChanged();
+      }
       repaint();
     }
   }
 
   public void select(final MindMapTopic t, final boolean removeIfPresented) {
     if (!this.selectedTopics.contains(t)) {
-      this.selectedTopics.add(t);
+      if (this.selectedTopics.add(t)) {
+        fireNotificationSelectionChanged();
+      }
       fireNotificationEnsureTopicVisibility(t);
       repaint();
     }
     else if (removeIfPresented) {
-      removeFromSelected(t);
+      removeFromSelection(t);
     }
   }
 
@@ -967,13 +982,16 @@ public final class MindMapPanel extends JPanel {
     return result;
   }
 
-  void onConfigurationChanged() {
-
-  }
-
   public void removeAllSelection() {
-    this.selectedTopics.clear();
-    repaint();
+    if (!this.selectedTopics.isEmpty()) {
+      try {
+        this.selectedTopics.clear();
+        fireNotificationSelectionChanged();
+      }
+      finally {
+        repaint();
+      }
+    }
   }
 
 }

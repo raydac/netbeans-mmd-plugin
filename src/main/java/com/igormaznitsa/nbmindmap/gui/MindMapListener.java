@@ -23,5 +23,6 @@ public interface MindMapListener {
   void onMindMapModelChanged(MindMapPanel source);
   void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
   void onEnsureVisibilityOfTopic(MindMapPanel source, MindMapTopic topic);
-  void onClickOnExtra(MindMapPanel panel, MindMapTopic topic, Extra<?> extra);
+  void onClickOnExtra(MindMapPanel source, MindMapTopic topic, Extra<?> extra);
+  void onChangedSelection(MindMapPanel source, MindMapTopic [] currentSelectedTopics);
 }

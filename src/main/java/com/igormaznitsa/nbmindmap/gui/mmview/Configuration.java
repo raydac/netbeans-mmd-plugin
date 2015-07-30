@@ -18,8 +18,18 @@ package com.igormaznitsa.nbmindmap.gui.mmview;
 import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
 import java.awt.Color;
 import java.awt.Font;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Configuration {
+  public interface ConfigurationListener {
+    void onConfigurationPropertyChanged(final Configuration source);
+  }
+  
+  private final List<WeakReference<ConfigurationListener>> listeners = new ArrayList<WeakReference<ConfigurationListener>>();
+  
   private int collapsatorSize = 16;
   private int textMargins = 10;
   private int otherLevelVerticalInset = 16;
@@ -58,6 +68,26 @@ public class Configuration {
   private boolean dropShadow = true;
 
   private final MindMapPanel panel;
+
+  public void addConfigurationListener(final ConfigurationListener l){
+    this.listeners.add(new WeakReference<ConfigurationListener>(l));
+  }
+  
+  public void removeConfigurationListener(final ConfigurationListener l){
+    final Iterator<WeakReference<ConfigurationListener>> iter = this.listeners.iterator();
+    while(iter.hasNext()){
+      final WeakReference<ConfigurationListener> wr = iter.next();
+      final ConfigurationListener c = wr.get();
+      if (c == null || c == l) iter.remove();
+    }
+  }
+  
+  private void notifyCfgListenersAboutChange(){
+    for(final WeakReference<ConfigurationListener> l : this.listeners){
+      final ConfigurationListener c = l.get();
+      if (c != null) c.onConfigurationPropertyChanged(this);
+    }
+  }
   
   public Configuration(final MindMapPanel panel){
     this.panel = panel;
@@ -69,6 +99,7 @@ public class Configuration {
   
   public void setHorizontalBlockGap(final int gap){
     this.horizontalBlockGap = gap;
+    notifyCfgListenersAboutChange();
   }
   
   public MindMapPanel getPanel(){
@@ -81,6 +112,7 @@ public class Configuration {
   
   public void setSelectLineWidth(final float f){
     this.selectLineWidth = f;
+    notifyCfgListenersAboutChange();
   }
   
   public Color getSelectLineColor(){
@@ -89,10 +121,12 @@ public class Configuration {
   
   public void setSelectLineColor(final Color color){
     this.selectLineColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public void setPaperMargins(final int size){
     this.paperMargins = size;
+    notifyCfgListenersAboutChange();
   }
   
   public int getPaperMargins(){
@@ -105,10 +139,12 @@ public class Configuration {
 
   public void setDrawBackground(final boolean flag){
     this.drawBackground = flag;
+    notifyCfgListenersAboutChange();
   }
   
   public void setOtherLevelVerticalInset(final int value) {
     this.otherLevelVerticalInset = value;
+    notifyCfgListenersAboutChange();
   }
 
   public int getOtherLevelVerticalInset() {
@@ -117,6 +153,7 @@ public class Configuration {
   
   public void setOtherLevelHorizontalInset(final int value) {
     this.otherLevelHorizontalInset = value;
+    notifyCfgListenersAboutChange();
   }
   
   public int getOtherLevelHorizontalInset(){
@@ -125,6 +162,7 @@ public class Configuration {
   
   public void setFirstLevelVerticalInset(final int value) {
     this.firstLevelVerticalInset = value;
+    notifyCfgListenersAboutChange();
   }
 
   public int getFirstLevelVerticalInset() {
@@ -133,6 +171,7 @@ public class Configuration {
   
   public void setFirstLevelHorizontalInset(final int value) {
     this.firstLevelHorizontalInset = value;
+    notifyCfgListenersAboutChange();
   }
   
   public int getFirstLevelHorizontalInset(){
@@ -145,10 +184,12 @@ public class Configuration {
   
   public void setPaperColor(final Color color){
     this.paperColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public void setGridColor(final Color color){
     this.gridColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public Color getGridColor(){
@@ -157,6 +198,7 @@ public class Configuration {
   
   public void setShowGrid(final boolean flag){
     this.showGrid = flag;
+    notifyCfgListenersAboutChange();
   }
   
   public boolean isShowGrid(){
@@ -165,6 +207,7 @@ public class Configuration {
   
   public void setGridStep(final int step){
     this.gridStep = step;
+    notifyCfgListenersAboutChange();
   }
   
   public int getGridStep(){
@@ -173,6 +216,7 @@ public class Configuration {
   
   public void setRootBackgroundColor(final Color color){
     this.rootBackgroundColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public Color getRootBackgroundColor(){
@@ -185,10 +229,12 @@ public class Configuration {
   
   public void setFirstLevelBackgroundColor(final Color color){
     this.firstLevelBackgroundColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public void setOtherLevelBackgroundColor(final Color color){
     this.otherLevelBackgroundColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public Color getOtherLevelBackgroundColor(){
@@ -201,10 +247,12 @@ public class Configuration {
   
   public void setRootTextColor(final Color color){
     this.rootTextColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public void setFirstLevelTextColor(final Color color){
     this.firstLevelTextColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public Color getFirstLevelTextColor(){
@@ -217,6 +265,7 @@ public class Configuration {
   
   public void setOtherLevelTextColor(final Color color){
     this.otherLevelTextColor =color; 
+    notifyCfgListenersAboutChange();
   }
   
   public Color getElementBorderColor(){
@@ -225,10 +274,12 @@ public class Configuration {
   
   public void setElementBorderColor(final Color color){
     this.elementBorderColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public void setConnectorColor(final Color color){
     this.connectorColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public Color getConnectorColor(){
@@ -237,6 +288,7 @@ public class Configuration {
   
   public void setShadowColor(final Color color){
     this.shadowColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public Color getShadowColor(){
@@ -249,6 +301,7 @@ public class Configuration {
   
   public void setCollapsatorBorderColor(final Color color){
     this.collapsatorBorderColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public Color getCollapsatorBackgroundColor(){
@@ -257,10 +310,12 @@ public class Configuration {
   
   public void setCollapsatorBackgroundColor(final Color color){
     this.collapsatorBackgroundColor = color;
+    notifyCfgListenersAboutChange();
   }
   
   public void setElementBorderWidth(final float value){
     this.elementBorderWidth = value;
+    notifyCfgListenersAboutChange();
   }
   
   public float getElementBorderWidth(){
@@ -273,6 +328,7 @@ public class Configuration {
   
   public void setCollapsatorBorderWidth(final float width){
     this.collapsatorBorderWidth = width;
+    notifyCfgListenersAboutChange();
   }
   
   public float getConnectorWidth(){
@@ -281,10 +337,12 @@ public class Configuration {
   
   public void setConnectorWidth(final float value){
     this.connectorWidth = value;
+    notifyCfgListenersAboutChange();
   }
   
   public void setFont(final Font f){
     this.font = f;
+    notifyCfgListenersAboutChange();
   }
   
   public Font getFont(){
@@ -297,6 +355,7 @@ public class Configuration {
   
   public void setScale(final float value){
     this.scale = Math.max(0.3f, Math.min(15f,value));
+    notifyCfgListenersAboutChange();
   }
   
   public boolean isDropShadow(){
@@ -305,6 +364,7 @@ public class Configuration {
   
   public void setDropShadow(final boolean value){
     this.dropShadow = value;
+    notifyCfgListenersAboutChange();
   }
   
   public int getCollapsatorSize(){
@@ -313,6 +373,7 @@ public class Configuration {
   
   public void setCollapsatorSize(final int size){
     this.collapsatorSize = size;
+    notifyCfgListenersAboutChange();
   }
   
   public int getTextMargins(){
@@ -321,6 +382,7 @@ public class Configuration {
   
   public void setTextMargins(final int value){
     this.textMargins = value;
+    notifyCfgListenersAboutChange();
   }
 
   public int getSelectLineGap() {
@@ -329,7 +391,7 @@ public class Configuration {
   
   public void setSelectLineGap(final int value) {
     this.selectLineGap = value;
+    notifyCfgListenersAboutChange();
   }
-  
   
 }

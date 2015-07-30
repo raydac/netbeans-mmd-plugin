@@ -15,7 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.dataobj;
 
-import com.igormaznitsa.nbmindmap.nb.gui.MMDGraphEditor;
+import com.igormaznitsa.nbmindmap.nb.gui.MMDTextPanel;
+import com.igormaznitsa.nbmindmap.nb.gui.MMDGraphPanel;
 import java.io.IOException;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewFactory;
@@ -32,8 +33,8 @@ import org.openide.text.DataEditorSupport;
 public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie {
   
   final MultiViewDescription [] descriptions = {
-    new MMDGraphEditor(this),
-    new MMDTextView(this)
+    new MMDGraphPanel(this),
+    new MMDTextPanel(this)
   };
   
   public static MMDEditorSupport create(final MMDDataObject obj){
@@ -83,9 +84,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   public String messageToolTip() {
     return super.messageToolTip(); 
   }
-
-  
-  
+ 
   @Override
   protected Pane createPane() {
     return (CloneableEditorSupport.Pane)MultiViewFactory.createCloneableMultiView(this.descriptions, this.descriptions[0]);
