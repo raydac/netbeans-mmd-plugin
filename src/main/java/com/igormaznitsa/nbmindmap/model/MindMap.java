@@ -67,7 +67,7 @@ public final class MindMap implements Serializable, Constants {
     final String str = IOUtils.toString(reader);
     this.mainTopic = MindMapTopic.parse(this, str);
   }
-
+  
   public String getAttribute(final String name) {
     return this.attributes.get(name);
   }

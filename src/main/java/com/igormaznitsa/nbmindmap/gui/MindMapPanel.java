@@ -684,6 +684,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   }
 
   public void setModel(final MindMap model) {
+    removeAllSelection();
     this.model = model;
     invalidate();
     revalidate();

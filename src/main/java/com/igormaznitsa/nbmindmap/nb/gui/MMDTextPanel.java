@@ -16,7 +16,6 @@
 package com.igormaznitsa.nbmindmap.nb.gui;
 
 import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
-import com.igormaznitsa.nbmindmap.nb.gui.MMDTextEditor;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.io.Serializable;

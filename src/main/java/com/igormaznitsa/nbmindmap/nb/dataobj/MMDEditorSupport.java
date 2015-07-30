@@ -18,6 +18,8 @@ package com.igormaznitsa.nbmindmap.nb.dataobj;
 import com.igormaznitsa.nbmindmap.nb.gui.MMDTextPanel;
 import com.igormaznitsa.nbmindmap.nb.gui.MMDGraphPanel;
 import java.io.IOException;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewFactory;
 import org.openide.cookies.EditCookie;
@@ -29,32 +31,45 @@ import org.openide.filesystems.FileObject;
 import org.openide.text.CloneableEditorSupport;
 import org.openide.text.DataEditorSupport;
 
-
 public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie {
-  
-  final MultiViewDescription [] descriptions = {
-    new MMDGraphPanel(this),
-    new MMDTextPanel(this)
+
+  private final MMDGraphPanel graphPanel = new MMDGraphPanel(this);
+  private final MMDTextPanel textPanel = new MMDTextPanel(this);
+
+  final MultiViewDescription[] descriptions = {
+    this.graphPanel,
+    this.textPanel
   };
-  
-  public static MMDEditorSupport create(final MMDDataObject obj){
+
+  public static MMDEditorSupport create(final MMDDataObject obj) {
     return new MMDEditorSupport(obj);
   }
-  
-  private MMDEditorSupport(MMDDataObject obj){
+
+  private MMDEditorSupport(MMDDataObject obj) {
     super(obj, new MMDDataEnv(obj));
+  }
+
+  public String getDocumentText() {
+    try {
+      final StyledDocument doc = this.openDocument();
+      return doc.getText(0, doc.getLength());
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+      return null;
+    }
   }
 
   @Override
   protected boolean notifyModified() {
     boolean retValue;
-    
+
     retValue = super.notifyModified();
-    if (retValue){
-      MMDDataObject obj = (MMDDataObject)getDataObject();
+    if (retValue) {
+      MMDDataObject obj = (MMDDataObject) getDataObject();
       obj.ic.add(env);
     }
-    
+
     return retValue;
   }
 
@@ -66,7 +81,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Override
   protected void notifyUnmodified() {
     super.notifyUnmodified();
-    MMDDataObject obj = (MMDDataObject)getDataObject();
+    MMDDataObject obj = (MMDDataObject) getDataObject();
     obj.ic.remove(env);
   }
 
@@ -82,15 +97,16 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
 
   @Override
   public String messageToolTip() {
-    return super.messageToolTip(); 
+    return super.messageToolTip();
   }
- 
+
   @Override
   protected Pane createPane() {
-    return (CloneableEditorSupport.Pane)MultiViewFactory.createCloneableMultiView(this.descriptions, this.descriptions[0]);
+    return (CloneableEditorSupport.Pane) MultiViewFactory.createCloneableMultiView(this.descriptions, this.descriptions[0]);
   }
-  
+
   private static final class MMDDataEnv extends DataEditorSupport.Env implements SaveCookie {
+
     private static final long serialVersionUID = 6101101548072950629L;
 
     public MMDDataEnv(final MMDDataObject obj) {

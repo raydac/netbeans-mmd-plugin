@@ -29,14 +29,18 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.text.StyledDocument;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.Mutex;
 import org.openide.windows.CloneableTopComponent;
@@ -52,14 +56,6 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
 
   private final JScrollPane mainScrollPane;
   private final MindMapPanel mindMapPanel;
-
-  public MMDGraphEditor() {
-    this.mainScrollPane = new JScrollPane();
-    this.mindMapPanel = new MindMapPanel();
-    this.mainScrollPane.setViewportView(this.mindMapPanel);
-    this.setLayout(new BorderLayout(0, 0));
-    this.add(this.mainScrollPane, BorderLayout.CENTER);
-  }
 
   public MMDGraphEditor(final MMDEditorSupport support) {
     super();
@@ -94,6 +90,7 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
 
   @Override
   public void componentShowing() {
+    updateModel();
   }
 
   @Override
@@ -102,6 +99,21 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
 
   @Override
   public void componentHidden() {
+  }
+
+  private void updateModel() {
+    final String text = this.editorSupport.getDocumentText();
+    if (text == null) {
+      this.mindMapPanel.setErrorText("Can't load document");
+    }
+    else {
+      try {
+        this.mindMapPanel.setModel(new MindMap(new StringReader(text)));
+      }
+      catch (IOException ex) {
+        this.mindMapPanel.setErrorText("Can't parse document");
+      }
+    }
   }
 
   @Override
@@ -130,8 +142,7 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
                   setHtmlDisplayName(name);
                   name = ces.messageName();
                   setDisplayName(name);
-                  setName(name); // XXX compatibility
-
+                  setName(name);
                   setToolTipText(ces.messageToolTip());
                 }
               }
@@ -172,6 +183,18 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
 
   @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
+    try {
+      final StringWriter writer = new StringWriter(16384);
+      this.mindMapPanel.getModel().write(writer);
+      final String text = writer.toString();
+      
+      final StyledDocument doc = this.editorSupport.getDocument();
+      doc.remove(0, doc.getLength());
+      doc.insertString(0, text, null);
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   @Override
