@@ -37,16 +37,16 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import javax.swing.text.StyledDocument;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
+import org.openide.awt.UndoRedo;
 import org.openide.util.Lookup;
 import org.openide.util.Mutex;
 import org.openide.windows.CloneableTopComponent;
 import org.openide.windows.TopComponent;
 
-public class MMDGraphEditor extends CloneableTopComponent implements MultiViewElement, MindMapListener, Runnable {
+public final class MMDGraphEditor extends CloneableTopComponent implements MultiViewElement, MindMapListener, Runnable {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -69,6 +69,19 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
 
     this.setLayout(new BorderLayout(0, 0));
     this.add(this.mainScrollPane, BorderLayout.CENTER);
+
+    this.mindMapPanel.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentResized(ComponentEvent e) {
+        processEditorResizing(mindMapPanel);
+      }
+    });
+    updateName();
+  }
+
+  @Override
+  public UndoRedo getUndoRedo() {
+    return this.editorSupport.getUndoRedoObject();
   }
 
   @Override
@@ -91,6 +104,20 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
   @Override
   public void componentShowing() {
     updateModel();
+    copyNameToCallbackTopComponent();
+  }
+
+  private void copyNameToCallbackTopComponent() {
+    final MultiViewElementCallback c = this.callback;
+    if (c != null) {
+      final TopComponent tc = c.getTopComponent();
+      if (tc != null) {
+        tc.setHtmlDisplayName(this.getHtmlDisplayName());
+        tc.setDisplayName(this.getDisplayName());
+        tc.setName(this.getName());
+        tc.setToolTipText(this.getToolTipText());
+      }
+    }
   }
 
   @Override
@@ -115,6 +142,7 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
         this.mindMapPanel.setErrorText("Can't parse document");
       }
     }
+    copyNameToCallbackTopComponent();
   }
 
   @Override
@@ -126,8 +154,8 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
   }
 
   @Override
-  public void setMultiViewCallback(final MultiViewElementCallback cllback) {
-    this.callback = cllback;
+  public void setMultiViewCallback(final MultiViewElementCallback callback) {
+    this.callback = callback;
     updateName();
   }
 
@@ -187,19 +215,20 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
     try {
       final StringWriter writer = new StringWriter(16384);
       this.mindMapPanel.getModel().write(writer);
-      final String text = writer.toString();
-      
-      final StyledDocument doc = this.editorSupport.getDocument();
-      doc.remove(0, doc.getLength());
-      doc.insertString(0, text, null);
+      this.editorSupport.replaceDocumentText(writer.toString());
+      this.editorSupport.notifyModified();
     }
     catch (Exception ex) {
       Logger.error("Can't get document text", ex);
+    }
+    finally {
+      copyNameToCallbackTopComponent();
     }
   }
 
   @Override
   public void onMindMapModelRealigned(final MindMapPanel source, final Dimension coveredAreaSize) {
+    this.mainScrollPane.getViewport().revalidate();
   }
 
   @Override
@@ -292,6 +321,10 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
 
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setVisible(true);
+  }
+
+  public void updateView() {
+    this.updateModel();
   }
 
 }

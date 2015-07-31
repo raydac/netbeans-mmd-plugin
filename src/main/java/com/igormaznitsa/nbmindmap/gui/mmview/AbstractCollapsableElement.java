@@ -66,7 +66,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public boolean isCollapsed() {
-    return "true".equals(this.model.getAttribute("collapsed"));
+    return "true".equalsIgnoreCase(this.model.getAttribute("collapsed"));
   }
 
   public void setCollapse(final boolean flag) {

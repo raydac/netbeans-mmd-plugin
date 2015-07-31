@@ -68,5 +68,9 @@ public class MMDGraphPanel implements MultiViewDescription, Serializable {
     }
     return this.editor;
   }
+
+  public void updateView() {
+    this.editor.updateView();
+  }
   
 }

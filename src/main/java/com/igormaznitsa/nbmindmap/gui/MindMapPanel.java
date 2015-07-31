@@ -554,7 +554,6 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       select(newTopic, false);
       invalidate();
       revalidate();
-      fireNotificationMindMapChanged();
       startEdit((AbstractElement) newTopic.getPayload());
     }
   }

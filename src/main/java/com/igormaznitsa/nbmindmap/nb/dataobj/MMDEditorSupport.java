@@ -15,15 +15,19 @@
  */
 package com.igormaznitsa.nbmindmap.nb.dataobj;
 
-import com.igormaznitsa.nbmindmap.utils.Utils;
 import com.igormaznitsa.nbmindmap.nb.gui.MMDTextPanel;
 import com.igormaznitsa.nbmindmap.nb.gui.MMDGraphPanel;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.io.IOException;
-import javax.swing.text.BadLocationException;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.StyledDocument;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewFactory;
+import org.netbeans.editor.GuardedDocument;
+import org.netbeans.modules.editor.NbEditorDocument;
+import org.openide.awt.UndoRedo;
 import org.openide.cookies.EditCookie;
 import org.openide.cookies.EditorCookie;
 import org.openide.cookies.OpenCookie;
@@ -63,7 +67,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   }
 
   @Override
-  protected boolean notifyModified() {
+  public boolean notifyModified() {
     boolean retValue;
 
     retValue = super.notifyModified();
@@ -78,6 +82,29 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Override
   protected boolean asynchronousOpen() {
     return false;
+  }
+
+  @Override
+  protected UndoRedo.Manager createUndoRedoManager() {
+    final UndoRedo.Manager result = super.createUndoRedoManager();
+  
+    result.addChangeListener(new ChangeListener() {
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            graphPanel.updateView();
+          }
+        });
+      }
+    });
+  
+    return result;
+  }
+
+  public UndoRedo.Manager getUndoRedoObject() {
+    return this.getUndoRedo();
   }
 
   @Override
@@ -105,6 +132,27 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Override
   protected Pane createPane() {
     return (CloneableEditorSupport.Pane) MultiViewFactory.createCloneableMultiView(this.descriptions, this.descriptions[0]);
+  }
+
+  public void replaceDocumentText(final String text) {
+    try {
+      final GuardedDocument doc = (GuardedDocument) this.openDocument();
+      doc.runAtomic(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            doc.remove(0, doc.getLength());
+            doc.insertString(0, text, null);
+          }
+          catch (Exception ex) {
+            Logger.error("Can't replace text", ex);
+          }
+        }
+      });
+    }
+    catch (Exception ex) {
+      Logger.error("Can't open document to replace text", ex);
+    }
   }
 
   private static final class MMDDataEnv extends DataEditorSupport.Env implements SaveCookie {
