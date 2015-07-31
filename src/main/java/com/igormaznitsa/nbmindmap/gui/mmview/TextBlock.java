@@ -15,7 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import static com.igormaznitsa.nbmindmap.gui.mmview.Utils.assertNotNull;
+import com.igormaznitsa.nbmindmap.utils.Utils;
+import static com.igormaznitsa.nbmindmap.utils.Utils.assertNotNull;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;

@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 
@@ -34,7 +34,7 @@ public final class ElementRoot extends AbstractElement {
   private final Dimension2D leftBlockSize = new Dimension();
   private final Dimension2D rightBlockSize = new Dimension();
 
-  public ElementRoot(final MindMapTopic topic) {
+  public ElementRoot(final Topic topic) {
     super(topic);
   }
 
@@ -107,7 +107,7 @@ public final class ElementRoot extends AbstractElement {
   private double calcTotalChildrenHeight(final double vertInset, final boolean left) {
     double result = 0.0d;
     boolean nonfirst = false;
-    for (final MindMapTopic t : this.model.getChildren()) {
+    for (final Topic t : this.model.getChildren()) {
       final AbstractCollapsableElement w = (AbstractCollapsableElement) t.getPayload();
       final boolean lft = w.isLeftDirection();
       if ((left && lft) || (!left && !lft)) {
@@ -146,7 +146,7 @@ public final class ElementRoot extends AbstractElement {
     if (leftHeight > 0.0d) {
       final double ddx = dx - insetHorz;
       double ddy = dy - (leftHeight - this.bounds.getHeight()) / 2;
-      for (final MindMapTopic t : this.model.getChildren()) {
+      for (final Topic t : this.model.getChildren()) {
         final AbstractCollapsableElement c = (AbstractCollapsableElement) t.getPayload();
         if (c.isLeftDirection()) {
           c.alignElementAndChildren(cfg, true, ddx - c.getBlockSize().getWidth(), ddy);
@@ -158,7 +158,7 @@ public final class ElementRoot extends AbstractElement {
     if (rightHeight > 0.0d) {
       final double ddx = dx + this.bounds.getWidth() + insetHorz;
       double ddy = dy - (rightHeight - this.bounds.getHeight()) / 2;
-      for (final MindMapTopic t : this.model.getChildren()) {
+      for (final Topic t : this.model.getChildren()) {
         final AbstractCollapsableElement c = (AbstractCollapsableElement) t.getPayload();
         if (!c.isLeftDirection()) {
           c.alignElementAndChildren(cfg, false, ddx, ddy);
@@ -198,7 +198,7 @@ public final class ElementRoot extends AbstractElement {
     boolean nonfirstOnLeft = false;
     boolean nonfirstOnRight = false;
 
-    for (final MindMapTopic t : this.model.getChildren()) {
+    for (final Topic t : this.model.getChildren()) {
       final ElementLevelFirst w = (ElementLevelFirst) t.getPayload();
 
       w.calcBlockSize(cfg, result);
@@ -241,9 +241,9 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public MindMapTopic findTopicBeforePoint(final Configuration cfg, final Point point) {
+  public Topic findTopicBeforePoint(final Configuration cfg, final Point point) {
 
-    MindMapTopic result = null;
+    Topic result = null;
     if (this.hasChildren()) {
       if (this.isCollapsed()) {
         return this.getModel().getLast();
@@ -253,27 +253,27 @@ public final class ElementRoot extends AbstractElement {
         final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
         double curY = calcBlockY();
 
-        MindMapTopic prev = null;
+        Topic prev = null;
 
-        final List<MindMapTopic> childForDirection = new ArrayList<MindMapTopic>();
+        final List<Topic> childForDirection = new ArrayList<Topic>();
         if (point.getX() < this.bounds.getCenterX()) {
-          for (final MindMapTopic t : this.model.getChildren()) {
+          for (final Topic t : this.model.getChildren()) {
             if (((AbstractElement) t.getPayload()).isLeftDirection()) {
               childForDirection.add(t);
             }
           }
         }
         else {
-          for (final MindMapTopic t : this.model.getChildren()) {
+          for (final Topic t : this.model.getChildren()) {
             if (!((AbstractElement) t.getPayload()).isLeftDirection()) {
               childForDirection.add(t);
             }
           }
         }
 
-        final MindMapTopic lastOne = childForDirection.isEmpty() ? null : childForDirection.get(childForDirection.size() - 1);
+        final Topic lastOne = childForDirection.isEmpty() ? null : childForDirection.get(childForDirection.size() - 1);
 
-        for (final MindMapTopic t : childForDirection) {
+        for (final Topic t : childForDirection) {
           final AbstractElement el = (AbstractElement) t.getPayload();
 
           final double childStartBlockY = el.calcBlockY();

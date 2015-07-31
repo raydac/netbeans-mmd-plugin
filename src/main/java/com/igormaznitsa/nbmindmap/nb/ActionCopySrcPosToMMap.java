@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.nb;
 
-import com.igormaznitsa.nbmindmap.gui.mmview.Utils;
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JEditorPane;

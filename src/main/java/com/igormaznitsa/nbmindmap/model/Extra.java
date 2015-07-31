@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;

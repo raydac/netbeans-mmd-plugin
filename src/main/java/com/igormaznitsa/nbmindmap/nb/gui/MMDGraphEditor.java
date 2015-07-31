@@ -20,9 +20,10 @@ import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
 import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMap;
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.nb.dataobj.MMDDataObject;
 import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
+import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -40,7 +41,6 @@ import javax.swing.text.StyledDocument;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.Mutex;
 import org.openide.windows.CloneableTopComponent;
@@ -52,7 +52,7 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
 
   private JToolBar toolbar;
   private MultiViewElementCallback callback;
-  private MMDEditorSupport editorSupport;
+  private final MMDEditorSupport editorSupport;
 
   private final JScrollPane mainScrollPane;
   private final MindMapPanel mindMapPanel;
@@ -111,6 +111,7 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
         this.mindMapPanel.setModel(new MindMap(new StringReader(text)));
       }
       catch (IOException ex) {
+        Logger.error("Can't parse mind map text", ex);
         this.mindMapPanel.setErrorText("Can't parse document");
       }
     }
@@ -193,7 +194,7 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
       doc.insertString(0, text, null);
     }
     catch (Exception ex) {
-      ex.printStackTrace();
+      Logger.error("Can't get document text", ex);
     }
   }
 
@@ -202,15 +203,15 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
   }
 
   @Override
-  public void onEnsureVisibilityOfTopic(final MindMapPanel source, final MindMapTopic topic) {
+  public void onEnsureVisibilityOfTopic(final MindMapPanel source, final Topic topic) {
   }
 
   @Override
-  public void onClickOnExtra(final MindMapPanel source, final MindMapTopic topic, final Extra<?> extra) {
+  public void onClickOnExtra(final MindMapPanel source, final Topic topic, final Extra<?> extra) {
   }
 
   @Override
-  public void onChangedSelection(final MindMapPanel source, final MindMapTopic[] currentSelectedTopics) {
+  public void onChangedSelection(final MindMapPanel source, final Topic[] currentSelectedTopics) {
   }
 
   private static void processEditorResizing(final MindMapPanel panel) {
@@ -261,7 +262,7 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
     pp.addMindMapListener(new MindMapListener() {
 
       @Override
-      public void onEnsureVisibilityOfTopic(MindMapPanel source, MindMapTopic topic) {
+      public void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic) {
         moveVisibleRectToElement(panel, source, (AbstractElement) topic.getPayload());
       }
 
@@ -275,12 +276,12 @@ public class MMDGraphEditor extends CloneableTopComponent implements MultiViewEl
       }
 
       @Override
-      public void onClickOnExtra(MindMapPanel panel, MindMapTopic topic, Extra<?> extra) {
+      public void onClickOnExtra(MindMapPanel panel, Topic topic, Extra<?> extra) {
         System.out.println("EXTRAS: " + extra);
       }
 
       @Override
-      public void onChangedSelection(MindMapPanel source, MindMapTopic[] currentSelectedTopics) {
+      public void onChangedSelection(MindMapPanel source, Topic[] currentSelectedTopics) {
       }
 
     });

@@ -15,8 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 
 public interface TopicChecker {
-  boolean check(MindMapTopic topic);
+  boolean check(Topic topic);
 }

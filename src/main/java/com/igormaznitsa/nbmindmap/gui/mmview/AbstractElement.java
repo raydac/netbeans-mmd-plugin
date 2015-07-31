@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -25,7 +25,7 @@ import javax.swing.text.JTextComponent;
 
 public abstract class AbstractElement {
 
-  protected final MindMapTopic model;
+  protected final Topic model;
 
   protected final TextBlock textBlock;
   protected final IconBlock iconBlock;
@@ -42,14 +42,14 @@ public abstract class AbstractElement {
     this.textBlock.updateText(text);
   }
 
-  public AbstractElement(final MindMapTopic model) {
+  public AbstractElement(final Topic model) {
     this.model = model;
     this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
     this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align")));
     this.iconBlock = new IconBlock(model);
   }
 
-  public MindMapTopic getModel() {
+  public Topic getModel() {
     return this.model;
   }
 
@@ -110,7 +110,7 @@ public abstract class AbstractElement {
 
   public void doPaintConnectors(final Graphics2D g, final boolean leftDirection, final Configuration cfg) {
     final Rectangle2D source = this.bounds;
-    for (final MindMapTopic t : this.model.getChildren()) {
+    for (final Topic t : this.model.getChildren()) {
       drawConnector(g, source, ((AbstractElement) t.getPayload()).getBounds(), leftDirection, cfg);
     }
   }
@@ -154,9 +154,9 @@ public abstract class AbstractElement {
     return result;
   }
   
-  public MindMapTopic findTopicBeforePoint(final Configuration cfg, final Point point){
+  public Topic findTopicBeforePoint(final Configuration cfg, final Point point){
     
-    MindMapTopic result = null;
+    Topic result = null;
     if (this.hasChildren()){
       if (this.isCollapsed()){
         return this.getModel().getLast();
@@ -165,9 +165,9 @@ public abstract class AbstractElement {
         final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
         double curY = calcBlockY();
         
-        MindMapTopic prev = null;
+        Topic prev = null;
         
-        for(final MindMapTopic t : this.model.getChildren()){
+        for(final Topic t : this.model.getChildren()){
           final AbstractElement el = (AbstractElement) t.getPayload();
           
           final double childStartBlockY = el.calcBlockY();
@@ -206,7 +206,7 @@ public abstract class AbstractElement {
   private AbstractElement findNearestTopic(final double lessThanDistance, final Point point){
     double curDistance = calcDistanceToPoint(point);
     AbstractElement result = curDistance <= lessThanDistance ? this : null;
-    for(final MindMapTopic t : this.model.getChildren()){
+    for(final Topic t : this.model.getChildren()){
       final AbstractElement element = t.getPayload() == null ? null : (AbstractElement)t.getPayload();
       if (element!=null){
         final AbstractElement nearestChild = element.findNearestTopic(curDistance , point);
@@ -237,7 +237,7 @@ public abstract class AbstractElement {
           result = this;
         }else{
           AbstractElement foundChild = null;
-          for(final MindMapTopic t : this.model.getChildren()){
+          for(final Topic t : this.model.getChildren()){
             foundChild = t.getPayload() == null ? null : ((AbstractElement)t.getPayload()).findTopicBlockForPoint(point);
             if (foundChild != null) break;
           }
@@ -255,7 +255,7 @@ public abstract class AbstractElement {
         result = this;
       }
       else {
-        for (final MindMapTopic t : this.model.getChildren()) {
+        for (final Topic t : this.model.getChildren()) {
           final AbstractElement w = (AbstractElement) t.getPayload();
           result = w == null ? null : w.findForPoint(point);
           if (result != null) {

@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -28,7 +28,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   protected final Rectangle2D collapsatorZone = new Rectangle2D.Double();
 
-  public AbstractCollapsableElement(final MindMapTopic model) {
+  public AbstractCollapsableElement(final Topic model) {
     super(model);
   }
 
@@ -82,11 +82,11 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     makeTopicLeftSided(this.model, leftSide); 
   }
 
-  public static boolean isLeftSidedTopic(final MindMapTopic t){
+  public static boolean isLeftSidedTopic(final Topic t){
     return "true".equals(t.getAttribute("leftSide"));
   }
   
-  public static void makeTopicLeftSided(final MindMapTopic topic, final boolean left){
+  public static void makeTopicLeftSided(final Topic topic, final boolean left){
     if (left){
       topic.setAttribute("leftSide", "true");
     }else{
@@ -113,7 +113,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
         boolean notFirst = false;
 
-        for (final MindMapTopic t : this.model.getChildren()) {
+        for (final Topic t : this.model.getChildren()) {
           if (notFirst) {
             childrenHeight += scaledVInset;
           }
@@ -178,7 +178,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
       boolean notFirst = false;
 
-      for (final MindMapTopic t : this.model.getChildren()) {
+      for (final Topic t : this.model.getChildren()) {
         if (notFirst) {
           currentY += vertInset;
         }
@@ -196,7 +196,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   public void doPaintConnectors(final Graphics2D g, final boolean leftDirection, final Configuration cfg) {
     final Rectangle2D source = new Rectangle2D.Double(this.bounds.getX() + this.collapsatorZone.getX(), this.bounds.getY() + this.collapsatorZone.getY(), this.collapsatorZone.getWidth(), this.collapsatorZone.getHeight());
     final boolean lefDir = isLeftDirection();
-    for (final MindMapTopic t : this.model.getChildren()) {
+    for (final Topic t : this.model.getChildren()) {
       this.drawConnector(g, source, ((AbstractElement) t.getPayload()).getBounds(), lefDir, cfg);
     }
   }
@@ -244,7 +244,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
           final double topZoneX = isLeftDirection() ? this.bounds.getMaxX() - this.blockSize.getWidth() : this.bounds.getX();
 
           if (point.getX() >= topZoneX && point.getY() >= topZoneY && point.getX() < (this.blockSize.getWidth() + topZoneX) && point.getY() < (this.blockSize.getHeight() + topZoneY)) {
-            for (final MindMapTopic t : this.model.getChildren()) {
+            for (final Topic t : this.model.getChildren()) {
               final AbstractElement w = (AbstractElement) t.getPayload();
               result = w == null ? null : w.findForPoint(point);
               if (result != null) {

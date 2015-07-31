@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -31,14 +32,14 @@ public final class MindMap implements Serializable, Constants {
 
   private static final long serialVersionUID = 5929181596778047354L;
 
-  private final MindMapTopic mainTopic;
+  private final Topic mainTopic;
   private final Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new HashMap<String, String>();
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s*(.+)$");
   private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*\\\"(.*?)\\\"");
 
   public MindMap() {
-    this.mainTopic = new MindMapTopic(this, null, "");
+    this.mainTopic = new Topic(this, null, "");
   }
 
   public MindMap(final Reader reader) throws IOException {
@@ -65,7 +66,7 @@ public final class MindMap implements Serializable, Constants {
     lineBuffer.trimToSize();
 
     final String str = IOUtils.toString(reader);
-    this.mainTopic = MindMapTopic.parse(this, str);
+    this.mainTopic = Topic.parse(this, str);
   }
   
   public String getAttribute(final String name) {
@@ -99,14 +100,14 @@ public final class MindMap implements Serializable, Constants {
     }
   }
 
-  private void resetPayload(final MindMapTopic t) {
+  private void resetPayload(final Topic t) {
     t.setPayload(null);
-    for (final MindMapTopic m : t.getChildren()) {
+    for (final Topic m : t.getChildren()) {
       resetPayload(m);
     }
   }
 
-  public MindMapTopic getRoot() {
+  public Topic getRoot() {
     this.locker.lock();
     try {
       return this.mainTopic;
@@ -168,7 +169,7 @@ public final class MindMap implements Serializable, Constants {
     this.locker.unlock();
   }
 
-  public void removeTopic(final MindMapTopic topic) {
+  public void removeTopic(final Topic topic) {
     if (this.mainTopic == topic){
       this.mainTopic.setText("");
       this.mainTopic.removeExtras();

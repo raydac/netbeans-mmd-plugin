@@ -21,20 +21,20 @@ import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.FILE;
 import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.LINK;
 import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.NOTE;
 import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.SRC_POSITION;
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
 public class IconBlock {
   private final Rectangle2D bounds = new Rectangle2D.Double();
-  private final MindMapTopic model;
+  private final Topic model;
   private float scale = 1.0f;
   private boolean contentPresented;
   
   private Extra<?> [] currentExtras = null;
   
-  public IconBlock(final MindMapTopic model){
+  public IconBlock(final Topic model){
     this.model = model;
   }
   

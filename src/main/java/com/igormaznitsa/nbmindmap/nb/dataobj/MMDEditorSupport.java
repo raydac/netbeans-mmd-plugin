@@ -15,8 +15,10 @@
  */
 package com.igormaznitsa.nbmindmap.nb.dataobj;
 
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import com.igormaznitsa.nbmindmap.nb.gui.MMDTextPanel;
 import com.igormaznitsa.nbmindmap.nb.gui.MMDGraphPanel;
+import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.io.IOException;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
@@ -55,7 +57,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
       return doc.getText(0, doc.getLength());
     }
     catch (Exception ex) {
-      ex.printStackTrace();
+      Logger.error("Can't get document text", ex);
       return null;
     }
   }

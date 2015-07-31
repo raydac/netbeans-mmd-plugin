@@ -17,7 +17,7 @@ package com.igormaznitsa.nbmindmap.gui;
 
 import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
 import com.igormaznitsa.nbmindmap.model.MindMap;
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -46,19 +46,19 @@ public class MouseSelectedArea {
     return new Rectangle(minX, minY, maxX - minX, maxY - minY);
   }
   
-  public List<MindMapTopic> getAllSelectedElements(final MindMap map){
-    final List<MindMapTopic> result = new ArrayList<MindMapTopic>();
+  public List<Topic> getAllSelectedElements(final MindMap map){
+    final List<Topic> result = new ArrayList<Topic>();
     final Rectangle rect = asRectangle();
     addCoveredToList(result, map.getRoot(), rect.getBounds2D());
     return result;
   }
   
-  private void addCoveredToList(final List<MindMapTopic> list, final MindMapTopic root, final Rectangle2D rect){
+  private void addCoveredToList(final List<Topic> list, final Topic root, final Rectangle2D rect){
     if (root == null || root.getPayload() == null) return;
     if (rect.contains(((AbstractElement)root.getPayload()).getBounds())){
       list.add(root);
     }
-    for(final MindMapTopic t : root.getChildren()){
+    for(final Topic t : root.getChildren()){
       addCoveredToList(list, t, rect);
     }
   }

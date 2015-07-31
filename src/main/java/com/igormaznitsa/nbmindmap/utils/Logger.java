@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui;
+package com.igormaznitsa.nbmindmap.utils;
 
-import com.igormaznitsa.nbmindmap.model.Extra;
-import com.igormaznitsa.nbmindmap.model.Topic;
-import java.awt.Dimension;
+import java.util.logging.Level;
 
-public interface MindMapListener {
-  void onMindMapModelChanged(MindMapPanel source);
-  void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
-  void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic);
-  void onClickOnExtra(MindMapPanel source, Topic topic, Extra<?> extra);
-  void onChangedSelection(MindMapPanel source, Topic [] currentSelectedTopics);
+public class Logger {
+  private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger("com.igormaznitsa.nbmindmap");
+
+  public static void error(final String msg, final Throwable thr){
+    logger.log(Level.SEVERE, msg, thr);
+  }
+  
+  public static void info(final String msg){
+    logger.log(Level.INFO, msg);
+  }
+  
+  public static void warn(final String msg){
+    logger.log(Level.WARNING, msg);
+  }
+  
 }

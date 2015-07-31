@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -23,7 +23,7 @@ import java.awt.geom.Rectangle2D;
 
 public class ElementLevelFirst extends AbstractCollapsableElement {
 
-  public ElementLevelFirst(final MindMapTopic model) {
+  public ElementLevelFirst(final Topic model) {
     super(model);
   }
 

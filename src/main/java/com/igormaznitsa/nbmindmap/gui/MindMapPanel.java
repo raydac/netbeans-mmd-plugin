@@ -15,10 +15,11 @@
  */
 package com.igormaznitsa.nbmindmap.gui;
 
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import com.igormaznitsa.nbmindmap.gui.mmview.*;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMap;
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -55,7 +56,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private final JPanel textEditorPanel = new JPanel(new BorderLayout(0, 0));
   private AbstractElement elementUnderEdit = null;
 
-  private final List<MindMapTopic> selectedTopics = new ArrayList<MindMapTopic>();
+  private final List<Topic> selectedTopics = new ArrayList<Topic>();
 
   private MouseSelectedArea mouseDragSelection = null;
   private AbstractElement draggedElement = null;
@@ -83,7 +84,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         switch (e.getKeyCode()) {
           case KeyEvent.VK_TAB: {
             e.consume();
-            final MindMapTopic edited = elementUnderEdit.getModel();
+            final Topic edited = elementUnderEdit.getModel();
             endEdit(true);
             makeNewChildAndStartEdit(edited, null);
           }
@@ -159,7 +160,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           break;
           case KeyEvent.VK_ENTER: {
             if (!hasActiveEditor() && hasOnlyTopicSelected()) {
-              final MindMapTopic baseTopic = selectedTopics.get(0);
+              final Topic baseTopic = selectedTopics.get(0);
               makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
             }
           }
@@ -218,20 +219,20 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             }
           }
           else if (mouseDragSelection != null) {
-            final List<MindMapTopic> covered = mouseDragSelection.getAllSelectedElements(model);
+            final List<Topic> covered = mouseDragSelection.getAllSelectedElements(model);
             if ((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
-              for (final MindMapTopic m : covered) {
+              for (final Topic m : covered) {
                 select(m, false);
               }
             }
             else if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-              for (final MindMapTopic m : covered) {
+              for (final Topic m : covered) {
                 select(m, true);
               }
             }
             else {
               selectedTopics.clear();
-              for (final MindMapTopic m : covered) {
+              for (final Topic m : covered) {
                 select(m, false);
               }
             }
@@ -374,7 +375,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       }
       else {
         // non first level
-        final MindMapTopic prevTopic = destination.findTopicBeforePoint(this.config, dropPoint);
+        final Topic prevTopic = destination.findTopicBeforePoint(this.config, dropPoint);
         element.getModel().moveToNewParent(destination.getModel());
         element.getModel().moveAfter(prevTopic);
         AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), left);
@@ -444,7 +445,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
             final TopicChecker checker = new TopicChecker() {
               @Override
-              public boolean check(final MindMapTopic topic) {
+              public boolean check(final Topic topic) {
                 if (!firstLevel) {
                   return true;
                 }
@@ -459,7 +460,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
               }
             };
 
-            final MindMapTopic topic = key == KeyEvent.VK_UP ? current.getModel().findPrev(checker) : current.getModel().findNext(checker);
+            final Topic topic = key == KeyEvent.VK_UP ? current.getModel().findPrev(checker) : current.getModel().findNext(checker);
             nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
           }
           break;
@@ -485,7 +486,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       else {
         switch (key) {
           case KeyEvent.VK_LEFT: {
-            for (final MindMapTopic t : current.getModel().getChildren()) {
+            for (final Topic t : current.getModel().getChildren()) {
               final AbstractElement e = (AbstractElement) t.getPayload();
               if (e != null && e.isLeftDirection()) {
                 nextFocused = e;
@@ -495,7 +496,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           }
           break;
           case KeyEvent.VK_RIGHT: {
-            for (final MindMapTopic t : current.getModel().getChildren()) {
+            for (final Topic t : current.getModel().getChildren()) {
               final AbstractElement e = (AbstractElement) t.getPayload();
               if (e != null && !e.isLeftDirection()) {
                 nextFocused = e;
@@ -522,15 +523,15 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return this.elementUnderEdit != null;
   }
 
-  private void makeNewChildAndStartEdit(final MindMapTopic parent, final MindMapTopic baseTopic) {
+  private void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
     if (parent != null) {
       removeAllSelection();
-      final MindMapTopic newTopic = parent.makeChild("", baseTopic);
+      final Topic newTopic = parent.makeChild("", baseTopic);
 
       if (parent.getParent() == null && baseTopic == null) {
         int numLeft = 0;
         int numRight = 0;
-        for (final MindMapTopic t : parent.getChildren()) {
+        for (final Topic t : parent.getChildren()) {
           if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
             numLeft++;
           }
@@ -559,7 +560,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   }
 
   protected void fireNotificationSelectionChanged() {
-    final MindMapTopic[] selected = this.selectedTopics.toArray(new MindMapTopic[this.selectedTopics.size()]);
+    final Topic[] selected = this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
     for (final MindMapListener l : this.mindMapListeners) {
       l.onChangedSelection(this, selected);
     }
@@ -571,13 +572,13 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  protected void fireNotificationClickOnExtra(final MindMapTopic topic, final Extra<?> extra) {
+  protected void fireNotificationClickOnExtra(final Topic topic, final Extra<?> extra) {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onClickOnExtra(this, topic, extra);
     }
   }
 
-  protected void fireNotificationEnsureTopicVisibility(final MindMapTopic topic) {
+  protected void fireNotificationEnsureTopicVisibility(final Topic topic) {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onEnsureVisibilityOfTopic(this, topic);
     }
@@ -585,7 +586,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   protected void deleteSelectedTopics() {
     if (!this.selectedTopics.isEmpty()) {
-      for (final MindMapTopic t : this.selectedTopics) {
+      for (final Topic t : this.selectedTopics) {
         this.model.removeTopic(t);
       }
       removeAllSelection();
@@ -600,7 +601,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return this.selectedTopics.size() == 1;
   }
 
-  public void removeFromSelection(final MindMapTopic t) {
+  public void removeFromSelection(final Topic t) {
     if (this.selectedTopics.contains(t)) {
       if (this.selectedTopics.remove(t)) {
         fireNotificationSelectionChanged();
@@ -609,7 +610,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  public void select(final MindMapTopic t, final boolean removeIfPresented) {
+  public void select(final Topic t, final boolean removeIfPresented) {
     if (!this.selectedTopics.contains(t)) {
       if (this.selectedTopics.add(t)) {
         fireNotificationSelectionChanged();
@@ -771,7 +772,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
       final double dblLineGap = selectLineGap * 2.0d;
 
-      for (final MindMapTopic s : this.selectedTopics) {
+      for (final Topic s : this.selectedTopics) {
         final AbstractElement e = (AbstractElement) s.getPayload();
         if (e != null) {
           g.drawRect((int) Math.round(e.getBounds().getX() - selectLineGap), (int) Math.round(e.getBounds().getY() - selectLineGap), (int) Math.round(e.getBounds().getWidth() + dblLineGap), (int) Math.round(e.getBounds().getHeight() + dblLineGap));
@@ -782,7 +783,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private void drawTopics(final Graphics2D g, final Configuration cfg, final MindMap map) {
     if (map != null) {
-      final MindMapTopic root = map.getRoot();
+      final Topic root = map.getRoot();
       if (root != null) {
         if (root.getPayload() == null) {
           revalidate();
@@ -792,22 +793,22 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  private void drawTopicTree(final Graphics2D gfx, final MindMapTopic topic, final Configuration cfg) {
+  private void drawTopicTree(final Graphics2D gfx, final Topic topic, final Configuration cfg) {
     paintTopic(gfx, topic, cfg);
     final AbstractElement w = (AbstractElement) topic.getPayload();
     if (w.isCollapsed()) {
       return;
     }
-    for (final MindMapTopic t : topic.getChildren()) {
+    for (final Topic t : topic.getChildren()) {
       drawTopicTree(gfx, t, cfg);
     }
   }
 
-  private void paintTopic(final Graphics2D gfx, final MindMapTopic topic, final Configuration cfg) {
+  private void paintTopic(final Graphics2D gfx, final Topic topic, final Configuration cfg) {
     ((AbstractElement) topic.getPayload()).doPaint(gfx, cfg);
   }
 
-  private void revalidateTopicTree(final Graphics2D gfx, final Configuration cfg, final MindMapTopic topic, final int level) {
+  private void revalidateTopicTree(final Graphics2D gfx, final Configuration cfg, final Topic topic, final int level) {
     AbstractElement widget = (AbstractElement) topic.getPayload();
     if (widget == null) {
       switch (level) {
@@ -825,7 +826,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
 
     widget.updateElementBounds(gfx, cfg);
-    for (final MindMapTopic t : topic.getChildren()) {
+    for (final Topic t : topic.getChildren()) {
       revalidateTopicTree(gfx, cfg, t, level + 1);
     }
     widget.updateBlockSize(cfg);
@@ -840,7 +841,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   protected void realignElements(final Configuration cfg, final MindMap model) {
     if (model != null) {
-      final MindMapTopic root = model.getRoot();
+      final Topic root = model.getRoot();
       if (root.getPayload() != null) {
         final ElementRoot rootWidget = (ElementRoot) root.getPayload();
         final Dimension2D blockSize = rootWidget.getBlockSize();
@@ -971,7 +972,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   public AbstractElement findTopicUnderPoint(final Point point) {
     AbstractElement result = null;
     if (this.model != null) {
-      final MindMapTopic root = this.model.getRoot();
+      final Topic root = this.model.getRoot();
       if (root != null) {
         final AbstractElement rootWidget = (AbstractElement) root.getPayload();
         if (rootWidget != null) {

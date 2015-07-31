@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.gui.mmview;
 
-import com.igormaznitsa.nbmindmap.model.MindMapTopic;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -23,7 +23,7 @@ import java.awt.geom.Rectangle2D;
 
 public class ElementLevelOther extends ElementLevelFirst {
 
-  public ElementLevelOther(final MindMapTopic model) {
+  public ElementLevelOther(final Topic model) {
     super(model);
   }
 
@@ -66,7 +66,7 @@ public class ElementLevelOther extends ElementLevelFirst {
   @Override
   public void doPaintConnectors(final Graphics2D g, final boolean leftDirection, final Configuration cfg) {
     final Rectangle2D source = new Rectangle2D.Double(this.bounds.getX() + this.collapsatorZone.getX(), this.bounds.getY() + this.collapsatorZone.getY(), this.collapsatorZone.getWidth(), this.collapsatorZone.getHeight());
-    for (final MindMapTopic t : this.model.getChildren()) {
+    for (final Topic t : this.model.getChildren()) {
       this.drawConnector(g, source, ((AbstractElement) t.getPayload()).getBounds(), leftDirection, cfg);
     }
   }
@@ -77,7 +77,7 @@ public class ElementLevelOther extends ElementLevelFirst {
 
   @Override
   public boolean isLeftDirection() {
-    MindMapTopic topic = this.model.getParent();
+    Topic topic = this.model.getParent();
 
     boolean result = false;
 
