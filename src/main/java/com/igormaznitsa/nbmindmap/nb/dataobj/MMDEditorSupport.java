@@ -23,6 +23,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.StyledDocument;
+import org.netbeans.api.project.FileOwnerQuery;
+import org.netbeans.api.project.Project;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewFactory;
 import org.netbeans.editor.GuardedDocument;
@@ -38,14 +40,8 @@ import org.openide.text.DataEditorSupport;
 
 public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie {
 
-  private final MMDGraphPanel graphPanel = new MMDGraphPanel(this);
-  private final MMDTextPanel textPanel = new MMDTextPanel(this);
-
-  final MultiViewDescription[] descriptions = {
-    this.graphPanel,
-    this.textPanel
-  };
-
+  private volatile MultiViewDescription[] lastGeneratedDescriptions;
+  
   public static MMDEditorSupport create(final MMDDataObject obj) {
     return new MMDEditorSupport(obj);
   }
@@ -54,6 +50,26 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     super(obj, new MMDDataEnv(obj));
   }
 
+  public Project getProject(){
+    return FileOwnerQuery.getOwner(getDataObject().getPrimaryFile());
+  }
+  
+  public FileObject makeRelativeForProject(final String path){
+    final Project proj = getProject();
+    if (proj == null) return null;
+    final FileObject projFileObject = proj.getProjectDirectory();
+    return projFileObject.getFileObject(path);
+  }
+
+  @Override
+  protected boolean close(final boolean ask) {
+    final boolean result = super.close(ask);
+    if (result){
+      this.lastGeneratedDescriptions = null;
+    }
+    return result;
+  }
+  
   public String getDocumentText() {
     try {
       final StyledDocument doc = this.openDocument();
@@ -93,7 +109,10 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            graphPanel.updateView();
+            final MultiViewDescription[] desc = lastGeneratedDescriptions;
+            if (desc!=null && desc.length>1){
+              ((MMDGraphPanel)desc[0]).updateView();
+            }
           }
         });
       }
@@ -130,7 +149,15 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
 
   @Override
   protected Pane createPane() {
-    return (CloneableEditorSupport.Pane) MultiViewFactory.createCloneableMultiView(this.descriptions, this.descriptions[0]);
+    final MMDGraphPanel graphPanel = new MMDGraphPanel(this);
+    final MMDTextPanel textPanel = new MMDTextPanel(this);
+    
+    final MultiViewDescription[] descriptions = {
+      graphPanel,
+      textPanel
+    };
+
+    return (CloneableEditorSupport.Pane) MultiViewFactory.createCloneableMultiView(descriptions, descriptions[0]);
   }
 
   public void replaceDocumentText(final String text) {
@@ -152,6 +179,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     catch (Exception ex) {
       Logger.error("Can't open document to replace text", ex);
     }
+    
   }
 
   private static final class MMDDataEnv extends DataEditorSupport.Env implements SaveCookie {

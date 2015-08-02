@@ -19,6 +19,7 @@ import com.igormaznitsa.nbmindmap.gui.MindMapListener;
 import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
 import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
 import com.igormaznitsa.nbmindmap.model.Extra;
+import com.igormaznitsa.nbmindmap.model.ExtraFile;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.nb.dataobj.MMDDataObject;
@@ -41,15 +42,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URLEncoder;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import org.netbeans.api.actions.Openable;
+import org.netbeans.api.project.Project;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.openide.awt.UndoRedo;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
+import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.util.Lookup;
 import org.openide.util.Mutex;
 import org.openide.windows.CloneableTopComponent;
@@ -67,7 +75,7 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   private final MindMapPanel mindMapPanel;
 
   private boolean dragAcceptableType = false;
-  
+
   public MMDGraphEditor(final MMDEditorSupport support) {
     super();
     this.editorSupport = support;
@@ -77,7 +85,7 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
     this.mindMapPanel.addMindMapListener(this);
 
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
-    
+
     this.mainScrollPane.setViewportView(this.mindMapPanel);
 
     this.setLayout(new BorderLayout(0, 0));
@@ -149,7 +157,7 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
       try {
         this.mindMapPanel.setModel(new MindMap(new StringReader(text)));
       }
-      catch (IllegalArgumentException ex){
+      catch (IllegalArgumentException ex) {
         Logger.warn("Can't detect mind map");
         this.mindMapPanel.setErrorText("Text doesn't contain mind map description");
       }
@@ -253,6 +261,49 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
 
   @Override
   public void onClickOnExtra(final MindMapPanel source, final Topic topic, final Extra<?> extra) {
+    switch (extra.getType()) {
+      case FILE: {
+        final FileObject fileObj;
+        try {
+          final URI uri = (URI) extra.getValue();
+          if (uri.isAbsolute()){
+            fileObj = FileUtil.toFileObject(new File(uri));
+          }else{
+            fileObj = this.editorSupport.makeRelativeForProject(uri.getPath());
+            if (fileObj == null){
+              NbUtils.msgError("Can't find file at project: " + uri.getPath());
+              return;
+            }
+          }
+        }
+        catch (Exception ex) {
+          NbUtils.msgError("Wrong file path : " + extra.getValue().toString());
+          return;
+        }
+
+        try {
+          final DataObject dobj = DataObject.find(fileObj);
+          final Openable openable = dobj.getLookup().lookup(Openable.class);
+          if (openable != null) {
+            openable.open();
+          }
+        }
+        catch (DataObjectNotFoundException ex) {
+          Logger.error("Cant't find data object", ex);
+        }
+      }
+      break;
+      case LINK: {
+      }
+      break;
+      case NOTE: {
+      }
+      break;
+      case SRC_POSITION: {
+
+      }
+      break;
+    }
   }
 
   @Override
@@ -322,7 +373,6 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
 
       @Override
       public void onClickOnExtra(MindMapPanel panel, Topic topic, Extra<?> extra) {
-        System.out.println("EXTRAS: " + extra);
       }
 
       @Override
@@ -346,16 +396,17 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   @Override
   public void dragEnter(DropTargetDragEvent dtde) {
     this.dragAcceptableType = checkDragType(dtde);
-    if (!this.dragAcceptableType){
+    if (!this.dragAcceptableType) {
       dtde.rejectDrag();
     }
   }
 
   @Override
   public void dragOver(final DropTargetDragEvent dtde) {
-    if (acceptOrRejectDragging(dtde)){
+    if (acceptOrRejectDragging(dtde)) {
       dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
-    }else{
+    }
+    else {
       dtde.rejectDrag();
     }
   }
@@ -369,21 +420,66 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   }
 
   @Override
-  public void drop(DropTargetDropEvent dtde) {
+  public void drop(final DropTargetDropEvent dtde) {
+    DataFlavor data = null;
+    for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
+      if (DataObject.class.isAssignableFrom(df.getRepresentationClass())) {
+        data = df;
+        break;
+      }
+    }
+
+    if (data != null) {
+      try {
+        final DataObject dataObj = (DataObject) dtde.getTransferable().getTransferData(data);
+        final AbstractElement destination = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
+        if (dataObj != null && destination != null) {
+          
+          final FileObject fileObj = dataObj.getPrimaryFile();
+          final String relativePath = getRelativePathToProjectIfPossible(fileObj);
+          
+          final URI uri;
+          if (relativePath!=null){
+            uri = new URI(relativePath.replace('\\', '/'));
+          }else{
+            uri = fileObj.toURI();
+          }
+          
+          destination.getModel().setExtra(new ExtraFile(uri));
+          this.mindMapPanel.invalidate();
+          this.mindMapPanel.repaint();
+          onMindMapModelChanged(this.mindMapPanel);
+        }
+      }
+      catch (Exception ex) {
+        Logger.error("Can't extract data from dragged object", ex);
+      }
+    }
   }
 
-  protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde){
-    final int dropAction = dtde.getDropAction();
-    
-    boolean result = false;
-    
-    if (this.dragAcceptableType && (dropAction & DnDConstants.ACTION_COPY_OR_MOVE)!=0 && this.mindMapPanel.findTopicUnderPoint(dtde.getLocation())!=null){
-      result = true;
+  private String getRelativePathToProjectIfPossible(final FileObject obj) {
+    String result = null;
+
+    final Project proj = this.editorSupport.getProject();
+    if (proj != null) {
+      result = FileUtil.getRelativePath(proj.getProjectDirectory(), obj);
     }
-    
+
     return result;
   }
-  
+
+  protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
+    final int dropAction = dtde.getDropAction();
+
+    boolean result = false;
+
+    if (this.dragAcceptableType && (dropAction & DnDConstants.ACTION_COPY_OR_MOVE) != 0 && this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()) != null) {
+      result = true;
+    }
+
+    return result;
+  }
+
   protected static boolean checkDragType(final DropTargetDragEvent dtde) {
     boolean result = false;
     for (final DataFlavor fl1 : dtde.getCurrentDataFlavors()) {
@@ -393,9 +489,7 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
         break;
       }
     }
-    
     return result;
   }
-  
-  
+
 }

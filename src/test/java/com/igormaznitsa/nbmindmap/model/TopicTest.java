@@ -20,7 +20,7 @@ import java.net.URI;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class MindMapTopicTest {
+public class TopicTest {
 
   @Test
   public void testParse_OnlyTopic() throws Exception {
