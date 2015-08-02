@@ -26,7 +26,6 @@ import javax.swing.text.StyledDocument;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewFactory;
 import org.netbeans.editor.GuardedDocument;
-import org.netbeans.modules.editor.NbEditorDocument;
 import org.openide.awt.UndoRedo;
 import org.openide.cookies.EditCookie;
 import org.openide.cookies.EditorCookie;
@@ -87,7 +86,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Override
   protected UndoRedo.Manager createUndoRedoManager() {
     final UndoRedo.Manager result = super.createUndoRedoManager();
-  
+
     result.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
@@ -99,7 +98,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
         });
       }
     });
-  
+
     return result;
   }
 

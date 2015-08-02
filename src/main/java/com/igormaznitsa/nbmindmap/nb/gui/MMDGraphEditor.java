@@ -28,8 +28,16 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -41,12 +49,13 @@ import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.openide.awt.UndoRedo;
+import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
 import org.openide.util.Mutex;
 import org.openide.windows.CloneableTopComponent;
 import org.openide.windows.TopComponent;
 
-public final class MMDGraphEditor extends CloneableTopComponent implements MultiViewElement, MindMapListener, Runnable {
+public final class MMDGraphEditor extends CloneableTopComponent implements MultiViewElement, MindMapListener, Runnable, DropTargetListener {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -57,6 +66,8 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   private final JScrollPane mainScrollPane;
   private final MindMapPanel mindMapPanel;
 
+  private boolean dragAcceptableType = false;
+  
   public MMDGraphEditor(final MMDEditorSupport support) {
     super();
     this.editorSupport = support;
@@ -65,6 +76,8 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
     this.mindMapPanel = new MindMapPanel();
     this.mindMapPanel.addMindMapListener(this);
 
+    this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
+    
     this.mainScrollPane.setViewportView(this.mindMapPanel);
 
     this.setLayout(new BorderLayout(0, 0));
@@ -104,7 +117,6 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   @Override
   public void componentShowing() {
     updateModel();
-    copyNameToCallbackTopComponent();
   }
 
   private void copyNameToCallbackTopComponent() {
@@ -137,12 +149,15 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
       try {
         this.mindMapPanel.setModel(new MindMap(new StringReader(text)));
       }
+      catch (IllegalArgumentException ex){
+        Logger.warn("Can't detect mind map");
+        this.mindMapPanel.setErrorText("Text doesn't contain mind map description");
+      }
       catch (IOException ex) {
         Logger.error("Can't parse mind map text", ex);
         this.mindMapPanel.setErrorText("Can't parse document");
       }
     }
-    copyNameToCallbackTopComponent();
   }
 
   @Override
@@ -157,6 +172,7 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   public void setMultiViewCallback(final MultiViewElementCallback callback) {
     this.callback = callback;
     updateName();
+    copyNameToCallbackTopComponent();
   }
 
   public void updateName() {
@@ -327,4 +343,59 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
     this.updateModel();
   }
 
+  @Override
+  public void dragEnter(DropTargetDragEvent dtde) {
+    this.dragAcceptableType = checkDragType(dtde);
+    if (!this.dragAcceptableType){
+      dtde.rejectDrag();
+    }
+  }
+
+  @Override
+  public void dragOver(final DropTargetDragEvent dtde) {
+    if (acceptOrRejectDragging(dtde)){
+      dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+    }else{
+      dtde.rejectDrag();
+    }
+  }
+
+  @Override
+  public void dropActionChanged(DropTargetDragEvent dtde) {
+  }
+
+  @Override
+  public void dragExit(DropTargetEvent dte) {
+  }
+
+  @Override
+  public void drop(DropTargetDropEvent dtde) {
+  }
+
+  protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde){
+    final int dropAction = dtde.getDropAction();
+    
+    boolean result = false;
+    
+    if (this.dragAcceptableType && (dropAction & DnDConstants.ACTION_COPY_OR_MOVE)!=0 && this.mindMapPanel.findTopicUnderPoint(dtde.getLocation())!=null){
+      result = true;
+    }
+    
+    return result;
+  }
+  
+  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
+    boolean result = false;
+    for (final DataFlavor fl1 : dtde.getCurrentDataFlavors()) {
+      final Class dataClass = fl1.getRepresentationClass();
+      if (DataObject.class.isAssignableFrom(dataClass)) {
+        result = true;
+        break;
+      }
+    }
+    
+    return result;
+  }
+  
+  
 }
