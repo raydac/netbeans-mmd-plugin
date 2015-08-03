@@ -110,8 +110,12 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
           @Override
           public void run() {
             final MultiViewDescription[] desc = lastGeneratedDescriptions;
-            if (desc!=null && desc.length>1){
-              ((MMDGraphPanel)desc[0]).updateView();
+            if (desc!=null){
+              for(final MultiViewDescription d : desc){
+                if (d instanceof MMDGraphPanel){
+                  ((MMDGraphPanel)d).updateView();
+                }
+              }
             }
           }
         });
@@ -157,6 +161,8 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
       textPanel
     };
 
+    this.lastGeneratedDescriptions = descriptions;
+    
     return (CloneableEditorSupport.Pane) MultiViewFactory.createCloneableMultiView(descriptions, descriptions[0]);
   }
 

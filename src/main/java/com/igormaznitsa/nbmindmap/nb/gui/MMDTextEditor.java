@@ -27,8 +27,6 @@ import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.openide.text.CloneableEditor;
 import org.openide.text.NbDocument;
 import org.openide.util.Lookup;
-import org.openide.util.Mutex;
-import org.openide.windows.TopComponent;
 
 public class MMDTextEditor extends CloneableEditor implements MultiViewElement, Runnable {
 
@@ -100,7 +98,7 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
   @Override
   public void setMultiViewCallback(final MultiViewElementCallback cllback) {
     this.callback = cllback;
-    updateName();
+    updateNameOfTopWindow();
   }
 
   @Override
@@ -114,26 +112,23 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
   }
 
   @Override
-  public void updateName() {
-    Mutex.EVENT.readAccess(this);
-  }
-
-  @Override
   public void run() {
     final MultiViewElementCallback c = this.callback;
     if (c == null) {
       return;
     }
-    TopComponent tc = c.getTopComponent();
-    if (tc == null) {
-      return;
-    }
-    super.updateName();
-    tc.setName(this.getName());
-    tc.setDisplayName(this.getDisplayName());
-    tc.setHtmlDisplayName(this.getHtmlDisplayName());
+    updateNameOfTopWindow();
   }
 
+  private void updateNameOfTopWindow(){
+    super.updateName();
+
+    final MultiViewElementCallback c = this.callback;
+    if (c!=null){
+      c.updateTitle(this.getDisplayName());
+    }
+  }
+  
   @Override
   public Lookup getLookup() {
     return ((MMDDataObject) ((MMDEditorSupport) cloneableEditorSupport()).getDataObject()).getNodeDelegate().getLookup();
