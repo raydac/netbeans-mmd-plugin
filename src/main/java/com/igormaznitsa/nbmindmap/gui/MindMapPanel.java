@@ -995,4 +995,13 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
+  public void focusTo(final Topic theTopic) {
+    if (theTopic!=null){
+      fireNotificationEnsureTopicVisibility(theTopic);
+      this.selectedTopics.clear();
+      this.selectedTopics.add(theTopic);
+      repaint();
+    }
+  }
+
 }

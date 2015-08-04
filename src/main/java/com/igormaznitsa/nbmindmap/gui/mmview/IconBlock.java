@@ -20,7 +20,7 @@ import com.igormaznitsa.nbmindmap.model.Extra;
 import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.FILE;
 import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.LINK;
 import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.NOTE;
-import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.SRC_POSITION;
+import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.TOPIC;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -83,8 +83,11 @@ public class IconBlock {
           case NOTE:
             ico = ScalableIcon.TEXT;
             break;
-          case SRC_POSITION:
-            ico = ScalableIcon.SOURCE;
+          case LINE:
+            ico = ScalableIcon.LINE;
+            break;
+          case TOPIC:
+            ico = ScalableIcon.TOPIC;
             break;
           default:
             throw new Error("Unexpected extras");

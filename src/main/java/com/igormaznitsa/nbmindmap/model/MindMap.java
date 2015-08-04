@@ -15,31 +15,40 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
+import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import org.apache.commons.io.IOUtils;
 
-public final class MindMap implements Serializable, Constants {
+public final class MindMap implements Serializable, Constants, TreeModel {
 
   private static final long serialVersionUID = 5929181596778047354L;
 
-  private final Topic mainTopic;
+  private final Topic root;
   private final Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new HashMap<String, String>();
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s*(.+)$");
   private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*\\\"(.*?)\\\"");
 
+  private final List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
+  
   public MindMap() {
-    this.mainTopic = new Topic(this, null, "");
+    this.root = new Topic(this, null, "");
   }
 
   public MindMap(final Reader reader) throws IOException {
@@ -66,7 +75,21 @@ public final class MindMap implements Serializable, Constants {
     lineBuffer.trimToSize();
 
     final String str = IOUtils.toString(reader);
-    this.mainTopic = Topic.parse(this, str);
+    this.root = Topic.parse(this, str);
+  }
+  
+  private void fireModelChanged(){
+    final TreeModelEvent evt = new TreeModelEvent(this, this.root == null ?  null : this.root.getPath());
+    for(final TreeModelListener l : this.treeListeners){
+      l.treeStructureChanged(evt);
+    }
+  }
+  
+  private void fireTopicChanged(final Topic topic){
+    final TreeModelEvent evt = new TreeModelEvent(this, topic == null ? null : topic.getPath());
+    for(final TreeModelListener l : this.treeListeners){
+      l.treeNodesChanged(evt);
+    }
   }
   
   public String getAttribute(final String name) {
@@ -91,8 +114,8 @@ public final class MindMap implements Serializable, Constants {
   public void resetPayload() {
     this.locker.lock();
     try {
-      if (this.mainTopic != null) {
-        resetPayload(this.mainTopic);
+      if (this.root != null) {
+        resetPayload(this.root);
       }
     }
     finally {
@@ -110,7 +133,7 @@ public final class MindMap implements Serializable, Constants {
   public Topic getRoot() {
     this.locker.lock();
     try {
-      return this.mainTopic;
+      return this.root;
     }
     finally {
       this.locker.unlock();
@@ -154,7 +177,7 @@ public final class MindMap implements Serializable, Constants {
         out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE);
       }
       out.append("---").append(NEXT_LINE);
-      this.mainTopic.write(out);
+      this.root.write(out);
     }
     finally {
       this.locker.unlock();
@@ -170,13 +193,57 @@ public final class MindMap implements Serializable, Constants {
   }
 
   public void removeTopic(final Topic topic) {
-    if (this.mainTopic == topic){
-      this.mainTopic.setText("");
-      this.mainTopic.removeExtras();
-      this.mainTopic.setPayload(null);
-      this.mainTopic.removeAllChildren();
+    if (this.root == topic){
+      this.root.setText("");
+      this.root.removeExtras();
+      this.root.setPayload(null);
+      this.root.removeAllChildren();
     }else{
-      this.mainTopic.removeTopic(topic);
+      this.root.removeTopic(topic);
     }
+  }
+
+  public Topic findTopicForUID(final String topicUID) {
+    return this.root.findForAttribute("uid",topicUID);
+  }
+
+  @Override
+  public Object getChild(final Object parent, final int index) {
+    return ((Topic) parent).getChildren().get(index);
+  }
+
+  @Override
+  public int getChildCount(Object parent) {
+    return ((Topic) parent).getChildren().size();
+  }
+
+  @Override
+  public boolean isLeaf(final Object node) {
+    return !((Topic) node).hasChildren();
+  }
+
+  @Override
+  public void valueForPathChanged(final TreePath path, final Object newValue) {
+    if (newValue instanceof String){
+      ((Topic)path.getLastPathComponent()).setText((String)newValue);
+      fireTopicChanged((Topic) path.getLastPathComponent());
+    }else {
+      Logger.warn("Attempt to set non string value to path : "+path);
+    }
+  }
+
+  @Override
+  public int getIndexOfChild(Object parent, Object child) {
+    return ((Topic) parent).getChildren().indexOf(child);
+  }
+
+  @Override
+  public void addTreeModelListener(final TreeModelListener l) {
+    this.treeListeners.add(l);
+  }
+
+  @Override
+  public void removeTreeModelListener(final TreeModelListener l) {
+    this.treeListeners.remove(l);
   }
 }

@@ -43,11 +43,11 @@ public final class Topic implements Serializable, Constants {
   private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras = Collections.unmodifiableMap(this.extras);
   private final Map<String, String> attributes = new HashMap<String, String>();
   private final Map<String, String> unmodifableAttributes = Collections.unmodifiableMap(this.attributes);
-  
+
   private volatile String text;
   private final List<Topic> children = new ArrayList<Topic>();
   private final List<Topic> unmodifableChildren = Collections.unmodifiableList(this.children);
-  
+
   private transient Object payload;
 
   private final transient long localUID = LOCALUID_GENERATOR.getAndIncrement();
@@ -428,7 +428,7 @@ public final class Topic implements Serializable, Constants {
 
   @Override
   public String toString() {
-    return this.text;
+    return "MindMapTopic('"+this.text+"')";
   }
 
   public long getLocalUid() {
@@ -572,6 +572,30 @@ public final class Topic implements Serializable, Constants {
     finally {
       this.map.unlock();
     }
+  }
+
+  public Topic findForAttribute(final String attrName, String value) {
+    if (value.equals(this.getAttribute(attrName))) {
+      return this;
+    }
+    Topic result = null;
+    for (final Topic c : this.children) {
+      result = c.findForAttribute(attrName, value);
+      if (result != null) {
+        break;
+      }
+    }
+    return result;
+  }
+
+  public Topic[] getPath(){
+    final List<Topic> list = new ArrayList<Topic>();
+    Topic current = this;
+    do{
+      list.add(0, current);
+      current = current.parent;
+    }while(current!=null);
+    return list.toArray(new Topic[list.size()]);
   }
 
 }

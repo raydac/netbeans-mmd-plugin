@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.nbmindmap.nb.gui;
 
-import com.igormaznitsa.nbmindmap.nb.dataobj.MMDDataObject;
 import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
@@ -26,7 +25,8 @@ import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.openide.text.CloneableEditor;
 import org.openide.text.NbDocument;
-import org.openide.util.Lookup;
+import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.ProxyLookup;
 
 public class MMDTextEditor extends CloneableEditor implements MultiViewElement, Runnable {
 
@@ -34,13 +34,10 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
 
   private JComponent toolbar;
   private MultiViewElementCallback callback;
-
-  public MMDTextEditor() {
-
-  }
-
+  
   public MMDTextEditor(final MMDEditorSupport support) {
     super(support);
+    associateLookup(new ProxyLookup(Lookups.fixed(new MMDNavigatorLookupHint()), support.getDataObject().getNodeDelegate().getLookup()));
   }
 
   @Override
@@ -127,10 +124,5 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
     if (c!=null){
       c.updateTitle(this.getDisplayName());
     }
-  }
-  
-  @Override
-  public Lookup getLookup() {
-    return ((MMDDataObject) ((MMDEditorSupport) cloneableEditorSupport()).getDataObject()).getNodeDelegate().getLookup();
   }
 }

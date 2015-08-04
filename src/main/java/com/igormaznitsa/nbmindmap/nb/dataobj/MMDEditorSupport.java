@@ -46,7 +46,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return new MMDEditorSupport(obj);
   }
 
-  private MMDEditorSupport(MMDDataObject obj) {
+  private MMDEditorSupport(final MMDDataObject obj) {
     super(obj, new MMDDataEnv(obj));
   }
 

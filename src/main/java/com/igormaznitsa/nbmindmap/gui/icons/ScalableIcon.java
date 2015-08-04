@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.nbmindmap.gui.icons;
 
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -26,7 +25,8 @@ import org.apache.commons.io.IOUtils;
 
 public enum ScalableIcon {
   FILE("folder_link.png"),
-  SOURCE("brick_link.png"),
+  TOPIC("brick_link.png"),
+  LINE("brick_link.png"),
   TEXT("label_link.png"),
   LINK("world_link.png");
 

@@ -22,7 +22,6 @@ import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.ExtraFile;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
-import com.igormaznitsa.nbmindmap.nb.dataobj.MMDDataObject;
 import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.awt.BorderLayout;
@@ -43,7 +42,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
-import java.net.URLEncoder;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -58,8 +56,9 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
-import org.openide.util.Lookup;
 import org.openide.util.Mutex;
+import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.CloneableTopComponent;
 import org.openide.windows.TopComponent;
 
@@ -78,6 +77,8 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
 
   public MMDGraphEditor(final MMDEditorSupport support) {
     super();
+    associateLookup(new ProxyLookup(Lookups.fixed(new MMDNavigatorLookupHint()), support.getDataObject().getNodeDelegate().getLookup()));
+    
     this.editorSupport = support;
 
     this.mainScrollPane = new JScrollPane();
@@ -171,9 +172,15 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   @Override
   public JComponent getToolbarRepresentation() {
     if (this.toolbar == null) {
-      this.toolbar = new JToolBar();
+      this.toolbar = makeToolbar();
     }
     return this.toolbar;
+  }
+
+  private JToolBar makeToolbar() {
+    final JToolBar result = new JToolBar();
+
+    return result;
   }
 
   @Override
@@ -230,11 +237,6 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   }
 
   @Override
-  public Lookup getLookup() {
-    return ((MMDDataObject) (this.editorSupport).getDataObject()).getNodeDelegate().getLookup();
-  }
-
-  @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
     try {
       final StringWriter writer = new StringWriter(16384);
@@ -266,11 +268,12 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
         final FileObject fileObj;
         try {
           final URI uri = (URI) extra.getValue();
-          if (uri.isAbsolute()){
+          if (uri.isAbsolute()) {
             fileObj = FileUtil.toFileObject(new File(uri));
-          }else{
+          }
+          else {
             fileObj = this.editorSupport.makeRelativeForProject(uri.getPath());
-            if (fileObj == null){
+            if (fileObj == null) {
               NbUtils.msgError("Can't find file at project: " + uri.getPath());
               return;
             }
@@ -299,8 +302,16 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
       case NOTE: {
       }
       break;
-      case SRC_POSITION: {
-
+      case TOPIC: {
+        final Topic theTopic = this.mindMapPanel.getModel().findTopicForUID((String) extra.getValue());
+        if (theTopic == null) {
+          // not presented
+          NbUtils.msgWarn("Can't find the topic, may be it was removed");
+        }
+        else {
+          // detected
+          this.mindMapPanel.focusTo(theTopic);
+        }
       }
       break;
     }
@@ -434,17 +445,26 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
         final DataObject dataObj = (DataObject) dtde.getTransferable().getTransferData(data);
         final AbstractElement destination = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
         if (dataObj != null && destination != null) {
-          
+
           final FileObject fileObj = dataObj.getPrimaryFile();
           final String relativePath = getRelativePathToProjectIfPossible(fileObj);
-          
+
           final URI uri;
-          if (relativePath!=null){
+          if (relativePath != null) {
             uri = new URI(relativePath.replace('\\', '/'));
-          }else{
+          }
+          else {
             uri = fileObj.toURI();
           }
-          
+
+          final Topic topic = destination.getModel();
+
+          if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
+            if (!NbUtils.msgConfirmOkCancel("Mind Map File link", "Replace existing file link in the topic?")) {
+              return;
+            }
+          }
+
           destination.getModel().setExtra(new ExtraFile(uri));
           this.mindMapPanel.invalidate();
           this.mindMapPanel.repaint();

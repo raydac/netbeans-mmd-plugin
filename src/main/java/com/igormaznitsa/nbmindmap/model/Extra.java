@@ -28,14 +28,16 @@ public abstract class Extra <T> implements Serializable, Constants {
     FILE,
     LINK,
     NOTE,
-    SRC_POSITION;
+    TOPIC,
+    LINE;
     
     public Extra<?> make(final String text) throws URISyntaxException{
       switch(this){
         case FILE : return new ExtraFile(text);
         case LINK : return new ExtraLink(text);
         case NOTE : return new ExtraNote(text);
-        case SRC_POSITION : return new ExtraSource(text);
+        case TOPIC : return new ExtraTopic(text);
+        case LINE : return new ExtraLine(text);
         default: throw new Error("Unexpected value ["+this.name()+']');
       }
     }

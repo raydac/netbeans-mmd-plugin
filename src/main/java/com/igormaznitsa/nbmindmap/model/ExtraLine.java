@@ -18,16 +18,16 @@ package com.igormaznitsa.nbmindmap.model;
 import java.io.IOException;
 import java.io.Writer;
 
-public class ExtraSource extends Extra<SourcePosition> {
+public class ExtraLine extends Extra<SourcePosition> {
   private static final long serialVersionUID = -8556885025460722094L;
 
   private final SourcePosition position;
   
-  public ExtraSource(final SourcePosition pos){
+  public ExtraLine(final SourcePosition pos){
     this.position = pos;
   }
   
-  public ExtraSource(final String text){
+  public ExtraLine(final String text){
     this.position = new SourcePosition(text);
   }
   
@@ -38,7 +38,7 @@ public class ExtraSource extends Extra<SourcePosition> {
 
   @Override
   public ExtraType getType() {
-    return ExtraType.SRC_POSITION;
+    return ExtraType.LINE;
   }
 
   @Override

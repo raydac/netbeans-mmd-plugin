@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.nb.dataobj;
 
+import com.igormaznitsa.nbmindmap.nb.gui.MMDNavigatorLookupHint;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.io.IOException;
@@ -46,14 +47,15 @@ public class MMDDataObject extends MultiDataObject implements Lookup.Provider {
 
   final InstanceContent ic;
   private final AbstractLookup lookup;
-
+  
   public MMDDataObject(final FileObject pf, final MultiFileLoader loader) throws DataObjectExistsException, IOException {
     super(pf, loader);
     registerEditor(MIME, true);
 
     this.ic = new InstanceContent();
-    lookup = new AbstractLookup(ic);
+    this.lookup = new AbstractLookup(ic);
     ic.add(MMDEditorSupport.create(this));
+    ic.add(new MMDNavigatorLookupHint());
     ic.add(this);
   }
 

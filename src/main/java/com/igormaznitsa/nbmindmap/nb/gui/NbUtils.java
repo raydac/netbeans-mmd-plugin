@@ -19,17 +19,30 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
 public enum NbUtils {
+
   ;
         
-        public static void msgError(final String text){
-          DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.ERROR_MESSAGE));
-        }
+  public static void msgError(final String text) {
+    DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.ERROR_MESSAGE));
+  }
 
-        public static void msgInfo(final String text){
-          DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.INFORMATION_MESSAGE));
-        }
+  public static void msgInfo(final String text) {
+    DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.INFORMATION_MESSAGE));
+  }
 
-        public static void msgWarn(final String text){
-          DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.WARNING_MESSAGE));
-        }
+  public static void msgWarn(final String text) {
+    DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.WARNING_MESSAGE));
+  }
+
+  public static boolean msgConfirmOkCancel(final String title, final String query) {
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.OK_CANCEL_OPTION);
+    final Object obj = DialogDisplayer.getDefault().notify(desc);
+    return NotifyDescriptor.OK_OPTION.equals(obj);
+  }
+
+  public static boolean msgConfirmYesNo(final String title, final String query) {
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_OPTION);
+    final Object obj = DialogDisplayer.getDefault().notify(desc);
+    return NotifyDescriptor.YES_OPTION.equals(obj);
+  }
 }
