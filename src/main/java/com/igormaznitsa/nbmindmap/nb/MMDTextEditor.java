@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb.gui;
+package com.igormaznitsa.nbmindmap.nb;
 
-import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
+import java.awt.Image;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.text.Document;
 import org.netbeans.core.spi.multiview.CloseOperationState;
+import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.openide.text.CloneableEditor;
 import org.openide.text.NbDocument;
+import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.Lookups;
-import org.openide.util.lookup.ProxyLookup;
 
-public class MMDTextEditor extends CloneableEditor implements MultiViewElement, Runnable {
+public class MMDTextEditor extends CloneableEditor implements MultiViewElement, MultiViewDescription, Runnable {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -37,7 +38,17 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
   
   public MMDTextEditor(final MMDEditorSupport support) {
     super(support);
-    associateLookup(new ProxyLookup(Lookups.fixed(new MMDNavigatorLookupHint()), support.getDataObject().getNodeDelegate().getLookup()));
+    associateLookup(Lookups.fixed(getActionMap(), support, MMDNavigatorLookupHint.getInstance()));
+  }
+
+  @Override
+  public Image getIcon(){
+    return ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/nbmm16.png");
+  }
+  
+  @Override
+  public String getDisplayName() {
+    return "Text";
   }
 
   @Override
@@ -48,6 +59,7 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
   @Override
   public void componentActivated() {
     super.componentActivated();
+    ((MMDEditorSupport)this.cloneableEditorSupport()).onEditorActivated();
   }
 
   @Override
@@ -73,6 +85,11 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
   @Override
   public void componentHidden() {
     super.componentHidden();
+  }
+
+  @Override
+  public String preferredID() {
+    return "mmd-text-editor";
   }
 
   @Override
@@ -124,5 +141,10 @@ public class MMDTextEditor extends CloneableEditor implements MultiViewElement, 
     if (c!=null){
       c.updateTitle(this.getDisplayName());
     }
+  }
+
+  @Override
+  public MultiViewElement createElement() {
+    return this;
   }
 }

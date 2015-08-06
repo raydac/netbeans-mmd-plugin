@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb.gui;
+package com.igormaznitsa.nbmindmap.nb;
 
+import javax.swing.JComponent;
+import javax.swing.text.JTextComponent;
+import org.netbeans.editor.Utilities;
+import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
@@ -44,5 +48,16 @@ public enum NbUtils {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     return NotifyDescriptor.YES_OPTION.equals(obj);
+  }
+
+  public static String editText(final String title, final String text) {
+    final PlainTextEditor textEditor = new PlainTextEditor(text);
+    
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(textEditor, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
+    if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION){
+      return textEditor.getText();
+    }else{
+      return null;
+    }
   }
 }

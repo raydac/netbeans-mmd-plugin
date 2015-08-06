@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb.gui;
+package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.gui.MindMapListener;
 import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
@@ -22,10 +22,10 @@ import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.ExtraFile;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
-import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -49,20 +49,22 @@ import javax.swing.JToolBar;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.project.Project;
 import org.netbeans.core.spi.multiview.CloseOperationState;
+import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.openide.awt.UndoRedo;
+import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Mutex;
 import org.openide.util.lookup.Lookups;
-import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.CloneableTopComponent;
 import org.openide.windows.TopComponent;
 
-public final class MMDGraphEditor extends CloneableTopComponent implements MultiViewElement, MindMapListener, Runnable, DropTargetListener {
+public final class MMDGraphEditor extends CloneableTopComponent implements MultiViewDescription, MultiViewElement, MindMapListener, Runnable, DropTargetListener {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -74,10 +76,11 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   private final MindMapPanel mindMapPanel;
 
   private boolean dragAcceptableType = false;
-
+  
+  
   public MMDGraphEditor(final MMDEditorSupport support) {
     super();
-    associateLookup(new ProxyLookup(Lookups.fixed(new MMDNavigatorLookupHint()), support.getDataObject().getNodeDelegate().getLookup()));
+    associateLookup(Lookups.fixed(getActionMap(), support, MMDNavigatorLookupHint.getInstance()));
     
     this.editorSupport = support;
 
@@ -113,14 +116,19 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
 
   @Override
   public void componentActivated() {
+    super.componentActivated();
+    this.editorSupport.onEditorActivated();
   }
 
   @Override
   public void componentClosed() {
+    super.componentClosed();
   }
 
   @Override
   public void componentOpened() {
+    super.componentOpened();
+    final MMDEditorSupport ces = this.editorSupport;
   }
 
   @Override
@@ -139,14 +147,17 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
         tc.setToolTipText(this.getToolTipText());
       }
     }
+    this.editorSupport.updateTitles();
   }
 
   @Override
   public void componentDeactivated() {
+    super.componentDeactivated();
   }
 
   @Override
   public void componentHidden() {
+    super.componentHidden();
   }
 
   private void updateModel() {
@@ -211,13 +222,40 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   }
 
   @Override
+  public String getDisplayName() {
+    return "Graph";
+  }
+
+  @Override
   public int getPersistenceType() {
     return PERSISTENCE_NEVER;
   }
 
   @Override
-  public CloseOperationState canCloseElement() {
-    return CloseOperationState.STATE_OK;
+  public String preferredID() {
+    return "mmd-graph-editor";
+  }
+  
+  @Override
+  public boolean canClose() {
+    final EditorCookie c = this.editorSupport.getDataObject().getLookup().lookup(EditorCookie.class);
+
+
+    if (c != null) {
+      boolean result = false;
+      if (c.isModified() && NbUtils.msgConfirmYesNo("Mind map modified", "Do you want to save \"" + this.getName() + "\"?")) {
+        try {
+          c.saveDocument();
+        }
+        catch (IOException ex) {
+          Logger.error("Can't save document", ex);
+          NbUtils.msgError("Can't save \"" + this.getName() + "\"");
+        }
+      }
+      return result;
+    }
+
+    return super.canClose();
   }
 
   @Override
@@ -236,6 +274,7 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
     tc.setHtmlDisplayName(this.getHtmlDisplayName());
   }
 
+  
   @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
     try {
@@ -265,6 +304,8 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   public void onClickOnExtra(final MindMapPanel source, final Topic topic, final Extra<?> extra) {
     switch (extra.getType()) {
       case FILE: {
+        NbUtils.editText("Test edit", "kjflksd sdf;sdf; sdfsd sdfpwe]r\n sdf ;dfsdl;kfjlsdjf weiopr \njf sdf lsdkjf lsdjf ower oweij \nladjf ldjflasdj dflasdj foeuropiwe \nrowejr lej \nflsdjk flsdf ");
+
         final FileObject fileObj;
         try {
           final URI uri = (URI) extra.getValue();
@@ -272,7 +313,7 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
             fileObj = FileUtil.toFileObject(new File(uri));
           }
           else {
-            fileObj = this.editorSupport.makeRelativeForProject(uri.getPath());
+            fileObj = this.editorSupport.makeRelativePathToProjectRoot(uri.getPath());
             if (fileObj == null) {
               NbUtils.msgError("Can't find file at project: " + uri.getPath());
               return;
@@ -423,6 +464,11 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   }
 
   @Override
+  public Image getIcon() {
+    return ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/nbmm16.png");
+  }
+
+  @Override
   public void dropActionChanged(DropTargetDragEvent dtde) {
   }
 
@@ -512,4 +558,13 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
     return result;
   }
 
+  @Override
+  public CloseOperationState canCloseElement() {
+    return CloseOperationState.STATE_OK;
+  }
+
+  @Override
+  public MultiViewElement createElement() {
+    return this;
+  }
 }

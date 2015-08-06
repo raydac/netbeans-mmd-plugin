@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb.dataobj;
+package com.igormaznitsa.nbmindmap.nb;
 
-import com.igormaznitsa.nbmindmap.nb.gui.MMDTextPanel;
-import com.igormaznitsa.nbmindmap.nb.gui.MMDGraphPanel;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
@@ -54,7 +52,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return FileOwnerQuery.getOwner(getDataObject().getPrimaryFile());
   }
   
-  public FileObject makeRelativeForProject(final String path){
+  public FileObject makeRelativePathToProjectRoot(final String path){
     final Project proj = getProject();
     if (proj == null) return null;
     final FileObject projFileObject = proj.getProjectDirectory();
@@ -82,19 +80,6 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   }
 
   @Override
-  public boolean notifyModified() {
-    boolean retValue;
-
-    retValue = super.notifyModified();
-    if (retValue) {
-      MMDDataObject obj = (MMDDataObject) getDataObject();
-      obj.ic.add(env);
-    }
-
-    return retValue;
-  }
-
-  @Override
   protected boolean asynchronousOpen() {
     return false;
   }
@@ -112,8 +97,8 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
             final MultiViewDescription[] desc = lastGeneratedDescriptions;
             if (desc!=null){
               for(final MultiViewDescription d : desc){
-                if (d instanceof MMDGraphPanel){
-                  ((MMDGraphPanel)d).updateView();
+                if (d instanceof MMDGraphEditor){
+                  ((MMDGraphEditor)d).updateView();
                 }
               }
             }
@@ -125,8 +110,26 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return result;
   }
 
+  public void onEditorActivated(){
+  }
+  
   public UndoRedo.Manager getUndoRedoObject() {
     return this.getUndoRedo();
+  }
+
+  @Override
+  protected boolean notifyModified() {
+    boolean retValue = super.notifyModified();
+    if (retValue) {
+      final MMDDataObject obj = (MMDDataObject) getDataObject();
+      obj.ic.add(env);
+    }
+
+    return retValue; 
+  }
+
+  public boolean notifyModifiedVisual(){
+    return this.notifyModified();
   }
 
   @Override
@@ -153,8 +156,8 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
 
   @Override
   protected Pane createPane() {
-    final MMDGraphPanel graphPanel = new MMDGraphPanel(this);
-    final MMDTextPanel textPanel = new MMDTextPanel(this);
+    final MMDGraphEditor graphPanel = new MMDGraphEditor(this);
+    final MMDTextEditor textPanel = new MMDTextEditor(this);
     
     final MultiViewDescription[] descriptions = {
       graphPanel,
@@ -192,18 +195,21 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
 
     private static final long serialVersionUID = 6101101548072950629L;
 
+    private MMDDataObject dataObj;
+    
     public MMDDataEnv(final MMDDataObject obj) {
       super(obj);
+      this.dataObj = obj;
     }
 
     @Override
     protected FileObject getFile() {
-      return super.getDataObject().getPrimaryFile();
+      return this.dataObj.getPrimaryFile();
     }
 
     @Override
     protected FileLock takeLock() throws IOException {
-      return ((MMDDataObject) super.getDataObject()).getPrimaryEntry().takeLock();
+      return this.dataObj.getPrimaryEntry().takeLock();
     }
 
     @Override
@@ -211,7 +217,10 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
       final MMDEditorSupport ed = (MMDEditorSupport) this.findCloneableOpenSupport();
       ed.saveDocument();
     }
-
   }
 
+  @Override
+  public void updateTitles() {
+    super.updateTitles();
+  }
 }

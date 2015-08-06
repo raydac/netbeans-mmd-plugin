@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb.dataobj;
+package com.igormaznitsa.nbmindmap.nb;
 
-import com.igormaznitsa.nbmindmap.nb.gui.MMDNavigatorLookupHint;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.io.IOException;
@@ -55,7 +54,6 @@ public class MMDDataObject extends MultiDataObject implements Lookup.Provider {
     this.ic = new InstanceContent();
     this.lookup = new AbstractLookup(ic);
     ic.add(MMDEditorSupport.create(this));
-    ic.add(new MMDNavigatorLookupHint());
     ic.add(this);
   }
 

@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb.gui;
+package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.model.MindMap;
-import com.igormaznitsa.nbmindmap.nb.dataobj.MMDDataObject;
-import com.igormaznitsa.nbmindmap.nb.dataobj.MMDEditorSupport;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -33,23 +31,24 @@ import org.netbeans.spi.navigator.NavigatorPanel;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
+import org.openide.windows.TopComponent;
 
 @NavigatorPanel.Registration(displayName = "Mind map", mimeType = MMDDataObject.MIME)
-public class MMDNavigatorPanel extends JScrollPane implements NavigatorPanel, LookupListener {
+public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupListener {
 
-  private static final Lookup.Template<? extends MMDDataObject> MY_DATA = new Lookup.Template<MMDDataObject>(MMDDataObject.class);
+  private static final Lookup.Template<? extends MMDEditorSupport> MY_DATA = new Lookup.Template<MMDEditorSupport>(MMDEditorSupport.class);
   private static final long serialVersionUID = -4344090966601180253L;
 
   private final JTree mindMapTree;
 
-  private Lookup.Result<? extends MMDDataObject> curContext;
-  private MMDDataObject content;
+  private Lookup.Result<? extends MMDEditorSupport> context;
+  private MMDEditorSupport currentSupport;
 
-  public MMDNavigatorPanel() {
+  public MMDNavigator() {
     super();
     this.mindMapTree = new JTree();
     this.setViewportView(this.mindMapTree);
-
+    
     this.mindMapTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     
     this.mindMapTree.addMouseListener(new MouseAdapter() {
@@ -57,7 +56,7 @@ public class MMDNavigatorPanel extends JScrollPane implements NavigatorPanel, Lo
       @Override
       public void mouseClicked(final MouseEvent e) {
         if (!e.isPopupTrigger() && e.getClickCount()>1){
-          final MMDDataObject current = content.getLookup().lookup(MMDDataObject.class);
+          final MMDDataObject current = (MMDDataObject)currentSupport.getDataObject();
           if (current != null) {
             final Openable openable = current.getLookup().lookup(Openable.class);
             if (openable != null) {
@@ -72,8 +71,8 @@ public class MMDNavigatorPanel extends JScrollPane implements NavigatorPanel, Lo
 
   @Override
   public String getDisplayName() {
-    final MMDDataObject mmddo = content;
-    return mmddo == null ? "NONE" : mmddo.getName();
+    final MMDEditorSupport mmddo = currentSupport;
+    return mmddo == null ? "NONE" : mmddo.getDataObject().getName();
   }
 
   @Override
@@ -88,23 +87,32 @@ public class MMDNavigatorPanel extends JScrollPane implements NavigatorPanel, Lo
 
   @Override
   public void panelActivated(final Lookup context) {
-    this.curContext = context.lookup(MY_DATA);
-    this.curContext.addLookupListener(this);
+    this.context = context.lookup(MY_DATA);
+    this.context.addLookupListener(this);
     extractDataFromContextAndUpdate();
   }
 
   private void extractDataFromContextAndUpdate() {
-    final Lookup.Result<? extends MMDDataObject> ctx = this.curContext;
+    final Lookup.Result<? extends MMDEditorSupport> ctx = this.context;
+    
     if (ctx == null) {
-      this.content = null;
+      this.currentSupport = null;
     }
     else {
-      final Collection<? extends MMDDataObject> clct = ctx.allInstances();
-      if (clct == null || clct.isEmpty()) {
-        this.content = null;
+      Collection<? extends MMDEditorSupport> clct = ctx.allInstances();
+      
+      if (clct.isEmpty()){
+        final TopComponent active = TopComponent.getRegistry().getActivated();
+        if (active!=null){
+          clct = active.getLookup().lookupAll(MMDEditorSupport.class);
+        }
+      }
+      
+      if (clct.isEmpty()) {
+        this.currentSupport = null;
       }
       else {
-        this.content = clct.iterator().next();
+        this.currentSupport = clct.iterator().next();
       }
     }
     updateContent();
@@ -112,8 +120,8 @@ public class MMDNavigatorPanel extends JScrollPane implements NavigatorPanel, Lo
 
   private String getDocumentText(){
     String result = null;
-    if (this.content != null){
-      final MMDEditorSupport editor = this.content.getLookup().lookup(MMDEditorSupport.class);
+    if (this.currentSupport != null){
+      final MMDEditorSupport editor = this.currentSupport;
       if (editor!=null){
         result = editor.getDocumentText();
       }
@@ -139,12 +147,12 @@ public class MMDNavigatorPanel extends JScrollPane implements NavigatorPanel, Lo
 
   @Override
   public void panelDeactivated() {
-    if (this.curContext != null) {
-      this.curContext.removeLookupListener(this);
+    if (this.context != null) {
+      this.context.removeLookupListener(this);
     }
     this.mindMapTree.setModel(null);
-    this.content = null;
-    this.curContext = null;
+    this.currentSupport = null;
+    this.context = null;
   }
 
   @Override
