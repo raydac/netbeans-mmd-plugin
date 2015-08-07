@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui;
+package com.igormaznitsa.nbmindmap.mmgui;
 
 import com.igormaznitsa.nbmindmap.utils.Utils;
-import com.igormaznitsa.nbmindmap.gui.mmview.*;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
@@ -44,7 +43,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private volatile MindMap model;
   private volatile String errorText;
 
-  private final Configuration config;
+  private transient final Configuration config;
 
   private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
 
@@ -54,20 +53,20 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private final JTextArea textEditor = new JTextArea();
   private final JPanel textEditorPanel = new JPanel(new BorderLayout(0, 0));
-  private AbstractElement elementUnderEdit = null;
+  private transient AbstractElement elementUnderEdit = null;
 
   private final List<Topic> selectedTopics = new ArrayList<Topic>();
 
-  private MouseSelectedArea mouseDragSelection = null;
-  private AbstractElement draggedElement = null;
-  private Point draggedElementPoint = null;
-  private AbstractElement destinationElement = null;
+  private transient MouseSelectedArea mouseDragSelection = null;
+  private transient AbstractElement draggedElement = null;
+  private transient Point draggedElementPoint = null;
+  private transient AbstractElement destinationElement = null;
 
   public MindMapPanel() {
     super(null);
     this.config = new Configuration(this);
     this.config.addConfigurationListener(this);
-    
+
     this.textEditor.setMargin(new Insets(5, 5, 5, 5));
     this.textEditor.setTabSize(4);
     this.textEditor.addKeyListener(new KeyAdapter() {
@@ -353,7 +352,6 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     repaint();
   }
 
-
   private void endDragOfElement(final Point dropPoint, final AbstractElement element, final AbstractElement destination) {
     final boolean same = element.getModel() == destination.getModel();
     if (same) {
@@ -526,9 +524,10 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
     if (parent != null) {
       removeAllSelection();
+
       final Topic newTopic = parent.makeChild("", baseTopic);
 
-      if (parent.getParent() == null && baseTopic == null) {
+      if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
         int numLeft = 0;
         int numRight = 0;
         for (final Topic t : parent.getChildren()) {
@@ -540,9 +539,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           }
         }
 
-        if (numLeft < numRight) {
-          AbstractCollapsableElement.makeTopicLeftSided(newTopic, true);
-        }
+        AbstractCollapsableElement.makeTopicLeftSided(newTopic, numLeft < numRight);
       }
       else {
         if (baseTopic != null && baseTopic.getPayload() != null) {
@@ -996,7 +993,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   }
 
   public void focusTo(final Topic theTopic) {
-    if (theTopic!=null){
+    if (theTopic != null) {
       fireNotificationEnsureTopicVisibility(theTopic);
       this.selectedTopics.clear();
       this.selectedTopics.add(theTopic);

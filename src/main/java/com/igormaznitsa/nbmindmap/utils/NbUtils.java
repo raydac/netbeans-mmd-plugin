@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.utils;
 
-import javax.swing.JComponent;
-import javax.swing.text.JTextComponent;
-import org.netbeans.editor.Utilities;
-import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 

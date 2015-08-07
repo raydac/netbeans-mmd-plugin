@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui;
+package com.igormaznitsa.nbmindmap.mmgui;
 
-import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.Topic;
-import java.awt.Dimension;
 
-public interface MindMapListener {
-  void onMindMapModelChanged(MindMapPanel source);
-  void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
-  void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic);
-  void onClickOnExtra(MindMapPanel source, Topic topic, Extra<?> extra);
-  void onChangedSelection(MindMapPanel source, Topic [] currentSelectedTopics);
+public interface TopicChecker {
+  boolean check(Topic topic);
 }

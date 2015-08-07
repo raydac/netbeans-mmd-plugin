@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui;
+package com.igormaznitsa.nbmindmap.mmgui;
 
-import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
+import com.igormaznitsa.nbmindmap.mmgui.AbstractElement;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.Point;

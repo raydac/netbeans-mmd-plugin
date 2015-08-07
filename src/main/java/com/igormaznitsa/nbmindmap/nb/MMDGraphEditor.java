@@ -15,9 +15,10 @@
  */
 package com.igormaznitsa.nbmindmap.nb;
 
-import com.igormaznitsa.nbmindmap.gui.MindMapListener;
-import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
-import com.igormaznitsa.nbmindmap.gui.mmview.AbstractElement;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
+import com.igormaznitsa.nbmindmap.mmgui.MindMapListener;
+import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
+import com.igormaznitsa.nbmindmap.mmgui.AbstractElement;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.ExtraFile;
 import com.igormaznitsa.nbmindmap.model.MindMap;
@@ -49,26 +50,30 @@ import javax.swing.JToolBar;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.project.Project;
 import org.netbeans.core.spi.multiview.CloseOperationState;
-import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
-import org.openide.awt.UndoRedo;
-import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
+import org.openide.text.CloneableEditor;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Mutex;
-import org.openide.util.lookup.Lookups;
-import org.openide.windows.CloneableTopComponent;
 import org.openide.windows.TopComponent;
+import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
-public final class MMDGraphEditor extends CloneableTopComponent implements MultiViewDescription, MultiViewElement, MindMapListener, Runnable, DropTargetListener {
-
+@MultiViewElement.Registration(
+        displayName = "Graph",
+        mimeType = MMDDataObject.MIME,
+        persistenceType = PERSISTENCE_NEVER,
+        iconBase = "com/igormaznitsa/nbmindmap/icons/nbmm16.png",
+        preferredID = MMDGraphEditor.ID, 
+        position = 100
+)
+public final class MMDGraphEditor extends CloneableEditor implements MultiViewElement, MindMapListener, DropTargetListener {
   private static final long serialVersionUID = -8776707243607267446L;
 
-  private JToolBar toolbar;
+  public static final String ID = "mmd-graph-editor";
+  
   private MultiViewElementCallback callback;
   private final MMDEditorSupport editorSupport;
 
@@ -76,11 +81,13 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   private final MindMapPanel mindMapPanel;
 
   private boolean dragAcceptableType = false;
-  
-  
+
+  private final JToolBar toolBar;
+
   public MMDGraphEditor(final MMDEditorSupport support) {
-    super();
-    associateLookup(Lookups.fixed(getActionMap(), support, MMDNavigatorLookupHint.getInstance()));
+    super(support);
+    
+    this.toolBar = makeToolBar();
     
     this.editorSupport = support;
 
@@ -104,11 +111,10 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
     updateName();
   }
 
-  @Override
-  public UndoRedo getUndoRedo() {
-    return this.editorSupport.getUndoRedoObject();
+  private JToolBar makeToolBar(){
+    return new JToolBar();
   }
-
+  
   @Override
   public JComponent getVisualRepresentation() {
     return this;
@@ -181,100 +187,12 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   }
 
   @Override
-  public JComponent getToolbarRepresentation() {
-    if (this.toolbar == null) {
-      this.toolbar = makeToolbar();
-    }
-    return this.toolbar;
-  }
-
-  private JToolBar makeToolbar() {
-    final JToolBar result = new JToolBar();
-
-    return result;
-  }
-
-  @Override
   public void setMultiViewCallback(final MultiViewElementCallback callback) {
     this.callback = callback;
     updateName();
     copyNameToCallbackTopComponent();
   }
 
-  public void updateName() {
-    final MMDEditorSupport ces = this.editorSupport;
-
-    if (ces != null) {
-      Mutex.EVENT.writeAccess(
-              new Runnable() {
-                @Override
-                public void run() {
-                  String name = ces.messageHtmlName();
-                  setHtmlDisplayName(name);
-                  name = ces.messageName();
-                  setDisplayName(name);
-                  setName(name);
-                  setToolTipText(ces.messageToolTip());
-                }
-              }
-      );
-    }
-  }
-
-  @Override
-  public String getDisplayName() {
-    return "Graph";
-  }
-
-  @Override
-  public int getPersistenceType() {
-    return PERSISTENCE_NEVER;
-  }
-
-  @Override
-  public String preferredID() {
-    return "mmd-graph-editor";
-  }
-  
-  @Override
-  public boolean canClose() {
-    final EditorCookie c = this.editorSupport.getDataObject().getLookup().lookup(EditorCookie.class);
-
-
-    if (c != null) {
-      boolean result = false;
-      if (c.isModified() && NbUtils.msgConfirmYesNo("Mind map modified", "Do you want to save \"" + this.getName() + "\"?")) {
-        try {
-          c.saveDocument();
-        }
-        catch (IOException ex) {
-          Logger.error("Can't save document", ex);
-          NbUtils.msgError("Can't save \"" + this.getName() + "\"");
-        }
-      }
-      return result;
-    }
-
-    return super.canClose();
-  }
-
-  @Override
-  public void run() {
-    final MultiViewElementCallback c = this.callback;
-    if (c == null) {
-      return;
-    }
-    TopComponent tc = c.getTopComponent();
-    if (tc == null) {
-      return;
-    }
-    updateName();
-    tc.setName(this.getName());
-    tc.setDisplayName(this.getDisplayName());
-    tc.setHtmlDisplayName(this.getHtmlDisplayName());
-  }
-
-  
   @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
     try {
@@ -385,61 +303,61 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
     }
   }
 
-  public static void main(String... args) throws Exception {
-    final JFrame frame = new JFrame("Test");
-    frame.setSize(500, 500);
-    frame.setLocationRelativeTo(null);
-
-    final JScrollPane panel = new JScrollPane();
-
-    final MindMapPanel pp = new MindMapPanel();
-    pp.addComponentListener(new ComponentAdapter() {
-
-      @Override
-      public void componentResized(ComponentEvent e) {
-        processEditorResizing(pp);
-      }
-
-    });
-
-//    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n##rrr\n##rrr\n###GGG\n####HHH\n#####JJKKLL\n## leve1.1\n> leftSide=\"true\"\n## leve1.1\n> leftSide=\"true\"\n"));
-//    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n## Some\n## Some\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n"));
-    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n- LINK\n```http://www.color.com```\n- NOTE\n```Hello world note```\n## Some\n- NOTE\n```Hello world note```\n- LINK\n```http://www.color.com```\n### SSS\n- NOTE\n```hhh```\n"));
-    pp.setModel(map);
-
-    pp.addMindMapListener(new MindMapListener() {
-
-      @Override
-      public void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic) {
-        moveVisibleRectToElement(panel, source, (AbstractElement) topic.getPayload());
-      }
-
-      @Override
-      public void onMindMapModelChanged(MindMapPanel source) {
-      }
-
-      @Override
-      public void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize) {
-        panel.getViewport().revalidate();
-      }
-
-      @Override
-      public void onClickOnExtra(MindMapPanel panel, Topic topic, Extra<?> extra) {
-      }
-
-      @Override
-      public void onChangedSelection(MindMapPanel source, Topic[] currentSelectedTopics) {
-      }
-
-    });
-
-    panel.setViewportView(pp);
-
-    frame.setContentPane(panel);
-
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setVisible(true);
-  }
+//  public static void main(String... args) throws Exception {
+//    final JFrame frame = new JFrame("Test");
+//    frame.setSize(500, 500);
+//    frame.setLocationRelativeTo(null);
+//
+//    final JScrollPane panel = new JScrollPane();
+//
+//    final MindMapPanel pp = new MindMapPanel();
+//    pp.addComponentListener(new ComponentAdapter() {
+//
+//      @Override
+//      public void componentResized(ComponentEvent e) {
+//        processEditorResizing(pp);
+//      }
+//
+//    });
+//
+////    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n##rrr\n##rrr\n###GGG\n####HHH\n#####JJKKLL\n## leve1.1\n> leftSide=\"true\"\n## leve1.1\n> leftSide=\"true\"\n"));
+////    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n## Some\n## Some\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n"));
+//    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n- LINK\n```http://www.color.com```\n- NOTE\n```Hello world note```\n## Some\n- NOTE\n```Hello world note```\n- LINK\n```http://www.color.com```\n### SSS\n- NOTE\n```hhh```\n"));
+//    pp.setModel(map);
+//
+//    pp.addMindMapListener(new MindMapListener() {
+//
+//      @Override
+//      public void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic) {
+//        moveVisibleRectToElement(panel, source, (AbstractElement) topic.getPayload());
+//      }
+//
+//      @Override
+//      public void onMindMapModelChanged(MindMapPanel source) {
+//      }
+//
+//      @Override
+//      public void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize) {
+//        panel.getViewport().revalidate();
+//      }
+//
+//      @Override
+//      public void onClickOnExtra(MindMapPanel panel, Topic topic, Extra<?> extra) {
+//      }
+//
+//      @Override
+//      public void onChangedSelection(MindMapPanel source, Topic[] currentSelectedTopics) {
+//      }
+//
+//    });
+//
+//    panel.setViewportView(pp);
+//
+//    frame.setContentPane(panel);
+//
+//    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//    frame.setVisible(true);
+//  }
 
   public void updateView() {
     this.updateModel();
@@ -564,7 +482,8 @@ public final class MMDGraphEditor extends CloneableTopComponent implements Multi
   }
 
   @Override
-  public MultiViewElement createElement() {
-    return this;
+  public JComponent getToolbarRepresentation() {
+    return this.toolBar;
   }
+
 }

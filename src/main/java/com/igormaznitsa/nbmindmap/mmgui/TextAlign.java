@@ -13,10 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui.mmview;
+package com.igormaznitsa.nbmindmap.mmgui;
 
-import com.igormaznitsa.nbmindmap.model.Topic;
+public enum TextAlign {
+  LEFT, RIGHT, CENTER;
 
-public interface TopicChecker {
-  boolean check(Topic topic);
+  public static TextAlign findForName(final String text) {
+    if (text == null) {
+      return CENTER;
+    }
+    for (final TextAlign t : values()) {
+      if (t.name().equalsIgnoreCase(text)) {
+        return t;
+      }
+    }
+    return CENTER;
+  }
+  
 }

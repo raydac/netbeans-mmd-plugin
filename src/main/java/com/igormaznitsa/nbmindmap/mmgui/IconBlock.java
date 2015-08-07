@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui.mmview;
+package com.igormaznitsa.nbmindmap.mmgui;
 
-import com.igormaznitsa.nbmindmap.gui.icons.ScalableIcon;
+import com.igormaznitsa.nbmindmap.utils.ScalableIcon;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.FILE;
 import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.LINK;
@@ -24,7 +24,6 @@ import static com.igormaznitsa.nbmindmap.model.Extra.ExtraType.TOPIC;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Map;
 
 public class IconBlock {
   private final Rectangle2D bounds = new Rectangle2D.Double();

@@ -17,14 +17,9 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.io.IOException;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.text.StyledDocument;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
-import org.netbeans.core.spi.multiview.MultiViewDescription;
-import org.netbeans.core.spi.multiview.MultiViewFactory;
 import org.netbeans.editor.GuardedDocument;
 import org.openide.awt.UndoRedo;
 import org.openide.cookies.EditCookie;
@@ -33,13 +28,11 @@ import org.openide.cookies.OpenCookie;
 import org.openide.cookies.SaveCookie;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
-import org.openide.text.CloneableEditorSupport;
+import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
 
 public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie {
 
-  private volatile MultiViewDescription[] lastGeneratedDescriptions;
-  
   public static MMDEditorSupport create(final MMDDataObject obj) {
     return new MMDEditorSupport(obj);
   }
@@ -48,24 +41,22 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     super(obj, new MMDDataEnv(obj));
   }
 
-  public Project getProject(){
+  public Project getProject() {
     return FileOwnerQuery.getOwner(getDataObject().getPrimaryFile());
   }
-  
-  public FileObject makeRelativePathToProjectRoot(final String path){
+
+  public FileObject makeRelativePathToProjectRoot(final String path) {
     final Project proj = getProject();
-    if (proj == null) return null;
+    if (proj == null) {
+      return null;
+    }
     final FileObject projFileObject = proj.getProjectDirectory();
     return projFileObject.getFileObject(path);
   }
 
   @Override
-  protected boolean close(final boolean ask) {
-    final boolean result = super.close(ask);
-    if (result){
-      this.lastGeneratedDescriptions = null;
-    }
-    return result;
+  protected CloneableEditor createCloneableEditor() {
+    return new MMDGraphEditor(this);
   }
   
   public String getDocumentText() {
@@ -87,32 +78,12 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Override
   protected UndoRedo.Manager createUndoRedoManager() {
     final UndoRedo.Manager result = super.createUndoRedoManager();
-
-    result.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            final MultiViewDescription[] desc = lastGeneratedDescriptions;
-            if (desc!=null){
-              for(final MultiViewDescription d : desc){
-                if (d instanceof MMDGraphEditor){
-                  ((MMDGraphEditor)d).updateView();
-                }
-              }
-            }
-          }
-        });
-      }
-    });
-
     return result;
   }
 
-  public void onEditorActivated(){
+  public void onEditorActivated() {
   }
-  
+
   public UndoRedo.Manager getUndoRedoObject() {
     return this.getUndoRedo();
   }
@@ -125,10 +96,10 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
       obj.ic.add(env);
     }
 
-    return retValue; 
+    return retValue;
   }
 
-  public boolean notifyModifiedVisual(){
+  public boolean notifyModifiedVisual() {
     return this.notifyModified();
   }
 
@@ -154,21 +125,6 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return super.messageToolTip();
   }
 
-  @Override
-  protected Pane createPane() {
-    final MMDGraphEditor graphPanel = new MMDGraphEditor(this);
-    final MMDTextEditor textPanel = new MMDTextEditor(this);
-    
-    final MultiViewDescription[] descriptions = {
-      graphPanel,
-      textPanel
-    };
-
-    this.lastGeneratedDescriptions = descriptions;
-    
-    return (CloneableEditorSupport.Pane) MultiViewFactory.createCloneableMultiView(descriptions, descriptions[0]);
-  }
-
   public void replaceDocumentText(final String text) {
     try {
       final GuardedDocument doc = (GuardedDocument) this.openDocument();
@@ -188,7 +144,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     catch (Exception ex) {
       Logger.error("Can't open document to replace text", ex);
     }
-    
+
   }
 
   private static final class MMDDataEnv extends DataEditorSupport.Env implements SaveCookie {
@@ -196,7 +152,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     private static final long serialVersionUID = 6101101548072950629L;
 
     private MMDDataObject dataObj;
-    
+
     public MMDDataEnv(final MMDDataObject obj) {
       super(obj);
       this.dataObj = obj;

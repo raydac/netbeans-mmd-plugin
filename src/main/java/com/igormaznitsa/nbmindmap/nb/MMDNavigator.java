@@ -41,8 +41,8 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
 
   private final JTree mindMapTree;
 
-  private Lookup.Result<? extends MMDEditorSupport> context;
-  private MMDEditorSupport currentSupport;
+  private transient Lookup.Result<? extends MMDEditorSupport> context;
+  private transient MMDEditorSupport currentSupport;
 
   public MMDNavigator() {
     super();

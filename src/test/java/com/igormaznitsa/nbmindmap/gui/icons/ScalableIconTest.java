@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.gui.icons;
 
+import com.igormaznitsa.nbmindmap.utils.ScalableIcon;
 import java.awt.Image;
 import org.junit.Test;
 import static org.junit.Assert.*;

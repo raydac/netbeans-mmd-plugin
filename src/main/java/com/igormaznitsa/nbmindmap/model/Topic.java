@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
-import com.igormaznitsa.nbmindmap.gui.mmview.TopicChecker;
+import com.igormaznitsa.nbmindmap.mmgui.TopicChecker;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;

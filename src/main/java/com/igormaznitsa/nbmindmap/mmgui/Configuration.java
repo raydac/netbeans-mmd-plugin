@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui.mmview;
+package com.igormaznitsa.nbmindmap.mmgui;
 
-import com.igormaznitsa.nbmindmap.gui.MindMapPanel;
 import java.awt.Color;
 import java.awt.Font;
 import java.lang.ref.WeakReference;

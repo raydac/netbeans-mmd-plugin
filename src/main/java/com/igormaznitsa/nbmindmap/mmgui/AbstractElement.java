@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui.mmview;
+package com.igormaznitsa.nbmindmap.mmgui;
 
 import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.Dimension;

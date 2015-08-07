@@ -45,7 +45,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s*(.+)$");
   private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*\\\"(.*?)\\\"");
 
-  private final List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
+  private final transient List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
   
   public MindMap() {
     this.root = new Topic(this, null, "");
@@ -130,6 +130,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     }
   }
 
+  @Override
   public Topic getRoot() {
     this.locker.lock();
     try {

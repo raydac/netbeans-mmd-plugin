@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui.icons;
+package com.igormaznitsa.nbmindmap.utils;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -50,7 +50,7 @@ public enum ScalableIcon {
       this.baseScaleY = (float) BASE_HEIGHT / (float)this.baseImage.getHeight(null);
     }
     catch (Exception ex) {
-      throw new Error("Can't load resource image "+name);
+      throw new Error("Can't load resource image "+name, ex);
     }finally{
       IOUtils.closeQuietly(in);
     }

@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui.mmview;
+package com.igormaznitsa.nbmindmap.mmgui;
 
-public enum TextAlign {
-  LEFT, RIGHT, CENTER;
+import com.igormaznitsa.nbmindmap.model.Extra;
+import com.igormaznitsa.nbmindmap.model.Topic;
+import java.awt.Dimension;
 
-  public static TextAlign findForName(final String text) {
-    if (text == null) {
-      return CENTER;
-    }
-    for (final TextAlign t : values()) {
-      if (t.name().equalsIgnoreCase(text)) {
-        return t;
-      }
-    }
-    return CENTER;
-  }
-  
+public interface MindMapListener {
+  void onMindMapModelChanged(MindMapPanel source);
+  void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
+  void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic);
+  void onClickOnExtra(MindMapPanel source, Topic topic, Extra<?> extra);
+  void onChangedSelection(MindMapPanel source, Topic [] currentSelectedTopics);
 }

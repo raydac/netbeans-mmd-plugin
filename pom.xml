@@ -8,6 +8,7 @@
   <packaging>nbm</packaging>
 
   <name>NetBeans MindMap plugin</name>
+  <description>NetBeans plugin to show and edit mind map structured data saved in markdown compatible text format.</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

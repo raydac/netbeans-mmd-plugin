@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui.mmview;
+package com.igormaznitsa.nbmindmap.mmgui;
 
 import com.igormaznitsa.nbmindmap.utils.Utils;
 import static com.igormaznitsa.nbmindmap.utils.Utils.assertNotNull;
@@ -39,7 +39,6 @@ public final class TextBlock {
   private String text;
   private Line[] lines;
   private Font font;
-  private float lineHeight;
   private float maxLineAscent;
   private final Rectangle2D bounds = new Rectangle2D.Double();
   private TextAlign textAlign;
@@ -87,7 +86,6 @@ public final class TextBlock {
       this.font = cfg.getFont().deriveFont(cfg.getFont().getSize2D() * cfg.getScale());
       final FontMetrics metrics = gfx.getFontMetrics(this.font);
 
-      this.lineHeight = metrics.getHeight();
       this.maxLineAscent = metrics.getMaxAscent();
 
       float maxWidth = 0.0f;
