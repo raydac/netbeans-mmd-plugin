@@ -33,7 +33,7 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
 @MIMEResolver.ExtensionRegistration(displayName = "Mind map", mimeType = MMDDataObject.MIME, extension = {MMDDataObject.MMD_EXT})
-@DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/nb/nbmm16.png", displayName = "Text Mind Map", mimeType = MMDDataObject.MIME)
+@DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "Text Mind Map", mimeType = MMDDataObject.MIME)
 public class MMDDataObject extends MultiDataObject implements Lookup.Provider {
 
   private static final long serialVersionUID = -833567211826863321L;
@@ -41,8 +41,8 @@ public class MMDDataObject extends MultiDataObject implements Lookup.Provider {
   public static final String MIME = "text/x-mmd+markdown";
   public static final String MMD_EXT = "mmd";
 
-  private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/nb/nbmm16.png");
-  private static final Image NODE_ICON_32x32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/nb/nbmm16.png");
+  private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png");
+  private static final Image NODE_ICON_32x32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo32.png");
 
   final InstanceContent ic;
   private final AbstractLookup lookup;

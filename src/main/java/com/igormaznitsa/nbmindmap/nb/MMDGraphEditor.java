@@ -44,7 +44,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import org.netbeans.api.actions.Openable;
@@ -65,7 +64,7 @@ import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
         displayName = "Graph",
         mimeType = MMDDataObject.MIME,
         persistenceType = PERSISTENCE_NEVER,
-        iconBase = "com/igormaznitsa/nbmindmap/icons/nbmm16.png",
+        iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
         preferredID = MMDGraphEditor.ID, 
         position = 100
 )
@@ -383,7 +382,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public Image getIcon() {
-    return ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/nbmm16.png");
+    return ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png");
   }
 
   @Override
