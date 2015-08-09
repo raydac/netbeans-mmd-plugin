@@ -23,6 +23,7 @@ public interface MindMapListener {
   void onMindMapModelChanged(MindMapPanel source);
   void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
   void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic);
-  void onClickOnExtra(MindMapPanel source, Topic topic, Extra<?> extra);
+  void onClickOnExtra(MindMapPanel source,int clicks, Topic topic, Extra<?> extra);
   void onChangedSelection(MindMapPanel source, Topic [] currentSelectedTopics);
+  boolean allowedRemovingOfTopics(MindMapPanel source, Topic [] topics);
 }

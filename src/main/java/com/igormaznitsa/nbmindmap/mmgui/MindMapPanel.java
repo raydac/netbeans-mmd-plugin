@@ -376,7 +376,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         else if (part == ElementPart.ICONS) {
           final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
           if (extra != null) {
-            fireNotificationClickOnExtra(element.getModel(), extra);
+            fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
           }
         }
         else {
@@ -641,9 +641,9 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  protected void fireNotificationClickOnExtra(final Topic topic, final Extra<?> extra) {
+  protected void fireNotificationClickOnExtra(final Topic topic, final int clicks, final Extra<?> extra) {
     for (final MindMapListener l : this.mindMapListeners) {
-      l.onClickOnExtra(this, topic, extra);
+      l.onClickOnExtra(this, clicks, topic, extra);
     }
   }
 
@@ -655,14 +655,22 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   protected void deleteSelectedTopics() {
     if (!this.selectedTopics.isEmpty()) {
-      for (final Topic t : this.selectedTopics) {
-        this.model.removeTopic(t);
+      final Topic[] topics = this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
+
+      boolean allowed = true;
+      for (final MindMapListener l : this.mindMapListeners) {
+        allowed &= l.allowedRemovingOfTopics(this, topics);
       }
-      removeAllSelection();
-      invalidate();
-      revalidate();
-      fireNotificationMindMapChanged();
-      repaint();
+      if (allowed) {
+        for (final Topic t : topics) {
+          this.model.removeTopic(t);
+        }
+        removeAllSelection();
+        invalidate();
+        revalidate();
+        fireNotificationMindMapChanged();
+        repaint();
+      }
     }
   }
 

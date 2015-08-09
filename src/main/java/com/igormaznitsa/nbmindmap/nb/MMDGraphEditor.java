@@ -22,6 +22,7 @@ import com.igormaznitsa.nbmindmap.mmgui.AbstractElement;
 import com.igormaznitsa.nbmindmap.mmgui.ElementPart;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.ExtraFile;
+import com.igormaznitsa.nbmindmap.model.ExtraNote;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.utils.Logger;
@@ -46,7 +47,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
-import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -203,6 +203,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   }
 
   @Override
+  public boolean allowedRemovingOfTopics(final MindMapPanel source, final Topic[] topics) {
+    return NbUtils.msgConfirmYesNo("Remove mind map topic(s)", "Do you really want to delete "+topics.length+" topic(s) from the mind map?");
+  }
+
+  @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
     try {
       final StringWriter writer = new StringWriter(16384);
@@ -228,60 +233,61 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   }
 
   @Override
-  public void onClickOnExtra(final MindMapPanel source, final Topic topic, final Extra<?> extra) {
-    switch (extra.getType()) {
-      case FILE: {
-        NbUtils.editText("Test edit", "kjflksd sdf;sdf; sdfsd sdfpwe]r\n sdf ;dfsdl;kfjlsdjf weiopr \njf sdf lsdkjf lsdjf ower oweij \nladjf ldjflasdj dflasdj foeuropiwe \nrowejr lej \nflsdjk flsdf ");
-
-        final FileObject fileObj;
-        try {
-          final URI uri = (URI) extra.getValue();
-          if (uri.isAbsolute()) {
-            fileObj = FileUtil.toFileObject(new File(uri));
-          }
-          else {
-            fileObj = this.editorSupport.makeRelativePathToProjectRoot(uri.getPath());
-            if (fileObj == null) {
-              NbUtils.msgError("Can't find file at project: " + uri.getPath());
-              return;
+  public void onClickOnExtra(final MindMapPanel source, final int clicks, final Topic topic, final Extra<?> extra) {
+    if (clicks > 1) {
+      switch (extra.getType()) {
+        case FILE: {
+          final FileObject fileObj;
+          try {
+            final URI uri = (URI) extra.getValue();
+            if (uri.isAbsolute()) {
+              fileObj = FileUtil.toFileObject(new File(uri));
+            }
+            else {
+              fileObj = this.editorSupport.makeRelativePathToProjectRoot(uri.getPath());
+              if (fileObj == null) {
+                NbUtils.msgError("Can't find file at project: " + uri.getPath());
+                return;
+              }
             }
           }
-        }
-        catch (Exception ex) {
-          NbUtils.msgError("Wrong file path : " + extra.getValue().toString());
-          return;
-        }
+          catch (Exception ex) {
+            NbUtils.msgError("Wrong file path : " + extra.getValue().toString());
+            return;
+          }
 
-        try {
-          final DataObject dobj = DataObject.find(fileObj);
-          final Openable openable = dobj.getLookup().lookup(Openable.class);
-          if (openable != null) {
-            openable.open();
+          try {
+            final DataObject dobj = DataObject.find(fileObj);
+            final Openable openable = dobj.getLookup().lookup(Openable.class);
+            if (openable != null) {
+              openable.open();
+            }
+          }
+          catch (DataObjectNotFoundException ex) {
+            Logger.error("Cant't find data object", ex);
           }
         }
-        catch (DataObjectNotFoundException ex) {
-          Logger.error("Cant't find data object", ex);
+        break;
+        case LINK: {
         }
-      }
-      break;
-      case LINK: {
-      }
-      break;
-      case NOTE: {
-      }
-      break;
-      case TOPIC: {
-        final Topic theTopic = this.mindMapPanel.getModel().findTopicForUID((String) extra.getValue());
-        if (theTopic == null) {
-          // not presented
-          NbUtils.msgWarn("Can't find the topic, may be it was removed");
+        break;
+        case NOTE: {
+          editTextForTopic(topic);
         }
-        else {
-          // detected
-          this.mindMapPanel.focusTo(theTopic);
+        break;
+        case TOPIC: {
+          final Topic theTopic = this.mindMapPanel.getModel().findTopicForUID((String) extra.getValue());
+          if (theTopic == null) {
+            // not presented
+            NbUtils.msgWarn("Can't find the topic, may be it was removed");
+          }
+          else {
+            // detected
+            this.mindMapPanel.focusTo(theTopic);
+          }
         }
+        break;
       }
-      break;
     }
   }
 
@@ -312,61 +318,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     }
   }
 
-//  public static void main(String... args) throws Exception {
-//    final JFrame frame = new JFrame("Test");
-//    frame.setSize(500, 500);
-//    frame.setLocationRelativeTo(null);
-//
-//    final JScrollPane panel = new JScrollPane();
-//
-//    final MindMapPanel pp = new MindMapPanel();
-//    pp.addComponentListener(new ComponentAdapter() {
-//
-//      @Override
-//      public void componentResized(ComponentEvent e) {
-//        processEditorResizing(pp);
-//      }
-//
-//    });
-//
-////    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n##rrr\n##rrr\n###GGG\n####HHH\n#####JJKKLL\n## leve1.1\n> leftSide=\"true\"\n## leve1.1\n> leftSide=\"true\"\n"));
-////    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n## Some\n## Some\n## Some\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n### AAAA\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n## Some\n"));
-//    final MindMap map = new MindMap(new StringReader("some\n------\n# HelloWorld\n- LINK\n```http://www.color.com```\n- NOTE\n```Hello world note```\n## Some\n- NOTE\n```Hello world note```\n- LINK\n```http://www.color.com```\n### SSS\n- NOTE\n```hhh```\n"));
-//    pp.setModel(map);
-//
-//    pp.addMindMapListener(new MindMapListener() {
-//
-//      @Override
-//      public void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic) {
-//        moveVisibleRectToElement(panel, source, (AbstractElement) topic.getPayload());
-//      }
-//
-//      @Override
-//      public void onMindMapModelChanged(MindMapPanel source) {
-//      }
-//
-//      @Override
-//      public void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize) {
-//        panel.getViewport().revalidate();
-//      }
-//
-//      @Override
-//      public void onClickOnExtra(MindMapPanel panel, Topic topic, Extra<?> extra) {
-//      }
-//
-//      @Override
-//      public void onChangedSelection(MindMapPanel source, Topic[] currentSelectedTopics) {
-//      }
-//
-//    });
-//
-//    panel.setViewportView(pp);
-//
-//    frame.setContentPane(panel);
-//
-//    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//    frame.setVisible(true);
-//  }
   public void updateView() {
     this.updateModel();
   }
@@ -494,14 +445,53 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     return this.toolBar;
   }
 
+  private void editTextForTopic(final Topic topic) {
+    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
+    final String result;
+    if (note == null) {
+      // create new
+      result = NbUtils.editText("Add note to '" + topic.getText() + "\'", "");
+    }
+    else {
+      // edit
+      result = NbUtils.editText("Edit note for '" + topic.getText() + "\'", note.getValue());
+    }
+    if (result != null) {
+      if (result.isEmpty()) {
+        topic.removeExtra(Extra.ExtraType.NOTE);
+      }
+      else {
+        topic.setExtra(new ExtraNote(result));
+      }
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+
   @Override
   public JPopupMenu makePopUp(final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
     final JPopupMenu result = new JPopupMenu();
 
+    if (element != null) {
+      final Topic topic = element.getModel();
+
+      final JMenuItem editText = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? "Edit note" : "Add note");
+      editText.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+          editTextForTopic(topic);
+        }
+      });
+
+      result.add(editText);
+
+    }
+
     result.add(new JSeparator());
 
-    JMenuItem menuItem = new JMenuItem("Options");
-    menuItem.addActionListener(new ActionListener() {
+    JMenuItem optionsMenu = new JMenuItem("Options");
+    optionsMenu.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -509,7 +499,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
       }
     });
 
-    result.add(menuItem);
+    result.add(optionsMenu);
 
     return result;
   }
