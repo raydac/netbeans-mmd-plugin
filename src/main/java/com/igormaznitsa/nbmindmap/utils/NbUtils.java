@@ -15,12 +15,20 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.nbmindmap.nb.MMDCfgOptionsPanelController;
+import java.util.prefs.Preferences;
+import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.NbPreferences;
 
 public enum NbUtils {
 
   ;
+       
+  public static Preferences getPreferences(){
+    return NbPreferences.forModule(MMDCfgOptionsPanelController.class);
+  } 
         
   public static void msgError(final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.ERROR_MESSAGE));
@@ -46,6 +54,11 @@ public enum NbUtils {
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
+  public static boolean msgComponentOkCancel(final String title, final JComponent component){
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(component, title, NotifyDescriptor.OK_CANCEL_OPTION);
+    return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
+  }
+  
   public static String editText(final String title, final String text) {
     final PlainTextEditor textEditor = new PlainTextEditor(text);
     

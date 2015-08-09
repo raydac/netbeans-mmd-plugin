@@ -19,6 +19,7 @@ import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapListener;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
 import com.igormaznitsa.nbmindmap.mmgui.AbstractElement;
+import com.igormaznitsa.nbmindmap.mmgui.ElementPart;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.ExtraFile;
 import com.igormaznitsa.nbmindmap.model.MindMap;
@@ -36,6 +37,8 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -43,10 +46,15 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import org.netbeans.api.actions.Openable;
+import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.Project;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
@@ -65,14 +73,15 @@ import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
         mimeType = MMDDataObject.MIME,
         persistenceType = PERSISTENCE_NEVER,
         iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
-        preferredID = MMDGraphEditor.ID, 
+        preferredID = MMDGraphEditor.ID,
         position = 100
 )
-public final class MMDGraphEditor extends CloneableEditor implements MultiViewElement, MindMapListener, DropTargetListener {
+public final class MMDGraphEditor extends CloneableEditor implements MultiViewElement, MindMapListener, DropTargetListener, MindMapPanel.PopUpProvider {
+
   private static final long serialVersionUID = -8776707243607267446L;
 
   public static final String ID = "mmd-graph-editor";
-  
+
   private MultiViewElementCallback callback;
   private final MMDEditorSupport editorSupport;
 
@@ -85,14 +94,15 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
-    
+
     this.toolBar = makeToolBar();
-    
+
     this.editorSupport = support;
 
     this.mainScrollPane = new JScrollPane();
     this.mindMapPanel = new MindMapPanel();
     this.mindMapPanel.addMindMapListener(this);
+    this.mindMapPanel.setPopUpProvider(this);
 
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
@@ -110,10 +120,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     updateName();
   }
 
-  private JToolBar makeToolBar(){
+  private JToolBar makeToolBar() {
     return new JToolBar();
   }
-  
+
   @Override
   public JComponent getVisualRepresentation() {
     return this;
@@ -357,7 +367,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 //    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //    frame.setVisible(true);
 //  }
-
   public void updateView() {
     this.updateModel();
   }
@@ -483,6 +492,26 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   @Override
   public JComponent getToolbarRepresentation() {
     return this.toolBar;
+  }
+
+  @Override
+  public JPopupMenu makePopUp(final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
+    final JPopupMenu result = new JPopupMenu();
+
+    result.add(new JSeparator());
+
+    JMenuItem menuItem = new JMenuItem("Options");
+    menuItem.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        OptionsDisplayer.getDefault().open("mmd-config-main");
+      }
+    });
+
+    result.add(menuItem);
+
+    return result;
   }
 
 }

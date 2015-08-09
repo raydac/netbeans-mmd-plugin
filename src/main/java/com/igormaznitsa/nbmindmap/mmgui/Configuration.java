@@ -18,17 +18,20 @@ package com.igormaznitsa.nbmindmap.mmgui;
 import java.awt.Color;
 import java.awt.Font;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Configuration {
+public final class Configuration {
+
   public interface ConfigurationListener {
+
     void onConfigurationPropertyChanged(final Configuration source);
   }
-  
+
   private final List<WeakReference<ConfigurationListener>> listeners = new ArrayList<WeakReference<ConfigurationListener>>();
-  
+
   private int collapsatorSize = 16;
   private int textMargins = 10;
   private int otherLevelVerticalInset = 16;
@@ -38,7 +41,7 @@ public class Configuration {
   private int paperMargins = 20;
   private int selectLineGap = 5;
   private int horizontalBlockGap = 5;
-  
+
   private boolean drawBackground = true;
   private Color paperColor = new Color(0x617B94);
   private Color gridColor = paperColor.darker();
@@ -66,81 +69,124 @@ public class Configuration {
   private float scale = 1.0f;
   private boolean dropShadow = true;
 
-  private final MindMapPanel panel;
+  private transient volatile boolean notificationEnabled = true;
 
-  public void addConfigurationListener(final ConfigurationListener l){
+  public Configuration(final Configuration cfg, final boolean copyListeners) {
+    this();
+    this.makeFullCopyOf(cfg, copyListeners, false);
+  }
+
+  public void makeAtomicChange(final Runnable runnable) {
+    this.notificationEnabled = false;
+    try{
+      runnable.run();
+    }finally{
+      this.notificationEnabled = true;
+      notifyCfgListenersAboutChange();
+    }
+  }
+
+  public void makeFullCopyOf(final Configuration src, final boolean copyListeners, final boolean makeNotification) {
+    for (final Field f : Configuration.class.getDeclaredFields()) {
+      if (f.getName().equals("listeners")) {
+        if (copyListeners) {
+          this.listeners.clear();
+          for (final WeakReference<ConfigurationListener> weakContainer : src.listeners) {
+            final ConfigurationListener theListener = weakContainer.get();
+            if (theListener != null) {
+              this.listeners.add(new WeakReference<ConfigurationListener>(theListener));
+            }
+          }
+        }
+      }
+      else {
+        try {
+          f.set(this, f.get(src));
+        }
+        catch (Exception ex) {
+          throw new Error("Unexpected state during cloning");
+        }
+      }
+    }
+    if (makeNotification) {
+      this.notifyCfgListenersAboutChange();
+    }
+  }
+
+  public void addConfigurationListener(final ConfigurationListener l) {
     this.listeners.add(new WeakReference<ConfigurationListener>(l));
   }
-  
-  public void removeConfigurationListener(final ConfigurationListener l){
+
+  public void removeConfigurationListener(final ConfigurationListener l) {
     final Iterator<WeakReference<ConfigurationListener>> iter = this.listeners.iterator();
-    while(iter.hasNext()){
+    while (iter.hasNext()) {
       final WeakReference<ConfigurationListener> wr = iter.next();
       final ConfigurationListener c = wr.get();
-      if (c == null || c == l) iter.remove();
+      if (c == null || c == l) {
+        iter.remove();
+      }
     }
   }
-  
-  private void notifyCfgListenersAboutChange(){
-    for(final WeakReference<ConfigurationListener> l : this.listeners){
-      final ConfigurationListener c = l.get();
-      if (c != null) c.onConfigurationPropertyChanged(this);
+
+  private void notifyCfgListenersAboutChange() {
+    if (this.notificationEnabled) {
+      for (final WeakReference<ConfigurationListener> l : this.listeners) {
+        final ConfigurationListener c = l.get();
+        if (c != null) {
+          c.onConfigurationPropertyChanged(this);
+        }
+      }
     }
   }
-  
-  public Configuration(final MindMapPanel panel){
-    this.panel = panel;
+
+  public Configuration() {
   }
-  
-  public int getHorizontalBlockGap(){
+
+  public int getHorizontalBlockGap() {
     return this.horizontalBlockGap;
   }
-  
-  public void setHorizontalBlockGap(final int gap){
+
+  public void setHorizontalBlockGap(final int gap) {
     this.horizontalBlockGap = gap;
     notifyCfgListenersAboutChange();
   }
-  
-  public MindMapPanel getPanel(){
-    return this.panel;
-  }
 
-  public float getSelectLineWidth(){
+  public float getSelectLineWidth() {
     return this.selectLineWidth;
   }
-  
-  public void setSelectLineWidth(final float f){
+
+  public void setSelectLineWidth(final float f) {
     this.selectLineWidth = f;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getSelectLineColor(){
+
+  public Color getSelectLineColor() {
     return this.selectLineColor;
   }
-  
-  public void setSelectLineColor(final Color color){
+
+  public void setSelectLineColor(final Color color) {
     this.selectLineColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public void setPaperMargins(final int size){
+
+  public void setPaperMargins(final int size) {
     this.paperMargins = size;
     notifyCfgListenersAboutChange();
   }
-  
-  public int getPaperMargins(){
+
+  public int getPaperMargins() {
     return this.paperMargins;
   }
-  
-  public boolean isDrawBackground(){
+
+  public boolean isDrawBackground() {
     return this.drawBackground;
   }
 
-  public void setDrawBackground(final boolean flag){
+  public void setDrawBackground(final boolean flag) {
     this.drawBackground = flag;
     notifyCfgListenersAboutChange();
   }
-  
+
   public void setOtherLevelVerticalInset(final int value) {
     this.otherLevelVerticalInset = value;
     notifyCfgListenersAboutChange();
@@ -149,16 +195,16 @@ public class Configuration {
   public int getOtherLevelVerticalInset() {
     return this.otherLevelVerticalInset;
   }
-  
+
   public void setOtherLevelHorizontalInset(final int value) {
     this.otherLevelHorizontalInset = value;
     notifyCfgListenersAboutChange();
   }
-  
-  public int getOtherLevelHorizontalInset(){
+
+  public int getOtherLevelHorizontalInset() {
     return this.otherLevelHorizontalInset;
   }
-  
+
   public void setFirstLevelVerticalInset(final int value) {
     this.firstLevelVerticalInset = value;
     notifyCfgListenersAboutChange();
@@ -167,219 +213,219 @@ public class Configuration {
   public int getFirstLevelVerticalInset() {
     return this.firstLevelVerticalInset;
   }
-  
+
   public void setFirstLevelHorizontalInset(final int value) {
     this.firstLevelHorizontalInset = value;
     notifyCfgListenersAboutChange();
   }
-  
-  public int getFirstLevelHorizontalInset(){
+
+  public int getFirstLevelHorizontalInset() {
     return this.firstLevelHorizontalInset;
   }
-  
-  public Color getPaperColor(){
+
+  public Color getPaperColor() {
     return this.paperColor;
   }
-  
-  public void setPaperColor(final Color color){
+
+  public void setPaperColor(final Color color) {
     this.paperColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public void setGridColor(final Color color){
+
+  public void setGridColor(final Color color) {
     this.gridColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getGridColor(){
+
+  public Color getGridColor() {
     return this.gridColor;
   }
-  
-  public void setShowGrid(final boolean flag){
+
+  public void setShowGrid(final boolean flag) {
     this.showGrid = flag;
     notifyCfgListenersAboutChange();
   }
-  
-  public boolean isShowGrid(){
+
+  public boolean isShowGrid() {
     return this.showGrid;
   }
-  
-  public void setGridStep(final int step){
+
+  public void setGridStep(final int step) {
     this.gridStep = step;
     notifyCfgListenersAboutChange();
   }
-  
-  public int getGridStep(){
+
+  public int getGridStep() {
     return this.gridStep;
   }
-  
-  public void setRootBackgroundColor(final Color color){
+
+  public void setRootBackgroundColor(final Color color) {
     this.rootBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getRootBackgroundColor(){
+
+  public Color getRootBackgroundColor() {
     return this.rootBackgroundColor;
   }
-  
-  public Color getFirstLevelBacgroundColor(){
+
+  public Color getFirstLevelBacgroundColor() {
     return this.firstLevelBackgroundColor;
   }
-  
-  public void setFirstLevelBackgroundColor(final Color color){
+
+  public void setFirstLevelBackgroundColor(final Color color) {
     this.firstLevelBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public void setOtherLevelBackgroundColor(final Color color){
+
+  public void setOtherLevelBackgroundColor(final Color color) {
     this.otherLevelBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getOtherLevelBackgroundColor(){
+
+  public Color getOtherLevelBackgroundColor() {
     return this.otherLevelBackgroundColor;
   }
-  
-  public Color getRootTextColor(){
+
+  public Color getRootTextColor() {
     return this.rootTextColor;
   }
-  
-  public void setRootTextColor(final Color color){
+
+  public void setRootTextColor(final Color color) {
     this.rootTextColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public void setFirstLevelTextColor(final Color color){
+
+  public void setFirstLevelTextColor(final Color color) {
     this.firstLevelTextColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getFirstLevelTextColor(){
+
+  public Color getFirstLevelTextColor() {
     return this.firstLevelTextColor;
   }
-  
-  public Color getOtherLeveltextColor(){
+
+  public Color getOtherLeveltextColor() {
     return this.otherLevelTextColor;
   }
-  
-  public void setOtherLevelTextColor(final Color color){
-    this.otherLevelTextColor =color; 
+
+  public void setOtherLevelTextColor(final Color color) {
+    this.otherLevelTextColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getElementBorderColor(){
+
+  public Color getElementBorderColor() {
     return this.elementBorderColor;
   }
-  
-  public void setElementBorderColor(final Color color){
+
+  public void setElementBorderColor(final Color color) {
     this.elementBorderColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public void setConnectorColor(final Color color){
+
+  public void setConnectorColor(final Color color) {
     this.connectorColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getConnectorColor(){
+
+  public Color getConnectorColor() {
     return this.connectorColor;
   }
-  
-  public void setShadowColor(final Color color){
+
+  public void setShadowColor(final Color color) {
     this.shadowColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getShadowColor(){
+
+  public Color getShadowColor() {
     return this.shadowColor;
   }
-  
-  public Color getCollapsatorBorderColor(){
+
+  public Color getCollapsatorBorderColor() {
     return this.collapsatorBorderColor;
   }
-  
-  public void setCollapsatorBorderColor(final Color color){
+
+  public void setCollapsatorBorderColor(final Color color) {
     this.collapsatorBorderColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getCollapsatorBackgroundColor(){
+
+  public Color getCollapsatorBackgroundColor() {
     return this.collapsatorBackgroundColor;
   }
-  
-  public void setCollapsatorBackgroundColor(final Color color){
+
+  public void setCollapsatorBackgroundColor(final Color color) {
     this.collapsatorBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public void setElementBorderWidth(final float value){
+
+  public void setElementBorderWidth(final float value) {
     this.elementBorderWidth = value;
     notifyCfgListenersAboutChange();
   }
-  
-  public float getElementBorderWidth(){
+
+  public float getElementBorderWidth() {
     return this.elementBorderWidth;
   }
-  
-  public float getCollapsatorBorderWidth(){
+
+  public float getCollapsatorBorderWidth() {
     return this.collapsatorBorderWidth;
   }
-  
-  public void setCollapsatorBorderWidth(final float width){
+
+  public void setCollapsatorBorderWidth(final float width) {
     this.collapsatorBorderWidth = width;
     notifyCfgListenersAboutChange();
   }
-  
-  public float getConnectorWidth(){
+
+  public float getConnectorWidth() {
     return this.connectorWidth;
   }
-  
-  public void setConnectorWidth(final float value){
+
+  public void setConnectorWidth(final float value) {
     this.connectorWidth = value;
     notifyCfgListenersAboutChange();
   }
-  
-  public void setFont(final Font f){
+
+  public void setFont(final Font f) {
     this.font = f;
     notifyCfgListenersAboutChange();
   }
-  
-  public Font getFont(){
+
+  public Font getFont() {
     return this.font;
   }
-  
-  public float getScale(){
+
+  public float getScale() {
     return this.scale;
   }
-  
-  public void setScale(final float value){
-    this.scale = Math.max(0.3f, Math.min(15f,value));
+
+  public void setScale(final float value) {
+    this.scale = Math.max(0.3f, Math.min(15f, value));
     notifyCfgListenersAboutChange();
   }
-  
-  public boolean isDropShadow(){
+
+  public boolean isDropShadow() {
     return this.dropShadow;
   }
-  
-  public void setDropShadow(final boolean value){
+
+  public void setDropShadow(final boolean value) {
     this.dropShadow = value;
     notifyCfgListenersAboutChange();
   }
-  
-  public int getCollapsatorSize(){
+
+  public int getCollapsatorSize() {
     return this.collapsatorSize;
   }
-  
-  public void setCollapsatorSize(final int size){
+
+  public void setCollapsatorSize(final int size) {
     this.collapsatorSize = size;
     notifyCfgListenersAboutChange();
   }
-  
-  public int getTextMargins(){
+
+  public int getTextMargins() {
     return this.textMargins;
   }
-  
-  public void setTextMargins(final int value){
+
+  public void setTextMargins(final int value) {
     this.textMargins = value;
     notifyCfgListenersAboutChange();
   }
@@ -387,10 +433,10 @@ public class Configuration {
   public int getSelectLineGap() {
     return this.selectLineGap;
   }
-  
+
   public void setSelectLineGap(final int value) {
     this.selectLineGap = value;
     notifyCfgListenersAboutChange();
   }
-  
+
 }

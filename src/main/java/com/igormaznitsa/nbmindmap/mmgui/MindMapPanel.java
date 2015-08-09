@@ -19,6 +19,7 @@ import com.igormaznitsa.nbmindmap.utils.Utils;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
@@ -40,10 +42,13 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private static final long serialVersionUID = 7474413542713752159L;
 
+  public interface PopUpProvider {
+
+    JPopupMenu makePopUp(final Point point, final AbstractElement element, final ElementPart partUnderMouse);
+  }
+
   private volatile MindMap model;
   private volatile String errorText;
-
-  private transient final Configuration config;
 
   private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
 
@@ -62,10 +67,41 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private transient Point draggedElementPoint = null;
   private transient AbstractElement destinationElement = null;
 
+  private static final Configuration COMMON_CONFIG = new Configuration();
+
+  private final Configuration config;
+  private PopUpProvider popupProvider;
+
+  static {
+    loadCommonConfig();
+  }
+
+  public static synchronized void loadCommonConfig() {
+    COMMON_CONFIG.makeAtomicChange(new Runnable() {
+      @Override
+      public void run() {
+        COMMON_CONFIG.setShowGrid(NbUtils.getPreferences().getBoolean("showGrid", COMMON_CONFIG.isShowGrid()));
+        COMMON_CONFIG.setDropShadow(NbUtils.getPreferences().getBoolean("dropShadow", COMMON_CONFIG.isDropShadow()));
+        COMMON_CONFIG.setPaperColor(new Color(NbUtils.getPreferences().getInt("paperColor", COMMON_CONFIG.getPaperColor().getRGB())));
+        COMMON_CONFIG.setGridColor(new Color(NbUtils.getPreferences().getInt("gridColor", COMMON_CONFIG.getGridColor().getRGB())));
+      }
+    });
+  }
+
+  public void setPopUpProvider(final PopUpProvider provider) {
+    this.popupProvider = provider;
+  }
+
+  public PopUpProvider getPopUpProvider() {
+    return this.popupProvider;
+  }
+
   public MindMapPanel() {
     super(null);
-    this.config = new Configuration(this);
-    this.config.addConfigurationListener(this);
+
+    this.config = new Configuration(COMMON_CONFIG, false);
+
+    COMMON_CONFIG.addConfigurationListener(this);
 
     this.textEditor.setMargin(new Insets(5, 5, 5, 5));
     this.textEditor.setTabSize(4);
@@ -191,14 +227,25 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       @Override
       public void mousePressed(final MouseEvent e) {
-        endEdit(false);
-        mouseDragSelection = null;
-        MindMap theMap = model;
-        AbstractElement element = null;
-        if (theMap != null) {
-          element = findTopicUnderPoint(e.getPoint());
-          if (element == null) {
-            mouseDragSelection = new MouseSelectedArea(e.getPoint());
+        if (e.isPopupTrigger()) {
+          e.consume();
+          MindMap theMap = model;
+          AbstractElement element = null;
+          if (theMap != null) {
+            element = findTopicUnderPoint(e.getPoint());
+          }
+          processPopUp(e.getPoint(), element);
+        }
+        else {
+          endEdit(false);
+          mouseDragSelection = null;
+          MindMap theMap = model;
+          AbstractElement element = null;
+          if (theMap != null) {
+            element = findTopicUnderPoint(e.getPoint());
+            if (element == null) {
+              mouseDragSelection = new MouseSelectedArea(e.getPoint());
+            }
           }
         }
       }
@@ -235,6 +282,15 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
                 select(m, false);
               }
             }
+          }
+          else if (e.isPopupTrigger()) {
+            e.consume();
+            MindMap theMap = model;
+            AbstractElement element = null;
+            if (theMap != null) {
+              element = findTopicUnderPoint(e.getPoint());
+            }
+            processPopUp(e.getPoint(), element);
           }
         }
         finally {
@@ -294,42 +350,37 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           element = findTopicUnderPoint(e.getPoint());
         }
 
-        if (e.isPopupTrigger()) {
-          processPopUp(e.getPoint(), element);
+        final ElementPart part = element == null ? ElementPart.NONE : element.findPartForPoint(e.getPoint());
+        if (part == ElementPart.COLLAPSATOR) {
+          removeAllSelection();
+          ((AbstractCollapsableElement) element).setCollapse(!element.isCollapsed());
+          invalidate();
+          fireNotificationMindMapChanged();
+          repaint();
+        }
+        else if (part != ElementPart.ICONS && e.getClickCount() > 1) {
+          startEdit(element);
+        }
+        else if (part == ElementPart.ICONS) {
+          final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+          if (extra != null) {
+            fireNotificationClickOnExtra(element.getModel(), extra);
+          }
         }
         else {
-          final ElementPart part = element == null ? ElementPart.NONE : element.findPartForPoint(e.getPoint());
-          if (part == ElementPart.COLLAPSATOR) {
-            removeAllSelection();
-            ((AbstractCollapsableElement) element).setCollapse(!element.isCollapsed());
-            invalidate();
-            fireNotificationMindMapChanged();
-            repaint();
-          }
-          else if (part != ElementPart.ICONS && e.getClickCount() > 1) {
-            startEdit(element);
-          }
-          else if (part == ElementPart.ICONS) {
-            final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-            if (extra != null) {
-              fireNotificationClickOnExtra(element.getModel(), extra);
+          if (element != null) {
+            if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0) {
+              // only
+              removeAllSelection();
+              select(element.getModel(), false);
             }
-          }
-          else {
-            if (element != null) {
-              if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0) {
-                // only
-                removeAllSelection();
+            else {
+              // group
+              if (selectedTopics.isEmpty()) {
                 select(element.getModel(), false);
               }
               else {
-                // group
-                if (selectedTopics.isEmpty()) {
-                  select(element.getModel(), false);
-                }
-                else {
-                  select(element.getModel(), true);
-                }
+                select(element.getModel(), true);
               }
             }
           }
@@ -348,6 +399,16 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   @Override
   public void onConfigurationPropertyChanged(final Configuration source) {
+    if (source == COMMON_CONFIG) {
+      final float scale = this.config.getScale();
+      this.config.makeAtomicChange(new Runnable() {
+        @Override
+        public void run() {
+          config.makeFullCopyOf(source, false, false);
+          config.setScale(scale);
+        }
+      });
+    }
     invalidate();
     repaint();
   }
@@ -666,7 +727,15 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   }
 
   protected void processPopUp(final Point point, final AbstractElement element) {
+    final PopUpProvider provider = this.popupProvider;
+    if (provider != null) {
+      final ElementPart part = element == null ? null : element.findPartForPoint(point);
 
+      final JPopupMenu menu = provider.makePopUp(point, element, part);
+      if (menu != null) {
+        menu.show(this, point.x, point.y);
+      }
+    }
   }
 
   public void addMindMapListener(final MindMapListener l) {
