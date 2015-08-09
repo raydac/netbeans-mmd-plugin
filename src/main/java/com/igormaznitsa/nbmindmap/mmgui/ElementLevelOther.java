@@ -51,7 +51,7 @@ public class ElementLevelOther extends ElementLevelFirst {
 
     final int margin = Math.round(cfg.getScale() * cfg.getTextMargins());
 
-    g.setColor(cfg.getOtherLeveltextColor());
+    g.setColor(cfg.getOtherLevelTextColor());
     this.textBlock.paint(g);
     
     if (this.iconBlock.hasContent()) {

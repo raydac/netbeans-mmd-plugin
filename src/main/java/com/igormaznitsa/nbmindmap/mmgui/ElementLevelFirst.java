@@ -42,7 +42,7 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
       g.fill(makeShape(5.0f * cfg.getScale(), 5.0f * cfg.getScale()));
     }
 
-    g.setColor(cfg.getFirstLevelBacgroundColor());
+    g.setColor(cfg.getFirstLevelBackgroundColor());
     g.fill(shape);
 
     g.setColor(cfg.getElementBorderColor());

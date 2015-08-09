@@ -268,7 +268,7 @@ public final class Configuration {
     return this.rootBackgroundColor;
   }
 
-  public Color getFirstLevelBacgroundColor() {
+  public Color getFirstLevelBackgroundColor() {
     return this.firstLevelBackgroundColor;
   }
 
@@ -304,7 +304,7 @@ public final class Configuration {
     return this.firstLevelTextColor;
   }
 
-  public Color getOtherLeveltextColor() {
+  public Color getOtherLevelTextColor() {
     return this.otherLevelTextColor;
   }
 

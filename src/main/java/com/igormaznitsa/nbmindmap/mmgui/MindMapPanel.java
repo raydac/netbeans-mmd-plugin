@@ -84,6 +84,18 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         COMMON_CONFIG.setDropShadow(NbUtils.getPreferences().getBoolean("dropShadow", COMMON_CONFIG.isDropShadow()));
         COMMON_CONFIG.setPaperColor(new Color(NbUtils.getPreferences().getInt("paperColor", COMMON_CONFIG.getPaperColor().getRGB())));
         COMMON_CONFIG.setGridColor(new Color(NbUtils.getPreferences().getInt("gridColor", COMMON_CONFIG.getGridColor().getRGB())));
+        COMMON_CONFIG.setConnectorColor(new Color(NbUtils.getPreferences().getInt("connectorColor", COMMON_CONFIG.getConnectorColor().getRGB())));
+        COMMON_CONFIG.setGridStep(NbUtils.getPreferences().getInt("gridStep", COMMON_CONFIG.getGridStep()));
+        COMMON_CONFIG.setConnectorWidth(NbUtils.getPreferences().getFloat("connectorWidth", COMMON_CONFIG.getConnectorWidth()));
+
+        COMMON_CONFIG.setRootBackgroundColor(new Color(NbUtils.getPreferences().getInt("rootBackColor", COMMON_CONFIG.getRootBackgroundColor().getRGB())));
+        COMMON_CONFIG.setRootTextColor(new Color(NbUtils.getPreferences().getInt("rootTextColor", COMMON_CONFIG.getRootTextColor().getRGB())));
+
+        COMMON_CONFIG.setFirstLevelBackgroundColor(new Color(NbUtils.getPreferences().getInt("1stBackColor", COMMON_CONFIG.getFirstLevelBackgroundColor().getRGB())));
+        COMMON_CONFIG.setFirstLevelTextColor(new Color(NbUtils.getPreferences().getInt("1stTextColor", COMMON_CONFIG.getFirstLevelTextColor().getRGB())));
+
+        COMMON_CONFIG.setOtherLevelBackgroundColor(new Color(NbUtils.getPreferences().getInt("2stBackColor", COMMON_CONFIG.getOtherLevelBackgroundColor().getRGB())));
+        COMMON_CONFIG.setOtherLevelTextColor(new Color(NbUtils.getPreferences().getInt("2stTextColor", COMMON_CONFIG.getOtherLevelTextColor().getRGB())));
       }
     });
   }
