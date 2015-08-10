@@ -33,9 +33,9 @@ public class TopicTest {
   @Test
   public void testParse_OnlyTopicWithExtras() throws Exception {
     final MindMap mm = new MindMap();
-    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n```Some\ntext```\n- LINK\n![Hello](http://www.google.com)");
+    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n```Some\ntext```\n- LINK\n![`Hel[ugu]lo`](http://www.google.com)\n## Topic2");
     assertEquals("Topic",topic.getText());
-    assertTrue(topic.getChildren().isEmpty());
+    assertEquals(1,topic.getChildren().size());
     assertEquals(2,topic.getExtras().size());
     assertEquals("Some\ntext",(String)topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
     assertEquals(new URI("http://www.google.com"),(URI)topic.getExtras().get(Extra.ExtraType.LINK).getValue());
@@ -44,7 +44,7 @@ public class TopicTest {
   @Test
   public void testParse_OnlyTopicWithExtrasAndAttributes() throws Exception {
     final MindMap mm = new MindMap();
-    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n```Some\ntext```\n- LINK\n```http://www.google.com```\n> attr1=\"hello\",attr2=\"world\"");
+    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n```Some\ntext```\n- LINK\n[Ha ha](http://www.google.com)\n> attr1=\"hello\",attr2=\"world\"");
     assertEquals("Topic",topic.getText());
     assertTrue(topic.getChildren().isEmpty());
     assertEquals(2,topic.getExtras().size());

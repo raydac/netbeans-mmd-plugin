@@ -67,12 +67,9 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.CloneableEditor;
-import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
-import org.openide.util.NbPreferences;
 import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
-import sun.awt.image.ImageWatched.Link;
 
 @MultiViewElement.Registration(
         displayName = "Graph",
