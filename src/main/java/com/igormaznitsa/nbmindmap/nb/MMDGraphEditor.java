@@ -22,6 +22,7 @@ import com.igormaznitsa.nbmindmap.mmgui.AbstractElement;
 import com.igormaznitsa.nbmindmap.mmgui.ElementPart;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.ExtraFile;
+import com.igormaznitsa.nbmindmap.model.ExtraLink;
 import com.igormaznitsa.nbmindmap.model.ExtraNote;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
@@ -32,6 +33,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -47,6 +49,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -64,9 +67,12 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.CloneableEditor;
+import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
+import org.openide.util.NbPreferences;
 import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
+import sun.awt.image.ImageWatched.Link;
 
 @MultiViewElement.Registration(
         displayName = "Graph",
@@ -204,7 +210,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public boolean allowedRemovingOfTopics(final MindMapPanel source, final Topic[] topics) {
-    return NbUtils.msgConfirmYesNo("Remove mind map topic(s)", "Do you really want to delete "+topics.length+" topic(s) from the mind map?");
+    return NbUtils.msgConfirmYesNo("Remove mind map topic(s)", "Do you really want to delete " + topics.length + " topic(s) from the mind map?");
   }
 
   @Override
@@ -269,6 +275,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
         }
         break;
         case LINK: {
+          final URI uri = ((ExtraLink) extra).getValue();
+          if (!NbUtils.browseURI(uri, NbUtils.getPreferences().getBoolean("useInsideBrowser", false))) {
+            NbUtils.msgError("Can't browse " + uri.toString());
+          }
         }
         break;
         case NOTE: {
@@ -353,49 +363,74 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   public void dragExit(DropTargetEvent dte) {
   }
 
+  private void addLinkToElement(final URI uri, final AbstractElement element) {
+    if (element != null) {
+      final Topic topic = element.getModel();
+      if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
+        if (!NbUtils.msgConfirmOkCancel("Mind Map URI link", "Replace existing URI link in the topic?")) {
+          return;
+        }
+      }
+      topic.setExtra(new ExtraLink(uri));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+
+  private void addDataObjectToElement(final DataObject dataObject, final AbstractElement element) {
+    try {
+      if (element != null) {
+        final Topic topic = element.getModel();
+
+        final FileObject fileObj = dataObject.getPrimaryFile();
+        final String relativePath = NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? getRelativePathToProjectIfPossible(fileObj) : null;
+
+        final URI uri;
+        if (relativePath != null) {
+          uri = new URI(relativePath.replace('\\', '/'));
+        }
+        else {
+          uri = fileObj.toURI();
+        }
+
+        if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
+          if (!NbUtils.msgConfirmOkCancel("Mind Map File link", "Replace existing file link in the topic?")) {
+            return;
+          }
+        }
+
+        topic.setExtra(new ExtraFile(uri));
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
+    }
+    catch (URISyntaxException ex) {
+      Logger.error("Can't make URI to the file", ex);
+    }
+  }
+
   @Override
   public void drop(final DropTargetDropEvent dtde) {
-    DataFlavor data = null;
+    DataFlavor dataObject = null;
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
-      if (DataObject.class.isAssignableFrom(df.getRepresentationClass())) {
-        data = df;
+      final Class<?> representation = df.getRepresentationClass();
+      if (DataObject.class.isAssignableFrom(representation)) {
+        dataObject = df;
         break;
       }
     }
 
-    if (data != null) {
+    if (dataObject != null) {
       try {
-        final DataObject dataObj = (DataObject) dtde.getTransferable().getTransferData(data);
-        final AbstractElement destination = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
-        if (dataObj != null && destination != null) {
-
-          final FileObject fileObj = dataObj.getPrimaryFile();
-          final String relativePath = getRelativePathToProjectIfPossible(fileObj);
-
-          final URI uri;
-          if (relativePath != null) {
-            uri = new URI(relativePath.replace('\\', '/'));
-          }
-          else {
-            uri = fileObj.toURI();
-          }
-
-          final Topic topic = destination.getModel();
-
-          if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
-            if (!NbUtils.msgConfirmOkCancel("Mind Map File link", "Replace existing file link in the topic?")) {
-              return;
-            }
-          }
-
-          destination.getModel().setExtra(new ExtraFile(uri));
-          this.mindMapPanel.invalidate();
-          this.mindMapPanel.repaint();
-          onMindMapModelChanged(this.mindMapPanel);
-        }
+        addDataObjectToElement((DataObject) dtde.getTransferable().getTransferData(dataObject), this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
       }
-      catch (Exception ex) {
-        Logger.error("Can't extract data from dragged object", ex);
+      catch (UnsupportedFlavorException ex) {
+        Logger.error("Can't get DataObject flavor", ex);
+      }
+      catch (IOException ex) {
+        Logger.error("Can't extract DataObject", ex);
       }
     }
   }
@@ -445,6 +480,30 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     return this.toolBar;
   }
 
+  private void editLinkForTopic(final Topic topic) {
+    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
+    final URI result;
+    if (link == null) {
+      // create new
+      result = NbUtils.editURI("Add URI to '" + topic.getText() + "\'", null);
+    }
+    else {
+      // edit
+      result = NbUtils.editURI("Edit URI for '" + topic.getText() + "\'", link.getValue());
+    }
+    if (result != null) {
+      if (result == NbUtils.EMPTY_URI) {
+        topic.removeExtra(Extra.ExtraType.LINK);
+      }
+      else {
+        topic.setExtra(new ExtraLink(result));
+      }
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+
   private void editTextForTopic(final Topic topic) {
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
     final String result;
@@ -486,6 +545,16 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
       result.add(editText);
 
+      final JMenuItem editLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? "Edit URI" : "Add URI");
+      editLink.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          editLinkForTopic(topic);
+        }
+      });
+
+      result.add(editLink);
     }
 
     result.add(new JSeparator());

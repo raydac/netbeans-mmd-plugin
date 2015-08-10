@@ -24,11 +24,11 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 
 public enum ScalableIcon {
-  FILE("folder_link.png"),
+  FILE("file_link.png"),
   TOPIC("brick_link.png"),
-  LINE("brick_link.png"),
-  TEXT("label_link.png"),
-  LINK("world_link.png");
+  LINE("source_link.png"),
+  TEXT("note_link.png"),
+  LINK("url_link.png");
 
   public static final int BASE_WIDTH = 16;
   public static final int BASE_HEIGHT = 16;

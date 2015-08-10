@@ -262,6 +262,11 @@
       <version>2.4</version>
     </dependency>
     <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+      <version>1.4.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-options-api</artifactId>
       <version>${nb.platform}</version>

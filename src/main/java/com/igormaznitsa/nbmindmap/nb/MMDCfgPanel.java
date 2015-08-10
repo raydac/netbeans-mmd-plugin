@@ -63,7 +63,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     colorChooser2ndBackground = new com.igormaznitsa.nbmindmap.nb.ColorChoosingButton();
     colorChooser2ndText = new com.igormaznitsa.nbmindmap.nb.ColorChoosingButton();
     jPanel1 = new javax.swing.JPanel();
-    checkboxOpenLinkINInsideBrowser = new javax.swing.JCheckBox();
+    checkboxUseInsideBrowser = new javax.swing.JCheckBox();
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.nbmindmap.nb.ColorChoosingButton();
@@ -297,7 +297,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel1.border.title"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(checkboxOpenLinkINInsideBrowser, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkboxOpenLinkINInsideBrowser.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(checkboxUseInsideBrowser, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkboxUseInsideBrowser.text")); // NOI18N
 
     org.openide.awt.Mnemonics.setLocalizedText(checkboxRelativePathsForFilesInTheProject, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text")); // NOI18N
 
@@ -308,7 +308,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(checkboxOpenLinkINInsideBrowser)
+          .addComponent(checkboxUseInsideBrowser)
           .addComponent(checkboxRelativePathsForFilesInTheProject))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
@@ -316,7 +316,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(checkboxOpenLinkINInsideBrowser)
+        .addComponent(checkboxUseInsideBrowser)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(checkboxRelativePathsForFilesInTheProject)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -516,6 +516,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.spinnerSelectLineGap.setValue(NbUtils.getPreferences().getInt("selectLineGap",etalon.getSelectLineGap()));
       this.spinnerConnectorWidth.setValue(NbUtils.getPreferences().getFloat("connectorWidth",etalon.getConnectorWidth()));
       this.spinnerSelectLineWidth.setValue(NbUtils.getPreferences().getFloat("selectLineWidth",etalon.getSelectLineWidth()));
+      
+      this.checkboxUseInsideBrowser.setSelected(NbUtils.getPreferences().getBoolean("useInsideBrowser", false));
+      this.checkboxRelativePathsForFilesInTheProject.setSelected(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true));
     }
     finally {
       changeNotificationAllowed = true;
@@ -541,6 +544,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       NbUtils.getPreferences().putInt("selectLineGap", (Integer)this.spinnerSelectLineGap.getValue());
       NbUtils.getPreferences().putFloat("connectorWidth", (Float)this.spinnerConnectorWidth.getValue());
       NbUtils.getPreferences().putFloat("selectLineWidth", (Float)this.spinnerSelectLineWidth.getValue());
+      
+      NbUtils.getPreferences().putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected());
+      NbUtils.getPreferences().putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
     }
     finally {
       MindMapPanel.loadCommonConfig();
@@ -554,8 +560,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxShowGrid;
-  private javax.swing.JCheckBox checkboxOpenLinkINInsideBrowser;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
+  private javax.swing.JCheckBox checkboxUseInsideBrowser;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooser1stBackground;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooser1stText;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooser2ndBackground;

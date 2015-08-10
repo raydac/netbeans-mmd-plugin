@@ -400,7 +400,7 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="checkboxOpenLinkINInsideBrowser" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkboxUseInsideBrowser" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="checkboxRelativePathsForFilesInTheProject" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
@@ -411,7 +411,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="checkboxOpenLinkINInsideBrowser" min="-2" max="-2" attributes="0"/>
+                  <Component id="checkboxUseInsideBrowser" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="checkboxRelativePathsForFilesInTheProject" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
@@ -420,10 +420,10 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JCheckBox" name="checkboxOpenLinkINInsideBrowser">
+        <Component class="javax.swing.JCheckBox" name="checkboxUseInsideBrowser">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.checkboxOpenLinkINInsideBrowser.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.checkboxUseInsideBrowser.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Component>
