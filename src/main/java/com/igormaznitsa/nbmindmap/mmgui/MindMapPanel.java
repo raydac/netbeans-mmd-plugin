@@ -96,6 +96,10 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
         COMMON_CONFIG.setOtherLevelBackgroundColor(new Color(NbUtils.getPreferences().getInt("2stBackColor", COMMON_CONFIG.getOtherLevelBackgroundColor().getRGB())));
         COMMON_CONFIG.setOtherLevelTextColor(new Color(NbUtils.getPreferences().getInt("2stTextColor", COMMON_CONFIG.getOtherLevelTextColor().getRGB())));
+        
+        COMMON_CONFIG.setSelectLineColor(new Color(NbUtils.getPreferences().getInt("selectLineColor", COMMON_CONFIG.getSelectLineColor().getRGB())));
+        COMMON_CONFIG.setSelectLineWidth(NbUtils.getPreferences().getFloat("selectLineWidth", COMMON_CONFIG.getSelectLineWidth()));
+        COMMON_CONFIG.setSelectLineGap(NbUtils.getPreferences().getInt("selectLineGap", COMMON_CONFIG.getSelectLineGap()));
       }
     });
   }

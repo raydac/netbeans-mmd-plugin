@@ -62,6 +62,15 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     colorChooser1stText = new com.igormaznitsa.nbmindmap.nb.ColorChoosingButton();
     colorChooser2ndBackground = new com.igormaznitsa.nbmindmap.nb.ColorChoosingButton();
     colorChooser2ndText = new com.igormaznitsa.nbmindmap.nb.ColorChoosingButton();
+    jPanel1 = new javax.swing.JPanel();
+    checkboxOpenLinkINInsideBrowser = new javax.swing.JCheckBox();
+    checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
+    jPanel5 = new javax.swing.JPanel();
+    colorChooserSelectLine = new com.igormaznitsa.nbmindmap.nb.ColorChoosingButton();
+    jLabel3 = new javax.swing.JLabel();
+    spinnerSelectLineWidth = new javax.swing.JSpinner();
+    jLabel4 = new javax.swing.JLabel();
+    spinnerSelectLineGap = new javax.swing.JSpinner();
 
     jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel3.border.title"))); // NOI18N
 
@@ -94,7 +103,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(spinnerConnectorWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(colorChooserConnectorColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(86, Short.MAX_VALUE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel3Layout.setVerticalGroup(
       jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -286,17 +295,99 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
+    jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel1.border.title"))); // NOI18N
+
+    org.openide.awt.Mnemonics.setLocalizedText(checkboxOpenLinkINInsideBrowser, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkboxOpenLinkINInsideBrowser.text")); // NOI18N
+
+    org.openide.awt.Mnemonics.setLocalizedText(checkboxRelativePathsForFilesInTheProject, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text")); // NOI18N
+
+    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+    jPanel1.setLayout(jPanel1Layout);
+    jPanel1Layout.setHorizontalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(checkboxOpenLinkINInsideBrowser)
+          .addComponent(checkboxRelativePathsForFilesInTheProject))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+    jPanel1Layout.setVerticalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(checkboxOpenLinkINInsideBrowser)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkboxRelativePathsForFilesInTheProject)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
+    jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel5.border.title"))); // NOI18N
+
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserSelectLine, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserSelectLine.text")); // NOI18N
+    colorChooserSelectLine.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    colorChooserSelectLine.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        colorChooserSelectLineActionPerformed(evt);
+      }
+    });
+
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jLabel3.text")); // NOI18N
+
+    spinnerSelectLineWidth.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.02f), Float.valueOf(100.0f), Float.valueOf(0.1f)));
+
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jLabel4.text")); // NOI18N
+
+    spinnerSelectLineGap.setModel(new javax.swing.SpinnerNumberModel(1, 1, 500, 1));
+
+    javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+    jPanel5.setLayout(jPanel5Layout);
+    jPanel5Layout.setHorizontalGroup(
+      jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel5Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(colorChooserSelectLine, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addGroup(jPanel5Layout.createSequentialGroup()
+            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(jLabel3)
+              .addComponent(jLabel4))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+              .addComponent(spinnerSelectLineGap)
+              .addComponent(spinnerSelectLineWidth, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE))))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+    jPanel5Layout.setVerticalGroup(
+      jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel5Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(colorChooserSelectLine, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel3)
+          .addComponent(spinnerSelectLineWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel4)
+          .addComponent(spinnerSelectLineGap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap())
+    );
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+          .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
@@ -309,6 +400,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
             .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
@@ -391,6 +486,12 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_colorChooser2ndTextActionPerformed
 
+  private void colorChooserSelectLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserSelectLineActionPerformed
+    if (this.colorChooserSelectLine.isLastOkPressed() && changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_colorChooserSelectLineActionPerformed
+
   void load() {
     changeNotificationAllowed = false;
     try {
@@ -408,9 +509,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
       this.colorChooser2ndBackground.setValue(new Color(NbUtils.getPreferences().getInt("2stBackColor", etalon.getOtherLevelBackgroundColor().getRGB())));
       this.colorChooser2ndText.setValue(new Color(NbUtils.getPreferences().getInt("2stTextColor", etalon.getOtherLevelTextColor().getRGB())));
+      
+      this.colorChooserSelectLine.setValue(new Color(NbUtils.getPreferences().getInt("selectLineColor", etalon.getSelectLineColor().getRGB())));
 
       this.spinnerGridStep.setValue(NbUtils.getPreferences().getInt("gridStep",etalon.getGridStep()));
+      this.spinnerSelectLineGap.setValue(NbUtils.getPreferences().getInt("selectLineGap",etalon.getSelectLineGap()));
       this.spinnerConnectorWidth.setValue(NbUtils.getPreferences().getFloat("connectorWidth",etalon.getConnectorWidth()));
+      this.spinnerSelectLineWidth.setValue(NbUtils.getPreferences().getFloat("selectLineWidth",etalon.getSelectLineWidth()));
     }
     finally {
       changeNotificationAllowed = true;
@@ -430,9 +535,12 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       NbUtils.getPreferences().putInt("1stTextColor", this.colorChooser1stText.getValue().getRGB());
       NbUtils.getPreferences().putInt("2stBackColor", this.colorChooser2ndBackground.getValue().getRGB());
       NbUtils.getPreferences().putInt("2stTextColor", this.colorChooser2ndText.getValue().getRGB());
+      NbUtils.getPreferences().putInt("selectLineColor", this.colorChooserSelectLine.getValue().getRGB());
       
       NbUtils.getPreferences().putInt("gridStep", (Integer)this.spinnerGridStep.getValue());
+      NbUtils.getPreferences().putInt("selectLineGap", (Integer)this.spinnerSelectLineGap.getValue());
       NbUtils.getPreferences().putFloat("connectorWidth", (Float)this.spinnerConnectorWidth.getValue());
+      NbUtils.getPreferences().putFloat("selectLineWidth", (Float)this.spinnerSelectLineWidth.getValue());
     }
     finally {
       MindMapPanel.loadCommonConfig();
@@ -446,6 +554,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxShowGrid;
+  private javax.swing.JCheckBox checkboxOpenLinkINInsideBrowser;
+  private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooser1stBackground;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooser1stText;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooser2ndBackground;
@@ -455,12 +565,19 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooserPaperColor;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooserRootBackground;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooserRootText;
+  private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooserSelectLine;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
+  private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
+  private javax.swing.JPanel jPanel5;
   private javax.swing.JSpinner spinnerConnectorWidth;
   private javax.swing.JSpinner spinnerGridStep;
+  private javax.swing.JSpinner spinnerSelectLineGap;
+  private javax.swing.JSpinner spinnerSelectLineWidth;
   // End of variables declaration//GEN-END:variables
 }
