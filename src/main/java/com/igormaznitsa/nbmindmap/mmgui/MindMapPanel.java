@@ -100,6 +100,17 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         COMMON_CONFIG.setSelectLineColor(new Color(NbUtils.getPreferences().getInt("selectLineColor", COMMON_CONFIG.getSelectLineColor().getRGB())));
         COMMON_CONFIG.setSelectLineWidth(NbUtils.getPreferences().getFloat("selectLineWidth", COMMON_CONFIG.getSelectLineWidth()));
         COMMON_CONFIG.setSelectLineGap(NbUtils.getPreferences().getInt("selectLineGap", COMMON_CONFIG.getSelectLineGap()));
+        
+        COMMON_CONFIG.setCollapsatorBackgroundColor(new Color(NbUtils.getPreferences().getInt("collapsatorBackColor", COMMON_CONFIG.getCollapsatorBackgroundColor().getRGB())));
+        COMMON_CONFIG.setCollapsatorBorderColor(new Color(NbUtils.getPreferences().getInt("collapsatorBorderColor", COMMON_CONFIG.getCollapsatorBorderColor().getRGB())));
+        COMMON_CONFIG.setCollapsatorSize(NbUtils.getPreferences().getInt("collapsatorSize", COMMON_CONFIG.getCollapsatorSize()));
+        COMMON_CONFIG.setCollapsatorBorderWidth(NbUtils.getPreferences().getFloat("collapsatorBorderWidth", COMMON_CONFIG.getCollapsatorBorderWidth()));
+        
+        COMMON_CONFIG.setFirstLevelHorizontalInset(NbUtils.getPreferences().getInt("firstLevelHInset", COMMON_CONFIG.getFirstLevelHorizontalInset()));
+        COMMON_CONFIG.setFirstLevelVerticalInset(NbUtils.getPreferences().getInt("firstLevelVInset", COMMON_CONFIG.getFirstLevelVerticalInset()));
+
+        COMMON_CONFIG.setOtherLevelHorizontalInset(NbUtils.getPreferences().getInt("otherLevelHInset", COMMON_CONFIG.getOtherLevelHorizontalInset()));
+        COMMON_CONFIG.setOtherLevelVerticalInset(NbUtils.getPreferences().getInt("otherLevelVInset", COMMON_CONFIG.getOtherLevelVerticalInset()));
       }
     });
   }

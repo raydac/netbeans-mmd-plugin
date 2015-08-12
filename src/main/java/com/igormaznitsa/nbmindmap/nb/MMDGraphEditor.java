@@ -30,6 +30,7 @@ import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.MenuItem;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -50,6 +51,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -77,7 +79,7 @@ import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
         persistenceType = PERSISTENCE_NEVER,
         iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
         preferredID = MMDGraphEditor.ID,
-        position = 100
+        position = 1
 )
 public final class MMDGraphEditor extends CloneableEditor implements MultiViewElement, MindMapListener, DropTargetListener, MindMapPanel.PopUpProvider {
 
@@ -93,12 +95,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   private boolean dragAcceptableType = false;
 
-  private final JToolBar toolBar;
+  private final JToolBar toolBar = new JToolBar();
 
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
-
-    this.toolBar = makeToolBar();
 
     this.editorSupport = support;
 
@@ -121,10 +121,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
       }
     });
     updateName();
-  }
-
-  private JToolBar makeToolBar() {
-    return new JToolBar();
   }
 
   @Override
