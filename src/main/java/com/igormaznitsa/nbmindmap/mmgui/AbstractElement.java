@@ -29,7 +29,7 @@ public abstract class AbstractElement {
 
   protected final TextBlock textBlock;
   protected final IconBlock iconBlock;
-  
+
   protected final Rectangle2D bounds = new Rectangle2D.Float();
   protected final Dimension2D blockSize = new Dimension();
 
@@ -65,15 +65,16 @@ public abstract class AbstractElement {
   public void updateElementBounds(final Graphics2D gfx, final Configuration cfg) {
     this.textBlock.updateSize(gfx, cfg);
     this.iconBlock.updateSize(gfx, cfg);
-    
+
     final double width;
-    if (this.iconBlock.hasContent()){
+    if (this.iconBlock.hasContent()) {
       width = this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap() + this.iconBlock.getBounds().getWidth();
-    }else{
+    }
+    else {
       width = this.textBlock.getBounds().getWidth();
     }
-    
-    this.bounds.setRect(0d, 0d, width, Math.max(this.textBlock.getBounds().getHeight(),this.iconBlock.getBounds().getHeight()));
+
+    this.bounds.setRect(0d, 0d, width, Math.max(this.textBlock.getBounds().getHeight(), this.iconBlock.getBounds().getHeight()));
   }
 
   public void updateBlockSize(final Configuration cfg) {
@@ -119,11 +120,11 @@ public abstract class AbstractElement {
     return this.model.hasChildren();
   }
 
-  public JTextComponent fillByTextAndFont(final JTextComponent compo){
+  public JTextComponent fillByTextAndFont(final JTextComponent compo) {
     this.textBlock.fillByTextAndFont(compo);
     return compo;
   }
-  
+
   public abstract void drawComponent(Graphics2D g, Configuration cfg);
 
   public abstract void drawConnector(Graphics2D g, Rectangle2D source, Rectangle2D destination, boolean leftDirection, Configuration cfg);
@@ -138,81 +139,84 @@ public abstract class AbstractElement {
 
   public abstract boolean hasDirection();
 
-  public ElementPart findPartForPoint(final Point point){
+  public ElementPart findPartForPoint(final Point point) {
     ElementPart result = ElementPart.NONE;
-    if (this.bounds.contains(point)){
+    if (this.bounds.contains(point)) {
       final double offX = point.getX() - this.bounds.getX();
       final double offY = point.getY() - this.bounds.getY();
-      
+
       result = ElementPart.AREA;
-      if (this.textBlock.getBounds().contains(offX,offY)) {
+      if (this.textBlock.getBounds().contains(offX, offY)) {
         result = ElementPart.TEXT;
-      } else if (this.iconBlock.getBounds().contains(offX,offY)){
+      }
+      else if (this.iconBlock.getBounds().contains(offX, offY)) {
         result = ElementPart.ICONS;
       }
     }
     return result;
   }
-  
-  public Topic findTopicBeforePoint(final Configuration cfg, final Point point){
-    
+
+  public Topic findTopicBeforePoint(final Configuration cfg, final Point point) {
+
     Topic result = null;
-    if (this.hasChildren()){
-      if (this.isCollapsed()){
+    if (this.hasChildren()) {
+      if (this.isCollapsed()) {
         return this.getModel().getLast();
-      }else{
+      }
+      else {
         double py = point.getY();
         final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
         double curY = calcBlockY();
-        
+
         Topic prev = null;
-        
-        for(final Topic t : this.model.getChildren()){
+
+        for (final Topic t : this.model.getChildren()) {
           final AbstractElement el = (AbstractElement) t.getPayload();
-          
+
           final double childStartBlockY = el.calcBlockY();
-          final double childEndBlockY = childStartBlockY + el.getBlockSize().getHeight()+vertInset;
-          
-          if (py < childEndBlockY){
+          final double childEndBlockY = childStartBlockY + el.getBlockSize().getHeight() + vertInset;
+
+          if (py < childEndBlockY) {
             result = py < el.getBounds().getCenterY() ? prev : t;
             break;
-          }else{
-            if (this.model.isLastChild(t)){
+          }
+          else {
+            if (this.model.isLastChild(t)) {
               result = t;
               break;
             }
           }
-          
+
           curY = childEndBlockY;
           prev = t;
         }
       }
-    } 
+    }
     return result;
   }
-  
-  protected double calcBlockY(){
-    return this.bounds.getY() - (this.blockSize.getHeight() - this.bounds.getHeight())/2;
+
+  protected double calcBlockY() {
+    return this.bounds.getY() - (this.blockSize.getHeight() - this.bounds.getHeight()) / 2;
   }
-  
-  protected double calcBlockX(){
+
+  protected double calcBlockX() {
     return this.bounds.getX() - (this.isLeftDirection() ? this.blockSize.getWidth() - this.bounds.getWidth() : 0.0d);
   }
 
-  public AbstractElement findNearestTopic(final Point point){
+  public AbstractElement findNearestTopic(final Point point) {
     return findNearestTopic(calcDistanceToPoint(point), point);
   }
-  
-  private AbstractElement findNearestTopic(final double lessThanDistance, final Point point){
+
+  private AbstractElement findNearestTopic(final double lessThanDistance, final Point point) {
     double curDistance = calcDistanceToPoint(point);
     AbstractElement result = curDistance <= lessThanDistance ? this : null;
-    for(final Topic t : this.model.getChildren()){
-      final AbstractElement element = t.getPayload() == null ? null : (AbstractElement)t.getPayload();
-      if (element!=null){
-        final AbstractElement nearestChild = element.findNearestTopic(curDistance , point);
-        if (nearestChild!=null){
+    for (final Topic t : this.model.getChildren()) {
+      final AbstractElement element = t.getPayload() == null ? null : (AbstractElement) t.getPayload();
+      if (element != null) {
+        final AbstractElement nearestChild = element.findNearestTopic(curDistance, point);
+        if (nearestChild != null) {
           final double dist = nearestChild.calcDistanceToPoint(point);
-          if (dist < curDistance){
+          if (dist < curDistance) {
             curDistance = dist;
             result = nearestChild;
           }
@@ -221,25 +225,28 @@ public abstract class AbstractElement {
     }
     return result;
   }
-  
+
   public double calcDistanceToPoint(final Point point) {
-    return Math.sqrt(Math.pow(this.bounds.getCenterX()-point.getX(),2.0d)+Math.pow(this.bounds.getCenterY() - point.getY(), 2.0d));
+    return Math.sqrt(Math.pow(this.bounds.getCenterX() - point.getX(), 2.0d) + Math.pow(this.bounds.getCenterY() - point.getY(), 2.0d));
   }
-  
-  public AbstractElement findTopicBlockForPoint(final Point point){
+
+  public AbstractElement findTopicBlockForPoint(final Point point) {
     AbstractElement result = null;
-    if (point != null){
+    if (point != null) {
       final double px = point.getX();
       final double py = point.getY();
-      
-      if (px>=calcBlockX() && py>=calcBlockY() && px<this.bounds.getX()+this.blockSize.getWidth() && py<this.bounds.getY()+this.blockSize.getHeight()){
-        if (this.isCollapsed()){
+
+      if (px >= calcBlockX() && py >= calcBlockY() && px < this.bounds.getX() + this.blockSize.getWidth() && py < this.bounds.getY() + this.blockSize.getHeight()) {
+        if (this.isCollapsed()) {
           result = this;
-        }else{
+        }
+        else {
           AbstractElement foundChild = null;
-          for(final Topic t : this.model.getChildren()){
-            foundChild = t.getPayload() == null ? null : ((AbstractElement)t.getPayload()).findTopicBlockForPoint(point);
-            if (foundChild != null) break;
+          for (final Topic t : this.model.getChildren()) {
+            foundChild = t.getPayload() == null ? null : ((AbstractElement) t.getPayload()).findTopicBlockForPoint(point);
+            if (foundChild != null) {
+              break;
+            }
           }
           result = foundChild == null ? this : foundChild;
         }
@@ -247,7 +254,7 @@ public abstract class AbstractElement {
     }
     return result;
   }
-  
+
   public AbstractElement findForPoint(final Point point) {
     AbstractElement result = null;
     if (point != null) {
@@ -278,4 +285,37 @@ public abstract class AbstractElement {
   public IconBlock getIconBlock() {
     return this.iconBlock;
   }
+
+  public boolean collapseOrExpandAllChildren(final boolean collapse) {
+    boolean result = false;
+
+    if (this instanceof AbstractCollapsableElement) {
+      final AbstractCollapsableElement el = (AbstractCollapsableElement) this;
+
+      if (collapse) {
+        if (!el.isCollapsed()) {
+          el.setCollapse(true);
+          result = true;
+        }
+      }
+      else {
+        if (el.isCollapsed()) {
+          el.setCollapse(false);
+          result = true;
+        }
+      }
+    }
+
+    if (this.hasChildren()) {
+      for (final Topic t : this.model.getChildren()) {
+        final AbstractElement e = (AbstractElement) t.getPayload();
+        if (e != null) {
+          result |= e.collapseOrExpandAllChildren(collapse);
+        }
+      }
+    }
+
+    return result;
+  }
+
 }

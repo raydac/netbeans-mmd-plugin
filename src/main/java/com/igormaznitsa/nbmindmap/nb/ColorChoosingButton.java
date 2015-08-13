@@ -20,61 +20,67 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import javax.swing.DefaultButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 
 public class ColorChoosingButton extends JButton {
+
   private static final long serialVersionUID = -354752410805059103L;
   private Color value = null;
-  
-  private boolean lastResultOk;
-  
-  public ColorChoosingButton(){
+
+  private volatile boolean lastResultOk;
+
+  public ColorChoosingButton() {
     super();
-  
-    addActionListener(new ActionListener() {
+
+    this.setModel(new DefaultButtonModel() {
+      private static final long serialVersionUID = 3109256773218160485L;
+
       @Override
-      public void actionPerformed(final ActionEvent e) {
+      protected void fireActionPerformed(ActionEvent e) {
         final JColorChooser colorChooser = new JColorChooser(value);
-        if (NbUtils.msgComponentOkCancel("Color for '"+getText()+'\'', colorChooser)){
+        if (NbUtils.msgComponentOkCancel("Color for '" + getText() + '\'', colorChooser)) {
           setValue(colorChooser.getColor());
           lastResultOk = true;
-        }else{
+        }
+        else {
           lastResultOk = false;
         }
+        super.fireActionPerformed(e);
       }
     });
-    
+
     setValue(Color.BLACK);
   }
-  
-  public boolean isLastOkPressed(){
+
+  public boolean isLastOkPressed() {
     return this.lastResultOk;
   }
-  
-  private static ImageIcon makeColorIconForColor(final Color color){
-    final Image img = new BufferedImage(16,16,BufferedImage.TYPE_INT_RGB);
+
+  private static ImageIcon makeColorIconForColor(final Color color) {
+    final Image img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
     final Graphics gfx = img.getGraphics();
-    try{
+    try {
       gfx.setColor(color);
       gfx.fillRect(0, 0, 16, 16);
       gfx.setColor(Color.BLACK);
       gfx.drawRect(0, 0, 16, 16);
-    }finally{
+    }
+    finally {
       gfx.dispose();
     }
     return new ImageIcon(img);
   }
-  
-  public void setValue(final Color color){
+
+  public void setValue(final Color color) {
     this.value = color;
     this.setIcon(makeColorIconForColor(this.value));
   }
-  
-  public Color getValue(){
+
+  public Color getValue() {
     return this.value;
   }
 }

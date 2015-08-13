@@ -26,11 +26,11 @@ import com.igormaznitsa.nbmindmap.model.ExtraLink;
 import com.igormaznitsa.nbmindmap.model.ExtraNote;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
+import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.MenuItem;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -51,7 +51,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -526,9 +525,55 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     final JPopupMenu result = new JPopupMenu();
 
     if (element != null) {
+      final JMenuItem editText = new JMenuItem("Edit text", Icons.EDITTEXT.getIcon());
+      editText.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          mindMapPanel.startEdit(element);
+        }
+      });
+
+      result.add(editText);
+
+      final JMenuItem addChild = new JMenuItem("Add child", Icons.ADD.getIcon());
+      addChild.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          mindMapPanel.makeNewChildAndStartEdit(element.getModel(), null);
+        }
+      });
+
+      result.add(addChild);
+    }
+
+    if (element != null || this.mindMapPanel.hasSelectedTopics()) {
+      final JMenuItem deleteItem = new JMenuItem("Remove " + (this.mindMapPanel.hasSelectedTopics() ? " selected topics" : " topic"), Icons.DELETE.getIcon());
+      deleteItem.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          if (mindMapPanel.hasSelectedTopics()) {
+            mindMapPanel.deleteSelectedTopics();
+          }
+          else {
+            mindMapPanel.deleteTopics(element.getModel());
+          }
+        }
+      });
+
+      result.add(deleteItem);
+    }
+
+    if (result.getComponentCount() > 0) {
+      result.add(new JSeparator());
+    }
+
+    if (element != null) {
       final Topic topic = element.getModel();
 
-      final JMenuItem editText = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? "Edit note" : "Add note");
+      final JMenuItem editText = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? "Edit note" : "Add note", Icons.NOTE.getIcon());
       editText.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(final ActionEvent e) {
@@ -538,7 +583,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
       result.add(editText);
 
-      final JMenuItem editLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? "Edit URI" : "Add URI");
+      final JMenuItem editLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? "Edit URI" : "Add URI", Icons.URL.getIcon());
       editLink.addActionListener(new ActionListener() {
 
         @Override
@@ -550,9 +595,38 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
       result.add(editLink);
     }
 
-    result.add(new JSeparator());
+    if (result.getComponentCount() > 0) {
+      result.add(new JSeparator());
+    }
 
-    JMenuItem optionsMenu = new JMenuItem("Options");
+    final JMenuItem expandAll = new JMenuItem("Expand All", Icons.EXPANDALL.getIcon());
+    expandAll.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        mindMapPanel.collapseOrExpandAll(false);
+      }
+
+    });
+
+    final JMenuItem collapseAll = new JMenuItem("Collapse All", Icons.COLLAPSEALL.getIcon());
+    collapseAll.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        mindMapPanel.collapseOrExpandAll(true);
+      }
+
+    });
+
+    result.add(expandAll);
+    result.add(collapseAll);
+
+    if (result.getComponentCount() > 0) {
+      result.add(new JSeparator());
+    }
+
+    JMenuItem optionsMenu = new JMenuItem("Options", Icons.OPTIONS.getIcon());
     optionsMenu.addActionListener(new ActionListener() {
 
       @Override
@@ -562,6 +636,16 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     });
 
     result.add(optionsMenu);
+
+    JMenuItem infoMenu = new JMenuItem("About", Icons.INFO.getIcon());
+    infoMenu.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+      }
+    });
+
+    result.add(infoMenu);
 
     return result;
   }

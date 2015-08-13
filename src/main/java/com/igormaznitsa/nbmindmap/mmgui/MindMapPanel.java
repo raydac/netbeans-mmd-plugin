@@ -96,16 +96,16 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
         COMMON_CONFIG.setOtherLevelBackgroundColor(new Color(NbUtils.getPreferences().getInt("2stBackColor", COMMON_CONFIG.getOtherLevelBackgroundColor().getRGB())));
         COMMON_CONFIG.setOtherLevelTextColor(new Color(NbUtils.getPreferences().getInt("2stTextColor", COMMON_CONFIG.getOtherLevelTextColor().getRGB())));
-        
+
         COMMON_CONFIG.setSelectLineColor(new Color(NbUtils.getPreferences().getInt("selectLineColor", COMMON_CONFIG.getSelectLineColor().getRGB())));
         COMMON_CONFIG.setSelectLineWidth(NbUtils.getPreferences().getFloat("selectLineWidth", COMMON_CONFIG.getSelectLineWidth()));
         COMMON_CONFIG.setSelectLineGap(NbUtils.getPreferences().getInt("selectLineGap", COMMON_CONFIG.getSelectLineGap()));
-        
+
         COMMON_CONFIG.setCollapsatorBackgroundColor(new Color(NbUtils.getPreferences().getInt("collapsatorBackColor", COMMON_CONFIG.getCollapsatorBackgroundColor().getRGB())));
         COMMON_CONFIG.setCollapsatorBorderColor(new Color(NbUtils.getPreferences().getInt("collapsatorBorderColor", COMMON_CONFIG.getCollapsatorBorderColor().getRGB())));
         COMMON_CONFIG.setCollapsatorSize(NbUtils.getPreferences().getInt("collapsatorSize", COMMON_CONFIG.getCollapsatorSize()));
         COMMON_CONFIG.setCollapsatorBorderWidth(NbUtils.getPreferences().getFloat("collapsatorBorderWidth", COMMON_CONFIG.getCollapsatorBorderWidth()));
-        
+
         COMMON_CONFIG.setFirstLevelHorizontalInset(NbUtils.getPreferences().getInt("firstLevelHInset", COMMON_CONFIG.getFirstLevelHorizontalInset()));
         COMMON_CONFIG.setFirstLevelVerticalInset(NbUtils.getPreferences().getInt("firstLevelVInset", COMMON_CONFIG.getFirstLevelVerticalInset()));
 
@@ -609,7 +609,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return this.elementUnderEdit != null;
   }
 
-  private void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
+  public void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
     if (parent != null) {
       removeAllSelection();
 
@@ -668,25 +668,47 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  protected void deleteSelectedTopics() {
-    if (!this.selectedTopics.isEmpty()) {
-      final Topic[] topics = this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
-
-      boolean allowed = true;
-      for (final MindMapListener l : this.mindMapListeners) {
-        allowed &= l.allowedRemovingOfTopics(this, topics);
+  public void deleteTopics(final Topic... topics) {
+    endEdit(false);
+    removeAllSelection();
+    boolean allowed = true;
+    for (final MindMapListener l : this.mindMapListeners) {
+      allowed &= l.allowedRemovingOfTopics(this, topics);
+    }
+    if (allowed) {
+      for (final Topic t : topics) {
+        this.model.removeTopic(t);
       }
-      if (allowed) {
-        for (final Topic t : topics) {
-          this.model.removeTopic(t);
-        }
-        removeAllSelection();
+      invalidate();
+      revalidate();
+      fireNotificationMindMapChanged();
+      repaint();
+    }
+  }
+
+   public void collapseOrExpandAll(final boolean collapse) {
+    endEdit(false);
+    removeAllSelection();
+
+    if (this.model.getRoot() != null) {
+      final AbstractElement root = (AbstractElement) this.model.getRoot().getPayload();
+      if (root != null && root.collapseOrExpandAllChildren(collapse)) {
         invalidate();
         revalidate();
         fireNotificationMindMapChanged();
         repaint();
       }
     }
+  }
+
+  public void deleteSelectedTopics() {
+    if (!this.selectedTopics.isEmpty()) {
+      deleteTopics(this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
+    }
+  }
+
+  public boolean hasSelectedTopics() {
+    return !this.selectedTopics.isEmpty();
   }
 
   public boolean hasOnlyTopicSelected() {
@@ -731,7 +753,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  protected void startEdit(final AbstractElement element) {
+  public void startEdit(final AbstractElement element) {
     if (element == null) {
       this.elementUnderEdit = null;
       this.textEditorPanel.setVisible(false);
