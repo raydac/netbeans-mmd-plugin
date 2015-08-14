@@ -60,6 +60,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.Project;
@@ -324,7 +325,16 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   }
 
   public void updateView() {
-    this.updateModel();
+    if (SwingUtilities.isEventDispatchThread()){
+      this.updateModel();
+    }else{
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          updateModel();
+        }
+      });
+    }
   }
 
   @Override

@@ -17,6 +17,12 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.StyledDocument;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
@@ -31,7 +37,9 @@ import org.openide.filesystems.FileObject;
 import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
 
-public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie {
+public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, ChangeListener {
+
+  private final List<WeakReference<MMDGraphEditor>> listeners = new ArrayList<WeakReference<MMDGraphEditor>>();
 
   public static MMDEditorSupport create(final MMDDataObject obj) {
     return new MMDEditorSupport(obj);
@@ -56,9 +64,11 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
 
   @Override
   protected CloneableEditor createCloneableEditor() {
-    return new MMDGraphEditor(this);
+    final MMDGraphEditor editor = new MMDGraphEditor(this);
+    this.listeners.add(new WeakReference<MMDGraphEditor>(editor));
+    return editor;
   }
-  
+
   public String getDocumentText() {
     try {
       final StyledDocument doc = this.openDocument();
@@ -78,6 +88,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Override
   protected UndoRedo.Manager createUndoRedoManager() {
     final UndoRedo.Manager result = super.createUndoRedoManager();
+    result.addChangeListener(this);
     return result;
   }
 
@@ -145,6 +156,16 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
       Logger.error("Can't open document to replace text", ex);
     }
 
+  }
+
+  @Override
+  public void stateChanged(final ChangeEvent e) {
+    for (final WeakReference<MMDGraphEditor> g : this.listeners) {
+      final MMDGraphEditor ge = g.get();
+      if (ge != null) {
+        ge.updateView();
+      }
+    }
   }
 
   private static final class MMDDataEnv extends DataEditorSupport.Env implements SaveCookie {
