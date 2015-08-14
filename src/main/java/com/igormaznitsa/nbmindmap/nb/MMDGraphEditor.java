@@ -627,6 +627,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
     if (result.getComponentCount()>0) result.add(new JSeparator());
     final JMenu exportMenu = new JMenu("Export the map as..");
+    exportMenu.setIcon(Icons.EXPORT.getIcon());
     for(final Exporters e : Exporters.values()){
       final MindMapExporter exp = e.getExporter();
       final JMenuItem item = new JMenuItem(exp.getName());

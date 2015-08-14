@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.exporters;
 
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
+import com.igormaznitsa.nbmindmap.utils.Icons;
 import java.io.IOException;
 import javax.swing.ImageIcon;
 
@@ -42,6 +43,6 @@ public final class PNGImageExporter extends MindMapExporter {
 
   @Override
   public ImageIcon getIcon() {
-    return null;
+    return Icons.IMAGE.getIcon();
   }
 }

@@ -22,6 +22,8 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.IOUtils;
 
 public enum Icons {
+  EXPORT("export16.png"),
+  IMAGE("image16.png"),
   EXPANDALL("toggle_expand16.png"),
   COLLAPSEALL("toggle16.png"),
   EDITTEXT("text16.png"),
