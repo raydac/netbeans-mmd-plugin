@@ -69,7 +69,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private static final Configuration COMMON_CONFIG = new Configuration();
 
-  private final Configuration config;
+  protected final Configuration config;
   private PopUpProvider popupProvider;
 
   static {
@@ -115,6 +115,10 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     });
   }
 
+  public Configuration getConfiguration(){
+    return this.config;
+  }
+  
   public void setPopUpProvider(final PopUpProvider provider) {
     this.popupProvider = provider;
   }

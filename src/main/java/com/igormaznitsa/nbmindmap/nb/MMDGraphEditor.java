@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb;
 
+import com.igormaznitsa.nbmindmap.exporters.Exporters;
+import com.igormaznitsa.nbmindmap.exporters.MindMapExporter;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapListener;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
@@ -52,6 +54,7 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -622,9 +625,29 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     result.add(expandAll);
     result.add(collapseAll);
 
-    if (result.getComponentCount() > 0) {
-      result.add(new JSeparator());
+    if (result.getComponentCount()>0) result.add(new JSeparator());
+    final JMenu exportMenu = new JMenu("Export the map as..");
+    for(final Exporters e : Exporters.values()){
+      final MindMapExporter exp = e.getExporter();
+      final JMenuItem item = new JMenuItem(exp.getName());
+      item.setToolTipText(exp.getReference());
+      item.setIcon(exp.getIcon());
+      item.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+          try{
+            exp.doExport(mindMapPanel);
+          }catch(Exception ex){
+            Logger.error("Error during map export", ex);
+            NbUtils.msgError("Can't make export for unexpected error! See the log!");
+          }
+        }
+      });
+      exportMenu.add(item);
     }
+    result.add(exportMenu);
+    
+    result.add(new JSeparator());
 
     JMenuItem optionsMenu = new JMenuItem("Options", Icons.OPTIONS.getIcon());
     optionsMenu.addActionListener(new ActionListener() {
