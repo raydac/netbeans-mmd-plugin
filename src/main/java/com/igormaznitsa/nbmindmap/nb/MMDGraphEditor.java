@@ -552,7 +552,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     }
 
     if (element != null || this.mindMapPanel.hasSelectedTopics()) {
-      final JMenuItem deleteItem = new JMenuItem("Remove " + (this.mindMapPanel.hasSelectedTopics() ? " selected topics" : " topic"), Icons.DELETE.getIcon());
+      final JMenuItem deleteItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? " Remove selected topics" : " Remove the topic", Icons.DELETE.getIcon());
       deleteItem.addActionListener(new ActionListener() {
 
         @Override
