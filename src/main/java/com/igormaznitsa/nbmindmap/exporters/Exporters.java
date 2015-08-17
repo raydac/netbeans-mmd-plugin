@@ -18,13 +18,13 @@ package com.igormaznitsa.nbmindmap.exporters;
 public enum Exporters {
   PNGIMAGE(new PNGImageExporter());
 
-  private final MindMapExporter exporter;
+  private final AbstractMindMapExporter exporter;
   
-  private Exporters(final MindMapExporter exporter) {
+  private Exporters(final AbstractMindMapExporter exporter) {
     this.exporter = exporter;
   }
 
-  public MindMapExporter getExporter(){
+  public AbstractMindMapExporter getExporter(){
     return this.exporter;
   }
 }

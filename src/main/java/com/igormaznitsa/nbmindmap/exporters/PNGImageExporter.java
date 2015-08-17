@@ -15,12 +15,23 @@
  */
 package com.igormaznitsa.nbmindmap.exporters;
 
+import com.igormaznitsa.nbmindmap.mmgui.Configuration;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
 import com.igormaznitsa.nbmindmap.utils.Icons;
+import com.igormaznitsa.nbmindmap.utils.Logger;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FileUtils;
+import org.openide.filesystems.FileChooserBuilder;
 
-public final class PNGImageExporter extends MindMapExporter {
+public final class PNGImageExporter extends AbstractMindMapExporter {
 
   public PNGImageExporter() {
     super();
@@ -28,6 +39,45 @@ public final class PNGImageExporter extends MindMapExporter {
 
   @Override
   public void doExport(final MindMapPanel viewPanel) throws IOException {
+    final Configuration newConfig = new Configuration(viewPanel.getConfiguration(), false);
+    newConfig.setScale(1.0f);
+
+    final RenderedImage image = MindMapPanel.renderMindMapAsImage(viewPanel.getModel(), newConfig, true);
+
+    if (image == null) {
+      NbUtils.msgError("Can't export mind map as image, may there is not any topic!");
+      return;
+    }
+
+    final ByteArrayOutputStream buff = new ByteArrayOutputStream(128000);
+    ImageIO.write(image, "png", buff);
+
+    final byte[] imageData = buff.toByteArray();
+
+    final File home = new File(System.getProperty("user.home"));
+    final File fileToSaveImage = new FileChooserBuilder("user-dir").setTitle("Save PNG Image").setDefaultWorkingDirectory(home).setFilesOnly(true).addFileFilter(new FileFilter() {
+
+      @Override
+      public boolean accept(File f) {
+        return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".png"));
+      }
+
+      @Override
+      public String getDescription() {
+        return "PNG image (*.png)";
+      }
+    }).setApproveText("Save").showSaveDialog();
+
+    if (fileToSaveImage != null) {
+      try {
+        FileUtils.writeByteArrayToFile(fileToSaveImage, imageData);
+      }
+      catch (final IOException ex) {
+        Logger.error("Can't save PNG image as " + fileToSaveImage, ex);
+        NbUtils.msgError("Can't save PNG image for error! See the log!");
+      }
+    }
+
   }
 
   @Override

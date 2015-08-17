@@ -89,6 +89,16 @@ public abstract class AbstractElement {
     this.bounds.setFrame(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
+  public void moveWholeTreeBranchCoordinates(final double deltaX, final double deltaY){
+    moveTo(this.bounds.getX()+deltaX, this.bounds.getY()+deltaY);
+    for(final Topic t : this.model.getChildren()){
+      final AbstractElement el = (AbstractElement)t.getPayload();
+      if (el!=null){
+        el.moveWholeTreeBranchCoordinates(deltaX, deltaY);
+      }
+    }
+  }
+
   public Rectangle2D getBounds() {
     return this.bounds;
   }
@@ -133,7 +143,7 @@ public abstract class AbstractElement {
 
   public abstract boolean isCollapsed();
 
-  public abstract void alignElementAndChildren(Configuration cfg, boolean leftSide, double x, double y);
+  public abstract void alignElementAndChildren(Configuration cfg, boolean leftSide, double centerX, double centerY);
 
   public abstract Dimension2D calcBlockSize(Configuration cfg, Dimension2D size);
 

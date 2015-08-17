@@ -601,11 +601,13 @@ public final class Topic implements Serializable, Constants {
   Topic makeCopy(final MindMap newMindMap, final Topic parent) {
     this.map.lock();
     try{
-      final Topic copied = new Topic(newMindMap, parent, this.text, this.extras.values().toArray(new Extra<?>[this.extras.values().size()]));
-      for(final Topic child : this.children){
-        child.makeCopy(newMindMap, copied);
+      final Topic result = new Topic(newMindMap, parent, this.text, this.extras.values().toArray(new Extra<?>[this.extras.values().size()]));
+      for(final Topic c : this.children){
+        c.makeCopy(newMindMap, result);
       }
-      return copied;
+      result.attributes.putAll(this.attributes);
+
+      return result;
     }finally{
       this.map.unlock();
     }

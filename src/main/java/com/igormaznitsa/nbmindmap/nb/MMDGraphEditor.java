@@ -16,7 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.exporters.Exporters;
-import com.igormaznitsa.nbmindmap.exporters.MindMapExporter;
+import com.igormaznitsa.nbmindmap.exporters.AbstractMindMapExporter;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapListener;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
@@ -307,27 +307,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     panel.repaint();
   }
 
-  private static void moveVisibleRectToElement(final JScrollPane pane, final MindMapPanel mmPanel, final AbstractElement e) {
-    if (e != null) {
-      final Rectangle componentRect = e.getBounds().getBounds();
-
-      final Rectangle visibleRect = pane.getViewport().getViewRect();
-
-      final int xoffset = (visibleRect.width - componentRect.width) / 2;
-      final int yoffset = (visibleRect.height - componentRect.height) / 2;
-
-      int px = Math.max(0, componentRect.x - xoffset);
-      int py = Math.max(0, componentRect.y - yoffset);
-
-      final Dimension preferredSize = mmPanel.getPreferredSize();
-      pane.getViewport().setViewPosition(new Point(px, py));
-    }
-  }
-
   public void updateView() {
-    if (SwingUtilities.isEventDispatchThread()){
+    if (SwingUtilities.isEventDispatchThread()) {
       this.updateModel();
-    }else{
+    }
+    else {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
@@ -635,20 +619,23 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     result.add(expandAll);
     result.add(collapseAll);
 
-    if (result.getComponentCount()>0) result.add(new JSeparator());
+    if (result.getComponentCount() > 0) {
+      result.add(new JSeparator());
+    }
     final JMenu exportMenu = new JMenu("Export the map as..");
     exportMenu.setIcon(Icons.EXPORT.getIcon());
-    for(final Exporters e : Exporters.values()){
-      final MindMapExporter exp = e.getExporter();
+    for (final Exporters e : Exporters.values()) {
+      final AbstractMindMapExporter exp = e.getExporter();
       final JMenuItem item = new JMenuItem(exp.getName());
       item.setToolTipText(exp.getReference());
       item.setIcon(exp.getIcon());
       item.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(final ActionEvent e) {
-          try{
+          try {
             exp.doExport(mindMapPanel);
-          }catch(Exception ex){
+          }
+          catch (Exception ex) {
             Logger.error("Error during map export", ex);
             NbUtils.msgError("Can't make export for unexpected error! See the log!");
           }
@@ -657,7 +644,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
       exportMenu.add(item);
     }
     result.add(exportMenu);
-    
+
     result.add(new JSeparator());
 
     JMenuItem optionsMenu = new JMenuItem("Options", Icons.OPTIONS.getIcon());

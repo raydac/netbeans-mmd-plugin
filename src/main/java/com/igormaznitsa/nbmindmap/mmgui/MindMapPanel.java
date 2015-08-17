@@ -28,6 +28,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -875,11 +877,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return map == null || map.getRoot() == null ? true : map.getRoot().getPayload() != null;
   }
 
-  public void drawOnGraphicsForConfiguration(final Graphics2D g, final Configuration config, final MindMap map, final boolean drawSelection) {
+  public static void drawOnGraphicsForConfiguration(final Graphics2D g, final Configuration config, final MindMap map, final boolean drawSelection, final List<Topic> selectedTopics) {
     drawBackground(g, config);
     drawTopics(g, config, map);
-    if (drawSelection && !this.selectedTopics.isEmpty()) {
-      drawSelection(g, config, this.selectedTopics);
+    if (drawSelection && selectedTopics!=null && !selectedTopics.isEmpty()) {
+      drawSelection(g, config, selectedTopics);
     }
   }
 
@@ -914,19 +916,16 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  private void drawTopics(final Graphics2D g, final Configuration cfg, final MindMap map) {
+  private static void drawTopics(final Graphics2D g, final Configuration cfg, final MindMap map) {
     if (map != null) {
       final Topic root = map.getRoot();
       if (root != null) {
-        if (root.getPayload() == null) {
-          revalidate();
-        }
         drawTopicTree(g, root, cfg);
       }
     }
   }
 
-  private void drawTopicTree(final Graphics2D gfx, final Topic topic, final Configuration cfg) {
+  private static void drawTopicTree(final Graphics2D gfx, final Topic topic, final Configuration cfg) {
     paintTopic(gfx, topic, cfg);
     final AbstractElement w = (AbstractElement) topic.getPayload();
     if (w.isCollapsed()) {
@@ -937,11 +936,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  private void paintTopic(final Graphics2D gfx, final Topic topic, final Configuration cfg) {
+  private static void paintTopic(final Graphics2D gfx, final Topic topic, final Configuration cfg) {
     ((AbstractElement) topic.getPayload()).doPaint(gfx, cfg);
   }
 
-  private void revalidateTopicTree(final Graphics2D gfx, final Configuration cfg, final Topic topic, final int level) {
+  private static void setElementSizesForElementAndChildren(final Graphics2D gfx, final Configuration cfg, final Topic topic, final int level) {
     AbstractElement widget = (AbstractElement) topic.getPayload();
     if (widget == null) {
       switch (level) {
@@ -960,46 +959,78 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
     widget.updateElementBounds(gfx, cfg);
     for (final Topic t : topic.getChildren()) {
-      revalidateTopicTree(gfx, cfg, t, level + 1);
+      setElementSizesForElementAndChildren(gfx, cfg, t, level + 1);
     }
     widget.updateBlockSize(cfg);
   }
 
-  protected void revalidateWholeTree(final Graphics2D gfx, final Configuration cfg, final MindMap model) {
-    if (gfx.getFontMetrics() != null) {
-      revalidateTopicTree(gfx, cfg, model.getRoot(), 0);
-      realignElements(cfg, model);
+  protected static boolean calculateElementSizes(final Graphics2D gfx, final MindMap model, final Configuration cfg) {
+    boolean result = false;
+
+    final Topic root = model == null ? null : model.getRoot();
+    if (root != null) {
+      if (gfx.getFontMetrics() != null) {
+        model.resetPayload();
+        setElementSizesForElementAndChildren(gfx, cfg, root, 0);
+        result = true;
+      }
+      else {
+        root.setPayload(null);
+      }
+    }
+    return result;
+  }
+
+  protected static Dimension2D layoutModelElements(final MindMap model, final Configuration cfg) {
+    Dimension2D result = null;
+    final AbstractElement root = model == null ? null : model.getRoot() == null ? null : (AbstractElement) model.getRoot().getPayload();
+    if (root != null) {
+      root.alignElementAndChildren(cfg, true, 0, 0);
+      result = root.getBlockSize();
+    }
+    return result;
+  }
+
+  protected static void moveDiagram(final MindMap model, final double deltaX, final double deltaY) {
+    final AbstractElement root = model == null ? null : model.getRoot() == null ? null : (AbstractElement) model.getRoot().getPayload();
+    if (root != null) {
+      root.moveWholeTreeBranchCoordinates(deltaX, deltaY);
     }
   }
 
-  protected void realignElements(final Configuration cfg, final MindMap model) {
-    if (model != null) {
-      final Topic root = model.getRoot();
-      if (root.getPayload() != null) {
-        final ElementRoot rootWidget = (ElementRoot) root.getPayload();
-        final Dimension2D blockSize = rootWidget.getBlockSize();
-
-        final double scaledPageMargin = cfg.getPaperMargins() * cfg.getScale();
-
-        final Dimension diagramSize = new Dimension((int) Math.round(blockSize.getWidth() + scaledPageMargin * 2), (int) Math.round(blockSize.getHeight() + scaledPageMargin * 2));
-
-        setMinimumSize(diagramSize);
-        setPreferredSize(diagramSize);
-
-        final Dimension panelSize = getSize();
-
-        final double xOff = Math.max(0.0d, panelSize.getWidth() - diagramSize.getWidth()) / 2;
-        final double yOff = Math.max(0.0d, panelSize.getHeight() - diagramSize.getHeight()) / 2;
-
-        final Dimension2D leftBlock = rootWidget.getLeftBlockSize();
-
-        rootWidget.alignElementAndChildren(cfg, true, xOff + scaledPageMargin + leftBlock.getWidth(), yOff + scaledPageMargin + (blockSize.getHeight() - rootWidget.getBounds().getHeight()) / 2);
-
-        for (final MindMapListener l : this.mindMapListeners) {
-          l.onMindMapModelRealigned(this, diagramSize);
-        }
+  private void changeSizeOfComponentWithNotification(final Dimension size) {
+    if (size != null) {
+      setMinimumSize(size);
+      setPreferredSize(size);
+      for (final MindMapListener l : this.mindMapListeners) {
+        l.onMindMapModelRealigned(this, size);
       }
     }
+  }
+
+  private static Dimension layoutFullDiagramWithCenteringToPaper(final Graphics2D gfx, final MindMap map, final Configuration cfg, final Dimension2D paperSize) {
+    Dimension resultSize = null;
+    if (calculateElementSizes(gfx, map, cfg)) {
+      Dimension2D rootBlockSize = layoutModelElements(map, cfg);
+      final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
+
+      if (rootBlockSize != null) {
+        if (paperSize != null) {
+          final ElementRoot rootElement = (ElementRoot) map.getRoot().getPayload();
+
+          double rootOffsetXInBlock = rootElement.getLeftBlockSize().getWidth();
+          double rootOffsetYInBlock = (rootBlockSize.getHeight() - rootElement.getBounds().getHeight()) / 2;
+
+          rootOffsetXInBlock += paperSize.getWidth() - rootBlockSize.getWidth() <= paperMargin ? paperMargin : (paperSize.getWidth() - rootBlockSize.getWidth()) / 2;
+          rootOffsetYInBlock += paperSize.getHeight() - rootBlockSize.getHeight() <= paperMargin ? paperMargin : (paperSize.getHeight() - rootBlockSize.getHeight()) / 2;
+
+          moveDiagram(map, rootOffsetXInBlock, rootOffsetYInBlock);
+        }
+        resultSize = new Dimension((int) Math.round(rootBlockSize.getWidth() + paperMargin * 2), (int) Math.round(rootBlockSize.getHeight() + paperMargin * 2));
+      }
+    }
+
+    return resultSize;
   }
 
   @Override
@@ -1009,8 +1040,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       public void run() {
         if (!isValid()) {
           final Graphics2D gfx = (Graphics2D) getGraphics();
-          if (gfx != null) {
-            revalidateWholeTree(gfx, config, model);
+          if (gfx != null && calculateElementSizes(gfx, model, config)) {
+            changeSizeOfComponentWithNotification(layoutFullDiagramWithCenteringToPaper(gfx, model, config, getSize()));
           }
         }
       }
@@ -1046,32 +1077,32 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   public void invalidate() {
     super.invalidate();
     if (this.model != null && this.model.getRoot() != null) {
-      this.model.getRoot().setPayload(null);
+      this.model.resetPayload();
     }
   }
 
-  private static void prepareGraphicsForQuality(final Graphics2D gfx){
+  private static void prepareGraphicsForQuality(final Graphics2D gfx) {
     gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     gfx.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     gfx.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
   }
-  
-  private static void drawErrorText(final Graphics2D gfx, final Dimension fullSize, final String error){
-        final Font font = new Font(Font.DIALOG, Font.BOLD, 24);
-      final FontMetrics metrics = gfx.getFontMetrics(font);
-      final Rectangle2D textBounds = metrics.getStringBounds(error, gfx);
-      gfx.setFont(font);
-      gfx.setColor(Color.DARK_GRAY);
-      gfx.fillRect(0, 0, fullSize.width, fullSize.height);
-      final int x = (int) (fullSize.width - textBounds.getWidth()) / 2;
-      final int y = (int) (fullSize.height - textBounds.getHeight()) / 2;
-      gfx.setColor(Color.BLACK);
-      gfx.drawString(error, x + 5, y + 5);
-      gfx.setColor(Color.RED.brighter());
-      gfx.drawString(error, x, y);
+
+  private static void drawErrorText(final Graphics2D gfx, final Dimension fullSize, final String error) {
+    final Font font = new Font(Font.DIALOG, Font.BOLD, 24);
+    final FontMetrics metrics = gfx.getFontMetrics(font);
+    final Rectangle2D textBounds = metrics.getStringBounds(error, gfx);
+    gfx.setFont(font);
+    gfx.setColor(Color.DARK_GRAY);
+    gfx.fillRect(0, 0, fullSize.width, fullSize.height);
+    final int x = (int) (fullSize.width - textBounds.getWidth()) / 2;
+    final int y = (int) (fullSize.height - textBounds.getHeight()) / 2;
+    gfx.setColor(Color.BLACK);
+    gfx.drawString(error, x + 5, y + 5);
+    gfx.setColor(Color.RED.brighter());
+    gfx.drawString(error, x, y);
   }
-  
+
   @Override
   public void paintComponent(final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
@@ -1083,10 +1114,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       drawErrorText(gfx, this.getSize(), error);
     }
     else {
-      if (!isValid()) {
-        revalidateWholeTree(gfx, this.config, this.model);
-      }
-      drawOnGraphicsForConfiguration(gfx, this.config, this.model, true);
+      revalidate();
+      drawOnGraphicsForConfiguration(gfx, this.config, this.model, true, this.selectedTopics);
       drawDestinationElement(gfx, this.config);
     }
 
@@ -1143,6 +1172,48 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       this.selectedTopics.add(theTopic);
       repaint();
     }
+  }
+
+  public static RenderedImage renderMindMapAsImage(final MindMap model, final Configuration cfg, final boolean expandAll) {
+    final MindMap workMap = new MindMap(model);
+    workMap.resetPayload();
+    
+    BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+    Dimension2D blockSize = null;
+    Graphics2D gfx = img.createGraphics();
+    try {
+      prepareGraphicsForQuality(gfx);
+      if (calculateElementSizes(gfx, workMap, cfg)) {
+        if (expandAll) {
+          final AbstractElement root = (AbstractElement) workMap.getRoot().getPayload();
+          root.collapseOrExpandAllChildren(false);
+          calculateElementSizes(gfx, workMap, cfg);
+        }
+        blockSize = layoutModelElements(workMap, cfg);
+      }
+    }
+    finally {
+      gfx.dispose();
+    }
+    if (blockSize == null) {
+      return null;
+    }
+
+    final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
+    blockSize.setSize(blockSize.getWidth() + paperMargin * 2, blockSize.getHeight() + paperMargin * 2);
+
+    img = new BufferedImage((int) blockSize.getWidth(), (int) blockSize.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    gfx = img.createGraphics();
+    try {
+      prepareGraphicsForQuality(gfx);
+      gfx.setClip(0, 0, img.getWidth(), img.getHeight());
+      layoutFullDiagramWithCenteringToPaper(gfx, workMap, cfg, blockSize);
+      drawOnGraphicsForConfiguration(gfx, cfg, workMap, false, null);
+    }
+    finally {
+      gfx.dispose();
+    }
+    return img;
   }
 
 }

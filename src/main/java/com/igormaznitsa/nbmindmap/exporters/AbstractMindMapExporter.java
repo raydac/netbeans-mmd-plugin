@@ -19,8 +19,8 @@ import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
 import java.io.IOException;
 import javax.swing.ImageIcon;
 
-public abstract class MindMapExporter {
-  public MindMapExporter(){
+public abstract class AbstractMindMapExporter {
+  public AbstractMindMapExporter(){
   }
 
   public abstract void doExport(final MindMapPanel currentPanel) throws IOException;
