@@ -51,6 +51,11 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     this.root = new Topic(this, null, "");
   }
 
+  public MindMap(final MindMap map){
+    this.attributes.putAll(map.attributes);
+    this.root = map.getRoot() == null ? null : map.getRoot().makeCopy(this, null);
+  }
+  
   public MindMap(final Reader reader) throws IOException {
     final StringBuilder lineBuffer = new StringBuilder();
     while (true) {

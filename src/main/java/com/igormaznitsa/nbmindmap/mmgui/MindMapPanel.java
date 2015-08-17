@@ -115,10 +115,10 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     });
   }
 
-  public Configuration getConfiguration(){
+  public Configuration getConfiguration() {
     return this.config;
   }
-  
+
   public void setPopUpProvider(final PopUpProvider provider) {
     this.popupProvider = provider;
   }
@@ -690,7 +690,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-   public void collapseOrExpandAll(final boolean collapse) {
+  public void collapseOrExpandAll(final boolean collapse) {
     endEdit(false);
     removeAllSelection();
 
@@ -835,22 +835,22 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return this.config.getScale();
   }
 
-  public void drawOnGraphicsForConfiguration(final Graphics2D g, final Configuration config, final MindMap map, final boolean drawSelection) {
+  private static void drawBackground(final Graphics2D g, final Configuration cfg) {
     final Rectangle clipBounds = g.getClipBounds();
 
-    if (config.isDrawBackground()) {
-      g.setColor(config.getPaperColor());
+    if (cfg.isDrawBackground()) {
+      g.setColor(cfg.getPaperColor());
       g.fillRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height);
 
-      if (config.isShowGrid()) {
-        final float scaledGridStep = config.getGridStep() * config.getScale();
+      if (cfg.isShowGrid()) {
+        final float scaledGridStep = cfg.getGridStep() * cfg.getScale();
 
         final float minX = clipBounds.x;
         final float minY = clipBounds.y;
         final float maxX = clipBounds.x + clipBounds.width;
         final float maxY = clipBounds.y + clipBounds.height;
 
-        g.setColor(config.getGridColor());
+        g.setColor(cfg.getGridColor());
 
         for (float x = 0.0f; x < maxX; x += scaledGridStep) {
           if (x < minX) {
@@ -869,10 +869,17 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         }
       }
     }
+  }
 
+  private static boolean isModelValid(final MindMap map) {
+    return map == null || map.getRoot() == null ? true : map.getRoot().getPayload() != null;
+  }
+
+  public void drawOnGraphicsForConfiguration(final Graphics2D g, final Configuration config, final MindMap map, final boolean drawSelection) {
+    drawBackground(g, config);
     drawTopics(g, config, map);
-    if (drawSelection) {
-      drawSelection(g, config);
+    if (drawSelection && !this.selectedTopics.isEmpty()) {
+      drawSelection(g, config, this.selectedTopics);
     }
   }
 
@@ -890,15 +897,15 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  private void drawSelection(final Graphics2D g, final Configuration cfg) {
-    if (!this.selectedTopics.isEmpty()) {
+  private static void drawSelection(final Graphics2D g, final Configuration cfg, final List<Topic> selectedTopics) {
+    if (selectedTopics != null && !selectedTopics.isEmpty()) {
       g.setColor(cfg.getSelectLineColor());
       final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{1 * cfg.getScale(), 4 * cfg.getScale()}, 0);
       g.setStroke(dashed);
       final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
       final double dblLineGap = selectLineGap * 2.0d;
 
-      for (final Topic s : this.selectedTopics) {
+      for (final Topic s : selectedTopics) {
         final AbstractElement e = (AbstractElement) s.getPayload();
         if (e != null) {
           g.drawRect((int) Math.round(e.getBounds().getX() - selectLineGap), (int) Math.round(e.getBounds().getY() - selectLineGap), (int) Math.round(e.getBounds().getWidth() + dblLineGap), (int) Math.round(e.getBounds().getHeight() + dblLineGap));
@@ -1027,7 +1034,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   @Override
   public boolean isValid() {
-    return this.model == null || this.model.getRoot() == null ? true : this.model.getRoot().getPayload() != null;
+    return isModelValid(this.model);
   }
 
   @Override
@@ -1043,30 +1050,37 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
+  private static void prepareGraphicsForQuality(final Graphics2D gfx){
+    gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    gfx.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+    gfx.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
+  }
+  
+  private static void drawErrorText(final Graphics2D gfx, final Dimension fullSize, final String error){
+        final Font font = new Font(Font.DIALOG, Font.BOLD, 24);
+      final FontMetrics metrics = gfx.getFontMetrics(font);
+      final Rectangle2D textBounds = metrics.getStringBounds(error, gfx);
+      gfx.setFont(font);
+      gfx.setColor(Color.DARK_GRAY);
+      gfx.fillRect(0, 0, fullSize.width, fullSize.height);
+      final int x = (int) (fullSize.width - textBounds.getWidth()) / 2;
+      final int y = (int) (fullSize.height - textBounds.getHeight()) / 2;
+      gfx.setColor(Color.BLACK);
+      gfx.drawString(error, x + 5, y + 5);
+      gfx.setColor(Color.RED.brighter());
+      gfx.drawString(error, x, y);
+  }
+  
   @Override
   public void paintComponent(final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
 
     final String error = this.errorText;
 
-    gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    gfx.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-    gfx.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
+    prepareGraphicsForQuality(gfx);
     if (error != null) {
-      final Font font = new Font(Font.DIALOG, Font.BOLD, 24);
-      final FontMetrics metrics = gfx.getFontMetrics(font);
-      final Rectangle2D textBounds = metrics.getStringBounds(error, g);
-      gfx.setFont(font);
-      gfx.setColor(Color.DARK_GRAY);
-      final Dimension size = getSize();
-      gfx.fillRect(0, 0, size.width, size.height);
-      final int x = (int) (size.width - textBounds.getWidth()) / 2;
-      final int y = (int) (size.height - textBounds.getHeight()) / 2;
-      gfx.setColor(Color.BLACK);
-      gfx.drawString(error, x + 5, y + 5);
-      gfx.setColor(Color.RED.brighter());
-      gfx.drawString(error, x, y);
+      drawErrorText(gfx, this.getSize(), error);
     }
     else {
       if (!isValid()) {

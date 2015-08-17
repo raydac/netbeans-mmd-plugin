@@ -598,4 +598,17 @@ public final class Topic implements Serializable, Constants {
     return list.toArray(new Topic[list.size()]);
   }
 
+  Topic makeCopy(final MindMap newMindMap, final Topic parent) {
+    this.map.lock();
+    try{
+      final Topic copied = new Topic(newMindMap, parent, this.text, this.extras.values().toArray(new Extra<?>[this.extras.values().size()]));
+      for(final Topic child : this.children){
+        child.makeCopy(newMindMap, copied);
+      }
+      return copied;
+    }finally{
+      this.map.unlock();
+    }
+  }
+
 }

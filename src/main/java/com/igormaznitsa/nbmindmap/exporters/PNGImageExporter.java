@@ -28,7 +28,6 @@ public final class PNGImageExporter extends MindMapExporter {
 
   @Override
   public void doExport(final MindMapPanel viewPanel) throws IOException {
-    
   }
 
   @Override

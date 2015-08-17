@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.net.URISyntaxException;
 
-public abstract class Extra <T> implements Serializable, Constants {
+public abstract class Extra <T> implements Serializable, Constants, Cloneable {
   private static final long serialVersionUID = 2547528075256486018L;
 
   public enum ExtraType {
