@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
@@ -186,12 +187,12 @@ public enum Utils {
     }
   }
 
-  public static String escapeStr(final String text) {
-    return text.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>").replace("\"", "&quot;");
+  public static String escapeHtmlStr(final String text) {
+    return StringEscapeUtils.escapeHtml(text).replace("\n", "<br>");
   }
 
-  public static String unescapeStr(final String text) {
-    return UNESCAPE_BR.matcher(text).replaceAll("\n").replace("&quot;", "\"").replace("&gt;", ">").replace("&lt;", "<");
+  public static String unescapeHtmlStr(final String text) {
+    return StringEscapeUtils.unescapeHtml(UNESCAPE_BR.matcher(text).replaceAll("\n"));
   }
 
   public static int calcMaxLengthOfBacktickQuotesSubstr(final String text) {

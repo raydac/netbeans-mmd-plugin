@@ -151,7 +151,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     if (attrmatcher.find()) {
       final Matcher attrParser = PATTERN_ATTRIBUTE.matcher(attrmatcher.group(1));
       while (attrParser.find()) {
-        map.put(attrParser.group(1), Utils.unescapeStr(attrParser.group(2)));
+        map.put(attrParser.group(1), Utils.unescapeHtmlStr(attrParser.group(2)));
       }
       return true;
     }
@@ -169,7 +169,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
       else {
         nonfirst = true;
       }
-      buffer.append(e.getKey()).append("=\"").append(Utils.escapeStr(e.getValue())).append('\"');
+      buffer.append(e.getKey()).append("=\"").append(Utils.escapeHtmlStr(e.getValue())).append('\"');
     }
 
     return buffer.toString();
