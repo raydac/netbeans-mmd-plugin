@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.utils.Logger;
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import org.openide.cookies.OpenCookie;
 import org.openide.cookies.SaveCookie;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
 
@@ -53,6 +55,18 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return FileOwnerQuery.getOwner(getDataObject().getPrimaryFile());
   }
 
+  public File getProjectDirectory(){
+    File result = null;
+    final Project project = getProject();
+    if (project!=null){
+      final FileObject projDir = project.getProjectDirectory();
+      if (projDir!=null){
+        return FileUtil.toFile(projDir);
+      }
+    }
+    return result;
+  }
+  
   public FileObject makeRelativePathToProjectRoot(final String path) {
     final Project proj = getProject();
     if (proj == null) {

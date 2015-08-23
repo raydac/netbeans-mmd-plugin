@@ -17,16 +17,15 @@ package com.igormaznitsa.nbmindmap.utils;
 
 import com.igormaznitsa.nbmindmap.nb.MMDCfgOptionsPanelController;
 import java.awt.Dimension;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.prefs.Preferences;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.HtmlBrowser;
-import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 
 public enum NbUtils {
@@ -115,6 +114,25 @@ public enum NbUtils {
         msgError("Illegal URI [" + text + ']');
         return null;
       }
+    }
+    else {
+      return null;
+    }
+  }
+
+  public static String editFilePath(final String title, final File projectFolder, final String path) {
+    final FileEditPanel textEditor = new FileEditPanel(projectFolder, path);
+
+    textEditor.doLayout();
+    textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));
+
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(textEditor, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
+    if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
+      final String text = textEditor.getPath();
+      if (text.isEmpty()) {
+        return "";
+      }
+      return text.trim();
     }
     else {
       return null;

@@ -74,6 +74,7 @@ import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.CloneableEditor;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
@@ -284,7 +285,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
         }
         break;
         case TOPIC: {
-          final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic)extra);
+          final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic) extra);
           if (theTopic == null) {
             // not presented
             NbUtils.msgWarn("Can't find the topic, may be it was removed");
@@ -352,21 +353,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public void dragExit(DropTargetEvent dte) {
-  }
-
-  private void addLinkToElement(final URI uri, final AbstractElement element) {
-    if (element != null) {
-      final Topic topic = element.getModel();
-      if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
-        if (!NbUtils.msgConfirmOkCancel("Mind Map URI link", "Replace existing URI link in the topic?")) {
-          return;
-        }
-      }
-      topic.setExtra(new ExtraLink(uri));
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
-    }
   }
 
   private void addDataObjectToElement(final DataObject dataObject, final AbstractElement element) {
@@ -469,6 +455,73 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   @Override
   public JComponent getToolbarRepresentation() {
     return this.toolBar;
+  }
+
+  private void editFileLinkForTopic(final Topic topic) {
+    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+
+    File projectDir = this.editorSupport.getProjectDirectory();
+
+    final String path;
+
+    if (file == null) {
+      path = NbUtils.editFilePath("Add file link", projectDir, null);
+    }
+    else {
+      final URI uri = file.getValue();
+      final String origPath;
+      if (uri.isAbsolute()) {
+        origPath = Utilities.toFile(uri).getAbsolutePath();
+      }
+      else {
+        if (projectDir == null) {
+          NbUtils.msgWarn("Detected relative path without project!");
+          origPath = Utilities.toFile(uri).getAbsolutePath();
+        }
+        else {
+          origPath = Utilities.toFile(Utilities.toURI(projectDir).resolve(uri)).getAbsolutePath();
+        }
+      }
+      path = NbUtils.editFilePath("Add file link", projectDir, origPath);
+    }
+
+    if (path != null) {
+      if (path.isEmpty()) {
+        topic.removeExtra(Extra.ExtraType.FILE);
+      }
+      else {
+        final File filePath = new File(path);
+        if (filePath.isFile()) {
+          final FileObject fileObj = FileUtil.toFileObject(filePath);
+          final String relativePath = NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? getRelativePathToProjectIfPossible(fileObj) : null;
+
+          URI value = null;
+          if (relativePath == null) {
+            value = fileObj.toURI();
+          }
+          else {
+            try {
+              value = new URI(relativePath);
+            }
+            catch (URISyntaxException ex) {
+              Logger.error("Can't convert file path to URI", ex);
+              NbUtils.msgError("Can't convert file path to URI '" + relativePath + "'");
+            }
+          }
+
+          if (value != null) {
+            topic.setExtra(new ExtraFile(value));
+            this.mindMapPanel.invalidate();
+            this.mindMapPanel.repaint();
+            onMindMapModelChanged(this.mindMapPanel);
+          }
+        }
+        else {
+          NbUtils.msgError("Can't find file '" + path + "'");
+        }
+      }
+    }
+
   }
 
   private void editTopicLinkForTopic(final Topic topic) {
@@ -638,7 +691,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
       result.add(editLink);
 
-      final JMenuItem editTopicLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.TOPIC) ? "Edit anchor" : "Add anchor", Icons.TOPIC.getIcon());
+      final JMenuItem editTopicLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.TOPIC) ? "Edit transition" : "Add transition", Icons.TOPIC.getIcon());
       editTopicLink.addActionListener(new ActionListener() {
 
         @Override
@@ -648,6 +701,17 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
       });
 
       result.add(editTopicLink);
+
+      final JMenuItem editFileLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.FILE) ? "Edit file" : "Add file", Icons.FILE.getIcon());
+      editFileLink.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          editFileLinkForTopic(topic);
+        }
+      });
+
+      result.add(editFileLink);
     }
 
     if (result.getComponentCount() > 0) {

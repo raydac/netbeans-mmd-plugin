@@ -96,9 +96,11 @@ public class MindMapTreePanel extends javax.swing.JPanel {
     jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
+    buttonRemoveSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/select16.png"))); // NOI18N
     org.openide.awt.Mnemonics.setLocalizedText(buttonRemoveSelection, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonRemoveSelection.text")); // NOI18N
+    buttonRemoveSelection.setToolTipText(org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonRemoveSelection.toolTipText")); // NOI18N
     buttonRemoveSelection.setFocusable(false);
-    buttonRemoveSelection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonRemoveSelection.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
     buttonRemoveSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     buttonRemoveSelection.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {

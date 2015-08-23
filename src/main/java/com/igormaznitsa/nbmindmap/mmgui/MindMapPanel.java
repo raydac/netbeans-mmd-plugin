@@ -45,6 +45,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private static final long serialVersionUID = 7474413542713752159L;
 
   public interface PopUpProvider {
+
     JPopupMenu makePopUp(final Point point, final AbstractElement element, final ElementPart partUnderMouse);
   }
 
@@ -141,6 +142,20 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       @Override
       public void keyPressed(final KeyEvent e) {
+        switch(e.getKeyCode()){
+          case KeyEvent.VK_ENTER : {
+            e.consume();
+          }break;
+          case KeyEvent.VK_TAB: {
+            if ((e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.META_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)) == 0) {
+              e.consume();
+              final Topic edited = elementUnderEdit.getModel();
+              endEdit(true);
+              makeNewChildAndStartEdit(edited, null);
+            }
+          }
+          break;
+        }
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
           e.consume();
         }
@@ -149,13 +164,6 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       @Override
       public void keyReleased(final KeyEvent e) {
         switch (e.getKeyCode()) {
-          case KeyEvent.VK_TAB: {
-            e.consume();
-            final Topic edited = elementUnderEdit.getModel();
-            endEdit(true);
-            makeNewChildAndStartEdit(edited, null);
-          }
-          break;
           case KeyEvent.VK_ENTER: {
             e.consume();
             if (((KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK) & e.getModifiersEx()) == 0) {
@@ -209,12 +217,14 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       public void keyReleased(final KeyEvent e) {
         switch (e.getKeyCode()) {
           case KeyEvent.VK_TAB: {
+            e.consume();
             if (hasOnlyTopicSelected()) {
               makeNewChildAndStartEdit(selectedTopics.get(0), null);
             }
           }
           break;
           case KeyEvent.VK_DELETE: {
+            e.consume();
             deleteSelectedTopics();
           }
           break;
@@ -222,10 +232,12 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           case KeyEvent.VK_RIGHT:
           case KeyEvent.VK_UP:
           case KeyEvent.VK_DOWN: {
+            e.consume();
             processMoveFocusByKey(e.getKeyCode());
           }
           break;
           case KeyEvent.VK_ENTER: {
+            e.consume();
             if (!hasActiveEditor() && hasOnlyTopicSelected()) {
               final Topic baseTopic = selectedTopics.get(0);
               makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
@@ -272,9 +284,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           endEdit(false);
           mouseDragSelection = null;
           MindMap theMap = model;
-          AbstractElement element = null;
           if (theMap != null) {
-            element = findTopicUnderPoint(e.getPoint());
+            final AbstractElement element = findTopicUnderPoint(e.getPoint());
             if (element == null) {
               mouseDragSelection = new MouseSelectedArea(e.getPoint());
             }
@@ -880,7 +891,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   public static void drawOnGraphicsForConfiguration(final Graphics2D g, final Configuration config, final MindMap map, final boolean drawSelection, final List<Topic> selectedTopics) {
     drawBackground(g, config);
     drawTopics(g, config, map);
-    if (drawSelection && selectedTopics!=null && !selectedTopics.isEmpty()) {
+    if (drawSelection && selectedTopics != null && !selectedTopics.isEmpty()) {
       drawSelection(g, config, selectedTopics);
     }
   }
@@ -1167,17 +1178,24 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   public void focusTo(final Topic theTopic) {
     if (theTopic != null) {
-      fireNotificationEnsureTopicVisibility(theTopic);
+      final AbstractElement element = (AbstractElement)theTopic.getPayload();
+      if (element!=null && element instanceof AbstractCollapsableElement){
+        final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
+        if (cel.ensureUncollapsed()){
+          invalidate();
+          fireNotificationMindMapChanged();
+        }
+      }
+      
       this.selectedTopics.clear();
-      this.selectedTopics.add(theTopic);
-      repaint();
+      this.select(theTopic, false);
     }
   }
 
   public static RenderedImage renderMindMapAsImage(final MindMap model, final Configuration cfg, final boolean expandAll) {
     final MindMap workMap = new MindMap(model);
     workMap.resetPayload();
-    
+
     BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
     Dimension2D blockSize = null;
     Graphics2D gfx = img.createGraphics();

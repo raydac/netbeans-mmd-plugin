@@ -79,21 +79,22 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   public void setLeftDirection(final boolean leftSide) {
-    makeTopicLeftSided(this.model, leftSide); 
+    makeTopicLeftSided(this.model, leftSide);
   }
 
-  public static boolean isLeftSidedTopic(final Topic t){
+  public static boolean isLeftSidedTopic(final Topic t) {
     return "true".equals(t.getAttribute("leftSide"));
   }
-  
-  public static void makeTopicLeftSided(final Topic topic, final boolean left){
-    if (left){
+
+  public static void makeTopicLeftSided(final Topic topic, final boolean left) {
+    if (left) {
       topic.setAttribute("leftSide", "true");
-    }else{
+    }
+    else {
       topic.setAttribute("leftSide", null);
     }
   }
-  
+
   @Override
   public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size) {
     final Dimension2D result = size == null ? new Dimension() : size;
@@ -272,6 +273,24 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   @Override
   public boolean hasDirection() {
     return true;
+  }
+
+  public boolean ensureUncollapsed() {
+    boolean result = false;
+
+    Topic parent = this.model.getParent();
+    while (parent != null) {
+      final AbstractElement payload = (AbstractElement) parent.getPayload();
+      if (payload == null) {
+        break;
+      }
+      if (payload != null && payload.isCollapsed() && payload instanceof AbstractCollapsableElement) {
+        ((AbstractCollapsableElement) payload).setCollapse(false);
+        result = true;
+      }
+      parent = payload.model.getParent();
+    }
+    return result;
   }
 
 }
