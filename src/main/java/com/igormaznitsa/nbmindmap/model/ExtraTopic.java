@@ -17,11 +17,40 @@ package com.igormaznitsa.nbmindmap.model;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Locale;
 
 public class ExtraTopic extends Extra<String> {
   private static final long serialVersionUID = -8556885025460722094L;
 
   private final String topicUID;
+  
+  public static final String TOPIC_UID_ATTR = "topicLinkUID";
+  
+  public static ExtraTopic makeLinkTo(final MindMap map,final Topic topic){
+    ExtraTopic result = null;
+    if (topic!=null){
+      String uid = topic.getAttribute(TOPIC_UID_ATTR);
+      if (uid == null){
+        String time = Long.toHexString(System.currentTimeMillis() & 0x7FFFFFFFFFFFFFFFL).toUpperCase(Locale.ENGLISH);
+        char extra = 'A';
+        while(true){
+          uid = time + extra;
+          if (map.findTopicForLink(new ExtraTopic(uid))!=null){
+            if (extra == 'Z'){
+              time = Long.toHexString(System.nanoTime()& 0x7FFFFFFFFFFFFFFFL).toUpperCase(Locale.ENGLISH);
+              extra = 'A';
+            }else
+            extra ++;
+          }else{
+            break;
+          }
+        }
+        topic.setAttribute(TOPIC_UID_ATTR, uid);
+      }
+      result = new ExtraTopic(uid);
+    }
+    return result;
+  }
   
   public ExtraTopic(final String topicUID){
     this.topicUID = topicUID;

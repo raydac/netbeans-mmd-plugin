@@ -81,11 +81,14 @@ public enum NbUtils {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(component, NotifyDescriptor.INFORMATION_MESSAGE));
   }
 
+  public static boolean plainMessageOkCancel(final String title, final JComponent compo){
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(compo, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
+    return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
+  }
+  
   public static String editText(final String title, final String text) {
     final PlainTextEditor textEditor = new PlainTextEditor(text);
-
-    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(textEditor, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
-    if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
+    if (plainMessageOkCancel(title, textEditor)) {
       return textEditor.getText();
     }
     else {

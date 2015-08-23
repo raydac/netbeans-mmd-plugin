@@ -15,9 +15,11 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.nbmindmap.model.ExtraTopic;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.nb.MindMapTreeCellRenderer;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -32,14 +34,14 @@ public class MindMapTreePanel extends javax.swing.JPanel {
 
   private final MindMapTreeCellRenderer cellRenderer = new MindMapTreeCellRenderer();
 
-  public MindMapTreePanel(final MindMap map, final String selectedTopicUid, final ActionListener listener) {
+  public MindMapTreePanel(final MindMap map, final ExtraTopic selectedTopicUid, final ActionListener listener) {
     initComponents();
     this.treeMindMap.setCellRenderer(this.cellRenderer);
     this.treeMindMap.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     if (map != null) {
       this.treeMindMap.setModel(map);
       if (selectedTopicUid != null) {
-        final Topic topic = map.findTopicForUID(selectedTopicUid);
+        final Topic topic = map.findTopicForLink(selectedTopicUid);
         if (topic != null) {
           this.treeMindMap.setSelectionPath(new TreePath(topic.getPath()));
         }
@@ -51,11 +53,15 @@ public class MindMapTreePanel extends javax.swing.JPanel {
       @Override
       public void mouseClicked(final MouseEvent e) {
         if (!e.isPopupTrigger() && e.getClickCount() > 1) {
-          listener.actionPerformed(new ActionEvent(this, 0, "doubleClick"));
+          if (listener != null) {
+            listener.actionPerformed(new ActionEvent(this, 0, "doubleClick"));
+          }
         }
       }
     });
 
+    
+    this.setPreferredSize(new Dimension(450, 400));
   }
 
   public JTree getTree() {
@@ -78,16 +84,40 @@ public class MindMapTreePanel extends javax.swing.JPanel {
 
     treeScrollPane = new javax.swing.JScrollPane();
     treeMindMap = new javax.swing.JTree();
+    jToolBar1 = new javax.swing.JToolBar();
+    buttonRemoveSelection = new javax.swing.JButton();
 
     setLayout(new java.awt.BorderLayout());
 
     treeScrollPane.setViewportView(treeMindMap);
 
     add(treeScrollPane, java.awt.BorderLayout.CENTER);
+
+    jToolBar1.setFloatable(false);
+    jToolBar1.setRollover(true);
+
+    org.openide.awt.Mnemonics.setLocalizedText(buttonRemoveSelection, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonRemoveSelection.text")); // NOI18N
+    buttonRemoveSelection.setFocusable(false);
+    buttonRemoveSelection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonRemoveSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonRemoveSelection.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonRemoveSelectionActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(buttonRemoveSelection);
+
+    add(jToolBar1, java.awt.BorderLayout.PAGE_START);
   }// </editor-fold>//GEN-END:initComponents
+
+  private void buttonRemoveSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRemoveSelectionActionPerformed
+    this.treeMindMap.setSelectionPath(null);
+  }//GEN-LAST:event_buttonRemoveSelectionActionPerformed
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonRemoveSelection;
+  private javax.swing.JToolBar jToolBar1;
   private javax.swing.JTree treeMindMap;
   private javax.swing.JScrollPane treeScrollPane;
   // End of variables declaration//GEN-END:variables

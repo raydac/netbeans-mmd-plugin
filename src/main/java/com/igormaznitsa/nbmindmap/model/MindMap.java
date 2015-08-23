@@ -215,8 +215,9 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     }
   }
 
-  public Topic findTopicForUID(final String topicUID) {
-    return this.root.findForAttribute("uid",topicUID);
+  public Topic findTopicForLink(final ExtraTopic link) {
+    if (link == null) return null;
+    return this.root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR,link.getValue());
   }
 
   @Override

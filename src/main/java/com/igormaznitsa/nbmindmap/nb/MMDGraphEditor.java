@@ -31,6 +31,7 @@ import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.Logger;
+import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -47,7 +48,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -115,7 +115,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
     this.mainScrollPane.setViewportView(this.mindMapPanel);
     this.mainScrollPane.setWheelScrollingEnabled(true);
-    
+
     this.setLayout(new BorderLayout(0, 0));
     this.add(this.mainScrollPane, BorderLayout.CENTER);
 
@@ -284,7 +284,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
         }
         break;
         case TOPIC: {
-          final Topic theTopic = this.mindMapPanel.getModel().findTopicForUID((String) extra.getValue());
+          final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic)extra);
           if (theTopic == null) {
             // not presented
             NbUtils.msgWarn("Can't find the topic, may be it was removed");
@@ -471,15 +471,51 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     return this.toolBar;
   }
 
-  private void editTopicLinkForTopic(final Topic topic){
+  private void editTopicLinkForTopic(final Topic topic) {
     final ExtraTopic link = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
-    if (link == null){
-      
-    }else{
-      
+
+    ExtraTopic result = null;
+
+    final ExtraTopic remove = new ExtraTopic("_______");
+
+    if (link == null) {
+      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, null);
+      if (NbUtils.plainMessageOkCancel("Select topic", panel)) {
+        final Topic selected = panel.getSelectedTopic();
+        if (selected != null) {
+          result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
+        }
+        else {
+          result = remove;
+        }
+      }
+    }
+    else {
+      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, null);
+      if (NbUtils.plainMessageOkCancel("Edit selected topic", panel)) {
+        final Topic selected = panel.getSelectedTopic();
+        if (selected != null) {
+          result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
+        }
+        else {
+          result = remove;
+        }
+      }
+    }
+
+    if (result != null) {
+      if (result == remove) {
+        topic.removeExtra(Extra.ExtraType.TOPIC);
+      }
+      else {
+        topic.setExtra(result);
+      }
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
     }
   }
-  
+
   private void editLinkForTopic(final Topic topic) {
     final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
     final URI result;
@@ -602,8 +638,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
       result.add(editLink);
 
-      final JMenuItem editTopicLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? "Edit link" : "Add link", Icons.TOPIC.getIcon());
-      editLink.addActionListener(new ActionListener() {
+      final JMenuItem editTopicLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.TOPIC) ? "Edit anchor" : "Add anchor", Icons.TOPIC.getIcon());
+      editTopicLink.addActionListener(new ActionListener() {
 
         @Override
         public void actionPerformed(ActionEvent e) {
