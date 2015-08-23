@@ -45,7 +45,6 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private static final long serialVersionUID = 7474413542713752159L;
 
   public interface PopUpProvider {
-
     JPopupMenu makePopUp(final Point point, final AbstractElement element, final ElementPart partUnderMouse);
   }
 
@@ -367,8 +366,9 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           setScale(getScale() + (SCALE_STEP * -e.getWheelRotation()));
           invalidate();
           revalidate();
+          repaint();
+          e.consume();
         }
-        repaint();
       }
 
       @Override

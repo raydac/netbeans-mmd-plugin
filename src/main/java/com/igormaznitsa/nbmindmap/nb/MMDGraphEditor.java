@@ -26,6 +26,7 @@ import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.ExtraFile;
 import com.igormaznitsa.nbmindmap.model.ExtraLink;
 import com.igormaznitsa.nbmindmap.model.ExtraNote;
+import com.igormaznitsa.nbmindmap.model.ExtraTopic;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.utils.Icons;
@@ -34,7 +35,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -47,6 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -113,7 +114,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
     this.mainScrollPane.setViewportView(this.mindMapPanel);
-
+    this.mainScrollPane.setWheelScrollingEnabled(true);
+    
     this.setLayout(new BorderLayout(0, 0));
     this.add(this.mainScrollPane, BorderLayout.CENTER);
 
@@ -469,6 +471,15 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     return this.toolBar;
   }
 
+  private void editTopicLinkForTopic(final Topic topic){
+    final ExtraTopic link = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+    if (link == null){
+      
+    }else{
+      
+    }
+  }
+  
   private void editLinkForTopic(final Topic topic) {
     final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
     final URI result;
@@ -590,6 +601,17 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
       });
 
       result.add(editLink);
+
+      final JMenuItem editTopicLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? "Edit link" : "Add link", Icons.TOPIC.getIcon());
+      editLink.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          editTopicLinkForTopic(topic);
+        }
+      });
+
+      result.add(editTopicLink);
     }
 
     if (result.getComponentCount() > 0) {

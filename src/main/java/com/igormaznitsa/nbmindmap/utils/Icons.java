@@ -22,6 +22,7 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.IOUtils;
 
 public enum Icons {
+  DOCUMENT("document16.png"),
   EXPORT("export16.png"),
   IMAGE("image16.png"),
   EXPANDALL("toggle_expand16.png"),
@@ -29,11 +30,14 @@ public enum Icons {
   EDITTEXT("text16.png"),
   ADD("add16.png"),
   SOURCE("source16.png"),
+  TOPIC("brick16.png"),
   INFO("info16.png"),
   NOTE("note16.png"),
   URL("url16.png"),
   DELETE("delete16.png"),
   OPTIONS("settings16.png"),
+  BLUEBALL("blueball16.png"),
+  GOLDBALL("goldball16.png"),
   FILE("disk16.png");
 
   private final ImageIcon icon;

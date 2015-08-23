@@ -38,6 +38,7 @@ public class UtilsTest {
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< br  >World"));
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< Br  >World"));
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< BR  >World"));
+    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< BR  ><strong test=\"some\">World</strong>"));
   }
   
   @Test

@@ -120,6 +120,7 @@ public enum Utils {
   }
 
   private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*br\\s*\\>");
+  private static final Pattern HTML_TAG = Pattern.compile("(?i)\\<\\/?.*?\\>");
 
   public static boolean equals(final Map<?, ?> map1, final Map<?, ?> map2) {
     if (map1 == map2) {
@@ -192,7 +193,7 @@ public enum Utils {
   }
 
   public static String unescapeHtmlStr(final String text) {
-    return StringEscapeUtils.unescapeHtml(UNESCAPE_BR.matcher(text).replaceAll("\n"));
+    return StringEscapeUtils.unescapeHtml(HTML_TAG.matcher(UNESCAPE_BR.matcher(text).replaceAll("\n")).replaceAll(""));
   }
 
   public static int calcMaxLengthOfBacktickQuotesSubstr(final String text) {
