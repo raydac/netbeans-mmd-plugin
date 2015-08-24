@@ -85,6 +85,12 @@ public enum NbUtils {
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
   
+  public static void plainMessageOk(final String title, final JComponent compo){
+    final NotifyDescriptor desc = new NotifyDescriptor.Message(compo, NotifyDescriptor.PLAIN_MESSAGE);
+    desc.setTitle(title);
+    DialogDisplayer.getDefault().notify(desc);
+  }
+  
   public static String editText(final String title, final String text) {
     final PlainTextEditor textEditor = new PlainTextEditor(text);
     if (plainMessageOkCancel(title, textEditor)) {

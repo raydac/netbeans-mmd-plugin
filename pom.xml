@@ -276,5 +276,10 @@
       <artifactId>org-netbeans-modules-options-api</artifactId>
       <version>${nb.platform}</version>
     </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-modules</artifactId>
+      <version>${nb.platform}</version>
+    </dependency>
   </dependencies>
 </project>

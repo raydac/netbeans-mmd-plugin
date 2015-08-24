@@ -29,6 +29,7 @@ import com.igormaznitsa.nbmindmap.model.ExtraNote;
 import com.igormaznitsa.nbmindmap.model.ExtraTopic;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
+import com.igormaznitsa.nbmindmap.utils.AboutPanel;
 import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
@@ -785,6 +786,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
       @Override
       public void actionPerformed(ActionEvent e) {
+        NbUtils.plainMessageOk("About",new AboutPanel());
       }
     });
 
