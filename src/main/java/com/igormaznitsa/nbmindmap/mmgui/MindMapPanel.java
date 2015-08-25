@@ -142,10 +142,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       @Override
       public void keyPressed(final KeyEvent e) {
-        switch(e.getKeyCode()){
-          case KeyEvent.VK_ENTER : {
+        switch (e.getKeyCode()) {
+          case KeyEvent.VK_ENTER: {
             e.consume();
-          }break;
+          }
+          break;
           case KeyEvent.VK_TAB: {
             if ((e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.META_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)) == 0) {
               e.consume();
@@ -155,9 +156,6 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             }
           }
           break;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-          e.consume();
         }
       }
 
@@ -214,15 +212,18 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     final KeyAdapter keyAdapter = new KeyAdapter() {
 
       @Override
+      public void keyTyped(KeyEvent e) {
+        if (e.getKeyChar() == '\t') {
+          e.consume();
+          if (hasOnlyTopicSelected()) {
+            makeNewChildAndStartEdit(selectedTopics.get(0), null);
+          }
+        }
+      }
+
+      @Override
       public void keyReleased(final KeyEvent e) {
         switch (e.getKeyCode()) {
-          case KeyEvent.VK_TAB: {
-            e.consume();
-            if (hasOnlyTopicSelected()) {
-              makeNewChildAndStartEdit(selectedTopics.get(0), null);
-            }
-          }
-          break;
           case KeyEvent.VK_DELETE: {
             e.consume();
             deleteSelectedTopics();
@@ -757,7 +758,6 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   public void endEdit(final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
-        final String text = this.textEditor.getText();
         this.elementUnderEdit.setText(this.textEditor.getText());
         repaint();
         fireNotificationMindMapChanged();
@@ -1178,15 +1178,15 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   public void focusTo(final Topic theTopic) {
     if (theTopic != null) {
-      final AbstractElement element = (AbstractElement)theTopic.getPayload();
-      if (element!=null && element instanceof AbstractCollapsableElement){
+      final AbstractElement element = (AbstractElement) theTopic.getPayload();
+      if (element != null && element instanceof AbstractCollapsableElement) {
         final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
-        if (cel.ensureUncollapsed()){
+        if (cel.ensureUncollapsed()) {
           invalidate();
           fireNotificationMindMapChanged();
         }
       }
-      
+
       this.selectedTopics.clear();
       this.select(theTopic, false);
     }
