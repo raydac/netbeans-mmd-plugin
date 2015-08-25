@@ -160,18 +160,22 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       }
 
       @Override
+      public void keyTyped(final KeyEvent e) {
+        if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+          if (((KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK) & e.getModifiersEx()) == 0) {
+            e.consume();
+            endEdit(true);
+          }
+          else {
+            e.consume();
+            textEditor.insert("\n", textEditor.getCaretPosition());
+          }
+        }
+      }
+
+      @Override
       public void keyReleased(final KeyEvent e) {
         switch (e.getKeyCode()) {
-          case KeyEvent.VK_ENTER: {
-            e.consume();
-            if (((KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK) & e.getModifiersEx()) == 0) {
-              endEdit(true);
-            }
-            else {
-              textEditor.insert("\n", textEditor.getCaretPosition());
-            }
-          }
-          break;
           case KeyEvent.VK_ESCAPE: {
             e.consume();
             endEdit(false);
@@ -213,11 +217,20 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       @Override
       public void keyTyped(KeyEvent e) {
-        if (e.getKeyChar() == '\t') {
-          e.consume();
-          if (hasOnlyTopicSelected()) {
-            makeNewChildAndStartEdit(selectedTopics.get(0), null);
+        switch (e.getKeyChar()) {
+          case '\t': {
+            if (hasOnlyTopicSelected()) {
+              makeNewChildAndStartEdit(selectedTopics.get(0), null);
+            }
           }
+          break;
+          case '\n': {
+            if (!hasActiveEditor() && hasOnlyTopicSelected()) {
+              final Topic baseTopic = selectedTopics.get(0);
+              makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
+            }
+          }
+          break;
         }
       }
 
@@ -235,14 +248,6 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           case KeyEvent.VK_DOWN: {
             e.consume();
             processMoveFocusByKey(e.getKeyCode());
-          }
-          break;
-          case KeyEvent.VK_ENTER: {
-            e.consume();
-            if (!hasActiveEditor() && hasOnlyTopicSelected()) {
-              final Topic baseTopic = selectedTopics.get(0);
-              makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
-            }
           }
           break;
         }
@@ -381,6 +386,9 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           repaint();
           e.consume();
         }
+        else {
+          sendToParent(e);
+        }
       }
 
       @Override
@@ -510,6 +518,13 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       }
     }
     element.getModel().setPayload(null);
+  }
+
+  private void sendToParent(final AWTEvent evt) {
+    final Container parent = this.getParent();
+    if (parent != null) {
+      parent.dispatchEvent(evt);
+    }
   }
 
   private void processMoveFocusByKey(final int key) {
