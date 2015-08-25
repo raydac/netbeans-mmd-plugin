@@ -19,22 +19,23 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="labelIcon" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="labelText" pref="549" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="textLabel" pref="553" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="labelIcon" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
-          </Group>
           <Group type="102" attributes="0">
-              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-              <Component id="labelText" pref="239" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="labelIcon" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+                  <Component id="textLabel" alignment="1" pref="231" max="32767" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -44,19 +45,15 @@
     <Component class="javax.swing.JLabel" name="labelIcon">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/logo/logo32.png"/>
+          <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/logo/logo.png"/>
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="labelText">
+    <Component class="com.igormaznitsa.ui.JHtmlLabel" name="textLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;b&gt;NB MindMap plugin&lt;/b&gt;&#xa;&lt;hr&gt;&#xa;&lt;p&gt;Version: ${version}&lt;/p&gt;&#xa;&lt;p&gt;Author: Igor Maznitsa (&lt;a href=&quot;http://www.igormaznitsa.com&quot;&gt;http://www.igormaznitsa.com&lt;/a&gt;)&lt;/p&gt;&#xa;&lt;br&gt;&#xa;&lt;hr&gt;&#xa;&lt;br&gt;&#xa;&lt;p&gt;The Plugin allows to embed MindMaps into NetBeans projects, keep structured text information and represent it as a graph view.&lt;/p&gt;&#xa;&lt;br&gt;&#xa;&lt;hr&gt;&#xa;&lt;br&gt;&#xa;&lt;p&gt;The Project page: &lt;a href=&quot;https://github.com/raydac/netbeans-mmd-plugin&quot;&gt;https://github.com/raydac/netbeans-mmd-plugin&lt;/a&gt;&amp;nbsp;&lt;br&gt;&#xa;The Project uses icons from the FatCow free web icon set &lt;a href=&quot;http://www.fatcow.com/free-icons&quot;&gt;http://www.fatcow.com/free-icons&lt;/a&gt;&amp;nbsp;&#xa;&lt;/p&gt;&#xa;&lt;/html&gt;" noResource="true"/>
-        <Property name="verticalAlignment" type="int" value="1"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;h2&gt;NB MindMap plugin&lt;/h2&gt;&#xa;&lt;hr&gt;&#xa;&lt;p&gt;Version: ${version}&lt;/p&gt;&#xa;&lt;p&gt;Author: Igor Maznitsa (&lt;a href=&quot;http://www.igormaznitsa.com&quot;&gt;http://www.igormaznitsa.com&lt;/a&gt;)&lt;/p&gt;&#xa;&lt;br&gt;&#xa;&lt;hr&gt;&#xa;&lt;br&gt;&#xa;&lt;p&gt;The Plugin allows to embed MindMaps into NetBeans projects, keep structured text information and represent it as a graph view.&lt;/p&gt;&#xa;&lt;br&gt;&#xa;&lt;hr&gt;&#xa;&lt;br&gt;&#xa;&lt;p&gt;The Project page: &lt;a href=&quot;https://github.com/raydac/netbeans-mmd-plugin&quot;&gt;https://github.com/raydac/netbeans-mmd-plugin&lt;/a&gt;&amp;nbsp;&lt;br&gt;&#xa;The Project uses icons from the FatCow free web icon set &lt;a href=&quot;http://www.fatcow.com/free-icons&quot;&gt;http://www.fatcow.com/free-icons&lt;/a&gt;&amp;nbsp;&#xa;&lt;/p&gt;&#xa;&lt;/html&gt;" noResource="true"/>
+        <Property name="verticalTextPosition" type="int" value="1"/>
       </Properties>
-      <Events>
-        <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="labelTextMouseMoved"/>
-        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="labelTextMouseClicked"/>
-      </Events>
     </Component>
   </SubComponents>
 </Form>

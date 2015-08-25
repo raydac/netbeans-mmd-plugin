@@ -145,9 +145,9 @@ public enum NbUtils {
     }
   }
 
-  public static boolean browseURI(final URI uri, final boolean insideBrowser) {
+  public static boolean browseURI(final URI uri, final boolean preferInsideBrowserIfPossible) {
     try {
-      if (insideBrowser) {
+      if (preferInsideBrowserIfPossible) {
         HtmlBrowser.URLDisplayer.getDefault().showURL(uri.toURL());
       }
       else {

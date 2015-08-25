@@ -15,33 +15,20 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
-import java.awt.Cursor;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
+import com.igormaznitsa.ui.JHtmlLabel;
 import java.net.URI;
-import java.net.URISyntaxException;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Position;
-import javax.swing.text.View;
-import javax.swing.text.html.HTMLDocument;
+import java.util.Properties;
 import org.openide.modules.ModuleInfo;
-import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
+import org.openide.modules.Modules;
 
-public class AboutPanel extends javax.swing.JPanel {
+public class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkListener {
 
   private static final long serialVersionUID = -3231534203788095969L;
 
   public AboutPanel() {
     initComponents();
 
-    final ModuleInfo info = Lookup.getDefault().lookup(ModuleInfo.class);
+    final ModuleInfo info = Modules.getDefault().findCodeNameBase("com.igormaznitsa.nbmindmap");
     final String version;
     if (info == null) {
       version = "UNKNOWN";
@@ -50,7 +37,20 @@ public class AboutPanel extends javax.swing.JPanel {
       version = info.getImplementationVersion();
     }
 
-    this.labelText.setText(this.labelText.getText().replace("${version}", version));
+    final Properties props = new Properties();
+    props.setProperty("version", version);
+    this.textLabel.replaceMacroses(props);
+    this.textLabel.addLinkListener(this);
+    this.textLabel.setShowLinkAddressInTooltip(true);
+  }
+
+  @Override
+  public void onLinkActivated(final JHtmlLabel source, final String href) {
+    try{
+      NbUtils.browseURI(new URI(href), false);
+    }catch(Exception ex){
+      Logger.error("Can't process link in 'About'", ex);
+    }
   }
 
   /**
@@ -63,22 +63,12 @@ public class AboutPanel extends javax.swing.JPanel {
   private void initComponents() {
 
     labelIcon = new javax.swing.JLabel();
-    labelText = new javax.swing.JLabel();
+    textLabel = new com.igormaznitsa.ui.JHtmlLabel();
 
-    labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo32.png"))); // NOI18N
+    labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo.png"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(labelText, "<html>\n<b>NB MindMap plugin</b>\n<hr>\n<p>Version: ${version}</p>\n<p>Author: Igor Maznitsa (<a href=\"http://www.igormaznitsa.com\">http://www.igormaznitsa.com</a>)</p>\n<br>\n<hr>\n<br>\n<p>The Plugin allows to embed MindMaps into NetBeans projects, keep structured text information and represent it as a graph view.</p>\n<br>\n<hr>\n<br>\n<p>The Project page: <a href=\"https://github.com/raydac/netbeans-mmd-plugin\">https://github.com/raydac/netbeans-mmd-plugin</a>&nbsp;<br>\nThe Project uses icons from the FatCow free web icon set <a href=\"http://www.fatcow.com/free-icons\">http://www.fatcow.com/free-icons</a>&nbsp;\n</p>\n</html>"); // NOI18N
-    labelText.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-    labelText.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-      public void mouseMoved(java.awt.event.MouseEvent evt) {
-        labelTextMouseMoved(evt);
-      }
-    });
-    labelText.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
-        labelTextMouseClicked(evt);
-      }
-    });
+    org.openide.awt.Mnemonics.setLocalizedText(textLabel, "<html>\n<h2>NB MindMap plugin</h2>\n<hr>\n<p>Version: ${version}</p>\n<p>Author: Igor Maznitsa (<a href=\"http://www.igormaznitsa.com\">http://www.igormaznitsa.com</a>)</p>\n<br>\n<hr>\n<br>\n<p>The Plugin allows to embed MindMaps into NetBeans projects, keep structured text information and represent it as a graph view.</p>\n<br>\n<hr>\n<br>\n<p>The Project page: <a href=\"https://github.com/raydac/netbeans-mmd-plugin\">https://github.com/raydac/netbeans-mmd-plugin</a>&nbsp;<br>\nThe Project uses icons from the FatCow free web icon set <a href=\"http://www.fatcow.com/free-icons\">http://www.fatcow.com/free-icons</a>&nbsp;\n</p>\n</html>"); // NOI18N
+    textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
@@ -87,125 +77,26 @@ public class AboutPanel extends javax.swing.JPanel {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(labelIcon)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(labelText, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(labelIcon)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-      .addGroup(layout.createSequentialGroup()
-        .addGap(28, 28, 28)
-        .addComponent(labelText, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(labelIcon)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addComponent(textLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
 
-  private void labelTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelTextMouseClicked
-    final String link = extractLinkForPoint(evt.getPoint(), this.labelText);
-    if (link != null) {
-      try {
-        NbUtils.browseURI(new URI(link), false);
-      }
-      catch (URISyntaxException ex) {
-        Logger.error("Can't make URI " + link, ex);
-      }
-    }
-  }//GEN-LAST:event_labelTextMouseClicked
-
-  private void labelTextMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelTextMouseMoved
-    final String link = extractLinkForPoint(evt.getPoint(), this.labelText);
-    this.labelText.setCursor(link == null ? Cursor.getDefaultCursor() : Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-  }//GEN-LAST:event_labelTextMouseMoved
-
-  private String extractLinkForPoint(final Point pont, final JLabel label) {
-    final int position = getIndexAtPoint(pont, label);
-    if (position < 0) {
-      return null;
-    }
-    final HTMLDocument doc = (HTMLDocument) (((View) label.getClientProperty("html")).getDocument());
-    try {
-      final String text = doc.getText(0, doc.getLength());
-      final int start = text.lastIndexOf("http", position);
-      if (start >= 0) {
-        int nextIndex = -1;
-        for (int i = start; i < text.length(); i++) {
-          if (text.charAt(i) == ')' || Character.isSpaceChar(text.charAt(i)) || Character.isISOControl(text.charAt(i))) {
-            nextIndex = i;
-            break;
-          }
-        }
-        if (nextIndex >= 0 && nextIndex >= position) {
-          return text.substring(start, nextIndex).trim();
-        }
-      }
-    }
-    catch (BadLocationException ex) {
-      Exceptions.printStackTrace(ex);
-    }
-    return null;
-  }
-
-  private static int getIndexAtPoint(final Point p, final JLabel label) {
-    View view = (View) label.getClientProperty("html");
-
-    if (view != null) {
-      Rectangle r = getTextRectangle(label);
-      if (r == null) {
-        return -1;
-      }
-      Rectangle2D.Float shape
-              = new Rectangle2D.Float(r.x, r.y, r.width, r.height);
-      Position.Bias bias[] = new Position.Bias[1];
-      return view.viewToModel(p.x, p.y, shape, bias);
-    }
-    else {
-      return -1;
-    }
-  }
-
-  private static Rectangle getTextRectangle(final JLabel label) {
-
-    String text = label.getText();
-    Icon icon = (label.isEnabled()) ? label.getIcon() : label.getDisabledIcon();
-
-    if ((icon == null) && (text == null)) {
-      return null;
-    }
-
-    Rectangle paintIconR = new Rectangle();
-    Rectangle paintTextR = new Rectangle();
-    Rectangle paintViewR = new Rectangle();
-    Insets paintViewInsets = new Insets(0, 0, 0, 0);
-
-    paintViewInsets = label.getInsets(paintViewInsets);
-    paintViewR.x = paintViewInsets.left;
-    paintViewR.y = paintViewInsets.top;
-    paintViewR.width = label.getWidth() - (paintViewInsets.left + paintViewInsets.right);
-    paintViewR.height = label.getHeight() - (paintViewInsets.top + paintViewInsets.bottom);
-
-    String clippedText = SwingUtilities.layoutCompoundLabel(
-            (JComponent) label,
-            label.getFontMetrics(label.getFont()),
-            text,
-            icon,
-            label.getVerticalAlignment(),
-            label.getHorizontalAlignment(),
-            label.getVerticalTextPosition(),
-            label.getHorizontalTextPosition(),
-            paintViewR,
-            paintIconR,
-            paintTextR,
-            label.getIconTextGap());
-
-    return paintTextR;
-  }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JLabel labelIcon;
-  private javax.swing.JLabel labelText;
+  private com.igormaznitsa.ui.JHtmlLabel textLabel;
   // End of variables declaration//GEN-END:variables
 }
