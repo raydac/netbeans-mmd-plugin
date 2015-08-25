@@ -7,8 +7,10 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>nbm</packaging>
 
-  <name>NetBeans MindMap plugin</name>
+  <name>NB MindMap plugin</name>
   <description>NetBeans plugin to show and edit mind map structured data saved in markdown compatible text format.</description>
+
+  <url>https://github.com/raydac/netbeans-mmd-plugin</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -103,12 +105,19 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>nbm-maven-plugin</artifactId>
-        <version>3.14</version>
+        <version>4.0</version>
         <extensions>true</extensions>
         <configuration>
           <encoding>UTF-8</encoding>
           <author>Igor Maznitsa</author>
-          <homePageUrl>http://www.igormaznitsa.com</homePageUrl>
+          <homePageUrl>https://github.com/raydac/netbeans-mmd-plugin</homePageUrl>
+          <moduleType>normal</moduleType>
+          <licenseName>License Agreement for NB Mind Map</licenseName>
+          <licenseFile>src/main/nbm/LICENSE-2.0.txt</licenseFile>
+          <codeNameBase>com.igormaznitsa.nbmindmap/1</codeNameBase>
+          <requiresRestart>true</requiresRestart>
+          <keystore>private/keystore.jks</keystore>
+          <keystorealias>iam</keystorealias>
         </configuration>
       </plugin>
       <plugin>
@@ -127,6 +136,24 @@
         <configuration>
           <useDefaultManifestFile>true</useDefaultManifestFile>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0-alpha-2</version>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>build.properties</file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

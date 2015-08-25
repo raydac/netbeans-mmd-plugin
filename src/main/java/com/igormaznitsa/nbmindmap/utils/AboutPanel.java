@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import java.awt.Cursor;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -66,8 +67,13 @@ public class AboutPanel extends javax.swing.JPanel {
 
     labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo32.png"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(labelText, "<html>\n<b>NB MindMap plugin</b>\n<hr>\n<p>Version: ${version}</p>\n<br>\n<p>Author: Igor Maznitsa (<a href=\"http://www.igormaznitsa.com\">http://www.igormaznitsa.com</a>)</p>\n<br>\n<hr>\n<p>The Project page: <a href=\"https://github.com/raydac/netbeans-mmd-plugin\">https://github.com/raydac/netbeans-mmd-plugin</a>\n<p>The Project uses icons from the FatCow free web icon set <a href=\"http://www.fatcow.com/free-icons\">http://www.fatcow.com/free-icons</a></p>\n<br>\n</html>"); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(labelText, "<html>\n<b>NB MindMap plugin</b>\n<hr>\n<p>Version: ${version}</p>\n<p>Author: Igor Maznitsa (<a href=\"http://www.igormaznitsa.com\">http://www.igormaznitsa.com</a>)</p>\n<br>\n<hr>\n<br>\n<p>The Plugin allows to embed MindMaps into NetBeans projects, keep structured text information and represent it as a graph view.</p>\n<br>\n<hr>\n<br>\n<p>The Project page: <a href=\"https://github.com/raydac/netbeans-mmd-plugin\">https://github.com/raydac/netbeans-mmd-plugin</a>&nbsp;<br>\nThe Project uses icons from the FatCow free web icon set <a href=\"http://www.fatcow.com/free-icons\">http://www.fatcow.com/free-icons</a>&nbsp;\n</p>\n</html>"); // NOI18N
     labelText.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+    labelText.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+      public void mouseMoved(java.awt.event.MouseEvent evt) {
+        labelTextMouseMoved(evt);
+      }
+    });
     labelText.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {
         labelTextMouseClicked(evt);
@@ -82,7 +88,7 @@ public class AboutPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addComponent(labelIcon)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(labelText)
+        .addComponent(labelText, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -93,7 +99,7 @@ public class AboutPanel extends javax.swing.JPanel {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       .addGroup(layout.createSequentialGroup()
         .addGap(28, 28, 28)
-        .addComponent(labelText, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
+        .addComponent(labelText, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
@@ -109,6 +115,11 @@ public class AboutPanel extends javax.swing.JPanel {
       }
     }
   }//GEN-LAST:event_labelTextMouseClicked
+
+  private void labelTextMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelTextMouseMoved
+    final String link = extractLinkForPoint(evt.getPoint(), this.labelText);
+    this.labelText.setCursor(link == null ? Cursor.getDefaultCursor() : Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+  }//GEN-LAST:event_labelTextMouseMoved
 
   private String extractLinkForPoint(final Point pont, final JLabel label) {
     final int position = getIndexAtPoint(pont, label);
