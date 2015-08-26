@@ -37,6 +37,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -49,20 +50,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.Project;
@@ -236,6 +231,30 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public void onEnsureVisibilityOfTopic(final MindMapPanel source, final Topic topic) {
+    if (topic == null) return;
+    
+    final AbstractElement element = (AbstractElement)topic.getPayload();
+    if (element == null) return;
+  
+    final Rectangle2D orig = element.getBounds();
+    if (orig==null) return;
+    
+    final int GAP = 30;
+    
+    final Rectangle bounds = orig.getBounds();
+    bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
+    bounds.setSize(bounds.width + GAP*2, bounds.height + GAP*2);
+    
+    final JViewport viewport = this.mainScrollPane.getViewport();
+    final Rectangle visible = viewport.getViewRect();
+    
+    if (visible.contains(bounds)) return;
+    
+    final int dx,dy;
+    
+    bounds.setLocation(bounds.x-visible.x, bounds.y-visible.y);
+    
+    viewport.scrollRectToVisible(bounds);
   }
 
   @Override
@@ -795,4 +814,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     return result;
   }
 
+  @Override
+  public int getPersistenceType() {
+    return TopComponent.PERSISTENCE_NEVER;
+  }
 }

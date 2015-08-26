@@ -475,7 +475,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     final boolean sameParent = element.getModel().getParent() == destination.getModel();
 
     final boolean pointInsideDestination = destination.getBounds().contains(dropPoint);
-    final boolean destinationIsRoot = destination instanceof ElementRoot;
+    final boolean destinationIsRoot = destination.getClass() == ElementRoot.class;
 
     if (destinationIsRoot) {
       // root
@@ -490,7 +490,12 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         final Topic prevTopic = destination.findTopicBeforePoint(this.config, dropPoint);
         element.getModel().moveToNewParent(destination.getModel());
         element.getModel().moveAfter(prevTopic);
-        AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), left);
+        if (element.getModel().getTopicLevel() > 1) {
+          AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), false);
+        }
+        else {
+          AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), left);
+        }
       }
     }
     else {
@@ -511,7 +516,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           element.getModel().moveAfter(destination.getModel());
         }
 
-        if (destination instanceof ElementLevelFirst) {
+        if (destination.getClass() == ElementLevelFirst.class) {
           AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), destination.isLeftDirection());
         }
 
@@ -559,7 +564,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           break;
           case KeyEvent.VK_UP:
           case KeyEvent.VK_DOWN: {
-            final boolean firstLevel = current instanceof ElementLevelFirst;
+            final boolean firstLevel = current.getClass() == ElementLevelFirst.class;
             final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(current.getModel());
 
             final TopicChecker checker = new TopicChecker() {
