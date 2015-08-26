@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -39,7 +40,7 @@ public class ExtraNote extends Extra<String> {
 
   @Override
   public void writeContent(final Writer out) throws IOException {
-    out.append(makeCodeBlock(this.text));
+    out.append(Utils.makeMDCodeBlock(this.text));
   }
 
 }

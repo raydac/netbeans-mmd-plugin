@@ -54,7 +54,7 @@ public final class Topic implements Serializable, Constants {
 
   private static final Pattern PATTERN_TOPIC_HEADER = Pattern.compile("^\\s*(\\#+)\\s*(.*)$");
   private static final Pattern PATTERN_EXTRA = Pattern.compile("^\\s*\\-\\s*([^\\s]+)\\s*$");
-  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s*.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|(\\`+)(.+?)\\4|^(.*?)$");
+  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|(\\`+)(.+?)\\4|^(.*?)$");
   private static final Pattern PATTERN_LINK = Pattern.compile("^\\s*\\!?\\[.*\\]\\((.*?)\\)\\s*$");
   private static final int MD_GROUP_HEAD = 1;
   private static final int MD_GROUP_ITEM = 2;

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Locale;
@@ -68,6 +69,6 @@ public class ExtraTopic extends Extra<String> {
 
   @Override
   public void writeContent(final Writer out) throws IOException {
-    out.write(makeCodeBlock(this.topicUID));
+    out.write(Utils.makeMDCodeBlock(this.topicUID));
   }
 }

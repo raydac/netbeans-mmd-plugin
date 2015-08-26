@@ -36,14 +36,16 @@ public class UtilsTest {
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello<br>World"));
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< br>World"));
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< br  >World"));
+    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< br  />World"));
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< Br  >World"));
+    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< Br  />World"));
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< BR  >World"));
     assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< BR  ><strong test=\"some\">World</strong>"));
   }
   
   @Test
   public void testEscapeHtmlStr() {
-    assertEquals("Hello<br>&quot;World&quot;", Utils.escapeHtmlStr("Hello\n\"World\""));
+    assertEquals("Hello<br/>&quot;World&quot;", Utils.escapeHtmlStr("Hello\n\"World\""));
   }
   
 }

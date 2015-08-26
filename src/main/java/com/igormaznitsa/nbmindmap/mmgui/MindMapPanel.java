@@ -151,8 +151,17 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             if ((e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.META_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)) == 0) {
               e.consume();
               final Topic edited = elementUnderEdit.getModel();
+              final int [] topicPosition = edited.getPositionPath();
               endEdit(true);
-              makeNewChildAndStartEdit(edited, null);
+              SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                  final Topic theTopic = model.findForPositionPath(topicPosition);
+                  if (theTopic!= null){
+                    makeNewChildAndStartEdit(theTopic, null);
+                  }
+                }
+              });
             }
           }
           break;

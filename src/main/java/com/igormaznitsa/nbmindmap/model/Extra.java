@@ -52,12 +52,4 @@ public abstract class Extra <T> implements Serializable, Constants, Cloneable {
     writeContent(out);
   }
   
-  protected static String makeCodeBlock(final String text) throws IOException {
-    final int maxQuotes = Utils.calcMaxLengthOfBacktickQuotesSubstr(text)+1;
-    final StringBuilder result = new StringBuilder(text.length()+16);
-    Utils.writeChar(result, '`', maxQuotes);
-    result.append(text);
-    Utils.writeChar(result, '`', maxQuotes);
-    return result.toString();
-  }
 }

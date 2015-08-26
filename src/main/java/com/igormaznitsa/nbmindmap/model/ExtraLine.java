@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -43,6 +44,6 @@ public class ExtraLine extends Extra<SourcePosition> {
 
   @Override
   public void writeContent(final Writer out) throws IOException {
-    out.write(makeCodeBlock(this.position.toString()));
+    out.write(Utils.makeMDCodeBlock(this.position.toString()));
   }
 }

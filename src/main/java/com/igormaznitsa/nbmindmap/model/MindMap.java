@@ -42,8 +42,8 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   private final Topic root;
   private final Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new HashMap<String, String>();
-  private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s*(.+)$");
-  private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*\\\"(.*?)\\\"");
+  private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s(.+)$");
+  private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*(\\`+)(.*?)\\2");
 
   private static final String GENERATOR_VERSION_NAME = "__version__";
   private static final String GENERATOR_VERSION = "1.0";
@@ -191,14 +191,14 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     if (attrmatcher.find()) {
       final Matcher attrParser = PATTERN_ATTRIBUTE.matcher(attrmatcher.group(1));
       while (attrParser.find()) {
-        map.put(attrParser.group(1), Utils.unescapeHtmlStr(attrParser.group(2)));
+        map.put(attrParser.group(1), attrParser.group(3));
       }
       return true;
     }
     return false;
   }
 
-  static String allAttributesAsString(final Map<String, String> map) {
+  static String allAttributesAsString(final Map<String, String> map) throws IOException {
     final StringBuilder buffer = new StringBuilder();
 
     boolean nonfirst = false;
@@ -209,7 +209,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
       else {
         nonfirst = true;
       }
-      buffer.append(e.getKey()).append("=\"").append(Utils.escapeHtmlStr(e.getValue())).append('\"');
+      buffer.append(e.getKey()).append('=').append(Utils.makeMDCodeBlock(e.getValue()));
     }
 
     return buffer.toString();

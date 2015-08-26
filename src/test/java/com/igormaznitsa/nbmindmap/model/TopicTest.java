@@ -44,7 +44,7 @@ public class TopicTest {
   @Test
   public void testParse_OnlyTopicWithExtrasAndAttributes() throws Exception {
     final MindMap mm = new MindMap();
-    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n```Some\ntext```\n- LINK\n[Ha ha](http://www.google.com)\n> attr1=\"hello\",attr2=\"world\"");
+    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n```Some\ntext```\n- LINK\n[Ha ha](http://www.google.com)\n> attr1=`hello`,attr2=``wor`ld``");
     assertEquals("Topic",topic.getText());
     assertTrue(topic.getChildren().isEmpty());
     assertEquals(2,topic.getExtras().size());
@@ -52,18 +52,18 @@ public class TopicTest {
     assertEquals(new URI("http://www.google.com"),(URI)topic.getExtras().get(Extra.ExtraType.LINK).getValue());
     assertEquals(2,topic.getAttributes().size());
     assertEquals("hello",topic.getAttribute("attr1"));
-    assertEquals("world",topic.getAttribute("attr2"));
+    assertEquals("wor`ld",topic.getAttribute("attr2"));
   }
   
   @Test
   public void testParse_TopicAndChild() throws Exception {
     final MindMap mm = new MindMap();
-    final Topic topic = Topic.parse(mm,"# Topic\n ## Child");
-    assertEquals("Topic",topic.getText());
+    final Topic topic = Topic.parse(mm,"# Topic<br>Root\n ## Child<br/>Topic");
+    assertEquals("Topic\nRoot",topic.getText());
     assertEquals(1,topic.getChildren().size());
     
     final Topic child = topic.getChildren().get(0);
-    assertEquals("Child", child.getText());
+    assertEquals("Child\nTopic", child.getText());
     assertTrue(child.getChildren().isEmpty());
   }
   
@@ -86,7 +86,7 @@ public class TopicTest {
   @Test
   public void testParse_MultiLevels() throws Exception {
     final MindMap mm = new MindMap();
-    final Topic root = Topic.parse(mm,"#Level1\n##Level2.1\n###Level3.1\n##Level2.2\n###Level3.2\n####Level4.2\n##Level2.3");
+    final Topic root = Topic.parse(mm,"# Level1\n## Level2.1\n### Level3.1\n## Level2.2\n### Level3.2\n#### Level4.2\n## Level2.3");
     assertEquals("Level1",root.getText());
     assertEquals(3, root.getChildren().size());
     assertEquals("Level2.1", root.getChildren().get(0).getText());
@@ -122,11 +122,11 @@ public class TopicTest {
   public void testParse_WriteOneLevelWithExtraAndAttribute() throws Exception {
     final MindMap mm = new MindMap();
     final Topic root = new Topic(mm,null,"Level1");
-    root.setAttribute("hello", "world");
+    root.setAttribute("hello", "wor`ld");
     root.setExtra(new ExtraLink("http://wwww.igormaznitsa.com"));
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("# Level1\n> hello=\"world\"\n- LINK\n[http://wwww.igormaznitsa.com](http://wwww.igormaznitsa.com)\n",writer.toString());
+    assertEquals("# Level1\n> hello=``wor`ld``\n- LINK\n[http://wwww.igormaznitsa.com](http://wwww.igormaznitsa.com)\n",writer.toString());
   }
   
   @Test
@@ -135,7 +135,7 @@ public class TopicTest {
     final Topic root = new Topic(mm,null,"<Level1>\nNextText");
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("# &lt;Level1&gt;<br>NextText\n",writer.toString());
+    assertEquals("# &lt;Level1&gt;<br/>NextText\n",writer.toString());
   }
   
   @Test
@@ -158,6 +158,18 @@ public class TopicTest {
     final StringWriter writer = new StringWriter();
     root.write(writer);
     assertEquals("# Level1\n## Level2\n### Level3\n## Level2.1\n",writer.toString());
+  }
+  
+  @Test
+  public void testParse_EmptyTextAtMiddleLevel() throws Exception {
+    final MindMap mm = new MindMap();
+    final Topic topic = Topic.parse(mm, "# \n## Child\n");
+    assertEquals("", topic.getText());
+    assertEquals(1, topic.getChildren().size());
+
+    final Topic child2 = topic.getChildren().get(0);
+    assertEquals("Child", child2.getText());
+    assertTrue(child2.getChildren().isEmpty());
   }
   
 }

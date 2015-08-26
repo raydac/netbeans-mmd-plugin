@@ -119,7 +119,7 @@ public enum Utils {
     }
   }
 
-  private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*br\\s*\\>");
+  private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*br\\s*\\/?\\>");
   private static final Pattern HTML_TAG = Pattern.compile("(?i)\\<\\/?.*?\\>");
 
   public static boolean equals(final Map<?, ?> map1, final Map<?, ?> map2) {
@@ -189,7 +189,7 @@ public enum Utils {
   }
 
   public static String escapeHtmlStr(final String text) {
-    return StringEscapeUtils.escapeHtml(text).replace("\n", "<br>");
+    return StringEscapeUtils.escapeHtml(text).replace("\n", "<br/>");
   }
 
   public static String unescapeHtmlStr(final String text) {
@@ -215,5 +215,13 @@ public enum Utils {
     return result;
   }
 
+  public static String makeMDCodeBlock(final String text) throws IOException {
+    final int maxQuotes = Utils.calcMaxLengthOfBacktickQuotesSubstr(text) + 1;
+    final StringBuilder result = new StringBuilder(text.length() + 16);
+    Utils.writeChar(result, '`', maxQuotes);
+    result.append(text);
+    Utils.writeChar(result, '`', maxQuotes);
+    return result.toString();
+  }
 
 }
