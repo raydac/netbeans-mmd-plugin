@@ -1203,6 +1203,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
         if (cel.ensureUncollapsed()) {
           invalidate();
+          revalidate();
           fireNotificationMindMapChanged();
         }
       }

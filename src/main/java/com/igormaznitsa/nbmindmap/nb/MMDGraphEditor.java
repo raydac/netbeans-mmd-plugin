@@ -231,30 +231,43 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public void onEnsureVisibilityOfTopic(final MindMapPanel source, final Topic topic) {
-    if (topic == null) return;
-    
-    final AbstractElement element = (AbstractElement)topic.getPayload();
-    if (element == null) return;
-  
-    final Rectangle2D orig = element.getBounds();
-    if (orig==null) return;
-    
-    final int GAP = 30;
-    
-    final Rectangle bounds = orig.getBounds();
-    bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
-    bounds.setSize(bounds.width + GAP*2, bounds.height + GAP*2);
-    
-    final JViewport viewport = this.mainScrollPane.getViewport();
-    final Rectangle visible = viewport.getViewRect();
-    
-    if (visible.contains(bounds)) return;
-    
-    final int dx,dy;
-    
-    bounds.setLocation(bounds.x-visible.x, bounds.y-visible.y);
-    
-    viewport.scrollRectToVisible(bounds);
+    SwingUtilities.invokeLater(new Runnable(){
+
+      @Override
+      public void run() {
+        if (topic == null) {
+          return;
+        }
+
+        final AbstractElement element = (AbstractElement) topic.getPayload();
+        if (element == null) {
+          return;
+        }
+
+        final Rectangle2D orig = element.getBounds();
+        if (orig == null) {
+          return;
+        }
+
+        final int GAP = 30;
+
+        final Rectangle bounds = orig.getBounds();
+        bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
+        bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
+
+        final JViewport viewport = mainScrollPane.getViewport();
+        final Rectangle visible = viewport.getViewRect();
+
+        if (visible.contains(bounds)) {
+          return;
+        }
+
+        bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
+
+        viewport.scrollRectToVisible(bounds);
+      }
+      
+    });
   }
 
   @Override
