@@ -86,6 +86,23 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  public boolean containTopic(final Topic topic) {
+    boolean result = false;
+
+    if (this == topic) {
+      result = true;
+    }
+    else {
+      for (final Topic t : this.children) {
+        if (t.containTopic(topic)) {
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
   public Object getPayload() {
     return this.payload;
   }
@@ -428,7 +445,7 @@ public final class Topic implements Serializable, Constants {
 
   @Override
   public String toString() {
-    return "MindMapTopic('"+this.text+"')";
+    return "MindMapTopic('" + this.text + "')";
   }
 
   public long getLocalUid() {
@@ -588,27 +605,48 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
-  public Topic[] getPath(){
+  public int [] getPositionPath(){
+    final Topic [] path = getPath();
+    final int [] result = new int [path.length];
+    
+    Topic current = path[0];
+    int index = 1;
+    while(index < path.length){
+      final Topic next = path[index];
+      final int theindex = current.children.indexOf(next);
+      result[index++] = theindex;
+      if (theindex<0){
+        break;
+      }
+      current = next;
+    }
+    
+    return result;
+  }
+  
+  public Topic[] getPath() {
     final List<Topic> list = new ArrayList<Topic>();
     Topic current = this;
-    do{
+    do {
       list.add(0, current);
       current = current.parent;
-    }while(current!=null);
+    }
+    while (current != null);
     return list.toArray(new Topic[list.size()]);
   }
 
   Topic makeCopy(final MindMap newMindMap, final Topic parent) {
     this.map.lock();
-    try{
+    try {
       final Topic result = new Topic(newMindMap, parent, this.text, this.extras.values().toArray(new Extra<?>[this.extras.values().size()]));
-      for(final Topic c : this.children){
+      for (final Topic c : this.children) {
         c.makeCopy(newMindMap, result);
       }
       result.attributes.putAll(this.attributes);
 
       return result;
-    }finally{
+    }
+    finally {
       this.map.unlock();
     }
   }

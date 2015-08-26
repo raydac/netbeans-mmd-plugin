@@ -47,18 +47,18 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
   private static final String GENERATOR_VERSION_NAME = "__version__";
   private static final String GENERATOR_VERSION = "1.0";
-  
+
   private final transient List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
-  
+
   public MindMap() {
     this.root = new Topic(this, null, "");
   }
 
-  public MindMap(final MindMap map){
+  public MindMap(final MindMap map) {
     this.attributes.putAll(map.attributes);
     this.root = map.getRoot() == null ? null : map.getRoot().makeCopy(this, null);
   }
-  
+
   public MindMap(final Reader reader) throws IOException {
     final StringBuilder lineBuffer = new StringBuilder();
     while (true) {
@@ -84,24 +84,24 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
     final String str = IOUtils.toString(reader);
     this.root = Topic.parse(this, str);
-    
+
     this.attributes.put(GENERATOR_VERSION_NAME, GENERATOR_VERSION);
   }
-  
-  private void fireModelChanged(){
-    final TreeModelEvent evt = new TreeModelEvent(this, this.root == null ?  null : this.root.getPath());
-    for(final TreeModelListener l : this.treeListeners){
+
+  private void fireModelChanged() {
+    final TreeModelEvent evt = new TreeModelEvent(this, this.root == null ? null : this.root.getPath());
+    for (final TreeModelListener l : this.treeListeners) {
       l.treeStructureChanged(evt);
     }
   }
-  
-  private void fireTopicChanged(final Topic topic){
+
+  private void fireTopicChanged(final Topic topic) {
     final TreeModelEvent evt = new TreeModelEvent(this, topic == null ? null : topic.getPath());
-    for(final TreeModelListener l : this.treeListeners){
+    for (final TreeModelListener l : this.treeListeners) {
       l.treeNodesChanged(evt);
     }
   }
-  
+
   public String getAttribute(final String name) {
     return this.attributes.get(name);
   }
@@ -138,6 +138,41 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     for (final Topic m : t.getChildren()) {
       resetPayload(m);
     }
+  }
+
+  public Topic findForPositionPath(final int [] positions){
+    if (positions == null || positions.length==0) return null;
+    if (positions.length == 1) return this.root;
+
+    Topic result = this.root;
+    int index = 1;
+    while(result!=null && index<positions.length){
+      final int elementPosition = positions[index++];
+      if (elementPosition<0 || result.getChildren().size()<=elementPosition) {
+        result = null;
+        break;
+      }
+      result = result.getChildren().get(elementPosition);
+    }
+    return result;
+  }
+  
+  public List<Topic> removeNonExistingTopics(final List<Topic> origList) {
+    final List<Topic> result = new ArrayList<Topic>();
+    this.locker.lock();
+    try {
+      if (this.root != null) {
+        for (final Topic t : origList) {
+          if (this.root.containTopic(t)){
+            result.add(t);
+          }
+        }
+      }
+    }
+    finally {
+      this.locker.unlock();
+    }
+    return result;
   }
 
   @Override
@@ -205,19 +240,22 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   }
 
   public void removeTopic(final Topic topic) {
-    if (this.root == topic){
+    if (this.root == topic) {
       this.root.setText("");
       this.root.removeExtras();
       this.root.setPayload(null);
       this.root.removeAllChildren();
-    }else{
+    }
+    else {
       this.root.removeTopic(topic);
     }
   }
 
   public Topic findTopicForLink(final ExtraTopic link) {
-    if (link == null) return null;
-    return this.root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR,link.getValue());
+    if (link == null) {
+      return null;
+    }
+    return this.root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
   }
 
   @Override
@@ -237,11 +275,12 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
   @Override
   public void valueForPathChanged(final TreePath path, final Object newValue) {
-    if (newValue instanceof String){
-      ((Topic)path.getLastPathComponent()).setText((String)newValue);
+    if (newValue instanceof String) {
+      ((Topic) path.getLastPathComponent()).setText((String) newValue);
       fireTopicChanged((Topic) path.getLastPathComponent());
-    }else {
-      Logger.warn("Attempt to set non string value to path : "+path);
+    }
+    else {
+      Logger.warn("Attempt to set non string value to path : " + path);
     }
   }
 

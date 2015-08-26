@@ -326,7 +326,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
               }
             }
             else {
-              selectedTopics.clear();
+              removeAllSelection();
               for (final Topic m : covered) {
                 select(m, false);
               }
@@ -778,6 +778,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   public void endEdit(final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
+        final Topic editedTopic = this.elementUnderEdit.getModel();
         this.elementUnderEdit.setText(this.textEditor.getText());
         repaint();
         fireNotificationMindMapChanged();
@@ -844,10 +845,30 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   }
 
   public void setModel(final MindMap model) {
-    removeAllSelection();
+    final List<int[]> selectedPaths = new ArrayList<int[]>();
+    for (final Topic t : this.selectedTopics) {
+      selectedPaths.add(t.getPositionPath());
+    }
+
+    this.selectedTopics.clear();
+
     this.model = model;
     invalidate();
     revalidate();
+
+    boolean selectionChanged = false;
+    for (final int[] posPath : selectedPaths) {
+      final Topic topic = this.model.findForPositionPath(posPath);
+      if (topic == null) {
+        selectionChanged = true;
+      }
+      else {
+        this.selectedTopics.add(topic);
+      }
+    }
+    if (selectionChanged) {
+      fireNotificationSelectionChanged();
+    }
     repaint();
   }
 
@@ -1208,7 +1229,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         }
       }
 
-      this.selectedTopics.clear();
+      removeAllSelection();
       this.select(theTopic, false);
     }
   }
