@@ -175,7 +175,7 @@ public final class Topic implements Serializable, Constants {
           final Matcher topicMatcher = PATTERN_TOPIC_HEADER.matcher(matcher.group(MD_GROUP_HEAD));
           if (topicMatcher.find()) {
             final int newDepth = topicMatcher.group(1).length();
-            final String newTopicText = Utils.unescapeHtmlStr(topicMatcher.group(2));
+            final String newTopicText = Utils.unescapeMarkdownStr(topicMatcher.group(2));
 
             if (newDepth == depth + 1) {
               depth = newDepth;
@@ -411,7 +411,7 @@ public final class Topic implements Serializable, Constants {
 
   private void write(final int level, final Writer out) throws IOException {
     Utils.writeChar(out, '#', level);
-    out.append(' ').append(Utils.escapeHtmlStr(this.text)).append(NEXT_LINE);
+    out.append(' ').append(Utils.escapeMarkdownStr(this.text)).append(NEXT_LINE);
     if (!this.attributes.isEmpty()) {
       out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE);
     }

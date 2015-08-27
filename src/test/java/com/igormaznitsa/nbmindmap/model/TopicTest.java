@@ -135,7 +135,7 @@ public class TopicTest {
     final Topic root = new Topic(mm,null,"<Level1>\nNextText");
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("# &lt;Level1&gt;<br/>NextText\n",writer.toString());
+    assertEquals("# \\<Level1\\><br/>NextText\n",writer.toString());
   }
   
   @Test
@@ -157,7 +157,7 @@ public class TopicTest {
     new Topic(mm,root, "Level2.1");
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("# Level1\n## Level2\n### Level3\n## Level2.1\n",writer.toString());
+    assertEquals("# Level1\n## Level2\n### Level3\n## Level2\\.1\n",writer.toString());
   }
   
   @Test

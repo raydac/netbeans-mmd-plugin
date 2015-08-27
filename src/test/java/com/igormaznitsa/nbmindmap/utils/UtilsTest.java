@@ -32,20 +32,20 @@ public class UtilsTest {
   }
 
   @Test
-  public void testUnescapeHtmlStr() {
-    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello<br>World"));
-    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< br>World"));
-    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< br  >World"));
-    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< br  />World"));
-    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< Br  >World"));
-    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< Br  />World"));
-    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< BR  >World"));
-    assertEquals("Hello\nWorld", Utils.unescapeHtmlStr("Hello< BR  ><strong test=\"some\">World</strong>"));
+  public void testUnescapeMarkdownStr() {
+    assertEquals("Hello\nWorld", Utils.unescapeMarkdownStr("Hello<br>World"));
+    assertEquals("<>\n", Utils.unescapeMarkdownStr("\\<\\><br>"));
+    assertEquals("\\`*_{}[]()#<>+-.!\n", Utils.unescapeMarkdownStr("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\<\\>\\+\\-\\.\\!<br/>"));
+    assertEquals("Hello `<\nWorld>`", Utils.unescapeMarkdownStr("Hello \\`<<br/>World\\>\\`"));
+    assertEquals("", Utils.unescapeMarkdownStr(""));
   }
   
   @Test
-  public void testEscapeHtmlStr() {
-    assertEquals("Hello<br/>&quot;World&quot;", Utils.escapeHtmlStr("Hello\n\"World\""));
+  public void testEscapeMarkdownStr() {
+    assertEquals("Hello<br/>World", Utils.escapeMarkdownStr("Hello\nWorld"));
+    assertEquals("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\<\\>\\+\\-\\.\\!<br/>", Utils.escapeMarkdownStr("\\`*_{}[]()#<>+-.!\n"));
+    assertEquals("Hello \\`\\<<br/>World\\>\\`", Utils.escapeMarkdownStr("Hello `<\nWorld>`"));
+    assertEquals("", Utils.escapeMarkdownStr(""));
   }
   
 }

@@ -15,16 +15,21 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.nbmindmap.mmgui.AbstractCollapsableElement;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.SwingUtilities;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
 public enum Utils {
+
   ;
         
   public static String[] breakToLines(final String text) {
@@ -119,8 +124,9 @@ public enum Utils {
     }
   }
 
-  private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*br\\s*\\/?\\>");
-  private static final Pattern HTML_TAG = Pattern.compile("(?i)\\<\\/?.*?\\>");
+  private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!";
+  private static final Pattern MD_ESCAPED_PATTERN = Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])");
+  private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>");
 
   public static boolean equals(final Map<?, ?> map1, final Map<?, ?> map2) {
     if (map1 == map2) {
@@ -188,12 +194,35 @@ public enum Utils {
     }
   }
 
-  public static String escapeHtmlStr(final String text) {
-    return StringEscapeUtils.escapeHtml(text).replace("\n", "<br/>");
+  public static String escapeMarkdownStr(final String text) {
+    final StringBuilder buffer = new StringBuilder(text.length() * 2);
+    for (final char c : text.toCharArray()) {
+      if (c == '\n') {
+        buffer.append("<br/>");
+        continue;
+      }
+      else if (Character.isISOControl(c)) {
+        continue;
+      }
+      else if (MD_ESCAPED_CHARS.indexOf(c) >= 0) {
+        buffer.append('\\');
+      }
+
+      buffer.append(c);
+    }
+    return buffer.toString();
   }
 
-  public static String unescapeHtmlStr(final String text) {
-    return StringEscapeUtils.unescapeHtml(HTML_TAG.matcher(UNESCAPE_BR.matcher(text).replaceAll("\n")).replaceAll(""));
+  public static String unescapeMarkdownStr(final String text) {
+    String unescaped = UNESCAPE_BR.matcher(text).replaceAll("\n");
+    final StringBuffer result = new StringBuffer(text.length());
+    final Matcher escaped = MD_ESCAPED_PATTERN.matcher(unescaped);
+    while (escaped.find()) {
+      final String group = escaped.group(1);
+      escaped.appendReplacement(result, Matcher.quoteReplacement(group.substring(1)));
+    }
+    escaped.appendTail(result);
+    return result.toString();
   }
 
   public static int calcMaxLengthOfBacktickQuotesSubstr(final String text) {
@@ -224,4 +253,23 @@ public enum Utils {
     return result.toString();
   }
 
+  public static Topic[] getLeftToRightOrderedChildrens(final Topic topic) {
+    final List<Topic> result = new ArrayList<Topic>();
+    if (topic.getTopicLevel() == 0) {
+      for (final Topic t : topic.getChildren()) {
+        if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
+          result.add(t);
+        }
+      }
+      for (final Topic t : topic.getChildren()) {
+        if (!AbstractCollapsableElement.isLeftSidedTopic(t)) {
+          result.add(t);
+        }
+      }
+    }
+    else {
+      result.addAll(topic.getChildren());
+    }
+    return result.toArray(new Topic[result.size()]);
+  }
 }
