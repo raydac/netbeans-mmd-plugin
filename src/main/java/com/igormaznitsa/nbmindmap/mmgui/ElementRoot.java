@@ -72,8 +72,8 @@ public final class ElementRoot extends AbstractElement {
     g.setColor(cfg.getRootTextColor());
     this.textBlock.paint(g);
 
-    if (this.iconBlock.hasContent()) {
-      this.iconBlock.paint(g);
+    if (this.extrasIconBlock.hasContent()) {
+      this.extrasIconBlock.paint(g);
     }
 
 //    g.setColor(Color.white);
@@ -130,13 +130,13 @@ public final class ElementRoot extends AbstractElement {
     this.moveTo(dx, dy);
 
     final int textMargin = Math.round(cfg.getScale() * cfg.getTextMargins());
-    final double centralLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.iconBlock.getBounds().getHeight()) / 2;
+    final double centralLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()) / 2;
 
-    this.textBlock.setCoordOffset(textMargin, centralLineY - this.textBlock.getBounds().getHeight()/2);
-    if (this.iconBlock.hasContent()){
-      this.iconBlock.setCoordOffset(textMargin+this.textBlock.getBounds().getWidth()+cfg.getScale()*cfg.getHorizontalBlockGap(), centralLineY - this.iconBlock.getBounds().getHeight()/2);
+    this.textBlock.setCoordOffset(textMargin, centralLineY - this.textBlock.getBounds().getHeight() / 2);
+    if (this.extrasIconBlock.hasContent()) {
+      this.extrasIconBlock.setCoordOffset(textMargin + this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap(), centralLineY - this.extrasIconBlock.getBounds().getHeight() / 2);
     }
-    
+
     final double insetVert = cfg.getFirstLevelVerticalInset() * cfg.getScale();
     final double insetHorz = cfg.getFirstLevelHorizontalInset() * cfg.getScale();
 
@@ -184,7 +184,7 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size) {
+  public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size, final boolean childrenOnly) {
     final float insetV = cfg.getScale() * cfg.getFirstLevelVerticalInset();
     final float insetH = cfg.getScale() * cfg.getFirstLevelHorizontalInset();
 
@@ -201,7 +201,7 @@ public final class ElementRoot extends AbstractElement {
     for (final Topic t : this.model.getChildren()) {
       final ElementLevelFirst w = (ElementLevelFirst) t.getPayload();
 
-      w.calcBlockSize(cfg, result);
+      w.calcBlockSize(cfg, result, false);
 
       if (w.isLeftDirection()) {
         leftWidth = Math.max(leftWidth, result.getWidth());
@@ -225,13 +225,21 @@ public final class ElementRoot extends AbstractElement {
       }
     }
 
-    leftWidth += nonfirstOnLeft ? insetH : 0.0d;
-    rightWidth += nonfirstOnRight ? insetH : 0.0d;
+    if (!childrenOnly) {
+      leftWidth += nonfirstOnLeft ? insetH : 0.0d;
+      rightWidth += nonfirstOnRight ? insetH : 0.0d;
+    }
 
     this.leftBlockSize.setSize(leftWidth, leftHeight);
     this.rightBlockSize.setSize(rightWidth, rightHeight);
 
-    result.setSize(leftWidth + rightWidth + this.bounds.getWidth(), Math.max(this.bounds.getHeight(), Math.max(leftHeight, rightHeight)));
+    if (childrenOnly) {
+      result.setSize(leftWidth + rightWidth, Math.max(leftHeight, rightHeight));
+    }
+    else {
+      result.setSize(leftWidth + rightWidth + this.bounds.getWidth(), Math.max(this.bounds.getHeight(), Math.max(leftHeight, rightHeight)));
+    }
+
     return result;
   }
 

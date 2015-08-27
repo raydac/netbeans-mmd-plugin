@@ -42,6 +42,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/disk16.png"/>
             </Property>
+            <Property name="text" type="java.lang.String" value="Import" noResource="true"/>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="com/igormaznitsa/nbmindmap/utils/Bundle.properties" key="PlainTextEditor.buttonLoad.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
@@ -58,6 +59,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/file_save16.png"/>
             </Property>
+            <Property name="text" type="java.lang.String" value="Export" noResource="true"/>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="com/igormaznitsa/nbmindmap/utils/Bundle.properties" key="PlainTextEditor.buttonSave.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>

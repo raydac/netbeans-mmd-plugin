@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.mmgui;
 
 import com.igormaznitsa.nbmindmap.model.Topic;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -28,7 +29,7 @@ public abstract class AbstractElement {
   protected final Topic model;
 
   protected final TextBlock textBlock;
-  protected final IconBlock iconBlock;
+  protected final IconBlock extrasIconBlock;
 
   protected final Rectangle2D bounds = new Rectangle2D.Float();
   protected final Dimension2D blockSize = new Dimension();
@@ -46,7 +47,7 @@ public abstract class AbstractElement {
     this.model = model;
     this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
     this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align")));
-    this.iconBlock = new IconBlock(model);
+    this.extrasIconBlock = new IconBlock(model);
   }
 
   public Topic getModel() {
@@ -64,21 +65,21 @@ public abstract class AbstractElement {
 
   public void updateElementBounds(final Graphics2D gfx, final Configuration cfg) {
     this.textBlock.updateSize(gfx, cfg);
-    this.iconBlock.updateSize(gfx, cfg);
+    this.extrasIconBlock.updateSize(gfx, cfg);
 
     final double width;
-    if (this.iconBlock.hasContent()) {
-      width = this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap() + this.iconBlock.getBounds().getWidth();
+    if (this.extrasIconBlock.hasContent()) {
+      width = this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap() + this.extrasIconBlock.getBounds().getWidth();
     }
     else {
       width = this.textBlock.getBounds().getWidth();
     }
 
-    this.bounds.setRect(0d, 0d, width, Math.max(this.textBlock.getBounds().getHeight(), this.iconBlock.getBounds().getHeight()));
+    this.bounds.setRect(0d, 0d, width, Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()));
   }
 
   public void updateBlockSize(final Configuration cfg) {
-    this.calcBlockSize(cfg, this.blockSize);
+    this.calcBlockSize(cfg, this.blockSize, false);
   }
 
   public Dimension2D getBlockSize() {
@@ -145,7 +146,7 @@ public abstract class AbstractElement {
 
   public abstract void alignElementAndChildren(Configuration cfg, boolean leftSide, double centerX, double centerY);
 
-  public abstract Dimension2D calcBlockSize(Configuration cfg, Dimension2D size);
+  public abstract Dimension2D calcBlockSize(Configuration cfg, Dimension2D size, boolean childrenOnly);
 
   public abstract boolean hasDirection();
 
@@ -159,7 +160,7 @@ public abstract class AbstractElement {
       if (this.textBlock.getBounds().contains(offX, offY)) {
         result = ElementPart.TEXT;
       }
-      else if (this.iconBlock.getBounds().contains(offX, offY)) {
+      else if (this.extrasIconBlock.getBounds().contains(offX, offY)) {
         result = ElementPart.ICONS;
       }
     }
@@ -213,17 +214,17 @@ public abstract class AbstractElement {
     return this.bounds.getX() - (this.isLeftDirection() ? this.blockSize.getWidth() - this.bounds.getWidth() : 0.0d);
   }
 
-  public AbstractElement findNearestTopic(final Point point) {
-    return findNearestTopic(calcDistanceToPoint(point), point);
+  public AbstractElement findNearestTopic(final AbstractElement elementToIgnore, final Point point) {
+    return findNearestTopic(elementToIgnore, calcDistanceToPoint(point), point);
   }
 
-  private AbstractElement findNearestTopic(final double lessThanDistance, final Point point) {
-    double curDistance = calcDistanceToPoint(point);
+  private AbstractElement findNearestTopic(final AbstractElement elementToIgnore, final double lessThanDistance, final Point point) {
+    double curDistance = this == elementToIgnore ? Double.MAX_VALUE : calcDistanceToPoint(point);
     AbstractElement result = curDistance <= lessThanDistance ? this : null;
     for (final Topic t : this.model.getChildren()) {
       final AbstractElement element = t.getPayload() == null ? null : (AbstractElement) t.getPayload();
       if (element != null) {
-        final AbstractElement nearestChild = element.findNearestTopic(curDistance, point);
+        final AbstractElement nearestChild = element.findNearestTopic(elementToIgnore, curDistance, point);
         if (nearestChild != null) {
           final double dist = nearestChild.calcDistanceToPoint(point);
           if (dist < curDistance) {
@@ -293,7 +294,7 @@ public abstract class AbstractElement {
   }
 
   public IconBlock getIconBlock() {
-    return this.iconBlock;
+    return this.extrasIconBlock;
   }
 
   public boolean collapseOrExpandAllChildren(final boolean collapse) {

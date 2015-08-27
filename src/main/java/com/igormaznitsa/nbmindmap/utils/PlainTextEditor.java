@@ -117,6 +117,7 @@ public class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.setRollover(true);
 
     buttonLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/disk16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonLoad, "Import"); // NOI18N
     buttonLoad.setToolTipText(org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonLoad.toolTipText")); // NOI18N
     buttonLoad.setFocusable(false);
     buttonLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -129,6 +130,7 @@ public class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonLoad);
 
     buttonSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_save16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonSave, "Export"); // NOI18N
     buttonSave.setToolTipText(org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonSave.toolTipText")); // NOI18N
     buttonSave.setFocusable(false);
     buttonSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

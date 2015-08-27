@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.mmgui;
 
 import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
@@ -49,13 +50,11 @@ public class ElementLevelOther extends ElementLevelFirst {
     g.setColor(cfg.getElementBorderColor());
     g.draw(shape);
 
-    final int margin = Math.round(cfg.getScale() * cfg.getTextMargins());
-
     g.setColor(cfg.getOtherLevelTextColor());
     this.textBlock.paint(g);
     
-    if (this.iconBlock.hasContent()) {
-      this.iconBlock.paint(g);
+    if (this.extrasIconBlock.hasContent()) {
+      this.extrasIconBlock.paint(g);
     }
 
     if (this.hasChildren()){

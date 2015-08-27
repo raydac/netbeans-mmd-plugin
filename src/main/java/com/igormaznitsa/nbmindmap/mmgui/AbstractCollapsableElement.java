@@ -96,32 +96,32 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   @Override
-  public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size) {
+  public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size, final boolean childrenOnly) {
     final Dimension2D result = size == null ? new Dimension() : size;
 
     final float scaledVInset = cfg.getScale() * cfg.getOtherLevelVerticalInset();
     final float scaledHInset = cfg.getScale() * cfg.getOtherLevelHorizontalInset();
 
-    double width = this.bounds.getWidth();
-    double height = this.bounds.getHeight();
+    double width = childrenOnly ? 0.0d : this.bounds.getWidth();
+    double height = childrenOnly ? 0.0d : this.bounds.getHeight();
 
     if (this.hasChildren()) {
       if (!this.isCollapsed()) {
-        width += scaledHInset;
+        width += childrenOnly ? 0.0d : scaledHInset;
 
-        final double baseWidth = width;
+        final double baseWidth = childrenOnly ? 0.0d : width;
         double childrenHeight = 0.0d;
 
-        boolean notFirst = false;
+        boolean notFirstChiild = false;
 
         for (final Topic t : this.model.getChildren()) {
-          if (notFirst) {
+          if (notFirstChiild) {
             childrenHeight += scaledVInset;
           }
           else {
-            notFirst = true;
+            notFirstChiild = true;
           }
-          ((AbstractElement) t.getPayload()).calcBlockSize(cfg, result);
+          ((AbstractElement) t.getPayload()).calcBlockSize(cfg, result, false);
           width = Math.max(baseWidth + result.getWidth(), width);
           childrenHeight += result.getHeight();
         }
@@ -129,7 +129,9 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
         height = Math.max(height, childrenHeight);
       }
       else {
-        width += cfg.getCollapsatorSize() * cfg.getScale();
+        if (!childrenOnly) {
+          width += cfg.getCollapsatorSize() * cfg.getScale();
+        }
       }
     }
     result.setSize(width, height);
@@ -163,11 +165,11 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     }
 
     final int textMargin = Math.round(cfg.getScale() * cfg.getTextMargins());
-    final double centralLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.iconBlock.getBounds().getHeight()) / 2;
+    final double centralBlockLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()) / 2;
 
-    this.textBlock.setCoordOffset(textMargin, centralLineY - this.textBlock.getBounds().getHeight() / 2);
-    if (this.iconBlock.hasContent()) {
-      this.iconBlock.setCoordOffset(textMargin + this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap(), centralLineY - this.iconBlock.getBounds().getHeight() / 2);
+    this.textBlock.setCoordOffset(textMargin, centralBlockLineY - this.textBlock.getBounds().getHeight() / 2);
+    if (this.extrasIconBlock.hasContent()) {
+      this.extrasIconBlock.setCoordOffset(textMargin + this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap(), centralBlockLineY - this.extrasIconBlock.getBounds().getHeight() / 2);
     }
 
     this.collapsatorZone.setRect(collapsatorX, (this.bounds.getHeight() - COLLAPSATORSIZE) / 2, COLLAPSATORSIZE, COLLAPSATORSIZE);
@@ -175,16 +177,17 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     if (!this.isCollapsed()) {
       final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
 
-      double currentY = topY;
-
-      boolean notFirst = false;
+      final Dimension2D childBlockSize = calcBlockSize(cfg, null, true);
+      double currentY = topY + (this.blockSize.getHeight() - childBlockSize.getHeight()) / 2.0d;
+      
+      boolean notFirstChild = false;
 
       for (final Topic t : this.model.getChildren()) {
-        if (notFirst) {
+        if (notFirstChild) {
           currentY += vertInset;
         }
         else {
-          notFirst = true;
+          notFirstChild = true;
         }
         final AbstractElement w = (AbstractElement) t.getPayload();
         w.alignElementAndChildren(cfg, leftSide, leftSide ? childrenX - w.getBlockSize().getWidth() : childrenX, currentY);
@@ -208,8 +211,8 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     g.setColor(cfg.getConnectorColor());
 
     final double dy = Math.abs(destination.getCenterY() - source.getCenterY());
-    if (dy < (16d * cfg.getScale())) {
-      g.drawLine((int) source.getCenterX(), (int) source.getCenterY(), (int) destination.getCenterX(), (int) destination.getCenterY());
+    if (dy < (16.0d * cfg.getScale())) {
+      g.drawLine((int) source.getCenterX(), (int) source.getCenterY(), (int) destination.getCenterX(), (int) source.getCenterY());
     }
     else {
       final Path2D path = new Path2D.Double();

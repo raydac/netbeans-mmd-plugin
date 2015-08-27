@@ -33,6 +33,7 @@ import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
@@ -137,6 +138,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     COMMON_CONFIG.addConfigurationListener(this);
 
     this.textEditor.setMargin(new Insets(5, 5, 5, 5));
+    this.textEditor.setBorder(BorderFactory.createEtchedBorder());
     this.textEditor.setTabSize(4);
     this.textEditor.addKeyListener(new KeyAdapter() {
 
@@ -240,6 +242,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             }
           }
           break;
+          case ' ': {
+            if (hasOnlyTopicSelected() && (e.getModifiersEx() & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK | KeyEvent.META_DOWN_MASK))!=0){
+              startEdit((AbstractElement)selectedTopics.get(0).getPayload());
+            }
+          }
         }
       }
 
@@ -807,7 +814,6 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
     else {
       this.elementUnderEdit = element;
-      final TextBlock painter = element.getTextBlock();
       element.fillByTextAndFont(this.textEditor);
       final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
       this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
@@ -823,7 +829,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private void findDestinationElementForDragged() {
     if (this.draggedElementPoint != null && this.draggedElement != null) {
       final AbstractElement root = (AbstractElement) this.model.getRoot().getPayload();
-      this.destinationElement = root.findNearestTopic(this.draggedElementPoint);
+      this.destinationElement = root.findNearestTopic(this.draggedElement, this.draggedElementPoint);
     }
     else {
       this.destinationElement = null;
@@ -946,7 +952,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  private void drawDestinationElement(final Graphics2D g, final Configuration cfg) {
+  private void drawDestinationElement(final Graphics2D g,final Configuration cfg) {
     if (this.destinationElement != null) {
       final Rectangle2D elementBounds = this.destinationElement.getBounds();
 
