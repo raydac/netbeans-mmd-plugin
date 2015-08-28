@@ -831,4 +831,12 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   public int getPersistenceType() {
     return TopComponent.PERSISTENCE_NEVER;
   }
+
+  public void focusToPath(final int[] positionPath) {
+    this.mindMapPanel.removeAllSelection();
+    final Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
+    if (topic!=null){
+      this.mindMapPanel.select(topic, false);
+    }
+  }
 }

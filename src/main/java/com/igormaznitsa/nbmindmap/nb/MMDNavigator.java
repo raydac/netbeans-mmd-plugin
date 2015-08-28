@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.model.MindMap;
+import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
 import java.awt.event.ActionEvent;
@@ -27,7 +28,7 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import org.netbeans.api.actions.Openable;
+import javax.swing.tree.TreePath;
 import org.netbeans.spi.navigator.NavigatorPanel;
 import org.openide.filesystems.FileAttributeEvent;
 import org.openide.filesystems.FileChangeListener;
@@ -56,9 +57,13 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
       public void actionPerformed(ActionEvent e) {
         final MMDDataObject current = (MMDDataObject) currentSupport.getDataObject();
         if (current != null) {
-          final Openable openable = current.getLookup().lookup(Openable.class);
-          if (openable != null) {
-            openable.open();
+          final MMDEditorSupport edSupport = current.getLookup().lookup(MMDEditorSupport.class);
+          if (edSupport!=null){
+            edSupport.edit();
+            final TreePath path = mindMapTree.getSelectionPath();
+            if (path!=null){
+              edSupport.focusToPosition(((Topic) path.getLastPathComponent()).getPositionPath());
+            }
           }
         }
       }

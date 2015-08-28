@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -37,6 +38,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
+import org.openide.windows.CloneableTopComponent;
 
 public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, ChangeListener {
 
@@ -178,6 +180,14 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
       if (ge != null) {
         ge.updateView();
       }
+    }
+  }
+
+  public void focusToPosition(final int[] positionPath) {
+    final Enumeration<CloneableTopComponent> editors = this.allEditors.getComponents();
+    while(editors.hasMoreElements()){
+      final MMDGraphEditor editor = (MMDGraphEditor)editors.nextElement();
+      editor.focusToPath(positionPath);
     }
   }
 
