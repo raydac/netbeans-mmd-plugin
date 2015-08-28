@@ -565,7 +565,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     final ExtraTopic remove = new ExtraTopic("_______");
 
     if (link == null) {
-      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, null);
+      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
       if (NbUtils.plainMessageOkCancel("Select topic", panel)) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
@@ -577,7 +577,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
       }
     }
     else {
-      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, null);
+      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
       if (NbUtils.plainMessageOkCancel("Edit selected topic", panel)) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {

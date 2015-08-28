@@ -52,16 +52,16 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
 
   public MMDNavigator() {
     super();
-    this.mindMapTree = new MindMapTreePanel(null,null,new ActionListener() {
+    this.mindMapTree = new MindMapTreePanel(null, null, true, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         final MMDDataObject current = (MMDDataObject) currentSupport.getDataObject();
         if (current != null) {
           final MMDEditorSupport edSupport = current.getLookup().lookup(MMDEditorSupport.class);
-          if (edSupport!=null){
+          if (edSupport != null) {
             edSupport.edit();
             final TreePath path = mindMapTree.getSelectionPath();
-            if (path!=null){
+            if (path != null) {
               edSupport.focusToPosition(((Topic) path.getLastPathComponent()).getPositionPath());
             }
           }
@@ -95,26 +95,26 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
 
   private void extractDataFromContextAndUpdate() {
     final Lookup.Result<? extends MMDEditorSupport> ctx = this.context;
-    
+
     if (ctx == null) {
       this.currentSupport = null;
     }
     else {
       Collection<? extends MMDEditorSupport> clct = ctx.allInstances();
-      
-      if (clct.isEmpty()){
+
+      if (clct.isEmpty()) {
         final TopComponent active = TopComponent.getRegistry().getActivated();
-        if (active!=null){
+        if (active != null) {
           clct = active.getLookup().lookupAll(MMDEditorSupport.class);
         }
       }
-      
+
       if (clct.isEmpty()) {
         this.currentSupport = null;
       }
       else {
         this.currentSupport = clct.iterator().next();
-        if (this.currentSupport!=null){
+        if (this.currentSupport != null) {
           this.currentSupport.getDataObject().getPrimaryFile().removeFileChangeListener(this);
           this.currentSupport.getDataObject().getPrimaryFile().addFileChangeListener(this);
         }
@@ -123,17 +123,17 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
     updateContent();
   }
 
-  private String getDocumentText(){
+  private String getDocumentText() {
     String result = null;
-    if (this.currentSupport != null){
+    if (this.currentSupport != null) {
       final MMDEditorSupport editor = this.currentSupport;
-      if (editor!=null){
+      if (editor != null) {
         result = editor.getDocumentText();
       }
     }
     return result;
   }
-  
+
   private void updateContent() {
     final String text = getDocumentText();
     if (text != null) {
@@ -155,11 +155,11 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
     if (this.context != null) {
       this.context.removeLookupListener(this);
     }
-    
-    if (this.currentSupport != null){
+
+    if (this.currentSupport != null) {
       this.currentSupport.getDataObject().getPrimaryFile().removeFileChangeListener(this);
     }
-    
+
     this.mindMapTree.setModel(null);
     this.currentSupport = null;
     this.context = null;
@@ -206,6 +206,4 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
   public void fileAttributeChanged(FileAttributeEvent fe) {
   }
 
-  
-  
 }

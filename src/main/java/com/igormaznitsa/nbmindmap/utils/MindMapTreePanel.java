@@ -34,7 +34,7 @@ public class MindMapTreePanel extends javax.swing.JPanel {
 
   private final MindMapTreeCellRenderer cellRenderer = new MindMapTreeCellRenderer();
 
-  public MindMapTreePanel(final MindMap map, final ExtraTopic selectedTopicUid, final ActionListener listener) {
+  public MindMapTreePanel(final MindMap map, final ExtraTopic selectedTopicUid, final boolean expandAll, final ActionListener listener) {
     initComponents();
     this.treeMindMap.setCellRenderer(this.cellRenderer);
     this.treeMindMap.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -62,8 +62,24 @@ public class MindMapTreePanel extends javax.swing.JPanel {
 
     
     this.setPreferredSize(new Dimension(450, 400));
+    
+    if (expandAll){
+      expandAll();
+    }
   }
 
+  public void expandAll(){
+    for (int i = 0; i < this.treeMindMap.getRowCount(); i++) {
+      this.treeMindMap.expandRow(i);
+    }
+  }
+  
+  public void collapseAll(){
+    for (int i = 0; i < this.treeMindMap.getRowCount(); i++) {
+      this.treeMindMap.collapseRow(i);
+    }
+  }
+  
   public JTree getTree() {
     return this.treeMindMap;
   }

@@ -55,7 +55,7 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
     final byte[] imageData = buff.toByteArray();
 
     final File home = new File(System.getProperty("user.home"));
-    final File fileToSaveImage = new FileChooserBuilder("user-dir").setTitle("Save PNG Image").setDefaultWorkingDirectory(home).setFilesOnly(true).addFileFilter(new FileFilter() {
+    final File fileToSaveImage = new FileChooserBuilder("user-dir").setTitle("Export as PNG Image").setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
 
       @Override
       public boolean accept(File f) {
