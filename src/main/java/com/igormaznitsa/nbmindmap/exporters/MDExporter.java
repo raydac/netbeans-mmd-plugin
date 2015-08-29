@@ -38,6 +38,8 @@ import org.openide.util.Utilities;
 
 public class MDExporter extends AbstractMindMapExporter {
 
+  private static final int STARTING_INDEX_FOR_NUMERATION = 5;
+  
   private static class State {
 
     private static final String NEXT_LINE = System.getProperty("line.separator", "\n");
@@ -93,33 +95,8 @@ public class MDExporter extends AbstractMindMapExporter {
     return result.toString();
   }
 
-  private static String makeLinkToTopic(final Topic topic){
-    final int [] path = topic.getPositionPath();
-    
-    final String listPosition;
-    
-    if (path.length<3){
-      listPosition = "";
-    }else{
-      final StringBuilder b = new StringBuilder();
-      for(int i=2;i<path.length;i++){
-        final int pos = path[i];
-        if (pos<0) throw new IllegalStateException("Unexpected state! Topic position is -1!");
-        b.append(pos+1).append('.');
-      }
-      listPosition = b.toString();
-    }
-    
-    final String text = topic.getText().trim().replace("\r", "").replace("\n", " ");
-    final String [] splitted = text.split("\\s");
-    final StringBuilder buffer = new StringBuilder(listPosition);
-    
-    for(final String s : splitted){
-      if (buffer.length()>0) buffer.append('-');
-      buffer.append(s.toLowerCase(Locale.ENGLISH));
-    }
-    
-    return buffer.toString();
+  private static String getTopicUid(final Topic topic){
+    return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
   
   private static void writeTopic(final Topic topic, final String listPosition, final State state) throws IOException {
@@ -127,11 +104,16 @@ public class MDExporter extends AbstractMindMapExporter {
     
     String prefix = "";
     
-    if (level<2){
+    final String topicUid = getTopicUid(topic);
+    if (topicUid!=null){
+      state.append("<a name=\"").append(topicUid).append("\">").nextLine();
+    }
+    
+    if (level<STARTING_INDEX_FOR_NUMERATION){
       final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);
       state.append(headerPrefix).append(' ').append(Utils.escapeMarkdownStr(topic.getText())).nextLine();
     }else{
-      final String headerPrefix = generateString('#', 3);
+      final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION+1);
       state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ').append(Utils.escapeMarkdownStr(topic.getText())).nextLine();
     }
 
@@ -149,7 +131,7 @@ public class MDExporter extends AbstractMindMapExporter {
 
     if (transition != null) {
       final Topic linkedTopic = topic.getMap().findTopicForLink(transition);
-      state.append(prefix).append("*Related to: ").append('[').append(Utils.escapeMarkdownStr(makeLineFromString(linkedTopic.getText()))).append("](").append("#").append(makeLinkToTopic(linkedTopic)).append(")*").nextStringMarker().nextLine();
+      state.append(prefix).append("*Related to: ").append('[').append(Utils.escapeMarkdownStr(makeLineFromString(linkedTopic.getText()))).append("](").append("#").append(getTopicUid(linkedTopic)).append(")*").nextStringMarker().nextLine();
       extrasPrinted = true;
       if (file != null || link != null || note != null){
         state.nextStringMarker().nextLine();
@@ -184,7 +166,12 @@ public class MDExporter extends AbstractMindMapExporter {
 
   private void writeOtherTopicRecursively(final Topic t, final String topicListNumStr, final int topicIndex, final State state) throws IOException {
     writeInterTopicLine(state);
-    final String prefix = topicListNumStr + Integer.toString(topicIndex+1) + '.';
+    final String prefix;
+    if (t.getTopicLevel()>=STARTING_INDEX_FOR_NUMERATION){
+      prefix = topicListNumStr + Integer.toString(topicIndex+1) + '.';
+    }else{
+      prefix = "";
+    }
     writeTopic(t, prefix, state);
     int index = 0;
     for (final Topic ch : t.getChildren()) {
@@ -204,7 +191,6 @@ public class MDExporter extends AbstractMindMapExporter {
       writeTopic(root, "", state);
 
       final Topic[] children = Utils.getLeftToRightOrderedChildrens(root);
-      int index = 0;
       for (final Topic t : children) {
         writeInterTopicLine(state);
         writeTopic(t, "", state);
