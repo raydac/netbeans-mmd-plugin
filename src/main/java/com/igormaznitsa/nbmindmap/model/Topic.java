@@ -54,13 +54,12 @@ public final class Topic implements Serializable, Constants {
 
   private static final Pattern PATTERN_TOPIC_HEADER = Pattern.compile("^\\s*(\\#+)\\s*(.*)$");
   private static final Pattern PATTERN_EXTRA = Pattern.compile("^\\s*\\-\\s*([^\\s]+)\\s*$");
-  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|(\\`+)(.+?)\\4|^(.*?)$");
-  private static final Pattern PATTERN_LINK = Pattern.compile("^\\s*\\!?\\[.*\\]\\((.*?)\\)\\s*$");
+  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|\\<\\s*?pre\\s*?\\>(.+?)\\<\\s*?\\/\\s*?pre\\s*\\>|^(.*?)$");
   private static final int MD_GROUP_HEAD = 1;
   private static final int MD_GROUP_ITEM = 2;
   private static final int MD_GROUP_BLOCKQUOTE = 3;
-  private static final int MD_GROUP_CODE = 5;
-  private static final int MD_GROUP_OTHER_LINE = 6;
+  private static final int MD_GROUP_PRE = 4;
+  private static final int MD_GROUP_OTHER_LINE = 5;
 
   private final MindMap map;
 
@@ -210,10 +209,10 @@ public final class Topic implements Serializable, Constants {
           }
           extraType = null;
         }
-        else if (matcher.group(MD_GROUP_CODE) != null) {
+        else if (matcher.group(MD_GROUP_PRE) != null) {
           if (topic != null && extraType != null) {
             try {
-              topic.setExtra(extraType.make(matcher.group(MD_GROUP_CODE)));
+              topic.setExtra(extraType.parseLoaded(matcher.group(MD_GROUP_PRE)));
             }
             catch (Exception ex) {
               Logger.error("Unexpected exception #23241", ex);
@@ -225,15 +224,6 @@ public final class Topic implements Serializable, Constants {
         }
         else if (matcher.group(MD_GROUP_OTHER_LINE) != null) {
           if (topic != null && extraType != null) {
-            final Matcher linkMatcher = PATTERN_LINK.matcher(matcher.group(MD_GROUP_OTHER_LINE));
-            if (linkMatcher.find()) {
-              try {
-                topic.setExtra(extraType.make(linkMatcher.group(1)));
-              }
-              catch (Exception ex) {
-                Logger.error("Unexpected exception #1234112", ex);
-              }
-            }
             extraType = null;
           }
         }

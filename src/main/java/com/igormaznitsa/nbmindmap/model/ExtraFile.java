@@ -15,9 +15,6 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
-import com.igormaznitsa.nbmindmap.utils.Utils;
-import java.io.IOException;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -45,7 +42,8 @@ public class ExtraFile extends Extra<URI>{
   }
 
   @Override
-  public void writeContent(final Writer out) throws IOException {
-    out.append(Utils.makeMDCodeBlock(file.toString()));
+  public String getAsString() {
+    return this.file.toString();
   }
+
 }

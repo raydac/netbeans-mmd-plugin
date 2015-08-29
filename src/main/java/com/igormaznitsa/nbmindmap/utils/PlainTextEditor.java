@@ -18,7 +18,13 @@ package com.igormaznitsa.nbmindmap.utils;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
@@ -31,13 +37,15 @@ import org.netbeans.editor.Utilities;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.text.CloneableEditorSupport;
 import org.openide.text.NbDocument;
+import org.openide.util.Exceptions;
 
 public class PlainTextEditor extends javax.swing.JPanel {
 
   private static final long serialVersionUID = 5847351391577028903L;
 
   private final BaseDocument doc;
-
+  private final JEditorPane editor;
+  
   private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -54,7 +62,7 @@ public class PlainTextEditor extends javax.swing.JPanel {
   public PlainTextEditor(final String text) {
     initComponents();
 
-    final JEditorPane editor = new JEditorPane();
+    editor = new JEditorPane();
     final EditorKit kit = CloneableEditorSupport.getEditorKit("text/plain");
     editor.setEditorKit(kit);
 
@@ -110,6 +118,9 @@ public class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1 = new javax.swing.JToolBar();
     buttonLoad = new javax.swing.JButton();
     buttonSave = new javax.swing.JButton();
+    buttonCopy = new javax.swing.JButton();
+    buttonPaste = new javax.swing.JButton();
+    jButton1 = new javax.swing.JButton();
 
     setLayout(new java.awt.BorderLayout());
 
@@ -141,6 +152,42 @@ public class PlainTextEditor extends javax.swing.JPanel {
       }
     });
     jToolBar1.add(buttonSave);
+
+    buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/page_copy16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonCopy, org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonCopy.text")); // NOI18N
+    buttonCopy.setFocusable(false);
+    buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonCopy.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonCopyActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(buttonCopy);
+
+    buttonPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/paste_plain16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonPaste, org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonPaste.text")); // NOI18N
+    buttonPaste.setFocusable(false);
+    buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonPaste.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonPasteActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(buttonPaste);
+
+    jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.jButton1.text")); // NOI18N
+    jButton1.setFocusable(false);
+    jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1ActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(jButton1);
 
     add(jToolBar1, java.awt.BorderLayout.PAGE_START);
   }// </editor-fold>//GEN-END:initComponents
@@ -183,11 +230,37 @@ public class PlainTextEditor extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_buttonSaveActionPerformed
 
+  private void buttonCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCopyActionPerformed
+    StringSelection stringSelection = new StringSelection(this.editor.getSelectedText());
+    final Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+    clpbrd.setContents(stringSelection, null);
+  }//GEN-LAST:event_buttonCopyActionPerformed
+
+  private void buttonPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPasteActionPerformed
+    try {
+      this.editor.replaceSelection((String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor));
+    }
+    catch (UnsupportedFlavorException ex) {
+      // no text data in clipboard
+    }
+    catch (IOException ex) {
+      Logger.error("Error during paste from clipboard", ex);
+    }
+
+  }//GEN-LAST:event_buttonPasteActionPerformed
+
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    this.editor.setText("");
+  }//GEN-LAST:event_jButton1ActionPerformed
+
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonCopy;
   private javax.swing.JButton buttonLoad;
+  private javax.swing.JButton buttonPaste;
   private javax.swing.JButton buttonSave;
   private javax.swing.JPopupMenu editorPopup;
+  private javax.swing.JButton jButton1;
   private javax.swing.JToolBar jToolBar1;
   // End of variables declaration//GEN-END:variables
 }

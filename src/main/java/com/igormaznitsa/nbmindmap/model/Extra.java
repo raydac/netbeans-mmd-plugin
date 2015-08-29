@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class Extra <T> implements Serializable, Constants, Cloneable {
   private static final long serialVersionUID = 2547528075256486018L;
@@ -31,13 +32,14 @@ public abstract class Extra <T> implements Serializable, Constants, Cloneable {
     TOPIC,
     LINE;
     
-    public Extra<?> make(final String text) throws URISyntaxException{
+    public Extra<?> parseLoaded(final String text) throws URISyntaxException{
+      final String preprocessed = StringEscapeUtils.unescapeHtml(text);
       switch(this){
-        case FILE : return new ExtraFile(text);
-        case LINK : return new ExtraLink(text);
-        case NOTE : return new ExtraNote(text);
-        case TOPIC : return new ExtraTopic(text);
-        case LINE : return new ExtraLine(text);
+        case FILE : return new ExtraFile(preprocessed);
+        case LINK : return new ExtraLink(preprocessed);
+        case NOTE : return new ExtraNote(preprocessed);
+        case TOPIC : return new ExtraTopic(preprocessed);
+        case LINE : return new ExtraLine(preprocessed);
         default: throw new Error("Unexpected value ["+this.name()+']');
       }
     }
@@ -45,11 +47,11 @@ public abstract class Extra <T> implements Serializable, Constants, Cloneable {
   
   public abstract T getValue();
   public abstract ExtraType getType();
-  public abstract void writeContent(Writer out) throws IOException;
+  public abstract String getAsString();
 
   public final void write(final Writer out) throws IOException {
     out.append("- ").append(getType().name()).append(NEXT_LINE);
-    writeContent(out);
+    out.append(Utils.makePreBlock(getAsString()));
   }
   
 }

@@ -15,10 +15,6 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
-import com.igormaznitsa.nbmindmap.utils.Utils;
-import java.io.IOException;
-import java.io.Writer;
-
 public class ExtraLine extends Extra<SourcePosition> {
   private static final long serialVersionUID = -8556885025460722094L;
 
@@ -43,7 +39,8 @@ public class ExtraLine extends Extra<SourcePosition> {
   }
 
   @Override
-  public void writeContent(final Writer out) throws IOException {
-    out.write(Utils.makeMDCodeBlock(this.position.toString()));
+  public String getAsString() {
+    return this.position.toString();
   }
+
 }

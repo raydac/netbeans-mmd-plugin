@@ -15,11 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 
 public class ExtraLink extends Extra<URI> {
   private static final long serialVersionUID = -3343908686571445847L;
@@ -44,10 +41,8 @@ public class ExtraLink extends Extra<URI> {
   }
 
   @Override
-  public void writeContent(final Writer out) throws IOException {
-    final String linkAsText = this.uri.toString();
-    out.append('[').append(linkAsText).append(']').append('(').append(linkAsText).append(')');
-    
+  public String getAsString() {
+    return this.uri.toString();
   }
 
 }

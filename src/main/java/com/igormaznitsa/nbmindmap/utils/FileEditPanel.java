@@ -50,6 +50,7 @@ public class FileEditPanel extends javax.swing.JPanel {
     labelBrowseCurrentLink = new javax.swing.JLabel();
     textFieldFilePath = new javax.swing.JTextField();
     buttonChooseFile = new javax.swing.JButton();
+    buttonReset = new javax.swing.JButton();
 
     setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 10));
     setLayout(new java.awt.GridBagLayout());
@@ -85,6 +86,17 @@ public class FileEditPanel extends javax.swing.JPanel {
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     add(buttonChooseFile, gridBagConstraints);
+
+    buttonReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonReset, org.openide.util.NbBundle.getMessage(FileEditPanel.class, "FileEditPanel.buttonReset.text")); // NOI18N
+    buttonReset.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonResetActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    add(buttonReset, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
  
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
@@ -116,9 +128,14 @@ public class FileEditPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_buttonChooseFileActionPerformed
 
+  private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
+    this.textFieldFilePath.setText("");
+  }//GEN-LAST:event_buttonResetActionPerformed
+
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonChooseFile;
+  private javax.swing.JButton buttonReset;
   private javax.swing.JLabel labelBrowseCurrentLink;
   private javax.swing.JTextField textFieldFilePath;
   // End of variables declaration//GEN-END:variables

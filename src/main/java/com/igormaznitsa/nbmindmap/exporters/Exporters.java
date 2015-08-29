@@ -16,7 +16,9 @@
 package com.igormaznitsa.nbmindmap.exporters;
 
 public enum Exporters {
-  PNGIMAGE(new PNGImageExporter());
+  PNGIMAGE(new PNGImageExporter()),
+  TEXT(new TextExporter()),
+  MD(new MDExporter());
 
   private final AbstractMindMapExporter exporter;
   

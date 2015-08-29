@@ -19,6 +19,7 @@ import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Locale;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class ExtraTopic extends Extra<String> {
   private static final long serialVersionUID = -8556885025460722094L;
@@ -68,7 +69,7 @@ public class ExtraTopic extends Extra<String> {
   }
 
   @Override
-  public void writeContent(final Writer out) throws IOException {
-    out.write(Utils.makeMDCodeBlock(this.topicUID));
+  public String getAsString() {
+    return this.topicUID;
   }
 }

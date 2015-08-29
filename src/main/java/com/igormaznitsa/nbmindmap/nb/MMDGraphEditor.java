@@ -521,6 +521,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     if (path != null) {
       if (path.isEmpty()) {
         topic.removeExtra(Extra.ExtraType.FILE);
+        if (file!=null){
+          this.mindMapPanel.invalidate();
+          this.mindMapPanel.repaint();
+          onMindMapModelChanged(this.mindMapPanel);
+        }
       }
       else {
         final File filePath = new File(path);

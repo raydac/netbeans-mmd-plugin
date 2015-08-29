@@ -18,6 +18,7 @@ package com.igormaznitsa.nbmindmap.model;
 import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.io.IOException;
 import java.io.Writer;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class ExtraNote extends Extra<String> {
   private static final long serialVersionUID = 8612886872756838947L;
@@ -39,8 +40,8 @@ public class ExtraNote extends Extra<String> {
   }
 
   @Override
-  public void writeContent(final Writer out) throws IOException {
-    out.append(Utils.makeMDCodeBlock(this.text));
+  public String getAsString() {
+    return this.text;
   }
 
 }

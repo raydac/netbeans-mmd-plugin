@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
@@ -244,6 +245,10 @@ public enum Utils {
     return result;
   }
 
+  public static String makePreBlock(final String text) {
+    return "<pre>"+StringEscapeUtils.escapeHtml(text)+"</pre>";
+  }
+  
   public static String makeMDCodeBlock(final String text) throws IOException {
     final int maxQuotes = Utils.calcMaxLengthOfBacktickQuotesSubstr(text) + 1;
     final StringBuilder result = new StringBuilder(text.length() + 16);

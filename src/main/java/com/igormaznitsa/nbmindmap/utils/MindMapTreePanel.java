@@ -100,8 +100,10 @@ public class MindMapTreePanel extends javax.swing.JPanel {
 
     treeScrollPane = new javax.swing.JScrollPane();
     treeMindMap = new javax.swing.JTree();
-    jToolBar1 = new javax.swing.JToolBar();
-    buttonRemoveSelection = new javax.swing.JButton();
+    toolBar = new javax.swing.JToolBar();
+    buttonExpandAll = new javax.swing.JButton();
+    buttonCollapseAll = new javax.swing.JButton();
+    buttonUnselect = new javax.swing.JButton();
 
     setLayout(new java.awt.BorderLayout());
 
@@ -109,33 +111,66 @@ public class MindMapTreePanel extends javax.swing.JPanel {
 
     add(treeScrollPane, java.awt.BorderLayout.CENTER);
 
-    jToolBar1.setFloatable(false);
-    jToolBar1.setRollover(true);
+    toolBar.setFloatable(false);
+    toolBar.setRollover(true);
 
-    buttonRemoveSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/select16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonRemoveSelection, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonRemoveSelection.text")); // NOI18N
-    buttonRemoveSelection.setToolTipText(org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonRemoveSelection.toolTipText")); // NOI18N
-    buttonRemoveSelection.setFocusable(false);
-    buttonRemoveSelection.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-    buttonRemoveSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonRemoveSelection.addActionListener(new java.awt.event.ActionListener() {
+    buttonExpandAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/toggle_expand16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonExpandAll, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonExpandAll.text")); // NOI18N
+    buttonExpandAll.setFocusable(false);
+    buttonExpandAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonExpandAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonExpandAll.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonRemoveSelectionActionPerformed(evt);
+        buttonExpandAllActionPerformed(evt);
       }
     });
-    jToolBar1.add(buttonRemoveSelection);
+    toolBar.add(buttonExpandAll);
 
-    add(jToolBar1, java.awt.BorderLayout.PAGE_START);
+    buttonCollapseAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/toggle16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonCollapseAll, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonCollapseAll.text")); // NOI18N
+    buttonCollapseAll.setFocusable(false);
+    buttonCollapseAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonCollapseAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonCollapseAll.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonCollapseAllActionPerformed(evt);
+      }
+    });
+    toolBar.add(buttonCollapseAll);
+
+    buttonUnselect.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/select16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonUnselect, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonUnselect.text")); // NOI18N
+    buttonUnselect.setFocusable(false);
+    buttonUnselect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonUnselect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonUnselect.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonUnselectActionPerformed(evt);
+      }
+    });
+    toolBar.add(buttonUnselect);
+
+    add(toolBar, java.awt.BorderLayout.PAGE_START);
   }// </editor-fold>//GEN-END:initComponents
 
-  private void buttonRemoveSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRemoveSelectionActionPerformed
+  private void buttonUnselectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUnselectActionPerformed
     this.treeMindMap.setSelectionPath(null);
-  }//GEN-LAST:event_buttonRemoveSelectionActionPerformed
+  }//GEN-LAST:event_buttonUnselectActionPerformed
+
+  private void buttonExpandAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExpandAllActionPerformed
+    expandAll();
+  }//GEN-LAST:event_buttonExpandAllActionPerformed
+
+  private void buttonCollapseAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCollapseAllActionPerformed
+    collapseAll();
+  }//GEN-LAST:event_buttonCollapseAllActionPerformed
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton buttonRemoveSelection;
-  private javax.swing.JToolBar jToolBar1;
+  private javax.swing.JButton buttonCollapseAll;
+  private javax.swing.JButton buttonExpandAll;
+  private javax.swing.JButton buttonUnselect;
+  private javax.swing.JToolBar toolBar;
   private javax.swing.JTree treeMindMap;
   private javax.swing.JScrollPane treeScrollPane;
   // End of variables declaration//GEN-END:variables
