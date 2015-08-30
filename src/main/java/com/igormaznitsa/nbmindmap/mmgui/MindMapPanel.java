@@ -17,6 +17,11 @@ package com.igormaznitsa.nbmindmap.mmgui;
 
 import com.igormaznitsa.nbmindmap.utils.Utils;
 import com.igormaznitsa.nbmindmap.model.Extra;
+import com.igormaznitsa.nbmindmap.model.ExtraFile;
+import com.igormaznitsa.nbmindmap.model.ExtraLine;
+import com.igormaznitsa.nbmindmap.model.ExtraLink;
+import com.igormaznitsa.nbmindmap.model.ExtraNote;
+import com.igormaznitsa.nbmindmap.model.ExtraTopic;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
@@ -40,6 +45,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public final class MindMapPanel extends JPanel implements Configuration.ConfigurationListener {
 
@@ -284,10 +290,21 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         final AbstractElement element = findTopicUnderPoint(e.getPoint());
         if (element == null) {
           setCursor(Cursor.getDefaultCursor());
+          setToolTipText(null);
         }
         else {
           final ElementPart part = element.findPartForPoint(e.getPoint());
           setCursor(part == ElementPart.ICONS || part == ElementPart.COLLAPSATOR ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+          if (part == ElementPart.ICONS){
+            final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+            if (extra != null) {
+              setToolTipText(makeHtmlTooltipForExtra(extra));
+            }else{
+              setToolTipText(null);
+            }
+          }else{
+            setToolTipText(null);
+          }
         }
       }
 
@@ -466,6 +483,40 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     this.add(this.textEditorPanel);
   }
 
+  private String makeHtmlTooltipForExtra(final Extra<?> extra){
+    final StringBuilder builder = new StringBuilder();
+    
+    builder.append("<html>");
+    
+    switch (extra.getType()) {
+      case FILE: {
+        builder.append("<b>Open File</b><br>").append(StringEscapeUtils.escapeHtml(((ExtraFile)extra).getAsString()));
+      }break;
+      case TOPIC: {
+        final Topic topic = this.getModel().findTopicForLink((ExtraTopic) extra);
+        builder.append("<b>Jump to topic</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(topic.getText(), 32)));
+      }break;
+      case LINK: {
+        builder.append("<b>Open link</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraLink)extra).getAsString(), 48)));
+      }
+      break;
+      case NOTE: {
+        builder.append("<b>Open text content</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraNote) extra).getAsString(), 64)));
+      }
+      break;
+      case LINE: {
+        builder.append("<b>Open line</b><br>").append(StringEscapeUtils.escapeHtml(((ExtraLine)extra).getValue().toString()));
+      }break;
+      default: {
+        builder.append("<b>Unknown</b>");
+      }break;
+    }
+
+    builder.append("</html>");
+    
+    return builder.toString();
+  }
+  
   @Override
   public void onConfigurationPropertyChanged(final Configuration source) {
     if (source == COMMON_CONFIG) {

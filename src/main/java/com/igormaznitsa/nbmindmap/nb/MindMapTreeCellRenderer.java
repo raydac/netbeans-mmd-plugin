@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.utils.Icons;
+import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.awt.Component;
 import javax.swing.Icon;
 import javax.swing.JTree;
@@ -47,10 +48,6 @@ public class MindMapTreeCellRenderer extends DefaultTreeCellRenderer {
   }
 
   private String extractTextFromTopic(final Topic topic) {
-    String firstLine = topic.getText().split("\\n")[0];
-    if (firstLine.length() > 20) {
-      firstLine = firstLine.substring(0, 20) + "...";
-    }
-    return firstLine;
+    return Utils.makeShortTextVersion(Utils.getFirstLine(topic.getText()), 20);
   }
 }

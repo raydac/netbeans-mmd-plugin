@@ -281,7 +281,7 @@ public enum Utils {
   }
   
   public static String color2html(final Color color) {
-    final StringBuilder buffer = new StringBuilder();;
+    final StringBuilder buffer = new StringBuilder();
 
     buffer.append('#');
     for (final int c : new int[]{color.getRed(), color.getGreen(), color.getBlue()}) {
@@ -295,4 +295,15 @@ public enum Utils {
     return buffer.toString();
   }
 
+  public static String getFirstLine(final String text){
+    return text.replace("\r", "").split("\\n")[0];
+  }
+  
+  public static String makeShortTextVersion(String text, final int maxLength){
+    if (text.length() > maxLength) {
+      text = text.substring(0, maxLength) + "...";
+    }
+    return text;
+  }
+  
 }
