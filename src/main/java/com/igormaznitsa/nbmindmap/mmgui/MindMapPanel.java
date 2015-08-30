@@ -159,13 +159,13 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             if ((e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.META_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)) == 0) {
               e.consume();
               final Topic edited = elementUnderEdit.getModel();
-              final int [] topicPosition = edited.getPositionPath();
+              final int[] topicPosition = edited.getPositionPath();
               endEdit(true);
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                   final Topic theTopic = model.findForPositionPath(topicPosition);
-                  if (theTopic!= null){
+                  if (theTopic != null) {
                     makeNewChildAndStartEdit(theTopic, null);
                   }
                 }
@@ -249,8 +249,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           }
           break;
           case ' ': {
-            if (hasOnlyTopicSelected() && (e.getModifiersEx() & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK | KeyEvent.META_DOWN_MASK))!=0){
-              startEdit((AbstractElement)selectedTopics.get(0).getPayload());
+            if (hasOnlyTopicSelected() && (e.getModifiersEx() & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK | KeyEvent.META_DOWN_MASK)) != 0) {
+              startEdit((AbstractElement) selectedTopics.get(0).getPayload());
             }
           }
         }
@@ -295,14 +295,16 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         else {
           final ElementPart part = element.findPartForPoint(e.getPoint());
           setCursor(part == ElementPart.ICONS || part == ElementPart.COLLAPSATOR ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
-          if (part == ElementPart.ICONS){
+          if (part == ElementPart.ICONS) {
             final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
             if (extra != null) {
               setToolTipText(makeHtmlTooltipForExtra(extra));
-            }else{
+            }
+            else {
               setToolTipText(null);
             }
-          }else{
+          }
+          else {
             setToolTipText(null);
           }
         }
@@ -483,21 +485,23 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     this.add(this.textEditorPanel);
   }
 
-  private String makeHtmlTooltipForExtra(final Extra<?> extra){
+  private String makeHtmlTooltipForExtra(final Extra<?> extra) {
     final StringBuilder builder = new StringBuilder();
-    
+
     builder.append("<html>");
-    
+
     switch (extra.getType()) {
       case FILE: {
-        builder.append("<b>Open File</b><br>").append(StringEscapeUtils.escapeHtml(((ExtraFile)extra).getAsString()));
-      }break;
+        builder.append("<b>Open File</b><br>").append(StringEscapeUtils.escapeHtml(((ExtraFile) extra).getAsString()));
+      }
+      break;
       case TOPIC: {
         final Topic topic = this.getModel().findTopicForLink((ExtraTopic) extra);
         builder.append("<b>Jump to topic</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(topic.getText(), 32)));
-      }break;
+      }
+      break;
       case LINK: {
-        builder.append("<b>Open link</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraLink)extra).getAsString(), 48)));
+        builder.append("<b>Open link</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraLink) extra).getAsString(), 48)));
       }
       break;
       case NOTE: {
@@ -505,18 +509,20 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       }
       break;
       case LINE: {
-        builder.append("<b>Open line</b><br>").append(StringEscapeUtils.escapeHtml(((ExtraLine)extra).getValue().toString()));
-      }break;
+        builder.append("<b>Open line</b><br>").append(StringEscapeUtils.escapeHtml(((ExtraLine) extra).getValue().toString()));
+      }
+      break;
       default: {
         builder.append("<b>Unknown</b>");
-      }break;
+      }
+      break;
     }
 
     builder.append("</html>");
-    
+
     return builder.toString();
   }
-  
+
   @Override
   public void onConfigurationPropertyChanged(final Configuration source) {
     if (source == COMMON_CONFIG) {
@@ -608,6 +614,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       AbstractElement nextFocused = null;
 
+      boolean modelChanged = false;
+
       if (current.isMoveable()) {
         boolean processFirstChild = false;
         switch (key) {
@@ -659,18 +667,12 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
         if (processFirstChild) {
           if (current.hasChildren()) {
-            boolean uncollapsed = false;
             if (current.isCollapsed()) {
               ((AbstractCollapsableElement) current).setCollapse(false);
-              uncollapsed = true;
+              modelChanged = true;
             }
 
             nextFocused = (AbstractElement) (current.getModel().getChildren().get(0)).getPayload();
-
-            if (uncollapsed) {
-              invalidate();
-              fireNotificationMindMapChanged();
-            }
           }
         }
       }
@@ -702,6 +704,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       if (nextFocused != null) {
         removeAllSelection();
         select(nextFocused.getModel(), false);
+      }
+
+      if (modelChanged) {
+        invalidate();
+        fireNotificationMindMapChanged();
       }
     }
   }
@@ -1003,7 +1010,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  private void drawDestinationElement(final Graphics2D g,final Configuration cfg) {
+  private void drawDestinationElement(final Graphics2D g, final Configuration cfg) {
     if (this.destinationElement != null) {
       final Rectangle2D elementBounds = this.destinationElement.getBounds();
 
