@@ -17,10 +17,12 @@ package com.igormaznitsa.nbmindmap.utils;
 
 import com.igormaznitsa.nbmindmap.mmgui.AbstractCollapsableElement;
 import com.igormaznitsa.nbmindmap.model.Topic;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -277,4 +279,20 @@ public enum Utils {
     }
     return result.toArray(new Topic[result.size()]);
   }
+  
+  public static String color2html(final Color color) {
+    final StringBuilder buffer = new StringBuilder();;
+
+    buffer.append('#');
+    for (final int c : new int[]{color.getRed(), color.getGreen(), color.getBlue()}) {
+      final String str = Integer.toHexString(c & 0xFF).toUpperCase(Locale.ENGLISH);
+      if (str.length() < 2) {
+        buffer.append('0');
+      }
+      buffer.append(str);
+    }
+
+    return buffer.toString();
+  }
+
 }

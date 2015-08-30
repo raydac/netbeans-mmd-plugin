@@ -41,6 +41,7 @@ public enum Icons {
   OPTIONS("settings16.png"),
   BLUEBALL("blueball16.png"),
   GOLDBALL("goldball16.png"),
+  FREEMIND("freemind16.png"),
   FILE("disk16.png");
 
   private final ImageIcon icon;
