@@ -338,9 +338,9 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   }
 
   private static void processEditorResizing(final MindMapPanel panel) {
-    panel.endEdit(false);
     panel.revalidate();
     panel.repaint();
+    panel.updateEditorAfterResizing();
   }
 
   public void updateView() {

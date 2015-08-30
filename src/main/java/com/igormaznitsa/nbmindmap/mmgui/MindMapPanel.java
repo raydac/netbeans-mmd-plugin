@@ -727,6 +727,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       final Topic newTopic = parent.makeChild("", baseTopic);
 
+      final AbstractElement parentElement = (AbstractElement)parent.getPayload();
+      
       if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
         int numLeft = 0;
         int numRight = 0;
@@ -748,6 +750,10 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         }
       }
 
+      if (parentElement instanceof AbstractCollapsableElement && parentElement.isCollapsed()) {
+        ((AbstractCollapsableElement)parentElement).setCollapse(false);
+      }
+      
       select(newTopic, false);
       invalidate();
       revalidate();
@@ -849,13 +855,23 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
+  public void updateEditorAfterResizing() {
+    if (this.elementUnderEdit != null) {
+      final AbstractElement element = this.elementUnderEdit;
+      final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
+      this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
+      this.textEditor.setMinimumSize(textBlockSize);
+      this.textEditorPanel.setVisible(true);
+      this.textEditor.requestFocus();
+    }
+  }
+
   public void endEdit(final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
-        final Topic editedTopic = this.elementUnderEdit.getModel();
         this.elementUnderEdit.setText(this.textEditor.getText());
-        repaint();
         fireNotificationMindMapChanged();
+        fireNotificationEnsureTopicVisibility(this.elementUnderEdit.model);
       }
     }
     finally {
