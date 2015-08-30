@@ -116,8 +116,8 @@ public class FreeMindExporter extends AbstractMindMapExporter {
 
     state.append(mainShiftStr).append("<node CREATED=\"").append(System.currentTimeMillis()).append("\" MODIFIED=\"").append(System.currentTimeMillis())
             .append("\" COLOR=\"").append(color2html(color)).append("\" BACKGROUND_COLOR=\"").append(color2html(backcolor))
-            .append("\" ").append(position.isEmpty() ? "" : "POSITION=\"" + position + "\" ")
-            .append(" ID=\"").append(makeUID(topic)).append("\" ")
+            .append("\" ").append(position.isEmpty() ? " " : "POSITION=\"" + position + "\" ")
+            .append("ID=\"").append(makeUID(topic)).append("\" ")
             .append("TEXT=\"").append(escapeXML(topic.getText())).append("\" ");
 
     final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
