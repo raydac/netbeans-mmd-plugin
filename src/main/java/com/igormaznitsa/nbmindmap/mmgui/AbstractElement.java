@@ -49,6 +49,11 @@ public abstract class AbstractElement {
     this.extrasIconBlock = new IconBlock(model);
   }
 
+  public AbstractElement getParent() {
+    final Topic parent = this.model.getParent();
+    return parent == null ? null : (AbstractElement) parent.getPayload();
+  }
+
   public Topic getModel() {
     return this.model;
   }
@@ -89,11 +94,11 @@ public abstract class AbstractElement {
     this.bounds.setFrame(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
-  public void moveWholeTreeBranchCoordinates(final double deltaX, final double deltaY){
-    moveTo(this.bounds.getX()+deltaX, this.bounds.getY()+deltaY);
-    for(final Topic t : this.model.getChildren()){
-      final AbstractElement el = (AbstractElement)t.getPayload();
-      if (el!=null){
+  public void moveWholeTreeBranchCoordinates(final double deltaX, final double deltaY) {
+    moveTo(this.bounds.getX() + deltaX, this.bounds.getY() + deltaY);
+    for (final Topic t : this.model.getChildren()) {
+      final AbstractElement el = (AbstractElement) t.getPayload();
+      if (el != null) {
         el.moveWholeTreeBranchCoordinates(deltaX, deltaY);
       }
     }
@@ -220,15 +225,17 @@ public abstract class AbstractElement {
   private AbstractElement findNearestTopic(final AbstractElement elementToIgnore, final double lessThanDistance, final Point point) {
     double curDistance = this == elementToIgnore ? Double.MAX_VALUE : calcDistanceToPoint(point);
     AbstractElement result = curDistance <= lessThanDistance ? this : null;
-    for (final Topic t : this.model.getChildren()) {
-      final AbstractElement element = t.getPayload() == null ? null : (AbstractElement) t.getPayload();
-      if (element != null) {
-        final AbstractElement nearestChild = element.findNearestTopic(elementToIgnore, curDistance, point);
-        if (nearestChild != null) {
-          final double dist = nearestChild.calcDistanceToPoint(point);
-          if (dist < curDistance) {
-            curDistance = dist;
-            result = nearestChild;
+    if (!this.isCollapsed()) {
+      for (final Topic t : this.model.getChildren()) {
+        final AbstractElement element = t.getPayload() == null ? null : (AbstractElement) t.getPayload();
+        if (element != null) {
+          final AbstractElement nearestChild = element.findNearestTopic(elementToIgnore, curDistance, point);
+          if (nearestChild != null) {
+            final double dist = nearestChild.calcDistanceToPoint(point);
+            if (dist < curDistance) {
+              curDistance = dist;
+              result = nearestChild;
+            }
           }
         }
       }

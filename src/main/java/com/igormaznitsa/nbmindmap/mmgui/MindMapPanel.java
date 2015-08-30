@@ -338,10 +338,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       public void mouseReleased(MouseEvent e) {
         try {
           if (draggedElementPoint != null) {
-            try {
-              endDragOfElement(draggedElementPoint, draggedElement, destinationElement);
-            }
-            finally {
+            if (endDragOfElement(draggedElementPoint, draggedElement, destinationElement)){
               invalidate();
               revalidate();
               fireNotificationMindMapChanged();
@@ -539,63 +536,92 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     repaint();
   }
 
-  private void endDragOfElement(final Point dropPoint, final AbstractElement element, final AbstractElement destination) {
-    final boolean same = element.getModel() == destination.getModel();
-    if (same) {
-      return;
-    }
+  private static final int DRAG_POSITION_LEFT = 1;
+  private static final int DRAG_POSITION_TOP = 2;
+  private static final int DRAG_POSITION_BOTTOM = 3;
+  private static final int DRAG_POSITION_RIGHT = 4;
 
-    final boolean sameParent = element.getModel().getParent() == destination.getModel();
-
-    final boolean pointInsideDestination = destination.getBounds().contains(dropPoint);
-    final boolean destinationIsRoot = destination.getClass() == ElementRoot.class;
-
-    if (destinationIsRoot) {
-      // root
-      final boolean left = dropPoint.getX() < destination.getBounds().getCenterX();
-      if (sameParent) {
-        // first level
-        final AbstractCollapsableElement collapsable = (AbstractCollapsableElement) element;
-        collapsable.setLeftDirection(left);
-      }
-      else {
-        // non first level
-        final Topic prevTopic = destination.findTopicBeforePoint(this.config, dropPoint);
-        element.getModel().moveToNewParent(destination.getModel());
-        element.getModel().moveAfter(prevTopic);
-        if (element.getModel().getTopicLevel() > 1) {
-          AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), false);
-        }
-        else {
-          AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), left);
-        }
-      }
+  private int calcDropPosition(final AbstractElement destination, final Point dropPoint) {
+    final int result;
+    if (destination.getClass() == ElementRoot.class) {
+      result = dropPoint.getX() < destination.getBounds().getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_RIGHT;
     }
     else {
-      if (pointInsideDestination) {
-        // attach as child
-        element.getModel().moveToNewParent(destination.getModel());
-        element.getModel().setPayload(null);
+      final Rectangle2D bounds = destination.getBounds();
+      if (dropPoint.getX() >= destination.getBounds().getX() && dropPoint.getX() <= destination.getBounds().getMaxX()) {
+        result = dropPoint.getY() < destination.getBounds().getCenterY() ? DRAG_POSITION_TOP : DRAG_POSITION_BOTTOM;
       }
       else {
-        // add as sibling
-        element.getModel().moveToNewParent(destination.getModel().getParent());
-        if (dropPoint.getY() < element.getBounds().getCenterY()) {
-          // before
-          element.getModel().moveBefore(destination.getModel());
+        result = dropPoint.getX() < destination.getBounds().getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_RIGHT;
+      }
+    }
+    return result;
+  }
+
+  private boolean endDragOfElement(final Point dropPoint, final AbstractElement dragged, final AbstractElement destination) {
+    final boolean ignore = dragged.getModel() == destination.getModel() || dragged.getBounds().contains(dropPoint) || destination.getModel().hasAncestor(dragged.getModel());
+    if (ignore) {
+      return false;
+    }
+
+    boolean changed = true;
+    
+    final AbstractElement destParent = destination.getParent();
+    final int pos = calcDropPosition(destination, dropPoint);
+    switch (pos) {
+      case DRAG_POSITION_TOP:
+      case DRAG_POSITION_BOTTOM: {
+        dragged.getModel().moveToNewParent(destParent.getModel());
+        if (pos == DRAG_POSITION_TOP) {
+          dragged.getModel().moveBefore(destination.getModel());
         }
         else {
-          // after
-          element.getModel().moveAfter(destination.getModel());
+          dragged.getModel().moveAfter(destination.getModel());
         }
 
         if (destination.getClass() == ElementLevelFirst.class) {
-          AbstractCollapsableElement.makeTopicLeftSided(element.getModel(), destination.isLeftDirection());
+          AbstractCollapsableElement.makeTopicLeftSided(dragged.getModel(), destination.isLeftDirection());
         }
-
+        else {
+          AbstractCollapsableElement.makeTopicLeftSided(dragged.getModel(), false);
+        }
       }
+      break;
+      case DRAG_POSITION_RIGHT:
+      case DRAG_POSITION_LEFT: {
+        if (dragged.getParent() == destination) {
+          // the same parent
+          if (destination.getClass() == ElementRoot.class) {
+            // process only for the root, just update direction
+            if (dragged instanceof AbstractCollapsableElement) {
+              ((AbstractCollapsableElement) dragged).setLeftDirection(pos == DRAG_POSITION_LEFT);
+            }
+          }
+        }
+        else {
+          dragged.getModel().moveToNewParent(destination.getModel());
+          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed()){
+            ((AbstractCollapsableElement)destination).setCollapse(false);
+          }
+          if (dropPoint.getY() < destination.getBounds().getY()) {
+            dragged.getModel().makeFirst();
+          }
+          else {
+            dragged.getModel().makeLast();
+          }
+          if (destination.getClass() == ElementRoot.class) {
+            AbstractCollapsableElement.makeTopicLeftSided(dragged.getModel(), pos == DRAG_POSITION_LEFT);
+          }
+          else {
+            AbstractCollapsableElement.makeTopicLeftSided(dragged.getModel(), false);
+          }
+        }
+      }
+      break;
     }
-    element.getModel().setPayload(null);
+    dragged.getModel().setPayload(null);
+    
+    return changed;
   }
 
   private void sendToParent(final AWTEvent evt) {
@@ -727,8 +753,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       final Topic newTopic = parent.makeChild("", baseTopic);
 
-      final AbstractElement parentElement = (AbstractElement)parent.getPayload();
-      
+      final AbstractElement parentElement = (AbstractElement) parent.getPayload();
+
       if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
         int numLeft = 0;
         int numRight = 0;
@@ -751,9 +777,9 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       }
 
       if (parentElement instanceof AbstractCollapsableElement && parentElement.isCollapsed()) {
-        ((AbstractCollapsableElement)parentElement).setCollapse(false);
+        ((AbstractCollapsableElement) parentElement).setCollapse(false);
       }
-      
+
       select(newTopic, false);
       invalidate();
       revalidate();
@@ -1028,15 +1054,43 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private void drawDestinationElement(final Graphics2D g, final Configuration cfg) {
     if (this.destinationElement != null) {
-      final Rectangle2D elementBounds = this.destinationElement.getBounds();
-
       g.setColor(cfg.getSelectLineColor());
       g.setStroke(new BasicStroke(3.0f * this.config.getScale()));
 
+      final Rectangle2D rectToDraw = new Rectangle2D.Double();
+      rectToDraw.setRect(this.destinationElement.getBounds());
       final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
-      final double dblLineGap = selectLineGap * 2.0d;
+      rectToDraw.setRect(rectToDraw.getX() - selectLineGap, rectToDraw.getY() - selectLineGap, rectToDraw.getWidth() + selectLineGap * 2, rectToDraw.getHeight() + selectLineGap * 2);
 
-      g.drawRect((int) Math.round(elementBounds.getX() - selectLineGap), (int) Math.round(elementBounds.getY() - selectLineGap), (int) Math.round(elementBounds.getWidth() + dblLineGap), (int) Math.round(elementBounds.getHeight() + dblLineGap));
+      final int position = calcDropPosition(this.destinationElement, this.draggedElementPoint);
+
+      boolean draw = !this.draggedElement.getBounds().contains(this.draggedElementPoint) && !this.destinationElement.getModel().hasAncestor(this.draggedElement.getModel());
+
+      switch (position) {
+        case DRAG_POSITION_TOP: {
+          rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY(), rectToDraw.getWidth(), rectToDraw.getHeight() / 2);
+        }
+        break;
+        case DRAG_POSITION_BOTTOM: {
+          rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY() + rectToDraw.getHeight() / 2, rectToDraw.getWidth(), rectToDraw.getHeight() / 2);
+        }
+        break;
+        case DRAG_POSITION_LEFT: {
+          rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY(), rectToDraw.getWidth() / 2, rectToDraw.getHeight());
+        }
+        break;
+        case DRAG_POSITION_RIGHT: {
+          rectToDraw.setRect(rectToDraw.getX() + rectToDraw.getWidth() / 2, rectToDraw.getY(), rectToDraw.getWidth() / 2, rectToDraw.getHeight());
+        }
+        break;
+        default:
+          draw = false;
+          break;
+      }
+
+      if (draw) {
+        g.draw(rectToDraw);
+      }
     }
   }
 

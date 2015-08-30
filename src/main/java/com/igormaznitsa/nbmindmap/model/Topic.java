@@ -345,6 +345,51 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  public boolean makeFirst(){
+    this.map.lock();
+    try {
+      if (this.parent != null) {
+        int thatIndex = this.parent.children.indexOf(this);
+        if (thatIndex>0){
+          this.parent.children.remove(thatIndex);
+          this.parent.children.add(0, this);
+          return true;
+        }
+      }
+      return false;
+    }
+    finally {
+      this.map.unlock();
+    }
+  }
+  
+  public boolean hasAncestor(final Topic topic){
+    Topic parent = this.parent;
+    while(parent!=null){
+      if (parent == topic) return true;
+      parent = parent.getParent();
+    }
+    return false;
+  }
+  
+  public boolean makeLast(){
+    this.map.lock();
+    try {
+      if (this.parent != null) {
+        int thatIndex = this.parent.children.indexOf(this);
+        if (thatIndex>=0 && thatIndex!=this.parent.children.size()-1){
+          this.parent.children.remove(thatIndex);
+          this.parent.children.add(this);
+          return true;
+        }
+      }
+      return false;
+    }
+    finally {
+      this.map.unlock();
+    }
+  }
+  
   public void moveBefore(final Topic topic) {
     this.map.lock();
     try {
