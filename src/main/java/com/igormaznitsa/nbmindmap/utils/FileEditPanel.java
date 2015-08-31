@@ -56,7 +56,6 @@ public class FileEditPanel extends javax.swing.JPanel {
     setLayout(new java.awt.GridBagLayout());
 
     labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_link.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(labelBrowseCurrentLink, org.openide.util.NbBundle.getMessage(FileEditPanel.class, "FileEditPanel.labelBrowseCurrentLink.text")); // NOI18N
     labelBrowseCurrentLink.setToolTipText(org.openide.util.NbBundle.getMessage(FileEditPanel.class, "FileEditPanel.labelBrowseCurrentLink.toolTipText")); // NOI18N
     labelBrowseCurrentLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     labelBrowseCurrentLink.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -69,15 +68,12 @@ public class FileEditPanel extends javax.swing.JPanel {
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.ipadx = 10;
     add(labelBrowseCurrentLink, gridBagConstraints);
-
-    textFieldFilePath.setText(org.openide.util.NbBundle.getMessage(FileEditPanel.class, "FileEditPanel.textFieldFilePath.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1000.0;
     add(textFieldFilePath, gridBagConstraints);
 
     buttonChooseFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_manager.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonChooseFile, org.openide.util.NbBundle.getMessage(FileEditPanel.class, "FileEditPanel.buttonChooseFile.text")); // NOI18N
     buttonChooseFile.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonChooseFileActionPerformed(evt);
@@ -88,7 +84,6 @@ public class FileEditPanel extends javax.swing.JPanel {
     add(buttonChooseFile, gridBagConstraints);
 
     buttonReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonReset, org.openide.util.NbBundle.getMessage(FileEditPanel.class, "FileEditPanel.buttonReset.text")); // NOI18N
     buttonReset.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonResetActionPerformed(evt);

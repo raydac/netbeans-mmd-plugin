@@ -4,6 +4,7 @@
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="1"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_formBundle" type="java.lang.String" value="com/igormaznitsa/nbmindmap/i18/Bundle"/>
     <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="true"/>
@@ -71,16 +72,11 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Connector and collapsator options">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jPanel3.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jPanel3.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
               </Properties>
-              <AccessibilityProperties>
-                <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jPanel3.AccessibleContext.accessibleName" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-                </Property>
-              </AccessibilityProperties>
 
               <Layout>
                 <DimensionLayout dim="0">
@@ -151,7 +147,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel2">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jLabel2.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jLabel2.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -168,7 +164,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserConnectorColor">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooserConnectorColor.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooserConnectorColor.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -179,7 +175,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserCollapsatorBorder">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooserCollapsatorBorder.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooserCollapsatorBorder.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -190,7 +186,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserCollapsatorBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooserCollapsatorBackground.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooserCollapsatorBackground.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -201,7 +197,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel5">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jLabel5.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jLabel5.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -218,7 +214,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel6">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jLabel6.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jLabel6.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -236,7 +232,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Paper options">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jPanel4.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jPanel4.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -290,7 +286,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserPaperColor">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooserPaperColor.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooserPaperColor.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -301,7 +297,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxShowGrid">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.checkBoxShowGrid.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.checkBoxShowGrid.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -311,7 +307,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserGridColor">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooserGridColor.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooserGridColor.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -332,7 +328,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel1">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jLabel1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jLabel1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -343,7 +339,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Element options">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jPanel2.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jPanel2.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -425,7 +421,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxDropShadow">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.checkBoxDropShadow.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.checkBoxDropShadow.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -435,7 +431,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserRootBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooserRootBackground.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooserRootBackground.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -446,7 +442,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserRootText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooserRootText.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooserRootText.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -457,7 +453,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooser1stBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooser1stBackground.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooser1stBackground.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -468,7 +464,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooser1stText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooser1stText.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooser1stText.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -479,7 +475,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooser2ndBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooser2ndBackground.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooser2ndBackground.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -490,7 +486,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooser2ndText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooser2ndText.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooser2ndText.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -508,7 +504,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="1st level horz.gap">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.slider1stLevelHorzGap.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.slider1stLevelHorzGap.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -527,7 +523,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="1st level vert.gap">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.slider1stLevelVertGap.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.slider1stLevelVertGap.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -546,7 +542,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="2nd level horz.gap">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.slider2ndLevelHorzGap.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.slider2ndLevelHorzGap.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -565,7 +561,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="2nd level vert.gap">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.slider2ndLevelVertGap.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.slider2ndLevelVertGap.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -579,7 +575,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="Font">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jPanel7.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jPanel7.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -609,7 +605,7 @@
                     <Component class="javax.swing.JButton" name="buttonFont">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.buttonFont.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.buttonFont.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -625,7 +621,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Misc">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jPanel1.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jPanel1.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -660,14 +656,14 @@
                 <Component class="javax.swing.JCheckBox" name="checkboxUseInsideBrowser">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.checkboxUseInsideBrowser.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.checkboxUseInsideBrowser.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="checkboxRelativePathsForFilesInTheProject">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -678,7 +674,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Selection frame">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jPanel5.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jPanel5.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -731,7 +727,7 @@
                 <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserSelectLine">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.colorChooserSelectLine.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.colorChooserSelectLine.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -742,7 +738,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel3">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jLabel3.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jLabel3.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -756,7 +752,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel4">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/nb/Bundle.properties" key="MMDCfgPanel.jLabel4.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.jLabel4.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>

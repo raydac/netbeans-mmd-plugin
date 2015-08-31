@@ -576,8 +576,6 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap(19, Short.MAX_VALUE))
     );
 
-    jPanel3.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel3.AccessibleContext.accessibleName")); // NOI18N
-
     jScrollPane1.setViewportView(jPanel6);
 
     add(jScrollPane1, java.awt.BorderLayout.CENTER);

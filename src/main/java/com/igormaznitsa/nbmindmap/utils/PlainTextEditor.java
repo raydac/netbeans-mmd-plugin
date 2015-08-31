@@ -120,7 +120,7 @@ public class PlainTextEditor extends javax.swing.JPanel {
     buttonSave = new javax.swing.JButton();
     buttonCopy = new javax.swing.JButton();
     buttonPaste = new javax.swing.JButton();
-    jButton1 = new javax.swing.JButton();
+    buttonClearAll = new javax.swing.JButton();
 
     setLayout(new java.awt.BorderLayout());
 
@@ -177,17 +177,17 @@ public class PlainTextEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonPaste);
 
-    jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.jButton1.text")); // NOI18N
-    jButton1.setFocusable(false);
-    jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    buttonClearAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonClearAll, org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonClearAll.text")); // NOI18N
+    buttonClearAll.setFocusable(false);
+    buttonClearAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonClearAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonClearAll.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        buttonClearAllActionPerformed(evt);
       }
     });
-    jToolBar1.add(jButton1);
+    jToolBar1.add(buttonClearAll);
 
     add(jToolBar1, java.awt.BorderLayout.PAGE_START);
   }// </editor-fold>//GEN-END:initComponents
@@ -249,18 +249,18 @@ public class PlainTextEditor extends javax.swing.JPanel {
 
   }//GEN-LAST:event_buttonPasteActionPerformed
 
-  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+  private void buttonClearAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearAllActionPerformed
     this.editor.setText("");
-  }//GEN-LAST:event_jButton1ActionPerformed
+  }//GEN-LAST:event_buttonClearAllActionPerformed
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonClearAll;
   private javax.swing.JButton buttonCopy;
   private javax.swing.JButton buttonLoad;
   private javax.swing.JButton buttonPaste;
   private javax.swing.JButton buttonSave;
   private javax.swing.JPopupMenu editorPopup;
-  private javax.swing.JButton jButton1;
   private javax.swing.JToolBar jToolBar1;
   // End of variables declaration//GEN-END:variables
 }

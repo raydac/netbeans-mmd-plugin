@@ -100,7 +100,6 @@ public class UriEditPanel extends javax.swing.JPanel {
     setLayout(new java.awt.GridBagLayout());
 
     labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/url_link.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(labelBrowseCurrentLink, org.openide.util.NbBundle.getMessage(UriEditPanel.class, "UriEditPanel.labelBrowseCurrentLink.text")); // NOI18N
     labelBrowseCurrentLink.setToolTipText(org.openide.util.NbBundle.getMessage(UriEditPanel.class, "UriEditPanel.labelBrowseCurrentLink.toolTipText")); // NOI18N
     labelBrowseCurrentLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     labelBrowseCurrentLink.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -113,8 +112,6 @@ public class UriEditPanel extends javax.swing.JPanel {
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.ipadx = 10;
     add(labelBrowseCurrentLink, gridBagConstraints);
-
-    textFieldURI.setText(org.openide.util.NbBundle.getMessage(UriEditPanel.class, "UriEditPanel.textFieldURI.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1000.0;
@@ -122,7 +119,6 @@ public class UriEditPanel extends javax.swing.JPanel {
 
     labelValidator.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
     labelValidator.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/question16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(labelValidator, org.openide.util.NbBundle.getMessage(UriEditPanel.class, "UriEditPanel.labelValidator.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.ipadx = 10;

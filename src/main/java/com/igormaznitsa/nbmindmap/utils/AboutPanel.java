@@ -67,7 +67,7 @@ public class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkLis
 
     labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo.png"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(textLabel, "<html>\n<h2>NB MindMap plugin</h2>\n<hr>\n<p>Version: ${version}</p>\n<p>Author: Igor Maznitsa (<a href=\"http://www.igormaznitsa.com\">http://www.igormaznitsa.com</a>)</p>\n<br>\n<hr>\n<br>\n<p>The Plugin allows to embed MindMaps into NetBeans projects, keep structured text information and represent it as a graph view.</p>\n<br>\n<hr>\n<br>\n<p>The Project page: <a href=\"https://github.com/raydac/netbeans-mmd-plugin\">https://github.com/raydac/netbeans-mmd-plugin</a>&nbsp;<br>\nThe Project uses icons from the FatCow free web icon set <a href=\"http://www.fatcow.com/free-icons\">http://www.fatcow.com/free-icons</a>&nbsp;\n</p>\n</html>"); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(textLabel, org.openide.util.NbBundle.getMessage(AboutPanel.class, "AboutText")); // NOI18N
     textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -89,7 +89,7 @@ public class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkLis
           .addGroup(layout.createSequentialGroup()
             .addComponent(labelIcon)
             .addGap(0, 0, Short.MAX_VALUE))
-          .addComponent(textLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE))
+          .addComponent(textLabel, javax.swing.GroupLayout.Alignment.TRAILING))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
