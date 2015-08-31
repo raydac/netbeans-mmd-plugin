@@ -67,6 +67,9 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
     labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo.png"))); // NOI18N
 
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(textLabel, bundle.getString("AboutText")); // NOI18N
+    textLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
     textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -77,7 +80,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
         .addContainerGap()
         .addComponent(labelIcon)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+        .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 627, Short.MAX_VALUE)
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -85,10 +88,10 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(textLabel)
           .addGroup(layout.createSequentialGroup()
             .addComponent(labelIcon)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addComponent(textLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+            .addGap(0, 203, Short.MAX_VALUE)))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
