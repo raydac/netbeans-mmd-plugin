@@ -42,7 +42,7 @@ public class MDExporter extends AbstractMindMapExporter {
   
   private static class State {
 
-    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");
+    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
     private final StringBuilder buffer = new StringBuilder(16384);
 
     public State append(final char ch) {
@@ -51,7 +51,7 @@ public class MDExporter extends AbstractMindMapExporter {
     }
 
     public State nextStringMarker(){
-      this.buffer.append("  ");
+      this.buffer.append("  ");//NOI18N
       return this;
     }
     
@@ -102,18 +102,18 @@ public class MDExporter extends AbstractMindMapExporter {
   private static void writeTopic(final Topic topic, final String listPosition, final State state) throws IOException {
     final int level = topic.getTopicLevel();
     
-    String prefix = "";
+    String prefix = "";//NOI18N
     
     final String topicUid = getTopicUid(topic);
     if (topicUid!=null){
-      state.append("<a name=\"").append(topicUid).append("\">").nextLine();
+      state.append("<a name=\"").append(topicUid).append("\">").nextLine();//NOI18N
     }
     
     if (level<STARTING_INDEX_FOR_NUMERATION){
-      final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);
+      final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);//NOI18N
       state.append(headerPrefix).append(' ').append(Utils.escapeMarkdownStr(topic.getText())).nextLine();
     }else{
-      final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION+1);
+      final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION+1);//NOI18N
       state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ').append(Utils.escapeMarkdownStr(topic.getText())).nextLine();
     }
 
@@ -122,16 +122,20 @@ public class MDExporter extends AbstractMindMapExporter {
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
     final ExtraTopic transition = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
 
-    boolean hasExtras = false;
     boolean extrasPrinted = false;
-
-    if (file != null || link != null || note != null || transition != null) {
-      hasExtras = true;
-    }
 
     if (transition != null) {
       final Topic linkedTopic = topic.getMap().findTopicForLink(transition);
-      state.append(prefix).append("*Related to: ").append('[').append(Utils.escapeMarkdownStr(makeLineFromString(linkedTopic.getText()))).append("](").append("#").append(getTopicUid(linkedTopic)).append(")*").nextStringMarker().nextLine();
+      state.append(prefix)
+              .append("*Related to: ")//NOI18N
+              .append('[')//NOI18N
+              .append(Utils.escapeMarkdownStr(makeLineFromString(linkedTopic.getText())))
+              .append("](")//NOI18N
+              .append("#")//NOI18N
+              .append(getTopicUid(linkedTopic))
+              .append(")*")//NOI18N
+              .nextStringMarker()
+              .nextLine();
       extrasPrinted = true;
       if (file != null || link != null || note != null){
         state.nextStringMarker().nextLine();
@@ -140,14 +144,24 @@ public class MDExporter extends AbstractMindMapExporter {
 
     if (file != null) {
       final URI fileURI = file.getValue();
-      state.append(prefix).append("> File: ").append(Utils.escapeMarkdownStr(fileURI.isAbsolute() ? Utilities.toFile(file.getValue()).getAbsolutePath() : fileURI.toString())).nextStringMarker().nextLine();
+      state.append(prefix)
+              .append("> File: ")//NOI18N
+              .append(Utils.escapeMarkdownStr(fileURI.isAbsolute() ? Utilities.toFile(file.getValue()).getAbsolutePath() : fileURI.toString())).nextStringMarker().nextLine();
       extrasPrinted = true;
     }
 
     if (link != null) {
       final String url = link.getValue().toString();
       final String ascurl = link.getValue().toASCIIString();
-      state.append(prefix).append("> Url: ").append('[').append(Utils.escapeMarkdownStr(url)).append("](").append(ascurl).append(')').nextStringMarker().nextLine();
+      state.append(prefix)
+              .append("> Url: ")//NOI18N
+              .append('[')//NOI18N
+              .append(Utils.escapeMarkdownStr(url))
+              .append("](")//NOI18N
+              .append(ascurl)
+              .append(')')//NOI18N
+              .nextStringMarker()
+              .nextLine();
       extrasPrinted = true;
     }
 
@@ -155,7 +169,11 @@ public class MDExporter extends AbstractMindMapExporter {
       if (extrasPrinted) {
         state.nextLine();
       }
-      state.append(prefix).append("<pre>").append(StringEscapeUtils.escapeHtml(note.getValue())).append("</pre>").nextLine();
+      state.append(prefix)
+              .append("<pre>")//NOI18N
+              .append(StringEscapeUtils.escapeHtml(note.getValue()))
+              .append("</pre>")//NOI18N
+              .nextLine();
       extrasPrinted = true;
     }
   }
@@ -168,9 +186,9 @@ public class MDExporter extends AbstractMindMapExporter {
     writeInterTopicLine(state);
     final String prefix;
     if (t.getTopicLevel()>=STARTING_INDEX_FOR_NUMERATION){
-      prefix = topicListNumStr + Integer.toString(topicIndex+1) + '.';
+      prefix = topicListNumStr + Integer.toString(topicIndex+1) + '.';//NOI18N
     }else{
-      prefix = "";
+      prefix = "";//NOI18N
     }
     writeTopic(t, prefix, state);
     int index = 0;
@@ -183,55 +201,59 @@ public class MDExporter extends AbstractMindMapExporter {
   public void doExport(final MindMapPanel currentPanel) throws IOException {
     final State state = new State();
 
-    state.append("<!--").nextLine().append("Generated by NB Mind Map Plugin (https://github.com/raydac/netbeans-mmd-plugin)").nextLine();
-    state.append(new Timestamp(new java.util.Date().getTime()).toString()).nextLine().append("-->").nextLine();
+    state.append("<!--")//NOI18N
+            .nextLine()//NOI18N
+            .append("Generated by NB Mind Map Plugin (https://github.com/raydac/netbeans-mmd-plugin)")//NOI18N
+            .nextLine();//NOI18N
+    state.append(new Timestamp(new java.util.Date().getTime()).toString()).nextLine().append("-->").nextLine();//NOI18N
 
     final Topic root = currentPanel.getModel().getRoot();
     if (root != null) {
-      writeTopic(root, "", state);
+      writeTopic(root, "", state);//NOI18N
 
       final Topic[] children = Utils.getLeftToRightOrderedChildrens(root);
       for (final Topic t : children) {
         writeInterTopicLine(state);
-        writeTopic(t, "", state);
+        writeTopic(t, "", state);//NOI18N
         int indexChild = 0;
         for (final Topic tt : t.getChildren()) {
-          writeOtherTopicRecursively(tt, "", indexChild++, state);
+          writeOtherTopicRecursively(tt, "", indexChild++, state);//NOI18N
         }
       }
     }
 
     final String text = state.toString();
 
-    final File home = new File(System.getProperty("user.home"));
-    File fileToSaveImage = new FileChooserBuilder("user-dir").setTitle("Export as MD file").setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
+    final File home = new File(System.getProperty("user.home"));//NOI18N
+    File fileToSaveImage = new FileChooserBuilder("user-dir")//NOI18N
+            .setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.saveDialogTitle")).setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
 
       @Override
       public boolean accept(File f) {
-        return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".md"));
+        return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".md"));//NOI18N
       }
 
       @Override
       public String getDescription() {
-        return "MD file (*.MD)";
+        return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.fileFilterName");
       }
-    }).setApproveText("Save").showSaveDialog();
+    }).setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.saveButtonText")).showSaveDialog();
 
-    fileToSaveImage = checkFile(fileToSaveImage, ".MD");
+    fileToSaveImage = checkFile(fileToSaveImage, ".MD");//NOI18N
 
     if (fileToSaveImage != null) {
-      FileUtils.writeStringToFile(fileToSaveImage, text, "UTF-8");
+      FileUtils.writeStringToFile(fileToSaveImage, text, "UTF-8");//NOI18N
     }
   }
 
   @Override
   public String getName() {
-    return "MD file";
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.exporterName");
   }
 
   @Override
   public String getReference() {
-    return "Export the mind map content as a plain UTF8 encoded GitHub compatible MarkDown file.";
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.exporterReference");
   }
 
   @Override

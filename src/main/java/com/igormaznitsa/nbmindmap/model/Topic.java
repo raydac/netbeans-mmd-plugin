@@ -52,9 +52,9 @@ public final class Topic implements Serializable, Constants {
 
   private final transient long localUID = LOCALUID_GENERATOR.getAndIncrement();
 
-  private static final Pattern PATTERN_TOPIC_HEADER = Pattern.compile("^\\s*(\\#+)\\s*(.*)$");
-  private static final Pattern PATTERN_EXTRA = Pattern.compile("^\\s*\\-\\s*([^\\s]+)\\s*$");
-  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|\\<\\s*?pre\\s*?\\>(.+?)\\<\\s*?\\/\\s*?pre\\s*\\>|^(.*?)$");
+  private static final Pattern PATTERN_TOPIC_HEADER = Pattern.compile("^\\s*(\\#+)\\s*(.*)$"); //NOI18N
+  private static final Pattern PATTERN_EXTRA = Pattern.compile("^\\s*\\-\\s*([^\\s]+)\\s*$"); //NOI18N
+  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|\\<\\s*?pre\\s*?\\>(.+?)\\<\\s*?\\/\\s*?pre\\s*\\>|^(.*?)$"); //NOI18N
   private static final int MD_GROUP_HEAD = 1;
   private static final int MD_GROUP_ITEM = 2;
   private static final int MD_GROUP_BLOCKQUOTE = 3;
@@ -215,7 +215,7 @@ public final class Topic implements Serializable, Constants {
               topic.setExtra(extraType.parseLoaded(matcher.group(MD_GROUP_PRE)));
             }
             catch (Exception ex) {
-              Logger.error("Unexpected exception #23241", ex);
+              Logger.error("Unexpected exception #23241", ex); //NOI18N
             }
             finally {
               extraType = null;
@@ -450,7 +450,7 @@ public final class Topic implements Serializable, Constants {
     Utils.writeChar(out, '#', level);
     out.append(' ').append(Utils.escapeMarkdownStr(this.text)).append(NEXT_LINE);
     if (!this.attributes.isEmpty()) {
-      out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE);
+      out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE); //NOI18N
     }
     for (final Map.Entry<Extra.ExtraType, Extra<?>> e : this.extras.entrySet()) {
       e.getValue().write(out);
@@ -482,7 +482,7 @@ public final class Topic implements Serializable, Constants {
 
   @Override
   public String toString() {
-    return "MindMapTopic('" + this.text + "')";
+    return "MindMapTopic('" + this.text + "')"; //NOI18N
   }
 
   public long getLocalUid() {
@@ -561,7 +561,7 @@ public final class Topic implements Serializable, Constants {
     this.map.lock();
     try {
       final int index = afterTheTopic == null ? -1 : this.children.indexOf(afterTheTopic);
-      Topic result = new Topic(this.map, this, text == null ? "" : text);
+      Topic result = new Topic(this.map, this, text == null ? "" : text); //NOI18N
       if (index >= 0) {
         result.moveAfter(afterTheTopic);
       }

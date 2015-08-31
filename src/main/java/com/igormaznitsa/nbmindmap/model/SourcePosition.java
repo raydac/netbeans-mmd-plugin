@@ -26,10 +26,10 @@ public final class SourcePosition implements Serializable {
   private final int line;
   private final int pos;
   
-  private static final Pattern pattern = Pattern.compile("^([^\\[]*)\\[(\\-?\\d+)\\:(\\-?\\d+)\\]$");
+  private static final Pattern pattern = Pattern.compile("^([^\\[]*)\\[(\\-?\\d+)\\:(\\-?\\d+)\\]$"); //NOI18N
   
   public SourcePosition(final String sourceName, final int line, final int pos){
-    this.sourceName = sourceName == null ? "" : sourceName;
+    this.sourceName = sourceName == null ? "" : sourceName; //NOI18N
     this.line = line;
     this.pos = pos;
   }
@@ -41,7 +41,7 @@ public final class SourcePosition implements Serializable {
       this.line = Integer.parseInt(matcher.group(2));
       this.pos = Integer.parseInt(matcher.group(3));
     }else{
-      throw new IllegalArgumentException("Wrong format of source position ["+packedSourceRecord+']');
+      throw new IllegalArgumentException("Wrong format of source position ["+packedSourceRecord+']'); //NOI18N
     }
   }
   

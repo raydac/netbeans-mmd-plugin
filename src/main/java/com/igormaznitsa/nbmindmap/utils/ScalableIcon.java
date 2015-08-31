@@ -24,11 +24,11 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 
 public enum ScalableIcon {
-  FILE("file_link.png"),
-  TOPIC("brick_link.png"),
-  LINE("source_link.png"),
-  TEXT("note_link.png"),
-  LINK("url_link.png");
+  FILE("file_link.png"), //NOI18N
+  TOPIC("brick_link.png"), //NOI18N
+  LINE("source_link.png"), //NOI18N
+  TEXT("note_link.png"), //NOI18N
+  LINK("url_link.png"); //NOI18N
 
   public static final int BASE_WIDTH = 16;
   public static final int BASE_HEIGHT = 16;
@@ -42,7 +42,7 @@ public enum ScalableIcon {
   private final float baseScaleY;
   
   private ScalableIcon(final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/"+name);
+    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/"+name); //NOI18N
     try{
       this.baseImage = ImageIO.read(in);
       this.scaledCachedImage = null;
@@ -50,7 +50,7 @@ public enum ScalableIcon {
       this.baseScaleY = (float) BASE_HEIGHT / (float)this.baseImage.getHeight(null);
     }
     catch (Exception ex) {
-      throw new Error("Can't load resource image "+name, ex);
+      throw new Error("Can't load resource image "+name, ex); //NOI18N
     }finally{
       IOUtils.closeQuietly(in);
     }

@@ -73,12 +73,12 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
 
   @Override
   public String getDisplayName() {
-    return "Navigator";
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDNavigator.displayName");
   }
 
   @Override
   public String getDisplayHint() {
-    return "Current mind map object in tree view";
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDNavigator.displayHint");
   }
 
   @Override
@@ -141,7 +141,7 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
         this.mindMapTree.setModel(new MindMap(new StringReader(text)));
       }
       catch (IOException ex) {
-        Logger.error("Can't parse mind map text", ex);
+        Logger.error("Can't parse mind map text", ex); //NOI18N
         this.mindMapTree.setModel(null);
       }
     }

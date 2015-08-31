@@ -42,7 +42,7 @@ public class ColorChoosingButton extends JButton {
       @Override
       protected void fireActionPerformed(ActionEvent e) {
         final JColorChooser colorChooser = new JColorChooser(value);
-        if (NbUtils.msgComponentOkCancel("Color for '" + getText() + '\'', colorChooser)) {
+        if (NbUtils.msgComponentOkCancel(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("ColorChoosingButton.dialogTitle"),getText()), colorChooser)) {
           setValue(colorChooser.getColor());
           lastResultOk = true;
         }

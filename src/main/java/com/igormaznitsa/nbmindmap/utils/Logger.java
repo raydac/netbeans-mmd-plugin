@@ -18,7 +18,7 @@ package com.igormaznitsa.nbmindmap.utils;
 import java.util.logging.Level;
 
 public class Logger {
-  private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger("com.igormaznitsa.nbmindmap");
+  private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger("com.igormaznitsa.nbmindmap"); //NOI18N
 
   public static void error(final String msg, final Throwable thr){
     logger.log(Level.SEVERE, msg, thr);

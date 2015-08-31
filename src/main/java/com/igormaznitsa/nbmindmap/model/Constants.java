@@ -16,6 +16,6 @@
 package com.igormaznitsa.nbmindmap.model;
 
 public interface Constants {
-  public static final String NEXT_LINE = "\n";
-  public static final String NEXT_PARAGRAPH = "   \n";
+  public static final String NEXT_LINE = "\n"; //NOI18N
+  public static final String NEXT_PARAGRAPH = "   \n"; //NOI18N
 }

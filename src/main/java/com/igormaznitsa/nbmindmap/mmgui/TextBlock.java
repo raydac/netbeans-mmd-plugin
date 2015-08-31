@@ -46,13 +46,13 @@ public final class TextBlock {
   private static final Rectangle2D ZERO = new Rectangle2D.Float();
 
   public TextBlock(final String text, final TextAlign justify) {
-    assertNotNull("Text must not be null", text);
+    assertNotNull("Text must not be null", text); //NOI18N
     updateText(text);
     this.textAlign = justify;
   }
 
   public void updateText(final String text) {
-    this.text = text == null ? "" : text;
+    this.text = text == null ? "" : text; //NOI18N
     invalidate();
   }
 
@@ -127,7 +127,7 @@ public final class TextBlock {
           }
           break;
           default:
-            throw new Error("unexpected situation #283794");
+            throw new Error("unexpected situation #283794"); //NOI18N
         }
 
         gfx.drawString(l.line, (int)Math.round(drawX), (int)Math.round(posy));

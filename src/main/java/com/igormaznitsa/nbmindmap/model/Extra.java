@@ -40,7 +40,7 @@ public abstract class Extra <T> implements Serializable, Constants, Cloneable {
         case NOTE : return new ExtraNote(preprocessed);
         case TOPIC : return new ExtraTopic(preprocessed);
         case LINE : return new ExtraLine(preprocessed);
-        default: throw new Error("Unexpected value ["+this.name()+']');
+        default: throw new Error("Unexpected value ["+this.name()+']'); //NOI18N
       }
     }
   }
@@ -50,7 +50,7 @@ public abstract class Extra <T> implements Serializable, Constants, Cloneable {
   public abstract String getAsString();
 
   public final void write(final Writer out) throws IOException {
-    out.append("- ").append(getType().name()).append(NEXT_LINE);
+    out.append("- ").append(getType().name()).append(NEXT_LINE); //NOI18N
     out.append(Utils.makePreBlock(getAsString()));
   }
   

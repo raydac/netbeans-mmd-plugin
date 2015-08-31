@@ -36,10 +36,10 @@ public enum NbUtils {
 
   static {
     try {
-      EMPTY_URI = new URI("http://igormaznitsa.com/specialuri#empty");
+      EMPTY_URI = new URI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
     }
     catch (URISyntaxException ex) {
-      throw new Error("Unexpected exception", ex);
+      throw new Error("Unexpected exception", ex); //NOI18N
     }
   }
 
@@ -124,7 +124,7 @@ public enum NbUtils {
         return new URI(text.trim());
       }
       catch (URISyntaxException ex) {
-        msgError("Illegal URI [" + text + ']');
+        msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("NbUtils.errMsgIllegalURI"),text));
         return null;
       }
     }
@@ -143,7 +143,7 @@ public enum NbUtils {
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
       final String text = textEditor.getPath();
       if (text.isEmpty()) {
-        return "";
+        return ""; //NOI18N
       }
       return text.trim();
     }
@@ -163,7 +163,7 @@ public enum NbUtils {
       return true;
     }
     catch (MalformedURLException ex) {
-      Logger.error("MalformedURLException", ex);
+      Logger.error("MalformedURLException", ex); //NOI18N
       return false;
     }
   }

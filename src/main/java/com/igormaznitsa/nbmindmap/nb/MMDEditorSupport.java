@@ -90,7 +90,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
       return doc.getText(0, doc.getLength());
     }
     catch (Exception ex) {
-      Logger.error("Can't get document text", ex);
+      Logger.error("Can't get document text", ex); //NOI18N
       return null;
     }
   }
@@ -162,13 +162,13 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
             doc.insertString(0, text, null);
           }
           catch (Exception ex) {
-            Logger.error("Can't replace text", ex);
+            Logger.error("Can't replace text", ex); //NOI18N
           }
         }
       });
     }
     catch (Exception ex) {
-      Logger.error("Can't open document to replace text", ex);
+      Logger.error("Can't open document to replace text", ex); //NOI18N
     }
 
   }

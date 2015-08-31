@@ -22,28 +22,28 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.IOUtils;
 
 public enum Icons {
-  DOCUMENT("document16.png"),
-  EXPORT("export16.png"),
-  IMAGE("image16.png"),
-  FILE_EXTENSION_PNG("file_extension_png16.png"),
-  FILE_EXTENSION_TXT("file_extension_txt16.png"),
-  FILE_EXTENSION_RTF("file_extension_rtf16.png"),
-  EXPANDALL("toggle_expand16.png"),
-  COLLAPSEALL("toggle16.png"),
-  EDITTEXT("text16.png"),
-  ADD("add16.png"),
-  SOURCE("source16.png"),
-  TOPIC("brick16.png"),
-  INFO("info16.png"),
-  NOTE("note16.png"),
-  URL("url16.png"),
-  DELETE("delete16.png"),
-  OPTIONS("settings16.png"),
-  BLUEBALL("blueball16.png"),
-  GOLDBALL("goldball16.png"),
-  FREEMIND("freemind16.png"),
-  FILE("disk16.png"),
-  CLONE("draw_clone16.png");
+  DOCUMENT("document16.png"), //NOI18N
+  EXPORT("export16.png"), //NOI18N
+  IMAGE("image16.png"), //NOI18N
+  FILE_EXTENSION_PNG("file_extension_png16.png"), //NOI18N
+  FILE_EXTENSION_TXT("file_extension_txt16.png"), //NOI18N
+  FILE_EXTENSION_RTF("file_extension_rtf16.png"), //NOI18N
+  EXPANDALL("toggle_expand16.png"), //NOI18N
+  COLLAPSEALL("toggle16.png"), //NOI18N
+  EDITTEXT("text16.png"), //NOI18N
+  ADD("add16.png"), //NOI18N
+  SOURCE("source16.png"), //NOI18N
+  TOPIC("brick16.png"), //NOI18N
+  INFO("info16.png"), //NOI18N
+  NOTE("note16.png"), //NOI18N
+  URL("url16.png"), //NOI18N
+  DELETE("delete16.png"), //NOI18N
+  OPTIONS("settings16.png"), //NOI18N
+  BLUEBALL("blueball16.png"), //NOI18N
+  GOLDBALL("goldball16.png"), //NOI18N
+  FREEMIND("freemind16.png"), //NOI18N
+  FILE("disk16.png"), //NOI18N
+  CLONE("draw_clone16.png"); //NOI18N
 
   private final ImageIcon icon;
 
@@ -52,12 +52,12 @@ public enum Icons {
   }
   
   private Icons(final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/" + name);
+    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/" + name); //NOI18N
     try {
       this.icon = new ImageIcon(ImageIO.read(in));
     }
     catch (IOException ex) {
-      throw new Error("Can't load icon " + name, ex);
+      throw new Error("Can't load icon " + name, ex); //NOI18N
     }
     finally {
       IOUtils.closeQuietly(in);

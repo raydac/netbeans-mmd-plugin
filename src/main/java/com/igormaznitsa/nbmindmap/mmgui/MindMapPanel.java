@@ -89,41 +89,41 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     COMMON_CONFIG.makeAtomicChange(new Runnable() {
       @Override
       public void run() {
-        COMMON_CONFIG.setShowGrid(NbUtils.getPreferences().getBoolean("showGrid", COMMON_CONFIG.isShowGrid()));
-        COMMON_CONFIG.setDropShadow(NbUtils.getPreferences().getBoolean("dropShadow", COMMON_CONFIG.isDropShadow()));
-        COMMON_CONFIG.setPaperColor(new Color(NbUtils.getPreferences().getInt("paperColor", COMMON_CONFIG.getPaperColor().getRGB())));
-        COMMON_CONFIG.setGridColor(new Color(NbUtils.getPreferences().getInt("gridColor", COMMON_CONFIG.getGridColor().getRGB())));
-        COMMON_CONFIG.setConnectorColor(new Color(NbUtils.getPreferences().getInt("connectorColor", COMMON_CONFIG.getConnectorColor().getRGB())));
-        COMMON_CONFIG.setGridStep(NbUtils.getPreferences().getInt("gridStep", COMMON_CONFIG.getGridStep()));
-        COMMON_CONFIG.setConnectorWidth(NbUtils.getPreferences().getFloat("connectorWidth", COMMON_CONFIG.getConnectorWidth()));
+        COMMON_CONFIG.setShowGrid(NbUtils.getPreferences().getBoolean("showGrid", COMMON_CONFIG.isShowGrid())); //NOI18N
+        COMMON_CONFIG.setDropShadow(NbUtils.getPreferences().getBoolean("dropShadow", COMMON_CONFIG.isDropShadow())); //NOI18N
+        COMMON_CONFIG.setPaperColor(new Color(NbUtils.getPreferences().getInt("paperColor", COMMON_CONFIG.getPaperColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setGridColor(new Color(NbUtils.getPreferences().getInt("gridColor", COMMON_CONFIG.getGridColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setConnectorColor(new Color(NbUtils.getPreferences().getInt("connectorColor", COMMON_CONFIG.getConnectorColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setGridStep(NbUtils.getPreferences().getInt("gridStep", COMMON_CONFIG.getGridStep())); //NOI18N
+        COMMON_CONFIG.setConnectorWidth(NbUtils.getPreferences().getFloat("connectorWidth", COMMON_CONFIG.getConnectorWidth())); //NOI18N
 
-        COMMON_CONFIG.setRootBackgroundColor(new Color(NbUtils.getPreferences().getInt("rootBackColor", COMMON_CONFIG.getRootBackgroundColor().getRGB())));
-        COMMON_CONFIG.setRootTextColor(new Color(NbUtils.getPreferences().getInt("rootTextColor", COMMON_CONFIG.getRootTextColor().getRGB())));
+        COMMON_CONFIG.setRootBackgroundColor(new Color(NbUtils.getPreferences().getInt("rootBackColor", COMMON_CONFIG.getRootBackgroundColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setRootTextColor(new Color(NbUtils.getPreferences().getInt("rootTextColor", COMMON_CONFIG.getRootTextColor().getRGB()))); //NOI18N
 
-        COMMON_CONFIG.setFirstLevelBackgroundColor(new Color(NbUtils.getPreferences().getInt("1stBackColor", COMMON_CONFIG.getFirstLevelBackgroundColor().getRGB())));
-        COMMON_CONFIG.setFirstLevelTextColor(new Color(NbUtils.getPreferences().getInt("1stTextColor", COMMON_CONFIG.getFirstLevelTextColor().getRGB())));
+        COMMON_CONFIG.setFirstLevelBackgroundColor(new Color(NbUtils.getPreferences().getInt("1stBackColor", COMMON_CONFIG.getFirstLevelBackgroundColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setFirstLevelTextColor(new Color(NbUtils.getPreferences().getInt("1stTextColor", COMMON_CONFIG.getFirstLevelTextColor().getRGB()))); //NOI18N
 
-        COMMON_CONFIG.setOtherLevelBackgroundColor(new Color(NbUtils.getPreferences().getInt("2stBackColor", COMMON_CONFIG.getOtherLevelBackgroundColor().getRGB())));
-        COMMON_CONFIG.setOtherLevelTextColor(new Color(NbUtils.getPreferences().getInt("2stTextColor", COMMON_CONFIG.getOtherLevelTextColor().getRGB())));
+        COMMON_CONFIG.setOtherLevelBackgroundColor(new Color(NbUtils.getPreferences().getInt("2stBackColor", COMMON_CONFIG.getOtherLevelBackgroundColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setOtherLevelTextColor(new Color(NbUtils.getPreferences().getInt("2stTextColor", COMMON_CONFIG.getOtherLevelTextColor().getRGB()))); //NOI18N
 
-        COMMON_CONFIG.setSelectLineColor(new Color(NbUtils.getPreferences().getInt("selectLineColor", COMMON_CONFIG.getSelectLineColor().getRGB())));
-        COMMON_CONFIG.setSelectLineWidth(NbUtils.getPreferences().getFloat("selectLineWidth", COMMON_CONFIG.getSelectLineWidth()));
-        COMMON_CONFIG.setSelectLineGap(NbUtils.getPreferences().getInt("selectLineGap", COMMON_CONFIG.getSelectLineGap()));
+        COMMON_CONFIG.setSelectLineColor(new Color(NbUtils.getPreferences().getInt("selectLineColor", COMMON_CONFIG.getSelectLineColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setSelectLineWidth(NbUtils.getPreferences().getFloat("selectLineWidth", COMMON_CONFIG.getSelectLineWidth())); //NOI18N
+        COMMON_CONFIG.setSelectLineGap(NbUtils.getPreferences().getInt("selectLineGap", COMMON_CONFIG.getSelectLineGap())); //NOI18N
 
-        COMMON_CONFIG.setCollapsatorBackgroundColor(new Color(NbUtils.getPreferences().getInt("collapsatorBackColor", COMMON_CONFIG.getCollapsatorBackgroundColor().getRGB())));
-        COMMON_CONFIG.setCollapsatorBorderColor(new Color(NbUtils.getPreferences().getInt("collapsatorBorderColor", COMMON_CONFIG.getCollapsatorBorderColor().getRGB())));
-        COMMON_CONFIG.setCollapsatorSize(NbUtils.getPreferences().getInt("collapsatorSize", COMMON_CONFIG.getCollapsatorSize()));
-        COMMON_CONFIG.setCollapsatorBorderWidth(NbUtils.getPreferences().getFloat("collapsatorBorderWidth", COMMON_CONFIG.getCollapsatorBorderWidth()));
+        COMMON_CONFIG.setCollapsatorBackgroundColor(new Color(NbUtils.getPreferences().getInt("collapsatorBackColor", COMMON_CONFIG.getCollapsatorBackgroundColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setCollapsatorBorderColor(new Color(NbUtils.getPreferences().getInt("collapsatorBorderColor", COMMON_CONFIG.getCollapsatorBorderColor().getRGB()))); //NOI18N
+        COMMON_CONFIG.setCollapsatorSize(NbUtils.getPreferences().getInt("collapsatorSize", COMMON_CONFIG.getCollapsatorSize())); //NOI18N
+        COMMON_CONFIG.setCollapsatorBorderWidth(NbUtils.getPreferences().getFloat("collapsatorBorderWidth", COMMON_CONFIG.getCollapsatorBorderWidth())); //NOI18N
 
-        COMMON_CONFIG.setFirstLevelHorizontalInset(NbUtils.getPreferences().getInt("firstLevelHInset", COMMON_CONFIG.getFirstLevelHorizontalInset()));
-        COMMON_CONFIG.setFirstLevelVerticalInset(NbUtils.getPreferences().getInt("firstLevelVInset", COMMON_CONFIG.getFirstLevelVerticalInset()));
+        COMMON_CONFIG.setFirstLevelHorizontalInset(NbUtils.getPreferences().getInt("firstLevelHInset", COMMON_CONFIG.getFirstLevelHorizontalInset())); //NOI18N
+        COMMON_CONFIG.setFirstLevelVerticalInset(NbUtils.getPreferences().getInt("firstLevelVInset", COMMON_CONFIG.getFirstLevelVerticalInset())); //NOI18N
 
-        COMMON_CONFIG.setOtherLevelHorizontalInset(NbUtils.getPreferences().getInt("otherLevelHInset", COMMON_CONFIG.getOtherLevelHorizontalInset()));
-        COMMON_CONFIG.setOtherLevelVerticalInset(NbUtils.getPreferences().getInt("otherLevelVInset", COMMON_CONFIG.getOtherLevelVerticalInset()));
+        COMMON_CONFIG.setOtherLevelHorizontalInset(NbUtils.getPreferences().getInt("otherLevelHInset", COMMON_CONFIG.getOtherLevelHorizontalInset())); //NOI18N
+        COMMON_CONFIG.setOtherLevelVerticalInset(NbUtils.getPreferences().getInt("otherLevelVInset", COMMON_CONFIG.getOtherLevelVerticalInset())); //NOI18N
 
-        final String fontName = NbUtils.getPreferences().get("font.name", COMMON_CONFIG.getFont().getName());
-        final int fontSize = NbUtils.getPreferences().getInt("font.size", COMMON_CONFIG.getFont().getSize());
-        final int fontStyle = NbUtils.getPreferences().getInt("font.style", COMMON_CONFIG.getFont().getStyle());
+        final String fontName = NbUtils.getPreferences().get("font.name", COMMON_CONFIG.getFont().getName()); //NOI18N
+        final int fontSize = NbUtils.getPreferences().getInt("font.size", COMMON_CONFIG.getFont().getSize()); //NOI18N
+        final int fontStyle = NbUtils.getPreferences().getInt("font.style", COMMON_CONFIG.getFont().getStyle()); //NOI18N
         COMMON_CONFIG.setFont(new Font(fontName, fontStyle, fontSize));
       }
     });
@@ -190,7 +190,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           }
           else {
             e.consume();
-            textEditor.insert("\n", textEditor.getCaretPosition());
+            textEditor.insert("\n", textEditor.getCaretPosition()); //NOI18N
           }
         }
       }
@@ -490,37 +490,37 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private String makeHtmlTooltipForExtra(final Extra<?> extra) {
     final StringBuilder builder = new StringBuilder();
 
-    builder.append("<html>");
+    builder.append("<html>"); //NOI18N
 
     switch (extra.getType()) {
       case FILE: {
-        builder.append("<b>Open File</b><br>").append(StringEscapeUtils.escapeHtml(((ExtraFile) extra).getAsString()));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipOpenFile")).append(StringEscapeUtils.escapeHtml(((ExtraFile) extra).getAsString()));
       }
       break;
       case TOPIC: {
         final Topic topic = this.getModel().findTopicForLink((ExtraTopic) extra);
-        builder.append("<b>Jump to topic</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(topic.getText(), 32)));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(topic.getText(), 32)));
       }
       break;
       case LINK: {
-        builder.append("<b>Open link</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraLink) extra).getAsString(), 48)));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraLink) extra).getAsString(), 48)));
       }
       break;
       case NOTE: {
-        builder.append("<b>Open text content</b><br>").append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraNote) extra).getAsString(), 64)));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipOpenText")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraNote) extra).getAsString(), 64)));
       }
       break;
       case LINE: {
-        builder.append("<b>Open line</b><br>").append(StringEscapeUtils.escapeHtml(((ExtraLine) extra).getValue().toString()));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipOpenLine")).append(StringEscapeUtils.escapeHtml(((ExtraLine) extra).getValue().toString()));
       }
       break;
       default: {
-        builder.append("<b>Unknown</b>");
+        builder.append("<b>Unknown</b>"); //NOI18N
       }
       break;
     }
 
-    builder.append("</html>");
+    builder.append("</html>"); //NOI18N
 
     return builder.toString();
   }
@@ -761,7 +761,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     if (parent != null) {
       removeAllSelection();
 
-      final Topic newTopic = parent.makeChild("", baseTopic);
+      final Topic newTopic = parent.makeChild("", baseTopic); //NOI18N
 
       final AbstractElement parentElement = (AbstractElement) parent.getPayload();
 
@@ -959,7 +959,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   }
 
   public void addMindMapListener(final MindMapListener l) {
-    Utils.assertNotNull("Listener must not be null", l);
+    Utils.assertNotNull("Listener must not be null", l); //NOI18N
     this.mindMapListeners.add(l);
   }
 
@@ -1392,7 +1392,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       return false;
     }
 
-    final Boolean cloneFullTree = NbUtils.msgConfirmYesNoCancel("Clone topic", "Do you want clone whole topic subtree?");
+    final Boolean cloneFullTree = NbUtils.msgConfirmYesNoCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.titleCloneTopicRequest"), java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.cloneTopicSubtreeRequestMsg"));
     if (cloneFullTree == null) {
       return false;
     }

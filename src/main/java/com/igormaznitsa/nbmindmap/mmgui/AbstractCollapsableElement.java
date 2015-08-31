@@ -66,11 +66,11 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public boolean isCollapsed() {
-    return "true".equalsIgnoreCase(this.model.getAttribute("collapsed"));
+    return "true".equalsIgnoreCase(this.model.getAttribute("collapsed"));//NOI18N
   }
 
   public void setCollapse(final boolean flag) {
-    this.model.setAttribute("collapsed", flag ? "true" : null);
+    this.model.setAttribute("collapsed", flag ? "true" : null);//NOI18N
   }
 
   @Override
@@ -83,15 +83,15 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   public static boolean isLeftSidedTopic(final Topic t) {
-    return "true".equals(t.getAttribute("leftSide"));
+    return "true".equals(t.getAttribute("leftSide"));//NOI18N
   }
 
   public static void makeTopicLeftSided(final Topic topic, final boolean left) {
     if (left) {
-      topic.setAttribute("leftSide", "true");
+      topic.setAttribute("leftSide", "true");//NOI18N
     }
     else {
-      topic.setAttribute("leftSide", null);
+      topic.setAttribute("leftSide", null);//NOI18N
     }
   }
 

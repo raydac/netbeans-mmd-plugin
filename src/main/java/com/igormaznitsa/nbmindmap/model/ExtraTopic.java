@@ -15,18 +15,14 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
-import com.igormaznitsa.nbmindmap.utils.Utils;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Locale;
-import org.apache.commons.lang.StringEscapeUtils;
 
 public class ExtraTopic extends Extra<String> {
   private static final long serialVersionUID = -8556885025460722094L;
 
   private final String topicUID;
   
-  public static final String TOPIC_UID_ATTR = "topicLinkUID";
+  public static final String TOPIC_UID_ATTR = "topicLinkUID"; //NOI18N
   
   public static ExtraTopic makeLinkTo(final MindMap map,final Topic topic){
     ExtraTopic result = null;

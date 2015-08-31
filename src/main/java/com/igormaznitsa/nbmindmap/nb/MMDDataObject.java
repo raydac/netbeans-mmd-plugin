@@ -38,11 +38,11 @@ public class MMDDataObject extends MultiDataObject implements Lookup.Provider {
 
   private static final long serialVersionUID = -833567211826863321L;
 
-  public static final String MIME = "text/x-mmd+markdown";
-  public static final String MMD_EXT = "mmd";
+  public static final String MIME = "text/x-mmd+markdown"; //NOI18N
+  public static final String MMD_EXT = "mmd"; //NOI18N
 
-  private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png");
-  private static final Image NODE_ICON_32x32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo32.png");
+  private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N
+  private static final Image NODE_ICON_32x32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo32.png"); //NOI18N
 
   final InstanceContent ic;
   private final AbstractLookup lookup;

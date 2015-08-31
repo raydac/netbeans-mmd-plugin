@@ -65,7 +65,7 @@ public final class Configuration {
   private float connectorWidth = 1.5f;
   private float selectLineWidth = 2.0f;
 
-  private Font font = new Font("Arial", Font.BOLD, 14);
+  private Font font = new Font("Arial", Font.BOLD, 14); //NOI18N
   private float scale = 1.0f;
   private boolean dropShadow = true;
 
@@ -88,7 +88,7 @@ public final class Configuration {
 
   public void makeFullCopyOf(final Configuration src, final boolean copyListeners, final boolean makeNotification) {
     for (final Field f : Configuration.class.getDeclaredFields()) {
-      if (f.getName().equals("listeners")) {
+      if (f.getName().equals("listeners")) { //NOI18N
         if (copyListeners) {
           this.listeners.clear();
           for (final WeakReference<ConfigurationListener> weakContainer : src.listeners) {
@@ -104,7 +104,7 @@ public final class Configuration {
           f.set(this, f.get(src));
         }
         catch (Exception ex) {
-          throw new Error("Unexpected state during cloning");
+          throw new Error("Unexpected state during cloning"); //NOI18N
         }
       }
     }

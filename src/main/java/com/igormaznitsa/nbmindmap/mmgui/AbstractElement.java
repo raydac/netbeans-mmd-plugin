@@ -45,7 +45,7 @@ public abstract class AbstractElement {
   public AbstractElement(final Topic model) {
     this.model = model;
     this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
-    this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align")));
+    this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align"))); //NOI18N
     this.extrasIconBlock = new IconBlock(model);
   }
 
@@ -64,7 +64,7 @@ public abstract class AbstractElement {
 
   public void setTextAlign(final TextAlign textAlign) {
     this.textBlock.setTextAlign(textAlign);
-    this.model.setAttribute("align", this.textBlock.getTextAlign().name());
+    this.model.setAttribute("align", this.textBlock.getTextAlign().name()); //NOI18N
   }
 
   public void updateElementBounds(final Graphics2D gfx, final Configuration cfg) {

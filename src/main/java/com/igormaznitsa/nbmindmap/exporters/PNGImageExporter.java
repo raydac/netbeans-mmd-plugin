@@ -45,38 +45,42 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
     final RenderedImage image = MindMapPanel.renderMindMapAsImage(viewPanel.getModel(), newConfig, true);
 
     if (image == null) {
-      NbUtils.msgError("Can't export mind map as image, may there is not any topic!");
+      NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("PNGImageExporter.msgErrorDuringRendering"));
       return;
     }
 
     final ByteArrayOutputStream buff = new ByteArrayOutputStream(128000);
-    ImageIO.write(image, "png", buff);
+    ImageIO.write(image, "png", buff);//NOI18N
 
     final byte[] imageData = buff.toByteArray();
 
-    final File home = new File(System.getProperty("user.home"));
-    File fileToSaveImage = new FileChooserBuilder("user-dir").setTitle("Export as PNG Image").setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
+    final File home = new File(System.getProperty("user.home"));//NOI18N
+    File fileToSaveImage = new FileChooserBuilder("user-dir")//NOI18N
+            .setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("PNGImageExporter.saveDialogTitle"))
+            .setDefaultWorkingDirectory(home)
+            .setFilesOnly(true)
+            .setFileFilter(new FileFilter() {
 
       @Override
       public boolean accept(File f) {
-        return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".png"));
+        return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".png"));//NOI18N
       }
 
       @Override
       public String getDescription() {
-        return "PNG image (*.png)";
+        return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("PNGImageExporter.fileFilterDescription");
       }
-    }).setApproveText("Save").showSaveDialog();
+    }).setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("PNGImageExporter.saveButtonText")).showSaveDialog();
 
-    fileToSaveImage = checkFile(fileToSaveImage, ".png");
+    fileToSaveImage = checkFile(fileToSaveImage, ".png");//NOI18N
     
     if (fileToSaveImage != null) {
       try {
         FileUtils.writeByteArrayToFile(fileToSaveImage, imageData);
       }
       catch (final IOException ex) {
-        Logger.error("Can't save PNG image as " + fileToSaveImage, ex);
-        NbUtils.msgError("Can't save PNG image for error! See the log!");
+        Logger.error("Can't save PNG image as " + fileToSaveImage, ex); //NOI18N
+        NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("PNGImageExporter.msgErrorForIO"));
       }
     }
 
@@ -84,12 +88,12 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
 
   @Override
   public String getName() {
-    return "PNG image";
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("PNGImageExporter.exporterName");
   }
 
   @Override
   public String getReference() {
-    return "Export of mind map as a PNG image file";
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("PNGImageExporter.exporterReference");
   }
 
   @Override

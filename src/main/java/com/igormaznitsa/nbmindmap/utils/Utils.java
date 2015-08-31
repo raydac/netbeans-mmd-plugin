@@ -127,9 +127,9 @@ public enum Utils {
     }
   }
 
-  private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!";
-  private static final Pattern MD_ESCAPED_PATTERN = Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])");
-  private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>");
+  private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
+  private static final Pattern MD_ESCAPED_PATTERN = Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])"); //NOI18N
+  private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>"); //NOI18N
 
   public static boolean equals(final Map<?, ?> map1, final Map<?, ?> map2) {
     if (map1 == map2) {
@@ -201,7 +201,7 @@ public enum Utils {
     final StringBuilder buffer = new StringBuilder(text.length() * 2);
     for (final char c : text.toCharArray()) {
       if (c == '\n') {
-        buffer.append("<br/>");
+        buffer.append("<br/>"); //NOI18N
         continue;
       }
       else if (Character.isISOControl(c)) {
@@ -217,7 +217,7 @@ public enum Utils {
   }
 
   public static String unescapeMarkdownStr(final String text) {
-    String unescaped = UNESCAPE_BR.matcher(text).replaceAll("\n");
+    String unescaped = UNESCAPE_BR.matcher(text).replaceAll("\n"); //NOI18N
     final StringBuffer result = new StringBuffer(text.length());
     final Matcher escaped = MD_ESCAPED_PATTERN.matcher(unescaped);
     while (escaped.find()) {
@@ -248,7 +248,7 @@ public enum Utils {
   }
 
   public static String makePreBlock(final String text) {
-    return "<pre>"+StringEscapeUtils.escapeHtml(text)+"</pre>";
+    return "<pre>"+StringEscapeUtils.escapeHtml(text)+"</pre>"; //NOI18N
   }
   
   public static String makeMDCodeBlock(final String text) throws IOException {
@@ -296,12 +296,12 @@ public enum Utils {
   }
 
   public static String getFirstLine(final String text){
-    return text.replace("\r", "").split("\\n")[0];
+    return text.replace("\r", "").split("\\n")[0]; //NOI18N
   }
   
   public static String makeShortTextVersion(String text, final int maxLength){
     if (text.length() > maxLength) {
-      text = text.substring(0, maxLength) + "...";
+      text = text.substring(0, maxLength) + "..."; //NOI18N
     }
     return text;
   }
