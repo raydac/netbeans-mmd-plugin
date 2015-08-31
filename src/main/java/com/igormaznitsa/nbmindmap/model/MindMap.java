@@ -140,15 +140,19 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     }
   }
 
-  public Topic findForPositionPath(final int [] positions){
-    if (positions == null || positions.length==0) return null;
-    if (positions.length == 1) return this.root;
+  public Topic findForPositionPath(final int[] positions) {
+    if (positions == null || positions.length == 0) {
+      return null;
+    }
+    if (positions.length == 1) {
+      return this.root;
+    }
 
     Topic result = this.root;
     int index = 1;
-    while(result!=null && index<positions.length){
+    while (result != null && index < positions.length) {
       final int elementPosition = positions[index++];
-      if (elementPosition<0 || result.getChildren().size()<=elementPosition) {
+      if (elementPosition < 0 || result.getChildren().size() <= elementPosition) {
         result = null;
         break;
       }
@@ -156,14 +160,14 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     }
     return result;
   }
-  
+
   public List<Topic> removeNonExistingTopics(final List<Topic> origList) {
     final List<Topic> result = new ArrayList<Topic>();
     this.locker.lock();
     try {
       if (this.root != null) {
         for (final Topic t : origList) {
-          if (this.root.containTopic(t)){
+          if (this.root.containTopic(t)) {
             result.add(t);
           }
         }
@@ -239,15 +243,25 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     this.locker.unlock();
   }
 
-  public void removeTopic(final Topic topic) {
-    if (this.root == topic) {
-      this.root.setText("");
-      this.root.removeExtras();
-      this.root.setPayload(null);
-      this.root.removeAllChildren();
+  public boolean removeTopic(final Topic topic) {
+    this.locker.lock();
+    try {
+      boolean result = false;
+      if (this.root == topic) {
+        this.root.setText("");
+        this.root.removeExtras();
+        this.root.setPayload(null);
+        this.root.removeAllChildren();
+        result = true;
+      }
+      else {
+        this.root.removeTopic(topic);
+        result = this.root.removeAllLinksTo(topic);
+      }
+      return result;
     }
-    else {
-      this.root.removeTopic(topic);
+    finally {
+      this.locker.unlock();
     }
   }
 

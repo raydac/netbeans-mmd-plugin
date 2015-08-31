@@ -345,12 +345,12 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public boolean makeFirst(){
+  public boolean makeFirst() {
     this.map.lock();
     try {
       if (this.parent != null) {
         int thatIndex = this.parent.children.indexOf(this);
-        if (thatIndex>0){
+        if (thatIndex > 0) {
           this.parent.children.remove(thatIndex);
           this.parent.children.add(0, this);
           return true;
@@ -362,22 +362,24 @@ public final class Topic implements Serializable, Constants {
       this.map.unlock();
     }
   }
-  
-  public boolean hasAncestor(final Topic topic){
+
+  public boolean hasAncestor(final Topic topic) {
     Topic parent = this.parent;
-    while(parent!=null){
-      if (parent == topic) return true;
+    while (parent != null) {
+      if (parent == topic) {
+        return true;
+      }
       parent = parent.getParent();
     }
     return false;
   }
-  
-  public boolean makeLast(){
+
+  public boolean makeLast() {
     this.map.lock();
     try {
       if (this.parent != null) {
         int thatIndex = this.parent.children.indexOf(this);
-        if (thatIndex>=0 && thatIndex!=this.parent.children.size()-1){
+        if (thatIndex >= 0 && thatIndex != this.parent.children.size() - 1) {
           this.parent.children.remove(thatIndex);
           this.parent.children.add(this);
           return true;
@@ -389,7 +391,7 @@ public final class Topic implements Serializable, Constants {
       this.map.unlock();
     }
   }
-  
+
   public void moveBefore(final Topic topic) {
     this.map.lock();
     try {
@@ -495,6 +497,24 @@ public final class Topic implements Serializable, Constants {
     finally {
       this.map.unlock();
     }
+  }
+
+  boolean removeAllLinksTo(final Topic topic) {
+    boolean result = false;
+
+    final String uid = topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
+
+    ExtraTopic link = (ExtraTopic) this.getExtras().get(Extra.ExtraType.TOPIC);
+    if (link != null && uid.equals(link.getValue())) {
+      this.removeExtra(Extra.ExtraType.TOPIC);
+      result = true;
+    }
+
+    for (final Topic ch : this.children) {
+      result |= ch.removeAllLinksTo(topic);
+    }
+
+    return result;
   }
 
   boolean removeTopic(final Topic topic) {
@@ -640,25 +660,25 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
-  public int [] getPositionPath(){
-    final Topic [] path = getPath();
-    final int [] result = new int [path.length];
-    
+  public int[] getPositionPath() {
+    final Topic[] path = getPath();
+    final int[] result = new int[path.length];
+
     Topic current = path[0];
     int index = 1;
-    while(index < path.length){
+    while (index < path.length) {
       final Topic next = path[index];
       final int theindex = current.children.indexOf(next);
       result[index++] = theindex;
-      if (theindex<0){
+      if (theindex < 0) {
         break;
       }
       current = next;
     }
-    
+
     return result;
   }
-  
+
   public Topic[] getPath() {
     final List<Topic> list = new ArrayList<Topic>();
     Topic current = this;

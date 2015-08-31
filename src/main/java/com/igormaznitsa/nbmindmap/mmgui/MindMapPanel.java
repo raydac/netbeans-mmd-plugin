@@ -120,6 +120,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
         COMMON_CONFIG.setOtherLevelHorizontalInset(NbUtils.getPreferences().getInt("otherLevelHInset", COMMON_CONFIG.getOtherLevelHorizontalInset()));
         COMMON_CONFIG.setOtherLevelVerticalInset(NbUtils.getPreferences().getInt("otherLevelVInset", COMMON_CONFIG.getOtherLevelVerticalInset()));
+
+        final String fontName = NbUtils.getPreferences().get("font.name", COMMON_CONFIG.getFont().getName());
+        final int fontSize = NbUtils.getPreferences().getInt("font.size", COMMON_CONFIG.getFont().getSize());
+        final int fontStyle = NbUtils.getPreferences().getInt("font.style", COMMON_CONFIG.getFont().getStyle());
+        COMMON_CONFIG.setFont(new Font(fontName, fontStyle, fontSize));
       }
     });
   }

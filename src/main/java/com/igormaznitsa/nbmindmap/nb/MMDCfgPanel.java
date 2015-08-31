@@ -19,6 +19,11 @@ import com.igormaznitsa.nbmindmap.mmgui.Configuration;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
+import java.awt.Font;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
 
 final class MMDCfgPanel extends javax.swing.JPanel {
 
@@ -29,6 +34,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private volatile boolean changeNotificationAllowed = true;
 
   private static final Configuration etalon = new Configuration();
+  
+  private Font mindMapFont = etalon.getFont();
   
   MMDCfgPanel(final MMDCfgOptionsPanelController controller) {
     this.controller = controller;
@@ -73,6 +80,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     slider1stLevelVertGap = new javax.swing.JSlider();
     slider2ndLevelHorzGap = new javax.swing.JSlider();
     slider2ndLevelVertGap = new javax.swing.JSlider();
+    jPanel7 = new javax.swing.JPanel();
+    buttonFont = new javax.swing.JButton();
     jPanel1 = new javax.swing.JPanel();
     checkboxUseInsideBrowser = new javax.swing.JCheckBox();
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -367,6 +376,32 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
+    jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel7.border.title"))); // NOI18N
+
+    org.openide.awt.Mnemonics.setLocalizedText(buttonFont, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.buttonFont.text")); // NOI18N
+    buttonFont.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonFontActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+    jPanel7.setLayout(jPanel7Layout);
+    jPanel7Layout.setHorizontalGroup(
+      jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel7Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(buttonFont, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+    jPanel7Layout.setVerticalGroup(
+      jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel7Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(buttonFont)
+        .addContainerGap())
+    );
+
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -379,6 +414,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
             .addComponent(colorChooserRootBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(colorChooserRootText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(slider1stLevelVertGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(slider2ndLevelHorzGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(slider2ndLevelVertGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(jPanel2Layout.createSequentialGroup()
@@ -391,9 +429,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(colorChooser2ndText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGap(0, 0, Short.MAX_VALUE))
-          .addComponent(slider1stLevelVertGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(slider2ndLevelHorzGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(slider2ndLevelVertGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
 
@@ -424,7 +460,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addComponent(slider2ndLevelHorzGap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(slider2ndLevelVertGap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(58, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel1.border.title"))); // NOI18N
@@ -671,6 +709,38 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_slider2ndLevelVertGapStateChanged
 
+  private void updateFontButton(){
+    final String strStyle;
+
+    if (this.mindMapFont.isBold()) {
+      strStyle = this.mindMapFont.isItalic() ? "bolditalic" : "bold";
+    }
+    else {
+      strStyle = this.mindMapFont.isItalic() ? "italic" : "plain";
+    }
+
+    this.buttonFont.setText(this.mindMapFont.getName()+", "+strStyle+", "+this.mindMapFont.getSize());
+  }
+  
+  private void buttonFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontActionPerformed
+    final PropertyEditor editor = PropertyEditorManager.findEditor(Font.class);
+    final DialogDescriptor descriptor = new DialogDescriptor(
+            editor.getCustomEditor(),
+            "Mind map font"
+    );
+
+    editor.setValue(this.mindMapFont);
+    
+    DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);
+    if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {
+      this.mindMapFont = (Font) editor.getValue();
+      updateFontButton();
+      if (changeNotificationAllowed){
+        this.controller.changed();
+      }
+    }
+  }//GEN-LAST:event_buttonFontActionPerformed
+
   void load() {
     changeNotificationAllowed = false;
     try {
@@ -710,6 +780,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
       this.slider2ndLevelHorzGap.setValue(NbUtils.getPreferences().getInt("otherLevelHInset", etalon.getOtherLevelHorizontalInset()));
       this.slider2ndLevelVertGap.setValue(NbUtils.getPreferences().getInt("otherLevelVInset", etalon.getOtherLevelVerticalInset()));
+      
+      final Font etalonFont = etalon.getFont();
+      final String fontName = NbUtils.getPreferences().get("font.name", etalonFont.getName());
+      final int fontSize = NbUtils.getPreferences().getInt("font.size", etalonFont.getSize());
+      final int fontStyle = NbUtils.getPreferences().getInt("font.style", etalonFont.getStyle());
+      this.mindMapFont = new Font(fontName, fontStyle, fontSize);
+      updateFontButton();
     }
     finally {
       changeNotificationAllowed = true;
@@ -747,6 +824,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       NbUtils.getPreferences().putInt("firstLevelVInset", this.slider1stLevelVertGap.getValue());
       NbUtils.getPreferences().putInt("otherLevelHInset", this.slider2ndLevelHorzGap.getValue());
       NbUtils.getPreferences().putInt("otherLevelVInset", this.slider2ndLevelVertGap.getValue());
+      
+      NbUtils.getPreferences().putInt("font.style", this.mindMapFont.getStyle());
+      NbUtils.getPreferences().put("font.name", this.mindMapFont.getName());
+      NbUtils.getPreferences().putInt("font.size", this.mindMapFont.getSize());
     }
     finally {
       MindMapPanel.loadCommonConfig();
@@ -758,6 +839,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonFont;
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxShowGrid;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
@@ -786,6 +868,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JPanel jPanel4;
   private javax.swing.JPanel jPanel5;
   private javax.swing.JPanel jPanel6;
+  private javax.swing.JPanel jPanel7;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JSlider slider1stLevelHorzGap;
   private javax.swing.JSlider slider1stLevelVertGap;
