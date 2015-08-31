@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.swing.JFileChooser;
 
-public class FileEditPanel extends javax.swing.JPanel {
+public final class FileEditPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -6683682013891751388L;
 
@@ -56,7 +56,8 @@ public class FileEditPanel extends javax.swing.JPanel {
     setLayout(new java.awt.GridBagLayout());
 
     labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_link.png"))); // NOI18N
-    labelBrowseCurrentLink.setToolTipText(org.openide.util.NbBundle.getMessage(FileEditPanel.class, "FileEditPanel.labelBrowseCurrentLink.toolTipText")); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    labelBrowseCurrentLink.setToolTipText(bundle.getString("FileEditPanel.labelBrowseCurrentLink.toolTipText")); // NOI18N
     labelBrowseCurrentLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     labelBrowseCurrentLink.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     labelBrowseCurrentLink.addMouseListener(new java.awt.event.MouseAdapter() {

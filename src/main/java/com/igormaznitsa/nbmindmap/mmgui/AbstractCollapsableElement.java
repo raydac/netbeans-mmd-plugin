@@ -287,7 +287,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
       if (payload == null) {
         break;
       }
-      if (payload != null && payload.isCollapsed() && payload instanceof AbstractCollapsableElement) {
+      if (payload.isCollapsed() && payload instanceof AbstractCollapsableElement) {
         ((AbstractCollapsableElement) payload).setCollapse(false);
         result = true;
       }

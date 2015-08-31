@@ -141,14 +141,14 @@ public enum Utils {
     for (final Map.Entry<?, ?> e : map1.entrySet()) {
       final Object value = e.getValue();
       final Object thatValue = map2.get(e.getKey());
-      if (value == null && thatValue == null) {
-        continue;
-      }
-      if (value == null && thatValue != null) {
-        return false;
-      }
-      if (!value.equals(thatValue)) {
-        return false;
+
+      if (value != thatValue) {
+        if (value == null || thatValue == null) {
+          return false;
+        }
+        else if (!value.equals(thatValue)) {
+          return false;
+        }
       }
     }
     return true;
@@ -248,9 +248,9 @@ public enum Utils {
   }
 
   public static String makePreBlock(final String text) {
-    return "<pre>"+StringEscapeUtils.escapeHtml(text)+"</pre>"; //NOI18N
+    return "<pre>" + StringEscapeUtils.escapeHtml(text) + "</pre>"; //NOI18N
   }
-  
+
   public static String makeMDCodeBlock(final String text) throws IOException {
     final int maxQuotes = Utils.calcMaxLengthOfBacktickQuotesSubstr(text) + 1;
     final StringBuilder result = new StringBuilder(text.length() + 16);
@@ -279,7 +279,7 @@ public enum Utils {
     }
     return result.toArray(new Topic[result.size()]);
   }
-  
+
   public static String color2html(final Color color) {
     final StringBuilder buffer = new StringBuilder();
 
@@ -295,15 +295,15 @@ public enum Utils {
     return buffer.toString();
   }
 
-  public static String getFirstLine(final String text){
+  public static String getFirstLine(final String text) {
     return text.replace("\r", "").split("\\n")[0]; //NOI18N
   }
-  
-  public static String makeShortTextVersion(String text, final int maxLength){
+
+  public static String makeShortTextVersion(String text, final int maxLength) {
     if (text.length() > maxLength) {
       text = text.substring(0, maxLength) + "..."; //NOI18N
     }
     return text;
   }
-  
+
 }

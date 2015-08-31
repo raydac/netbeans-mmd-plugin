@@ -43,9 +43,11 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/disk16.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Import" noResource="true"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonImport" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+            </Property>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonLoad.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonLoad.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -60,9 +62,11 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/file_save16.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Export" noResource="true"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlaintextEditor.buttonExport" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+            </Property>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonSave.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonSave.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -78,7 +82,10 @@
               <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/page_copy16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonCopy.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonCopy.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonCopy.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -94,7 +101,10 @@
               <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/paste_plain16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonPaste.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonPaste.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonPaste.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -110,7 +120,10 @@
               <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/cross16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonClearAll.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonClearAll.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="PlainTextEditor.buttonClearAll.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>

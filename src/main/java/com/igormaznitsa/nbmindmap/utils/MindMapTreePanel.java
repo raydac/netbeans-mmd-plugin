@@ -28,7 +28,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public class MindMapTreePanel extends javax.swing.JPanel {
+public final class MindMapTreePanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = 2652308291444091807L;
 
@@ -115,7 +115,8 @@ public class MindMapTreePanel extends javax.swing.JPanel {
     toolBar.setRollover(true);
 
     buttonExpandAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/toggle_expand16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonExpandAll, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonExpandAll.text")); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    buttonExpandAll.setText(bundle.getString("MindMapTreePanel.buttonExpandAll.text")); // NOI18N
     buttonExpandAll.setFocusable(false);
     buttonExpandAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonExpandAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -127,7 +128,7 @@ public class MindMapTreePanel extends javax.swing.JPanel {
     toolBar.add(buttonExpandAll);
 
     buttonCollapseAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/toggle16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonCollapseAll, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonCollapseAll.text")); // NOI18N
+    buttonCollapseAll.setText(bundle.getString("MindMapTreePanel.buttonCollapseAll.text")); // NOI18N
     buttonCollapseAll.setFocusable(false);
     buttonCollapseAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonCollapseAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -139,7 +140,7 @@ public class MindMapTreePanel extends javax.swing.JPanel {
     toolBar.add(buttonCollapseAll);
 
     buttonUnselect.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/select16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonUnselect, org.openide.util.NbBundle.getMessage(MindMapTreePanel.class, "MindMapTreePanel.buttonUnselect.text")); // NOI18N
+    buttonUnselect.setText(bundle.getString("MindMapTreePanel.buttonUnselect.text")); // NOI18N
     buttonUnselect.setFocusable(false);
     buttonUnselect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonUnselect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

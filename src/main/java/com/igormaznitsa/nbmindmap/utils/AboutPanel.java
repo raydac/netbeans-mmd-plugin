@@ -21,7 +21,7 @@ import java.util.Properties;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.Modules;
 
-public class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkListener {
+public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkListener {
 
   private static final long serialVersionUID = -3231534203788095969L;
 
@@ -67,7 +67,6 @@ public class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkLis
 
     labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo.png"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(textLabel, org.openide.util.NbBundle.getMessage(AboutPanel.class, "AboutText")); // NOI18N
     textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

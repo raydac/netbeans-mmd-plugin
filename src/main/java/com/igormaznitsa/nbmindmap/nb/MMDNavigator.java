@@ -127,9 +127,7 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
     String result = null;
     if (this.currentSupport != null) {
       final MMDEditorSupport editor = this.currentSupport;
-      if (editor != null) {
-        result = editor.getDocumentText();
-      }
+      result = editor.getDocumentText();
     }
     return result;
   }

@@ -61,7 +61,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
 
-  private final float SCALE_STEP = 0.5f;
+  private static final float SCALE_STEP = 0.5f;
 
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
 
@@ -78,7 +78,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private static final Configuration COMMON_CONFIG = new Configuration();
 
-  protected final Configuration config;
+  private final Configuration config;
+
   private PopUpProvider popupProvider;
 
   static {
@@ -178,6 +179,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             }
           }
           break;
+          default:
+            break;
         }
       }
 
@@ -197,12 +200,9 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       @Override
       public void keyReleased(final KeyEvent e) {
-        switch (e.getKeyCode()) {
-          case KeyEvent.VK_ESCAPE: {
-            e.consume();
-            endEdit(false);
-          }
-          break;
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+          e.consume();
+          endEdit(false);
         }
       }
     });
@@ -258,6 +258,9 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
               startEdit((AbstractElement) selectedTopics.get(0).getPayload());
             }
           }
+          break;
+          default:
+            break;
         }
       }
 
@@ -277,6 +280,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             processMoveFocusByKey(e.getKeyCode());
           }
           break;
+          default:
+            break;
         }
       }
     };
@@ -558,9 +563,10 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         result = dropPoint.getY() < bounds.getCenterY() ? DRAG_POSITION_TOP : DRAG_POSITION_BOTTOM;
       }
       else {
-        if (destinationIsLeft){
+        if (destinationIsLeft) {
           result = dropPoint.getX() < bounds.getCenterX() ? DRAG_POSITION_LEFT : -1;
-        }else{
+        }
+        else {
           result = dropPoint.getX() > bounds.getCenterX() ? DRAG_POSITION_RIGHT : -1;
         }
       }
@@ -628,6 +634,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         }
       }
       break;
+      default:
+        break;
     }
     dragged.getModel().setPayload(null);
 
@@ -699,6 +707,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
           }
           break;
+          default:
+            break;
         }
 
         if (processFirstChild) {
@@ -1309,6 +1319,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void paintComponent(final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
 

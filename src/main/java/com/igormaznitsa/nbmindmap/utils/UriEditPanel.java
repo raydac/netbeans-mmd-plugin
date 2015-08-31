@@ -15,24 +15,20 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
-import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.openide.awt.HtmlBrowser;
 import org.openide.util.ImageUtilities;
 
 /**
  *
  * @author Igor Maznitsa (http://www.igormaznitsa.com)
  */
-public class UriEditPanel extends javax.swing.JPanel {
+public final class UriEditPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -6683682013891751388L;
 
@@ -100,7 +96,8 @@ public class UriEditPanel extends javax.swing.JPanel {
     setLayout(new java.awt.GridBagLayout());
 
     labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/url_link.png"))); // NOI18N
-    labelBrowseCurrentLink.setToolTipText(org.openide.util.NbBundle.getMessage(UriEditPanel.class, "UriEditPanel.labelBrowseCurrentLink.toolTipText")); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    labelBrowseCurrentLink.setToolTipText(bundle.getString("UriEditPanel.labelBrowseCurrentLink.toolTipText")); // NOI18N
     labelBrowseCurrentLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     labelBrowseCurrentLink.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     labelBrowseCurrentLink.addMouseListener(new java.awt.event.MouseAdapter() {

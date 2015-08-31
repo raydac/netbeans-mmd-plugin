@@ -259,7 +259,6 @@ public final class ElementRoot extends AbstractElement {
       else {
         double py = point.getY();
         final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
-        double curY = calcBlockY();
 
         Topic prev = null;
 
@@ -298,7 +297,6 @@ public final class ElementRoot extends AbstractElement {
             }
           }
 
-          curY = childEndBlockY;
           prev = t;
         }
       }

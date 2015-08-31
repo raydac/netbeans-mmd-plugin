@@ -172,7 +172,6 @@ public class FreeMindExporter extends AbstractMindMapExporter {
       writeTopicRecursively(ch, cfg, shift, state);
     }
 
-    shift--;
     state.append(mainShiftStr).append("</node>").nextLine();//NOI18N
   }
 

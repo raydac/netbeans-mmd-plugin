@@ -17,13 +17,17 @@ package com.igormaznitsa.nbmindmap.mmgui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public final class Configuration {
+public final class Configuration implements Serializable {
+
+  private static final long serialVersionUID = -4273687011484460064L;
 
   public interface ConfigurationListener {
 
@@ -78,9 +82,10 @@ public final class Configuration {
 
   public void makeAtomicChange(final Runnable runnable) {
     this.notificationEnabled = false;
-    try{
+    try {
       runnable.run();
-    }finally{
+    }
+    finally {
       this.notificationEnabled = true;
       notifyCfgListenersAboutChange();
     }
@@ -100,11 +105,13 @@ public final class Configuration {
         }
       }
       else {
-        try {
-          f.set(this, f.get(src));
-        }
-        catch (Exception ex) {
-          throw new Error("Unexpected state during cloning"); //NOI18N
+        if ((f.getModifiers() & (Modifier.STATIC | Modifier.FINAL)) == 0) {
+          try {
+            f.set(this, f.get(src));
+          }
+          catch (Exception ex) {
+            throw new Error("Unexpected state during cloning field " + f, ex); //NOI18N
+          }
         }
       }
     }

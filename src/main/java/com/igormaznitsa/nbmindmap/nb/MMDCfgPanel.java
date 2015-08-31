@@ -29,7 +29,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -1090601330630026253L;
 
-  private final MMDCfgOptionsPanelController controller;
+  private final transient MMDCfgOptionsPanelController controller;
 
   private volatile boolean changeNotificationAllowed = true;
 
@@ -94,9 +94,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
     setLayout(new java.awt.BorderLayout());
 
-    jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel3.border.title"))); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel3.border.title"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jLabel2.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel2, bundle.getString("MMDCfgPanel.jLabel2.text")); // NOI18N
 
     spinnerConnectorWidth.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.1f), Float.valueOf(0.05f), Float.valueOf(20.0f), Float.valueOf(0.01f)));
     spinnerConnectorWidth.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -105,7 +106,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooserConnectorColor, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserConnectorColor.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserConnectorColor, bundle.getString("MMDCfgPanel.colorChooserConnectorColor.text")); // NOI18N
     colorChooserConnectorColor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserConnectorColor.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -113,7 +114,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooserCollapsatorBorder, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserCollapsatorBorder.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserCollapsatorBorder, bundle.getString("MMDCfgPanel.colorChooserCollapsatorBorder.text")); // NOI18N
     colorChooserCollapsatorBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserCollapsatorBorder.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -121,7 +122,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooserCollapsatorBackground, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserCollapsatorBackground.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserCollapsatorBackground, bundle.getString("MMDCfgPanel.colorChooserCollapsatorBackground.text")); // NOI18N
     colorChooserCollapsatorBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserCollapsatorBackground.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -129,7 +130,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jLabel5.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel5, bundle.getString("MMDCfgPanel.jLabel5.text")); // NOI18N
 
     spinnerCollapsatorSize.setModel(new javax.swing.SpinnerNumberModel(5, 3, 500, 1));
     spinnerCollapsatorSize.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -138,7 +139,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jLabel6.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel6, bundle.getString("MMDCfgPanel.jLabel6.text")); // NOI18N
 
     spinnerCollapsatorWidth.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.01f), Float.valueOf(100.0f), Float.valueOf(0.1f)));
 
@@ -198,9 +199,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel4.border.title"))); // NOI18N
+    jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel4.border.title"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooserPaperColor, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserPaperColor.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserPaperColor, bundle.getString("MMDCfgPanel.colorChooserPaperColor.text")); // NOI18N
     colorChooserPaperColor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserPaperColor.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -208,14 +209,14 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowGrid, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkBoxShowGrid.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowGrid, bundle.getString("MMDCfgPanel.checkBoxShowGrid.text")); // NOI18N
     checkBoxShowGrid.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         checkBoxShowGridActionPerformed(evt);
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooserGridColor, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserGridColor.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserGridColor, bundle.getString("MMDCfgPanel.colorChooserGridColor.text")); // NOI18N
     colorChooserGridColor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserGridColor.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -230,7 +231,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jLabel1.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel1, bundle.getString("MMDCfgPanel.jLabel1.text")); // NOI18N
 
     javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
     jPanel4.setLayout(jPanel4Layout);
@@ -271,16 +272,16 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel2.border.title"))); // NOI18N
+    jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel2.border.title"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(checkBoxDropShadow, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkBoxDropShadow.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(checkBoxDropShadow, bundle.getString("MMDCfgPanel.checkBoxDropShadow.text")); // NOI18N
     checkBoxDropShadow.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         checkBoxDropShadowActionPerformed(evt);
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooserRootBackground, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserRootBackground.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserRootBackground, bundle.getString("MMDCfgPanel.colorChooserRootBackground.text")); // NOI18N
     colorChooserRootBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserRootBackground.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -288,7 +289,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooserRootText, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserRootText.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserRootText, bundle.getString("MMDCfgPanel.colorChooserRootText.text")); // NOI18N
     colorChooserRootText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserRootText.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -296,7 +297,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooser1stBackground, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooser1stBackground.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooser1stBackground, bundle.getString("MMDCfgPanel.colorChooser1stBackground.text")); // NOI18N
     colorChooser1stBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooser1stBackground.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -304,7 +305,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooser1stText, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooser1stText.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooser1stText, bundle.getString("MMDCfgPanel.colorChooser1stText.text")); // NOI18N
     colorChooser1stText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooser1stText.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -312,7 +313,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooser2ndBackground, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooser2ndBackground.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooser2ndBackground, bundle.getString("MMDCfgPanel.colorChooser2ndBackground.text")); // NOI18N
     colorChooser2ndBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooser2ndBackground.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -320,7 +321,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooser2ndText, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooser2ndText.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooser2ndText, bundle.getString("MMDCfgPanel.colorChooser2ndText.text")); // NOI18N
     colorChooser2ndText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooser2ndText.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -333,7 +334,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     slider1stLevelHorzGap.setMinimum(10);
     slider1stLevelHorzGap.setPaintLabels(true);
     slider1stLevelHorzGap.setPaintTicks(true);
-    slider1stLevelHorzGap.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.slider1stLevelHorzGap.border.title"))); // NOI18N
+    slider1stLevelHorzGap.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.slider1stLevelHorzGap.border.title"))); // NOI18N
     slider1stLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
       public void stateChanged(javax.swing.event.ChangeEvent evt) {
         slider1stLevelHorzGapStateChanged(evt);
@@ -345,7 +346,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     slider1stLevelVertGap.setMinimum(10);
     slider1stLevelVertGap.setPaintLabels(true);
     slider1stLevelVertGap.setPaintTicks(true);
-    slider1stLevelVertGap.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.slider1stLevelVertGap.border.title"))); // NOI18N
+    slider1stLevelVertGap.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.slider1stLevelVertGap.border.title"))); // NOI18N
     slider1stLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
       public void stateChanged(javax.swing.event.ChangeEvent evt) {
         slider1stLevelVertGapStateChanged(evt);
@@ -357,7 +358,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     slider2ndLevelHorzGap.setMinimum(10);
     slider2ndLevelHorzGap.setPaintLabels(true);
     slider2ndLevelHorzGap.setPaintTicks(true);
-    slider2ndLevelHorzGap.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.slider2ndLevelHorzGap.border.title"))); // NOI18N
+    slider2ndLevelHorzGap.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.slider2ndLevelHorzGap.border.title"))); // NOI18N
     slider2ndLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
       public void stateChanged(javax.swing.event.ChangeEvent evt) {
         slider2ndLevelHorzGapStateChanged(evt);
@@ -369,16 +370,16 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     slider2ndLevelVertGap.setMinimum(10);
     slider2ndLevelVertGap.setPaintLabels(true);
     slider2ndLevelVertGap.setPaintTicks(true);
-    slider2ndLevelVertGap.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.slider2ndLevelVertGap.border.title"))); // NOI18N
+    slider2ndLevelVertGap.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.slider2ndLevelVertGap.border.title"))); // NOI18N
     slider2ndLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
       public void stateChanged(javax.swing.event.ChangeEvent evt) {
         slider2ndLevelVertGapStateChanged(evt);
       }
     });
 
-    jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel7.border.title"))); // NOI18N
+    jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel7.border.title"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(buttonFont, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.buttonFont.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonFont, "...");
     buttonFont.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonFontActionPerformed(evt);
@@ -465,11 +466,11 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel1.border.title"))); // NOI18N
+    jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel1.border.title"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(checkboxUseInsideBrowser, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkboxUseInsideBrowser.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(checkboxUseInsideBrowser, bundle.getString("MMDCfgPanel.checkboxUseInsideBrowser.text")); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(checkboxRelativePathsForFilesInTheProject, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(checkboxRelativePathsForFilesInTheProject, bundle.getString("MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text")); // NOI18N
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -492,9 +493,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jPanel5.border.title"))); // NOI18N
+    jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel5.border.title"))); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(colorChooserSelectLine, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.colorChooserSelectLine.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(colorChooserSelectLine, bundle.getString("MMDCfgPanel.colorChooserSelectLine.text")); // NOI18N
     colorChooserSelectLine.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserSelectLine.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -502,11 +503,11 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jLabel3.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel3, bundle.getString("MMDCfgPanel.jLabel3.text")); // NOI18N
 
     spinnerSelectLineWidth.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.02f), Float.valueOf(100.0f), Float.valueOf(0.1f)));
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(MMDCfgPanel.class, "MMDCfgPanel.jLabel4.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel4, bundle.getString("MMDCfgPanel.jLabel4.text")); // NOI18N
 
     spinnerSelectLineGap.setModel(new javax.swing.SpinnerNumberModel(1, 1, 500, 1));
 

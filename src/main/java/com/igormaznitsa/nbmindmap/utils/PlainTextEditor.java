@@ -37,9 +37,8 @@ import org.netbeans.editor.Utilities;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.text.CloneableEditorSupport;
 import org.openide.text.NbDocument;
-import org.openide.util.Exceptions;
 
-public class PlainTextEditor extends javax.swing.JPanel {
+public final class PlainTextEditor extends javax.swing.JPanel {
 
   private static final long serialVersionUID = 5847351391577028903L;
 
@@ -128,8 +127,9 @@ public class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.setRollover(true);
 
     buttonLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/disk16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonLoad, "Import"); // NOI18N
-    buttonLoad.setToolTipText(org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonLoad.toolTipText")); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonLoad, bundle.getString("PlainTextEditor.buttonImport")); // NOI18N
+    buttonLoad.setToolTipText(bundle.getString("PlainTextEditor.buttonLoad.toolTipText")); // NOI18N
     buttonLoad.setFocusable(false);
     buttonLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -141,8 +141,8 @@ public class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonLoad);
 
     buttonSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_save16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonSave, "Export"); // NOI18N
-    buttonSave.setToolTipText(org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonSave.toolTipText")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonSave, bundle.getString("PlaintextEditor.buttonExport")); // NOI18N
+    buttonSave.setToolTipText(bundle.getString("PlainTextEditor.buttonSave.toolTipText")); // NOI18N
     buttonSave.setFocusable(false);
     buttonSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -154,7 +154,8 @@ public class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonSave);
 
     buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/page_copy16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonCopy, org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonCopy.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonCopy, bundle.getString("PlainTextEditor.buttonCopy.text")); // NOI18N
+    buttonCopy.setToolTipText(bundle.getString("PlainTextEditor.buttonCopy.toolTipText")); // NOI18N
     buttonCopy.setFocusable(false);
     buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -166,7 +167,8 @@ public class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonCopy);
 
     buttonPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/paste_plain16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonPaste, org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonPaste.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonPaste, bundle.getString("PlainTextEditor.buttonPaste.text")); // NOI18N
+    buttonPaste.setToolTipText(bundle.getString("PlainTextEditor.buttonPaste.toolTipText")); // NOI18N
     buttonPaste.setFocusable(false);
     buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -178,7 +180,8 @@ public class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonPaste);
 
     buttonClearAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(buttonClearAll, org.openide.util.NbBundle.getMessage(PlainTextEditor.class, "PlainTextEditor.buttonClearAll.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonClearAll, bundle.getString("PlainTextEditor.buttonClearAll.text")); // NOI18N
+    buttonClearAll.setToolTipText(bundle.getString("PlainTextEditor.buttonClearAll.toolTipText")); // NOI18N
     buttonClearAll.setFocusable(false);
     buttonClearAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonClearAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

@@ -84,7 +84,7 @@ public class JHtmlLabel extends JLabel {
   /**
    * Inside cache of detected link elements.
    */
-  private List<HtmlLinkAddress> linkCache = null;
+  private transient List<HtmlLinkAddress> linkCache = null;
 
   private final List<LinkListener> linkListeners = new CopyOnWriteArrayList<LinkListener>();
   private boolean showLinkAddressInToolTip = false;

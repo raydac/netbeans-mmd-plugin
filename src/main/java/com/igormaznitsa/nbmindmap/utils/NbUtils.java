@@ -74,7 +74,9 @@ public enum NbUtils {
   public static Boolean msgConfirmYesNoCancel(final String title, final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_CANCEL_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
-    if (NotifyDescriptor.CANCEL_OPTION.equals(obj)) return null;
+    if (NotifyDescriptor.CANCEL_OPTION.equals(obj)) {
+      return null;
+    }
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
@@ -87,17 +89,17 @@ public enum NbUtils {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(component, NotifyDescriptor.INFORMATION_MESSAGE));
   }
 
-  public static boolean plainMessageOkCancel(final String title, final JComponent compo){
+  public static boolean plainMessageOkCancel(final String title, final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(compo, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
-  
-  public static void plainMessageOk(final String title, final JComponent compo){
+
+  public static void plainMessageOk(final String title, final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Message(compo, NotifyDescriptor.PLAIN_MESSAGE);
     desc.setTitle(title);
     DialogDisplayer.getDefault().notify(desc);
   }
-  
+
   public static String editText(final String title, final String text) {
     final PlainTextEditor textEditor = new PlainTextEditor(text);
     if (plainMessageOkCancel(title, textEditor)) {
@@ -124,7 +126,7 @@ public enum NbUtils {
         return new URI(text.trim());
       }
       catch (URISyntaxException ex) {
-        msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("NbUtils.errMsgIllegalURI"),text));
+        msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     }

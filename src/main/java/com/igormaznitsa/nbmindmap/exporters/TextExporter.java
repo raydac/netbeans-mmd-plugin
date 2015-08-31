@@ -37,7 +37,7 @@ import org.openide.util.Utilities;
 
 public class TextExporter extends AbstractMindMapExporter {
 
-  final int SHIFT_STEP = 1;
+  private static final int SHIFT_STEP = 1;
 
   private static class State {
 

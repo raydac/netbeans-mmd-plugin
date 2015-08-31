@@ -30,7 +30,7 @@
           <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/url_link.png"/>
         </Property>
         <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="UriEditPanel.labelBrowseCurrentLink.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="UriEditPanel.labelBrowseCurrentLink.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
           <Color id="Hand Cursor"/>
