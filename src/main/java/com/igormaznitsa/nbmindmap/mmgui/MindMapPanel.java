@@ -552,12 +552,17 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       result = dropPoint.getX() < destination.getBounds().getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_RIGHT;
     }
     else {
+      final boolean destinationIsLeft = destination.isLeftDirection();
       final Rectangle2D bounds = destination.getBounds();
-      if (dropPoint.getX() >= destination.getBounds().getX() && dropPoint.getX() <= destination.getBounds().getMaxX()) {
-        result = dropPoint.getY() < destination.getBounds().getCenterY() ? DRAG_POSITION_TOP : DRAG_POSITION_BOTTOM;
+      if (dropPoint.getX() >= bounds.getX() && dropPoint.getX() <= bounds.getMaxX()) {
+        result = dropPoint.getY() < bounds.getCenterY() ? DRAG_POSITION_TOP : DRAG_POSITION_BOTTOM;
       }
       else {
-        result = dropPoint.getX() < destination.getBounds().getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_RIGHT;
+        if (destinationIsLeft){
+          result = dropPoint.getX() < bounds.getCenterX() ? DRAG_POSITION_LEFT : -1;
+        }else{
+          result = dropPoint.getX() > bounds.getCenterX() ? DRAG_POSITION_RIGHT : -1;
+        }
       }
     }
     return result;
