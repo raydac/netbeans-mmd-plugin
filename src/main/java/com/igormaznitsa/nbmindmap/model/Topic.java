@@ -503,11 +503,12 @@ public final class Topic implements Serializable, Constants {
     boolean result = false;
 
     final String uid = topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
-
-    ExtraTopic link = (ExtraTopic) this.getExtras().get(Extra.ExtraType.TOPIC);
-    if (link != null && uid.equals(link.getValue())) {
-      this.removeExtra(Extra.ExtraType.TOPIC);
-      result = true;
+    if (uid != null) {
+      final ExtraTopic link = (ExtraTopic) this.getExtras().get(Extra.ExtraType.TOPIC);
+      if (link != null && uid.equals(link.getValue())) {
+        this.removeExtra(Extra.ExtraType.TOPIC);
+        result = true;
+      }
     }
 
     for (final Topic ch : this.children) {
@@ -699,6 +700,42 @@ public final class Topic implements Serializable, Constants {
       }
       result.attributes.putAll(this.attributes);
 
+      return result;
+    }
+    finally {
+      this.map.unlock();
+    }
+  }
+
+  public boolean removeExtraFromSubtree(final Extra.ExtraType... type) {
+    boolean result = false;
+
+    this.map.lock();
+    try {
+      for (final Extra.ExtraType t : type) {
+        result |= this.extras.remove(t) != null;
+      }
+      for (final Topic c : this.children) {
+        result |= c.removeExtraFromSubtree(type);
+      }
+      return result;
+    }
+    finally {
+      this.map.unlock();
+    }
+  }
+
+  public boolean removeAttributeFromSubtree(final String... names) {
+    boolean result = false;
+
+    this.map.lock();
+    try {
+      for (final String t : names) {
+        result |= this.attributes.remove(t) != null;
+      }
+      for (final Topic c : this.children) {
+        result |= c.removeAttributeFromSubtree(names);
+      }
       return result;
     }
     finally {

@@ -243,6 +243,27 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     this.locker.unlock();
   }
 
+  public Topic cloneTopic(final Topic topic, final boolean cloneFullTree) {
+    this.locker.lock();
+    try {
+      if (topic == null || topic == this.root) return null;
+      
+      final Topic clonedtopic = topic.makeCopy(this,topic.getParent());
+      if (!cloneFullTree){
+        clonedtopic.removeAllChildren();
+      }
+      
+      clonedtopic.removeAttributeFromSubtree(ExtraTopic.TOPIC_UID_ATTR);
+      
+      fireModelChanged();
+      
+      return clonedtopic;
+    }
+    finally {
+      this.locker.unlock();
+    }
+  }
+  
   public boolean removeTopic(final Topic topic) {
     this.locker.lock();
     try {
@@ -258,6 +279,9 @@ public final class MindMap implements Serializable, Constants, TreeModel {
         this.root.removeTopic(topic);
         result = this.root.removeAllLinksTo(topic);
       }
+      
+      if (result) fireModelChanged();
+      
       return result;
     }
     finally {

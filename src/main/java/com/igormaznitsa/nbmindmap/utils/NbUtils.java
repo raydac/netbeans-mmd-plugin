@@ -71,6 +71,13 @@ public enum NbUtils {
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
+  public static Boolean msgConfirmYesNoCancel(final String title, final String query) {
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_CANCEL_OPTION);
+    final Object obj = DialogDisplayer.getDefault().notify(desc);
+    if (NotifyDescriptor.CANCEL_OPTION.equals(obj)) return null;
+    return NotifyDescriptor.YES_OPTION.equals(obj);
+  }
+
   public static boolean msgComponentOkCancel(final String title, final JComponent component) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(component, title, NotifyDescriptor.OK_CANCEL_OPTION);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;

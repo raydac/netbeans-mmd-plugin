@@ -231,7 +231,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public void onEnsureVisibilityOfTopic(final MindMapPanel source, final Topic topic) {
-    SwingUtilities.invokeLater(new Runnable(){
+    SwingUtilities.invokeLater(new Runnable() {
 
       @Override
       public void run() {
@@ -266,7 +266,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
         viewport.scrollRectToVisible(bounds);
       }
-      
+
     });
   }
 
@@ -521,7 +521,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     if (path != null) {
       if (path.isEmpty()) {
         topic.removeExtra(Extra.ExtraType.FILE);
-        if (file!=null){
+        if (file != null) {
           this.mindMapPanel.invalidate();
           this.mindMapPanel.repaint();
           onMindMapModelChanged(this.mindMapPanel);
@@ -701,6 +701,22 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
       result.add(deleteItem);
     }
 
+    if (element != null || this.mindMapPanel.hasOnlyTopicSelected()) {
+      final Topic theTopic = this.mindMapPanel.getFirstSelected() == null ? element.getModel() : this.mindMapPanel.getFirstSelected();
+      if (theTopic.getParent() != null) {
+        final JMenuItem cloneItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? " Clone selected topic" : " Clone the topic", Icons.CLONE.getIcon());
+        cloneItem.addActionListener(new ActionListener() {
+
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            mindMapPanel.cloneTopic(theTopic);
+          }
+        });
+
+        result.add(cloneItem);
+      }
+    }
+
     if (result.getComponentCount() > 0) {
       result.add(new JSeparator());
     }
@@ -823,7 +839,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        NbUtils.plainMessageOk("About",new AboutPanel());
+        NbUtils.plainMessageOk("About", new AboutPanel());
       }
     });
 
@@ -840,7 +856,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   public void focusToPath(final int[] positionPath) {
     this.mindMapPanel.removeAllSelection();
     final Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
-    if (topic!=null){
+    if (topic != null) {
       this.mindMapPanel.select(topic, false);
     }
   }

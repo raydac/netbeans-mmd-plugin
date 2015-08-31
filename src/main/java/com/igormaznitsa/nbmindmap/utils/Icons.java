@@ -42,7 +42,8 @@ public enum Icons {
   BLUEBALL("blueball16.png"),
   GOLDBALL("goldball16.png"),
   FREEMIND("freemind16.png"),
-  FILE("disk16.png");
+  FILE("disk16.png"),
+  CLONE("draw_clone16.png");
 
   private final ImageIcon icon;
 

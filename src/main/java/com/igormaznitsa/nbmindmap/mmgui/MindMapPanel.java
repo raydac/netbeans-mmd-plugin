@@ -343,7 +343,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       public void mouseReleased(MouseEvent e) {
         try {
           if (draggedElementPoint != null) {
-            if (endDragOfElement(draggedElementPoint, draggedElement, destinationElement)){
+            if (endDragOfElement(draggedElementPoint, draggedElement, destinationElement)) {
               invalidate();
               revalidate();
               fireNotificationMindMapChanged();
@@ -570,7 +570,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
 
     boolean changed = true;
-    
+
     final AbstractElement destParent = destination.getParent();
     final int pos = calcDropPosition(destination, dropPoint);
     switch (pos) {
@@ -605,8 +605,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         }
         else {
           dragged.getModel().moveToNewParent(destination.getModel());
-          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed()){
-            ((AbstractCollapsableElement)destination).setCollapse(false);
+          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed()) {
+            ((AbstractCollapsableElement) destination).setCollapse(false);
           }
           if (dropPoint.getY() < destination.getBounds().getY()) {
             dragged.getModel().makeFirst();
@@ -625,7 +625,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       break;
     }
     dragged.getModel().setPayload(null);
-    
+
     return changed;
   }
 
@@ -1380,6 +1380,34 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       removeAllSelection();
       this.select(theTopic, false);
     }
+  }
+
+  public boolean cloneTopic(final Topic topic) {
+    if (topic == null || topic.getTopicLevel() == 0) {
+      return false;
+    }
+
+    final Boolean cloneFullTree = NbUtils.msgConfirmYesNoCancel("Clone topic", "Do you want clone whole topic subtree?");
+    if (cloneFullTree == null) {
+      return false;
+    }
+
+    final Topic cloned = this.model.cloneTopic(topic, cloneFullTree);
+
+    if (cloned != null) {
+      cloned.moveAfter(topic);
+
+      invalidate();
+      revalidate();
+      fireNotificationMindMapChanged();
+      repaint();
+    }
+
+    return true;
+  }
+
+  public Topic getFirstSelected() {
+    return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
   }
 
   public static RenderedImage renderMindMapAsImage(final MindMap model, final Configuration cfg, final boolean expandAll) {
