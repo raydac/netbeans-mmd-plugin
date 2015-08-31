@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.model;
 
+import com.igormaznitsa.nbmindmap.mmgui.AbstractCollapsableElement;
 import com.igormaznitsa.nbmindmap.mmgui.TopicChecker;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.Utils;
@@ -151,6 +152,27 @@ public final class Topic implements Serializable, Constants {
         result = result.parent;
       }
       return result;
+    }
+    finally {
+      this.map.unlock();
+    }
+  }
+
+  public boolean canBeLost() {
+    this.map.lock();
+    try {
+      final boolean hasNotImportantAttributes = this.attributes.isEmpty() || (this.attributes.size() == 1 && this.attributes.containsKey("leftSide"));
+      
+      boolean noImportantContent = this.text.trim().isEmpty() && hasNotImportantAttributes && this.extras.isEmpty();
+      if (noImportantContent) {
+        for (final Topic t : this.children) {
+          noImportantContent &= t.canBeLost();
+          if (!noImportantContent) {
+            break;
+          }
+        }
+      }
+      return noImportantContent;
     }
     finally {
       this.map.unlock();

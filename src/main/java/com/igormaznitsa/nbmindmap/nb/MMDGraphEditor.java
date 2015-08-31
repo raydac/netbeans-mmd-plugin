@@ -210,7 +210,21 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public boolean allowedRemovingOfTopics(final MindMapPanel source, final Topic[] topics) {
-    return NbUtils.msgConfirmYesNo(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
+    boolean topicsNotImportant = true;
+    
+    for(final Topic t : topics){
+      topicsNotImportant &= t.canBeLost();
+      if (!topicsNotImportant) break;
+    }
+    
+    final boolean result;
+    
+    if (topicsNotImportant){
+      result = true;
+    }else{
+      result = NbUtils.msgConfirmYesNo(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
+    }
+    return result;
   }
 
   @Override
