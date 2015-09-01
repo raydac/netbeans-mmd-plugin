@@ -90,6 +90,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   public static final String ID = "mmd-graph-editor"; //NOI18N
 
+  private volatile boolean rootToCentre;
+
   private MultiViewElementCallback callback;
   private final MMDEditorSupport editorSupport;
 
@@ -124,7 +126,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
     this.mindMapPanel.addComponentListener(new ComponentAdapter() {
       @Override
-      public void componentResized(ComponentEvent e) {
+      public void componentResized(final ComponentEvent e) {
         processEditorResizing(mindMapPanel);
       }
     });
@@ -140,6 +142,19 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   public void componentActivated() {
     super.componentActivated();
     this.editorSupport.onEditorActivated();
+
+    if (rootToCentre) {
+      rootToCentre = false;
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          final Topic root = mindMapPanel.getModel() == null ? null : mindMapPanel.getModel().getRoot();
+          if (root != null) {
+            topicToCentre(root);
+          }
+        }
+      });
+    }
   }
 
   @Override
@@ -155,6 +170,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   @Override
   public void componentShowing() {
     updateModel();
+    this.rootToCentre = true;
   }
 
   private void copyNameToCallbackTopComponent() {
@@ -182,8 +198,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   }
 
   private void updateModel() {
-    final MindMap oldModel = this.mindMapPanel.getModel();
-
     final String text = this.editorSupport.getDocumentText();
     if (text == null) {
       this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantLoadDocument"));
@@ -200,10 +214,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
         Logger.error("Can't parse mind map text", ex); //NOI18N
         this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantParseDoc"));
       }
-    }
-
-    if (oldModel == null && this.mindMapPanel.getModel() != null) {
-      topicToCentre(this.mindMapPanel.getModel().getRoot());
     }
   }
 
@@ -238,8 +248,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
-    System.out.println("onMindMapModelChanged");
-
     try {
       final StringWriter writer = new StringWriter(16384);
       this.mindMapPanel.getModel().write(writer);
@@ -267,7 +275,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
           final AbstractElement element = (AbstractElement) topic.getPayload();
           if (element != null) {
             final Rectangle2D bounds = element.getBounds();
-            final Dimension viewPortSize = mainScrollPane.getViewport().getViewSize();
+            final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
 
             final int x = (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2);
             final int y = (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2);
@@ -392,8 +400,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   }
 
   private static void processEditorResizing(final MindMapPanel panel) {
-    panel.revalidate();
-    panel.repaint();
+    panel.updateView(false);
     panel.updateEditorAfterResizing();
   }
 

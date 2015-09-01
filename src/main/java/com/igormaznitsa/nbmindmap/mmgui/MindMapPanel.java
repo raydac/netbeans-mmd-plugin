@@ -32,7 +32,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Dimension2D;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -42,7 +41,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
@@ -352,10 +350,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         try {
           if (draggedElementPoint != null) {
             if (endDragOfElement(draggedElementPoint, draggedElement, destinationElement)) {
-              invalidate();
-              revalidate();
-              fireNotificationMindMapChanged();
-              repaint();
+              updateView(true);
             }
           }
           else if (mouseDragSelection != null) {
@@ -423,51 +418,18 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         draggedElement = null;
         draggedElementPoint = null;
 
-        if (e.isControlDown()) {
+        if (!e.isConsumed() && e.isControlDown()) {
           endEdit(false);
 
           final JViewport viewPort = getParent() instanceof JViewport ? (JViewport) getParent() : null;
 
           final Point relativeMouseXY;
           final Point absUnderMouseXY;
-          
-          if (viewPort != null) {
-            final Point oldVisiblePos = viewPort.getViewPosition();
-            relativeMouseXY = new Point(e.getPoint().x - oldVisiblePos.x, e.getPoint().y - oldVisiblePos.y);
-            absUnderMouseXY = new Point((int)Math.round(e.getPoint().x / getScale()), (int)Math.round(e.getPoint().y / getScale()));
-          }
-          else {
-            absUnderMouseXY = null;
-            relativeMouseXY = null;
-          }
 
           setScale(getScale() + (SCALE_STEP * -e.getWheelRotation()));
 
-          invalidate();
-          revalidate();
-          repaint();
+          updateView(false);
           e.consume();
-
-          if (viewPort != null) {
-            final Dimension vpSize = viewPort.getViewSize();
-            final Dimension theSize = getPreferredSize();
-            
-            final int vpx,vpy;
-            
-            if (vpSize.width<theSize.width){
-              vpx = (int) Math.round(absUnderMouseXY.x * getScale() - relativeMouseXY.x);
-            }else{
-              vpx = 0;
-            }
-            
-            if (vpSize.height<theSize.height){
-              vpy = (int) Math.round(absUnderMouseXY.y * getScale() - relativeMouseXY.y);
-            }else{
-              vpy = 0;
-            }
-
-            viewPort.setViewPosition(new Point(vpx,vpy));
-          }
         }
         else {
           sendToParent(e);
@@ -842,8 +804,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       }
 
       select(newTopic, false);
-      invalidate();
-      revalidate();
+      updateView(false);
       startEdit((AbstractElement) newTopic.getPayload());
     }
   }
@@ -884,10 +845,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       for (final Topic t : topics) {
         this.model.removeTopic(t);
       }
-      invalidate();
-      revalidate();
-      fireNotificationMindMapChanged();
-      repaint();
+      updateView(true);
     }
   }
 
@@ -898,10 +856,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     if (this.model.getRoot() != null) {
       final AbstractElement root = (AbstractElement) this.model.getRoot().getPayload();
       if (root != null && root.collapseOrExpandAllChildren(collapse)) {
-        invalidate();
-        revalidate();
-        fireNotificationMindMapChanged();
-        repaint();
+        updateView(true);
       }
     }
   }
@@ -957,7 +912,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     try {
       if (commit && this.elementUnderEdit != null) {
         this.elementUnderEdit.setText(this.textEditor.getText());
-        fireNotificationMindMapChanged();
+        this.textEditorPanel.setVisible(false);
+        updateView(true);
         fireNotificationEnsureTopicVisibility(this.elementUnderEdit.model);
       }
     }
@@ -1029,8 +985,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     this.selectedTopics.clear();
 
     this.model = model;
-    invalidate();
-    revalidate();
+
+    updateView(false);
 
     boolean selectionChanged = false;
     for (final int[] posPath : selectedPaths) {
@@ -1289,6 +1245,15 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return resultSize;
   }
 
+  public void updateView(final boolean structureWasChanged) {
+    invalidate();
+    revalidate();
+    if (structureWasChanged) {
+      fireNotificationMindMapChanged();
+    }
+    repaint();
+  }
+
   @Override
   public void revalidate() {
     final Runnable runnable = new Runnable() {
@@ -1428,9 +1393,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       if (element != null && element instanceof AbstractCollapsableElement) {
         final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
         if (cel.ensureUncollapsed()) {
-          invalidate();
-          revalidate();
-          fireNotificationMindMapChanged();
+          updateView(true);
         }
       }
 
@@ -1453,11 +1416,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
     if (cloned != null) {
       cloned.moveAfter(topic);
-
-      invalidate();
-      revalidate();
-      fireNotificationMindMapChanged();
-      repaint();
+      updateView(true);
     }
 
     return true;
