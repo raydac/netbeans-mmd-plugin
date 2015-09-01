@@ -100,10 +100,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   private final JToolBar toolBar = new JToolBar();
 
-  public MMDGraphEditor(){
+  public MMDGraphEditor() {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
   }
-  
+
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
 
@@ -182,6 +182,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   }
 
   private void updateModel() {
+    final MindMap oldModel = this.mindMapPanel.getModel();
+
     final String text = this.editorSupport.getDocumentText();
     if (text == null) {
       this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantLoadDocument"));
@@ -199,6 +201,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
         this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantParseDoc"));
       }
     }
+
+    if (oldModel == null && this.mindMapPanel.getModel() != null) {
+      topicToCentre(this.mindMapPanel.getModel().getRoot());
+    }
   }
 
   @Override
@@ -211,17 +217,20 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   @Override
   public boolean allowedRemovingOfTopics(final MindMapPanel source, final Topic[] topics) {
     boolean topicsNotImportant = true;
-    
-    for(final Topic t : topics){
+
+    for (final Topic t : topics) {
       topicsNotImportant &= t.canBeLost();
-      if (!topicsNotImportant) break;
+      if (!topicsNotImportant) {
+        break;
+      }
     }
-    
+
     final boolean result;
-    
-    if (topicsNotImportant){
+
+    if (topicsNotImportant) {
       result = true;
-    }else{
+    }
+    else {
       result = NbUtils.msgConfirmYesNo(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
@@ -229,6 +238,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   @Override
   public void onMindMapModelChanged(final MindMapPanel source) {
+    System.out.println("onMindMapModelChanged");
+
     try {
       final StringWriter writer = new StringWriter(16384);
       this.mindMapPanel.getModel().write(writer);
@@ -246,6 +257,26 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   @Override
   public void onMindMapModelRealigned(final MindMapPanel source, final Dimension coveredAreaSize) {
     this.mainScrollPane.getViewport().revalidate();
+  }
+
+  public void topicToCentre(final Topic topic) {
+    if (topic != null) {
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          final AbstractElement element = (AbstractElement) topic.getPayload();
+          if (element != null) {
+            final Rectangle2D bounds = element.getBounds();
+            final Dimension viewPortSize = mainScrollPane.getViewport().getViewSize();
+
+            final int x = (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2);
+            final int y = (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2);
+
+            mainScrollPane.getViewport().setViewPosition(new Point(x, y));
+          }
+        }
+      });
+    }
   }
 
   @Override
