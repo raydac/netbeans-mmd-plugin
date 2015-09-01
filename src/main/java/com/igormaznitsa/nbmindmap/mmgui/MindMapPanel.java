@@ -255,7 +255,10 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           }
           break;
           case ' ': {
-            if (hasOnlyTopicSelected() && (e.getModifiersEx() & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK | KeyEvent.META_DOWN_MASK)) != 0) {
+            if (!hasSelectedTopics()) {
+              select(getModel().getRoot(), false);
+            }else
+            if (hasOnlyTopicSelected() & (e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK | KeyEvent.META_DOWN_MASK))!=0) {
               startEdit((AbstractElement) selectedTopics.get(0).getPayload());
             }
           }

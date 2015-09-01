@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.mmgui.Configuration;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
+import com.igormaznitsa.nbmindmap.utils.AboutPanel;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
 import java.awt.Font;
@@ -34,9 +35,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private volatile boolean changeNotificationAllowed = true;
 
   private static final Configuration etalon = new Configuration();
-  
+
   private Font mindMapFont = etalon.getFont();
-  
+
   MMDCfgPanel(final MMDCfgOptionsPanelController controller) {
     this.controller = controller;
     initComponents();
@@ -91,6 +92,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     spinnerSelectLineWidth = new javax.swing.JSpinner();
     jLabel4 = new javax.swing.JLabel();
     spinnerSelectLineGap = new javax.swing.JSpinner();
+    buttonAbout = new javax.swing.JButton();
 
     setLayout(new java.awt.BorderLayout());
 
@@ -542,6 +544,14 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap())
     );
 
+    buttonAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/info16.png"))); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(buttonAbout, bundle.getString("MMDCfgPanel.buttonAbout.Text")); // NOI18N
+    buttonAbout.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonAboutActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
     jPanel6.setLayout(jPanel6Layout);
     jPanel6Layout.setHorizontalGroup(
@@ -554,15 +564,16 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(buttonAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(18, Short.MAX_VALUE))
     );
     jPanel6Layout.setVerticalGroup(
       jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel6Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addGroup(jPanel6Layout.createSequentialGroup()
             .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -570,8 +581,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap(23, Short.MAX_VALUE))
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(jPanel6Layout.createSequentialGroup()
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(7, 7, 7)
+            .addComponent(buttonAbout)))
+        .addContainerGap())
     );
 
     jScrollPane1.setViewportView(jPanel6);
@@ -586,13 +602,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_checkBoxShowGridActionPerformed
 
   private void checkBoxDropShadowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxDropShadowActionPerformed
-    if (changeNotificationAllowed){
+    if (changeNotificationAllowed) {
       this.controller.changed();
     }
   }//GEN-LAST:event_checkBoxDropShadowActionPerformed
 
   private void colorChooserPaperColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserPaperColorActionPerformed
-    if (this.colorChooserPaperColor.isLastOkPressed() && changeNotificationAllowed){
+    if (this.colorChooserPaperColor.isLastOkPressed() && changeNotificationAllowed) {
       this.controller.changed();
     }
   }//GEN-LAST:event_colorChooserPaperColorActionPerformed
@@ -604,13 +620,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_colorChooserGridColorActionPerformed
 
   private void spinnerGridStepStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinnerGridStepStateChanged
-    if (changeNotificationAllowed){
+    if (changeNotificationAllowed) {
       this.controller.changed();
     }
   }//GEN-LAST:event_spinnerGridStepStateChanged
 
   private void spinnerConnectorWidthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinnerConnectorWidthStateChanged
-    if (changeNotificationAllowed){
+    if (changeNotificationAllowed) {
       this.controller.changed();
     }
   }//GEN-LAST:event_spinnerConnectorWidthStateChanged
@@ -705,7 +721,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_slider2ndLevelVertGapStateChanged
 
-  private void updateFontButton(){
+  private void updateFontButton() {
     final String strStyle;
 
     if (this.mindMapFont.isBold()) {
@@ -715,9 +731,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       strStyle = this.mindMapFont.isItalic() ? "italic" : "plain";
     }
 
-    this.buttonFont.setText(this.mindMapFont.getName()+", "+strStyle+", "+this.mindMapFont.getSize());
+    this.buttonFont.setText(this.mindMapFont.getName() + ", " + strStyle + ", " + this.mindMapFont.getSize());
   }
-  
+
   private void buttonFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontActionPerformed
     final PropertyEditor editor = PropertyEditorManager.findEditor(Font.class);
     final DialogDescriptor descriptor = new DialogDescriptor(
@@ -726,16 +742,20 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     );
 
     editor.setValue(this.mindMapFont);
-    
+
     DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);
     if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {
       this.mindMapFont = (Font) editor.getValue();
       updateFontButton();
-      if (changeNotificationAllowed){
+      if (changeNotificationAllowed) {
         this.controller.changed();
       }
     }
   }//GEN-LAST:event_buttonFontActionPerformed
+
+  private void buttonAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAboutActionPerformed
+    NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
+  }//GEN-LAST:event_buttonAboutActionPerformed
 
   void load() {
     changeNotificationAllowed = false;
@@ -754,29 +774,29 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
       this.colorChooser2ndBackground.setValue(new Color(NbUtils.getPreferences().getInt("2stBackColor", etalon.getOtherLevelBackgroundColor().getRGB())));
       this.colorChooser2ndText.setValue(new Color(NbUtils.getPreferences().getInt("2stTextColor", etalon.getOtherLevelTextColor().getRGB())));
-      
+
       this.colorChooserSelectLine.setValue(new Color(NbUtils.getPreferences().getInt("selectLineColor", etalon.getSelectLineColor().getRGB())));
 
-      this.spinnerGridStep.setValue(NbUtils.getPreferences().getInt("gridStep",etalon.getGridStep()));
-      this.spinnerSelectLineGap.setValue(NbUtils.getPreferences().getInt("selectLineGap",etalon.getSelectLineGap()));
-      this.spinnerConnectorWidth.setValue(NbUtils.getPreferences().getFloat("connectorWidth",etalon.getConnectorWidth()));
-      this.spinnerCollapsatorWidth.setValue(NbUtils.getPreferences().getFloat("collapsatorBorderWidth",etalon.getCollapsatorBorderWidth()));
-      this.spinnerCollapsatorSize.setValue(NbUtils.getPreferences().getInt("collapsatorSize",etalon.getCollapsatorSize()));
-      
+      this.spinnerGridStep.setValue(NbUtils.getPreferences().getInt("gridStep", etalon.getGridStep()));
+      this.spinnerSelectLineGap.setValue(NbUtils.getPreferences().getInt("selectLineGap", etalon.getSelectLineGap()));
+      this.spinnerConnectorWidth.setValue(NbUtils.getPreferences().getFloat("connectorWidth", etalon.getConnectorWidth()));
+      this.spinnerCollapsatorWidth.setValue(NbUtils.getPreferences().getFloat("collapsatorBorderWidth", etalon.getCollapsatorBorderWidth()));
+      this.spinnerCollapsatorSize.setValue(NbUtils.getPreferences().getInt("collapsatorSize", etalon.getCollapsatorSize()));
+
       this.colorChooserCollapsatorBackground.setValue(new Color(NbUtils.getPreferences().getInt("collapsatorBackColor", etalon.getCollapsatorBackgroundColor().getRGB())));
       this.colorChooserCollapsatorBorder.setValue(new Color(NbUtils.getPreferences().getInt("collapsatorBorderColor", etalon.getCollapsatorBorderColor().getRGB())));
-      
-      this.spinnerSelectLineWidth.setValue(NbUtils.getPreferences().getFloat("selectLineWidth",etalon.getSelectLineWidth()));
-      
+
+      this.spinnerSelectLineWidth.setValue(NbUtils.getPreferences().getFloat("selectLineWidth", etalon.getSelectLineWidth()));
+
       this.checkboxUseInsideBrowser.setSelected(NbUtils.getPreferences().getBoolean("useInsideBrowser", false));
       this.checkboxRelativePathsForFilesInTheProject.setSelected(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true));
-      
+
       this.slider1stLevelHorzGap.setValue(NbUtils.getPreferences().getInt("firstLevelHInset", etalon.getFirstLevelHorizontalInset()));
       this.slider1stLevelVertGap.setValue(NbUtils.getPreferences().getInt("firstLevelVInset", etalon.getFirstLevelVerticalInset()));
 
       this.slider2ndLevelHorzGap.setValue(NbUtils.getPreferences().getInt("otherLevelHInset", etalon.getOtherLevelHorizontalInset()));
       this.slider2ndLevelVertGap.setValue(NbUtils.getPreferences().getInt("otherLevelVInset", etalon.getOtherLevelVerticalInset()));
-      
+
       final Font etalonFont = etalon.getFont();
       final String fontName = NbUtils.getPreferences().get("font.name", etalonFont.getName());
       final int fontSize = NbUtils.getPreferences().getInt("font.size", etalonFont.getSize());
@@ -805,22 +825,22 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       NbUtils.getPreferences().putInt("selectLineColor", this.colorChooserSelectLine.getValue().getRGB());
       NbUtils.getPreferences().putInt("collapsatorBackColor", this.colorChooserCollapsatorBackground.getValue().getRGB());
       NbUtils.getPreferences().putInt("collapsatorBorderColor", this.colorChooserCollapsatorBorder.getValue().getRGB());
-      
-      NbUtils.getPreferences().putInt("gridStep", (Integer)this.spinnerGridStep.getValue());
-      NbUtils.getPreferences().putInt("selectLineGap", (Integer)this.spinnerSelectLineGap.getValue());
-      NbUtils.getPreferences().putInt("collapsatorSize", (Integer)this.spinnerCollapsatorSize.getValue());
-      NbUtils.getPreferences().putFloat("connectorWidth", (Float)this.spinnerConnectorWidth.getValue());
-      NbUtils.getPreferences().putFloat("selectLineWidth", (Float)this.spinnerSelectLineWidth.getValue());
-      NbUtils.getPreferences().putFloat("collapsatorBorderWidth", (Float)this.spinnerCollapsatorWidth.getValue());
-      
+
+      NbUtils.getPreferences().putInt("gridStep", (Integer) this.spinnerGridStep.getValue());
+      NbUtils.getPreferences().putInt("selectLineGap", (Integer) this.spinnerSelectLineGap.getValue());
+      NbUtils.getPreferences().putInt("collapsatorSize", (Integer) this.spinnerCollapsatorSize.getValue());
+      NbUtils.getPreferences().putFloat("connectorWidth", (Float) this.spinnerConnectorWidth.getValue());
+      NbUtils.getPreferences().putFloat("selectLineWidth", (Float) this.spinnerSelectLineWidth.getValue());
+      NbUtils.getPreferences().putFloat("collapsatorBorderWidth", (Float) this.spinnerCollapsatorWidth.getValue());
+
       NbUtils.getPreferences().putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected());
       NbUtils.getPreferences().putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
-      
+
       NbUtils.getPreferences().putInt("firstLevelHInset", this.slider1stLevelHorzGap.getValue());
       NbUtils.getPreferences().putInt("firstLevelVInset", this.slider1stLevelVertGap.getValue());
       NbUtils.getPreferences().putInt("otherLevelHInset", this.slider2ndLevelHorzGap.getValue());
       NbUtils.getPreferences().putInt("otherLevelVInset", this.slider2ndLevelVertGap.getValue());
-      
+
       NbUtils.getPreferences().putInt("font.style", this.mindMapFont.getStyle());
       NbUtils.getPreferences().put("font.name", this.mindMapFont.getName());
       NbUtils.getPreferences().putInt("font.size", this.mindMapFont.getSize());
@@ -835,6 +855,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonAbout;
   private javax.swing.JButton buttonFont;
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxShowGrid;
