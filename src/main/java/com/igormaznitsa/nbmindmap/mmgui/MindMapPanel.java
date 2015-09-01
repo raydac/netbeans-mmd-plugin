@@ -62,7 +62,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
 
-  private static final float SCALE_STEP = 0.3f;
+  private static final float SCALE_STEP = 0.2f;
 
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
 

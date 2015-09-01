@@ -24,7 +24,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
 @OptionsPanelController.TopLevelRegistration(
-        categoryName = "MD Mind Map",
+        categoryName = "NB Mind Map",
         iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo32.png",
         keywords = "mindmap",
         keywordsCategory = "mindmap",
