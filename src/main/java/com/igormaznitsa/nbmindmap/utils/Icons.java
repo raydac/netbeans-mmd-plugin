@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 public enum Icons {
   DOCUMENT("document16.png"), //NOI18N
   EXPORT("export16.png"), //NOI18N
+  MINDMUP("mindmup16.png"), //NOI18N
   IMAGE("image16.png"), //NOI18N
   FILE_EXTENSION_PNG("file_extension_png16.png"), //NOI18N
   FILE_EXTENSION_TXT("file_extension_txt16.png"), //NOI18N

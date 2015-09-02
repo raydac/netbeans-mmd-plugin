@@ -203,7 +203,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       public void keyReleased(final KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
           e.consume();
+          final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
           endEdit(false);
+          if (edited != null && edited.canBeLost()) {
+            deleteTopics(edited);
+          }
         }
       }
     });
@@ -257,8 +261,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
           case ' ': {
             if (!hasSelectedTopics()) {
               select(getModel().getRoot(), false);
-            }else
-            if (hasOnlyTopicSelected() & (e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK | KeyEvent.META_DOWN_MASK))!=0) {
+            }
+            else if (hasOnlyTopicSelected() & (e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK | KeyEvent.META_DOWN_MASK)) != 0) {
               startEdit((AbstractElement) selectedTopics.get(0).getPayload());
             }
           }
