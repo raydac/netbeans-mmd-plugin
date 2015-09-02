@@ -33,3 +33,7 @@ Yes, the plugin supports export in several more or less standard formats:
 -  **DEL** - remove selected topics
 -  **CTRL(or SHFT)+SPACE** - if there is not any selected topic then select the root topic, if there is selected topic then start its editing.
 -  **UP,LEFT,RIGHT,DOWN** - navigation through topic tree.
+
+# Donation   
+If you like the software you can make some donation to the author   
+[![https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2)
