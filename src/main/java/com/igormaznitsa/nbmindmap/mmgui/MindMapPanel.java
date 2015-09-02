@@ -122,7 +122,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
         COMMON_CONFIG.setOtherLevelHorizontalInset(NbUtils.getPreferences().getInt("otherLevelHInset", COMMON_CONFIG.getOtherLevelHorizontalInset())); //NOI18N
         COMMON_CONFIG.setOtherLevelVerticalInset(NbUtils.getPreferences().getInt("otherLevelVInset", COMMON_CONFIG.getOtherLevelVerticalInset())); //NOI18N
-
+        
         final String fontName = NbUtils.getPreferences().get("font.name", COMMON_CONFIG.getFont().getName()); //NOI18N
         final int fontSize = NbUtils.getPreferences().getInt("font.size", COMMON_CONFIG.getFont().getSize()); //NOI18N
         final int fontStyle = NbUtils.getPreferences().getInt("font.style", COMMON_CONFIG.getFont().getStyle()); //NOI18N
@@ -626,8 +626,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         }
         else {
           dragged.getModel().moveToNewParent(destination.getModel());
-          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed()) {
-            ((AbstractCollapsableElement) destination).setCollapse(false);
+          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed() && NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true)) { //NOI18N
+             ((AbstractCollapsableElement) destination).setCollapse(false);
           }
           if (dropPoint.getY() < destination.getBounds().getY()) {
             dragged.getModel().makeFirst();

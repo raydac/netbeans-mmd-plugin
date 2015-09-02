@@ -90,7 +90,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   public static final String ID = "mmd-graph-editor"; //NOI18N
 
-  private volatile boolean rootToCentre;
+  private volatile boolean rootToCentre = true;
 
   private MultiViewElementCallback callback;
   private final MMDEditorSupport editorSupport;
@@ -108,7 +108,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
-
+    
     this.editorSupport = support;
 
     this.mainScrollPane = new JScrollPane();
@@ -170,7 +170,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   @Override
   public void componentShowing() {
     updateModel();
-    this.rootToCentre = true;
   }
 
   private void copyNameToCallbackTopComponent() {
@@ -277,8 +276,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
             final Rectangle2D bounds = element.getBounds();
             final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
 
-            final int x = (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2);
-            final int y = (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2);
+            final int x = Math.max(0,(int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
+            final int y = Math.max(0,(int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
 
             mainScrollPane.getViewport().setViewPosition(new Point(x, y));
           }

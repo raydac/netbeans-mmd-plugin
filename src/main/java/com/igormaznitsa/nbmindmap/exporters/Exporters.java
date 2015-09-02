@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.exporters;
 
 public enum Exporters {
   FREEMIND(new FreeMindExporter()),
+  MUNDMAP(new MindmupExporter()),
   TEXT(new TextExporter()),
   MD(new MDExporter()),
   PNGIMAGE(new PNGImageExporter());

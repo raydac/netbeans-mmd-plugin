@@ -61,7 +61,6 @@
                               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jPanel5" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
@@ -69,7 +68,7 @@
                               <Component id="buttonAbout" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -124,8 +123,8 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="spinnerConnectorWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel2" linkSize="10" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerConnectorWidth" linkSize="10" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="colorChooserConnectorColor" min="-2" max="-2" attributes="0"/>
@@ -135,15 +134,15 @@
                           <Component id="colorChooserCollapsatorBackground" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="2" attributes="0">
-                              <Component id="jLabel5" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="spinnerCollapsatorSize" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerCollapsatorSize" linkSize="6" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel5" linkSize="6" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="2" attributes="0">
-                              <Component id="jLabel6" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="spinnerCollapsatorWidth" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel6" linkSize="7" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerCollapsatorWidth" linkSize="7" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="28" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -273,14 +272,14 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="spinnerGridStep" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="colorChooserGridColor" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerGridStep" linkSize="11" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel1" linkSize="11" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="colorChooserGridColor" linkSize="12" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="colorChooserPaperColor" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="checkBoxShowGrid" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="colorChooserPaperColor" linkSize="12" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkBoxShowGrid" linkSize="12" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -638,6 +637,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="checkboxUseInsideBrowser" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="checkboxRelativePathsForFilesInTheProject" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkBoxUnfoldCollapsedTarget" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -651,6 +651,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="checkboxRelativePathsForFilesInTheProject" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
+                          <Component id="checkBoxUnfoldCollapsedTarget" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -662,6 +663,9 @@
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.checkboxUseInsideBrowser.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkboxUseInsideBrowserActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="checkboxRelativePathsForFilesInTheProject">
                   <Properties>
@@ -669,6 +673,19 @@
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkboxRelativePathsForFilesInTheProjectActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="checkBoxUnfoldCollapsedTarget">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18/Bundle.properties" key="MMDCfgPanel.checkBoxUnfoldCollapsedTarget.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxUnfoldCollapsedTargetActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
@@ -713,13 +730,13 @@
                           <Component id="colorChooserSelectLine" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="2" attributes="0">
-                              <Component id="jLabel3" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="spinnerSelectLineWidth" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel3" linkSize="8" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerSelectLineWidth" linkSize="8" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace pref="7" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="2" attributes="0">
-                              <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="spinnerSelectLineGap" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel4" linkSize="9" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerSelectLineGap" linkSize="9" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>

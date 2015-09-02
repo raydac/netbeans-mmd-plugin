@@ -86,6 +86,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     jPanel1 = new javax.swing.JPanel();
     checkboxUseInsideBrowser = new javax.swing.JCheckBox();
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
+    checkBoxUnfoldCollapsedTarget = new javax.swing.JCheckBox();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.nbmindmap.nb.ColorChoosingButton();
     jLabel3 = new javax.swing.JLabel();
@@ -190,14 +191,20 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addComponent(colorChooserCollapsatorBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-          .addComponent(jLabel5)
-          .addComponent(spinnerCollapsatorSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(spinnerCollapsatorSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel5))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
           .addComponent(jLabel6)
           .addComponent(spinnerCollapsatorWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(28, Short.MAX_VALUE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
+
+    jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel5, spinnerCollapsatorSize});
+
+    jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel6, spinnerCollapsatorWidth});
+
+    jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel2, spinnerConnectorWidth});
 
     jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel4.border.title"))); // NOI18N
 
@@ -270,6 +277,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(checkBoxShowGrid))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
+
+    jPanel4Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel1, spinnerGridStep});
+
+    jPanel4Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {checkBoxShowGrid, colorChooserGridColor, colorChooserPaperColor});
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel2.border.title"))); // NOI18N
 
@@ -468,8 +479,25 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel1.border.title"))); // NOI18N
 
     org.openide.awt.Mnemonics.setLocalizedText(checkboxUseInsideBrowser, bundle.getString("MMDCfgPanel.checkboxUseInsideBrowser.text")); // NOI18N
+    checkboxUseInsideBrowser.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkboxUseInsideBrowserActionPerformed(evt);
+      }
+    });
 
     org.openide.awt.Mnemonics.setLocalizedText(checkboxRelativePathsForFilesInTheProject, bundle.getString("MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text")); // NOI18N
+    checkboxRelativePathsForFilesInTheProject.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkboxRelativePathsForFilesInTheProjectActionPerformed(evt);
+      }
+    });
+
+    org.openide.awt.Mnemonics.setLocalizedText(checkBoxUnfoldCollapsedTarget, bundle.getString("MMDCfgPanel.checkBoxUnfoldCollapsedTarget.text")); // NOI18N
+    checkBoxUnfoldCollapsedTarget.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxUnfoldCollapsedTargetActionPerformed(evt);
+      }
+    });
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -479,7 +507,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(checkboxUseInsideBrowser)
-          .addComponent(checkboxRelativePathsForFilesInTheProject))
+          .addComponent(checkboxRelativePathsForFilesInTheProject)
+          .addComponent(checkBoxUnfoldCollapsedTarget))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
@@ -489,7 +518,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addComponent(checkboxUseInsideBrowser)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(checkboxRelativePathsForFilesInTheProject)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(checkBoxUnfoldCollapsedTarget))
     );
 
     jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel5.border.title"))); // NOI18N
@@ -544,6 +574,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap())
     );
 
+    jPanel5Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel3, spinnerSelectLineWidth});
+
+    jPanel5Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel4, spinnerSelectLineGap});
+
     buttonAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/info16.png"))); // NOI18N
     org.openide.awt.Mnemonics.setLocalizedText(buttonAbout, bundle.getString("MMDCfgPanel.buttonAbout.Text")); // NOI18N
     buttonAbout.addActionListener(new java.awt.event.ActionListener() {
@@ -581,13 +615,12 @@ final class MMDCfgPanel extends javax.swing.JPanel {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addGroup(jPanel6Layout.createSequentialGroup()
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(7, 7, 7)
             .addComponent(buttonAbout)))
-        .addContainerGap())
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jScrollPane1.setViewportView(jPanel6);
@@ -757,6 +790,24 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
   }//GEN-LAST:event_buttonAboutActionPerformed
 
+  private void checkboxUseInsideBrowserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxUseInsideBrowserActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkboxUseInsideBrowserActionPerformed
+
+  private void checkboxRelativePathsForFilesInTheProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxRelativePathsForFilesInTheProjectActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkboxRelativePathsForFilesInTheProjectActionPerformed
+
+  private void checkBoxUnfoldCollapsedTargetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxUnfoldCollapsedTargetActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkBoxUnfoldCollapsedTargetActionPerformed
+
   void load() {
     changeNotificationAllowed = false;
     try {
@@ -797,6 +848,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.slider2ndLevelHorzGap.setValue(NbUtils.getPreferences().getInt("otherLevelHInset", etalon.getOtherLevelHorizontalInset()));
       this.slider2ndLevelVertGap.setValue(NbUtils.getPreferences().getInt("otherLevelVInset", etalon.getOtherLevelVerticalInset()));
 
+      this.checkBoxUnfoldCollapsedTarget.setSelected(NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true));
+      
       final Font etalonFont = etalon.getFont();
       final String fontName = NbUtils.getPreferences().get("font.name", etalonFont.getName());
       final int fontSize = NbUtils.getPreferences().getInt("font.size", etalonFont.getSize());
@@ -844,6 +897,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       NbUtils.getPreferences().putInt("font.style", this.mindMapFont.getStyle());
       NbUtils.getPreferences().put("font.name", this.mindMapFont.getName());
       NbUtils.getPreferences().putInt("font.size", this.mindMapFont.getSize());
+      
+      NbUtils.getPreferences().putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
     }
     finally {
       MindMapPanel.loadCommonConfig();
@@ -859,6 +914,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JButton buttonFont;
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxShowGrid;
+  private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
   private javax.swing.JCheckBox checkboxUseInsideBrowser;
   private com.igormaznitsa.nbmindmap.nb.ColorChoosingButton colorChooser1stBackground;

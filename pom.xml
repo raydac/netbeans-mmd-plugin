@@ -211,6 +211,11 @@
     </dependency>
 
     <dependency>
+      <groupId>net.minidev</groupId>
+      <artifactId>json-smart</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-api-annotations-common</artifactId>
       <version>${nb.platform}</version>
