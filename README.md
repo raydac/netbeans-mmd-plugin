@@ -5,12 +5,20 @@ It is a small plugin working under NetBeans platform 7.4+ and allow keep knowled
 ![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshot1.png)
 
 # How to create new mind map?
-Just start the **New File** wizard and select the **Other** category and you will see the **NB Mind-map** record in the **File Types:** list. Select the **NB Mind-map** and press **Next>** in the wizard.
+Just start the **New File** wizard and select the **Other** category and you will see the **NB Mind-map** record in the **File Types:** list. Select the **NB Mind-map** and press **Next>** in the wizard.  
 ![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/newfiledialog.png)
 
 # There are no any actions or toolbar buttons! How to work?
-You can make manipulations with content through its context popup menu. The Pop-up menu provides all actions allowed for selected topic or topics.
+You can make manipulations with content through its context popup menu. The Pop-up menu provides all actions allowed for selected topic or topics.  
 ![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/popup.png)
+
+# How to change position of topics?
+All manipulations over topic positions can be made only with mouse drag&drop. But it allows only change either order of topics or their parents, layouting can't be changed. Focus lines show you where the dragged topic will be dropped. **NB! The Action has some restrictions and for instance you can't make children of a topic as its parent in the operation, in the case you will not see position**.  
+![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/dragdroptopic.png)
+
+# I want to change graphic parameters!
+It is very easy, you can just go to IDE **Options** (or click **Options** in the pop-up menu) and tune needed parameters in the opened panel.  
+![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/optionspanel.png)
 
 # Which kind of data I can keep in my maps?
 You can keep in maps listed information:
