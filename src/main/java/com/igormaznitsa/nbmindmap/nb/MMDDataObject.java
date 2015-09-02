@@ -33,12 +33,12 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
 @MIMEResolver.ExtensionRegistration(displayName = "Mind map", mimeType = MMDDataObject.MIME, extension = {MMDDataObject.MMD_EXT})
-@DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "Text Mind Map", mimeType = MMDDataObject.MIME)
+@DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "NB Mind-Map", mimeType = MMDDataObject.MIME)
 public class MMDDataObject extends MultiDataObject {
 
   private static final long serialVersionUID = -833567211826863321L;
 
-  public static final String MIME = "text/x-mmd+markdown"; //NOI18N
+  public static final String MIME = "text/x-nbmmd+markdown"; //NOI18N
   public static final String MMD_EXT = "mmd"; //NOI18N
 
   private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N

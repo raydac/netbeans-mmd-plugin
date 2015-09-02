@@ -80,7 +80,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
         .addContainerGap()
         .addComponent(labelIcon)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 627, Short.MAX_VALUE)
+        .addComponent(textLabel)
         .addContainerGap())
     );
     layout.setVerticalGroup(

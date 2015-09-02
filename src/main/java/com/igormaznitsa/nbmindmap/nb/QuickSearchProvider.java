@@ -1,5 +1,7 @@
 package com.igormaznitsa.nbmindmap.nb;
 
+import com.igormaznitsa.nbmindmap.utils.AboutPanel;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -39,6 +41,7 @@ public class QuickSearchProvider implements SearchProvider {
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                  NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
                 }
               });
             }
