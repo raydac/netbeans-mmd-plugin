@@ -990,11 +990,16 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
               return;
             }
 
-            final double cx = Math.min(requiredSize.getWidth(), (double) paperWidth) / Math.max(requiredSize.getWidth(), (double) paperWidth);
-            final double cy = Math.min(requiredSize.getHeight(), (double) paperHeight) / Math.max(requiredSize.getHeight(), (double) paperHeight);
-
-            cfg.setScale(Math.min((float) cx, (float) cy));
-
+            if (requiredSize.getWidth()>paperWidth || requiredSize.getHeight()>paperHeight){
+              final double cx = Math.min(requiredSize.getWidth(), (double) paperWidth) / Math.max(requiredSize.getWidth(), (double) paperWidth);
+              final double cy = Math.min(requiredSize.getHeight(), (double) paperHeight) / Math.max(requiredSize.getHeight(), (double) paperHeight);
+              cfg.setScale(Math.min((float) cx, (float) cy));
+            }else{
+              final double cx = Math.max(requiredSize.getWidth(), (double) paperWidth) / Math.min(requiredSize.getWidth(), (double) paperWidth);
+              final double cy = Math.max(requiredSize.getHeight(), (double) paperHeight) / Math.min(requiredSize.getHeight(), (double) paperHeight);
+              cfg.setScale(Math.min((float) cx, (float) cy));
+            }
+            
             // relayout and draw
             if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg) && MindMapPanel.layoutFullDiagramWithCenteringToPaper(g2d, theModel, cfg, new Dimension(width, height)) != null) {
               MindMapPanel.drawOnGraphicsForConfiguration(g2d, cfg, theModel, false, null);
