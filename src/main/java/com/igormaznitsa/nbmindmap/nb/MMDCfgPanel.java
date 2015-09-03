@@ -773,7 +773,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     if (editor == null){
       Logger.error("Can't find any font editor", null);
       NbUtils.msgError("Can't find editor! Unexpected state! Contact developer!");
-      return;
+      return; 
     }
     editor.setValue(this.mindMapFont);
     
