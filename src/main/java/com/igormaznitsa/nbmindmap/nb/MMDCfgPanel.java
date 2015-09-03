@@ -18,6 +18,7 @@ package com.igormaznitsa.nbmindmap.nb;
 import com.igormaznitsa.nbmindmap.mmgui.Configuration;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
 import com.igormaznitsa.nbmindmap.utils.AboutPanel;
+import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
 import java.awt.Font;
@@ -769,12 +770,17 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
   private void buttonFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontActionPerformed
     final PropertyEditor editor = PropertyEditorManager.findEditor(Font.class);
+    if (editor == null){
+      Logger.error("Can't find any font editor", null);
+      NbUtils.msgError("Can't find editor! Unexpected state! Contact developer!");
+      return;
+    }
+    editor.setValue(this.mindMapFont);
+    
     final DialogDescriptor descriptor = new DialogDescriptor(
             editor.getCustomEditor(),
             "Mind map font"
     );
-
-    editor.setValue(this.mindMapFont);
 
     DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);
     if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {

@@ -56,7 +56,8 @@ import org.openide.nodes.Node;
   "org-netbeans-modules-groovy-grailsproject",
   "org-netbeans-modules-gradle-project",
   "org-netbeans-modules-scala-project",
-  "org-netbeans-modules-scala-sbt"
+  "org-netbeans-modules-scala-sbt",
+  "org-netbeans-modules-cnd-api-project"
 },position = 10000)
 public class MindMapNodeFactory implements NodeFactory, FilenameFilter {
 

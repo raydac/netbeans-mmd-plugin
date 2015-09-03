@@ -15,16 +15,22 @@
  */
 package com.igormaznitsa.nbmindmap.nb;
 
+import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
 import javax.swing.DefaultButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
 
 public class ColorChoosingButton extends JButton {
 
@@ -41,14 +47,29 @@ public class ColorChoosingButton extends JButton {
 
       @Override
       protected void fireActionPerformed(ActionEvent e) {
-        final JColorChooser colorChooser = new JColorChooser(value);
-        if (NbUtils.msgComponentOkCancel(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("ColorChoosingButton.dialogTitle"),getText()), colorChooser)) {
-          setValue(colorChooser.getColor());
+        final PropertyEditor editor = PropertyEditorManager.findEditor(Color.class);
+        if (editor == null) {
+          Logger.error("Can't find registered color editor", null);
+          NbUtils.msgError("Can't find color editor! unexpected state! Contact developer!");
+          return;
+        }
+
+        editor.setValue(value);
+
+        final DialogDescriptor descriptor = new DialogDescriptor(
+                editor.getCustomEditor(),
+                String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("ColorChoosingButton.dialogTitle"), getText())
+        );
+
+        DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);
+        if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {
+          setValue((Color) editor.getValue());
           lastResultOk = true;
         }
         else {
           lastResultOk = false;
         }
+
         super.fireActionPerformed(e);
       }
     });
