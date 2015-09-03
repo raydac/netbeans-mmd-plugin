@@ -210,8 +210,8 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   }
 
   private void updateModel() {
-    this.mindMapPanel.endEdit(false);
-    
+    this.mindMapPanel.hideEditor();
+
     final String text = this.editorSupport.getDocumentText();
     if (text == null) {
       this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantLoadDocument"));
@@ -962,43 +962,50 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     final MindMap theModel = new MindMap(this.mindMapPanel.getModel());
 
     final PrintPage thePage = new PrintPage() {
+
+      private Image doubleBuffer;
+
       @Override
       public void print(final Graphics g) {
-        theModel.resetPayload();
-        cfg.setScale(1.0f);
-        
-        final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        final Graphics2D g2d = (Graphics2D) image.createGraphics();
-        g2d.setClip(0, 0, width, height);
-        try {
-          MindMapPanel.prepareGraphicsForQuality(g2d);
+        if (this.doubleBuffer == null) {
+          theModel.resetPayload();
+          cfg.setScale(1.0f);
 
-          final int paperWidth = Math.round(width * 0.95f);
-          final int paperHeight = Math.round(height * 0.95f);
+          final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+          final Graphics2D g2d = (Graphics2D) image.createGraphics();
+          g2d.setClip(0, 0, width, height);
+          try {
+            MindMapPanel.prepareGraphicsForQuality(g2d);
 
-          // figure out scaling
-          final Dimension2D requiredSize;
-          if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg)){
-            requiredSize = MindMapPanel.layoutModelElements(theModel, cfg);
-          }else{
-            Logger.error("Can't calculate element sizes for printing", null);
-            return;
+            final int paperWidth = Math.round(width * 0.95f);
+            final int paperHeight = Math.round(height * 0.95f);
+
+            // figure out scaling
+            final Dimension2D requiredSize;
+            if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg)) {
+              requiredSize = MindMapPanel.layoutModelElements(theModel, cfg);
+            }
+            else {
+              Logger.error("Can't calculate element sizes for printing", null);
+              return;
+            }
+
+            final double cx = Math.min(requiredSize.getWidth(), (double) paperWidth) / Math.max(requiredSize.getWidth(), (double) paperWidth);
+            final double cy = Math.min(requiredSize.getHeight(), (double) paperHeight) / Math.max(requiredSize.getHeight(), (double) paperHeight);
+
+            cfg.setScale(Math.min((float) cx, (float) cy));
+
+            // relayout and draw
+            if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg) && MindMapPanel.layoutFullDiagramWithCenteringToPaper(g2d, theModel, cfg, new Dimension(width, height)) != null) {
+              MindMapPanel.drawOnGraphicsForConfiguration(g2d, cfg, theModel, false, null);
+            }
           }
-          
-          final double cx = Math.min(requiredSize.getWidth(), (double) paperWidth) / Math.max(requiredSize.getWidth(), (double) paperWidth);
-          final double cy = Math.min(requiredSize.getHeight(), (double) paperHeight) / Math.max(requiredSize.getHeight(), (double) paperHeight);
-          
-          cfg.setScale(Math.min((float) cx, (float) cy));
-
-          // relayout and draw
-          if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg) && MindMapPanel.layoutFullDiagramWithCenteringToPaper(g2d, theModel, cfg, new Dimension(width, height))!=null){
-            MindMapPanel.drawOnGraphicsForConfiguration(g2d, cfg, theModel, false, null);
+          finally {
+            g2d.dispose();
+            doubleBuffer = image;
           }
         }
-        finally {
-          g2d.dispose();
-          g.drawImage(image, 0, 0, null);
-        }
+        g.drawImage(doubleBuffer, 0, 0, null);
       }
     };
 
@@ -1007,9 +1014,10 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   @Override
   public Date lastModified() {
-    if (this.editorSupport.isModified()){
+    if (this.editorSupport.isModified()) {
       return new Date();
-    }else{
+    }
+    else {
       return this.editorSupport.getDataObject().getPrimaryFile().lastModified();
     }
   }

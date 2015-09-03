@@ -915,6 +915,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
+  public void hideEditor() {
+    this.textEditorPanel.setVisible(false);
+    this.elementUnderEdit = null;
+  }
+  
   public void endEdit(final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
