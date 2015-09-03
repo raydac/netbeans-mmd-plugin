@@ -1183,7 +1183,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     widget.updateBlockSize(cfg);
   }
 
-  protected static boolean calculateElementSizes(final Graphics2D gfx, final MindMap model, final Configuration cfg) {
+  public static boolean calculateElementSizes(final Graphics2D gfx, final MindMap model, final Configuration cfg) {
     boolean result = false;
 
     final Topic root = model == null ? null : model.getRoot();
@@ -1200,7 +1200,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return result;
   }
 
-  protected static Dimension2D layoutModelElements(final MindMap model, final Configuration cfg) {
+  public static Dimension2D layoutModelElements(final MindMap model, final Configuration cfg) {
     Dimension2D result = null;
     final AbstractElement root = model == null ? null : model.getRoot() == null ? null : (AbstractElement) model.getRoot().getPayload();
     if (root != null) {
@@ -1227,7 +1227,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  private static Dimension layoutFullDiagramWithCenteringToPaper(final Graphics2D gfx, final MindMap map, final Configuration cfg, final Dimension2D paperSize) {
+  public static Dimension layoutFullDiagramWithCenteringToPaper(final Graphics2D gfx, final MindMap map, final Configuration cfg, final Dimension2D paperSize) {
     Dimension resultSize = null;
     if (calculateElementSizes(gfx, map, cfg)) {
       Dimension2D rootBlockSize = layoutModelElements(map, cfg);
@@ -1309,7 +1309,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     }
   }
 
-  private static void prepareGraphicsForQuality(final Graphics2D gfx) {
+  public static void prepareGraphicsForQuality(final Graphics2D gfx) {
     gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     gfx.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);

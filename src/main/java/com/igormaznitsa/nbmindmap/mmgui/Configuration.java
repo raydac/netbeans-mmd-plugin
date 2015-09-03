@@ -69,7 +69,7 @@ public final class Configuration implements Serializable {
   private float connectorWidth = 1.5f;
   private float selectLineWidth = 2.0f;
 
-  private Font font = new Font("Arial", Font.BOLD, 14); //NOI18N
+  private Font font = new Font("Arial", Font.BOLD, 18); //NOI18N
   private float scale = 1.0f;
   private boolean dropShadow = true;
 

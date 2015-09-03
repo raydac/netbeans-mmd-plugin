@@ -109,18 +109,19 @@ public abstract class AbstractElement {
   }
 
   public final void doPaint(final Graphics2D g, final Configuration cfg) {
-    if (this.hasChildren() && !isCollapsed()) {
-      doPaintConnectors(g, isLeftDirection(), cfg);
-    }
+    final Graphics2D gfx = (Graphics2D) g.create();
+    try {
+      if (this.hasChildren() && !isCollapsed()) {
+        doPaintConnectors(g, isLeftDirection(), cfg);
+      }
 
-    if (g.getClipBounds().intersects(this.bounds)) {
-      g.translate(this.bounds.getX(), this.bounds.getY());
-      try {
-        drawComponent(g, cfg);
+      if (g.getClipBounds().intersects(this.bounds)) {
+        gfx.translate(this.bounds.getX(), this.bounds.getY());
+        drawComponent(gfx, cfg);
       }
-      finally {
-        g.translate(-this.bounds.getX(), -this.bounds.getY());
-      }
+    }
+    finally {
+      gfx.dispose();
     }
   }
 

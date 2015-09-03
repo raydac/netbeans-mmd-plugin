@@ -325,5 +325,11 @@
       <artifactId>org-openide-modules</artifactId>
       <version>${nb.platform}</version>
     </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-print</artifactId>
+      <version>${nb.platform}</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>

@@ -21,6 +21,7 @@ import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapListener;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
 import com.igormaznitsa.nbmindmap.mmgui.AbstractElement;
+import com.igormaznitsa.nbmindmap.mmgui.Configuration;
 import com.igormaznitsa.nbmindmap.mmgui.ElementPart;
 import com.igormaznitsa.nbmindmap.model.Extra;
 import com.igormaznitsa.nbmindmap.model.ExtraFile;
@@ -35,7 +36,10 @@ import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
 import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -51,20 +55,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import javax.swing.*;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
+import org.netbeans.api.print.PrintManager;
 import org.netbeans.api.project.Project;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
+import org.netbeans.spi.print.PrintPage;
+import org.netbeans.spi.print.PrintProvider;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
@@ -73,6 +84,8 @@ import org.openide.text.CloneableEditor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.Utilities;
+import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
@@ -84,7 +97,7 @@ import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
         preferredID = MMDGraphEditor.ID,
         position = 1
 )
-public final class MMDGraphEditor extends CloneableEditor implements MultiViewElement, MindMapListener, DropTargetListener, MindMapPanel.PopUpProvider {
+public final class MMDGraphEditor extends CloneableEditor implements PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanel.PopUpProvider {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -108,7 +121,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
 
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
-    
+
     this.editorSupport = support;
 
     this.mainScrollPane = new JScrollPane();
@@ -197,6 +210,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
   }
 
   private void updateModel() {
+    this.mindMapPanel.endEdit(false);
+    
     final String text = this.editorSupport.getDocumentText();
     if (text == null) {
       this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantLoadDocument"));
@@ -276,8 +291,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
             final Rectangle2D bounds = element.getBounds();
             final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
 
-            final int x = Math.max(0,(int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
-            final int y = Math.max(0,(int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
+            final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
+            final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
 
             mainScrollPane.getViewport().setViewPosition(new Point(x, y));
           }
@@ -918,6 +933,84 @@ public final class MMDGraphEditor extends CloneableEditor implements MultiViewEl
     final Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
     if (topic != null) {
       this.mindMapPanel.select(topic, false);
+    }
+  }
+
+  @Override
+  public Lookup getLookup() {
+    return new ProxyLookup(Lookups.singleton(this), super.getLookup());
+  }
+
+  @Override
+  public PrintPage[][] getPages(final int width, final int height, final double zoom) {
+    final Configuration cfg = new Configuration(this.mindMapPanel.getConfiguration(), false);
+    cfg.setScale(1.0f);
+    cfg.setPaperMargins(0);
+    cfg.setDrawBackground(false);
+    cfg.setDropShadow(false);
+
+    cfg.setConnectorColor(Color.black);
+    cfg.setRootBackgroundColor(Color.black);
+    cfg.setRootTextColor(Color.white);
+    cfg.setFirstLevelBackgroundColor(Color.lightGray);
+    cfg.setFirstLevelTextColor(Color.black);
+    cfg.setOtherLevelBackgroundColor(Color.white);
+    cfg.setOtherLevelTextColor(Color.black);
+    cfg.setCollapsatorBorderColor(Color.black);
+    cfg.setCollapsatorBackgroundColor(Color.white);
+
+    final MindMap theModel = new MindMap(this.mindMapPanel.getModel());
+
+    final PrintPage thePage = new PrintPage() {
+      @Override
+      public void print(final Graphics g) {
+        theModel.resetPayload();
+        cfg.setScale(1.0f);
+        
+        final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g2d = (Graphics2D) image.createGraphics();
+        g2d.setClip(0, 0, width, height);
+        try {
+          MindMapPanel.prepareGraphicsForQuality(g2d);
+
+          final int paperWidth = Math.round(width * 0.95f);
+          final int paperHeight = Math.round(height * 0.95f);
+
+          // figure out scaling
+          final Dimension2D requiredSize;
+          if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg)){
+            requiredSize = MindMapPanel.layoutModelElements(theModel, cfg);
+          }else{
+            Logger.error("Can't calculate element sizes for printing", null);
+            return;
+          }
+          
+          final double cx = Math.min(requiredSize.getWidth(), (double) paperWidth) / Math.max(requiredSize.getWidth(), (double) paperWidth);
+          final double cy = Math.min(requiredSize.getHeight(), (double) paperHeight) / Math.max(requiredSize.getHeight(), (double) paperHeight);
+          
+          cfg.setScale(Math.min((float) cx, (float) cy));
+
+          // relayout and draw
+          if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg) && MindMapPanel.layoutFullDiagramWithCenteringToPaper(g2d, theModel, cfg, new Dimension(width, height))!=null){
+            MindMapPanel.drawOnGraphicsForConfiguration(g2d, cfg, theModel, false, null);
+          }
+        }
+        finally {
+          g2d.dispose();
+          g.drawImage(image, 0, 0, null);
+        }
+      }
+    };
+
+    return new PrintPage[][]{{thePage}};
+  }
+
+  @Override
+  public Date lastModified() {
+    if (this.editorSupport.isModified()){
+      return new Date();
+    }else{
+      return this.editorSupport.getDataObject().getPrimaryFile().lastModified();
     }
   }
 }
