@@ -62,7 +62,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
   private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
 
-  private static final float SCALE_STEP = 0.2f;
+  private static final double SCALE_STEP = 0.2d;
 
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
 
@@ -543,7 +543,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   @Override
   public void onConfigurationPropertyChanged(final Configuration source) {
     if (source == COMMON_CONFIG) {
-      final float scale = this.config.getScale();
+      final double scale = this.config.getScale();
       this.config.makeAtomicChange(new Runnable() {
         @Override
         public void run() {
@@ -1027,11 +1027,11 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return this.model;
   }
 
-  public void setScale(final float zoom) {
+  public void setScale(final double zoom) {
     this.config.setScale(zoom);
   }
 
-  public float getScale() {
+  public double getScale() {
     return this.config.getScale();
   }
 
@@ -1043,7 +1043,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       g.fillRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height);
 
       if (cfg.isShowGrid()) {
-        final float scaledGridStep = cfg.getGridStep() * cfg.getScale();
+        final double scaledGridStep = cfg.getGridStep() * cfg.getScale();
 
         final float minX = clipBounds.x;
         final float minY = clipBounds.y;
@@ -1086,7 +1086,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private void drawDestinationElement(final Graphics2D g, final Configuration cfg) {
     if (this.destinationElement != null) {
       g.setColor(cfg.getSelectLineColor());
-      g.setStroke(new BasicStroke(3.0f * this.config.getScale()));
+      g.setStroke(new BasicStroke(this.config.safeScaleFloatValue(3.0f, 0.1f)));
 
       final Rectangle2D rectToDraw = new Rectangle2D.Double();
       rectToDraw.setRect(this.destinationElement.getBounds());
@@ -1128,7 +1128,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private static void drawSelection(final Graphics2D g, final Configuration cfg, final List<Topic> selectedTopics) {
     if (selectedTopics != null && !selectedTopics.isEmpty()) {
       g.setColor(cfg.getSelectLineColor());
-      final Stroke dashed = new BasicStroke(cfg.getSelectLineWidth() * cfg.getScale(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{1 * cfg.getScale(), 4 * cfg.getScale()}, 0);
+      final Stroke dashed = new BasicStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(),0.1f), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{cfg.safeScaleFloatValue(1.0f, 0.1f), cfg.safeScaleFloatValue(4.0f, 0.1f)}, 0);
       g.setStroke(dashed);
       final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
       final double dblLineGap = selectLineGap * 2.0d;

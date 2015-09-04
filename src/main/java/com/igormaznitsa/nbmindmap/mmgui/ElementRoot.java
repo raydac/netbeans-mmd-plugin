@@ -49,18 +49,20 @@ public final class ElementRoot extends AbstractElement {
   }
 
   private Shape makeShape(final Configuration cfg, final float x, final float y) {
-    return new RoundRectangle2D.Float(x, y, (float) this.bounds.getWidth(), (float) this.bounds.getHeight(), 10.0f * cfg.getScale(), 10.0f * cfg.getScale());
+    final float round = cfg.safeScaleFloatValue(10.0f, 0.1f);
+    return new RoundRectangle2D.Float(x, y, (float) this.bounds.getWidth(), (float) this.bounds.getHeight(), round, round);
   }
 
   @Override
   public void drawComponent(final Graphics2D g, final Configuration cfg) {
-    g.setStroke(new BasicStroke(cfg.getScale() * cfg.getElementBorderWidth()));
+    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f)));
 
     final Shape shape = makeShape(cfg, 0f, 0f);
 
     if (cfg.isDropShadow()) {
       g.setColor(cfg.getShadowColor());
-      g.fill(makeShape(cfg, 5.0f * cfg.getScale(), 5.0f * cfg.getScale()));
+      final float offset = cfg.safeScaleFloatValue(5.0f, 0.1f);
+      g.fill(makeShape(cfg, offset, offset));
     }
 
     g.setColor(cfg.getRootBackgroundColor());
@@ -83,7 +85,7 @@ public final class ElementRoot extends AbstractElement {
 
   @Override
   public void drawConnector(final Graphics2D g, final Rectangle2D source, final Rectangle2D destination, final boolean leftDirection, final Configuration cfg) {
-    g.setStroke(new BasicStroke(cfg.getConnectorWidth() * cfg.getScale()));
+    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(),0.1f)));
     g.setColor(cfg.getConnectorColor());
 
     final Path2D path = new Path2D.Double();
@@ -129,7 +131,7 @@ public final class ElementRoot extends AbstractElement {
     final double dy = cy;
     this.moveTo(dx, dy);
 
-    final int textMargin = Math.round(cfg.getScale() * cfg.getTextMargins());
+    final double textMargin = cfg.getScale() * cfg.getTextMargins();
     final double centralLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()) / 2;
 
     this.textBlock.setCoordOffset(textMargin, centralLineY - this.textBlock.getBounds().getHeight() / 2);
@@ -171,7 +173,7 @@ public final class ElementRoot extends AbstractElement {
   @Override
   public void updateElementBounds(final Graphics2D gfx, final Configuration cfg) {
     super.updateElementBounds(gfx, cfg);
-    final float marginOffset = (cfg.getTextMargins() << 1) * cfg.getScale();
+    final double marginOffset = (cfg.getTextMargins() << 1) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
   }
 
@@ -185,8 +187,8 @@ public final class ElementRoot extends AbstractElement {
 
   @Override
   public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size, final boolean childrenOnly) {
-    final float insetV = cfg.getScale() * cfg.getFirstLevelVerticalInset();
-    final float insetH = cfg.getScale() * cfg.getFirstLevelHorizontalInset();
+    final double insetV = cfg.getScale() * cfg.getFirstLevelVerticalInset();
+    final double insetH = cfg.getScale() * cfg.getFirstLevelHorizontalInset();
 
     final Dimension2D result = size == null ? new Dimension() : size;
 

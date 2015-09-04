@@ -28,7 +28,7 @@ import java.awt.geom.Rectangle2D;
 public class IconBlock {
   private final Rectangle2D bounds = new Rectangle2D.Double();
   private final Topic model;
-  private float scale = 1.0f;
+  private double scale = 1.0d;
   private boolean contentPresented;
   
   private Extra<?> [] currentExtras = null;

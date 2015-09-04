@@ -34,13 +34,14 @@ public class ElementLevelOther extends ElementLevelFirst {
 
   @Override
   public void drawComponent(final Graphics2D g, final Configuration cfg) {
-    g.setStroke(new BasicStroke(cfg.getScale() * cfg.getElementBorderWidth()));
+    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f)));
 
     final Shape shape = makeShape(0f, 0f);
 
     if (cfg.isDropShadow()) {
       g.setColor(cfg.getShadowColor());
-      g.fill(makeShape(5.0f * cfg.getScale(), 5.0f * cfg.getScale()));
+      final float offset = cfg.safeScaleFloatValue(5.0f, 0.1f);
+      g.fill(makeShape(offset, offset));
     }
 
     g.setColor(cfg.getOtherLevelBackgroundColor());

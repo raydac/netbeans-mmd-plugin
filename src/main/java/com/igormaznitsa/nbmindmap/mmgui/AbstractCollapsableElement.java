@@ -40,7 +40,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
     final int DELTA = (int) Math.round(cfg.getCollapsatorSize() * 0.3d * cfg.getScale());
 
-    g.setStroke(new BasicStroke(cfg.getCollapsatorBorderWidth() * cfg.getScale()));
+    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getCollapsatorBorderWidth(),0.1f)));
     g.setColor(cfg.getCollapsatorBackgroundColor());
     g.fillOval(x, y, w, h);
     g.setColor(cfg.getCollapsatorBorderColor());
@@ -99,8 +99,8 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   public Dimension2D calcBlockSize(final Configuration cfg, final Dimension2D size, final boolean childrenOnly) {
     final Dimension2D result = size == null ? new Dimension() : size;
 
-    final float scaledVInset = cfg.getScale() * cfg.getOtherLevelVerticalInset();
-    final float scaledHInset = cfg.getScale() * cfg.getOtherLevelHorizontalInset();
+    final double scaledVInset = cfg.getScale() * cfg.getOtherLevelVerticalInset();
+    final double scaledHInset = cfg.getScale() * cfg.getOtherLevelHorizontalInset();
 
     double width = childrenOnly ? 0.0d : this.bounds.getWidth();
     double height = childrenOnly ? 0.0d : this.bounds.getHeight();
@@ -164,7 +164,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
       collapsatorX = this.bounds.getWidth() + COLLAPSATORDISTANCE;
     }
 
-    final int textMargin = Math.round(cfg.getScale() * cfg.getTextMargins());
+    final double textMargin = cfg.getScale() * cfg.getTextMargins();
     final double centralBlockLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()) / 2;
 
     this.textBlock.setCoordOffset(textMargin, centralBlockLineY - this.textBlock.getBounds().getHeight() / 2);
@@ -207,7 +207,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public void drawConnector(final Graphics2D g, final Rectangle2D source, final Rectangle2D destination, final boolean leftDirection, final Configuration cfg) {
-    g.setStroke(new BasicStroke(cfg.getConnectorWidth() * cfg.getScale()));
+    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(),0.1f)));
     g.setColor(cfg.getConnectorColor());
 
     final double dy = Math.abs(destination.getCenterY() - source.getCenterY());
@@ -265,7 +265,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   @Override
   public void updateElementBounds(final Graphics2D gfx, final Configuration cfg) {
     super.updateElementBounds(gfx, cfg);
-    final float marginOffset = (cfg.getTextMargins() << 1) * cfg.getScale();
+    final double marginOffset = (cfg.getTextMargins() << 1) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
   }
 

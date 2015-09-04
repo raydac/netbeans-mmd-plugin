@@ -70,7 +70,7 @@ public final class Configuration implements Serializable {
   private float selectLineWidth = 2.0f;
 
   private Font font = new Font("Arial", Font.BOLD, 18); //NOI18N
-  private float scale = 1.0f;
+  private double scale = 1.0d;
   private boolean dropShadow = true;
 
   private transient volatile boolean notificationEnabled = true;
@@ -91,6 +91,11 @@ public final class Configuration implements Serializable {
     }
   }
 
+  public float safeScaleFloatValue(final float value, final float minimal){
+    final float result = (float)(this.scale*(double)value);
+    return Float.compare(result, minimal)>=0 ? result : minimal;
+  }
+  
   public void makeFullCopyOf(final Configuration src, final boolean copyListeners, final boolean makeNotification) {
     for (final Field f : Configuration.class.getDeclaredFields()) {
       if (f.getName().equals("listeners")) { //NOI18N
@@ -401,12 +406,12 @@ public final class Configuration implements Serializable {
     return this.font;
   }
 
-  public float getScale() {
+  public double getScale() {
     return this.scale;
   }
 
-  public void setScale(final float value) {
-    this.scale = Math.max(0.3f, Math.min(15f, value));
+  public void setScale(final double value) {
+    this.scale = Math.max(0.3d, Math.min(15d, value));
     notifyCfgListenersAboutChange();
   }
 

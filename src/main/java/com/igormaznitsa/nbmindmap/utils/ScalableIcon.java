@@ -33,7 +33,7 @@ public enum ScalableIcon {
   public static final int BASE_WIDTH = 16;
   public static final int BASE_HEIGHT = 16;
   
-  private float currentScaleFactor = -1.0f;
+  private double currentScaleFactor = -1.0d;
   
   private final Image baseImage;
   private Image scaledCachedImage;
@@ -56,12 +56,12 @@ public enum ScalableIcon {
     }
   }
 
-  public synchronized float getScaleFactor(){
+  public synchronized double getScaleFactor(){
     return this.currentScaleFactor;
   }
   
-  public synchronized Image getImage(final float scale){
-    if (Float.compare(this.currentScaleFactor, scale)!=0){
+  public synchronized Image getImage(final double scale){
+    if (Double.compare(this.currentScaleFactor, scale)!=0){
       this.scaledCachedImage = null;
     }
     
@@ -70,8 +70,8 @@ public enum ScalableIcon {
       
       final int imgw = this.baseImage.getWidth(null);
       final int imgh = this.baseImage.getHeight(null);
-      final int scaledW = Math.round((float)imgw*this.baseScaleX*scale);
-      final int scaledH = Math.round((float)imgh*this.baseScaleY*scale);
+      final int scaledW = (int)Math.round(imgw*this.baseScaleX*scale);
+      final int scaledH = (int)Math.round(imgh*this.baseScaleY*scale);
     
       final BufferedImage img = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
       final Graphics2D g = (Graphics2D)img.getGraphics();

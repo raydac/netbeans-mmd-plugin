@@ -83,7 +83,7 @@ public final class TextBlock {
   }
   
   public void updateSize(final Graphics2D gfx, final Configuration cfg) {
-      this.font = cfg.getFont().deriveFont(cfg.getFont().getSize2D() * cfg.getScale());
+      this.font = cfg.getFont().deriveFont(cfg.safeScaleFloatValue(cfg.getFont().getSize2D(),2f));
       final FontMetrics metrics = gfx.getFontMetrics(this.font);
 
       this.maxLineAscent = metrics.getMaxAscent();
