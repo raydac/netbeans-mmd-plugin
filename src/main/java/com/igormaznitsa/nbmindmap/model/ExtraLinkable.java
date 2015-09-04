@@ -16,39 +16,7 @@
 package com.igormaznitsa.nbmindmap.model;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
-public class ExtraFile extends Extra<URI> implements ExtraLinkable{
-  private static final long serialVersionUID = -478916403235887225L;
-
-  private final URI file;
-  
-  public ExtraFile(final URI file){
-    this.file = file;
-  }
-
-  public ExtraFile(final String text) throws URISyntaxException {
-    this.file = new URI(text);
-  }
-  
-  @Override
-  public URI getValue() {
-    return file;
-  }
-
-  @Override
-  public ExtraType getType() {
-    return ExtraType.FILE;
-  }
-
-  @Override
-  public String getAsString() {
-    return this.file.toString();
-  }
-
-  @Override
-  public URI getAsURI() {
-    return this.file;
-  }
-
+public interface ExtraLinkable {
+  URI getAsURI();
 }

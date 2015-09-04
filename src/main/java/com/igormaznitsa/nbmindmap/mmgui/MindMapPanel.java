@@ -923,10 +923,12 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   public void endEdit(final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
-        this.elementUnderEdit.setText(this.textEditor.getText());
+        final AbstractElement editedElement = this.elementUnderEdit;
+        final Topic editedTopic = this.elementUnderEdit.model;
+        editedElement.setText(this.textEditor.getText());
         this.textEditorPanel.setVisible(false);
         updateView(true);
-        fireNotificationEnsureTopicVisibility(this.elementUnderEdit.model);
+        fireNotificationEnsureTopicVisibility(editedTopic);
       }
     }
     finally {
