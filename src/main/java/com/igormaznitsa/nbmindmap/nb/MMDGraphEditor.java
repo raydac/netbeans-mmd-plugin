@@ -55,9 +55,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -940,10 +942,8 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   }
 
   @Override
-  public PrintPage[][] getPages(final int width, final int height, final double zoom) {
+  public PrintPage[][] getPages(final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
     final Configuration cfg = new Configuration(this.mindMapPanel.getConfiguration(), false);
-    cfg.setScale(1.0f);
-    cfg.setPaperMargins(0);
     cfg.setDrawBackground(false);
     cfg.setDropShadow(false);
 
@@ -961,48 +961,25 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     final PrintPage thePage = new PrintPage() {
 
-      private Image doubleBuffer;
+      private BufferedImage mindMapAsImage;
 
       @Override
       public void print(final Graphics g) {
-        if (this.doubleBuffer == null) {
-          theModel.resetPayload();
-          cfg.setScale(1.0f);
-
-          final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-          final Graphics2D g2d = (Graphics2D) image.createGraphics();
-          g2d.setClip(0, 0, width, height);
-          try {
-            MindMapPanel.prepareGraphicsForQuality(g2d);
-
-            final int paperWidth = Math.round(width * 0.95f);
-            final int paperHeight = Math.round(height * 0.95f);
-
-            // figure out scaling
-            final Dimension2D requiredSize;
-            if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg)) {
-              requiredSize = MindMapPanel.layoutModelElements(theModel, cfg);
-            }
-            else {
-              Logger.error("Can't calculate element sizes for printing", null);
-              return;
-            }
-
-            final float scaleX = (float)paperWidth / (float)requiredSize.getWidth();
-            final float scaleY = (float)paperHeight / (float)requiredSize.getHeight();
-            cfg.setScale(Math.min(scaleX, scaleY));
-
-            // relayout and draw
-            if (MindMapPanel.calculateElementSizes(g2d, theModel, cfg) && MindMapPanel.layoutFullDiagramWithCenteringToPaper(g2d, theModel, cfg, new Dimension(width, height)) != null) {
-              MindMapPanel.drawOnGraphicsForConfiguration(g2d, cfg, theModel, false, null);
-            }
-          }
-          finally {
-            g2d.dispose();
-            doubleBuffer = image;
-          }
+        if (this.mindMapAsImage == null) {
+          cfg.setScale(1.0d);
+          this.mindMapAsImage = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
         }
-        g.drawImage(doubleBuffer, 0, 0, null);
+
+        final double scaleX = (double) paperWidthInPixels / (double) this.mindMapAsImage.getWidth();
+        final double scaleY = (double) paperHeightInPixels / (double) this.mindMapAsImage.getHeight();
+
+        final double selectedScaleFactor = Math.min(scaleX, scaleY);
+
+        final AffineTransform transform = new AffineTransform();
+        transform.scale(selectedScaleFactor, selectedScaleFactor);
+        transform.translate(((double) paperWidthInPixels - (selectedScaleFactor * this.mindMapAsImage.getWidth())) / 2, ((double) paperHeightInPixels - (selectedScaleFactor * this.mindMapAsImage.getHeight())) / 2);
+
+        ((Graphics2D) g).drawImage(this.mindMapAsImage, transform, null);
       }
     };
 

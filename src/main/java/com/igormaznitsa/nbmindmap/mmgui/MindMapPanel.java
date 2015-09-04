@@ -122,7 +122,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
         COMMON_CONFIG.setOtherLevelHorizontalInset(NbUtils.getPreferences().getInt("otherLevelHInset", COMMON_CONFIG.getOtherLevelHorizontalInset())); //NOI18N
         COMMON_CONFIG.setOtherLevelVerticalInset(NbUtils.getPreferences().getInt("otherLevelVInset", COMMON_CONFIG.getOtherLevelVerticalInset())); //NOI18N
-        
+
         final String fontName = NbUtils.getPreferences().get("font.name", COMMON_CONFIG.getFont().getName()); //NOI18N
         final int fontSize = NbUtils.getPreferences().getInt("font.size", COMMON_CONFIG.getFont().getSize()); //NOI18N
         final int fontStyle = NbUtils.getPreferences().getInt("font.style", COMMON_CONFIG.getFont().getStyle()); //NOI18N
@@ -627,7 +627,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
         else {
           dragged.getModel().moveToNewParent(destination.getModel());
           if (destination instanceof AbstractCollapsableElement && destination.isCollapsed() && NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true)) { //NOI18N
-             ((AbstractCollapsableElement) destination).setCollapse(false);
+            ((AbstractCollapsableElement) destination).setCollapse(false);
           }
           if (dropPoint.getY() < destination.getBounds().getY()) {
             dragged.getModel().makeFirst();
@@ -919,7 +919,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     this.textEditorPanel.setVisible(false);
     this.elementUnderEdit = null;
   }
-  
+
   public void endEdit(final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
@@ -1128,7 +1128,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private static void drawSelection(final Graphics2D g, final Configuration cfg, final List<Topic> selectedTopics) {
     if (selectedTopics != null && !selectedTopics.isEmpty()) {
       g.setColor(cfg.getSelectLineColor());
-      final Stroke dashed = new BasicStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(),0.1f), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{cfg.safeScaleFloatValue(1.0f, 0.1f), cfg.safeScaleFloatValue(4.0f, 0.1f)}, 0);
+      final Stroke dashed = new BasicStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(), 0.1f), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{cfg.safeScaleFloatValue(1.0f, 0.1f), cfg.safeScaleFloatValue(4.0f, 0.1f)}, 0);
       g.setStroke(dashed);
       final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
       final double dblLineGap = selectLineGap * 2.0d;
@@ -1341,36 +1341,40 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   @Override
   @SuppressWarnings("unchecked")
   public void paintComponent(final Graphics g) {
-    final Graphics2D gfx = (Graphics2D) g;
+    final Graphics2D gfx = (Graphics2D) g.create();
+    try {
+      final String error = this.errorText;
 
-    final String error = this.errorText;
-
-    prepareGraphicsForQuality(gfx);
-    if (error != null) {
-      drawErrorText(gfx, this.getSize(), error);
-    }
-    else {
-      revalidate();
-      drawOnGraphicsForConfiguration(gfx, this.config, this.model, true, this.selectedTopics);
-      drawDestinationElement(gfx, this.config);
-    }
-
-    paintChildren(g);
-
-    if (this.draggedElement != null) {
-      final int px = this.draggedElementPoint.x - ((int) this.draggedElement.getBounds().getWidth()) / 2;
-      final int py = this.draggedElementPoint.y - ((int) this.draggedElement.getBounds().getHeight()) / 2;
-      gfx.translate(px, py);
-      try {
-        this.draggedElement.drawComponent(gfx, this.config);
+      prepareGraphicsForQuality(gfx);
+      if (error != null) {
+        drawErrorText(gfx, this.getSize(), error);
       }
-      finally {
-        gfx.translate(-px, -py);
+      else {
+        revalidate();
+        drawOnGraphicsForConfiguration(gfx, this.config, this.model, true, this.selectedTopics);
+        drawDestinationElement(gfx, this.config);
+      }
+
+      paintChildren(g);
+
+      if (this.draggedElement != null) {
+        final int px = this.draggedElementPoint.x - ((int) this.draggedElement.getBounds().getWidth()) / 2;
+        final int py = this.draggedElementPoint.y - ((int) this.draggedElement.getBounds().getHeight()) / 2;
+        gfx.translate(px, py);
+        try {
+          this.draggedElement.drawComponent(gfx, this.config);
+        }
+        finally {
+          gfx.translate(-px, -py);
+        }
+      }
+      else if (this.mouseDragSelection != null) {
+        gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
+        gfx.fill(this.mouseDragSelection.asRectangle());
       }
     }
-    else if (this.mouseDragSelection != null) {
-      gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
-      gfx.fill(this.mouseDragSelection.asRectangle());
+    finally {
+      gfx.dispose();
     }
   }
 
@@ -1440,7 +1444,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
     return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
   }
 
-  public static RenderedImage renderMindMapAsImage(final MindMap model, final Configuration cfg, final boolean expandAll) {
+  public static BufferedImage renderMindMapAsImage(final MindMap model, final Configuration cfg, final boolean expandAll) {
     final MindMap workMap = new MindMap(model);
     workMap.resetPayload();
 
