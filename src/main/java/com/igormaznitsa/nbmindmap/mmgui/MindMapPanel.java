@@ -24,8 +24,11 @@ import com.igormaznitsa.nbmindmap.model.ExtraNote;
 import com.igormaznitsa.nbmindmap.model.ExtraTopic;
 import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
+import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -34,7 +37,6 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,6 +48,8 @@ import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import org.apache.commons.lang.StringEscapeUtils;
 
 public final class MindMapPanel extends JPanel implements Configuration.ConfigurationListener {
@@ -82,6 +86,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
   private final Configuration config;
 
   private PopUpProvider popupProvider;
+
+  private volatile boolean popupMenuActive = false;
 
   static {
     loadCommonConfig();
@@ -330,30 +336,29 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       @Override
       public void mousePressed(final MouseEvent e) {
-        if (e.isPopupTrigger()) {
-          e.consume();
-          MindMap theMap = model;
-          AbstractElement element = null;
-          if (theMap != null) {
-            element = findTopicUnderPoint(e.getPoint());
-          }
-          processPopUp(e.getPoint(), element);
-        }
-        else {
-          endEdit(false);
-          mouseDragSelection = null;
-          MindMap theMap = model;
-          if (theMap != null) {
-            final AbstractElement element = findTopicUnderPoint(e.getPoint());
-            if (element == null) {
-              mouseDragSelection = new MouseSelectedArea(e.getPoint());
+        try {
+          if (e.isPopupTrigger()) {
+            mouseDragSelection = null;
+            MindMap theMap = model;
+            AbstractElement element = null;
+            if (theMap != null) {
+              element = findTopicUnderPoint(e.getPoint());
             }
+            processPopUp(e.getPoint(), element);
+            e.consume();
           }
+          else {
+            endEdit(false);
+            mouseDragSelection = null;
+          }
+        }
+        catch (Exception ex) {
+          Logger.error("Error during mousePressed()", ex);
         }
       }
 
       @Override
-      public void mouseReleased(MouseEvent e) {
+      public void mouseReleased(final MouseEvent e) {
         try {
           if (draggedElementPoint != null) {
             if (endDragOfElement(draggedElementPoint, draggedElement, destinationElement)) {
@@ -380,14 +385,18 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             }
           }
           else if (e.isPopupTrigger()) {
-            e.consume();
+            mouseDragSelection = null;
             MindMap theMap = model;
             AbstractElement element = null;
             if (theMap != null) {
               element = findTopicUnderPoint(e.getPoint());
             }
             processPopUp(e.getPoint(), element);
+            e.consume();
           }
+        }
+        catch (Exception ex) {
+          Logger.error("Error during mouseReleased()", ex);
         }
         finally {
           mouseDragSelection = null;
@@ -400,22 +409,40 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       @Override
       public void mouseDragged(final MouseEvent e) {
-        if (mouseDragSelection != null) {
-          mouseDragSelection.update(e);
-          repaint();
-        }
-        else if (draggedElementPoint == null) {
-          draggedElement = findTopicUnderPoint(e.getPoint());
-          if (draggedElement != null && draggedElement.isMoveable()) {
-            draggedElementPoint = e.getPoint();
+        if (!popupMenuActive) {
+          if (draggedElementPoint == null && mouseDragSelection == null) {
+            final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
+            if (elementUnderMouse == null) {
+              MindMap theMap = model;
+              if (theMap != null) {
+                final AbstractElement element = findTopicUnderPoint(e.getPoint());
+                if (element == null) {
+                  mouseDragSelection = new MouseSelectedArea(e.getPoint());
+                }
+              }
+            }
+            else {
+              draggedElement = elementUnderMouse;
+              if (elementUnderMouse.isMoveable()) {
+                draggedElementPoint = e.getPoint();
+                findDestinationElementForDragged();
+                repaint();
+              }
+            }
+          }
+          else if (mouseDragSelection != null) {
+            mouseDragSelection.update(e);
+            repaint();
+          }
+          else if (draggedElementPoint!=null){
+            draggedElementPoint.setLocation(e.getPoint());
             findDestinationElementForDragged();
             repaint();
           }
         }
         else {
-          draggedElementPoint.setLocation(e.getPoint());
-          findDestinationElementForDragged();
-          repaint();
+          draggedElementPoint = null;
+          mouseDragSelection = null;
         }
       }
 
@@ -974,6 +1001,29 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       final JPopupMenu menu = provider.makePopUp(point, element, part);
       if (menu != null) {
+
+        final MindMapPanel theInstance = this;
+        menu.addPopupMenuListener(new PopupMenuListener() {
+
+          @Override
+          public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
+            theInstance.mouseDragSelection = null;
+            theInstance.popupMenuActive = true;
+          }
+
+          @Override
+          public void popupMenuWillBecomeInvisible(final PopupMenuEvent e) {
+            theInstance.mouseDragSelection = null;
+            theInstance.popupMenuActive = false;
+          }
+
+          @Override
+          public void popupMenuCanceled(final PopupMenuEvent e) {
+            theInstance.mouseDragSelection = null;
+            theInstance.popupMenuActive = false;
+          }
+        });
+
         menu.show(this, point.x, point.y);
       }
     }
