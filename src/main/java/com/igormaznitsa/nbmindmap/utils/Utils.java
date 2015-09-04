@@ -18,8 +18,11 @@ package com.igormaznitsa.nbmindmap.utils;
 import com.igormaznitsa.nbmindmap.mmgui.AbstractCollapsableElement;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +37,32 @@ import org.openide.NotifyDescriptor;
 public enum Utils {
 
   ;
+   
+  private static String normalizeURI(final String s){
+    final int schemePosition = s.indexOf(':');
+    final String scheme =  s.substring(0,schemePosition);
+    final String chars = " :<>?";
+    String result = s.substring(schemePosition+1);
+    for(final char ch : chars.toCharArray()){
+      result = result.replace(Character.toString(ch), "%"+Integer.toHexString(ch).toUpperCase(Locale.ENGLISH));
+    }
+    return scheme+':'+result;
+  }
+        
+  public static File makeFileForPath(final String str){
+    if (str == null || str.isEmpty()) return null;
+    if (str.startsWith("file:")){
+      try {
+        return new File(new URI(normalizeURI(str)));
+      }
+      catch (URISyntaxException ex) {
+        Logger.error("URISyntaxException for "+str, ex);
+        return null;
+      }
+    }else{
+      return new File(str);
+    }
+  }
         
   public static String[] breakToLines(final String text) {
     final int lineNum = numberOfLines(text);

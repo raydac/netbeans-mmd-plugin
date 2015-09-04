@@ -66,8 +66,12 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Date;
+import java.util.Locale;
 import javax.swing.*;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.Project;
@@ -363,7 +367,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
             }
           }
           catch (Exception ex) {
-            Logger.error("onClickExtra#FILE", ex);
+            Logger.error("onClickExtra#FILE", ex); //NOI18N
             NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), extra.getValue().toString()));
             return;
           }
@@ -404,7 +408,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         }
         break;
         default:
-          throw new Error("Unexpected type " + extra.getType());
+          throw new Error("Unexpected type " + extra.getType()); //NOI18N
       }
     }
   }
@@ -603,8 +607,9 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         }
       }
       else {
-        final File filePath = new File(path);
-        if (filePath.isFile()) {
+        final File filePath = Utils.makeFileForPath(path);
+
+        if (filePath != null && filePath.isFile()) {
           final FileObject fileObj = FileUtil.toFileObject(filePath);
           final String relativePath = NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? getRelativePathToProjectIfPossible(fileObj) : null; //NOI18N
 
@@ -965,21 +970,28 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
       @Override
       public void print(final Graphics g) {
-        if (this.mindMapAsImage == null) {
-          cfg.setScale(1.0d);
-          this.mindMapAsImage = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
+        final Graphics2D gfx = (Graphics2D) g.create();
+        MindMapPanel.prepareGraphicsForQuality(gfx);
+        try {
+          if (this.mindMapAsImage == null) {
+            cfg.setScale(1.0d);
+            this.mindMapAsImage = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
+          }
+
+          final double scaleX = (double) paperWidthInPixels / (double) this.mindMapAsImage.getWidth();
+          final double scaleY = (double) paperHeightInPixels / (double) this.mindMapAsImage.getHeight();
+
+          final double selectedScaleFactor = Math.min(scaleX, scaleY);
+
+          final AffineTransform transform = new AffineTransform();
+          transform.scale(selectedScaleFactor, selectedScaleFactor);
+          transform.translate(((double) paperWidthInPixels - (selectedScaleFactor * this.mindMapAsImage.getWidth())) / 2, ((double) paperHeightInPixels - (selectedScaleFactor * this.mindMapAsImage.getHeight())) / 2);
+
+          gfx.drawImage(this.mindMapAsImage, transform, null);
         }
-
-        final double scaleX = (double) paperWidthInPixels / (double) this.mindMapAsImage.getWidth();
-        final double scaleY = (double) paperHeightInPixels / (double) this.mindMapAsImage.getHeight();
-
-        final double selectedScaleFactor = Math.min(scaleX, scaleY);
-
-        final AffineTransform transform = new AffineTransform();
-        transform.scale(selectedScaleFactor, selectedScaleFactor);
-        transform.translate(((double) paperWidthInPixels - (selectedScaleFactor * this.mindMapAsImage.getWidth())) / 2, ((double) paperHeightInPixels - (selectedScaleFactor * this.mindMapAsImage.getHeight())) / 2);
-
-        ((Graphics2D) g).drawImage(this.mindMapAsImage, transform, null);
+        finally {
+          gfx.dispose();
+        }
       }
     };
 
