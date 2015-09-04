@@ -409,6 +409,8 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       @Override
       public void mouseDragged(final MouseEvent e) {
+        scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
+        
         if (!popupMenuActive) {
           if (draggedElementPoint == null && mouseDragSelection == null) {
             final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
@@ -424,6 +426,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
             else {
               draggedElement = elementUnderMouse;
               if (elementUnderMouse.isMoveable()) {
+                selectedTopics.clear();
                 draggedElementPoint = e.getPoint();
                 findDestinationElementForDragged();
                 repaint();

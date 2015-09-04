@@ -56,22 +56,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.Date;
-import java.util.Locale;
 import javax.swing.*;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.Project;
@@ -137,7 +131,8 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     this.mainScrollPane.setViewportView(this.mindMapPanel);
     this.mainScrollPane.setWheelScrollingEnabled(true);
-
+    this.mainScrollPane.setAutoscrolls(true);
+    
     this.setLayout(new BorderLayout(0, 0));
     this.add(this.mainScrollPane, BorderLayout.CENTER);
 
