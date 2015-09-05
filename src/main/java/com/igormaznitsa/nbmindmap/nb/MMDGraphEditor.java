@@ -804,6 +804,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         @Override
         public void actionPerformed(final ActionEvent e) {
           editTextForTopic(topic);
+          mindMapPanel.requestFocus();
         }
       });
 
@@ -815,6 +816,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         @Override
         public void actionPerformed(ActionEvent e) {
           editLinkForTopic(topic);
+          mindMapPanel.requestFocus();
         }
       });
 
@@ -826,6 +828,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         @Override
         public void actionPerformed(ActionEvent e) {
           editTopicLinkForTopic(topic);
+          mindMapPanel.requestFocus();
         }
       });
 
@@ -837,6 +840,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         @Override
         public void actionPerformed(ActionEvent e) {
           editFileLinkForTopic(topic);
+          mindMapPanel.requestFocus();
         }
       });
 

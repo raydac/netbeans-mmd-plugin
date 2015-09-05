@@ -1410,7 +1410,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
       paintChildren(g);
 
-      if (this.draggedElement != null) {
+      if (this.draggedElement != null && this.draggedElementPoint != null) {
         final int px = this.draggedElementPoint.x - ((int) this.draggedElement.getBounds().getWidth()) / 2;
         final int py = this.draggedElementPoint.y - ((int) this.draggedElement.getBounds().getHeight()) / 2;
         gfx.translate(px, py);
