@@ -469,10 +469,11 @@ public final class Topic implements Serializable, Constants {
   }
 
   private void write(final int level, final Writer out) throws IOException {
+    out.append(NEXT_LINE);
     Utils.writeChar(out, '#', level);
     out.append(' ').append(Utils.escapeMarkdownStr(this.text)).append(NEXT_LINE);
     if (!this.attributes.isEmpty()) {
-      out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE); //NOI18N
+      out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE).append(NEXT_LINE); //NOI18N
     }
     for (final Map.Entry<Extra.ExtraType, Extra<?>> e : this.extras.entrySet()) {
       e.getValue().write(out);

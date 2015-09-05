@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.nbmindmap.exporters.Exporters;
 import com.igormaznitsa.nbmindmap.exporters.AbstractMindMapExporter;
+import com.igormaznitsa.nbmindmap.mmgui.AbstractCollapsableElement;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapListener;
 import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
@@ -263,7 +264,10 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   public void onMindMapModelChanged(final MindMapPanel source) {
     try {
       final StringWriter writer = new StringWriter(16384);
-      this.mindMapPanel.getModel().write(writer);
+      
+      final MindMap theMap = this.mindMapPanel.getModel();
+      AbstractCollapsableElement.removeCollapseAttributeFromTopicsWithoutChildren(theMap);
+      theMap.write(writer);
       this.editorSupport.replaceDocumentText(writer.toString());
       this.editorSupport.notifyModified();
     }

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.mmgui;
 
+import com.igormaznitsa.nbmindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.model.Topic;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
@@ -27,7 +28,8 @@ import java.awt.geom.Rectangle2D;
 public abstract class AbstractCollapsableElement extends AbstractElement {
 
   protected final Rectangle2D collapsatorZone = new Rectangle2D.Double();
-
+  public static final String ATTR_COLLAPSED = "collapsed";
+  
   public AbstractCollapsableElement(final Topic model) {
     super(model);
   }
@@ -66,11 +68,11 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public boolean isCollapsed() {
-    return "true".equalsIgnoreCase(this.model.getAttribute("collapsed"));//NOI18N
+    return "true".equalsIgnoreCase(this.model.getAttribute(ATTR_COLLAPSED));//NOI18N
   }
 
   public void setCollapse(final boolean flag) {
-    this.model.setAttribute("collapsed", flag ? "true" : null);//NOI18N
+    this.model.setAttribute(ATTR_COLLAPSED, flag ? "true" : null);//NOI18N
   }
 
   @Override
@@ -296,4 +298,20 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     return result;
   }
 
+  public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map){
+    removeCollapseAttrIfNoChildren(map == null ? null : map.getRoot());
+  }
+  
+  private static void removeCollapseAttrIfNoChildren(final Topic topic){
+    if (topic!=null){
+    if (!topic.hasChildren()){
+      topic.setAttribute(ATTR_COLLAPSED, null);
+    }else{
+      for(final Topic t : topic.getChildren()){
+        removeCollapseAttrIfNoChildren(t);
+      }
+    }
+    }
+  }
+  
 }

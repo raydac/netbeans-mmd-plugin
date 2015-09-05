@@ -27,8 +27,6 @@ import com.igormaznitsa.nbmindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
