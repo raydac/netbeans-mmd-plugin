@@ -24,10 +24,10 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
 @OptionsPanelController.TopLevelRegistration(
-        categoryName = "NB Mind Map",
+        categoryName = "#MMDCfgOptionsPanelController.categoryName",
         iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo32.png",
-        keywords = "mindmap",
-        keywordsCategory = "mindmap",
+        keywords = "#MMDCfgOptionsPanelController.keywords",
+        keywordsCategory = "#MMDCfgOptionsPanelController.keywordsCategory",
         id = "mmd-config-main",
         position = 10000
 )

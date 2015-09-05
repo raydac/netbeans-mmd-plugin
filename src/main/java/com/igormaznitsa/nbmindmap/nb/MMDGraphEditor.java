@@ -89,7 +89,7 @@ import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 @MultiViewElement.Registration(
-        displayName = "Graph",
+        displayName = "#MMDGraphEditor.displayName",
         mimeType = MMDDataObject.MIME,
         persistenceType = PERSISTENCE_NEVER,
         iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",

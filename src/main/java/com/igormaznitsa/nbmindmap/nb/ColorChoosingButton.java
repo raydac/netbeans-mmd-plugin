@@ -18,7 +18,6 @@ package com.igormaznitsa.nbmindmap.nb;
 import com.igormaznitsa.nbmindmap.utils.Logger;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -28,7 +27,6 @@ import java.beans.PropertyEditorManager;
 import javax.swing.DefaultButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 

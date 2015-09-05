@@ -32,8 +32,8 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
-@MIMEResolver.ExtensionRegistration(displayName = "Mind map", mimeType = MMDDataObject.MIME, extension = {MMDDataObject.MMD_EXT})
-@DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "NB Mind-Map", mimeType = MMDDataObject.MIME)
+@MIMEResolver.ExtensionRegistration(displayName = "#MMDDataObject.extensionDisplayName", mimeType = MMDDataObject.MIME, extension = {MMDDataObject.MMD_EXT})
+@DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "#MMDDataObject.displayName", mimeType = MMDDataObject.MIME)
 public class MMDDataObject extends MultiDataObject {
 
   private static final long serialVersionUID = -833567211826863321L;
