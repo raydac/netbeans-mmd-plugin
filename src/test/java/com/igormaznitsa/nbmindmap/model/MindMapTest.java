@@ -48,7 +48,7 @@ public class MindMapTest {
     final MindMap map = new MindMap(new StringReader("lkf\n> test=`Hi`\n> test=`Lo`\n---\n# Hello"));
     assertEquals("Lo",map.getAttribute("test"));
     assertEquals("Hello",map.getRoot().getText());
-  }
+  } 
   
   @Test
   public void testMindMapParse_overridenAttributes_SeveralNewLine() throws Exception {
