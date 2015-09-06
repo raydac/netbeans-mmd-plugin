@@ -126,7 +126,7 @@ public enum NbUtils {
         return new URI(text.trim());
       }
       catch (URISyntaxException ex) {
-        msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
+        msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     }

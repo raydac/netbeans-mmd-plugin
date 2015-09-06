@@ -127,7 +127,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.setRollover(true);
 
     buttonLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/disk16.png"))); // NOI18N
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     org.openide.awt.Mnemonics.setLocalizedText(buttonLoad, bundle.getString("PlainTextEditor.buttonImport")); // NOI18N
     buttonLoad.setToolTipText(bundle.getString("PlainTextEditor.buttonLoad.toolTipText")); // NOI18N
     buttonLoad.setFocusable(false);

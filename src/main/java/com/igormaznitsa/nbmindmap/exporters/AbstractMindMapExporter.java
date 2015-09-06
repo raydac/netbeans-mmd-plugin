@@ -40,17 +40,17 @@ public abstract class AbstractMindMapExporter {
       return null;
     }
     if (file.isDirectory()) {
-      NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("AbstractMindMapExporter.msgErrorItIsDirectory"), file.getAbsolutePath()));
+      NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("AbstractMindMapExporter.msgErrorItIsDirectory"), file.getAbsolutePath()));
       return null;
     }
     if (file.isFile()) {
-      if (!NbUtils.msgConfirmOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("AbstractMindMapExporter.titleSaveAs"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"), file.getAbsolutePath()))) {
+      if (!NbUtils.msgConfirmOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("AbstractMindMapExporter.titleSaveAs"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"), file.getAbsolutePath()))) {
         return null;
       }
     }
     else {
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
-        if (NbUtils.msgConfirmYesNo(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
+        if (NbUtils.msgConfirmYesNo(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
           return new File(file.getParent(), file.getName() + dottedExtension);
         }
       }

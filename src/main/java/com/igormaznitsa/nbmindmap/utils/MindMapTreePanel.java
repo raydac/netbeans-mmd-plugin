@@ -115,7 +115,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel {
     toolBar.setRollover(true);
 
     buttonExpandAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/toggle_expand16.png"))); // NOI18N
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     buttonExpandAll.setText(bundle.getString("MindMapTreePanel.buttonExpandAll.text")); // NOI18N
     buttonExpandAll.setFocusable(false);
     buttonExpandAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

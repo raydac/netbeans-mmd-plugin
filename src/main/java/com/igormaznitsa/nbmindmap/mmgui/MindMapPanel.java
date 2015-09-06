@@ -537,24 +537,24 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
 
     switch (extra.getType()) {
       case FILE: {
-        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipOpenFile")).append(StringEscapeUtils.escapeHtml(((ExtraFile) extra).getAsString()));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindMapPanel.tooltipOpenFile")).append(StringEscapeUtils.escapeHtml(((ExtraFile) extra).getAsString()));
       }
       break;
       case TOPIC: {
         final Topic topic = this.getModel().findTopicForLink((ExtraTopic) extra);
-        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(topic.getText(), 32)));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(topic.getText(), 32)));
       }
       break;
       case LINK: {
-        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraLink) extra).getAsString(), 48)));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraLink) extra).getAsString(), 48)));
       }
       break;
       case NOTE: {
-        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipOpenText")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraNote) extra).getAsString(), 64)));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindMapPanel.tooltipOpenText")).append(StringEscapeUtils.escapeHtml(Utils.makeShortTextVersion(((ExtraNote) extra).getAsString(), 64)));
       }
       break;
       case LINE: {
-        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.tooltipOpenLine")).append(StringEscapeUtils.escapeHtml(((ExtraLine) extra).getValue().toString()));
+        builder.append(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindMapPanel.tooltipOpenLine")).append(StringEscapeUtils.escapeHtml(((ExtraLine) extra).getValue().toString()));
       }
       break;
       default: {
@@ -1476,7 +1476,7 @@ public final class MindMapPanel extends JPanel implements Configuration.Configur
       return false;
     }
 
-    final Boolean cloneFullTree = NbUtils.msgConfirmYesNoCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.titleCloneTopicRequest"), java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindMapPanel.cloneTopicSubtreeRequestMsg"));
+    final Boolean cloneFullTree = NbUtils.msgConfirmYesNoCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindMapPanel.titleCloneTopicRequest"), java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindMapPanel.cloneTopicSubtreeRequestMsg"));
     if (cloneFullTree == null) {
       return false;
     }

@@ -214,7 +214,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     final String text = this.editorSupport.getDocumentText();
     if (text == null) {
-      this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantLoadDocument"));
+      this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.updateModel.cantLoadDocument"));
     }
     else {
       try {
@@ -222,11 +222,11 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       }
       catch (IllegalArgumentException ex) {
         Logger.warn("Can't detect mind map"); //NOI18N
-        this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantDetectMMap"));
+        this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.updateModel.cantDetectMMap"));
       }
       catch (IOException ex) {
         Logger.error("Can't parse mind map text", ex); //NOI18N
-        this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.updateModel.cantParseDoc"));
+        this.mindMapPanel.setErrorText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.updateModel.cantParseDoc"));
       }
     }
   }
@@ -255,7 +255,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       result = true;
     }
     else {
-      result = NbUtils.msgConfirmYesNo(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
+      result = NbUtils.msgConfirmYesNo(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
   }
@@ -360,14 +360,14 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
             else {
               fileObj = this.editorSupport.makeRelativePathToProjectRoot(uri.getPath());
               if (fileObj == null) {
-                NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), uri.getPath()));
+                NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), uri.getPath()));
                 return;
               }
             }
           }
           catch (Exception ex) {
             Logger.error("onClickExtra#FILE", ex); //NOI18N
-            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), extra.getValue().toString()));
+            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), extra.getValue().toString()));
             return;
           }
 
@@ -386,7 +386,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         case LINK: {
           final URI uri = ((ExtraLink) extra).getValue();
           if (!NbUtils.browseURI(uri, NbUtils.getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
-            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
           }
         }
         break;
@@ -398,7 +398,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
           final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic) extra);
           if (theTopic == null) {
             // not presented
-            NbUtils.msgWarn(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+            NbUtils.msgWarn(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
           }
           else {
             // detected
@@ -483,7 +483,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         }
 
         if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
-          if (!NbUtils.msgConfirmOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+          if (!NbUtils.msgConfirmOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
             return;
           }
         }
@@ -576,7 +576,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     final String path;
 
     if (file == null) {
-      path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectDir, null);
+      path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectDir, null);
     }
     else {
       final URI uri = file.getValue();
@@ -586,14 +586,14 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       }
       else {
         if (projectDir == null) {
-          NbUtils.msgWarn(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
+          NbUtils.msgWarn(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
           origPath = Utilities.toFile(uri).getAbsolutePath();
         }
         else {
           origPath = Utilities.toFile(Utilities.toURI(projectDir).resolve(uri)).getAbsolutePath();
         }
       }
-      path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectDir, origPath);
+      path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectDir, origPath);
     }
 
     if (path != null) {
@@ -622,7 +622,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
             }
             catch (URISyntaxException ex) {
               Logger.error("Can't convert file path to URI", ex); //NOI18N
-              NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantConvertFilePath"), relativePath));
+              NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantConvertFilePath"), relativePath));
             }
           }
 
@@ -634,7 +634,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
           }
         }
         else {
-          NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path));
+          NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path));
         }
       }
     }
@@ -650,7 +650,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     if (link == null) {
       final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
-      if (NbUtils.plainMessageOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), panel)) {
+      if (NbUtils.plainMessageOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), panel)) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
@@ -662,7 +662,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     }
     else {
       final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
-      if (NbUtils.plainMessageOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+      if (NbUtils.plainMessageOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
@@ -691,11 +691,11 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     final URI result;
     if (link == null) {
       // create new
-      result = NbUtils.editURI(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
+      result = NbUtils.editURI(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
     }
     else {
       // edit
-      result = NbUtils.editURI(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
+      result = NbUtils.editURI(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
     }
     if (result != null) {
       if (result == NbUtils.EMPTY_URI) {
@@ -715,11 +715,11 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     final String result;
     if (note == null) {
       // create new
-      result = NbUtils.editText(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
+      result = NbUtils.editText(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
     }
     else {
       // edit
-      result = NbUtils.editText(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), note.getValue());
+      result = NbUtils.editText(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), note.getValue());
     }
     if (result != null) {
       if (result.isEmpty()) {
@@ -739,7 +739,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     final JPopupMenu result = new JPopupMenu();
 
     if (element != null) {
-      final JMenuItem editText = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miEditText"), Icons.EDITTEXT.getIcon());
+      final JMenuItem editText = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miEditText"), Icons.EDITTEXT.getIcon());
       editText.addActionListener(new ActionListener() {
 
         @Override
@@ -750,7 +750,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
       result.add(editText);
 
-      final JMenuItem addChild = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miAddChild"), Icons.ADD.getIcon());
+      final JMenuItem addChild = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miAddChild"), Icons.ADD.getIcon());
       addChild.addActionListener(new ActionListener() {
 
         @Override
@@ -763,7 +763,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     }
 
     if (element != null || this.mindMapPanel.hasSelectedTopics()) {
-      final JMenuItem deleteItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miRemoveTheTopic"), Icons.DELETE.getIcon());
+      final JMenuItem deleteItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miRemoveTheTopic"), Icons.DELETE.getIcon());
       deleteItem.addActionListener(new ActionListener() {
 
         @Override
@@ -783,7 +783,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     if (element != null || this.mindMapPanel.hasOnlyTopicSelected()) {
       final Topic theTopic = this.mindMapPanel.getFirstSelected() == null ? element.getModel() : this.mindMapPanel.getFirstSelected();
       if (theTopic.getParent() != null) {
-        final JMenuItem cloneItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miCloneTheTopic"), Icons.CLONE.getIcon());
+        final JMenuItem cloneItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miCloneTheTopic"), Icons.CLONE.getIcon());
         cloneItem.addActionListener(new ActionListener() {
 
           @Override
@@ -803,7 +803,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     if (element != null) {
       final Topic topic = element.getModel();
 
-      final JMenuItem editText = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miEditNote") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miAddNote"), Icons.NOTE.getIcon());
+      final JMenuItem editText = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miEditNote") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miAddNote"), Icons.NOTE.getIcon());
       editText.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(final ActionEvent e) {
@@ -814,7 +814,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
       result.add(editText);
 
-      final JMenuItem editLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miEditURI") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miAddURI"), Icons.URL.getIcon());
+      final JMenuItem editLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miEditURI") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miAddURI"), Icons.URL.getIcon());
       editLink.addActionListener(new ActionListener() {
 
         @Override
@@ -826,7 +826,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
       result.add(editLink);
 
-      final JMenuItem editTopicLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.TOPIC) ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miEditTransition") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miAddTransition"), Icons.TOPIC.getIcon());
+      final JMenuItem editTopicLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.TOPIC) ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miEditTransition") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miAddTransition"), Icons.TOPIC.getIcon());
       editTopicLink.addActionListener(new ActionListener() {
 
         @Override
@@ -838,7 +838,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
       result.add(editTopicLink);
 
-      final JMenuItem editFileLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.FILE) ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miEditFile") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miAddFile"), Icons.FILE.getIcon());
+      final JMenuItem editFileLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.FILE) ? java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miEditFile") : java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miAddFile"), Icons.FILE.getIcon());
       editFileLink.addActionListener(new ActionListener() {
 
         @Override
@@ -855,7 +855,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       result.add(new JSeparator());
     }
 
-    final JMenuItem expandAll = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miExpandAll"), Icons.EXPANDALL.getIcon());
+    final JMenuItem expandAll = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miExpandAll"), Icons.EXPANDALL.getIcon());
     expandAll.addActionListener(new ActionListener() {
 
       @Override
@@ -865,7 +865,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     });
 
-    final JMenuItem collapseAll = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miCollapseAll"), Icons.COLLAPSEALL.getIcon());
+    final JMenuItem collapseAll = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miCollapseAll"), Icons.COLLAPSEALL.getIcon());
     collapseAll.addActionListener(new ActionListener() {
 
       @Override
@@ -881,7 +881,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     if (result.getComponentCount() > 0) {
       result.add(new JSeparator());
     }
-    final JMenu exportMenu = new JMenu(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miExportMapAs"));
+    final JMenu exportMenu = new JMenu(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miExportMapAs"));
     exportMenu.setIcon(Icons.EXPORT.getIcon());
     for (final Exporters e : Exporters.values()) {
       final AbstractMindMapExporter exp = e.getExporter();
@@ -896,7 +896,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
           }
           catch (Exception ex) {
             Logger.error("Error during map export", ex); //NOI18N
-            NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
+            NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
           }
         }
       });
@@ -906,7 +906,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     result.add(new JSeparator());
 
-    JMenuItem optionsMenu = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miOptions"), Icons.OPTIONS.getIcon());
+    JMenuItem optionsMenu = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miOptions"), Icons.OPTIONS.getIcon());
     optionsMenu.addActionListener(new ActionListener() {
 
       @Override
@@ -917,12 +917,12 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     result.add(optionsMenu);
 
-    JMenuItem infoMenu = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.miAbout"), Icons.INFO.getIcon());
+    JMenuItem infoMenu = new JMenuItem(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.miAbout"), Icons.INFO.getIcon());
     infoMenu.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());
+        NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());
       }
     });
 

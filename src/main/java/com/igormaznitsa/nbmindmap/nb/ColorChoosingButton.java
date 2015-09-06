@@ -56,7 +56,7 @@ public class ColorChoosingButton extends JButton {
 
         final DialogDescriptor descriptor = new DialogDescriptor(
                 editor.getCustomEditor(),
-                String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("ColorChoosingButton.dialogTitle"), getText())
+                String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("ColorChoosingButton.dialogTitle"), getText())
         );
 
         DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);

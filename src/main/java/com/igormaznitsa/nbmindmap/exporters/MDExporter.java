@@ -226,7 +226,7 @@ public class MDExporter extends AbstractMindMapExporter {
 
     final File home = new File(System.getProperty("user.home"));//NOI18N
     File fileToSaveImage = new FileChooserBuilder("user-dir")//NOI18N
-            .setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.saveDialogTitle")).setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
+            .setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MDExporter.saveDialogTitle")).setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
 
       @Override
       public boolean accept(File f) {
@@ -235,9 +235,9 @@ public class MDExporter extends AbstractMindMapExporter {
 
       @Override
       public String getDescription() {
-        return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.fileFilterName");
+        return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MDExporter.fileFilterName");
       }
-    }).setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.saveButtonText")).showSaveDialog();
+    }).setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MDExporter.saveButtonText")).showSaveDialog();
 
     fileToSaveImage = checkFile(fileToSaveImage, ".MD");//NOI18N
 
@@ -248,12 +248,12 @@ public class MDExporter extends AbstractMindMapExporter {
 
   @Override
   public String getName() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.exporterName");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MDExporter.exporterName");
   }
 
   @Override
   public String getReference() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MDExporter.exporterReference");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MDExporter.exporterReference");
   }
 
   @Override

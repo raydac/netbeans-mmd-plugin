@@ -230,7 +230,7 @@ public class FreeMindExporter extends AbstractMindMapExporter {
 
     final File home = new File(System.getProperty("user.home"));//NOI18N
     File fileToSaveImage = new FileChooserBuilder("user-dir").//NOI18N
-            setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("FreeMindExporter.saveDialogTitle")).setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
+            setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("FreeMindExporter.saveDialogTitle")).setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
 
               @Override
               public boolean accept(File f) {
@@ -239,9 +239,9 @@ public class FreeMindExporter extends AbstractMindMapExporter {
 
               @Override
               public String getDescription() {
-                return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("FreeMindExporter.filterDescription");
+                return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("FreeMindExporter.filterDescription");
               }
-            }).setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("FreeMindExporter.saveText")).showSaveDialog();
+            }).setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("FreeMindExporter.saveText")).showSaveDialog();
 
     fileToSaveImage = checkFile(fileToSaveImage, ".mm");//NOI18N
 
@@ -256,12 +256,12 @@ public class FreeMindExporter extends AbstractMindMapExporter {
 
   @Override
   public String getName() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("FreeMindExporter.exporterName");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("FreeMindExporter.exporterName");
   }
 
   @Override
   public String getReference() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("FreeMindExporter.exporterReference");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("FreeMindExporter.exporterReference");
   }
 
   @Override

@@ -98,7 +98,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
     setLayout(new java.awt.BorderLayout());
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel3.border.title"))); // NOI18N
 
     org.openide.awt.Mnemonics.setLocalizedText(jLabel2, bundle.getString("MMDCfgPanel.jLabel2.text")); // NOI18N
@@ -793,7 +793,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonFontActionPerformed
 
   private void buttonAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAboutActionPerformed
-    NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
+    NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
   }//GEN-LAST:event_buttonAboutActionPerformed
 
   private void checkboxUseInsideBrowserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxUseInsideBrowserActionPerformed

@@ -74,12 +74,12 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
 
   @Override
   public String getDisplayName() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDNavigator.displayName");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDNavigator.displayName");
   }
 
   @Override
   public String getDisplayHint() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MMDNavigator.displayHint");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDNavigator.displayHint");
   }
 
   @Override

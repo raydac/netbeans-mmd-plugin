@@ -67,7 +67,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
     labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo.png"))); // NOI18N
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     org.openide.awt.Mnemonics.setLocalizedText(textLabel, bundle.getString("AboutText")); // NOI18N
     textLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
     textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);

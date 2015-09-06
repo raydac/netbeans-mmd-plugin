@@ -293,7 +293,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
 
     final File home = new File(System.getProperty("user.home"));//NOI18N
     File fileToSaveImage = new FileChooserBuilder("user-dir")//NOI18N
-            .setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindmupExporter.SaveDialog.title")).setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
+            .setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindmupExporter.SaveDialog.title")).setDefaultWorkingDirectory(home).setFilesOnly(true).setFileFilter(new FileFilter() {
 
               @Override
               public boolean accept(File f) {
@@ -302,9 +302,9 @@ public class MindmupExporter extends AbstractMindMapExporter {
 
               @Override
               public String getDescription() {
-                return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindmupExporter.fileFilterDescription");
+                return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindmupExporter.fileFilterDescription");
               }
-            }).setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindmupExporter.saveDialog.approveButton")).showSaveDialog();
+            }).setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindmupExporter.saveDialog.approveButton")).showSaveDialog();
 
     fileToSaveImage = checkFile(fileToSaveImage, ".mup");//NOI18N
 
@@ -315,12 +315,12 @@ public class MindmupExporter extends AbstractMindMapExporter {
 
   @Override
   public String getName() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindmupExporter.exporterName");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindmupExporter.exporterName");
   }
 
   @Override
   public String getReference() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("MindmupExporter.exporterReference");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MindmupExporter.exporterReference");
   }
 
   @Override

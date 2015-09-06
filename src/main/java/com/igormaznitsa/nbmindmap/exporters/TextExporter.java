@@ -209,10 +209,10 @@ public class TextExporter extends AbstractMindMapExporter {
 
     final File home = new File(System.getProperty("user.home"));//NOI18N
     File fileToSaveText = new FileChooserBuilder("user-dir")//NOI18N
-            .setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("TextExporter.saveDialogTitle"))
+            .setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("TextExporter.saveDialogTitle"))
             .setDefaultWorkingDirectory(home)
             .setFilesOnly(true)
-            .setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("TextExporter.saveDialogSaveButtonTxt"))
+            .setApproveText(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("TextExporter.saveDialogSaveButtonTxt"))
             .setFileFilter(new FileFilter() {
 
       @Override
@@ -222,7 +222,7 @@ public class TextExporter extends AbstractMindMapExporter {
 
       @Override
       public String getDescription() {
-        return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("TextExporter.fileFilterDescription");
+        return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("TextExporter.fileFilterDescription");
       }
     }).showSaveDialog();
 
@@ -235,12 +235,12 @@ public class TextExporter extends AbstractMindMapExporter {
 
   @Override
   public String getName() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("TextExporter.exporterName");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("TextExporter.exporterName");
   }
 
   @Override
   public String getReference() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle").getString("TextExporter.exporterReference");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("TextExporter.exporterReference");
   }
 
   @Override
