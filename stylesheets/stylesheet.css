@@ -53,7 +53,9 @@ table {
   border-spacing: 0;
   border-collapse: collapse;
 }
-
+p {
+  text-align: justify;
+}
 /* LAYOUT STYLES */
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, serif;
