@@ -7,8 +7,8 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>nbm</packaging>
 
-  <name>NB MindMap plugin</name>
-  <description>NetBeans plugin to show and edit mind map structured data saved in markdown compatible text format.</description>
+  <name>NB Mind Map Editor plugin</name>
+  <description>NetBeans editor plugin to create and edit mind maps within NetBeans IDE projects.</description>
 
   <url>https://github.com/raydac/netbeans-mmd-plugin</url>
 
