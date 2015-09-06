@@ -352,22 +352,22 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       switch (extra.getType()) {
         case FILE: {
           final FileObject fileObj;
+          final URI uri = (URI) extra.getValue();
           try {
-            final URI uri = (URI) extra.getValue();
             if (uri.isAbsolute()) {
               fileObj = FileUtil.toFileObject(new File(uri));
             }
             else {
               fileObj = this.editorSupport.makeRelativePathToProjectRoot(uri.getPath());
               if (fileObj == null) {
-                NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), uri.getPath()));
+                NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), uri.toString()));
                 return;
               }
             }
           }
           catch (Exception ex) {
             Logger.error("onClickExtra#FILE", ex); //NOI18N
-            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), extra.getValue().toString()));
+            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), uri.toString()));
             return;
           }
 
@@ -378,8 +378,9 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
               openable.open();
             }
           }
-          catch (DataObjectNotFoundException ex) {
-            Logger.error("Cant't find data object", ex); //NOI18N
+          catch (Exception ex) {
+            Logger.error("Cant't find or open data object", ex); //NOI18N
+            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickExtra.cantFindFileObj"),uri.toString()));
           }
         }
         break;
