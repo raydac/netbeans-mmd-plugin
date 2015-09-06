@@ -49,12 +49,12 @@ public final class PlainTextEditor extends javax.swing.JPanel {
 
     @Override
     public boolean accept(final File f) {
-      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".txt");
+      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".txt"); //NOI18N
     }
 
     @Override
     public String getDescription() {
-      return "Text files (*,txt)";
+      return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.fileFilter.description");
     }
   };
   
@@ -62,7 +62,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     initComponents();
 
     editor = new JEditorPane();
-    final EditorKit kit = CloneableEditorSupport.getEditorKit("text/plain");
+    final EditorKit kit = CloneableEditorSupport.getEditorKit("text/plain"); //NOI18N
     editor.setEditorKit(kit);
 
     this.doc = Utilities.getDocument(editor);
@@ -89,7 +89,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
       return this.doc.getText(0, this.doc.getLength());
     }
     catch (BadLocationException e) {
-      Logger.error("Can't get text", e);
+      Logger.error("Can't get text", e); //NOI18N
       return null;
     }
   }
@@ -99,7 +99,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
       this.doc.replace(0, 0, text, null);
     }
     catch (BadLocationException ex) {
-      Logger.error("Can't set text", ex);
+      Logger.error("Can't set text", ex); //NOI18N
       throw new RuntimeException(ex);
     }    
   }
@@ -196,27 +196,29 @@ public final class PlainTextEditor extends javax.swing.JPanel {
   }// </editor-fold>//GEN-END:initComponents
 
   private void buttonLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadActionPerformed
-    final File home = new File(System.getProperty("user.home"));
-    final File toOpen = new FileChooserBuilder("user-home-dir").setTitle("Open UTF8 encoded text file").
+    final File home = new File(System.getProperty("user.home")); //NOI18N
+    final File toOpen = new FileChooserBuilder("user-home-dir"). //NOI18N
+            setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonLoadActionPerformed.title")).
             addFileFilter(TEXT_FILE_FILTER).setFileFilter(TEXT_FILE_FILTER).
             setFilesOnly(true).
             setDefaultWorkingDirectory(home).
             showOpenDialog();
     if (toOpen!=null){
       try {
-        final String text = FileUtils.readFileToString(toOpen, "UTF-8");
+        final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
         setText(text);
       }
       catch (Exception ex) {
-        Logger.error("Error during text file loading", ex);
-        NbUtils.msgError("Can't read text file for error!");
+        Logger.error("Error during text file loading", ex); //NOI18N
+        NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
   }//GEN-LAST:event_buttonLoadActionPerformed
 
   private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-    final File home = new File(System.getProperty("user.home"));
-    final File toSave = new FileChooserBuilder("user-home-dir").setTitle("Open UTF8 encoded text file").
+    final File home = new File(System.getProperty("user.home")); //NOI18N
+    final File toSave = new FileChooserBuilder("user-home-dir").
+            setTitle(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle")).
             addFileFilter(TEXT_FILE_FILTER).setFileFilter(TEXT_FILE_FILTER).
             setFilesOnly(true).
             setDefaultWorkingDirectory(home).
@@ -224,11 +226,11 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     if (toSave != null) {
       try {
         final String text = getText();
-        FileUtils.writeStringToFile(toSave, text, "UTF-8");
+        FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
       }
       catch (Exception ex) {
-        Logger.error("Error during text file saving", ex);
-        NbUtils.msgError("Can't save text file for error!");
+        Logger.error("Error during text file saving", ex); //NOI18N
+        NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
   }//GEN-LAST:event_buttonSaveActionPerformed
@@ -247,13 +249,13 @@ public final class PlainTextEditor extends javax.swing.JPanel {
       // no text data in clipboard
     }
     catch (IOException ex) {
-      Logger.error("Error during paste from clipboard", ex);
+      Logger.error("Error during paste from clipboard", ex); //NOI18N
     }
 
   }//GEN-LAST:event_buttonPasteActionPerformed
 
   private void buttonClearAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearAllActionPerformed
-    this.editor.setText("");
+    this.editor.setText(""); //NOI18N
   }//GEN-LAST:event_buttonClearAllActionPerformed
 
 
