@@ -59,16 +59,18 @@ body {
   font-family: 'Helvetica Neue', Helvetica, Arial, serif;
   font-size: 1em;
   line-height: 1.5;
-  color: #ffffff;
+  color: #d1dfdd;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
   background: #617b94;  /*url(../images/body-bg.png) 0 0 repeat;*/
 }
 
 a {
-  color: #d5000d;
+  color: #CCE6FF;
 }
+
 a:hover {
-  color: #c5000c;
+  color: #CCFFFF;
+  text-decoration: underline;
 }
 
 header {
@@ -208,12 +210,12 @@ ul, ol, dl {
 /* COMMON STYLES */
 
 hr {
-  height: 1px;
+/*  height: 1px;
   padding-bottom: 1em;
   margin-top: 1em;
   line-height: 1px;
   background: transparent url('../images/hr.png') 50% 0 no-repeat;
-  border: none;
+  border: none;*/
 }
 
 strong {
@@ -250,6 +252,7 @@ form {
 
 h1 {
   font-size: 32px;
+  color: #ffffff;
 }
 
 h2 {
@@ -319,10 +322,10 @@ dl dt {
 }
 
 footer {
-  padding-top: 20px;
+  /*padding-top: 20px;*/
+  /*margin-top: 40px;*/
   padding-bottom: 30px;
-  margin-top: 40px;
-  font-size: 13px;
+  font-size: 12px;
   color: #A3A3A3;
   background: transparent url('../images/hr.png') 0 0 no-repeat;
 }
