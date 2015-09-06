@@ -18,11 +18,14 @@
       <div class="inner">
 
         <header>
+          <!-- 
           <h1>NetBeans Mind Maps</h1>
           <h2>Plugin for NetBeans to work with mind maps</h2>
+          -->
         </header>
 
         <section id="downloads" class="clearfix">
+          <p><img alt="NetBeans Mind Maps" src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png">  </p>
           <a href="https://github.com/raydac/netbeans-mmd-plugin/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
           <a href="https://github.com/raydac/netbeans-mmd-plugin/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
           <a href="https://github.com/raydac/netbeans-mmd-plugin" id="view-on-github" class="button"><span>View on GitHub</span></a>
@@ -31,28 +34,26 @@
         <hr>
 
         <section id="main_content">
-          <p><img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png" alt="Banner">  </p>
+          <h1>
+            <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
 
-<h1>
-<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
+          <p>The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and <a href="https://en.wikipedia.org/wiki/Mind_map">a mind map diagram</a> is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  </p>
 
-<p>The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and <a href="https://en.wikipedia.org/wiki/Mind_map">a mind map diagram</a> is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  </p>
+          <h1>
+            <a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation</h1>
 
-<h1>
-<a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation</h1>
+          <p>Because my main programming tool is <a href="https://netbeans.org/">NetBeans IDE</a>, I have developed plugin for the IDE. It is compatible with Java 1.6+ and NetBeans 7.4+.<br>
+            <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshot1.png" alt="Screenshot">  </p>
 
-<p>Because my main programming tool is <a href="https://netbeans.org/">NetBeans IDE</a>, I have developed plugin for the IDE. It is compatible with Java 1.6+ and NetBeans 7.4+.<br>
-<img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshot1.png" alt="Screenshot">  </p>
+          <h1>
+            <a id="key-features" class="anchor" href="#key-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Key features</h1>
 
-<h1>
-<a id="key-features" class="anchor" href="#key-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Key features</h1>
+          <h2>
+            <a id="data-format" class="anchor" href="#data-format" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data format</h2>
 
-<h2>
-<a id="data-format" class="anchor" href="#data-format" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data format</h2>
+          <p>The Plugin keeps all mind map information in single UTF8 encoded plain text file formed in markdown compatible format, so the file can be easily read and interpret and without the plugin.  </p>
 
-<p>The Plugin keeps all mind map information in single UTF8 encoded plain text file formed in markdown compatible format, so the file can be easily read and interpret and without the plugin.  </p>
-
-<pre><code>Mind Map generated by NB MindMap plugin   
+          <pre><code>Mind Map generated by NB MindMap plugin   
 &gt; __version__=`1.0`
 ---
 
@@ -73,66 +74,71 @@
 &lt;pre&gt;14F9D4CD31DA&lt;/pre&gt;
 </code></pre>
 
-<h2>
-<a id="new-mind-map-creation" class="anchor" href="#new-mind-map-creation" aria-hidden="true"><span class="octicon octicon-link"></span></a>New mind map creation</h2>
+          <h2>
+            <a id="new-mind-map-creation" class="anchor" href="#new-mind-map-creation" aria-hidden="true"><span class="octicon octicon-link"></span></a>New mind map creation</h2>
 
-<p>The Plugin creates new mind map just within project folders through the standard NetBeans new file wizard, just start the <strong>New File</strong> wizard and select the <strong>Other</strong> category and you will see the <strong>NB Mind-map</strong> record in the <strong>File Types:</strong> list. Select the <strong>NB Mind-map</strong> and press <strong>Next&gt;</strong> in the wizard.<br>
-<img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/newfiledialog.png" alt="New file wizard">  </p>
+          <p>The Plugin creates new mind map just within project folders through the standard NetBeans new file wizard, just start the <strong>New File</strong> wizard and select the <strong>Other</strong> category and you will see the <strong>NB Mind-map</strong> record in the <strong>File Types:</strong> list. Select the <strong>NB Mind-map</strong> and press <strong>Next&gt;</strong> in the wizard.<br>
+            <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/newfiledialog.png" alt="New file wizard">  </p>
 
-<h2>
-<a id="work-with-mind-maps" class="anchor" href="#work-with-mind-maps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Work with mind maps</h2>
+          <h2>
+            <a id="work-with-mind-maps" class="anchor" href="#work-with-mind-maps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Work with mind maps</h2>
 
-<p>Mind maps are opened in IDE as documents with graphic interface and the plugin doesn't add any new actions into IDE menu so all operations over mind maps you can make through the document pop-up menu. The Pop-up menu is formed for the current document state and context.<br>
-<img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/popup.png" alt="Screenshot">  </p>
+          <p>Mind maps are opened in IDE as documents with graphic interface and the plugin doesn't add any new actions into IDE menu so all operations over mind maps you can make through the document pop-up menu. The Pop-up menu is formed for the current document state and context.<br>
+            <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/popup.png" alt="Screenshot">  </p>
 
-<h2>
-<a id="move-topics" class="anchor" href="#move-topics" aria-hidden="true"><span class="octicon octicon-link"></span></a>Move topics</h2>
+          <h2>
+            <a id="move-topics" class="anchor" href="#move-topics" aria-hidden="true"><span class="octicon octicon-link"></span></a>Move topics</h2>
 
-<p>All manipulations over topic order and its position in the map hierarchy can be made only through mouse Drag&amp;Drop operations (keep in mind that only one topic can be moved in the same time).<br>
-<img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/dragdroptopic.png" alt="Screenshot">  </p>
+          <p>All manipulations over topic order and its position in the map hierarchy can be made only through mouse Drag&amp;Drop operations (keep in mind that only one topic can be moved in the same time).<br>
+            <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/dragdroptopic.png" alt="Screenshot">  </p>
 
-<h2>
-<a id="change-look-and-feel-of-mind-maps" class="anchor" href="#change-look-and-feel-of-mind-maps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Change look and feel of mind maps</h2>
+          <h2>
+            <a id="change-look-and-feel-of-mind-maps" class="anchor" href="#change-look-and-feel-of-mind-maps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Change look and feel of mind maps</h2>
 
-<p>You can tune most of graphic parameters for mind map rendering through the IDE <strong>Options</strong> (or just click <strong>Options</strong> in the pop-up menu).<br>
-<img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/optionspanel.png" alt="Screenshot">  </p>
+          <p>You can tune most of graphic parameters for mind map rendering through the IDE <strong>Options</strong> (or just click <strong>Options</strong> in the pop-up menu).<br>
+            <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/optionspanel.png" alt="Screenshot">  </p>
 
-<h2>
-<a id="export-mind-map-data" class="anchor" href="#export-mind-map-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Export mind map data</h2>
+          <h2>
+            <a id="export-mind-map-data" class="anchor" href="#export-mind-map-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Export mind map data</h2>
 
-<p>Today it is very important to have way to export data to another formats to use the knowledge in another tools. The Plugin supports several formats to export data:  </p>
+          <p>Today it is very important to have way to export data to another formats to use the knowledge in another tools. The Plugin supports several formats to export data:  </p>
 
-<ul>
-<li> <strong>Plain text format</strong> - just plain UTF8 encoded format.</li>
-<li> <strong>Markdown format</strong> - UTF8 encoded specialized text format, it is compatible with Markdown used by GitHub.</li>
-<li> <strong>FreeMind map</strong> - XML based format for <a href="http://freemind.sourceforge.net/">the FreeMind editor</a>, a popular mind map editing tool, also the format is supported for export by <a href="https://www.xmind.net/">X-Mind editor</a>.</li>
-<li> <strong>Mindmup map</strong> - JSON based format for <a href="https://www.mindmup.com">the Mindmup online editor</a>.</li>
-<li> <strong>PNG image</strong> - just standard PNG image files.</li>
-</ul>
+          <ul>
+            <li> <strong>Plain text format</strong> - just plain UTF8 encoded format.</li>
+            <li> <strong>Markdown format</strong> - UTF8 encoded specialized text format, it is compatible with Markdown used by GitHub.</li>
+            <li> <strong>FreeMind map</strong> - XML based format for <a href="http://freemind.sourceforge.net/">the FreeMind editor</a>, a popular mind map editing tool, also the format is supported for export by <a href="https://www.xmind.net/">X-Mind editor</a>.</li>
+            <li> <strong>Mindmup map</strong> - JSON based format for <a href="https://www.mindmup.com">the Mindmup online editor</a>.</li>
+            <li> <strong>PNG image</strong> - just standard PNG image files.</li>
+          </ul>
 
-<h2>
-<a id="content-alowed-in-mind-maps" class="anchor" href="#content-alowed-in-mind-maps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Content alowed in mind maps</h2>
+          <h2>
+            <a id="content-alowed-in-mind-maps" class="anchor" href="#content-alowed-in-mind-maps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Content alowed in mind maps</h2>
 
-<p>Mainly you can keep short texts in your mind maps as topic names but sometime it is useful to keep and another information, the plugin allows to keep below listed information assets:</p>
+          <p>Mainly you can keep short texts in your mind maps as topic names but sometime it is useful to keep and another information, the plugin allows to keep below listed information assets:</p>
 
-<ul>
-<li> <strong>Short text</strong> - short text in one or two lines as topic name, mainly used as id for the topic.</li>
-<li> <strong>Long text</strong> - long text information which can be opened and edited in special editor.</li>
-<li> <strong>URL link</strong> - just URL link to be opened in browser</li>
-<li> <strong>File link</strong> - link to a file, <strong>the file will be opened within IDE as a document</strong>
-</li>
-<li> <strong>Transition</strong> - link to another topic in the same mind map, it allows to make some navigation in very big mind maps</li>
-</ul>
+          <ul>
+            <li> <strong>Short text</strong> - short text in one or two lines as topic name, mainly used as id for the topic.</li>
+            <li> <strong>Long text</strong> - long text information which can be opened and edited in special editor.</li>
+            <li> <strong>URL link</strong> - just URL link to be opened in browser</li>
+            <li> <strong>File link</strong> - link to a file, <strong>the file will be opened within IDE as a document</strong>
+            </li>
+            <li> <strong>Transition</strong> - link to another topic in the same mind map, it allows to make some navigation in very big mind maps</li>
+          </ul>
 
-<p>You can add and edit new toipic content through the maind map pop-up menu and if you want remove some content then just open editor for the content and remove all text information.</p>
+          <p>You can add and edit new toipic content through the maind map pop-up menu and if you want remove some content then just open editor for the content and remove all text information.</p>
         </section>
 
+        <h2>
+          <a id="donation" class="anchor" href="#donation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Donation</h2>
+
+        <p>If you like the project and want to support its author, you could make some donation</p>
+        <p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2" target="_blank"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donation button"></a></p>
         <footer>
-          NetBeans Mind Maps is maintained by <a href="https://github.com/raydac">raydac</a><br>
+          NetBeans Mind Maps is maintained by <a href="https://github.com/raydac">Igor Maznitsa</a><br>
           This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
         </footer>
 
-        
+
       </div>
     </div>
   </body>
