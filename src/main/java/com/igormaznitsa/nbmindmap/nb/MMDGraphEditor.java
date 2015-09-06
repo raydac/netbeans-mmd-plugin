@@ -78,7 +78,6 @@ import org.netbeans.spi.print.PrintProvider;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
-import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.CloneableEditor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
@@ -912,7 +911,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        OptionsDisplayer.getDefault().open("mmd-config-main"); //NOI18N
+        OptionsDisplayer.getDefault().open("nb-mmd-config-main"); //NOI18N
       }
     });
 

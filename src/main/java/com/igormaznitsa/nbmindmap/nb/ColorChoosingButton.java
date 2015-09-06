@@ -30,7 +30,7 @@ import javax.swing.JButton;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 
-public class ColorChoosingButton extends JButton {
+public final class ColorChoosingButton extends JButton {
 
   private static final long serialVersionUID = -354752410805059103L;
   private Color value = null;

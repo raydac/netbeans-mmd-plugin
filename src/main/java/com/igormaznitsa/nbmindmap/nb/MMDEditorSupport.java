@@ -195,7 +195,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
 
     private static final long serialVersionUID = 6101101548072950629L;
 
-    private MMDDataObject dataObj;
+    private final MMDDataObject dataObj;
 
     public MMDDataEnv(final MMDDataObject obj) {
       super(obj);
