@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Layer: com/igormaznitsa/nbmindmap/layer.xml
-OpenIDE-Module-Localizing-Bundle: com/igormaznitsa/nbmindmap/Bundle.properties
-
