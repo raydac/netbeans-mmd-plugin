@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_formBundle" type="java.lang.String" value="com/igormaznitsa/nbmindmap/i18n/Bundle"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-77,0,0,2,-19"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel6">
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="jPanel5" max="32767" attributes="0"/>
+                          <Component id="jPanel1" max="32767" attributes="0"/>
+                          <Component id="jPanel3" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jPanel4" alignment="0" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                          <Component id="buttonAbout" min="-2" pref="137" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jPanel5" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="jPanel2" min="-2" pref="629" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+                              <Component id="buttonAbout" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel3">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Connector and collapsator options">
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jPanel3.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </TitledBorder>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Component id="colorChooserConnectorColor" linkSize="4" min="-2" pref="183" max="-2" attributes="0"/>
+                              <Component id="colorChooserCollapsatorBorder" linkSize="4" alignment="1" max="32767" attributes="0"/>
+                              <Component id="colorChooserCollapsatorBackground" linkSize="4" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jLabel5" alignment="1" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="spinnerCollapsatorSize" linkSize="2" min="-2" pref="151" max="-2" attributes="0"/>
+                                      <Component id="spinnerCollapsatorWidth" linkSize="2" min="-2" pref="151" max="-2" attributes="0"/>
+                                      <Component id="spinnerConnectorWidth" linkSize="2" alignment="0" min="-2" pref="158" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel2" linkSize="10" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerConnectorWidth" linkSize="10" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="colorChooserConnectorColor" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="colorChooserCollapsatorBorder" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="colorChooserCollapsatorBackground" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="2" attributes="0">
+                              <Component id="spinnerCollapsatorSize" linkSize="6" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel5" linkSize="6" alignment="2" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="2" attributes="0">
+                              <Component id="jLabel6" linkSize="7" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerCollapsatorWidth" linkSize="7" alignment="2" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JLabel" name="jLabel2">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jLabel2.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="spinnerConnectorWidth">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="0.1" maximum="20.0" minimum="0.05" numberType="java.lang.Float" stepSize="0.01" type="number"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="spinnerConnectorWidthStateChanged"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserConnectorColor">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserConnectorColor.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserConnectorColorActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserCollapsatorBorder">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserCollapsatorBorder.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserCollapsatorBorderActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserCollapsatorBackground">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserCollapsatorBackground.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserCollapsatorBackgroundActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel5">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jLabel5.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="spinnerCollapsatorSize">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="5" maximum="500" minimum="3" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="spinnerCollapsatorSizeStateChanged"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel6">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jLabel6.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="spinnerCollapsatorWidth">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="1.0" maximum="100.0" minimum="0.01" numberType="java.lang.Float" stepSize="0.1" type="number"/>
+                    </Property>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel4">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Paper options">
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jPanel4.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </TitledBorder>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="checkBoxShowGrid" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="spinnerGridStep" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="colorChooserGridColor" linkSize="5" min="-2" pref="165" max="-2" attributes="0"/>
+                              <Component id="colorChooserPaperColor" linkSize="5" min="-2" pref="165" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="spinnerGridStep" linkSize="11" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel1" linkSize="11" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="colorChooserGridColor" linkSize="12" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="colorChooserPaperColor" linkSize="12" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkBoxShowGrid" linkSize="12" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserPaperColor">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserPaperColor.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserPaperColorActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="checkBoxShowGrid">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.checkBoxShowGrid.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxShowGridActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserGridColor">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserGridColor.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserGridColorActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="spinnerGridStep">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="15" maximum="500" minimum="2" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="spinnerGridStepStateChanged"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jLabel1.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel2">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Element options">
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jPanel2.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </TitledBorder>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="slider1stLevelHorzGap" alignment="1" max="32767" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="colorChooserRootBackground" linkSize="3" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="colorChooserRootText" linkSize="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="slider1stLevelVertGap" alignment="0" max="32767" attributes="0"/>
+                              <Component id="slider2ndLevelHorzGap" alignment="0" max="32767" attributes="0"/>
+                              <Component id="slider2ndLevelVertGap" alignment="0" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Component id="colorChooser1stBackground" linkSize="3" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="colorChooser1stText" linkSize="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="checkBoxDropShadow" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <Component id="colorChooser2ndBackground" linkSize="3" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="colorChooser2ndText" linkSize="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                              <Component id="jPanel7" alignment="0" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="checkBoxDropShadow" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="colorChooserRootBackground" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="colorChooserRootText" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="colorChooser1stText" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="colorChooser1stBackground" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="colorChooser2ndText" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="colorChooser2ndBackground" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="slider1stLevelHorzGap" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="slider1stLevelVertGap" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="slider2ndLevelHorzGap" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="slider2ndLevelVertGap" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jPanel7" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JCheckBox" name="checkBoxDropShadow">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.checkBoxDropShadow.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxDropShadowActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserRootBackground">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserRootBackground.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserRootBackgroundActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserRootText">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserRootText.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserRootTextActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooser1stBackground">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooser1stBackground.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooser1stBackgroundActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooser1stText">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooser1stText.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooser1stTextActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooser2ndBackground">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooser2ndBackground.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooser2ndBackgroundActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooser2ndText">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooser2ndText.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooser2ndTextActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JSlider" name="slider1stLevelHorzGap">
+                  <Properties>
+                    <Property name="majorTickSpacing" type="int" value="25"/>
+                    <Property name="maximum" type="int" value="250"/>
+                    <Property name="minimum" type="int" value="10"/>
+                    <Property name="paintLabels" type="boolean" value="true"/>
+                    <Property name="paintTicks" type="boolean" value="true"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="1st level horz.gap">
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.slider1stLevelHorzGap.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                        </TitledBorder>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="slider1stLevelHorzGapStateChanged"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JSlider" name="slider1stLevelVertGap">
+                  <Properties>
+                    <Property name="majorTickSpacing" type="int" value="25"/>
+                    <Property name="maximum" type="int" value="250"/>
+                    <Property name="minimum" type="int" value="10"/>
+                    <Property name="paintLabels" type="boolean" value="true"/>
+                    <Property name="paintTicks" type="boolean" value="true"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="1st level vert.gap">
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.slider1stLevelVertGap.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                        </TitledBorder>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="slider1stLevelVertGapStateChanged"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JSlider" name="slider2ndLevelHorzGap">
+                  <Properties>
+                    <Property name="majorTickSpacing" type="int" value="25"/>
+                    <Property name="maximum" type="int" value="250"/>
+                    <Property name="minimum" type="int" value="10"/>
+                    <Property name="paintLabels" type="boolean" value="true"/>
+                    <Property name="paintTicks" type="boolean" value="true"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="2nd level horz.gap">
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.slider2ndLevelHorzGap.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                        </TitledBorder>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="slider2ndLevelHorzGapStateChanged"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JSlider" name="slider2ndLevelVertGap">
+                  <Properties>
+                    <Property name="majorTickSpacing" type="int" value="25"/>
+                    <Property name="maximum" type="int" value="250"/>
+                    <Property name="minimum" type="int" value="10"/>
+                    <Property name="paintLabels" type="boolean" value="true"/>
+                    <Property name="paintTicks" type="boolean" value="true"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="2nd level vert.gap">
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.slider2ndLevelVertGap.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                        </TitledBorder>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="slider2ndLevelVertGapStateChanged"/>
+                  </Events>
+                </Component>
+                <Container class="javax.swing.JPanel" name="jPanel7">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Font">
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jPanel7.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                        </TitledBorder>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="buttonFont" alignment="0" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="buttonFont" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JButton" name="buttonFont">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="..." noResource="true"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonFontActionPerformed"/>
+                      </Events>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel1">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Misc">
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jPanel1.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </TitledBorder>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="checkboxUseInsideBrowser" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkboxRelativePathsForFilesInTheProject" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkBoxUnfoldCollapsedTarget" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="checkboxUseInsideBrowser" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="checkboxRelativePathsForFilesInTheProject" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="checkBoxUnfoldCollapsedTarget" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JCheckBox" name="checkboxUseInsideBrowser">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.checkboxUseInsideBrowser.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkboxUseInsideBrowserActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="checkboxRelativePathsForFilesInTheProject">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.checkboxRelativePathsForFilesInTheProject.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkboxRelativePathsForFilesInTheProjectActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="checkBoxUnfoldCollapsedTarget">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.checkBoxUnfoldCollapsedTarget.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxUnfoldCollapsedTargetActionPerformed"/>
+                  </Events>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel5">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Selection frame">
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jPanel5.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </TitledBorder>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Component id="colorChooserSelectLine" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="spinnerSelectLineGap" max="32767" attributes="0"/>
+                                      <Component id="spinnerSelectLineWidth" alignment="1" pref="145" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="colorChooserSelectLine" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="2" attributes="0">
+                              <Component id="jLabel3" linkSize="8" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerSelectLineWidth" linkSize="8" alignment="2" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="2" attributes="0">
+                              <Component id="jLabel4" linkSize="9" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="spinnerSelectLineGap" linkSize="9" alignment="2" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="com.igormaznitsa.nbmindmap.nb.ColorChoosingButton" name="colorChooserSelectLine">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserSelectLine.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="2"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserSelectLineActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel3">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jLabel3.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="spinnerSelectLineWidth">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="1.0" maximum="100.0" minimum="0.02" numberType="java.lang.Float" stepSize="0.1" type="number"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel4">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.jLabel4.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="spinnerSelectLineGap">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="1" maximum="500" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                    </Property>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Component class="javax.swing.JButton" name="buttonAbout">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/info16.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.buttonAbout.Text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonAboutActionPerformed"/>
+              </Events>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>
