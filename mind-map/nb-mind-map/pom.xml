@@ -20,6 +20,7 @@
 
   <properties>
     <nb.platform>RELEASE74</nb.platform>
+    <mindmap.model>1.0.1-SNAPSHOT</mindmap.model>
   </properties>
 
   <profiles>
@@ -119,7 +120,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>mind-map-model</artifactId>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>${mindmap.model}</version>
     </dependency>
     <dependency>
       <groupId>net.minidev</groupId>
@@ -210,16 +211,6 @@
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-spi-quicksearch</artifactId>
       <version>${nb.platform}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
     </dependency>
     <dependency>
       <groupId>commons-validator</groupId>
