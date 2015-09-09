@@ -13,14 +13,13 @@
   <version>1.0.1-SNAPSHOT</version>
   <packaging>nbm</packaging>
 
-  <name>NB Mind Map Editor plugin</name>
+  <name>NetBeans Mind Map Editor plugin</name>
   <description>NetBeans editor plugin to create and edit mind maps within NetBeans IDE projects.</description>
 
   <url>https://github.com/raydac/netbeans-mmd-plugin</url>
 
   <properties>
     <nb.platform>RELEASE74</nb.platform>
-    <mindmap.model>1.0.1-SNAPSHOT</mindmap.model>
   </properties>
 
   <profiles>
@@ -118,9 +117,14 @@
       <version>1.7.12</version>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-model</artifactId>
-      <version>${mindmap.model}</version>
+      <version>1.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>mind-map-swing-panel</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>net.minidev</groupId>

@@ -8,3 +8,5 @@ dependency-reduced-pom.xml
 buildNumber.properties
 /private/
 /build.properties
+/mind-map/nb-mind-map/private/
+/mind-map/nb-mind-map/build.properties

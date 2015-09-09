@@ -5,26 +5,25 @@
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
         <version>1.0.0</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>mind-map-model</artifactId>
+    <artifactId>mind-map-swing-panel</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     
-    <description>Abstract mind map model</description>
+    <description>Swing based panel to show and interact with mind map</description>
     
     <dependencies>
       <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.4</version>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>mind-map-model</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <optional>true</optional>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
+        <groupId>net.minidev</groupId>
+        <artifactId>json-smart</artifactId>
+        <version>2.1.1</version>
       </dependency>
     </dependencies>
-    
 </project>

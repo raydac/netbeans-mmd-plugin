@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
-import com.igormaznitsa.nbmindmap.mmgui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.Color;
 import java.io.File;
@@ -204,41 +203,6 @@ public enum Utils {
       }
     }
     return num;
-  }
-
-  public static Topic[] getLeftToRightOrderedChildrens(final Topic topic) {
-    final List<Topic> result = new ArrayList<Topic>();
-    if (topic.getTopicLevel() == 0) {
-      for (final Topic t : topic.getChildren()) {
-        if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
-          result.add(t);
-        }
-      }
-      for (final Topic t : topic.getChildren()) {
-        if (!AbstractCollapsableElement.isLeftSidedTopic(t)) {
-          result.add(t);
-        }
-      }
-    }
-    else {
-      result.addAll(topic.getChildren());
-    }
-    return result.toArray(new Topic[result.size()]);
-  }
-
-  public static String color2html(final Color color) {
-    final StringBuilder buffer = new StringBuilder();
-
-    buffer.append('#');
-    for (final int c : new int[]{color.getRed(), color.getGreen(), color.getBlue()}) {
-      final String str = Integer.toHexString(c & 0xFF).toUpperCase(Locale.ENGLISH);
-      if (str.length() < 2) {
-        buffer.append('0');
-      }
-      buffer.append(str);
-    }
-
-    return buffer.toString();
   }
 
   public static String getFirstLine(final String text) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.utils;
+package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,32 +22,20 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.IOUtils;
 
 public enum Icons {
-  DOCUMENT("document16.png"), //NOI18N
-  EXPORT("export16.png"), //NOI18N
-  EXPANDALL("toggle_expand16.png"), //NOI18N
-  COLLAPSEALL("toggle16.png"), //NOI18N
-  EDITTEXT("text16.png"), //NOI18N
-  ADD("add16.png"), //NOI18N
-  SOURCE("source16.png"), //NOI18N
-  TOPIC("brick16.png"), //NOI18N
-  INFO("info16.png"), //NOI18N
-  NOTE("note16.png"), //NOI18N
-  URL("url16.png"), //NOI18N
-  DELETE("delete16.png"), //NOI18N
-  OPTIONS("settings16.png"), //NOI18N
-  BLUEBALL("blueball16.png"), //NOI18N
-  GOLDBALL("goldball16.png"), //NOI18N
-  FILE("disk16.png"), //NOI18N
-  CLONE("draw_clone16.png"); //NOI18N
+  ICO_FREEMIND("mm16.png"), 
+  ICO_MARKDOWN("md16.png"), 
+  ICO_MINDMUP("mup16.png"), 
+  ICO_PNG("png16.png"), 
+  ICO_TXT("txt16.png");
 
   private final ImageIcon icon;
 
-  public ImageIcon getIcon(){
+  public ImageIcon getIcon() {
     return this.icon;
   }
-  
+
   private Icons(final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/" + name); //NOI18N
+    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
     try {
       this.icon = new ImageIcon(ImageIO.read(in));
     }

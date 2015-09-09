@@ -15,15 +15,9 @@
  */
 package com.igormaznitsa.nbmindmap.nb;
 
-import com.igormaznitsa.nbmindmap.exporters.Exporters;
-import com.igormaznitsa.nbmindmap.exporters.AbstractMindMapExporter;
-import com.igormaznitsa.nbmindmap.mmgui.AbstractCollapsableElement;
+import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
+import com.igormaznitsa.mindmap.exporters.Exporters;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
-import com.igormaznitsa.nbmindmap.mmgui.MindMapListener;
-import com.igormaznitsa.nbmindmap.mmgui.MindMapPanel;
-import com.igormaznitsa.nbmindmap.mmgui.AbstractElement;
-import com.igormaznitsa.nbmindmap.mmgui.Configuration;
-import com.igormaznitsa.nbmindmap.mmgui.ElementPart;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -31,6 +25,14 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.nbmindmap.utils.AboutPanel;
 import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
@@ -65,7 +67,9 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.List;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.Project;
@@ -74,6 +78,7 @@ import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.netbeans.spi.print.PrintPage;
 import org.netbeans.spi.print.PrintProvider;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
@@ -81,6 +86,7 @@ import org.openide.text.CloneableEditor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.Utilities;
+import org.openide.util.WeakSet;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
@@ -96,12 +102,11 @@ import org.slf4j.LoggerFactory;
         preferredID = MMDGraphEditor.ID,
         position = 1
 )
-public final class MMDGraphEditor extends CloneableEditor implements PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanel.PopUpProvider {
+public final class MMDGraphEditor extends CloneableEditor implements PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, DialogProvider {
 
   private static final long serialVersionUID = -8776707243607267446L;
-
   private static final Logger logger = LoggerFactory.getLogger(MMDGraphEditor.class);
-  
+
   public static final String ID = "mmd-graph-editor"; //NOI18N
 
   private volatile boolean rootToCentre = true;
@@ -116,26 +121,27 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   private final JToolBar toolBar = new JToolBar();
 
+  private static final WeakSet<MMDGraphEditor> allEditors = new WeakSet<MMDGraphEditor>();
+  
   public MMDGraphEditor() {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
   }
 
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
-
+    
     this.editorSupport = support;
 
     this.mainScrollPane = new JScrollPane();
-    this.mindMapPanel = new MindMapPanel();
+    this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
-    this.mindMapPanel.setPopUpProvider(this);
 
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
     this.mainScrollPane.setViewportView(this.mindMapPanel);
     this.mainScrollPane.setWheelScrollingEnabled(true);
     this.mainScrollPane.setAutoscrolls(true);
-    
+
     this.setLayout(new BorderLayout(0, 0));
     this.add(this.mainScrollPane, BorderLayout.CENTER);
 
@@ -146,6 +152,10 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       }
     });
     updateName();
+
+    synchronized (allEditors) {
+      allEditors.add(this);
+    }
   }
 
   @Override
@@ -266,7 +276,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   public void onMindMapModelChanged(final MindMapPanel source) {
     try {
       final StringWriter writer = new StringWriter(16384);
-      
+
       final MindMap theMap = this.mindMapPanel.getModel();
       AbstractCollapsableElement.removeCollapseAttributeFromTopicsWithoutChildren(theMap);
       theMap.write(writer);
@@ -382,7 +392,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
           }
           catch (Exception ex) {
             logger.error("Cant't find or open data object", ex); //NOI18N
-            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickExtra.cantFindFileObj"),uri.toString()));
+            NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickExtra.cantFindFileObj"), uri.toString()));
           }
         }
         break;
@@ -738,7 +748,99 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   }
 
   @Override
-  public JPopupMenu makePopUp(final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
+  public int getPersistenceType() {
+    return TopComponent.PERSISTENCE_NEVER;
+  }
+
+  public void focusToPath(final int[] positionPath) {
+    this.mindMapPanel.removeAllSelection();
+    final Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
+    if (topic != null) {
+      this.mindMapPanel.select(topic, false);
+    }
+  }
+
+  @Override
+  public Lookup getLookup() {
+    return new ProxyLookup(Lookups.singleton(this), super.getLookup());
+  }
+
+  @Override
+  public PrintPage[][] getPages(final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
+    final MindMapPanelConfig cfg = new MindMapPanelConfig(this.mindMapPanel.getConfiguration(), false);
+    cfg.setDrawBackground(false);
+    cfg.setDropShadow(false);
+
+    cfg.setConnectorColor(Color.black);
+    cfg.setRootBackgroundColor(Color.black);
+    cfg.setRootTextColor(Color.white);
+    cfg.setFirstLevelBackgroundColor(Color.lightGray);
+    cfg.setFirstLevelTextColor(Color.black);
+    cfg.setOtherLevelBackgroundColor(Color.white);
+    cfg.setOtherLevelTextColor(Color.black);
+    cfg.setCollapsatorBorderColor(Color.black);
+    cfg.setCollapsatorBackgroundColor(Color.white);
+
+    final MindMap theModel = new MindMap(this.mindMapPanel.getModel());
+
+    final PrintPage thePage = new PrintPage() {
+
+      private BufferedImage mindMapAsImage;
+
+      @Override
+      public void print(final Graphics g) {
+        final Graphics2D gfx = (Graphics2D) g.create();
+        MindMapPanel.prepareGraphicsForQuality(gfx);
+        try {
+          if (this.mindMapAsImage == null) {
+            cfg.setScale(1.0d);
+            this.mindMapAsImage = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
+          }
+
+          final double scaleX = (double) paperWidthInPixels / (double) this.mindMapAsImage.getWidth();
+          final double scaleY = (double) paperHeightInPixels / (double) this.mindMapAsImage.getHeight();
+
+          final double selectedScaleFactor = Math.min(scaleX, scaleY);
+
+          final AffineTransform transform = new AffineTransform();
+          transform.scale(selectedScaleFactor, selectedScaleFactor);
+          transform.translate(((double) paperWidthInPixels - (selectedScaleFactor * this.mindMapAsImage.getWidth())) / 2, ((double) paperHeightInPixels - (selectedScaleFactor * this.mindMapAsImage.getHeight())) / 2);
+
+          gfx.drawImage(this.mindMapAsImage, transform, null);
+        }
+        finally {
+          gfx.dispose();
+        }
+      }
+    };
+
+    return new PrintPage[][]{{thePage}};
+  }
+
+  @Override
+  public Date lastModified() {
+    if (this.editorSupport.isModified()) {
+      return new Date();
+    }
+    else {
+      return this.editorSupport.getDataObject().getPrimaryFile().lastModified();
+    }
+  }
+
+  @Override
+  public boolean isUnfoldCollapsedTopicDropTarget(final MindMapPanel source) {
+    return NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true);
+  }
+
+  @Override
+  public MindMapPanelConfig provideConfigForMindMapPanel(final MindMapPanel source) {
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    config.loadFrom(NbUtils.getPreferences());
+    return config;
+  }
+
+  @Override
+  public JPopupMenu makePopUpForMindMapPanel(final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
     final JPopupMenu result = new JPopupMenu();
 
     if (element != null) {
@@ -895,7 +997,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         @Override
         public void actionPerformed(final ActionEvent e) {
           try {
-            exp.doExport(mindMapPanel);
+            exp.doExport(mindMapPanel, null);
           }
           catch (Exception ex) {
             logger.error("Error during map export", ex); //NOI18N
@@ -935,82 +1037,62 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   }
 
   @Override
-  public int getPersistenceType() {
-    return TopComponent.PERSISTENCE_NEVER;
-  }
-
-  public void focusToPath(final int[] positionPath) {
-    this.mindMapPanel.removeAllSelection();
-    final Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
-    if (topic != null) {
-      this.mindMapPanel.select(topic, false);
-    }
+  public DialogProvider getDialogProvider(final MindMapPanel source) {
+    return this;
   }
 
   @Override
-  public Lookup getLookup() {
-    return new ProxyLookup(Lookups.singleton(this), super.getLookup());
+  public void msgError(final String text) {
+    NbUtils.msgError(text);
   }
 
   @Override
-  public PrintPage[][] getPages(final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
-    final Configuration cfg = new Configuration(this.mindMapPanel.getConfiguration(), false);
-    cfg.setDrawBackground(false);
-    cfg.setDropShadow(false);
+  public void msgInfo(final String text) {
+    NbUtils.msgInfo(text);
+  }
 
-    cfg.setConnectorColor(Color.black);
-    cfg.setRootBackgroundColor(Color.black);
-    cfg.setRootTextColor(Color.white);
-    cfg.setFirstLevelBackgroundColor(Color.lightGray);
-    cfg.setFirstLevelTextColor(Color.black);
-    cfg.setOtherLevelBackgroundColor(Color.white);
-    cfg.setOtherLevelTextColor(Color.black);
-    cfg.setCollapsatorBorderColor(Color.black);
-    cfg.setCollapsatorBackgroundColor(Color.white);
+  @Override
+  public void msgWarn(final String text) {
+    NbUtils.msgWarn(text);
+  }
 
-    final MindMap theModel = new MindMap(this.mindMapPanel.getModel());
+  @Override
+  public boolean msgConfirmOkCancel(String title, String question) {
+    return NbUtils.msgConfirmOkCancel(title, question);
+  }
 
-    final PrintPage thePage = new PrintPage() {
+  @Override
+  public boolean msgConfirmYesNo(String title, String question) {
+    return NbUtils.msgConfirmYesNo(title, question);
+  }
 
-      private BufferedImage mindMapAsImage;
+  @Override
+  public Boolean msgConfirmYesNoCancel(String title, String question) {
+    return NbUtils.msgConfirmYesNoCancel(title, question);
+  }
 
+  @Override
+  public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
+    return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showSaveDialog();
+  }
+
+  private void updateConfigFromPreferences(){
+    SwingUtilities.invokeLater(new Runnable(){
       @Override
-      public void print(final Graphics g) {
-        final Graphics2D gfx = (Graphics2D) g.create();
-        MindMapPanel.prepareGraphicsForQuality(gfx);
-        try {
-          if (this.mindMapAsImage == null) {
-            cfg.setScale(1.0d);
-            this.mindMapAsImage = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
-          }
-
-          final double scaleX = (double) paperWidthInPixels / (double) this.mindMapAsImage.getWidth();
-          final double scaleY = (double) paperHeightInPixels / (double) this.mindMapAsImage.getHeight();
-
-          final double selectedScaleFactor = Math.min(scaleX, scaleY);
-
-          final AffineTransform transform = new AffineTransform();
-          transform.scale(selectedScaleFactor, selectedScaleFactor);
-          transform.translate(((double) paperWidthInPixels - (selectedScaleFactor * this.mindMapAsImage.getWidth())) / 2, ((double) paperHeightInPixels - (selectedScaleFactor * this.mindMapAsImage.getHeight())) / 2);
-
-          gfx.drawImage(this.mindMapAsImage, transform, null);
-        }
-        finally {
-          gfx.dispose();
-        }
+      public void run() {
+        mindMapPanel.refreshConfiguration();
+        mindMapPanel.invalidate();
+        mindMapPanel.revalidate();
+        mindMapPanel.repaint();
       }
-    };
-
-    return new PrintPage[][]{{thePage}};
+    });
   }
-
-  @Override
-  public Date lastModified() {
-    if (this.editorSupport.isModified()) {
-      return new Date();
-    }
-    else {
-      return this.editorSupport.getDataObject().getPrimaryFile().lastModified();
+  
+  public static void notifyReloadConfig() {
+    synchronized(allEditors){
+      for(final MMDGraphEditor e : allEditors){
+        e.updateConfigFromPreferences();
+      }
     }
   }
 }

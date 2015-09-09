@@ -16,6 +16,8 @@
 package com.igormaznitsa.mindmap.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -26,7 +28,7 @@ public enum ModelUtils {
   private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>"); //NOI18N
   private static final Pattern MD_ESCAPED_PATTERN = Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])"); //NOI18N
   private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
-  
+
   public static boolean onlyFromChar(final String line, final char chr) {
     if (line.isEmpty()) {
       return false;
@@ -70,7 +72,7 @@ public enum ModelUtils {
     }
     return buffer.toString();
   }
-  
+
   public static int calcMaxLengthOfBacktickQuotesSubstr(final String text) {
     int result = 0;
     if (text != null) {
@@ -89,13 +91,13 @@ public enum ModelUtils {
     }
     return result;
   }
-  
+
   public static void writeChar(final Appendable out, final char chr, final int times) throws IOException {
     for (int i = 0; i < times; i++) {
       out.append(chr);
     }
   }
-  
+
   public static String unescapeMarkdownStr(final String text) {
     String unescaped = UNESCAPE_BR.matcher(text).replaceAll("\n"); //NOI18N
     final StringBuffer result = new StringBuffer(text.length());
@@ -106,6 +108,49 @@ public enum ModelUtils {
     }
     escaped.appendTail(result);
     return result.toString();
+  }
+
+  public static String makeShortTextVersion(String text, final int maxLength) {
+    if (text.length() > maxLength) {
+      text = text.substring(0, maxLength) + "..."; //NOI18N
+    }
+    return text;
+  }
+
+  public static int countLines(final String text) {
+    int result = 1;
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '\n') {
+        result++;
+      }
+    }
+    return result;
+  }
+
+  public static void assertNotNull(final String message, final Object obj) {
+    if (obj == null) {
+      throw new NullPointerException(message);
+    }
+  }
+
+  public static String[] breakToLines(final String text) {
+    final int lineNum = countLines(text);
+    final String[] result = new String[lineNum];
+    final StringBuilder line = new StringBuilder();
+
+    int index = 0;
+
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '\n') {
+        result[index++] = line.toString();
+        line.setLength(0);
+      }
+      else {
+        line.append(text.charAt(i));
+      }
+    }
+    result[index] = line.toString();
+    return result;
   }
 
 }
