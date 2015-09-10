@@ -1,5 +1,7 @@
 1.0.1
+- improved print subsystem to support print of multi-page documents
 - refactoring, project splitted to modules
+- minimal version of Java changed to 1.7
 
 1.0.0
 - Initial version
