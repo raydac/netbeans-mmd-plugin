@@ -67,7 +67,6 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.actions.Openable;
@@ -121,15 +120,15 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   private final JToolBar toolBar = new JToolBar();
 
-  private static final WeakSet<MMDGraphEditor> allEditors = new WeakSet<MMDGraphEditor>();
-  
+  private static final WeakSet<MMDGraphEditor> allEditors = new WeakSet<>();
+
   public MMDGraphEditor() {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
   }
 
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
-    
+
     this.editorSupport = support;
 
     this.mainScrollPane = new JScrollPane();
@@ -767,54 +766,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   @Override
   public PrintPage[][] getPages(final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
-    final MindMapPanelConfig cfg = new MindMapPanelConfig(this.mindMapPanel.getConfiguration(), false);
-    cfg.setDrawBackground(false);
-    cfg.setDropShadow(false);
-
-    cfg.setConnectorColor(Color.black);
-    cfg.setRootBackgroundColor(Color.black);
-    cfg.setRootTextColor(Color.white);
-    cfg.setFirstLevelBackgroundColor(Color.lightGray);
-    cfg.setFirstLevelTextColor(Color.black);
-    cfg.setOtherLevelBackgroundColor(Color.white);
-    cfg.setOtherLevelTextColor(Color.black);
-    cfg.setCollapsatorBorderColor(Color.black);
-    cfg.setCollapsatorBackgroundColor(Color.white);
-
-    final MindMap theModel = new MindMap(this.mindMapPanel.getModel());
-
-    final PrintPage thePage = new PrintPage() {
-
-      private BufferedImage mindMapAsImage;
-
-      @Override
-      public void print(final Graphics g) {
-        final Graphics2D gfx = (Graphics2D) g.create();
-        MindMapPanel.prepareGraphicsForQuality(gfx);
-        try {
-          if (this.mindMapAsImage == null) {
-            cfg.setScale(1.0d);
-            this.mindMapAsImage = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
-          }
-
-          final double scaleX = (double) paperWidthInPixels / (double) this.mindMapAsImage.getWidth();
-          final double scaleY = (double) paperHeightInPixels / (double) this.mindMapAsImage.getHeight();
-
-          final double selectedScaleFactor = Math.min(scaleX, scaleY);
-
-          final AffineTransform transform = new AffineTransform();
-          transform.scale(selectedScaleFactor, selectedScaleFactor);
-          transform.translate(((double) paperWidthInPixels - (selectedScaleFactor * this.mindMapAsImage.getWidth())) / 2, ((double) paperHeightInPixels - (selectedScaleFactor * this.mindMapAsImage.getHeight())) / 2);
-
-          gfx.drawImage(this.mindMapAsImage, transform, null);
-        }
-        finally {
-          gfx.dispose();
-        }
-      }
-    };
-
-    return new PrintPage[][]{{thePage}};
+    return new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, pageZoomFactor).getPages();
   }
 
   @Override
@@ -1076,8 +1028,8 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showSaveDialog();
   }
 
-  private void updateConfigFromPreferences(){
-    SwingUtilities.invokeLater(new Runnable(){
+  private void updateConfigFromPreferences() {
+    SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         mindMapPanel.refreshConfiguration();
@@ -1087,10 +1039,10 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       }
     });
   }
-  
+
   public static void notifyReloadConfig() {
-    synchronized(allEditors){
-      for(final MMDGraphEditor e : allEditors){
+    synchronized (allEditors) {
+      for (final MMDGraphEditor e : allEditors) {
         e.updateConfigFromPreferences();
       }
     }
