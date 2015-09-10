@@ -1071,7 +1071,7 @@ public final class MindMapPanel extends JPanel {
 
   private void drawDestinationElement(final Graphics2D g, final MindMapPanelConfig cfg) {
     if (this.destinationElement != null) {
-      g.setColor(cfg.getSelectLineColor());
+      g.setColor(new Color((cfg.getSelectLineColor().getRGB() & 0xFFFFFF) | 0x80000000,true));
       g.setStroke(new BasicStroke(this.config.safeScaleFloatValue(3.0f, 0.1f)));
 
       final Rectangle2D rectToDraw = new Rectangle2D.Double();
@@ -1106,7 +1106,7 @@ public final class MindMapPanel extends JPanel {
       }
 
       if (draw) {
-        g.drawOval((int)rectToDraw.getX(), (int)rectToDraw.getY(), (int)rectToDraw.getWidth(), (int)rectToDraw.getHeight());
+        g.fillOval((int)rectToDraw.getX(), (int)rectToDraw.getY(), (int)rectToDraw.getWidth(), (int)rectToDraw.getHeight());
       }
     }
   }
