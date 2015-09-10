@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import java.awt.Color;
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,5 +83,74 @@ public class Utils {
     return new File(uri);
   }
   
+  public static String getFirstLine(final String text) {
+    return text.replace("\r", "").split("\\n")[0]; //NOI18N
+  }
+
+  public static String makeShortTextVersion(String text, final int maxLength) {
+    if (text.length() > maxLength) {
+      text = text.substring(0, maxLength) + "..."; //NOI18N
+    }
+    return text;
+  }
+
+  public static String[] breakToLines(final String text) {
+    final int lineNum = numberOfLines(text);
+    final String[] result = new String[lineNum];
+    final StringBuilder line = new StringBuilder();
+
+    int index = 0;
+
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '\n') {
+        result[index++] = line.toString();
+        line.setLength(0);
+      }
+      else {
+        line.append(text.charAt(i));
+      }
+    }
+    result[index] = line.toString();
+    return result;
+  }
+
+  public static int numberOfLines(final String text) {
+    int result = 1;
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '\n') {
+        result++;
+      }
+    }
+    return result;
+  }
+  
+  private static String normalizeURI(final String s) {
+    final int schemePosition = s.indexOf(':');
+    final String scheme = s.substring(0, schemePosition);
+    final String chars = " :<>?";
+    String result = s.substring(schemePosition + 1);
+    for (final char ch : chars.toCharArray()) {
+      result = result.replace(Character.toString(ch), "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH));
+    }
+    return scheme + ':' + result;
+  }
+
+  public static File makeFileForPath(final String str) {
+    if (str == null || str.isEmpty()) {
+      return null;
+    }
+    if (str.startsWith("file:")) {
+      try {
+        return new File(new URI(normalizeURI(str)));
+      }
+      catch (URISyntaxException ex) {
+        logger.error("URISyntaxException for " + str, ex);
+        return null;
+      }
+    }
+    else {
+      return new File(str);
+    }
+  }  
   
 }

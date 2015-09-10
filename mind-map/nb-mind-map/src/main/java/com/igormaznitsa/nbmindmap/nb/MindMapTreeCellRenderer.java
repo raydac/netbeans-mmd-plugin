@@ -16,8 +16,8 @@
 package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.nbmindmap.utils.Icons;
-import com.igormaznitsa.nbmindmap.utils.Utils;
 import java.awt.Component;
 import javax.swing.Icon;
 import javax.swing.JTree;

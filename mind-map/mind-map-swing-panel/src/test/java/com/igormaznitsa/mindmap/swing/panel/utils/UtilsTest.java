@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.utils;
+package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -29,6 +29,6 @@ public class UtilsTest {
     assertEquals("/some/who/files/main.c++", Utils.makeFileForPath("file:///some/who/files/main.c++").getAbsolutePath());
     assertEquals("/some/folder/temp/<: ,,,, ... main.c++ >", Utils.makeFileForPath("file:///some/folder/temp/<: ,,,, ... main.c++ >").getAbsolutePath());
     assertEquals("/some/folder/temp/ :<>?", Utils.makeFileForPath("file:///some/folder/temp/ :<>?").getAbsolutePath());
+    assertEquals("src/main/java/com/igormaznitsa/nbmindmap/nb/QuickSearchProvider.java", Utils.makeFileForPath("src/main/java/com/igormaznitsa/nbmindmap/nb/QuickSearchProvider.java").getPath());
   }
-
 }
