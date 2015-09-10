@@ -1076,7 +1076,7 @@ public final class MindMapPanel extends JPanel {
 
       final Rectangle2D rectToDraw = new Rectangle2D.Double();
       rectToDraw.setRect(this.destinationElement.getBounds());
-      final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
+      final double selectLineGap = cfg.getSelectLineGap() * 3.0d * cfg.getScale();
       rectToDraw.setRect(rectToDraw.getX() - selectLineGap, rectToDraw.getY() - selectLineGap, rectToDraw.getWidth() + selectLineGap * 2, rectToDraw.getHeight() + selectLineGap * 2);
 
       final int position = calcDropPosition(this.destinationElement, this.draggedElementPoint);
@@ -1106,7 +1106,7 @@ public final class MindMapPanel extends JPanel {
       }
 
       if (draw) {
-        g.draw(rectToDraw);
+        g.drawOval((int)rectToDraw.getX(), (int)rectToDraw.getY(), (int)rectToDraw.getWidth(), (int)rectToDraw.getHeight());
       }
     }
   }

@@ -1,4 +1,5 @@
 1.0.1
+- indicator for topic drop target changed to oval shape and its size increased
 - improved print subsystem to support print of multi-page documents
 - refactoring, project splitted to modules
 - minimal version of Java changed to 1.7
