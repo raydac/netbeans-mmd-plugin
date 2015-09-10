@@ -70,8 +70,8 @@ public enum ScalableIcon {
       
       final int imgw = this.baseImage.getWidth(null);
       final int imgh = this.baseImage.getHeight(null);
-      final int scaledW = (int)Math.round(imgw*this.baseScaleX*scale);
-      final int scaledH = (int)Math.round(imgh*this.baseScaleY*scale);
+      final int scaledW = Math.max(1,(int)Math.round(imgw*this.baseScaleX*scale));
+      final int scaledH = Math.max(1,(int)Math.round(imgh*this.baseScaleY*scale));
     
       final BufferedImage img = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
       final Graphics2D g = (Graphics2D)img.getGraphics();

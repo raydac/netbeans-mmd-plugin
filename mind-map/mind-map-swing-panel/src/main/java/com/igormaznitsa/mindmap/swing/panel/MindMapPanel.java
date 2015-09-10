@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.model.*;
 import java.awt.*;
+import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -33,14 +34,15 @@ import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
-import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -57,12 +59,22 @@ public final class MindMapPanel extends JPanel {
   private static final Logger logger = LoggerFactory.getLogger(MindMapPanel.class);
   private final MindMapPanelController controller;
 
+  private static final Map<Key,Object> RENDERING_HINTS = new HashMap<>();
+  static{
+    RENDERING_HINTS.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    RENDERING_HINTS.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    RENDERING_HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    RENDERING_HINTS.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    RENDERING_HINTS.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+    RENDERING_HINTS.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+  }
+  
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
   private volatile MindMap model;
   private volatile String errorText;
 
-  private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
+  private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<>();
 
   private static final double SCALE_STEP = 0.2d;
 
@@ -72,7 +84,7 @@ public final class MindMapPanel extends JPanel {
   private final JPanel textEditorPanel = new JPanel(new BorderLayout(0, 0));
   private transient AbstractElement elementUnderEdit = null;
 
-  private final List<Topic> selectedTopics = new ArrayList<Topic>();
+  private final List<Topic> selectedTopics = new ArrayList<>();
 
   private transient MouseSelectedArea mouseDragSelection = null;
   private transient AbstractElement draggedElement = null;
@@ -391,12 +403,7 @@ public final class MindMapPanel extends JPanel {
         if (!e.isConsumed() && e.isControlDown()) {
           endEdit(false);
 
-          final JViewport viewPort = getParent() instanceof JViewport ? (JViewport) getParent() : null;
-
-          final Point relativeMouseXY;
-          final Point absUnderMouseXY;
-
-          setScale(getScale() + (SCALE_STEP * -e.getWheelRotation()));
+          setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()),10.0d)));
 
           updateView(false);
           e.consume();
@@ -1296,10 +1303,7 @@ public final class MindMapPanel extends JPanel {
   }
 
   public static void prepareGraphicsForQuality(final Graphics2D gfx) {
-    gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    gfx.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-    gfx.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
+    gfx.setRenderingHints(RENDERING_HINTS);
   }
 
   private static void drawErrorText(final Graphics2D gfx, final Dimension fullSize, final String error) {
@@ -1435,7 +1439,7 @@ public final class MindMapPanel extends JPanel {
     final MindMap workMap = new MindMap(model);
     workMap.resetPayload();
 
-    BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+    BufferedImage img = new BufferedImage(32, 32, cfg.isDrawBackground() ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
     Dimension2D blockSize = null;
     Graphics2D gfx = img.createGraphics();
     try {
