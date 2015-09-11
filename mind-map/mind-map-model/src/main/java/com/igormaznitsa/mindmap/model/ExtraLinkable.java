@@ -15,8 +15,6 @@
  */
 package com.igormaznitsa.mindmap.model;
 
-import java.net.URI;
-
 public interface ExtraLinkable {
-  URI getAsURI();
+  MMapURI getAsURI();
 }

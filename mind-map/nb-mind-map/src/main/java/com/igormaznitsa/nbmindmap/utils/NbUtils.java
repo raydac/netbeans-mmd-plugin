@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.nbmindmap.nb.MMDCfgOptionsPanelController;
 import java.awt.Dimension;
 import java.io.File;
@@ -36,11 +37,11 @@ public enum NbUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(NbUtils.class);
         
-  public static final URI EMPTY_URI;
+  public static final MMapURI EMPTY_URI;
 
   static {
     try {
-      EMPTY_URI = new URI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
+      EMPTY_URI = new MMapURI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
     }
     catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
@@ -114,8 +115,8 @@ public enum NbUtils {
     }
   }
 
-  public static URI editURI(final String title, final URI uri) {
-    final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.toString());
+  public static MMapURI editURI(final String title, final MMapURI uri) {
+    final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false,false));
 
     textEditor.doLayout();
     textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));
@@ -127,7 +128,7 @@ public enum NbUtils {
         return EMPTY_URI;
       }
       try {
-        return new URI(text.trim());
+        return new MMapURI(text.trim());
       }
       catch (URISyntaxException ex) {
         msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("NbUtils.errMsgIllegalURI"), text));

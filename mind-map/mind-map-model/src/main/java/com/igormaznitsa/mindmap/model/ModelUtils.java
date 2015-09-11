@@ -15,19 +15,35 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum ModelUtils {
 
   ;
+
+  private static final Logger logger = LoggerFactory.getLogger(ModelUtils.class);
+
   private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>"); //NOI18N
   private static final Pattern MD_ESCAPED_PATTERN = Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])"); //NOI18N
   private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
+  private static final Pattern URI_QUERY_PARAMETERS = Pattern.compile("\\&?([^=]+)=([^&]*)"); //NOI18N
 
   public static boolean onlyFromChar(final String line, final char chr) {
     if (line.isEmpty()) {
@@ -151,6 +167,147 @@ public enum ModelUtils {
     }
     result[index] = line.toString();
     return result;
+  }
+
+  public static String makeQueryStringForURI(final Properties properties) {
+    if (properties == null || properties.isEmpty()) {
+      return "";
+    }
+    final StringBuilder buffer = new StringBuilder();
+
+    for (final String k : properties.stringPropertyNames()) {
+      try {
+        final String encodedKey = URLEncoder.encode(k, "UTF-8");
+        final String encodedValue = URLEncoder.encode(properties.getProperty(k), "UTF-8");
+
+        if (buffer.length() > 0) {
+          buffer.append('&');
+        }
+        buffer.append(encodedKey).append('=').append(encodedValue);
+      }
+      catch (UnsupportedEncodingException ex) {
+        logger.error("Can't encode URI query", ex);
+        throw new Error("Unexpected exception, can't find UTF-8 charset!");
+      }
+    }
+    return buffer.toString();
+  }
+
+  public static Properties extractQueryPropertiesFromURI(final URI uri) {
+    final Properties result = new Properties();
+
+    final String rawQuery = uri.getRawQuery();
+    if (rawQuery != null) {
+      final Matcher matcher = URI_QUERY_PARAMETERS.matcher(rawQuery);
+
+      try {
+        while (matcher.find()) {
+          final String key = URLDecoder.decode(matcher.group(1), "UTF-8");
+          final String value = URLDecoder.decode(matcher.group(2), "UTF-8");
+          result.put(key, value);
+        }
+      }
+      catch (UnsupportedEncodingException ex) {
+        logger.error("Can't decode URI query", ex);
+        throw new Error("Unexpected exception, can't find UTF-8 charset!");
+      }
+    }
+
+    return result;
+  }
+
+  private static String char2UriHexByte(final char ch) {
+    final String s = Integer.toHexString(ch).toUpperCase(Locale.ENGLISH);
+    return '%' + (s.length() < 2 ? "0" : "") + s;
+  }
+
+  public static String encodeForURI(final String s) {
+    final StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < s.length(); i++) {
+      final char c = s.charAt(i);
+      if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || "-_.~".indexOf(c) >= 0) {
+        result.append(c);
+      }
+      else {
+        if (":/?#[]@!$^'()*+,;= ".indexOf(c) >= 0) {
+          result.append(char2UriHexByte(c));
+        }
+        else {
+          result.append(c);
+        }
+      }
+    }
+
+    return result.toString();
+  }
+
+  public static File makeFileForPath(final String path) {
+    if (path == null || path.isEmpty()) {
+      return null;
+    }
+    if (path.startsWith("file:")) {
+      try {
+        return new File(new URI(normalizeFileURI(path)));
+      }
+      catch (URISyntaxException ex) {
+        logger.error("URISyntaxException for " + path, ex);
+        return null;
+      }
+    }
+    else {
+      return new File(path);
+    }
+  }
+
+  private static String normalizeFileURI(final String fileUri) {
+    final int schemePosition = fileUri.indexOf(':');
+    final String scheme = fileUri.substring(0, schemePosition);
+    final String chars = " :<>?";
+    String result = fileUri.substring(schemePosition + 1);
+    for (final char ch : chars.toCharArray()) {
+      result = result.replace(Character.toString(ch), "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH));
+    }
+    return scheme + ':' + result;
+  }
+
+  public static URI toURI(final Path path) {
+    if (path == null) {
+      return null;
+    }
+    try {
+      final StringBuilder buffer = new StringBuilder();
+
+      for (final Path p : path) {
+        if (buffer.length() > 0) {
+          buffer.append('/');
+        }
+        buffer.append(encodeForURI(p.toFile().getName()));
+      }
+
+      if (path.isAbsolute()) {
+        buffer.insert(0, "file:///");
+      }
+
+      return new URI(buffer.toString());
+    }
+    catch (Exception ex) {
+      throw new IllegalArgumentException("Can't convert path to URI: " + path, ex);
+    }
+  }
+
+  public static File toFile(final URI uri) throws IllegalArgumentException {
+    try {
+      return new File(uri);
+    }
+    catch (Exception ex) {
+      logger.warn(String.format("Can't convert %s to a file", uri), ex);
+    }
+    final String host = uri.getHost();
+    if (host != null && !host.isEmpty() && "file".equals(uri.getScheme())) {
+      return new File("\\\\" + host + uri.getPath().replace('/', '\\'));
+    }
+    return new File(uri);
   }
 
 }

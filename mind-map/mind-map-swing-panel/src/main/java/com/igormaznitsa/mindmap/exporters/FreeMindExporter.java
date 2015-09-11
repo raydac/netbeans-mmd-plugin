@@ -185,7 +185,7 @@ public class FreeMindExporter extends AbstractMindMapExporter {
       for (final Extra<?> e : extrasToSaveInText) {
         htmlTextForNode.append("<li>"); //NOI18N
         if (e instanceof ExtraLinkable) {
-          final String linkAsText = ((ExtraLinkable) e).getAsURI().toASCIIString();
+          final String linkAsText = ((ExtraLinkable) e).getAsURI().asString(true,e.getType() != Extra.ExtraType.FILE);
           htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml(e.getType().name())).append(": </b>").append("<a href=\"").append(linkAsText).append("\">").append(linkAsText).append("</a>"); //NOI18N
         }
         else {

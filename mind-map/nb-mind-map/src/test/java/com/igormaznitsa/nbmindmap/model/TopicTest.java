@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
@@ -44,7 +45,7 @@ public class TopicTest {
     assertEquals(1,topic.getChildren().size());
     assertEquals(2,topic.getExtras().size());
     assertEquals("Some\ntext",(String)topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
-    assertEquals(new URI("http://www.google.com"),(URI)topic.getExtras().get(Extra.ExtraType.LINK).getValue());
+    assertEquals(new URI("http://www.google.com"),((MMapURI)topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
   }
   
   @Test
@@ -55,7 +56,7 @@ public class TopicTest {
     assertTrue(topic.getChildren().isEmpty());
     assertEquals(2,topic.getExtras().size());
     assertEquals("Some\ntext",(String)topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
-    assertEquals(new URI("http://www.google.com"),(URI)topic.getExtras().get(Extra.ExtraType.LINK).getValue());
+    assertEquals(new URI("http://www.google.com"),((MMapURI)topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
     assertEquals(2,topic.getAttributes().size());
     assertEquals("hello",topic.getAttribute("attr1"));
     assertEquals("wor`ld",topic.getAttribute("attr2"));

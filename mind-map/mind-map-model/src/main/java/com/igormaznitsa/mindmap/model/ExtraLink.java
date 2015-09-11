@@ -15,23 +15,22 @@
  */
 package com.igormaznitsa.mindmap.model;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
-public class ExtraLink extends Extra<URI> implements ExtraLinkable {
+public class ExtraLink extends Extra<MMapURI> implements ExtraLinkable {
   private static final long serialVersionUID = -3343908686571445847L;
-  private final URI uri;
+  private final MMapURI uri;
   
-  public ExtraLink(final URI uri){
+  public ExtraLink(final MMapURI uri){
     this.uri = uri;
   }
 
   public ExtraLink(final String text) throws URISyntaxException {
-    this.uri = new URI(text);
+    this.uri = new MMapURI(text);
   }
   
   @Override
-  public URI getValue() {
+  public MMapURI getValue() {
     return this.uri;
   }
 
@@ -46,7 +45,12 @@ public class ExtraLink extends Extra<URI> implements ExtraLinkable {
   }
 
   @Override
-  public URI getAsURI() {
+  public String provideAsStringForSave() {
+    return this.uri.toString();
+  }
+  
+  @Override
+  public MMapURI getAsURI() {
     return this.uri;
   }
 

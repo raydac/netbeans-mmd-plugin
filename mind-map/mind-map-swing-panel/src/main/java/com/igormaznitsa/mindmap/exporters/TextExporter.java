@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
@@ -141,13 +142,14 @@ public class TextExporter extends AbstractMindMapExporter {
     }
 
     if (file != null) {
-      final URI fileURI = file.getValue();
-      state.append(shiftString("FILE: ", ' ', shift)).append(fileURI.isAbsolute() ? Utils.toFile(file.getValue()).getAbsolutePath() : fileURI.toString()).nextLine();//NOI18N
+      final String uri = file.getValue().asString(false, false);
+      state.append(shiftString("FILE: ", ' ', shift)).append(uri).nextLine();//NOI18N
       extrasPrinted = true;
     }
 
     if (link != null) {
-      state.append(shiftString("URL: ", ' ', shift)).append(link.getValue().toASCIIString()).nextLine();//NOI18N
+      final String uri = link.getValue().asString(false, false);
+      state.append(shiftString("URL: ", ' ', shift)).append(uri).nextLine();//NOI18N
       extrasPrinted = true;
     }
 

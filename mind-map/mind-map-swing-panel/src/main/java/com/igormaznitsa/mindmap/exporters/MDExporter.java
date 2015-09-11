@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -148,16 +149,16 @@ public class MDExporter extends AbstractMindMapExporter {
     }
 
     if (file != null) {
-      final URI fileURI = file.getValue();
+      final MMapURI fileURI = file.getValue();
       state.append(prefix)
               .append("> File: ")//NOI18N
-              .append(ModelUtils.escapeMarkdownStr(fileURI.isAbsolute() ? Utils.toFile(fileURI).getAbsolutePath() : fileURI.toString())).nextStringMarker().nextLine();
+              .append(ModelUtils.escapeMarkdownStr(fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString())).nextStringMarker().nextLine();
       extrasPrinted = true;
     }
 
     if (link != null) {
       final String url = link.getValue().toString();
-      final String ascurl = link.getValue().toASCIIString();
+      final String ascurl = link.getValue().asString(true,true);
       state.append(prefix)
               .append("> Url: ")//NOI18N
               .append('[')//NOI18N

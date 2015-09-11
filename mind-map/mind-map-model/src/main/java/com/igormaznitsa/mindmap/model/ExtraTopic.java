@@ -68,4 +68,9 @@ public class ExtraTopic extends Extra<String> {
   public String getAsString() {
     return this.topicUID;
   }
+
+  @Override
+  public String provideAsStringForSave() {
+    return this.getAsString();
+  }
 }

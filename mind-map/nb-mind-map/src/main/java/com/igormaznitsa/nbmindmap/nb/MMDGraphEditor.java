@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
@@ -359,17 +360,12 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       switch (extra.getType()) {
         case FILE: {
           final FileObject fileObj;
-          final URI uri = (URI) extra.getValue();
+          final MMapURI uri = (MMapURI) extra.getValue();
           try {
-            if (uri.isAbsolute()) {
-              fileObj = FileUtil.toFileObject(new File(uri));
-            }
-            else {
-              fileObj = this.editorSupport.makeRelativePathToProjectRoot(uri.getPath());
-              if (fileObj == null) {
-                NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), uri.toString()));
-                return;
-              }
+            fileObj = FileUtil.toFileObject(uri.asFile(this.editorSupport.getProjectDirectory()));
+            if (fileObj == null) {
+              NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), uri.toString()));
+              return;
             }
           }
           catch (Exception ex) {
@@ -392,8 +388,8 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         }
         break;
         case LINK: {
-          final URI uri = ((ExtraLink) extra).getValue();
-          if (!NbUtils.browseURI(uri, NbUtils.getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
+          final MMapURI uri = ((ExtraLink) extra).getValue();
+          if (!NbUtils.browseURI(uri.asURI(), NbUtils.getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
             NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
           }
         }
@@ -475,35 +471,23 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   }
 
   private void addDataObjectToElement(final DataObject dataObject, final AbstractElement element) {
-    try {
-      if (element != null) {
-        final Topic topic = element.getModel();
+    if (element != null) {
+      final Topic topic = element.getModel();
 
-        final FileObject fileObj = dataObject.getPrimaryFile();
-        final String relativePath = NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? getRelativePathToProjectIfPossible(fileObj) : null; //NOI18N
+      final File theFile = FileUtil.toFile(dataObject.getPrimaryFile());
 
-        final URI uri;
-        if (relativePath != null) {
-          uri = new URI(relativePath.replace('\\', '/'));
+      final MMapURI theURI = NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? new MMapURI(getProjectFolder(), theFile, null) : new MMapURI(null, theFile, null); //NOI18N
+
+      if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
+        if (!NbUtils.msgConfirmOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+          return;
         }
-        else {
-          uri = fileObj.toURI();
-        }
-
-        if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
-          if (!NbUtils.msgConfirmOkCancel(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
-            return;
-          }
-        }
-
-        topic.setExtra(new ExtraFile(uri));
-        this.mindMapPanel.invalidate();
-        this.mindMapPanel.repaint();
-        onMindMapModelChanged(this.mindMapPanel);
       }
-    }
-    catch (URISyntaxException ex) {
-      logger.error("Can't make URI to the file", ex); //NOI18N
+
+      topic.setExtra(new ExtraFile(theURI));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
     }
   }
 
@@ -531,14 +515,12 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     }
   }
 
-  private String getRelativePathToProjectIfPossible(final FileObject obj) {
-    String result = null;
-
+  public File getProjectFolder() {
+    File result = null;
     final Project proj = this.editorSupport.getProject();
     if (proj != null) {
-      result = FileUtil.getRelativePath(proj.getProjectDirectory(), obj);
+      result = FileUtil.toFile(proj.getProjectDirectory());
     }
-
     return result;
   }
 
@@ -579,74 +561,59 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   private void editFileLinkForTopic(final Topic topic) {
     final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
-    File projectDir = this.editorSupport.getProjectDirectory();
-
     final String path;
 
+    final File projectFolder = getProjectFolder();
     if (file == null) {
-      path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectDir, null);
+      path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
     }
     else {
-      final URI uri = file.getValue();
+      final MMapURI uri = file.getValue();
       final String origPath;
       if (uri.isAbsolute()) {
-        origPath = Utilities.toFile(uri).getAbsolutePath();
+        origPath = uri.asFile(getProjectFolder()).getAbsolutePath();
       }
       else {
-        if (projectDir == null) {
+        if (projectFolder == null) {
           NbUtils.msgWarn(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
-          origPath = Utilities.toFile(uri).getAbsolutePath();
+          origPath = uri.asFile(getProjectFolder()).getPath();
         }
         else {
-          origPath = Utilities.toFile(Utilities.toURI(projectDir).resolve(uri)).getAbsolutePath();
+          origPath = uri.asFile(projectFolder).getAbsolutePath();
         }
       }
-      path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectDir, origPath);
+      path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
     }
+
+    boolean revalidate = true;
 
     if (path != null) {
       if (path.isEmpty()) {
         topic.removeExtra(Extra.ExtraType.FILE);
-        if (file != null) {
-          this.mindMapPanel.invalidate();
-          this.mindMapPanel.repaint();
-          onMindMapModelChanged(this.mindMapPanel);
+        if (file == null) {
+          revalidate = false;
         }
       }
       else {
-        final File filePath = Utils.makeFileForPath(path);
+        final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path, null);
+        final File theFile = fileUri.asFile(projectFolder);
+        logger.info("Path %s converted to uri: %s", fileUri.asString(false, true));
 
-        if (filePath != null && filePath.isFile()) {
-          final FileObject fileObj = FileUtil.toFileObject(filePath);
-          final String relativePath = NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? getRelativePathToProjectIfPossible(fileObj) : null; //NOI18N
-
-          URI value = null;
-          if (relativePath == null) {
-            value = fileObj.toURI();
-          }
-          else {
-            try {
-              value = new URI(relativePath);
-            }
-            catch (URISyntaxException ex) {
-              logger.error("Can't convert file path to URI", ex); //NOI18N
-              NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantConvertFilePath"), relativePath));
-            }
-          }
-
-          if (value != null) {
-            topic.setExtra(new ExtraFile(value));
-            this.mindMapPanel.invalidate();
-            this.mindMapPanel.repaint();
-            onMindMapModelChanged(this.mindMapPanel);
-          }
+        if (theFile.isFile()) {
+          topic.setExtra(new ExtraFile(fileUri));
         }
         else {
+          revalidate = false;
           NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path));
         }
       }
     }
 
+    if (revalidate) {
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
   }
 
   private void editTopicLinkForTopic(final Topic topic) {
@@ -696,7 +663,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   private void editLinkForTopic(final Topic topic) {
     final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-    final URI result;
+    final MMapURI result;
     if (link == null) {
       // create new
       result = NbUtils.editURI(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);

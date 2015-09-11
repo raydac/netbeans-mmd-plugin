@@ -199,10 +199,12 @@ public class MindmupExporter extends AbstractMindMapExporter {
     final StringBuilder result = new StringBuilder();
 
     if (file != null) {
-      result.append("FILE: <a href=\"").append(file.getValue().toASCIIString()).append("\">").append(file.getValue().toASCIIString()).append("</a><br>"); //NOI18N
+      final String uri = file.getValue().asString(true, false);
+      result.append("FILE: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
     }
     if (link != null) {
-      result.append("LINK: <a href=\"").append(link.getValue().toASCIIString()).append("\">").append(link.getValue().toASCIIString()).append("</a><br>"); //NOI18N
+      final String uri = link.getValue().asString(true, true);
+      result.append("LINK: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
     }
     if (note != null) {
       if (file != null || link != null) {

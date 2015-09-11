@@ -15,14 +15,41 @@
  */
 package com.igormaznitsa.mindmap.model;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import java.net.URI;
+import java.util.Properties;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ModelUtilsTest {
+
+  @Test
+  public void testExtractQueryParameters() throws Exception {
+    final Properties properties = ModelUtils.extractQueryPropertiesFromURI(new URI("file://hello?some=test&other=&misc=%26ffsdsd&h=1"));
+    assertEquals(4, properties.size());
+    assertEquals("test", properties.get("some"));
+    assertEquals("", properties.get("other"));
+    assertEquals("&ffsdsd", properties.get("misc"));
+    assertEquals("1", properties.get("h"));
+  }
+
+  @Test
+  public void testExtractQueryParameters_Empty() throws Exception {
+    final Properties properties = ModelUtils.extractQueryPropertiesFromURI(new URI("file://hello"));
+    assertTrue(properties.isEmpty());
+  }
+
+  @Test
+  public void testMakeQueryStringForURI() throws Exception {
+    final Properties props = new Properties();
+    assertEquals("", ModelUtils.makeQueryStringForURI(null));
+    assertEquals("", ModelUtils.makeQueryStringForURI(props));
+    props.put("test", "hello test");
+    assertEquals("test=hello+test", ModelUtils.makeQueryStringForURI(props));
+    props.put("&key", "&value some");
+    assertEquals("%26key=%26value+some&test=hello+test", ModelUtils.makeQueryStringForURI(props));
+  }
+
+  
   @Test
   public void testCalcMaxLengthOfBacktickQuotesSubstr() throws Exception {
     assertEquals(0, ModelUtils.calcMaxLengthOfBacktickQuotesSubstr("akldjf lsdkjf"));
@@ -51,5 +78,17 @@ public class ModelUtilsTest {
     assertEquals("", ModelUtils.escapeMarkdownStr(""));
   }
 
+  @Test
+  public void testMakeFileForPath() throws Exception {
+    assertNull(ModelUtils.makeFileForPath(null));
+    assertNull(ModelUtils.makeFileForPath(""));
+    assertEquals("/some/who/files/2012-11-02 13.47.10.jpg", ModelUtils.makeFileForPath("file:///some/who/files/2012-11-02 13.47.10.jpg").getAbsolutePath());
+    assertEquals("/some/who/files/2012-11-02 13.47.10.jpg", ModelUtils.makeFileForPath("file:///some/who/files/2012-11-02%2013.47.10.jpg").getAbsolutePath());
+    assertEquals("/some/who/files/main.c++", ModelUtils.makeFileForPath("file:///some/who/files/main.c++").getAbsolutePath());
+    assertEquals("/some/folder/temp/<: ,,,, ... main.c++ >", ModelUtils.makeFileForPath("file:///some/folder/temp/<: ,,,, ... main.c++ >").getAbsolutePath());
+    assertEquals("/some/folder/temp/ :<>?", ModelUtils.makeFileForPath("file:///some/folder/temp/ :<>?").getAbsolutePath());
+    assertEquals("/some/folder&ssd/temp/ :<>?test=jks&lls=1", ModelUtils.makeFileForPath("file:///some/folder&ssd/temp/ :<>?test=jks&lls=1").getAbsolutePath());
+    assertEquals("src/main/java/com/igormaznitsa/nbmindmap/nb/QuickSearchProvider.java", ModelUtils.makeFileForPath("src/main/java/com/igormaznitsa/nbmindmap/nb/QuickSearchProvider.java").getPath());
+  }
   
 }

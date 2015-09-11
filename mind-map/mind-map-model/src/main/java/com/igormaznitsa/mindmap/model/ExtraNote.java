@@ -39,4 +39,9 @@ public class ExtraNote extends Extra<String> {
     return this.text;
   }
 
+  @Override
+  public String provideAsStringForSave() {
+    return this.text;
+  }
+
 }

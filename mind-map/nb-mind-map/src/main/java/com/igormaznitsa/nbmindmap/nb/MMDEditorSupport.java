@@ -71,15 +71,6 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return result;
   }
   
-  public FileObject makeRelativePathToProjectRoot(final String path) {
-    final Project proj = getProject();
-    if (proj == null) {
-      return null;
-    }
-    final FileObject projFileObject = proj.getProjectDirectory();
-    return projFileObject.getFileObject(path);
-  }
-
   @Override
   protected CloneableEditor createCloneableEditor() {
     final MMDGraphEditor editor = new MMDGraphEditor(this);
