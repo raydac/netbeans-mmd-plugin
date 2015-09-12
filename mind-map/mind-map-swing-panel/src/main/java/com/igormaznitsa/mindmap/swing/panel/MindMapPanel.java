@@ -55,12 +55,13 @@ import org.slf4j.LoggerFactory;
 public final class MindMapPanel extends JPanel {
 
   public static final long serialVersionUID = 2783412123454232L;
-  
+
   private static final Logger logger = LoggerFactory.getLogger(MindMapPanel.class);
   private final MindMapPanelController controller;
 
-  private static final Map<Key,Object> RENDERING_HINTS = new HashMap<>();
-  static{
+  private static final Map<Key, Object> RENDERING_HINTS = new HashMap<>();
+
+  static {
     RENDERING_HINTS.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
     RENDERING_HINTS.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     RENDERING_HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -68,7 +69,7 @@ public final class MindMapPanel extends JPanel {
     RENDERING_HINTS.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
     RENDERING_HINTS.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
   }
-  
+
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
   private volatile MindMap model;
@@ -94,11 +95,11 @@ public final class MindMapPanel extends JPanel {
   private volatile boolean popupMenuActive = false;
 
   private final MindMapPanelConfig config;
-  
+
   public MindMapPanel(final MindMapPanelController controller) {
     super(null);
     this.controller = controller;
-    
+
     this.config = new MindMapPanelConfig(controller.provideConfigForMindMapPanel(this), false);
 
     this.textEditor.setMargin(new Insets(5, 5, 5, 5));
@@ -355,7 +356,7 @@ public final class MindMapPanel extends JPanel {
       @Override
       public void mouseDragged(final MouseEvent e) {
         scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
-        
+
         if (!popupMenuActive) {
           if (draggedElementPoint == null && mouseDragSelection == null) {
             final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
@@ -382,7 +383,7 @@ public final class MindMapPanel extends JPanel {
             mouseDragSelection.update(e);
             repaint();
           }
-          else if (draggedElementPoint!=null){
+          else if (draggedElementPoint != null) {
             draggedElementPoint.setLocation(e.getPoint());
             findDestinationElementForDragged();
             repaint();
@@ -403,7 +404,7 @@ public final class MindMapPanel extends JPanel {
         if (!e.isConsumed() && e.isControlDown()) {
           endEdit(false);
 
-          setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()),10.0d)));
+          setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), 10.0d)));
 
           updateView(false);
           e.consume();
@@ -506,7 +507,7 @@ public final class MindMapPanel extends JPanel {
     return builder.toString();
   }
 
-  public void refreshConfiguration(){
+  public void refreshConfiguration() {
     final MindMapPanel theInstance = this;
     final double scale = this.config.getScale();
     this.config.makeAtomicChange(new Runnable() {
@@ -519,29 +520,32 @@ public final class MindMapPanel extends JPanel {
     invalidate();
     repaint();
   }
-  
+
+  private static final int DRAG_POSITION_UNKNOWN = -1;
   private static final int DRAG_POSITION_LEFT = 1;
   private static final int DRAG_POSITION_TOP = 2;
   private static final int DRAG_POSITION_BOTTOM = 3;
   private static final int DRAG_POSITION_RIGHT = 4;
 
   private int calcDropPosition(final AbstractElement destination, final Point dropPoint) {
-    final int result;
+    int result = DRAG_POSITION_UNKNOWN;
     if (destination.getClass() == ElementRoot.class) {
       result = dropPoint.getX() < destination.getBounds().getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_RIGHT;
     }
     else {
       final boolean destinationIsLeft = destination.isLeftDirection();
       final Rectangle2D bounds = destination.getBounds();
-      if (dropPoint.getX() >= bounds.getX() && dropPoint.getX() <= bounds.getMaxX()) {
-        result = dropPoint.getY() < bounds.getCenterY() ? DRAG_POSITION_TOP : DRAG_POSITION_BOTTOM;
-      }
-      else {
-        if (destinationIsLeft) {
-          result = dropPoint.getX() < bounds.getCenterX() ? DRAG_POSITION_LEFT : -1;
+      if (bounds != null && dropPoint != null) {
+        if (dropPoint.getX() >= bounds.getX() && dropPoint.getX() <= bounds.getMaxX()) {
+          result = dropPoint.getY() < bounds.getCenterY() ? DRAG_POSITION_TOP : DRAG_POSITION_BOTTOM;
         }
         else {
-          result = dropPoint.getX() > bounds.getCenterX() ? DRAG_POSITION_RIGHT : -1;
+          if (destinationIsLeft) {
+            result = dropPoint.getX() < bounds.getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_UNKNOWN;
+          }
+          else {
+            result = dropPoint.getX() > bounds.getCenterX() ? DRAG_POSITION_RIGHT : DRAG_POSITION_UNKNOWN;
+          }
         }
       }
     }
@@ -1071,7 +1075,7 @@ public final class MindMapPanel extends JPanel {
 
   private void drawDestinationElement(final Graphics2D g, final MindMapPanelConfig cfg) {
     if (this.destinationElement != null) {
-      g.setColor(new Color((cfg.getSelectLineColor().getRGB() & 0xFFFFFF) | 0x80000000,true));
+      g.setColor(new Color((cfg.getSelectLineColor().getRGB() & 0xFFFFFF) | 0x80000000, true));
       g.setStroke(new BasicStroke(this.config.safeScaleFloatValue(3.0f, 0.1f)));
 
       final Rectangle2D rectToDraw = new Rectangle2D.Double();
@@ -1106,7 +1110,7 @@ public final class MindMapPanel extends JPanel {
       }
 
       if (draw) {
-        g.fillOval((int)rectToDraw.getX(), (int)rectToDraw.getY(), (int)rectToDraw.getWidth(), (int)rectToDraw.getHeight());
+        g.fill(rectToDraw);
       }
     }
   }
@@ -1423,14 +1427,14 @@ public final class MindMapPanel extends JPanel {
     return true;
   }
 
-  public MindMapPanelConfig getConfiguration(){
+  public MindMapPanelConfig getConfiguration() {
     return this.config;
   }
-  
-  public MindMapPanelController getController(){
+
+  public MindMapPanelController getController() {
     return this.controller;
   }
-  
+
   public Topic getFirstSelected() {
     return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
   }
