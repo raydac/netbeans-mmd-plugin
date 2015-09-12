@@ -76,7 +76,12 @@ public class IconBlock {
         final ScalableIcon ico;
         switch (e.getType()) {
           case FILE:
-            ico = ((ExtraFile)e).isMMDFile() ? ScalableIcon.FILE_MMD : ScalableIcon.FILE;
+            final ExtraFile theFileLink = (ExtraFile)e;
+            if (theFileLink.isAbsolute()){
+              ico = ((ExtraFile)e).isMMDFile() ? ScalableIcon.FILE_MMD_WARN : ScalableIcon.FILE_WARN;
+            }else{
+              ico = ((ExtraFile)e).isMMDFile() ? ScalableIcon.FILE_MMD : ScalableIcon.FILE;
+            }
             break;
           case LINK:
             ico = ScalableIcon.LINK;

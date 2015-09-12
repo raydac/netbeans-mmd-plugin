@@ -67,4 +67,8 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable{
     return this.fileUri;
   }
 
+  public boolean isAbsolute() {
+    return this.fileUri.isAbsolute();
+  }
+
 }

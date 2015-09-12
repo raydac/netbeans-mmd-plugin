@@ -1,5 +1,6 @@
 1.0.1
-- indicator for topic drop target is changed to filled half-transparent rectangle
+- added special icons for MMD files and files with absolute path
+- indicator for topic drop target is changed to filled half-transparent rectangle, improved topic d&d algorithm
 - improved print subsystem to support print of multi-page documents
 - refactoring, project splitted to modules
 - minimal version of Java changed to 1.7

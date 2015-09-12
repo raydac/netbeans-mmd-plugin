@@ -25,7 +25,9 @@ import org.apache.commons.io.IOUtils;
 
 public enum ScalableIcon {
   FILE("extra_file.png"), //NOI18N
+  FILE_WARN("extra_file_warn.png"), //NOI18N
   FILE_MMD("extra_mmd.png"), //NOI18N
+  FILE_MMD_WARN("extra_mmd_warn.png"), //NOI18N
   TOPIC("extra_topic.png"), //NOI18N
   TEXT("extra_note.png"), //NOI18N
   LINK("extra_uri.png"); //NOI18N
