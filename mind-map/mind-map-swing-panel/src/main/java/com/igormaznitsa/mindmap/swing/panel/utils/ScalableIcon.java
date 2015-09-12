@@ -24,10 +24,10 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 
 public enum ScalableIcon {
-  FILE("file_link.png"), //NOI18N
-  TOPIC("brick_link.png"), //NOI18N
-  TEXT("note_link.png"), //NOI18N
-  LINK("url_link.png"); //NOI18N
+  FILE("extra_file.png"), //NOI18N
+  TOPIC("extra_topic.png"), //NOI18N
+  TEXT("extra_note.png"), //NOI18N
+  LINK("extra_uri.png"); //NOI18N
 
   public static final int BASE_WIDTH = 16;
   public static final int BASE_HEIGHT = 16;
@@ -41,7 +41,7 @@ public enum ScalableIcon {
   private final float baseScaleY;
   
   private ScalableIcon(final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/"+name); //NOI18N
+    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/"+name); //NOI18N
     try{
       this.baseImage = ImageIO.read(in);
       this.scaledCachedImage = null;
@@ -74,9 +74,12 @@ public enum ScalableIcon {
     
       final BufferedImage img = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
       final Graphics2D g = (Graphics2D)img.getGraphics();
+
       g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      
       g.drawImage(this.baseImage,0,0,scaledW, scaledH, null);
       g.dispose();
       

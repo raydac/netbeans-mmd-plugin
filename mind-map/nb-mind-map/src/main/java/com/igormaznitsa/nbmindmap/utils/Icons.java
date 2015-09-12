@@ -47,7 +47,7 @@ public enum Icons {
   }
   
   private Icons(final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/" + name); //NOI18N
+    final InputStream in = Icons.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/" + name); //NOI18N
     try {
       this.icon = new ImageIcon(ImageIO.read(in));
     }

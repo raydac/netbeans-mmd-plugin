@@ -13,42 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.gui.icons;
+package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import com.igormaznitsa.nbmindmap.utils.ScalableIcon;
 import java.awt.Image;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ScalableIconTest {
-
+  
   @Test
-  public void testIcons(){
+  public void testIcons() {
     assertNotNull(ScalableIcon.FILE.getImage(1.0f));
     assertNotNull(ScalableIcon.LINK.getImage(1.0f));
     assertNotNull(ScalableIcon.TOPIC.getImage(1.0f));
     assertNotNull(ScalableIcon.TEXT.getImage(1.0f));
   }
-  
+
   @Test
-  public void testIconScale_1x(){
+  public void testIconScale_1x() {
     final Image img = ScalableIcon.FILE.getImage(1.0f);
-    assertEquals(16,img.getWidth(null));
-    assertEquals(16,img.getHeight(null));
+    assertEquals(16, img.getWidth(null));
+    assertEquals(16, img.getHeight(null));
   }
-  
+
   @Test
-  public void testIconScale_2x(){
+  public void testIconScale_2x() {
     final Image img = ScalableIcon.FILE.getImage(2.0f);
-    assertEquals(32,img.getWidth(null));
-    assertEquals(32,img.getHeight(null));
+    assertEquals(32, img.getWidth(null));
+    assertEquals(32, img.getHeight(null));
   }
-  
+
   @Test
-  public void testIconScale_3x(){
+  public void testIconScale_3x() {
     final Image img = ScalableIcon.FILE.getImage(3.0f);
-    assertEquals(48,img.getWidth(null));
-    assertEquals(48,img.getHeight(null));
+    assertEquals(48, img.getWidth(null));
+    assertEquals(48, img.getHeight(null));
   }
   
 }
