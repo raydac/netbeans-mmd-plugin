@@ -30,7 +30,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   protected final Rectangle2D collapsatorZone = new Rectangle2D.Double();
   public static final String ATTR_COLLAPSED = "collapsed";
-  
+
   public AbstractCollapsableElement(final Topic model) {
     super(model);
   }
@@ -43,7 +43,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
     final int DELTA = (int) Math.round(cfg.getCollapsatorSize() * 0.3d * cfg.getScale());
 
-    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getCollapsatorBorderWidth(),0.1f)));
+    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getCollapsatorBorderWidth(), 0.1f)));
     g.setColor(cfg.getCollapsatorBackgroundColor());
     g.fillOval(x, y, w, h);
     g.setColor(cfg.getCollapsatorBorderColor());
@@ -182,7 +182,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
       final Dimension2D childBlockSize = calcBlockSize(cfg, null, true);
       double currentY = topY + (this.blockSize.getHeight() - childBlockSize.getHeight()) / 2.0d;
-      
+
       boolean notFirstChild = false;
 
       for (final Topic t : this.model.getChildren()) {
@@ -210,7 +210,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public void drawConnector(final Graphics2D g, final Rectangle2D source, final Rectangle2D destination, final boolean leftDirection, final MindMapPanelConfig cfg) {
-    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(),0.1f)));
+    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f)));
     g.setColor(cfg.getConnectorColor());
 
     final double dy = Math.abs(destination.getCenterY() - source.getCenterY());
@@ -299,20 +299,28 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     return result;
   }
 
-  public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map){
+  public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map) {
     removeCollapseAttrIfNoChildren(map == null ? null : map.getRoot());
   }
-  
-  private static void removeCollapseAttrIfNoChildren(final Topic topic){
-    if (topic!=null){
-    if (!topic.hasChildren()){
-      topic.setAttribute(ATTR_COLLAPSED, null);
-    }else{
-      for(final Topic t : topic.getChildren()){
-        removeCollapseAttrIfNoChildren(t);
+
+  private static void removeCollapseAttrIfNoChildren(final Topic topic) {
+    if (topic != null) {
+      if (!topic.hasChildren()) {
+        topic.setAttribute(ATTR_COLLAPSED, null);
+      }
+      else {
+        for (final Topic t : topic.getChildren()) {
+          removeCollapseAttrIfNoChildren(t);
+        }
       }
     }
-    }
   }
-  
+
+  public static boolean isHidden(final Topic topic) {
+    if (topic == null) {
+      return true;
+    }
+    final String collapsed = topic.findAttributeInAncestors(ATTR_COLLAPSED);
+    return collapsed != null && Boolean.parseBoolean(collapsed);
+  }
 }

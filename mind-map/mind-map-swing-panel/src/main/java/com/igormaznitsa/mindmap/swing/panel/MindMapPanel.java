@@ -985,7 +985,7 @@ public final class MindMapPanel extends JPanel {
   }
 
   public void setModel(final MindMap model) {
-    final List<int[]> selectedPaths = new ArrayList<int[]>();
+    final List<int[]> selectedPaths = new ArrayList<>();
     for (final Topic t : this.selectedTopics) {
       selectedPaths.add(t.getPositionPath());
     }
@@ -1003,7 +1003,9 @@ public final class MindMapPanel extends JPanel {
         selectionChanged = true;
       }
       else {
-        this.selectedTopics.add(topic);
+        if (!AbstractCollapsableElement.isHidden(topic)){
+          this.selectedTopics.add(topic);
+        }
       }
     }
     if (selectionChanged) {

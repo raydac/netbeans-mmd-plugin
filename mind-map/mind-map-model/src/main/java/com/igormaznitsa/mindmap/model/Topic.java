@@ -437,6 +437,21 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  public String findAttributeInAncestors(final String attrName){
+    this.map.lock();
+    try{
+      String result = null;
+      Topic current = this.parent;
+      while(result == null && current!=null){
+        result = current.getAttribute(attrName);
+        current = current.parent;
+      }
+      return result;
+    }finally{
+      this.map.unlock();
+    }
+  }
+  
   public void moveAfter(final Topic topic) {
     this.map.lock();
     try {
