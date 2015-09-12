@@ -167,5 +167,14 @@ public class MMapURITest {
     assertEquals(new File("/Kõik/või/mitte/midagi.txt"),uri.asFile(null));
   }
 
+  @Test
+  public void testGetExtension() throws Exception {
+    assertEquals("",new MMapURI("http://wwww.hello.world/").getExtension());
+    assertEquals("",new MMapURI("http://wwww.hello.world/test").getExtension());
+    assertEquals("abc",new MMapURI("http://wwww.hello.world/test.abc").getExtension());
+    assertEquals("ABC",new MMapURI("http://wwww.hello.world/test.ABC").getExtension());
+    assertEquals("ABC",new MMapURI("http://wwww.hello.world/test.ABC?dot=eer.txt").getExtension());
+    assertEquals("ABC",new MMapURI("http://wwww.hello.world/test.ABC?dot=eer.txt#rwwewe").getExtension());
+  }
 
 }

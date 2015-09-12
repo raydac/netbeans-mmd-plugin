@@ -22,6 +22,7 @@ import static com.igormaznitsa.mindmap.model.Extra.ExtraType.FILE;
 import static com.igormaznitsa.mindmap.model.Extra.ExtraType.LINK;
 import static com.igormaznitsa.mindmap.model.Extra.ExtraType.NOTE;
 import static com.igormaznitsa.mindmap.model.Extra.ExtraType.TOPIC;
+import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -75,7 +76,7 @@ public class IconBlock {
         final ScalableIcon ico;
         switch (e.getType()) {
           case FILE:
-            ico = ScalableIcon.FILE;
+            ico = ((ExtraFile)e).isMMDFile() ? ScalableIcon.FILE_MMD : ScalableIcon.FILE;
             break;
           case LINK:
             ico = ScalableIcon.LINK;

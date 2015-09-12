@@ -92,6 +92,22 @@ public final class MMapURI {
     }
   }
 
+  public String getExtension() {
+    String text = this.uri.getPath();
+    final int lastSlash = text.lastIndexOf('/');
+    if (lastSlash >= 0) {
+      text = text.substring(lastSlash + 1);
+    }
+    String result = "";
+    if (!text.isEmpty()) {
+      final int dotIndex = text.lastIndexOf('.');
+      if (dotIndex >= 0) {
+        result = text.substring(dotIndex+1);
+      }
+    }
+    return result;
+  }
+
   public String asString(final boolean ascII, final boolean addPropertiesAsQuery) {
     if (this.fileUriFlag) {
       return (ascII ? this.uri.toASCIIString() : this.uri.toString()) + (!addPropertiesAsQuery || this.parameters.isEmpty() ? "" : '?' + ModelUtils.makeQueryStringForURI(this.parameters));
@@ -124,9 +140,9 @@ public final class MMapURI {
   public boolean isAbsolute() {
     return this.uri.isAbsolute();
   }
-  
+
   @Override
-  public String toString(){
+  public String toString() {
     return asString(true, true);
   }
 }

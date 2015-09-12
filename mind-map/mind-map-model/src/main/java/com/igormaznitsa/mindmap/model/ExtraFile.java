@@ -23,13 +23,20 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable{
   private final MMapURI fileUri;
 
   private volatile String cachedString;
+
+  private final boolean mmdFileFlag;
   
   public ExtraFile(final MMapURI file){
     this.fileUri = file;
+    this.mmdFileFlag = this.fileUri.getExtension().equalsIgnoreCase("mmd");
   }
 
   public ExtraFile(final String text) throws URISyntaxException {
-    this.fileUri = new MMapURI(text);
+    this(new MMapURI(text));
+  }
+
+  public boolean isMMDFile(){
+    return this.mmdFileFlag;
   }
   
   @Override
