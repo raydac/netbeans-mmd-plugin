@@ -375,7 +375,7 @@ public final class MindMapPanel extends JPanel {
               if (elementUnderMouse.isMoveable()) {
                 selectedTopics.clear();
                 draggedElementPoint = e.getPoint();
-                draggedElementPointDrawOffset = new Point((int)Math.round(draggedElementPoint.getX()-draggedElement.getBounds().getX()), (int)Math.round(draggedElementPoint.getY()-draggedElement.getBounds().getY()));
+                draggedElementPointDrawOffset = new Point((int) Math.round(draggedElementPoint.getX() - draggedElement.getBounds().getX()), (int) Math.round(draggedElementPoint.getY() - draggedElement.getBounds().getY()));
                 findDestinationElementForDragged();
                 repaint();
               }
@@ -537,8 +537,10 @@ public final class MindMapPanel extends JPanel {
     else {
       final boolean destinationIsLeft = destination.isLeftDirection();
       final Rectangle2D bounds = destination.getBounds();
+
       if (bounds != null && dropPoint != null) {
-        if (dropPoint.getX() >= bounds.getX() && dropPoint.getX() <= bounds.getMaxX()) {
+        final double edgeOffset = bounds.getWidth() * 0.2d;
+        if (dropPoint.getX() >= (bounds.getX() + edgeOffset) && dropPoint.getX() <= (bounds.getMaxX() - edgeOffset)) {
           result = dropPoint.getY() < bounds.getCenterY() ? DRAG_POSITION_TOP : DRAG_POSITION_BOTTOM;
         }
         else {
@@ -930,7 +932,7 @@ public final class MindMapPanel extends JPanel {
   private void findDestinationElementForDragged() {
     if (this.draggedElementPoint != null && this.draggedElement != null) {
       final AbstractElement root = (AbstractElement) this.model.getRoot().getPayload();
-      this.destinationElement = root.findNearestTopicToPoint(this.draggedElement, this.draggedElementPoint);
+      this.destinationElement = root.findNearestOpenedTopicToPoint(this.draggedElement, this.draggedElementPoint);
     }
     else {
       this.destinationElement = null;
@@ -1076,7 +1078,7 @@ public final class MindMapPanel extends JPanel {
   }
 
   private void drawDestinationElement(final Graphics2D g, final MindMapPanelConfig cfg) {
-    if (this.destinationElement != null && this.draggedElement!=null && this.draggedElementPoint!=null) {
+    if (this.destinationElement != null && this.draggedElement != null && this.draggedElementPoint != null) {
       g.setColor(new Color((cfg.getSelectLineColor().getRGB() & 0xFFFFFF) | 0x80000000, true));
       g.setStroke(new BasicStroke(this.config.safeScaleFloatValue(3.0f, 0.1f)));
 

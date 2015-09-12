@@ -220,14 +220,14 @@ public abstract class AbstractElement {
     return this.bounds.getX() - (this.isLeftDirection() ? this.blockSize.getWidth() - this.bounds.getWidth() : 0.0d);
   }
 
-  public AbstractElement findNearestTopicToPoint(final AbstractElement elementToIgnore, final Point point) {
+  public AbstractElement findNearestOpenedTopicToPoint(final AbstractElement elementToIgnore, final Point point) {
     return findNearestTopic(elementToIgnore, Double.MAX_VALUE, point);
   }
 
   private AbstractElement findNearestTopic(final AbstractElement elementToIgnore, double maxDistance, final Point point) {
     AbstractElement result = null;
     if (elementToIgnore != this){
-      final double dist = calcDistanceToPoint(point);
+      final double dist = calcAverageDistanceToPoint(point);
       if (dist<maxDistance){
         maxDistance = dist;
         result = this;
@@ -240,7 +240,7 @@ public abstract class AbstractElement {
         if (element != null) {
           final AbstractElement nearestChild = element.findNearestTopic(elementToIgnore, maxDistance, point);
           if (nearestChild != null) {
-            maxDistance = nearestChild.calcDistanceToPoint(point);
+            maxDistance = nearestChild.calcAverageDistanceToPoint(point);
             result = nearestChild;
           }
         }
@@ -249,8 +249,12 @@ public abstract class AbstractElement {
     return result;
   }
 
-  public double calcDistanceToPoint(final Point point) {
-    return Point2D.distance(this.bounds.getCenterX(), this.bounds.getCenterY(), point.getX(), point.getY());
+  public double calcAverageDistanceToPoint(final Point point) {
+    final double d1 = point.distance(this.bounds.getX(), this.bounds.getY());
+    final double d2 = point.distance(this.bounds.getMaxX(), this.bounds.getY());
+    final double d3 = point.distance(this.bounds.getX(), this.bounds.getMaxY());
+    final double d4 = point.distance(this.bounds.getMaxX(), this.bounds.getMaxY());
+    return (d1+d2+d3+d4)/(this.bounds.contains(point) ? 8.0d : 4.0d);
   }
 
   public AbstractElement findTopicBlockForPoint(final Point point) {
