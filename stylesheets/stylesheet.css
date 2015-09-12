@@ -23,6 +23,10 @@ time, mark, audio, video {
   border: 0;
 }
 
+.iframe-wrapper {
+  text-align:center; 
+}
+
 /* Center images */
 img {
   display: block;
