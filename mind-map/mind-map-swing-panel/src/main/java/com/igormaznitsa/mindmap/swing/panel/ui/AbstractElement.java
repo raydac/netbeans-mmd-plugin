@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Dimension2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import javax.swing.text.JTextComponent;
 
@@ -219,24 +220,28 @@ public abstract class AbstractElement {
     return this.bounds.getX() - (this.isLeftDirection() ? this.blockSize.getWidth() - this.bounds.getWidth() : 0.0d);
   }
 
-  public AbstractElement findNearestTopic(final AbstractElement elementToIgnore, final Point point) {
-    return findNearestTopic(elementToIgnore, calcDistanceToPoint(point), point);
+  public AbstractElement findNearestTopicToPoint(final AbstractElement elementToIgnore, final Point point) {
+    return findNearestTopic(elementToIgnore, Double.MAX_VALUE, point);
   }
 
-  private AbstractElement findNearestTopic(final AbstractElement elementToIgnore, final double lessThanDistance, final Point point) {
-    double curDistance = this == elementToIgnore ? Double.MAX_VALUE : calcDistanceToPoint(point);
-    AbstractElement result = curDistance <= lessThanDistance ? this : null;
+  private AbstractElement findNearestTopic(final AbstractElement elementToIgnore, double maxDistance, final Point point) {
+    AbstractElement result = null;
+    if (elementToIgnore != this){
+      final double dist = calcDistanceToPoint(point);
+      if (dist<maxDistance){
+        maxDistance = dist;
+        result = this;
+      }
+    }
+    
     if (!this.isCollapsed()) {
       for (final Topic t : this.model.getChildren()) {
         final AbstractElement element = t.getPayload() == null ? null : (AbstractElement) t.getPayload();
         if (element != null) {
-          final AbstractElement nearestChild = element.findNearestTopic(elementToIgnore, curDistance, point);
+          final AbstractElement nearestChild = element.findNearestTopic(elementToIgnore, maxDistance, point);
           if (nearestChild != null) {
-            final double dist = nearestChild.calcDistanceToPoint(point);
-            if (dist < curDistance) {
-              curDistance = dist;
-              result = nearestChild;
-            }
+            maxDistance = nearestChild.calcDistanceToPoint(point);
+            result = nearestChild;
           }
         }
       }
@@ -245,7 +250,7 @@ public abstract class AbstractElement {
   }
 
   public double calcDistanceToPoint(final Point point) {
-    return Math.sqrt(Math.pow(this.bounds.getCenterX() - point.getX(), 2.0d) + Math.pow(this.bounds.getCenterY() - point.getY(), 2.0d));
+    return Point2D.distance(this.bounds.getCenterX(), this.bounds.getCenterY(), point.getX(), point.getY());
   }
 
   public AbstractElement findTopicBlockForPoint(final Point point) {

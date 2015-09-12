@@ -90,6 +90,7 @@ public final class MindMapPanel extends JPanel {
   private transient MouseSelectedArea mouseDragSelection = null;
   private transient AbstractElement draggedElement = null;
   private transient Point draggedElementPoint = null;
+  private transient Point draggedElementPointDrawOffset = null;
   private transient AbstractElement destinationElement = null;
 
   private volatile boolean popupMenuActive = false;
@@ -374,6 +375,7 @@ public final class MindMapPanel extends JPanel {
               if (elementUnderMouse.isMoveable()) {
                 selectedTopics.clear();
                 draggedElementPoint = e.getPoint();
+                draggedElementPointDrawOffset = new Point((int)Math.round(draggedElementPoint.getX()-draggedElement.getBounds().getX()), (int)Math.round(draggedElementPoint.getY()-draggedElement.getBounds().getY()));
                 findDestinationElementForDragged();
                 repaint();
               }
@@ -928,7 +930,7 @@ public final class MindMapPanel extends JPanel {
   private void findDestinationElementForDragged() {
     if (this.draggedElementPoint != null && this.draggedElement != null) {
       final AbstractElement root = (AbstractElement) this.model.getRoot().getPayload();
-      this.destinationElement = root.findNearestTopic(this.draggedElement, this.draggedElementPoint);
+      this.destinationElement = root.findNearestTopicToPoint(this.draggedElement, this.draggedElementPoint);
     }
     else {
       this.destinationElement = null;
@@ -1074,7 +1076,7 @@ public final class MindMapPanel extends JPanel {
   }
 
   private void drawDestinationElement(final Graphics2D g, final MindMapPanelConfig cfg) {
-    if (this.destinationElement != null) {
+    if (this.destinationElement != null && this.draggedElement!=null && this.draggedElementPoint!=null) {
       g.setColor(new Color((cfg.getSelectLineColor().getRGB() & 0xFFFFFF) | 0x80000000, true));
       g.setStroke(new BasicStroke(this.config.safeScaleFloatValue(3.0f, 0.1f)));
 
@@ -1345,8 +1347,8 @@ public final class MindMapPanel extends JPanel {
       paintChildren(g);
 
       if (this.draggedElement != null && this.draggedElementPoint != null) {
-        final int px = this.draggedElementPoint.x - ((int) this.draggedElement.getBounds().getWidth()) / 2;
-        final int py = this.draggedElementPoint.y - ((int) this.draggedElement.getBounds().getHeight()) / 2;
+        final int px = this.draggedElementPoint.x - this.draggedElementPointDrawOffset.x;
+        final int py = this.draggedElementPoint.y - this.draggedElementPointDrawOffset.y;
         gfx.translate(px, py);
         try {
           this.draggedElement.drawComponent(gfx, this.config);
