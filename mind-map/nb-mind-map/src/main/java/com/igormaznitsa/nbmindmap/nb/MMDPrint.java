@@ -167,6 +167,6 @@ public class MMDPrint {
   }
 
   public PrintPage[][] getPages() {
-    return pages;
+    return this.pages;
   }
 }

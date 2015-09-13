@@ -16,6 +16,7 @@
 package com.igormaznitsa.mindmap.model;
 
 import java.io.File;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,8 +24,10 @@ import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public final class MMapURI {
+public class MMapURI implements Serializable {
 
+  public static final long serialVersionUID = 27896411234L;
+  
   private static final Properties EMPTY = new Properties();
 
   private final URI uri;

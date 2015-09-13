@@ -78,10 +78,10 @@ public final class FileEditPanel extends javax.swing.JPanel {
     textFieldFilePath = new javax.swing.JTextField();
     buttonChooseFile = new javax.swing.JButton();
     buttonReset = new javax.swing.JButton();
-    jPanel1 = new javax.swing.JPanel();
+    optionPanel = new javax.swing.JPanel();
     checkBoxShowFileInSystem = new javax.swing.JCheckBox();
 
-    setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 1, 10));
     setLayout(new java.awt.GridBagLayout());
 
     labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_link.png"))); // NOI18N
@@ -123,10 +123,10 @@ public final class FileEditPanel extends javax.swing.JPanel {
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     add(buttonReset, gridBagConstraints);
 
-    jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+    optionPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
     org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowFileInSystem, bundle.getString("FileEditPanel.checkBoxShowFileInSystem.text")); // NOI18N
-    jPanel1.add(checkBoxShowFileInSystem);
+    optionPanel.add(checkBoxShowFileInSystem);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -134,7 +134,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.ipadx = 2;
-    add(jPanel1, gridBagConstraints);
+    add(optionPanel, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
  
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
@@ -175,8 +175,8 @@ public final class FileEditPanel extends javax.swing.JPanel {
   private javax.swing.JButton buttonChooseFile;
   private javax.swing.JButton buttonReset;
   private javax.swing.JCheckBox checkBoxShowFileInSystem;
-  private javax.swing.JPanel jPanel1;
   private javax.swing.JLabel labelBrowseCurrentLink;
+  private javax.swing.JPanel optionPanel;
   private javax.swing.JTextField textFieldFilePath;
   // End of variables declaration//GEN-END:variables
 }

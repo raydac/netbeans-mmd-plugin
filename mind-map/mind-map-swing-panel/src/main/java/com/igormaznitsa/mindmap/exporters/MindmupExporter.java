@@ -258,7 +258,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     state.start("attr"); //NOI18N
     state.start("style").set("background", Utils.color2html(cfg.getRootBackgroundColor())).end(); //NOI18N
 
-    final String attachment = makeHtmlFromExtras(root);
+    final String attachment = root == null ? null : makeHtmlFromExtras(root);
     if (attachment != null) {
       state.start("attachment"); //NOI18N
       state.set("contentType", "text/html"); //NOI18N
