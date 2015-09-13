@@ -140,19 +140,15 @@ public enum NbUtils {
     }
   }
 
-  public static String editFilePath(final String title, final File projectFolder, final String path) {
-    final FileEditPanel textEditor = new FileEditPanel(projectFolder, path);
+  public static FileEditPanel.DataContainer editFilePath(final String title, final File projectFolder, final FileEditPanel.DataContainer data) {
+    final FileEditPanel filePathEditor = new FileEditPanel(projectFolder, data);
 
-    textEditor.doLayout();
-    textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));
+    filePathEditor.doLayout();
+    filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
 
-    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(textEditor, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(filePathEditor, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
-      final String text = textEditor.getPath();
-      if (text.isEmpty()) {
-        return ""; //NOI18N
-      }
-      return text.trim();
+      return filePathEditor.getData();
     }
     else {
       return null;

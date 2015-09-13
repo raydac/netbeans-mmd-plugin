@@ -96,7 +96,7 @@ public final class UriEditPanel extends javax.swing.JPanel {
     textFieldURI = new javax.swing.JTextField();
     labelValidator = new javax.swing.JLabel();
 
-    setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 10));
+    setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
     setLayout(new java.awt.GridBagLayout());
 
     labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/url_link.png"))); // NOI18N

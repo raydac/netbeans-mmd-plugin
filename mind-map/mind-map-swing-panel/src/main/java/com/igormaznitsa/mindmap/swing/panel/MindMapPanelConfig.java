@@ -30,7 +30,7 @@ public final class MindMapPanelConfig implements Serializable {
 
   private static final long serialVersionUID = -4273687011484460064L;
 
-  private final List<WeakReference<MindMapConfigListener>> listeners = new ArrayList<WeakReference<MindMapConfigListener>>();
+  private final List<WeakReference<MindMapConfigListener>> listeners = new ArrayList<>();
 
   private int collapsatorSize = 16;
   private int textMargins = 10;
@@ -63,7 +63,7 @@ public final class MindMapPanelConfig implements Serializable {
   private float elementBorderWidth = 1.0f;
   private float collapsatorBorderWidth = 1.0f;
   private float connectorWidth = 1.5f;
-  private float selectLineWidth = 2.0f;
+  private float selectLineWidth = 3.0f;
 
   private Font font = new Font("Arial", Font.BOLD, 18); //NOI18N
   private double scale = 1.0d;
@@ -211,7 +211,7 @@ public final class MindMapPanelConfig implements Serializable {
             for (final WeakReference<MindMapConfigListener> weakContainer : src.listeners) {
               final MindMapConfigListener theListener = weakContainer.get();
               if (theListener != null) {
-                this.listeners.add(new WeakReference<MindMapConfigListener>(theListener));
+                this.listeners.add(new WeakReference<>(theListener));
               }
             }
           }
@@ -234,7 +234,7 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   public void addConfigurationListener(final MindMapConfigListener l) {
-    this.listeners.add(new WeakReference<MindMapConfigListener>(l));
+    this.listeners.add(new WeakReference<>(l));
   }
 
   public void removeConfigurationListener(final MindMapConfigListener l) {

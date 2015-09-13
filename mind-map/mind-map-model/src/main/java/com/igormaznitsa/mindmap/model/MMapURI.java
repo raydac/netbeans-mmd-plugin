@@ -36,18 +36,31 @@ public final class MMapURI {
   }
 
   public MMapURI(final URI uri) {
-    ModelUtils.assertNotNull("URI must not be nukk", uri);
+    ModelUtils.assertNotNull("URI must not be nukk", uri); //NOI18N
 
-    this.fileUriFlag = uri.getScheme() == null ? false : uri.getScheme().equalsIgnoreCase("file");
+    this.fileUriFlag = uri.getScheme() == null ? true : uri.getScheme().equalsIgnoreCase("file"); //NOI18N
+
+    final URI preparedURI;
 
     final String queryString = uri.getRawQuery();
     if (queryString != null) {
       this.parameters = ModelUtils.extractQueryPropertiesFromURI(uri);
+      if (this.fileUriFlag){
+      try {
+        preparedURI = new URI(uri.getScheme(), null, uri.getHost(), -1, uri.getPath(), null, null);
+      }
+      catch (URISyntaxException ex) {
+        throw new Error("Unexpected error", ex);
+      }
+      }else{
+        preparedURI = uri;
+      }
     }
     else {
       this.parameters = EMPTY;
+      preparedURI = uri;
     }
-    this.uri = uri;
+    this.uri = preparedURI;
   }
 
   public MMapURI(final File nullableBase, final File file, final Properties nullableParameters) {
@@ -84,7 +97,7 @@ public final class MMapURI {
         return new URI(this.uri.toASCIIString() + (this.parameters.isEmpty() ? "" : '?' + ModelUtils.makeQueryStringForURI(this.parameters)));
       }
       catch (URISyntaxException ex) {
-        throw new Error("Unexpected error during URI convertation");
+        throw new Error("Unexpected error during URI convertation"); //NOI18N
       }
     }
     else {
@@ -98,11 +111,11 @@ public final class MMapURI {
     if (lastSlash >= 0) {
       text = text.substring(lastSlash + 1);
     }
-    String result = "";
+    String result = ""; //NOI18N
     if (!text.isEmpty()) {
       final int dotIndex = text.lastIndexOf('.');
       if (dotIndex >= 0) {
-        result = text.substring(dotIndex+1);
+        result = text.substring(dotIndex + 1);
       }
     }
     return result;
@@ -110,7 +123,7 @@ public final class MMapURI {
 
   public String asString(final boolean ascII, final boolean addPropertiesAsQuery) {
     if (this.fileUriFlag) {
-      return (ascII ? this.uri.toASCIIString() : this.uri.toString()) + (!addPropertiesAsQuery || this.parameters.isEmpty() ? "" : '?' + ModelUtils.makeQueryStringForURI(this.parameters));
+      return (ascII ? this.uri.toASCIIString() : this.uri.toString()) + (!addPropertiesAsQuery || this.parameters.isEmpty() ? "" : '?' + ModelUtils.makeQueryStringForURI(this.parameters)); //NOI18N
     }
     else {
       return ascII ? this.uri.toASCIIString() : this.uri.toString();
@@ -124,10 +137,10 @@ public final class MMapURI {
     }
     else {
       try {
-        result = new File(base, URLDecoder.decode(this.uri.getPath(), "UTF-8"));
+        result = new File(base, URLDecoder.decode(this.uri.getPath(), "UTF-8")); //NOI18N
       }
       catch (UnsupportedEncodingException ex) {
-        throw new Error("Unexpected error", ex);
+        throw new Error("Unexpected error", ex); //NOI18N
       }
     }
     return result;

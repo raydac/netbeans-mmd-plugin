@@ -28,7 +28,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable{
   
   public ExtraFile(final MMapURI file){
     this.fileUri = file;
-    this.mmdFileFlag = this.fileUri.getExtension().equalsIgnoreCase("mmd");
+    this.mmdFileFlag = this.fileUri.getExtension().equalsIgnoreCase("mmd"); //NOI18N
   }
 
   public ExtraFile(final String text) throws URISyntaxException {

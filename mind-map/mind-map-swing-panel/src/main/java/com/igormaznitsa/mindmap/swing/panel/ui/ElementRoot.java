@@ -16,8 +16,6 @@
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
@@ -267,7 +265,7 @@ public final class ElementRoot extends AbstractElement {
 
         Topic prev = null;
 
-        final List<Topic> childForDirection = new ArrayList<Topic>();
+        final List<Topic> childForDirection = new ArrayList<>();
         if (point.getX() < this.bounds.getCenterX()) {
           for (final Topic t : this.model.getChildren()) {
             if (((AbstractElement) t.getPayload()).isLeftDirection()) {

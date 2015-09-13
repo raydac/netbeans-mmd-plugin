@@ -46,7 +46,7 @@ public class MMapURITest {
     assertTrue(uri.getParameters().isEmpty());
 
     uri = new MMapURI("/some/test?hello=1234");
-    assertEquals("/some/test?hello=1234", uri.asString(false, false));
+    assertEquals("/some/test?hello=1234", uri.asString(false, true));
     assertFalse(uri.isAbsolute());
     assertEquals(1, uri.getParameters().size());
   }
@@ -65,7 +65,7 @@ public class MMapURITest {
     assertTrue(uri.getParameters().isEmpty());
 
     uri = new MMapURI(new URI("/some/test?hello=1234"));
-    assertEquals("/some/test?hello=1234", uri.asString(false, false));
+    assertEquals("/some/test?hello=1234", uri.asString(false, true));
     assertFalse(uri.isAbsolute());
     assertEquals(1, uri.getParameters().size());
   }

@@ -33,12 +33,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.sql.Timestamp;
-import java.util.Locale;
 import javax.swing.ImageIcon;
-import javax.swing.filechooser.FileFilter;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -180,7 +176,6 @@ public class MDExporter extends AbstractMindMapExporter {
               .append(StringEscapeUtils.escapeHtml(note.getValue()))
               .append("</pre>")//NOI18N
               .nextLine();
-      extrasPrinted = true;
     }
   }
 

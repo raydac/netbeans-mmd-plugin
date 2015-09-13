@@ -18,19 +18,9 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import java.awt.Color;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +31,7 @@ public class Utils {
   private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
   public static Topic[] getLeftToRightOrderedChildrens(final Topic topic) {
-    final List<Topic> result = new ArrayList<Topic>();
+    final List<Topic> result = new ArrayList<>();
     if (topic.getTopicLevel() == 0) {
       for (final Topic t : topic.getChildren()) {
         if (AbstractCollapsableElement.isLeftSidedTopic(t)) {

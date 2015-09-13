@@ -15,8 +15,6 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.Point;
@@ -49,7 +47,7 @@ public class MouseSelectedArea {
   }
 
   public List<Topic> getAllSelectedElements(final MindMap map) {
-    final List<Topic> result = new ArrayList<Topic>();
+    final List<Topic> result = new ArrayList<>();
     final Rectangle rect = asRectangle();
     addCoveredToList(result, map.getRoot(), rect.getBounds2D());
     return result;

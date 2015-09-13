@@ -24,6 +24,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class FileEditPanel extends javax.swing.JPanel {
+  public static final class DataContainer {
+    private final String path;
+    private final boolean showWithSystemTool;
+    
+    public DataContainer(final String path, final boolean showWithSystemTool){
+      this.path = path == null ? "" : path;
+      this.showWithSystemTool = showWithSystemTool;
+    }
+    
+    public String getPath(){
+      return this.path;
+    }
+    
+    public boolean isShowWithSystemTool(){
+      return this.showWithSystemTool;
+    }
+    
+    public boolean isEmpty(){
+      return this.path.trim().isEmpty();
+    }
+  }
 
   private static final long serialVersionUID = -6683682013891751388L;
 
@@ -31,14 +52,16 @@ public final class FileEditPanel extends javax.swing.JPanel {
   
   private final File projectFolder;
   
-  public FileEditPanel(final File projectFolder, final String path) {
+  
+  public FileEditPanel(final File projectFolder, final DataContainer initialData) {
     initComponents();
     this.projectFolder = projectFolder;
-    this.textFieldFilePath.setText(path == null ? "" : path);
+    this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath());
+    this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
   }
 
-  public String getPath() {
-    return this.textFieldFilePath.getText().trim();
+  public DataContainer getData() {
+    return new DataContainer(this.textFieldFilePath.getText().trim(),this.checkBoxShowFileInSystem.isSelected());
   }
 
   /**
@@ -55,8 +78,10 @@ public final class FileEditPanel extends javax.swing.JPanel {
     textFieldFilePath = new javax.swing.JTextField();
     buttonChooseFile = new javax.swing.JButton();
     buttonReset = new javax.swing.JButton();
+    jPanel1 = new javax.swing.JPanel();
+    checkBoxShowFileInSystem = new javax.swing.JCheckBox();
 
-    setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 10));
+    setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
     setLayout(new java.awt.GridBagLayout());
 
     labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_link.png"))); // NOI18N
@@ -97,6 +122,19 @@ public final class FileEditPanel extends javax.swing.JPanel {
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     add(buttonReset, gridBagConstraints);
+
+    jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+    org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowFileInSystem, bundle.getString("FileEditPanel.checkBoxShowFileInSystem.text")); // NOI18N
+    jPanel1.add(checkBoxShowFileInSystem);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridwidth = 4;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.ipadx = 2;
+    add(jPanel1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
  
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
@@ -136,6 +174,8 @@ public final class FileEditPanel extends javax.swing.JPanel {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonChooseFile;
   private javax.swing.JButton buttonReset;
+  private javax.swing.JCheckBox checkBoxShowFileInSystem;
+  private javax.swing.JPanel jPanel1;
   private javax.swing.JLabel labelBrowseCurrentLink;
   private javax.swing.JTextField textFieldFilePath;
   // End of variables declaration//GEN-END:variables

@@ -36,9 +36,11 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.nbmindmap.utils.AboutPanel;
+import com.igormaznitsa.nbmindmap.utils.FileEditPanel;
 import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
@@ -61,6 +63,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.Properties;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.actions.Openable;
@@ -98,6 +101,8 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   private static final long serialVersionUID = -8776707243607267446L;
   private static final Logger logger = LoggerFactory.getLogger(MMDGraphEditor.class);
+
+  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem";
 
   public static final String ID = "mmd-graph-editor"; //NOI18N
 
@@ -372,10 +377,15 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
           }
 
           try {
-            final DataObject dobj = DataObject.find(fileObj);
-            final Openable openable = dobj.getLookup().lookup(Openable.class);
-            if (openable != null) {
-              openable.open();
+            if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) {
+              Desktop.getDesktop().open(uri.asFile(this.editorSupport.getProjectDirectory()));
+            }
+            else {
+              final DataObject dobj = DataObject.find(fileObj);
+              final Openable openable = dobj.getLookup().lookup(Openable.class);
+              if (openable != null) {
+                openable.open();
+              }
             }
           }
           catch (Exception ex) {
@@ -558,7 +568,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   private void editFileLinkForTopic(final Topic topic) {
     final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
-    final String path;
+    final FileEditPanel.DataContainer path;
 
     final File projectFolder = getProjectFolder();
     if (file == null) {
@@ -566,17 +576,18 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     }
     else {
       final MMapURI uri = file.getValue();
-      final String origPath;
+      final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
+      final FileEditPanel.DataContainer origPath;
       if (uri.isAbsolute()) {
-        origPath = uri.asFile(getProjectFolder()).getAbsolutePath();
+        origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getAbsolutePath(), flagOpenInSystem);
       }
       else {
         if (projectFolder == null) {
           NbUtils.msgWarn(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
-          origPath = uri.asFile(getProjectFolder()).getPath();
+          origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getPath(), flagOpenInSystem);
         }
         else {
-          origPath = uri.asFile(projectFolder).getAbsolutePath();
+          origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
         }
       }
       path = NbUtils.editFilePath(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
@@ -592,7 +603,12 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         }
       }
       else {
-        final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path, null);
+        final Properties props = new Properties();
+        if (path.isShowWithSystemTool()) {
+          props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true");
+        }
+
+        final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props);
         final File theFile = fileUri.asFile(projectFolder);
         logger.info("Path %s converted to uri: %s", fileUri.asString(false, true));
 

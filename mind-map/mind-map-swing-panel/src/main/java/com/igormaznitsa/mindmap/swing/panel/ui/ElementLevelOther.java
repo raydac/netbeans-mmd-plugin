@@ -16,7 +16,6 @@
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;

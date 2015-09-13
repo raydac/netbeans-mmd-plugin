@@ -22,7 +22,6 @@ import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
@@ -32,7 +31,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.sql.Timestamp;
 import javax.swing.ImageIcon;
 import org.apache.commons.io.IOUtils;
@@ -164,7 +162,6 @@ public class TextExporter extends AbstractMindMapExporter {
         state.nextLine();
       }
       state.append(shiftString(note.getValue(), ' ', shift)).nextLine();
-      extrasPrinted = true;
     }
   }
 

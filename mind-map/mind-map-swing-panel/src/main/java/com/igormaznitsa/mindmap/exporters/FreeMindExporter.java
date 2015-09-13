@@ -142,7 +142,7 @@ public class FreeMindExporter extends AbstractMindMapExporter {
 
     final String thelink;
 
-    final List<Extra<?>> extrasToSaveInText = new ArrayList<Extra<?>>();
+    final List<Extra<?>> extrasToSaveInText = new ArrayList<>();
 
     // make some prioritization for only attribute
     if (transition != null) {
