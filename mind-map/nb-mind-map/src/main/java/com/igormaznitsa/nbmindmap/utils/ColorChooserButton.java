@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.utils;
 
-import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -31,17 +30,19 @@ import org.openide.DialogDisplayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ColorChoosingButton extends JButton {
+public final class ColorChooserButton extends JButton {
 
   private static final long serialVersionUID = -354752410805059103L;
   
-  private static final Logger logger = LoggerFactory.getLogger(ColorChoosingButton.class);
+  private static final Logger logger = LoggerFactory.getLogger(ColorChooserButton.class);
   
   private Color value = null;
 
   private volatile boolean lastResultOk;
 
-  public ColorChoosingButton() {
+  public static final Color DIFF_COLORS = new Color(0,true);
+  
+  public ColorChooserButton() {
     super();
 
     this.setModel(new DefaultButtonModel() {
@@ -87,10 +88,27 @@ public final class ColorChoosingButton extends JButton {
     final Image img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
     final Graphics gfx = img.getGraphics();
     try {
-      gfx.setColor(color);
-      gfx.fillRect(0, 0, 16, 16);
-      gfx.setColor(Color.BLACK);
-      gfx.drawRect(0, 0, 16, 16);
+      if (color == null){
+        gfx.setColor(NbUtils.DARK_THEME ? Color.darkGray : Color.white);
+        gfx.fillRect(0, 0, 16, 16);
+        gfx.setColor(NbUtils.DARK_THEME ? Color.yellow : Color.black);
+        gfx.drawRect(0, 0, 15, 15);
+        gfx.drawLine(0, 0, 15, 15);
+      }else if (color == DIFF_COLORS) {
+        gfx.setColor(Color.red);
+        gfx.fillRect(0, 0, 8, 8);
+        gfx.setColor(Color.green);
+        gfx.fillRect(8, 0, 8, 8);
+        gfx.setColor(Color.blue);
+        gfx.fillRect(0, 8, 8, 8);
+        gfx.setColor(Color.yellow);
+        gfx.fillRect(8, 8, 8, 8);
+      }else{
+        gfx.setColor(color);
+        gfx.fillRect(0, 0, 16, 16);
+        gfx.setColor(Color.black);
+        gfx.drawRect(0, 0, 15, 15);
+      }
     }
     finally {
       gfx.dispose();

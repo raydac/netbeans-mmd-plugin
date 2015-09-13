@@ -876,6 +876,10 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
+  public Topic [] getSelectedTopics(){
+    return this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
+  }
+  
   public void updateEditorAfterResizing() {
     if (this.elementUnderEdit != null) {
       final AbstractElement element = this.elementUnderEdit;
@@ -943,6 +947,11 @@ public final class MindMapPanel extends JPanel {
     if (this.controller != null) {
       final ElementPart partUnderMouse = elementUnderMouse == null ? null : elementUnderMouse.findPartForPoint(point);
 
+      if (elementUnderMouse != null && !this.selectedTopics.contains(elementUnderMouse.getModel())){
+        this.selectedTopics.clear();
+        this.select(elementUnderMouse.getModel(), false);
+      }
+      
       final JPopupMenu menu = this.controller.makePopUpForMindMapPanel(this, point, elementUnderMouse, partUnderMouse);
       if (menu != null) {
 

@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import java.awt.Graphics2D;
@@ -66,22 +67,18 @@ public final class ElementRoot extends AbstractElement {
       g.fill(makeShape(cfg, offset, offset));
     }
 
-    g.setColor(cfg.getRootBackgroundColor());
+    g.setColor(this.getBackgroundColor(cfg));
     g.fill(shape);
 
-    g.setColor(cfg.getElementBorderColor());
+    g.setColor(this.getBorderColor(cfg));
     g.draw(shape);
 
-    g.setColor(cfg.getRootTextColor());
+    g.setColor(this.getTextColor(cfg));
     this.textBlock.paint(g);
 
     if (this.extrasIconBlock.hasContent()) {
       this.extrasIconBlock.paint(g);
     }
-
-//    g.setColor(Color.white);
-//    g.drawRect((int) (-this.leftBlockSize.getWidth()), -(int) (this.leftBlockSize.getHeight() - this.bounds.getHeight()) / 2, (int) this.leftBlockSize.getWidth(), (int) this.leftBlockSize.getHeight());
-//    g.drawRect((int) this.bounds.getWidth(), -(int) (this.rightBlockSize.getHeight() - this.bounds.getHeight()) / 2, (int) this.rightBlockSize.getWidth(), (int) this.rightBlockSize.getHeight());
   }
 
   @Override
@@ -307,4 +304,16 @@ public final class ElementRoot extends AbstractElement {
     return result;
   }
 
+  @Override
+  public Color getBackgroundColor(final MindMapPanelConfig config) {
+    final Color dflt = this.fillColor == null ? config.getRootBackgroundColor() : this.fillColor;
+    return dflt;
+  }
+
+  @Override
+  public Color getTextColor(final MindMapPanelConfig config) {
+    final Color dflt = this.textColor == null ? config.getRootTextColor() : this.textColor;
+    return dflt;
+  }
+  
 }

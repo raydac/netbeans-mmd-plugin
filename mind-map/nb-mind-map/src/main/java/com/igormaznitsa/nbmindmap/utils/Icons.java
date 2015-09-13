@@ -35,6 +35,7 @@ public enum Icons {
   URL("url16.png"), //NOI18N
   DELETE("delete16.png"), //NOI18N
   OPTIONS("settings16.png"), //NOI18N
+  COLORS("color_swatches16.png"), //NOI18N
   BLUEBALL("blueball16.png"), //NOI18N
   GOLDBALL("goldball16.png"), //NOI18N
   FILE("disk16.png"), //NOI18N

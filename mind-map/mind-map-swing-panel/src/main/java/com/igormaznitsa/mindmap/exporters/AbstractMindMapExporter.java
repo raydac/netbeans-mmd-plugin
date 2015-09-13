@@ -15,7 +15,12 @@
  */
 package com.igormaznitsa.mindmap.exporters;
 
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,20 +32,78 @@ import javax.swing.filechooser.FileFilter;
 public abstract class AbstractMindMapExporter {
 
   protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
-  
+
   public AbstractMindMapExporter() {
   }
 
   public abstract void doExport(MindMapPanel panel, OutputStream out) throws IOException;
+
   public abstract String getName();
+
   public abstract String getReference();
+
   public abstract ImageIcon getIcon();
 
-  public static File selectFileForFileFilter(final MindMapPanel panel, final String title, final String dottedFileExtension, final String filterDescription, final String approveButtonText){
+  public static Color getBackgroundColor(final MindMapPanelConfig cfg, final Topic topic) {
+    final Color extracted = Utils.html2color(topic.getAttribute(AbstractElement.ATTR_FILL_COLOR), false);
+    final Color result;
+    if (extracted == null) {
+      switch (topic.getTopicLevel()) {
+        case 0: {
+          result = cfg.getRootBackgroundColor();
+        }
+        break;
+        case 1: {
+          result = cfg.getFirstLevelBackgroundColor();
+        }
+        break;
+        default: {
+          result = cfg.getOtherLevelBackgroundColor();
+        }
+        break;
+      }
+    }
+    else {
+      result = extracted;
+    }
+    return result;
+  }
+
+  public static Color getTextColor(final MindMapPanelConfig cfg, final Topic topic) {
+    final Color extracted = Utils.html2color(topic.getAttribute(AbstractElement.ATTR_TEXT_COLOR), false);
+    final Color result;
+    if (extracted == null) {
+      switch (topic.getTopicLevel()) {
+        case 0: {
+          result = cfg.getRootTextColor();
+        }
+        break;
+        case 1: {
+          result = cfg.getFirstLevelTextColor();
+        }
+        break;
+        default: {
+          result = cfg.getOtherLevelTextColor();
+        }
+        break;
+      }
+    }
+    else {
+      result = extracted;
+    }
+    return result;
+  }
+
+  public static Color getBorderColor(final MindMapPanelConfig cfg, final Topic topic) {
+    final Color extracted = Utils.html2color(topic.getAttribute(AbstractElement.ATTR_BORDER_COLOR), false);
+    return extracted == null ? cfg.getElementBorderColor() : extracted;
+  }
+
+  public static File selectFileForFileFilter(final MindMapPanel panel, final String title, final String dottedFileExtension, final String filterDescription, final String approveButtonText) {
     final File home = new File(System.getProperty("user.home"));//NOI18N
-    
+
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
-    
+
     return panel.getController().getDialogProvider(panel).msgSaveFileDialog("user-dir", title, home, true, new FileFilter() { //NOI18N
       @Override
       public boolean accept(File f) {
@@ -53,7 +116,7 @@ public abstract class AbstractMindMapExporter {
       }
     }, approveButtonText);
   }
-  
+
   public static File checkFileAndExtension(final MindMapPanel panel, final File file, final String dottedExtension) {
     if (file == null) {
       return null;

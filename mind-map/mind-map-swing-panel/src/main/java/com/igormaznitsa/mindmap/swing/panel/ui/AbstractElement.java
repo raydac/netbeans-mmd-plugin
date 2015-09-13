@@ -17,6 +17,8 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -26,6 +28,10 @@ import javax.swing.text.JTextComponent;
 
 public abstract class AbstractElement {
 
+  public static final String ATTR_BORDER_COLOR = "borderColor";
+  public static final String ATTR_FILL_COLOR = "fillColor";
+  public static final String ATTR_TEXT_COLOR = "textColor";
+  
   protected final Topic model;
 
   protected final TextBlock textBlock;
@@ -34,6 +40,10 @@ public abstract class AbstractElement {
   protected final Rectangle2D bounds = new Rectangle2D.Float();
   protected final Dimension2D blockSize = new Dimension();
 
+  protected Color fillColor;
+  protected Color textColor;
+  protected Color borderColor;
+  
   public String getText() {
     return this.model.getText();
   }
@@ -48,8 +58,15 @@ public abstract class AbstractElement {
     this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
     this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align"))); //NOI18N
     this.extrasIconBlock = new IconBlock(model);
+    updateColorAttributeFromModel();
   }
 
+  public final void updateColorAttributeFromModel(){
+    this.borderColor = Utils.html2color(this.model.getAttribute(ATTR_BORDER_COLOR), false);
+    this.textColor = Utils.html2color(this.model.getAttribute(ATTR_TEXT_COLOR), false);
+    this.fillColor = Utils.html2color(this.model.getAttribute(ATTR_FILL_COLOR), false);
+  }
+  
   public AbstractElement getParent() {
     final Topic parent = this.model.getParent();
     return parent == null ? null : (AbstractElement) parent.getPayload();
@@ -343,4 +360,12 @@ public abstract class AbstractElement {
     return result;
   }
 
+  public abstract Color getBackgroundColor(MindMapPanelConfig config);
+  public abstract Color getTextColor(MindMapPanelConfig config);
+ 
+  public Color getBorderColor(final MindMapPanelConfig config){
+    final Color dflt = this.borderColor == null ? config.getElementBorderColor() : this.borderColor;
+    return dflt;
+  }
+  
 }

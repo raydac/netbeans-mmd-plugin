@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
@@ -44,13 +45,13 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
       g.fill(makeShape(offset, offset));
     }
 
-    g.setColor(cfg.getFirstLevelBackgroundColor());
+    g.setColor(getBackgroundColor(cfg));
     g.fill(shape);
 
-    g.setColor(cfg.getElementBorderColor());
+    g.setColor(getBorderColor(cfg));
     g.draw(shape);
 
-    g.setColor(cfg.getFirstLevelTextColor());
+    g.setColor(getTextColor(cfg));
     this.textBlock.paint(g);
 
     if (this.extrasIconBlock.hasContent()) {
@@ -67,4 +68,15 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
     return true;
   }
 
+  @Override
+  public Color getBackgroundColor(final MindMapPanelConfig config) {
+    final Color dflt = this.fillColor == null ? config.getFirstLevelBackgroundColor() : this.fillColor;
+    return dflt;
+  }
+
+  @Override
+  public Color getTextColor(final MindMapPanelConfig config) {
+    final Color dflt = this.textColor == null ? config.getFirstLevelTextColor() : this.textColor;
+    return dflt;
+  }
 }

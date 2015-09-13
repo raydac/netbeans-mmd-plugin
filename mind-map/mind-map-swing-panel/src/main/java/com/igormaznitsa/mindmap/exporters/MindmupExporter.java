@@ -157,8 +157,6 @@ public class MindmupExporter extends AbstractMindMapExporter {
 
     idCounter++;
 
-    final int level = topic.getTopicLevel();
-
     state.set("title", topic.getText()); //NOI18N
     state.set("id", id); //NOI18N
 
@@ -171,7 +169,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     state.end();
 
     state.start("attr"); //NOI18N
-    state.start("style").set("background", Utils.color2html(level == 1 ? cfg.getFirstLevelBackgroundColor() : cfg.getOtherLevelBackgroundColor())).end(); //NOI18N
+    state.start("style").set("background", Utils.color2html(getBackgroundColor(cfg, topic),false)).set("color", Utils.color2html(getTextColor(cfg, topic), false)).end(); //NOI18N
 
     final String attachment = makeHtmlFromExtras(topic);
     if (attachment != null) {
@@ -256,7 +254,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     state.end();
 
     state.start("attr"); //NOI18N
-    state.start("style").set("background", Utils.color2html(cfg.getRootBackgroundColor())).end(); //NOI18N
+    state.start("style").set("background", Utils.color2html(getBackgroundColor(cfg, root), false)).set("color", Utils.color2html(getTextColor(cfg, root), false)).end(); //NOI18N
 
     final String attachment = root == null ? null : makeHtmlFromExtras(root);
     if (attachment != null) {

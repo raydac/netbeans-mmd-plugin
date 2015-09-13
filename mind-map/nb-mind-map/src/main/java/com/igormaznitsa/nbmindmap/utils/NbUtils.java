@@ -16,7 +16,10 @@
 package com.igormaznitsa.nbmindmap.utils;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.Topic;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
 import com.igormaznitsa.nbmindmap.nb.MMDCfgOptionsPanelController;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -24,6 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.prefs.Preferences;
 import javax.swing.JComponent;
+import javax.swing.UIManager;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.HtmlBrowser;
@@ -36,8 +40,9 @@ public enum NbUtils {
   ;
 
   private static final Logger logger = LoggerFactory.getLogger(NbUtils.class);
-        
+
   public static final MMapURI EMPTY_URI;
+  public static final boolean DARK_THEME;
 
   static {
     try {
@@ -46,7 +51,39 @@ public enum NbUtils {
     catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
     }
+
+    final Color color = UIManager.getColor("Panel.background");
+    if (color == null) {
+      DARK_THEME = false;
+    }
+    else {
+      DARK_THEME = calculateBrightness(color)<150;
+    }
   }
+
+  public static int calculateBrightness(final Color color) {
+    return (int) Math.sqrt(
+            color.getRed() * color.getRed() * .241d
+            + color.getGreen() * color.getGreen() * .691d
+            + color.getBlue() * color.getBlue() * .068d);
+  }
+
+  public static Color extractCommonColorForColorChooserButton(final String colorAttribute, final Topic[] topics) {
+    Color result = null;
+    for (final Topic t : topics) {
+      final Color color = html2color(t.getAttribute(colorAttribute), false);
+      if (result == null) {
+        result = color;
+      }
+      else {
+        if (!result.equals(color)) {
+          return ColorChooserButton.DIFF_COLORS;
+        }
+      }
+    }
+    return result;
+  }
+
 
   public static Preferences getPreferences() {
     return NbPreferences.forModule(MMDCfgOptionsPanelController.class);
@@ -116,7 +153,7 @@ public enum NbUtils {
   }
 
   public static MMapURI editURI(final String title, final MMapURI uri) {
-    final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false,false));
+    final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
 
     textEditor.doLayout();
     textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));

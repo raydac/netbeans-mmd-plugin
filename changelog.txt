@@ -1,4 +1,5 @@
 1.0.1
+- added editing of colors for every topic
 - added support of opening files via system
 - added special icons for MMD files and files with absolute path
 - indicator for topic drop target is changed to filled half-transparent rectangle, improved topic d&d algorithm

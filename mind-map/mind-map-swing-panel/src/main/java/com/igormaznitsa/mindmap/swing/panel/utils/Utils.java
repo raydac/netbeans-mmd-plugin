@@ -50,11 +50,44 @@ public class Utils {
     return result.toArray(new Topic[result.size()]);
   }
 
-  public static String color2html(final Color color) {
+  public static void setAttribute(final String name, final String value, final Topic[] topics) {
+    for (final Topic t : topics) {
+      t.setAttribute(name, value);
+    }
+  }
+
+  public static Color html2color(final String str, final boolean hasAlpha) {
+    Color result = null;
+    if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
+      try {
+        result = new Color(Integer.parseInt(str.substring(1), 16), hasAlpha);
+      }
+      catch (NumberFormatException ex) {
+        logger.warn(String.format("Can't convert %s to color", str));
+      }
+    }
+    return result;
+  }
+
+  public static String color2html(final Color color, final boolean hasAlpha) {
+    if (color == null) {
+      return null;
+    }
+
     final StringBuilder buffer = new StringBuilder();
 
     buffer.append('#');
-    for (final int c : new int[]{color.getRed(), color.getGreen(), color.getBlue()}) {
+
+    final int[] components;
+
+    if (hasAlpha) {
+      components = new int[]{color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
+    }
+    else {
+      components = new int[]{color.getRed(), color.getGreen(), color.getBlue()};
+    }
+
+    for (final int c : components) {
       final String str = Integer.toHexString(c & 0xFF).toUpperCase(Locale.ENGLISH);
       if (str.length() < 2) {
         buffer.append('0');
