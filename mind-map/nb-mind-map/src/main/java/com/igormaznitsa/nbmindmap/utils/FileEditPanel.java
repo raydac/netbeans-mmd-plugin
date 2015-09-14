@@ -140,7 +140,8 @@ public final class FileEditPanel extends javax.swing.JPanel {
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
     if (evt.getClickCount()>1){
       try {
-        Desktop.getDesktop().open(new File(this.textFieldFilePath.getText().trim()));
+        final File file = new File(this.textFieldFilePath.getText().trim());
+        Desktop.getDesktop().open(file);
       }
       catch (IOException ex) {
         logger.error("Can't open file "+this.textFieldFilePath.getText(), ex);
@@ -158,7 +159,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
     chooser.setApproveButtonText("Select");
     chooser.setDialogTitle("Select file");
     chooser.setMultiSelectionEnabled(false);
-    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     
     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
       final File selected = chooser.getSelectedFile();

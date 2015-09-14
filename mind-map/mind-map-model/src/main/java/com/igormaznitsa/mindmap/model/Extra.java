@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.model;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
+import java.net.URI;
 import java.net.URISyntaxException;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -29,6 +30,23 @@ public abstract class Extra <T> implements Serializable, Constants, Cloneable {
     LINK,
     NOTE,
     TOPIC;
+    
+    public boolean isStringValid(final String str){
+      boolean result;
+      switch(this){
+        case FILE :
+        case LINK :{
+          try{
+            new URI(str);
+            result = true;
+          }catch(Exception ex){
+            result = false;
+          }
+        }break;
+        default: result = true; break;
+      }
+      return result;
+    }
     
     public Extra<?> parseLoaded(final String text) throws URISyntaxException{
       final String preprocessed = StringEscapeUtils.unescapeHtml(text);

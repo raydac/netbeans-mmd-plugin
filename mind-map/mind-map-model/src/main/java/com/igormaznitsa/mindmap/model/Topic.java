@@ -56,7 +56,7 @@ public final class Topic implements Serializable, Constants {
 
   private static final Pattern PATTERN_TOPIC_HEADER = Pattern.compile("^\\s*(\\#+)\\s*(.*)$"); //NOI18N
   private static final Pattern PATTERN_EXTRA = Pattern.compile("^\\s*\\-\\s*([^\\s]+)\\s*$"); //NOI18N
-  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|\\<\\s*?pre\\s*?\\>(.+?)\\<\\s*?\\/\\s*?pre\\s*\\>|^(.*?)$"); //NOI18N
+  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|\\<\\s*?pre\\s*?\\>(.*?)\\<\\s*?\\/\\s*?pre\\s*\\>|^(.*?)$"); //NOI18N
   private static final int MD_GROUP_HEAD = 1;
   private static final int MD_GROUP_ITEM = 2;
   private static final int MD_GROUP_BLOCKQUOTE = 3;
@@ -235,7 +235,12 @@ public final class Topic implements Serializable, Constants {
         else if (matcher.group(MD_GROUP_PRE) != null) {
           if (topic != null && extraType != null) {
             try {
-              topic.setExtra(extraType.parseLoaded(matcher.group(MD_GROUP_PRE)));
+              final String groupPre = matcher.group(MD_GROUP_PRE);
+              if (extraType.isStringValid(groupPre)){
+                topic.setExtra(extraType.parseLoaded(groupPre));
+              }else{
+                logger.error("Detected invalid extra data "+extraType+" : "+groupPre);
+              }
             }
             catch (Exception ex) {
               logger.error("Unexpected exception #23241", ex); //NOI18N
@@ -340,14 +345,16 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public void removeExtra(final Extra.ExtraType... types) {
+  public boolean removeExtra(final Extra.ExtraType... types) {
     this.map.lock();
     try {
+      boolean result = false;
       for (final Extra.ExtraType e : types) {
         if (e != null) {
-          this.extras.remove(e);
+          result |= this.extras.remove(e) != null;
         }
       }
+      return result;
     }
     finally {
       this.map.unlock();

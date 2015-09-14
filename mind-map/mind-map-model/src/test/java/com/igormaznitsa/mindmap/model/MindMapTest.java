@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.model;
+package com.igormaznitsa.mindmap.model;
 
-import com.igormaznitsa.mindmap.model.MindMap;
 import java.io.StringReader;
 import java.io.StringWriter;
 import org.junit.Test;

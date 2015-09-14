@@ -72,6 +72,8 @@ import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.ProjectManager;
+import org.netbeans.api.project.ui.OpenProjects;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -101,6 +103,7 @@ import org.slf4j.LoggerFactory;
         position = 1
 )
 public final class MMDGraphEditor extends CloneableEditor implements PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, DialogProvider {
+
   private static final long serialVersionUID = -8776707243607267446L;
 
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
@@ -386,10 +389,30 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
               Desktop.getDesktop().open(uri.asFile(this.editorSupport.getProjectDirectory()));
             }
             else {
-              final DataObject dobj = DataObject.find(fileObj);
-              final Openable openable = dobj.getLookup().lookup(Openable.class);
-              if (openable != null) {
-                openable.open();
+              if (fileObj.isFolder()) {
+                final ProjectManager manager = ProjectManager.getDefault();
+                if (manager.isProject(fileObj)) {
+                  final Project project = manager.findProject(fileObj);
+                  if (project == null) {
+                    Desktop.getDesktop().open(uri.asFile(this.editorSupport.getProjectDirectory()));
+                  }
+                  else {
+                    final OpenProjects openManager = OpenProjects.getDefault();
+                    if (!openManager.isProjectOpen(project)){
+                      openManager.open(new Project[]{project}, false, true);
+                    }
+                  }
+                }
+                else {
+                  Desktop.getDesktop().open(uri.asFile(this.editorSupport.getProjectDirectory()));
+                }
+              }
+              else {
+                final DataObject dobj = DataObject.find(fileObj);
+                final Openable openable = dobj.getLookup().lookup(Openable.class);
+                if (openable != null) {
+                  openable.open();
+                }
               }
             }
           }
@@ -582,6 +605,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     else {
       final MMapURI uri = file.getValue();
       final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
+
       final FileEditPanel.DataContainer origPath;
       if (uri.isAbsolute()) {
         origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getAbsolutePath(), flagOpenInSystem);
@@ -598,39 +622,35 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       path = NbUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
     }
 
-    boolean revalidate = true;
-
     if (path != null) {
+      final boolean changed;
       if (path.isEmpty()) {
-        topic.removeExtra(Extra.ExtraType.FILE);
-        if (file == null) {
-          revalidate = false;
-        }
+        changed = topic.removeExtra(Extra.ExtraType.FILE);
       }
       else {
         final Properties props = new Properties();
         if (path.isShowWithSystemTool()) {
           props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true");
         }
-
         final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props);
         final File theFile = fileUri.asFile(projectFolder);
-        logger.info("Path %s converted to uri: %s", fileUri.asString(false, true));
+        logger.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true)));
 
-        if (theFile.isFile()) {
+        if (theFile.exists()) {
           topic.setExtra(new ExtraFile(fileUri));
+          changed = true;
         }
         else {
-          revalidate = false;
-          NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path));
+          NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
+          changed = false;
         }
       }
-    }
 
-    if (revalidate) {
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      if (changed) {
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
     }
   }
 
@@ -1003,7 +1023,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     final Color textColor = NbUtils.extractCommonColorForColorChooserButton(AbstractElement.ATTR_TEXT_COLOR, topics);
 
     final ColorAttributePanel panel = new ColorAttributePanel(borderColor, fillColor, textColor);
-    if (NbUtils.plainMessageOkCancel(String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"),topics.length), panel)) {
+    if (NbUtils.plainMessageOkCancel(String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
       ColorAttributePanel.Result result = panel.getResult();
 
       if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {

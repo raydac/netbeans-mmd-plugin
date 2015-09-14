@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 
 public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable{
