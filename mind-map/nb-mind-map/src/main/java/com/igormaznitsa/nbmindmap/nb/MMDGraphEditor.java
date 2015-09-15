@@ -854,11 +854,11 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       }
     }
 
-    if (result.getComponentCount() > 0) {
-      result.add(new JSeparator());
-    }
-
     if (element != null) {
+      if (result.getComponentCount() > 0) {
+        result.add(new JSeparator());
+      }
+
       final Topic topic = element.getModel();
 
       final JMenuItem editText = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditNote") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddNote"), Icons.NOTE.getIcon());
@@ -961,6 +961,16 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     });
 
+    final JCheckBoxMenuItem showJumps = new JCheckBoxMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miShowJumps"),Icons.SHOWJUMPS.getIcon(),source.isShowJumps());
+    showJumps.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        mindMapPanel.setShowJumps(showJumps.isSelected());
+      }
+    });
+
+    result.add(showJumps);
     result.add(expandAll);
     result.add(collapseAll);
 

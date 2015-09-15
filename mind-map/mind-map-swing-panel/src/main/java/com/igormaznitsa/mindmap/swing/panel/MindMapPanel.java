@@ -56,6 +56,8 @@ public final class MindMapPanel extends JPanel {
 
   public static final long serialVersionUID = 2783412123454232L;
 
+  public static final String ATTR_SHOW_JUMPS = "showJumps";
+  
   private static final Logger logger = LoggerFactory.getLogger(MindMapPanel.class);
   private final MindMapPanelController controller;
 
@@ -749,6 +751,16 @@ public final class MindMapPanel extends JPanel {
     return this.elementUnderEdit != null;
   }
 
+  public boolean isShowJumps(){
+    return Boolean.parseBoolean(this.model.getAttribute(ATTR_SHOW_JUMPS));
+  }
+  
+  public void setShowJumps(final boolean flag){
+    this.model.setAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
+    repaint();
+    fireNotificationMindMapChanged();
+  }
+  
   public void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
     if (parent != null) {
       removeAllSelection();
@@ -1149,6 +1161,10 @@ public final class MindMapPanel extends JPanel {
 
   private static void drawTopics(final Graphics2D g, final MindMapPanelConfig cfg, final MindMap map) {
     if (map != null) {
+      if (Boolean.parseBoolean(map.getAttribute(ATTR_SHOW_JUMPS))){
+        drawJumps(g, map, cfg);
+      }
+      
       final Topic root = map.getRoot();
       if (root != null) {
         drawTopicTree(g, root, cfg);
@@ -1156,6 +1172,10 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
+  private static void drawJumps(final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg){
+    //TODO
+  }
+  
   private static void drawTopicTree(final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {
     paintTopic(gfx, topic, cfg);
     final AbstractElement w = (AbstractElement) topic.getPayload();
