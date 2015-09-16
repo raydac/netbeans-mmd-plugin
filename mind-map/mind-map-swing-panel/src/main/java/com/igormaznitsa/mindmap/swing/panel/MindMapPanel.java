@@ -1221,8 +1221,11 @@ public final class MindMapPanel extends JPanel {
 
     gfx.setColor(cfg.getJumpLinkColor());
 
-    for (final Topic src : allTopicsWithJumps) {
+    for (Topic src : allTopicsWithJumps) {
       final ExtraTopic extra = (ExtraTopic) src.getExtras().get(Extra.ExtraType.TOPIC);
+      
+      src = AbstractCollapsableElement.isHidden(src) ? AbstractCollapsableElement.findFirstVisibleAncestor(src) : src;
+      
       final AbstractElement srcElement = (AbstractElement) src.getPayload();
       if (extra != null) {
         Topic dst = map.findTopicForLink(extra);

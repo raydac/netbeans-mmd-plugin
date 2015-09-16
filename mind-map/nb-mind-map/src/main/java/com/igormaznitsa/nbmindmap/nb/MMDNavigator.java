@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,7 +46,7 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
 
   private static final Logger logger = LoggerFactory.getLogger(MMDNavigator.class);
   
-  private static final Lookup.Template<? extends MMDEditorSupport> MY_DATA = new Lookup.Template<MMDEditorSupport>(MMDEditorSupport.class);
+  private static final Lookup.Template<? extends MMDEditorSupport> MY_DATA = new Lookup.Template<>(MMDEditorSupport.class);
   private static final long serialVersionUID = -4344090966601180253L;
 
   private final JTree mindMapTree;
@@ -65,7 +66,10 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
             edSupport.edit();
             final TreePath path = mindMapTree.getSelectionPath();
             if (path != null) {
-              edSupport.focusToPosition(((Topic) path.getLastPathComponent()).getPositionPath());
+              final Topic theTopic = (Topic) path.getLastPathComponent();
+              if (!AbstractCollapsableElement.isHidden(theTopic)){
+                edSupport.focusToPosition(((Topic) path.getLastPathComponent()).getPositionPath());
+              }
             }
           }
         }
