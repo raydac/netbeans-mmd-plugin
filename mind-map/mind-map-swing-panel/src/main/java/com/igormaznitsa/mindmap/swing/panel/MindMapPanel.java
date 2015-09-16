@@ -251,6 +251,8 @@ public final class MindMapPanel extends JPanel {
 
     this.setFocusTraversalKeysEnabled(false);
 
+    final MindMapPanel theInstance = this;
+
     final MouseAdapter adapter = new MouseAdapter() {
 
       @Override
@@ -260,6 +262,9 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void mouseMoved(final MouseEvent e) {
+        if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
+          return;
+        }
         final AbstractElement element = findTopicUnderPoint(e.getPoint());
         if (element == null) {
           setCursor(Cursor.getDefaultCursor());
@@ -285,6 +290,9 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void mousePressed(final MouseEvent e) {
+        if (!controller.isMouseClickProcessingAllowed(theInstance)) {
+          return;
+        }
         try {
           if (e.isPopupTrigger()) {
             mouseDragSelection = null;
@@ -308,6 +316,9 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void mouseReleased(final MouseEvent e) {
+        if (!controller.isMouseClickProcessingAllowed(theInstance)) {
+          return;
+        }
         try {
           if (draggedElementPoint != null) {
             if (endDragOfElement(draggedElementPoint, draggedElement, destinationElement)) {
@@ -358,6 +369,9 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void mouseDragged(final MouseEvent e) {
+        if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
+          return;
+        }
         scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
 
         if (!popupMenuActive) {
@@ -367,29 +381,43 @@ public final class MindMapPanel extends JPanel {
               MindMap theMap = model;
               if (theMap != null) {
                 final AbstractElement element = findTopicUnderPoint(e.getPoint());
-                if (element == null) {
+                if (controller.isSelectionAllowed(theInstance) && element == null) {
                   mouseDragSelection = new MouseSelectedArea(e.getPoint());
                 }
               }
             }
             else {
-              draggedElement = elementUnderMouse;
-              if (elementUnderMouse.isMoveable()) {
-                selectedTopics.clear();
-                draggedElementPoint = e.getPoint();
-                draggedElementPointDrawOffset = new Point((int) Math.round(draggedElementPoint.getX() - draggedElement.getBounds().getX()), (int) Math.round(draggedElementPoint.getY() - draggedElement.getBounds().getY()));
-                findDestinationElementForDragged();
-                repaint();
+              if (controller.isElementDragAllowed(theInstance)) {
+                draggedElement = elementUnderMouse;
+                if (elementUnderMouse.isMoveable()) {
+                  selectedTopics.clear();
+                  draggedElementPoint = e.getPoint();
+                  draggedElementPointDrawOffset = new Point((int) Math.round(draggedElementPoint.getX() - draggedElement.getBounds().getX()), (int) Math.round(draggedElementPoint.getY() - draggedElement.getBounds().getY()));
+                  findDestinationElementForDragged();
+                  repaint();
+                }
               }
             }
           }
           else if (mouseDragSelection != null) {
-            mouseDragSelection.update(e);
+            if (controller.isSelectionAllowed(theInstance)) {
+              mouseDragSelection.update(e);
+            }
+            else {
+              mouseDragSelection = null;
+            }
             repaint();
           }
           else if (draggedElementPoint != null) {
-            draggedElementPoint.setLocation(e.getPoint());
-            findDestinationElementForDragged();
+            if (controller.isElementDragAllowed(theInstance)) {
+              draggedElementPoint.setLocation(e.getPoint());
+              findDestinationElementForDragged();
+            }
+            else {
+              draggedElement = null;
+              draggedElementPoint = null;
+              draggedElementPointDrawOffset = null;
+            }
             repaint();
           }
         }
@@ -401,25 +429,30 @@ public final class MindMapPanel extends JPanel {
 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
-        mouseDragSelection = null;
-        draggedElement = null;
-        draggedElementPoint = null;
+        if (controller.isMouseWheelProcessingAllowed(theInstance)) {
+          mouseDragSelection = null;
+          draggedElement = null;
+          draggedElementPoint = null;
 
-        if (!e.isConsumed() && e.isControlDown()) {
-          endEdit(false);
+          if (!e.isConsumed() && e.isControlDown()) {
+            endEdit(false);
 
-          setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), 10.0d)));
+            setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), 10.0d)));
 
-          updateView(false);
-          e.consume();
-        }
-        else {
-          sendToParent(e);
+            updateView(false);
+            e.consume();
+          }
+          else {
+            sendToParent(e);
+          }
         }
       }
 
       @Override
       public void mouseClicked(final MouseEvent e) {
+        if (!controller.isMouseClickProcessingAllowed(theInstance)) {
+          return;
+        }
         mouseDragSelection = null;
         draggedElement = null;
         draggedElementPoint = null;
@@ -767,7 +800,7 @@ public final class MindMapPanel extends JPanel {
 
       final Topic newTopic = parent.makeChild("", baseTopic); //NOI18N
 
-      if (!parent.isRoot()) {
+      if (this.controller.isCopyColorInfoFromParentToNewChildAllowed(this) && !parent.isRoot()) {
         AbstractElement.copyColorAttributes(parent, newTopic);
       }
 
@@ -880,7 +913,7 @@ public final class MindMapPanel extends JPanel {
   }
 
   public void select(final Topic t, final boolean removeIfPresented) {
-    if (t != null) {
+    if (this.controller.isSelectionAllowed(this) && t != null) {
       if (!this.selectedTopics.contains(t)) {
         if (this.selectedTopics.add(t)) {
           fireNotificationSelectionChanged();

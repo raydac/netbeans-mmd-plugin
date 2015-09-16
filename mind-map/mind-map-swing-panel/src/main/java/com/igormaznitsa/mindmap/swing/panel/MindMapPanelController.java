@@ -22,6 +22,12 @@ import javax.swing.JPopupMenu;
 
 public interface MindMapPanelController {
   boolean isUnfoldCollapsedTopicDropTarget(MindMapPanel source);
+  boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source);
+  boolean isSelectionAllowed(MindMapPanel source);
+  boolean isElementDragAllowed(MindMapPanel source);
+  boolean isMouseMoveProcessingAllowed(MindMapPanel source);
+  boolean isMouseWheelProcessingAllowed(MindMapPanel source);
+  boolean isMouseClickProcessingAllowed(MindMapPanel source);
   MindMapPanelConfig provideConfigForMindMapPanel(MindMapPanel source);
   JPopupMenu makePopUpForMindMapPanel(MindMapPanel source,  Point point, AbstractElement elementUnderMouse,  ElementPart elementPartUnderMouse);
   DialogProvider getDialogProvider(MindMapPanel source);

@@ -781,6 +781,11 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   }
 
   @Override
+  public boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source) {
+    return NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true);
+  }
+
+  @Override
   public boolean isUnfoldCollapsedTopicDropTarget(final MindMapPanel source) {
     return NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true);
   }
@@ -1111,4 +1116,30 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       }
     }
   }
+
+  @Override
+  public boolean isSelectionAllowed(MindMapPanel source) {
+    return true;
+  }
+
+  @Override
+  public boolean isElementDragAllowed(MindMapPanel source) {
+    return true;
+  }
+
+  @Override
+  public boolean isMouseMoveProcessingAllowed(MindMapPanel source) {
+    return true;
+  }
+
+  @Override
+  public boolean isMouseWheelProcessingAllowed(MindMapPanel source) {
+    return true;
+  }
+
+  @Override
+  public boolean isMouseClickProcessingAllowed(final MindMapPanel source) {
+    return true;
+  }
+
 }
