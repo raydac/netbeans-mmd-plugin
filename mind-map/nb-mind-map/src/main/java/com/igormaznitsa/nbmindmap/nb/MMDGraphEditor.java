@@ -398,7 +398,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
                   }
                   else {
                     final OpenProjects openManager = OpenProjects.getDefault();
-                    if (!openManager.isProjectOpen(project)){
+                    if (!openManager.isProjectOpen(project)) {
                       openManager.open(new Project[]{project}, false, true);
                     }
                   }
@@ -961,7 +961,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
     });
 
-    final JCheckBoxMenuItem showJumps = new JCheckBoxMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miShowJumps"),Icons.SHOWJUMPS.getIcon(),source.isShowJumps());
+    final JCheckBoxMenuItem showJumps = new JCheckBoxMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miShowJumps"), Icons.SHOWJUMPS.getIcon(), source.isShowJumps());
     showJumps.addActionListener(new ActionListener() {
 
       @Override

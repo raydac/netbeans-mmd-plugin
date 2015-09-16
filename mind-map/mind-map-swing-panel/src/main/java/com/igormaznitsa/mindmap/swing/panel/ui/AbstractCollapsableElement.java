@@ -316,6 +316,28 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     }
   }
 
+  public static Topic findFirstVisibleAncestor(final Topic topic) {
+    if (topic == null) {
+      return null;
+    }
+
+    final Topic[] path = topic.getPath();
+
+    Topic lastVisible = null;
+
+    if (path.length > 0) {
+      for (final Topic t : path) {
+        lastVisible = t;
+        final boolean collapsed = Boolean.parseBoolean(t.getAttribute(ATTR_COLLAPSED));
+        if (collapsed) {
+          break;
+        }
+      }
+    }
+
+    return lastVisible;
+  }
+
   public static boolean isHidden(final Topic topic) {
     if (topic == null) {
       return true;

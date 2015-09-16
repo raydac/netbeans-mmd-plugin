@@ -57,7 +57,7 @@ public final class MindMapPanel extends JPanel {
   public static final long serialVersionUID = 2783412123454232L;
 
   public static final String ATTR_SHOW_JUMPS = "showJumps";
-  
+
   private static final Logger logger = LoggerFactory.getLogger(MindMapPanel.class);
   private final MindMapPanelController controller;
 
@@ -489,7 +489,7 @@ public final class MindMapPanel extends JPanel {
       break;
       case TOPIC: {
         final Topic topic = this.getModel().findTopicForLink((ExtraTopic) extra);
-        builder.append(BUNDLE.getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml(ModelUtils.makeShortTextVersion(topic.getText(), 32)));
+        builder.append(BUNDLE.getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml(ModelUtils.makeShortTextVersion(topic == null ? "----" : topic.getText(), 32)));
       }
       break;
       case LINK: {
@@ -751,16 +751,16 @@ public final class MindMapPanel extends JPanel {
     return this.elementUnderEdit != null;
   }
 
-  public boolean isShowJumps(){
+  public boolean isShowJumps() {
     return Boolean.parseBoolean(this.model.getAttribute(ATTR_SHOW_JUMPS));
   }
-  
-  public void setShowJumps(final boolean flag){
+
+  public void setShowJumps(final boolean flag) {
     this.model.setAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
     repaint();
     fireNotificationMindMapChanged();
   }
-  
+
   public void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
     if (parent != null) {
       removeAllSelection();
@@ -876,22 +876,24 @@ public final class MindMapPanel extends JPanel {
   }
 
   public void select(final Topic t, final boolean removeIfPresented) {
-    if (!this.selectedTopics.contains(t)) {
-      if (this.selectedTopics.add(t)) {
-        fireNotificationSelectionChanged();
+    if (t != null) {
+      if (!this.selectedTopics.contains(t)) {
+        if (this.selectedTopics.add(t)) {
+          fireNotificationSelectionChanged();
+        }
+        fireNotificationEnsureTopicVisibility(t);
+        repaint();
       }
-      fireNotificationEnsureTopicVisibility(t);
-      repaint();
-    }
-    else if (removeIfPresented) {
-      removeFromSelection(t);
+      else if (removeIfPresented) {
+        removeFromSelection(t);
+      }
     }
   }
 
-  public Topic [] getSelectedTopics(){
+  public Topic[] getSelectedTopics() {
     return this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
   }
-  
+
   public void updateEditorAfterResizing() {
     if (this.elementUnderEdit != null) {
       final AbstractElement element = this.elementUnderEdit;
@@ -959,11 +961,11 @@ public final class MindMapPanel extends JPanel {
     if (this.controller != null) {
       final ElementPart partUnderMouse = elementUnderMouse == null ? null : elementUnderMouse.findPartForPoint(point);
 
-      if (elementUnderMouse != null && !this.selectedTopics.contains(elementUnderMouse.getModel())){
+      if (elementUnderMouse != null && !this.selectedTopics.contains(elementUnderMouse.getModel())) {
         this.selectedTopics.clear();
         this.select(elementUnderMouse.getModel(), false);
       }
-      
+
       final JPopupMenu menu = this.controller.makePopUpForMindMapPanel(this, point, elementUnderMouse, partUnderMouse);
       if (menu != null) {
 
@@ -1024,7 +1026,7 @@ public final class MindMapPanel extends JPanel {
         selectionChanged = true;
       }
       else {
-        if (!AbstractCollapsableElement.isHidden(topic)){
+        if (!AbstractCollapsableElement.isHidden(topic)) {
           this.selectedTopics.add(topic);
         }
       }
@@ -1161,10 +1163,10 @@ public final class MindMapPanel extends JPanel {
 
   private static void drawTopics(final Graphics2D g, final MindMapPanelConfig cfg, final MindMap map) {
     if (map != null) {
-      if (Boolean.parseBoolean(map.getAttribute(ATTR_SHOW_JUMPS))){
+      if (Boolean.parseBoolean(map.getAttribute(ATTR_SHOW_JUMPS))) {
         drawJumps(g, map, cfg);
       }
-      
+
       final Topic root = map.getRoot();
       if (root != null) {
         drawTopicTree(g, root, cfg);
@@ -1172,10 +1174,44 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
-  private static void drawJumps(final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg){
-    //TODO
+  private static void drawJumps(final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg) {
+    final List<Topic> allTopicsWithJumps = map.findAllTopicsForExtraType(Extra.ExtraType.TOPIC);
+
+    final float scaledSize = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
+
+    final Stroke dashed = new BasicStroke(scaledSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{scaledSize, scaledSize*3.0f}, 0);
+    gfx.setStroke(dashed);
+
+    gfx.setColor(cfg.getJumpLinkColor());
+
+    for (final Topic src : allTopicsWithJumps) {
+      final ExtraTopic extra = (ExtraTopic) src.getExtras().get(Extra.ExtraType.TOPIC);
+      final AbstractElement srcElement = (AbstractElement) src.getPayload();
+      if (extra != null) {
+        Topic dst = map.findTopicForLink(extra);
+        if (dst != null) {
+          if (AbstractCollapsableElement.isHidden(dst)) {
+            dst = AbstractCollapsableElement.findFirstVisibleAncestor(dst);
+            if (dst == src) {
+              dst = null;
+            }
+          }
+
+          if (dst != null) {
+            final AbstractElement dstElement = (AbstractElement) dst.getPayload();
+            if (!AbstractCollapsableElement.isHidden(dst)) {
+              final Rectangle2D srcRect = srcElement.getBounds();
+              final Rectangle2D dstRect = dstElement.getBounds();
+
+              gfx.drawLine((int) srcRect.getCenterX(), (int) srcRect.getCenterY(), (int) dstRect.getCenterX(), (int) dstRect.getCenterY());
+            }
+          }
+        }
+      }
+    }
+
   }
-  
+
   private static void drawTopicTree(final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {
     paintTopic(gfx, topic, cfg);
     final AbstractElement w = (AbstractElement) topic.getPayload();
@@ -1438,7 +1474,9 @@ public final class MindMapPanel extends JPanel {
       }
 
       removeAllSelection();
-      this.select(theTopic, false);
+
+      final int[] path = theTopic.getPositionPath();
+      this.select(this.model.findForPositionPath(path), false);
     }
   }
 

@@ -295,9 +295,36 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     if (link == null) {
       return null;
     }
+    this.locker.lock();
+    try{
     return this.root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
+    }finally{
+      this.locker.unlock();
+    }
   }
 
+  public List<Topic> findAllTopicsForExtraType(final Extra.ExtraType type){
+    final List<Topic> result = new ArrayList<>();
+    this.locker.lock();
+    try{
+      if (this.root!=null){
+        _findAllTopicsForExtraType(this.root, type, result);
+      }
+    }finally{
+      this.locker.unlock();
+    }
+    return result;
+  }
+  
+  private void _findAllTopicsForExtraType(final Topic topic, final Extra.ExtraType type, final List<Topic> result){
+    if (topic.getExtras().containsKey(type)){
+      result.add(topic);
+    }
+    for(final Topic c : topic.getChildren()){
+      _findAllTopicsForExtraType(c, type, result);
+    }
+  }
+  
   @Override
   public Object getChild(final Object parent, final int index) {
     return ((Topic) parent).getChildren().get(index);

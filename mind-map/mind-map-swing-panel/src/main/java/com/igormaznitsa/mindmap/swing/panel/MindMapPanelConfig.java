@@ -59,11 +59,13 @@ public final class MindMapPanelConfig implements Serializable {
   private Color collapsatorBorderColor = Color.DARK_GRAY;
   private Color collapsatorBackgroundColor = Color.WHITE;
   private Color selectLineColor = Color.ORANGE;
+  private Color jumpLinkColor = Color.CYAN;
 
   private float elementBorderWidth = 1.0f;
   private float collapsatorBorderWidth = 1.0f;
   private float connectorWidth = 1.5f;
   private float selectLineWidth = 3.0f;
+  private float jumpLinkWidth = 1.5f;
 
   private Font font = new Font("Arial", Font.BOLD, 18); //NOI18N
   private double scale = 1.0d;
@@ -280,6 +282,24 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
+  public float getJumpLinkWidth(){
+    return this.jumpLinkWidth;
+  }
+
+  public void setJumpLinkWidth(final float f){
+    this.jumpLinkWidth = f;
+    notifyCfgListenersAboutChange();
+  }
+  
+  public Color getJumpLinkColor(){
+    return this.jumpLinkColor;
+  }
+
+  public void setJumpLinkColor(final Color color){
+    this.jumpLinkColor = color;
+    notifyCfgListenersAboutChange();
+  }
+  
   public Color getSelectLineColor() {
     return this.selectLineColor;
   }

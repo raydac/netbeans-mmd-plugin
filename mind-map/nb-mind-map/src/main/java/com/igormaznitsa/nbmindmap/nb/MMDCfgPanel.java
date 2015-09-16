@@ -62,6 +62,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     spinnerCollapsatorSize = new javax.swing.JSpinner();
     jLabel6 = new javax.swing.JLabel();
     spinnerCollapsatorWidth = new javax.swing.JSpinner();
+    colorChooserJumpLink = new com.igormaznitsa.nbmindmap.utils.ColorChooserButton();
+    jLabel7 = new javax.swing.JLabel();
+    spinnerJumpLinkWidth = new javax.swing.JSpinner();
     jPanel4 = new javax.swing.JPanel();
     colorChooserPaperColor = new com.igormaznitsa.nbmindmap.utils.ColorChooserButton();
     checkBoxShowGrid = new javax.swing.JCheckBox();
@@ -145,30 +148,58 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
     spinnerCollapsatorWidth.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.01f), Float.valueOf(100.0f), Float.valueOf(0.1f)));
 
+    colorChooserJumpLink.setText(bundle.getString("MMDCfgPanel.colorChooserJumpLink.text")); // NOI18N
+    colorChooserJumpLink.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    colorChooserJumpLink.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        colorChooserJumpLinkActionPerformed(evt);
+      }
+    });
+
+    jLabel7.setText(bundle.getString("MMDCfgPanel.jLabel7.text")); // NOI18N
+
+    spinnerJumpLinkWidth.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.1f), Float.valueOf(0.05f), Float.valueOf(20.0f), Float.valueOf(0.01f)));
+    spinnerJumpLinkWidth.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        spinnerJumpLinkWidthStateChanged(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
     jPanel3.setLayout(jPanel3Layout);
     jPanel3Layout.setHorizontalGroup(
       jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+      .addGroup(jPanel3Layout.createSequentialGroup()
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(colorChooserConnectorColor, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(colorChooserCollapsatorBorder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(colorChooserCollapsatorBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addGroup(jPanel3Layout.createSequentialGroup()
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+              .addComponent(colorChooserJumpLink, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(colorChooserConnectorColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+              .addComponent(colorChooserCollapsatorBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(colorChooserCollapsatorBorder, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+              .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(jLabel7)
+                .addComponent(jLabel2))
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(spinnerJumpLinkWidth)
+                .addComponent(spinnerConnectorWidth, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE))))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
               .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                  .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
               .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jLabel6)
                 .addGap(12, 12, 12)))
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(spinnerCollapsatorSize, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(spinnerCollapsatorWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(spinnerConnectorWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+              .addComponent(spinnerCollapsatorSize, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+              .addComponent(spinnerCollapsatorWidth, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE))))
         .addContainerGap())
     );
 
@@ -184,11 +215,17 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(jLabel2)
           .addComponent(spinnerConnectorWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(colorChooserConnectorColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel7)
+          .addComponent(spinnerJumpLinkWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(colorChooserCollapsatorBorder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(colorChooserCollapsatorBorder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(colorChooserCollapsatorBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(colorChooserCollapsatorBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(colorChooserJumpLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(colorChooserConnectorColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
           .addComponent(spinnerCollapsatorSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -197,7 +234,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
           .addComponent(jLabel6)
           .addComponent(spinnerCollapsatorWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(32, Short.MAX_VALUE))
     );
 
     jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel5, spinnerCollapsatorSize});
@@ -339,7 +376,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    slider1stLevelHorzGap.setMajorTickSpacing(25);
+    slider1stLevelHorzGap.setMajorTickSpacing(30);
     slider1stLevelHorzGap.setMaximum(250);
     slider1stLevelHorzGap.setMinimum(10);
     slider1stLevelHorzGap.setPaintLabels(true);
@@ -351,7 +388,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    slider1stLevelVertGap.setMajorTickSpacing(25);
+    slider1stLevelVertGap.setMajorTickSpacing(30);
     slider1stLevelVertGap.setMaximum(250);
     slider1stLevelVertGap.setMinimum(10);
     slider1stLevelVertGap.setPaintLabels(true);
@@ -363,7 +400,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    slider2ndLevelHorzGap.setMajorTickSpacing(25);
+    slider2ndLevelHorzGap.setMajorTickSpacing(30);
     slider2ndLevelHorzGap.setMaximum(250);
     slider2ndLevelHorzGap.setMinimum(10);
     slider2ndLevelHorzGap.setPaintLabels(true);
@@ -375,7 +412,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
-    slider2ndLevelVertGap.setMajorTickSpacing(25);
+    slider2ndLevelVertGap.setMajorTickSpacing(30);
     slider2ndLevelVertGap.setMaximum(250);
     slider2ndLevelVertGap.setMinimum(10);
     slider2ndLevelVertGap.setPaintLabels(true);
@@ -421,15 +458,16 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(slider1stLevelHorzGap, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(colorChooserRootBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(colorChooserRootText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(slider1stLevelVertGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(slider2ndLevelHorzGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(slider2ndLevelVertGap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(colorChooserRootBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(colorChooserRootText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
               .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(colorChooser1stBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -439,8 +477,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
                 .addComponent(colorChooser2ndBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(colorChooser2ndText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 69, Short.MAX_VALUE)))
         .addContainerGap())
     );
 
@@ -509,17 +546,17 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(checkboxUseInsideBrowser)
           .addComponent(checkboxRelativePathsForFilesInTheProject)
           .addComponent(checkBoxUnfoldCollapsedTarget))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(100, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
-        .addContainerGap()
         .addComponent(checkboxUseInsideBrowser)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(checkboxRelativePathsForFilesInTheProject)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addComponent(checkBoxUnfoldCollapsedTarget))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxUnfoldCollapsedTarget)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel5.border.title"))); // NOI18N
@@ -545,33 +582,32 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     jPanel5Layout.setHorizontalGroup(
       jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel5Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(colorChooserSelectLine, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addGroup(jPanel5Layout.createSequentialGroup()
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(jLabel3)
-              .addComponent(jLabel4))
+        .addContainerGap(43, Short.MAX_VALUE)
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-              .addComponent(spinnerSelectLineGap)
-              .addComponent(spinnerSelectLineWidth, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE))))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(spinnerSelectLineWidth, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(spinnerSelectLineGap, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addComponent(colorChooserSelectLine, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap())
     );
     jPanel5Layout.setVerticalGroup(
       jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel5Layout.createSequentialGroup()
-        .addContainerGap()
         .addComponent(colorChooserSelectLine, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-          .addComponent(jLabel3)
-          .addComponent(spinnerSelectLineWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-          .addComponent(jLabel4)
-          .addComponent(spinnerSelectLineGap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap())
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(spinnerSelectLineWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel3))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(spinnerSelectLineGap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel4))
+        .addContainerGap(24, Short.MAX_VALUE))
     );
 
     jPanel5Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel3, spinnerSelectLineWidth});
@@ -595,11 +631,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(buttonAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addGroup(jPanel6Layout.createSequentialGroup()
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-              .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+              .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                  .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -815,6 +853,18 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_checkBoxUnfoldCollapsedTargetActionPerformed
 
+  private void colorChooserJumpLinkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserJumpLinkActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_colorChooserJumpLinkActionPerformed
+
+  private void spinnerJumpLinkWidthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinnerJumpLinkWidthStateChanged
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_spinnerJumpLinkWidthStateChanged
+
   void load() {
     this.config.loadFrom(NbUtils.getPreferences());
 
@@ -825,6 +875,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.colorChooserPaperColor.setValue(this.config.getPaperColor());
       this.colorChooserGridColor.setValue(this.config.getGridColor());
       this.colorChooserConnectorColor.setValue(this.config.getConnectorColor());
+      this.colorChooserJumpLink.setValue(this.config.getJumpLinkColor());
 
       this.colorChooserRootBackground.setValue(this.config.getRootBackgroundColor());
       this.colorChooserRootText.setValue(this.config.getRootTextColor());
@@ -840,6 +891,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.spinnerGridStep.setValue(this.config.getGridStep());
       this.spinnerSelectLineGap.setValue(this.config.getSelectLineGap());
       this.spinnerConnectorWidth.setValue(this.config.getConnectorWidth());
+      this.spinnerJumpLinkWidth.setValue(this.config.getJumpLinkWidth());
       this.spinnerCollapsatorWidth.setValue(this.config.getCollapsatorBorderWidth());
       this.spinnerCollapsatorSize.setValue(this.config.getCollapsatorSize());
 
@@ -872,6 +924,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.config.setPaperColor(this.colorChooserPaperColor.getValue());
       this.config.setGridColor(this.colorChooserGridColor.getValue());
       this.config.setConnectorColor(this.colorChooserConnectorColor.getValue());
+      this.config.setJumpLinkColor(this.colorChooserJumpLink.getValue());
       this.config.setRootBackgroundColor(this.colorChooserRootBackground.getValue());
       this.config.setRootTextColor(this.colorChooserRootText.getValue());
       this.config.setFirstLevelBackgroundColor(this.colorChooser1stBackground.getValue());
@@ -885,6 +938,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.config.setSelectLineGap((Integer) this.spinnerSelectLineGap.getValue());
       this.config.setCollapsatorSize((Integer) this.spinnerCollapsatorSize.getValue());
       this.config.setConnectorWidth((Float) this.spinnerConnectorWidth.getValue());
+      this.config.setJumpLinkWidth((Float) this.spinnerJumpLinkWidth.getValue());
       this.config.setSelectLineWidth((Float) this.spinnerSelectLineWidth.getValue());
       this.config.setCollapsatorBorderWidth((Float) this.spinnerCollapsatorWidth.getValue());
 
@@ -925,6 +979,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserCollapsatorBorder;
   private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserConnectorColor;
   private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserGridColor;
+  private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserJumpLink;
   private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserPaperColor;
   private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserRootBackground;
   private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserRootText;
@@ -935,6 +990,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
   private javax.swing.JLabel jLabel6;
+  private javax.swing.JLabel jLabel7;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
@@ -951,6 +1007,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JSpinner spinnerCollapsatorWidth;
   private javax.swing.JSpinner spinnerConnectorWidth;
   private javax.swing.JSpinner spinnerGridStep;
+  private javax.swing.JSpinner spinnerJumpLinkWidth;
   private javax.swing.JSpinner spinnerSelectLineGap;
   private javax.swing.JSpinner spinnerSelectLineWidth;
   // End of variables declaration//GEN-END:variables
