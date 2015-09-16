@@ -31,7 +31,7 @@ public abstract class AbstractElement {
   public static final String ATTR_BORDER_COLOR = "borderColor";
   public static final String ATTR_FILL_COLOR = "fillColor";
   public static final String ATTR_TEXT_COLOR = "textColor";
-  
+
   protected final Topic model;
 
   protected final TextBlock textBlock;
@@ -367,5 +367,11 @@ public abstract class AbstractElement {
     final Color dflt = this.borderColor == null ? config.getElementBorderColor() : this.borderColor;
     return dflt;
   }
-  
+
+  public static void copyColorAttributes(final Topic source, final Topic destination) {
+    destination.setAttribute(ATTR_FILL_COLOR, source.getAttribute(ATTR_FILL_COLOR));
+    destination.setAttribute(ATTR_BORDER_COLOR, source.getAttribute(ATTR_BORDER_COLOR));
+    destination.setAttribute(ATTR_TEXT_COLOR, source.getAttribute(ATTR_TEXT_COLOR));
+  }
+
 }

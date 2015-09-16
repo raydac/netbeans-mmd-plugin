@@ -767,6 +767,10 @@ public final class MindMapPanel extends JPanel {
 
       final Topic newTopic = parent.makeChild("", baseTopic); //NOI18N
 
+      if (!parent.isRoot()) {
+        AbstractElement.copyColorAttributes(parent, newTopic);
+      }
+
       final AbstractElement parentElement = (AbstractElement) parent.getPayload();
 
       if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
@@ -1179,7 +1183,7 @@ public final class MindMapPanel extends JPanel {
 
     final float scaledSize = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
 
-    final Stroke dashed = new BasicStroke(scaledSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{scaledSize, scaledSize*3.0f}, 0);
+    final Stroke dashed = new BasicStroke(scaledSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{scaledSize, scaledSize * 3.0f}, 0);
     gfx.setStroke(dashed);
 
     gfx.setColor(cfg.getJumpLinkColor());

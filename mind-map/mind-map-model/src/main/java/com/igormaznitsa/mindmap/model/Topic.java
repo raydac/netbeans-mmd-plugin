@@ -104,6 +104,10 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
+  public boolean isRoot(){
+    return this.parent == null;
+  }
+  
   public Object getPayload() {
     return this.payload;
   }
