@@ -292,14 +292,14 @@ public final class Topic implements Serializable, Constants {
     return this.unmodifableAttributes;
   }
 
-  public void setAttribute(final String name, final String value) {
+  public boolean setAttribute(final String name, final String value) {
     this.map.lock();
     try {
       if (value == null) {
-        this.attributes.remove(name);
+        return this.attributes.remove(name) != null;
       }
       else {
-        this.attributes.put(name, value);
+        return !value.equals(this.attributes.put(name, value));
       }
     }
     finally {

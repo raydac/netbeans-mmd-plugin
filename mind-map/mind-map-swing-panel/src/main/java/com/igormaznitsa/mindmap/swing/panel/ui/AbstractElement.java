@@ -17,6 +17,9 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
+import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_BORDER_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_TEXT_COLOR;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,10 +30,6 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.text.JTextComponent;
 
 public abstract class AbstractElement {
-
-  public static final String ATTR_BORDER_COLOR = "borderColor";
-  public static final String ATTR_FILL_COLOR = "fillColor";
-  public static final String ATTR_TEXT_COLOR = "textColor";
 
   protected final Topic model;
 
@@ -366,12 +365,6 @@ public abstract class AbstractElement {
   public Color getBorderColor(final MindMapPanelConfig config){
     final Color dflt = this.borderColor == null ? config.getElementBorderColor() : this.borderColor;
     return dflt;
-  }
-
-  public static void copyColorAttributes(final Topic source, final Topic destination) {
-    destination.setAttribute(ATTR_FILL_COLOR, source.getAttribute(ATTR_FILL_COLOR));
-    destination.setAttribute(ATTR_BORDER_COLOR, source.getAttribute(ATTR_BORDER_COLOR));
-    destination.setAttribute(ATTR_TEXT_COLOR, source.getAttribute(ATTR_TEXT_COLOR));
   }
 
 }

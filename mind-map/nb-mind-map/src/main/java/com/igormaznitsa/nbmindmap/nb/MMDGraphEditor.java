@@ -34,6 +34,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.nbmindmap.utils.AboutPanel;
 import com.igormaznitsa.nbmindmap.utils.ColorChooserButton;
@@ -179,6 +180,9 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         @Override
         public void run() {
           final Topic root = mindMapPanel.getModel() == null ? null : mindMapPanel.getModel().getRoot();
+          if (mindMapPanel.hasSelectedTopics()){
+            topicToCentre(mindMapPanel.getFirstSelected());
+          }else
           if (root != null) {
             mindMapPanel.select(root, false);
             topicToCentre(root);
@@ -284,7 +288,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       final StringWriter writer = new StringWriter(16384);
 
       final MindMap theMap = this.mindMapPanel.getModel();
-      AbstractCollapsableElement.removeCollapseAttributeFromTopicsWithoutChildren(theMap);
+      MindMapUtils.removeCollapseAttributeFromTopicsWithoutChildren(theMap);
       theMap.write(writer);
       this.editorSupport.replaceDocumentText(writer.toString());
       this.editorSupport.notifyModified();
@@ -752,12 +756,23 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     return TopComponent.PERSISTENCE_NEVER;
   }
 
-  public void focusToPath(final int[] positionPath) {
+  public boolean focusToPath(final boolean enforceVisibility, final int[] positionPath) {
     this.mindMapPanel.removeAllSelection();
-    final Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
+    Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
+    boolean mapChanged = false;
     if (topic != null) {
+      if (enforceVisibility) {
+        mapChanged = MindMapUtils.ensureVisibility(topic);
+      }else{
+        topic = MindMapUtils.findFirstVisibleAncestor(topic);
+      }
+      if (mapChanged){
+        this.mindMapPanel.updateView(true);
+        topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
+      }
       this.mindMapPanel.select(topic, false);
     }
+    return mapChanged;
   }
 
   @Override
@@ -1033,24 +1048,24 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   }
 
   private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {
-    final Color borderColor = NbUtils.extractCommonColorForColorChooserButton(AbstractElement.ATTR_BORDER_COLOR, topics);
-    final Color fillColor = NbUtils.extractCommonColorForColorChooserButton(AbstractElement.ATTR_FILL_COLOR, topics);
-    final Color textColor = NbUtils.extractCommonColorForColorChooserButton(AbstractElement.ATTR_TEXT_COLOR, topics);
+    final Color borderColor = NbUtils.extractCommonColorForColorChooserButton(MindMapUtils.ATTR_BORDER_COLOR, topics);
+    final Color fillColor = NbUtils.extractCommonColorForColorChooserButton(MindMapUtils.ATTR_FILL_COLOR, topics);
+    final Color textColor = NbUtils.extractCommonColorForColorChooserButton(MindMapUtils.ATTR_TEXT_COLOR, topics);
 
     final ColorAttributePanel panel = new ColorAttributePanel(borderColor, fillColor, textColor);
     if (NbUtils.plainMessageOkCancel(String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
       ColorAttributePanel.Result result = panel.getResult();
 
       if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
-        Utils.setAttribute(AbstractElement.ATTR_BORDER_COLOR, Utils.color2html(result.getBorderColor(), false), topics);
+        Utils.setAttribute(MindMapUtils.ATTR_BORDER_COLOR, Utils.color2html(result.getBorderColor(), false), topics);
       }
 
       if (result.getTextColor() != ColorChooserButton.DIFF_COLORS) {
-        Utils.setAttribute(AbstractElement.ATTR_TEXT_COLOR, Utils.color2html(result.getTextColor(), false), topics);
+        Utils.setAttribute(MindMapUtils.ATTR_TEXT_COLOR, Utils.color2html(result.getTextColor(), false), topics);
       }
 
       if (result.getFillColor() != ColorChooserButton.DIFF_COLORS) {
-        Utils.setAttribute(AbstractElement.ATTR_FILL_COLOR, Utils.color2html(result.getFillColor(), false), topics);
+        Utils.setAttribute(MindMapUtils.ATTR_FILL_COLOR, Utils.color2html(result.getFillColor(), false), topics);
       }
 
       source.updateView(true);

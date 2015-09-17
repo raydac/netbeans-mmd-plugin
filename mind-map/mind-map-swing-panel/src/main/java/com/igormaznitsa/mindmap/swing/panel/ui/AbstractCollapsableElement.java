@@ -16,8 +16,8 @@
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -29,7 +29,6 @@ import java.awt.geom.Rectangle2D;
 public abstract class AbstractCollapsableElement extends AbstractElement {
 
   protected final Rectangle2D collapsatorZone = new Rectangle2D.Double();
-  public static final String ATTR_COLLAPSED = "collapsed";
 
   public AbstractCollapsableElement(final Topic model) {
     super(model);
@@ -69,11 +68,11 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public boolean isCollapsed() {
-    return "true".equalsIgnoreCase(this.model.getAttribute(ATTR_COLLAPSED));//NOI18N
+    return MindMapUtils.isCollapsed(this.model);
   }
 
   public void setCollapse(final boolean flag) {
-    this.model.setAttribute(ATTR_COLLAPSED, flag ? "true" : null);//NOI18N
+    MindMapUtils.setCollapsed(this.model, flag);
   }
 
   @Override
@@ -281,68 +280,4 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     return true;
   }
 
-  public boolean ensureUncollapsed() {
-    boolean result = false;
-
-    Topic parent = this.model.getParent();
-    while (parent != null) {
-      final AbstractElement payload = (AbstractElement) parent.getPayload();
-      if (payload == null) {
-        break;
-      }
-      if (payload.isCollapsed() && payload instanceof AbstractCollapsableElement) {
-        ((AbstractCollapsableElement) payload).setCollapse(false);
-        result = true;
-      }
-      parent = payload.model.getParent();
-    }
-    return result;
-  }
-
-  public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map) {
-    removeCollapseAttrIfNoChildren(map == null ? null : map.getRoot());
-  }
-
-  private static void removeCollapseAttrIfNoChildren(final Topic topic) {
-    if (topic != null) {
-      if (!topic.hasChildren()) {
-        topic.setAttribute(ATTR_COLLAPSED, null);
-      }
-      else {
-        for (final Topic t : topic.getChildren()) {
-          removeCollapseAttrIfNoChildren(t);
-        }
-      }
-    }
-  }
-
-  public static Topic findFirstVisibleAncestor(final Topic topic) {
-    if (topic == null) {
-      return null;
-    }
-
-    final Topic[] path = topic.getPath();
-
-    Topic lastVisible = null;
-
-    if (path.length > 0) {
-      for (final Topic t : path) {
-        lastVisible = t;
-        final boolean collapsed = Boolean.parseBoolean(t.getAttribute(ATTR_COLLAPSED));
-        if (collapsed) {
-          break;
-        }
-      }
-    }
-
-    return lastVisible;
-  }
-
-  public static boolean isHidden(final Topic topic) {
-    if (topic == null) {
-      return true;
-    }
-    final String collapsed = topic.findAttributeInAncestors(ATTR_COLLAPSED);
-    return collapsed != null && Boolean.parseBoolean(collapsed);
-  }
 }

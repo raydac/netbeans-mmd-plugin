@@ -177,11 +177,11 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     }
   }
 
-  public void focusToPosition(final int[] positionPath) {
+  public void focusToPosition(final boolean enforceVisibilityOfTopic, final int[] positionPath) {
     final Enumeration<CloneableTopComponent> editors = this.allEditors.getComponents();
     while(editors.hasMoreElements()){
       final MMDGraphEditor editor = (MMDGraphEditor)editors.nextElement();
-      editor.focusToPath(positionPath);
+      editor.focusToPath(enforceVisibilityOfTopic, positionPath);
     }
   }
 

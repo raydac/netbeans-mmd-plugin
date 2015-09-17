@@ -23,6 +23,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.ElementLevelOther;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
@@ -801,7 +802,7 @@ public final class MindMapPanel extends JPanel {
       final Topic newTopic = parent.makeChild("", baseTopic); //NOI18N
 
       if (this.controller.isCopyColorInfoFromParentToNewChildAllowed(this) && !parent.isRoot()) {
-        AbstractElement.copyColorAttributes(parent, newTopic);
+        MindMapUtils.copyColorAttributes(parent, newTopic);
       }
 
       final AbstractElement parentElement = (AbstractElement) parent.getPayload();
@@ -1063,7 +1064,7 @@ public final class MindMapPanel extends JPanel {
         selectionChanged = true;
       }
       else {
-        if (!AbstractCollapsableElement.isHidden(topic)) {
+        if (!MindMapUtils.isHidden(topic)) {
           this.selectedTopics.add(topic);
         }
       }
@@ -1224,14 +1225,14 @@ public final class MindMapPanel extends JPanel {
     for (Topic src : allTopicsWithJumps) {
       final ExtraTopic extra = (ExtraTopic) src.getExtras().get(Extra.ExtraType.TOPIC);
       
-      src = AbstractCollapsableElement.isHidden(src) ? AbstractCollapsableElement.findFirstVisibleAncestor(src) : src;
+      src = MindMapUtils.isHidden(src) ? MindMapUtils.findFirstVisibleAncestor(src) : src;
       
       final AbstractElement srcElement = (AbstractElement) src.getPayload();
       if (extra != null) {
         Topic dst = map.findTopicForLink(extra);
         if (dst != null) {
-          if (AbstractCollapsableElement.isHidden(dst)) {
-            dst = AbstractCollapsableElement.findFirstVisibleAncestor(dst);
+          if (MindMapUtils.isHidden(dst)) {
+            dst = MindMapUtils.findFirstVisibleAncestor(dst);
             if (dst == src) {
               dst = null;
             }
@@ -1239,7 +1240,7 @@ public final class MindMapPanel extends JPanel {
 
           if (dst != null) {
             final AbstractElement dstElement = (AbstractElement) dst.getPayload();
-            if (!AbstractCollapsableElement.isHidden(dst)) {
+            if (!MindMapUtils.isHidden(dst)) {
               final Rectangle2D srcRect = srcElement.getBounds();
               final Rectangle2D dstRect = dstElement.getBounds();
 
@@ -1508,7 +1509,7 @@ public final class MindMapPanel extends JPanel {
       final AbstractElement element = (AbstractElement) theTopic.getPayload();
       if (element != null && element instanceof AbstractCollapsableElement) {
         final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
-        if (cel.ensureUncollapsed()) {
+        if (MindMapUtils.ensureVisibility(cel.getModel())) {
           updateView(true);
         }
       }

@@ -66,10 +66,7 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
             edSupport.edit();
             final TreePath path = mindMapTree.getSelectionPath();
             if (path != null) {
-              final Topic theTopic = (Topic) path.getLastPathComponent();
-              if (!AbstractCollapsableElement.isHidden(theTopic)){
-                edSupport.focusToPosition(((Topic) path.getLastPathComponent()).getPositionPath());
-              }
+              edSupport.focusToPosition(true, ((Topic) path.getLastPathComponent()).getPositionPath());
             }
           }
         }
