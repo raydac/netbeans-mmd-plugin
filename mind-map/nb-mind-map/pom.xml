@@ -237,5 +237,17 @@
       <version>${nb.platform}</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-refactoring-api</artifactId>
+      <version>${nb.platform}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-queries</artifactId>
+      <version>${nb.platform}</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>
