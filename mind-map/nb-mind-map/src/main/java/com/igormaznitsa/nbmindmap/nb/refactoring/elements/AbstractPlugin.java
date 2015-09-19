@@ -72,13 +72,13 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
       if (result != null) break;
       
       final Project project = FileOwnerQuery.getOwner(fileObject);
-      result = processFileObject(project, session, fileObject);
+      result = processFileObject(project, 0, session, fileObject);
     }
 
     return result;
   }
 
-  private Problem processFileObject(final Project project, final RefactoringElementsBag session, final FileObject fileObject) {
+  private Problem processFileObject(final Project project, int level, final RefactoringElementsBag session, final FileObject fileObject) {
     final Project theProject;
     if (project == null) {
       theProject = FileOwnerQuery.getOwner(fileObject);
@@ -88,7 +88,8 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
     }
     final File projectFolder = FileUtil.toFile(theProject.getProjectDirectory());
 
-    Problem result = processFile(theProject, projectFolder, session, fileObject);
+    Problem result = processFile(theProject, level, projectFolder, session, fileObject);
+    level++;
     if (fileObject.isFolder()) {
       for (final FileObject fo : fileObject.getChildren()) {
         if (result != null) {
@@ -96,10 +97,10 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
         }
 
         if (fo.isFolder()) {
-          result = processFileObject(theProject, session, fo);
+          result = processFileObject(theProject, level, session, fo);
         }
         else {
-          result = processFile(theProject, projectFolder, session, fo);
+          result = processFile(theProject, level, projectFolder, session, fo);
         }
       }
     }
@@ -107,7 +108,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
     return result;
   }
 
-  protected abstract Problem processFile(Project project, File projectFolder, RefactoringElementsBag session, FileObject fileObject);
+  protected abstract Problem processFile(Project project, int level, File projectFolder, RefactoringElementsBag session, FileObject fileObject);
 
   protected boolean doesMindMapContainFileLink(final Project project, final FileObject mindMap, final MMapURI fileToCheck) throws IOException {
     final FileObject baseFolder = project.getProjectDirectory();

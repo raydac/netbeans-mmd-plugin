@@ -52,7 +52,7 @@ public class SafeDeleteFileActionPlugin extends AbstractPlugin<SafeDeleteRefacto
   }
 
   @Override
-  protected Problem processFile(final Project project, final File projectFolder, final RefactoringElementsBag session, final FileObject fileObject) {
+  protected Problem processFile(final Project project, final int level, final File projectFolder, final RefactoringElementsBag session, final FileObject fileObject) {
     final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
 
     for (final FileObject mmap : allMapsInProject(project)) {

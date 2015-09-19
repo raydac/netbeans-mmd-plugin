@@ -56,9 +56,6 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
   protected static void writeMindMap(final File file, final MindMap map) throws IOException {
     FileUtils.writeStringToFile(file, map.packToString(), "UTF-8");
     final FileObject fobj = FileUtil.toFileObject(file);
-    if (fobj!=null){
-      fobj.refresh(true);
-    }
   }
 
   @Override
