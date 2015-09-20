@@ -15,9 +15,11 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -37,7 +39,6 @@ public final class Topic implements Serializable, Constants {
 
   private static Logger logger = LoggerFactory.getLogger(Topic.class);
 
-  
   private static final AtomicLong LOCALUID_GENERATOR = new AtomicLong();
 
   private Topic parent;
@@ -104,10 +105,10 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
-  public boolean isRoot(){
+  public boolean isRoot() {
     return this.parent == null;
   }
-  
+
   public Object getPayload() {
     return this.payload;
   }
@@ -167,7 +168,7 @@ public final class Topic implements Serializable, Constants {
     this.map.lock();
     try {
       final boolean hasNotImportantAttributes = this.attributes.isEmpty() || (this.attributes.size() == 1 && this.attributes.containsKey("leftSide")); //NOI18N
-      
+
       boolean noImportantContent = this.text.trim().isEmpty() && hasNotImportantAttributes && this.extras.isEmpty();
       if (noImportantContent) {
         for (final Topic t : this.children) {
@@ -240,10 +241,11 @@ public final class Topic implements Serializable, Constants {
           if (topic != null && extraType != null) {
             try {
               final String groupPre = matcher.group(MD_GROUP_PRE);
-              if (extraType.isStringValid(groupPre)){
+              if (extraType.isStringValid(groupPre)) {
                 topic.setExtra(extraType.parseLoaded(groupPre));
-              }else{
-                logger.error("Detected invalid extra data "+extraType+" : "+groupPre);
+              }
+              else {
+                logger.error("Detected invalid extra data " + extraType + " : " + groupPre);
               }
             }
             catch (Exception ex) {
@@ -448,21 +450,22 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public String findAttributeInAncestors(final String attrName){
+  public String findAttributeInAncestors(final String attrName) {
     this.map.lock();
-    try{
+    try {
       String result = null;
       Topic current = this.parent;
-      while(result == null && current!=null){
+      while (result == null && current != null) {
         result = current.getAttribute(attrName);
         current = current.parent;
       }
       return result;
-    }finally{
+    }
+    finally {
       this.map.unlock();
     }
   }
-  
+
   public void moveAfter(final Topic topic) {
     this.map.lock();
     try {
@@ -791,6 +794,51 @@ public final class Topic implements Serializable, Constants {
     finally {
       this.map.unlock();
     }
+  }
+
+  public boolean deleteLinkToFileIfPresented(final File baseFolder, final MMapURI file) {
+    boolean result = false;
+    if (this.extras.containsKey(Extra.ExtraType.FILE)) {
+      final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
+      if (fileLink.isSameOrHasParent(baseFolder, file)) {
+        result = this.extras.remove(Extra.ExtraType.FILE) != null;
+      }
+    }
+    for (final Topic c : this.children) {
+      result |= c.deleteLinkToFileIfPresented(baseFolder, file);
+    }
+    return result;
+  }
+
+  public boolean replaceLinkToFileIfPresented(final File baseFolder, final MMapURI oldFile, final MMapURI newFile) {
+    boolean result = false;
+    if (this.extras.containsKey(Extra.ExtraType.FILE)) {
+      final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
+      if (fileLink.isSame(baseFolder, oldFile)) {
+        this.extras.remove(Extra.ExtraType.FILE);
+        this.extras.put(Extra.ExtraType.FILE, new ExtraFile(newFile));
+        result = true;
+      }
+    }
+    for (final Topic c : this.children) {
+      result |= c.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
+    }
+    return result;
+  }
+
+  public boolean doesContainFileLink(final File baseFolder, final MMapURI file) {
+    if (this.extras.containsKey(Extra.ExtraType.FILE)) {
+      final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
+      if (fileLink.isSame(baseFolder, file)) {
+        return true;
+      }
+    }
+    for (final Topic c : this.children) {
+      if (c.doesContainFileLink(baseFolder, file)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

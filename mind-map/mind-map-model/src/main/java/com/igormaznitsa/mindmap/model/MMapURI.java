@@ -22,24 +22,37 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class MMapURI implements Serializable {
 
   public static final long serialVersionUID = 27896411234L;
-  
+
   private static final Properties EMPTY = new Properties();
 
   private final URI uri;
   private final Properties parameters;
   private final boolean fileUriFlag;
 
+  private static String extractHost(final URI uri) {
+    String host = uri.getHost();
+    if (host == null) {
+      final String schemeSpecific = uri.getSchemeSpecificPart();
+      if (schemeSpecific != null && schemeSpecific.startsWith("//")) {
+        host = "";
+      }
+    }
+    return host;
+  }
+
   public MMapURI(final String uri) throws URISyntaxException {
     this(new URI(uri));
   }
 
   public MMapURI(final URI uri) {
-    ModelUtils.assertNotNull("URI must not be nukk", uri); //NOI18N
+    ModelUtils.assertNotNull("URI must not be null", uri); //NOI18N
 
     this.fileUriFlag = uri.getScheme() == null ? true : uri.getScheme().equalsIgnoreCase("file"); //NOI18N
 
@@ -48,14 +61,15 @@ public class MMapURI implements Serializable {
     final String queryString = uri.getRawQuery();
     if (queryString != null) {
       this.parameters = ModelUtils.extractQueryPropertiesFromURI(uri);
-      if (this.fileUriFlag){
-      try {
-        preparedURI = new URI(uri.getScheme(), null, uri.getHost(), -1, uri.getPath(), null, null);
+      if (this.fileUriFlag) {
+        try {
+          preparedURI = new URI(uri.getScheme(), null, extractHost(uri), -1, uri.getPath(), null, null);
+        }
+        catch (URISyntaxException ex) {
+          throw new Error("Unexpected error", ex);
+        }
       }
-      catch (URISyntaxException ex) {
-        throw new Error("Unexpected error", ex);
-      }
-      }else{
+      else {
         preparedURI = uri;
       }
     }
@@ -64,6 +78,12 @@ public class MMapURI implements Serializable {
       preparedURI = uri;
     }
     this.uri = preparedURI;
+  }
+
+  private MMapURI(final URI uri, final boolean isFile, final Properties properties) {
+    this.uri = uri;
+    this.fileUriFlag = isFile;
+    this.parameters = properties == null ? new Properties() : (Properties) properties.clone();
   }
 
   public MMapURI(final File nullableBase, final File file, final Properties nullableParameters) {
@@ -92,6 +112,86 @@ public class MMapURI implements Serializable {
 
   public static MMapURI makeFromFilePath(final File base, final String filePath, final Properties properties) {
     return new MMapURI(base, ModelUtils.makeFileForPath(filePath), properties);
+  }
+
+  public MMapURI replaceBaseInPath(final boolean replaceHost, final URI newBase, int currentNumberOfResourceItemsTheLasIsZero) throws URISyntaxException {
+    final String newURIPath = newBase.getPath();
+    final String[] splittedNewPath = newURIPath.split("\\/");
+    final String[] splittedOldPath = this.uri.getPath().split("\\/");
+
+    final List<String> resultPath = new ArrayList<>();
+
+    for (final String s : splittedNewPath) {
+      resultPath.add(s);
+    }
+
+    final int firstResourceIndex = resultPath.size();
+
+    currentNumberOfResourceItemsTheLasIsZero = currentNumberOfResourceItemsTheLasIsZero + 1;
+  
+    int oldPathIndex = splittedOldPath.length - currentNumberOfResourceItemsTheLasIsZero; 
+    
+    while (oldPathIndex < splittedOldPath.length) {
+      if (oldPathIndex>=0){
+        resultPath.add(splittedOldPath[oldPathIndex]);
+      }
+      oldPathIndex ++;
+    }
+
+    final StringBuilder buffer = new StringBuilder();
+    for (int i = 0; i < resultPath.size(); i++) {
+      if (i > 0) {
+        buffer.append('/');
+      }
+      buffer.append(resultPath.get(i));
+    }
+
+    final URI newURI = new URI(replaceHost ? newBase.getScheme() : this.uri.getScheme(),
+            replaceHost ? newBase.getUserInfo() : this.uri.getUserInfo(),
+            replaceHost ? extractHost(newBase) : extractHost(this.uri),
+            replaceHost ? newBase.getPort() : this.uri.getPort(),
+            buffer.toString(),
+            this.uri.getQuery(),
+            this.uri.getFragment()
+    );
+
+    return new MMapURI(newURI, this.fileUriFlag, this.parameters);
+  }
+
+  public MMapURI replaceName(final String newName) throws URISyntaxException {
+    final MMapURI result;
+    final String normalizedName = ModelUtils.escapeURIPath(newName).replace('\\', '/');
+
+    final String [] parsedNormalized = normalizedName.split("\\/");
+    final String [] parsedCurrentPath = this.uri.getPath().split("\\/");
+
+    final int baseLength = Math.max(0, parsedCurrentPath.length - parsedNormalized.length);
+    
+    final StringBuilder buffer = new StringBuilder();
+
+    for(int i=0;i<baseLength;i++){
+      if (i>0){
+        buffer.append('/');
+      }
+      buffer.append(parsedCurrentPath[i]);
+    }
+    
+    for(int i=0;i<parsedNormalized.length;i++){
+      if ((i==0 && buffer.length()>0) || i>0){
+        buffer.append('/');
+      }
+      buffer.append(parsedNormalized[i]);
+    }
+    
+    result = new MMapURI(new URI(
+            this.uri.getScheme(),
+            this.uri.getUserInfo(),
+            extractHost(this.uri),
+            this.uri.getPort(),
+            buffer.toString(),
+            this.uri.getQuery(),
+            this.uri.getFragment()), this.fileUriFlag, parameters);
+    return result;
   }
 
   public URI asURI() {

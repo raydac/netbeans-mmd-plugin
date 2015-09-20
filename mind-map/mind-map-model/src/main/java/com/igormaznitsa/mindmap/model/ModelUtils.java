@@ -257,15 +257,25 @@ public enum ModelUtils {
     }
   }
 
-  private static String normalizeFileURI(final String fileUri) {
-    final int schemePosition = fileUri.indexOf(':');
-    final String scheme = fileUri.substring(0, schemePosition);
-    final String chars = " :<>?"; //NOI18N
-    String result = fileUri.substring(schemePosition + 1);
+  public static String escapeURIPath(final String text){
+    final String chars = "% :<>?"; //NOI18N
+    String result = text;
     for (final char ch : chars.toCharArray()) {
       result = result.replace(Character.toString(ch), "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH)); //NOI18N
     }
-    return scheme + ':' + result;
+    
+    return result;
+  }
+  
+  private static String normalizeFileURI(final String fileUri) {
+    final int schemePosition = fileUri.indexOf(':');
+    final String scheme = schemePosition < 0 ? "" : fileUri.substring(0, schemePosition + 1);
+    final String chars = " :<>?"; //NOI18N
+    String result = fileUri.substring(scheme.length());
+    for (final char ch : chars.toCharArray()) {
+      result = result.replace(Character.toString(ch), "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH)); //NOI18N
+    }
+    return scheme + result;
   }
 
   public static URI toURI(final Path path) {

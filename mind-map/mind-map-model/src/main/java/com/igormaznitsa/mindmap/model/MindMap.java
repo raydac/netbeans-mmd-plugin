@@ -15,9 +15,11 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.event.TreeModelEvent;
@@ -40,7 +43,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   private static final long serialVersionUID = 5929181596778047354L;
 
   private static final Logger logger = LoggerFactory.getLogger(MindMap.class);
-  
+
   private final Topic root;
   private final Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new HashMap<>();
@@ -221,6 +224,17 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     return buffer.toString();
   }
 
+  public String packToString() {
+    final StringWriter writer = new StringWriter(16384);
+    try {
+      write(writer);
+    }
+    catch (IOException ex) {
+      throw new Error("Unexpected exception", ex);
+    }
+    return writer.toString();
+  }
+
   public void write(final Writer out) throws IOException {
     this.locker.lock();
     try {
@@ -248,24 +262,26 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   public Topic cloneTopic(final Topic topic, final boolean cloneFullTree) {
     this.locker.lock();
     try {
-      if (topic == null || topic == this.root) return null;
-      
-      final Topic clonedtopic = topic.makeCopy(this,topic.getParent());
-      if (!cloneFullTree){
+      if (topic == null || topic == this.root) {
+        return null;
+      }
+
+      final Topic clonedtopic = topic.makeCopy(this, topic.getParent());
+      if (!cloneFullTree) {
         clonedtopic.removeAllChildren();
       }
-      
+
       clonedtopic.removeAttributeFromSubtree(ExtraTopic.TOPIC_UID_ATTR);
-      
+
       fireModelChanged();
-      
+
       return clonedtopic;
     }
     finally {
       this.locker.unlock();
     }
   }
-  
+
   public boolean removeTopic(final Topic topic) {
     this.locker.lock();
     try {
@@ -281,9 +297,11 @@ public final class MindMap implements Serializable, Constants, TreeModel {
         this.root.removeTopic(topic);
         result = this.root.removeAllLinksTo(topic);
       }
-      
-      if (result) fireModelChanged();
-      
+
+      if (result) {
+        fireModelChanged();
+      }
+
       return result;
     }
     finally {
@@ -296,35 +314,37 @@ public final class MindMap implements Serializable, Constants, TreeModel {
       return null;
     }
     this.locker.lock();
-    try{
-    return this.root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
-    }finally{
+    try {
+      return this.root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
+    }
+    finally {
       this.locker.unlock();
     }
   }
 
-  public List<Topic> findAllTopicsForExtraType(final Extra.ExtraType type){
+  public List<Topic> findAllTopicsForExtraType(final Extra.ExtraType type) {
     final List<Topic> result = new ArrayList<>();
     this.locker.lock();
-    try{
-      if (this.root!=null){
+    try {
+      if (this.root != null) {
         _findAllTopicsForExtraType(this.root, type, result);
       }
-    }finally{
+    }
+    finally {
       this.locker.unlock();
     }
     return result;
   }
-  
-  private void _findAllTopicsForExtraType(final Topic topic, final Extra.ExtraType type, final List<Topic> result){
-    if (topic.getExtras().containsKey(type)){
+
+  private void _findAllTopicsForExtraType(final Topic topic, final Extra.ExtraType type, final List<Topic> result) {
+    if (topic.getExtras().containsKey(type)) {
       result.add(topic);
     }
-    for(final Topic c : topic.getChildren()){
+    for (final Topic c : topic.getChildren()) {
       _findAllTopicsForExtraType(c, type, result);
     }
   }
-  
+
   @Override
   public Object getChild(final Object parent, final int index) {
     return ((Topic) parent).getChildren().get(index);
@@ -365,4 +385,54 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   public void removeTreeModelListener(final TreeModelListener l) {
     this.treeListeners.remove(l);
   }
+
+  public boolean doesContainFileLink(final File baseFolder, final MMapURI file) {
+    this.locker.lock();
+    try {
+      if (this.root == null) {
+        return false;
+      }
+      else {
+        return this.root.doesContainFileLink(baseFolder, file);
+      }
+    }
+    finally {
+      this.locker.unlock();
+    }
+  }
+
+  public boolean deleteAllLinksToFile(final File baseFolder, final MMapURI file) {
+    boolean changed = false;
+    this.locker.lock();
+    try {
+      if (this.root != null) {
+        changed = this.root.deleteLinkToFileIfPresented(baseFolder, file);
+      }
+    }
+    finally {
+      this.locker.unlock();
+    }
+    if (changed) {
+      fireModelChanged();
+    }
+    return changed;
+  }
+
+  public boolean replaceAllLinksToFile(final File baseFolder, final MMapURI oldFile, final MMapURI newFile) {
+    boolean changed = false;
+    this.locker.lock();
+    try {
+      if (this.root != null) {
+        changed = this.root.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
+      }
+    }
+    finally {
+      this.locker.unlock();
+    }
+    if (changed) {
+      fireModelChanged();
+    }
+    return changed;
+  }
+
 }

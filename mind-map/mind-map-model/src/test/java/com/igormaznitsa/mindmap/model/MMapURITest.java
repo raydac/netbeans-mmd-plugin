@@ -23,6 +23,27 @@ import static org.junit.Assert.*;
 
 public class MMapURITest {
 
+  @Test
+  public void testReplaceName() throws Exception {
+    assertEquals("universe.doc?query=123", new MMapURI("?query=123#eee").replaceName("universe.doc").asURI().toString());
+    assertEquals("hello/universe.doc?query=123", new MMapURI("hello/world.txt?query=123#eee").replaceName("universe.doc").asURI().toString());
+    assertEquals("hello?query=123", new MMapURI("universe/?query=123#eee").replaceName("hello").asURI().toString());
+    assertEquals("hello?query=123", new MMapURI("universe?query=123#eee").replaceName("hello").asURI().toString());
+    assertEquals("file:///folder/folder2/file.txt?query=123", new MMapURI("file:///folder/folder2/hoho.txt?query=123").replaceName("file.txt").asURI().toString());
+    assertEquals("file:///folder/folder2/file%253A%253A%253Csome%253E.txt?query=123", new MMapURI("file:///folder/folder2/hoho.txt?query=123").replaceName("file::<some>.txt").asURI().toString());
+    
+    assertEquals("file:///folder1/folder2/some/new/fold/hello.txt?query=123", new MMapURI("file:///folder1/folder2/some/new/folder/hoho.txt?query=123").replaceName("new/fold/hello.txt").asURI().toString());
+  }
+
+  @Test
+  public void testReplaceBaseInPath() throws Exception {
+    assertEquals("hello/world/test",new MMapURI("test").replaceBaseInPath(false, new URI("hello/world"), 0).asURI().toString());
+    assertEquals("hello/world/some/test",new MMapURI("some/test").replaceBaseInPath(false, new URI("hello/world"), 1).asURI().toString());
+    assertEquals("http://some/world/test",new MMapURI("http://some/test").replaceBaseInPath(false, new URI("http://hello/world"), 0).asURI().toString());
+    assertEquals("file:///newfolder/newfolder1/hello/universe/and/world",new MMapURI("file:///server/folder/hello/universe/and/world").replaceBaseInPath(false, new URI("file:///newfolder/newfolder1"), 3).asURI().toString());
+    assertEquals("/newfolder/newfolder1/hello/universe/and/world",new MMapURI("server/folder/hello/universe/and/world").replaceBaseInPath(false, new URI("file:///newfolder/newfolder1"), 3).asURI().toString());
+  }
+  
   @Test(expected = NullPointerException.class)
   public void testCreate_StrNull() throws Exception {
     new MMapURI((String) null);

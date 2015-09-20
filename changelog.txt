@@ -1,4 +1,5 @@
 1.0.1
+- added base support for project refactoring actions "move", "delete" and "rename"
 - added "show jump links" pop-up menu item to show inside mind-map jump links as lines
 - added support of folders to be added to topics and opened through click, a Netbeans project folder will be opened in IDE
 - added editing of colors for every topic
