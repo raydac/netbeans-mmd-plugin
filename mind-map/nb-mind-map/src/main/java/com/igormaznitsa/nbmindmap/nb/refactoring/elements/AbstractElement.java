@@ -97,7 +97,13 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
       }
     }
     try {
-      FileUtils.writeStringToFile(FileUtil.toFile(fileObject), map.packToString(),"UTF-8");
+      final OutputStream out = fileObject.getOutputStream(lock);
+      try {
+        IOUtils.write(map.packToString(), out, "UTF-8");
+      }
+      finally {
+        IOUtils.closeQuietly(out);
+      }
     }
     finally {
       if (lock != null) {
