@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
+import com.igormaznitsa.nbmindmap.nb.refactoring.elements.MoveFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.RenameFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.SafeDeleteFileActionPlugin;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
@@ -34,7 +35,7 @@ public class MindMapRefactoringFactory implements RefactoringPluginFactory {
       result = new SafeDeleteFileActionPlugin((SafeDeleteRefactoring) refactoring);
     }
     else if (refactoring instanceof MoveRefactoring) {
-      result = null;
+      result = new MoveFileActionPlugin((MoveRefactoring)refactoring);
     }
     else if (refactoring instanceof RenameRefactoring) {
       result = new RenameFileActionPlugin((RenameRefactoring)refactoring);

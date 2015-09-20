@@ -21,12 +21,13 @@ import com.igormaznitsa.nbmindmap.nb.refactoring.RefactoringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.io.FileUtils;
+import org.netbeans.api.fileinfo.NonRecursiveFolder;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
@@ -35,6 +36,7 @@ import org.netbeans.modules.refactoring.spi.RefactoringElementsBag;
 import org.netbeans.modules.refactoring.spi.RefactoringPlugin;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,13 +66,26 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
     return result;
   }
 
+  private Collection<? extends FileObject> findFileObjectInLookup(final Lookup lookup) {
+    final Collection<? extends FileObject> files = lookup.lookupAll(FileObject.class);
+    final Collection<? extends NonRecursiveFolder> folders = lookup.lookupAll(NonRecursiveFolder.class);
+    final List<FileObject> result = new ArrayList<>();
+    for (final NonRecursiveFolder f : folders) {
+      result.add(f.getFolder());
+    }
+    result.addAll(files);
+    return result;
+  }
+
   @Override
   public Problem prepare(final RefactoringElementsBag session) {
     Problem result = null;
 
-    for (final FileObject fileObject : this.refactoring.getRefactoringSource().lookupAll(FileObject.class)) {
-      if (result != null) break;
-      
+    for (final FileObject fileObject : findFileObjectInLookup(this.refactoring.getRefactoringSource())) {
+      if (result != null) {
+        break;
+      }
+
       final Project project = FileOwnerQuery.getOwner(fileObject);
       result = processFileObject(project, 0, session, fileObject);
     }
@@ -121,5 +136,5 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
       return false;
     }
   }
-  
+
 }

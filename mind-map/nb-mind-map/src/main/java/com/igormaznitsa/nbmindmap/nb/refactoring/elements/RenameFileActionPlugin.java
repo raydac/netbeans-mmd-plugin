@@ -55,46 +55,72 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
   public void cancelRequest() {
   }
 
-  protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path, final String newName){
-    final String normalizedSeparators = FilenameUtils.separatorsToUnix(path);
-    int start = normalizedSeparators.length();
-    while(start>=0 && pathItemIndexFromEnd>=0){
-      start = normalizedSeparators.lastIndexOf('/', start-1);
-      pathItemIndexFromEnd --;
-    }
-    
-    String result = path;
-    
-    if (start >= 0){
-      final int indexEnd = normalizedSeparators.indexOf('/', start+1);
-      if (indexEnd<=0){
-        result = path.substring(0,start+1)+newName;
-      }else{
-        result = path.substring(0,start+1)+newName+path.substring(indexEnd);
+  private static int numberOfFolders(final String text) {
+    int result = 0;
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '/' || text.charAt(i) == '\\') {
+        result++;
       }
     }
     return result;
   }
-  
+
+  protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path, final String newName) {
+    int foldersInNewName = numberOfFolders(newName);
+
+    final String normalizedSeparators = FilenameUtils.separatorsToUnix(path);
+    int start = normalizedSeparators.length();
+
+    while (start >= 0 && pathItemIndexFromEnd >= 0) {
+      start = normalizedSeparators.lastIndexOf('/', start - 1);
+      pathItemIndexFromEnd--;
+    }
+
+    String result = path;
+
+    if (start >= 0) {
+      final int indexEnd = normalizedSeparators.indexOf('/', start + 1);
+
+      while (start >= 0 && foldersInNewName > 0) {
+        start = normalizedSeparators.lastIndexOf('/', start - 1);
+        foldersInNewName--;
+      }
+
+      if (start >= 0) {
+        if (indexEnd <= 0) {
+          result = path.substring(0, start + 1) + newName;
+        }
+        else {
+          result = path.substring(0, start + 1) + newName + path.substring(indexEnd);
+        }
+      }
+    }
+    return result;
+  }
+
   @Override
   protected Problem processFile(final Project project, final int level, final File projectFolder, final RefactoringElementsBag session, final FileObject fileObject) {
     final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
 
     String newFileName = this.refactoring.getNewName();
 
-    if (level==0 && !fileObject.isFolder()) {
+    if (level == 0 && !fileObject.isFolder()) {
       final String ext = FilenameUtils.getExtension(fileObject.getNameExt());
       if (!ext.isEmpty()) {
         newFileName += '.' + ext;
       }
     }
+    else {
+      newFileName = newFileName.replace('.', '/');
+    }
 
     final MMapURI newFileAsURI;
     try {
-      if (level == 0){
+      if (level == 0) {
         newFileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null).replaceName(newFileName);
-      }else{
-        newFileAsURI = MMapURI.makeFromFilePath(projectFolder, replaceNameInPath(level, fileObject.getPath(), newFileName),null);
+      }
+      else {
+        newFileAsURI = MMapURI.makeFromFilePath(projectFolder, replaceNameInPath(level, fileObject.getPath(), newFileName), null);
       }
     }
     catch (URISyntaxException ex) {

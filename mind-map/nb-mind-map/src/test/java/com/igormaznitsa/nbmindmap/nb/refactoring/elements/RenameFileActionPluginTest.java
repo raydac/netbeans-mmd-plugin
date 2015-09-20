@@ -28,6 +28,10 @@ public class RenameFileActionPluginTest {
     assertEquals("c:\\smartest\\est\\hello\\world.txt",RenameFileActionPlugin.replaceNameInPath(2, "c:\\smartest\\lskjdflkdsjfwioeqwoieqwlkdlkd\\hello\\world.txt", "est"));
     assertEquals("zomby",RenameFileActionPlugin.replaceNameInPath(2, "zomby", "est"));
     assertEquals("",RenameFileActionPlugin.replaceNameInPath(0, "", "est"));
+    
+    assertEquals("/hello/world/test.txt",RenameFileActionPlugin.replaceNameInPath(1, "/hello/some/test.txt", "world"));
+    assertEquals("/aha/world/test.txt",RenameFileActionPlugin.replaceNameInPath(1, "/hello/some/test.txt", "aha/world"));
+    assertEquals("/hello/aha/world1/test.txt",RenameFileActionPlugin.replaceNameInPath(1, "/hello/aha/world/test.txt", "aha/world1"));
   }
   
 }
