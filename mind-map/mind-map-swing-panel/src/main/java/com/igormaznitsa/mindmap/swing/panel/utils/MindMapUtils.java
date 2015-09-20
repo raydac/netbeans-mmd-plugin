@@ -17,8 +17,6 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 
 public enum MindMapUtils {;
   public static final String ATTR_BORDER_COLOR = "borderColor";

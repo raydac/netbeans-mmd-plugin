@@ -19,7 +19,6 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
 import java.io.File;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import org.apache.commons.io.FilenameUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.Problem;
@@ -28,7 +27,6 @@ import org.netbeans.modules.refactoring.spi.RefactoringElementsBag;
 import org.openide.ErrorManager;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.util.Exceptions;
 
 public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
 

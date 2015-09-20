@@ -16,17 +16,13 @@
 package com.igormaznitsa.nbmindmap.utils;
 
 import com.igormaznitsa.ui.JHtmlLabel;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class JHtmlLabelTest {
   
   @Test
-  public void test(){
-    JHtmlLabel l = new JHtmlLabel("<a href=\"hello world\">Some</a>");
+  public void testCreatingForString_NoException(){
+    assertNotNull(new JHtmlLabel("<a href=\"hello world\">Some</a>"));
   }
 }

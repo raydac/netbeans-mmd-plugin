@@ -79,7 +79,7 @@ public class MindMapNodeFactory implements NodeFactory, FilenameFilter {
     if (listFiles == null || listFiles.length == 0) {
       return NodeFactorySupport.fixedNodeList();
     }
-    final List<Node> foundNodes = new ArrayList<Node>(listFiles.length);
+    final List<Node> foundNodes = new ArrayList<>(listFiles.length);
     for (final File f : listFiles) {
       final FileObject fileObject = FileUtil.toFileObject(FileUtil.normalizeFile(f));
 

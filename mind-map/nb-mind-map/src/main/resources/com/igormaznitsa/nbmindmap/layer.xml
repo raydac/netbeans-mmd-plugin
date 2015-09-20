@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
+  <folder name="Loaders">
+    <folder name="text">
+      <folder name="x-nbmmd+markdown">
+        <folder name="Actions">
+          <file name="RefactoringAll.shadow">
+            <attr name="originalFile" stringvalue="Actions/Refactoring/RefactoringAll.instance"/>
+            <attr name="position" intvalue="2000"/>
+          </file>
+          <file name="RefactoringSeparator-1.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+            <attr name="position" intvalue="2100"/>
+          </file>
+          <file name="RenameAction.shadow_hidden"/>
+        </folder>
+      </folder>
+    </folder>
+  </folder>
   <folder name="QuickSearch">
     <folder name="NBMindMap">
       <attr name="position" intvalue="0"/>

@@ -17,7 +17,6 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

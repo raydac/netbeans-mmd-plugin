@@ -30,7 +30,7 @@ public class MindMapPanelConfigTest {
 
   @Test
   public void testSaveRestoreState(){
-    final Map<String, Object> storage = new HashMap<String,Object>();
+    final Map<String, Object> storage = new HashMap<>();
     final Preferences prefs = mock(Preferences.class);
      
     doAnswer(new Answer(){

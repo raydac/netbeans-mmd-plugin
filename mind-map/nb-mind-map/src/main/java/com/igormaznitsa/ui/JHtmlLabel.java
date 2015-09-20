@@ -86,7 +86,7 @@ public class JHtmlLabel extends JLabel {
    */
   private transient List<HtmlLinkAddress> linkCache = null;
 
-  private final List<LinkListener> linkListeners = new CopyOnWriteArrayList<LinkListener>();
+  private final List<LinkListener> linkListeners = new CopyOnWriteArrayList<>();
   private boolean showLinkAddressInToolTip = false;
   private int minClickCountToActivateLink = 1;
 
@@ -194,7 +194,7 @@ public class JHtmlLabel extends JLabel {
   }
 
   private void cacheLinkElements() {
-    this.linkCache = new ArrayList<HtmlLinkAddress>();
+    this.linkCache = new ArrayList<>();
     final View view = (View) this.getClientProperty("html");
     if (view != null) {
       final HTMLDocument doc = (HTMLDocument) view.getDocument();
