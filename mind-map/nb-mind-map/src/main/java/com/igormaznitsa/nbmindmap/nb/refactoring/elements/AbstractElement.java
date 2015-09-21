@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.ResourceBundle;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.netbeans.modules.refactoring.spi.SimpleRefactoringElementImplementation;
@@ -37,8 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractElement extends SimpleRefactoringElementImplementation {
-
-  protected static final Logger logger = LoggerFactory.getLogger("MindMapRefactoringPlugin");
+  protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+  protected static final Logger logger = LoggerFactory.getLogger("MindMapRefactoringPlugin"); //NOI18N
 
   protected final File projectFolder;
   protected final MMapURI processedFile;
@@ -58,7 +59,7 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
       Thread.sleep(delay);
     }
     catch (InterruptedException ex) {
-      throw new IOException("Interrupted", ex);
+      throw new IOException("Interrupted", ex); //NOI18N
     }
   }
 
@@ -75,7 +76,7 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
       }
     }
     try {
-      return new MindMap(new StringReader(fileObject.asText("UTF-8")));
+      return new MindMap(new StringReader(fileObject.asText("UTF-8"))); //NOI18N
     }
     finally {
       if (lock != null) {
@@ -99,7 +100,7 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
     try {
       final OutputStream out = fileObject.getOutputStream(lock);
       try {
-        IOUtils.write(map.packToString(), out, "UTF-8");
+        IOUtils.write(map.packToString(), out, "UTF-8"); //NOI18N
       }
       finally {
         IOUtils.closeQuietly(out);
@@ -115,11 +116,11 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
   @Override
   public void performChange() {
     try {
-      this.oldMindMapText = FileUtils.readFileToString(this.mindMapFile.getFile(), "UTF-8");
+      this.oldMindMapText = FileUtils.readFileToString(this.mindMapFile.getFile(), "UTF-8"); //NOI18N
     }
     catch (IOException ex) {
-      logger.error("Can't load mind map file", ex);
-      ErrorManager.getDefault().log(ErrorManager.ERROR, "Can't load mind map file during refactoring");
+      logger.error("Can't load mind map file", ex); //NOI18N
+      ErrorManager.getDefault().log(ErrorManager.ERROR, "Can't load mind map file during refactoring"); //NOI18N
     }
   }
 
@@ -127,10 +128,10 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
   public void undoChange() {
     if (this.oldMindMapText != null) {
       try {
-        FileUtils.writeStringToFile(this.mindMapFile.getFile(), this.oldMindMapText, "UTF-8");
+        FileUtils.writeStringToFile(this.mindMapFile.getFile(), this.oldMindMapText, "UTF-8"); //NOI18N
       }
       catch (IOException ex) {
-        logger.error("Can't undo old mind map text", ex);
+        logger.error("Can't undo old mind map text", ex); //NOI18N
         throw new CannotUndoMindMapException(this.mindMapFile.getFile());
       }
     }

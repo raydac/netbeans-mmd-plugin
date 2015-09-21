@@ -36,7 +36,7 @@ public class MoveElement extends AbstractElement {
 
   @Override
   public String getText() {
-    return "Move file " + this.processedFile.asString(false, false);
+    return String.format(BUNDLE.getString("MoveElement.getText"),this.processedFile.asString(false, false));
   }
 
   @Override
@@ -50,12 +50,12 @@ public class MoveElement extends AbstractElement {
         }
       }
       else {
-        logger.warn("Detected null as new file uri for rename refactoring");
+        logger.warn("Detected null as new file uri for rename refactoring"); //NOI18N
       }
     }
     catch (Exception ex) {
-      logger.error("Error during mind map refactoring", ex);
-      ErrorManager.getDefault().log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link");
+      logger.error("Error during mind map refactoring", ex); //NOI18N
+      ErrorManager.getDefault().log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
     }
   }
 

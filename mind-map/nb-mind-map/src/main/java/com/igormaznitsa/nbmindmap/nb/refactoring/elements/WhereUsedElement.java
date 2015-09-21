@@ -16,34 +16,18 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
 import java.io.File;
-import org.openide.ErrorManager;
 
-public class DeleteElement extends AbstractElement {
+public class WhereUsedElement extends AbstractElement {
 
-  public DeleteElement(final MutableFileLink mindMap, final File projectFolder, final MMapURI fileObject) {
+  public WhereUsedElement(final MutableFileLink mindMap, final File projectFolder, final MMapURI fileObject) {
     super(mindMap, projectFolder, fileObject);
   }
 
   @Override
   public String getText() {
-    return String.format(BUNDLE.getString("DeleteElement.getText"),this.processedFile.asString(false, false));
+    return String.format(BUNDLE.getString("WhereUsedElement.getText"),this.processedFile.asString(false, false));
   }
 
-  @Override
-  public void performChange() {
-    super.performChange();
-    try{
-      final MindMap parsed = readMindMap(this.mindMapFile.getFile());
-      if (parsed.deleteAllLinksToFile(this.projectFolder, this.processedFile)){
-        writeMindMap(this.mindMapFile.getFile(), parsed);
-      }
-    }catch(Exception ex){
-      logger.error("Error during mind map refactoring",ex); //NOI18N
-      ErrorManager.getDefault().log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
-    }
-  }
-  
 }

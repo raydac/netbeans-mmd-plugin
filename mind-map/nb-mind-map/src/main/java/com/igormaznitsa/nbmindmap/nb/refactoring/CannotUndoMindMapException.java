@@ -16,19 +16,22 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
 import java.io.File;
+import java.util.ResourceBundle;
 import javax.swing.undo.CannotUndoException;
 
 public class CannotUndoMindMapException extends CannotUndoException {
+  protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+
   public static final long serialVersionUID = 12312439213L;
   
   private final String filePath;
   
   public CannotUndoMindMapException(final File file){
-    this.filePath = file == null ? "<NULL>" : file.getAbsolutePath();
+    this.filePath = file == null ? "<NULL>" : file.getAbsolutePath(); //NOI18N
   }
   
   @Override
   public String getMessage(){
-    return "Can't undo changes in file "+this.filePath;
+    return String.format(BUNDLE.getString("CannotUndoMindMapException.getMessage"),this.filePath);
   }
 }

@@ -23,7 +23,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.RenameRefactoring;
-import org.netbeans.modules.refactoring.spi.RefactoringElementsBag;
 import org.openide.ErrorManager;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -32,25 +31,6 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
 
   public RenameFileActionPlugin(final RenameRefactoring refactoring) {
     super(refactoring);
-  }
-
-  @Override
-  public Problem preCheck() {
-    return null;
-  }
-
-  @Override
-  public Problem checkParameters() {
-    return null;
-  }
-
-  @Override
-  public Problem fastCheckParameters() {
-    return null;
-  }
-
-  @Override
-  public void cancelRequest() {
   }
 
   private static int numberOfFolders(final String text) {
@@ -97,7 +77,7 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
   }
 
   @Override
-  protected Problem processFile(final Project project, final int level, final File projectFolder, final RefactoringElementsBag session, final FileObject fileObject) {
+  protected Problem processFile(final Project project, final int level, final File projectFolder, final FileObject fileObject) {
     final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
 
     String newFileName = this.refactoring.getNewName();
@@ -122,21 +102,24 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
       }
     }
     catch (URISyntaxException ex) {
-      logger.error("Can't make new file uri for " + fileObject.getPath(), ex);
-      return new Problem(true, "Can't make URI for new file name");
+      logger.error("Can't make new file uri for " + fileObject.getPath(), ex); //NOI18N
+      return new Problem(true, BUNDLE.getString("Refactoring.CantMakeURI"));
     }
 
     for (final FileObject mmap : allMapsInProject(project)) {
+      if (isCanceled()) {
+        break;
+      }
       try {
         if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
           final RenameElement element = new RenameElement(new MutableFileLink(FileUtil.toFile(mmap)), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null));
           element.setNewFile(newFileAsURI);
-          session.addFileChange(this.refactoring, element);
+          addElement(element);
         }
       }
       catch (Exception ex) {
         ErrorManager.getDefault().notify(ex);
-        return new Problem(true, "Error during mind map processing");
+        return new Problem(true, BUNDLE.getString("Refactoring.CantProcessMindMap"));
       }
     }
 

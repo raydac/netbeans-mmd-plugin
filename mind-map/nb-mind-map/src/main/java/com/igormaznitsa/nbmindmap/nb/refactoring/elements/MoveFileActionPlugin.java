@@ -38,25 +38,6 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
     super(refactoring);
   }
 
-  @Override
-  public Problem preCheck() {
-    return null;
-  }
-
-  @Override
-  public Problem checkParameters() {
-    return null;
-  }
-
-  @Override
-  public Problem fastCheckParameters() {
-    return null;
-  }
-
-  @Override
-  public void cancelRequest() {
-  }
-
   protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path, final String newName){
     final String normalizedSeparators = FilenameUtils.separatorsToUnix(path);
     int start = normalizedSeparators.length();
@@ -79,7 +60,7 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
   }
   
   @Override
-  protected Problem processFile(final Project project, final int level, final File projectFolder, final RefactoringElementsBag session, final FileObject fileObject) {
+  protected Problem processFile(final Project project, final int level, final File projectFolder, final FileObject fileObject) {
     final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
 
     final Lookup targetLookup = this.refactoring.getTarget();
@@ -102,18 +83,18 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
             if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
               final MoveElement element = new MoveElement(new MutableFileLink(FileUtil.toFile(mmap)), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null));
               element.setTarget(newFileAsURI);
-              session.addFileChange(this.refactoring, element);
+              addElement(element);
             }
           }
           catch (Exception ex) {
             ErrorManager.getDefault().notify(ex);
-            return new Problem(true, "Error during mind map processing");
+            return new Problem(true, BUNDLE.getString("Refactoring.CantProcessMindMap"));
           }
         }
       }
       catch (URISyntaxException ex) {
-        logger.error("Can't make new file uri for " + fileObject.getPath(), ex);
-        return new Problem(true, "Can't make URI for new file name");
+        logger.error("Can't make new file uri for " + fileObject.getPath(), ex); //NOI18N
+        return new Problem(true, "Can't make URI for new file name"); //NOI18N
       }
     }
 

@@ -36,7 +36,7 @@ public enum RefactoringUtils {;
       final SourceGroup [] groups = sources.getSourceGroups(Sources.TYPE_GENERIC);
               
       for(final SourceGroup g : groups){
-        final Collection<File> files = FileUtils.listFiles(FileUtil.toFile(g.getRootFolder()), new String[]{"mmd","MMD"}, true);
+        final Collection<File> files = FileUtils.listFiles(FileUtil.toFile(g.getRootFolder()), new String[]{"mmd","MMD","Mmd"}, true);
         for(final File f : files){
           final FileObject fo = FileUtil.toFileObject(f);
           result.add(fo);

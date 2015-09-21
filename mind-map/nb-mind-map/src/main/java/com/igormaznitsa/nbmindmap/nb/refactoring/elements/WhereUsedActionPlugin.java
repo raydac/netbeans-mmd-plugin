@@ -20,14 +20,15 @@ import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
 import java.io.File;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.Problem;
-import org.netbeans.modules.refactoring.api.SafeDeleteRefactoring;
+import org.netbeans.modules.refactoring.api.WhereUsedQuery;
+import org.netbeans.modules.refactoring.spi.RefactoringElementsBag;
 import org.openide.ErrorManager;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 
-public class SafeDeleteFileActionPlugin extends AbstractPlugin<SafeDeleteRefactoring> {
+public class WhereUsedActionPlugin extends AbstractPlugin<WhereUsedQuery> {
 
-  public SafeDeleteFileActionPlugin(final SafeDeleteRefactoring refactoring) {
+  public WhereUsedActionPlugin(final WhereUsedQuery refactoring) {
     super(refactoring);
   }
 
@@ -36,10 +37,12 @@ public class SafeDeleteFileActionPlugin extends AbstractPlugin<SafeDeleteRefacto
     final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
 
     for (final FileObject mmap : allMapsInProject(project)) {
-      if (isCanceled()) break;
+      if (isCanceled()) {
+        break;
+      }
       try {
         if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
-          addElement(new DeleteElement(new MutableFileLink(FileUtil.toFile(mmap)), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)));
+            addElement(new WhereUsedElement(new MutableFileLink(FileUtil.toFile(mmap)), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)));
         }
       }
       catch (Exception ex) {

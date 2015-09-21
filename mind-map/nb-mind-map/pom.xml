@@ -19,7 +19,7 @@
   <url>https://github.com/raydac/netbeans-mmd-plugin</url>
 
   <properties>
-    <nb.platform>RELEASE74</nb.platform>
+    <nb.platform>RELEASE80</nb.platform>
   </properties>
 
   <profiles>
@@ -111,6 +111,11 @@
   </repositories>
 
   <dependencies>
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+      <version>1.4.1</version>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
@@ -217,11 +222,6 @@
       <version>${nb.platform}</version>
     </dependency>
     <dependency>
-      <groupId>commons-validator</groupId>
-      <artifactId>commons-validator</artifactId>
-      <version>1.4.1</version>
-    </dependency>
-    <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-options-api</artifactId>
       <version>${nb.platform}</version>
@@ -245,7 +245,19 @@
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-refactoring-java</artifactId>
+      <version>${nb.platform}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-queries</artifactId>
+      <version>${nb.platform}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-java-source</artifactId>
       <version>${nb.platform}</version>
       <type>jar</type>
     </dependency>

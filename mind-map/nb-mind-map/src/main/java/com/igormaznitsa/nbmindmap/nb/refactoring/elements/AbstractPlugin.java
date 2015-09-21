@@ -21,17 +21,16 @@ import com.igormaznitsa.nbmindmap.nb.refactoring.RefactoringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.netbeans.api.fileinfo.NonRecursiveFolder;
+import org.netbeans.api.java.source.TreePathHandle;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
+import org.netbeans.modules.refactoring.api.RenameRefactoring;
+import org.netbeans.modules.refactoring.spi.ProgressProviderAdapter;
+import org.netbeans.modules.refactoring.spi.RefactoringElementImplementation;
 import org.netbeans.modules.refactoring.spi.RefactoringElementsBag;
 import org.netbeans.modules.refactoring.spi.RefactoringPlugin;
 import org.openide.filesystems.FileObject;
@@ -40,18 +39,28 @@ import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractPlugin<T extends AbstractRefactoring> implements RefactoringPlugin {
+public abstract class AbstractPlugin<T extends AbstractRefactoring> extends ProgressProviderAdapter implements RefactoringPlugin {
 
   protected static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
-
   protected final T refactoring;
-
+  protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   private final Map<FileObject, List<FileObject>> cache = new HashMap<>();
 
+  private final List<RefactoringElementImplementation> elements = new ArrayList<>();
+  
+  private volatile boolean canceled;
+
   public AbstractPlugin(final T refactoring) {
+    super();
     this.refactoring = refactoring;
   }
 
+  protected void addElement(final RefactoringElementImplementation element){
+    synchronized(this.elements){
+      this.elements.add(element);
+    }
+  }
+  
   protected List<FileObject> allMapsInProject(final Project project) {
     if (project == null) {
       return Collections.<FileObject>emptyList();
@@ -69,31 +78,75 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
   private Collection<? extends FileObject> findFileObjectInLookup(final Lookup lookup) {
     final Collection<? extends FileObject> files = lookup.lookupAll(FileObject.class);
     final Collection<? extends NonRecursiveFolder> folders = lookup.lookupAll(NonRecursiveFolder.class);
-    final List<FileObject> result = new ArrayList<>();
+    final Set<FileObject> result = new HashSet<>();
     for (final NonRecursiveFolder f : folders) {
       result.add(f.getFolder());
     }
     result.addAll(files);
-    return result;
-  }
 
-  @Override
-  public Problem prepare(final RefactoringElementsBag session) {
-    Problem result = null;
-
-    for (final FileObject fileObject : findFileObjectInLookup(this.refactoring.getRefactoringSource())) {
-      if (result != null) {
-        break;
-      }
-
-      final Project project = FileOwnerQuery.getOwner(fileObject);
-      result = processFileObject(project, 0, session, fileObject);
+    final Collection<? extends TreePathHandle> treePaths = lookup.lookupAll(TreePathHandle.class);
+    for (final TreePathHandle h : treePaths) {
+      result.add(h.getFileObject());
     }
 
     return result;
   }
 
-  private Problem processFileObject(final Project project, int level, final RefactoringElementsBag session, final FileObject fileObject) {
+  @Override
+  public final Problem checkParameters() {
+    return null;
+  }
+
+  @Override
+  public final Problem preCheck() {
+    return null;
+  }
+
+  @Override
+  public final Problem fastCheckParameters() {
+    return null;
+  }
+
+  @Override
+  public final Problem prepare(final RefactoringElementsBag session) {
+    if (isCanceled()) {
+      return null;
+    }
+
+    final Collection<? extends FileObject> files = findFileObjectInLookup(this.refactoring.getRefactoringSource());
+
+    fireProgressListenerStart(RenameRefactoring.PREPARE, files.size());
+
+    Problem result = null;
+
+    try {
+      for (final FileObject fileObject : findFileObjectInLookup(this.refactoring.getRefactoringSource())) {
+        if (isCanceled()) {
+          return null;
+        }
+        if (result != null) {
+          break;
+        }
+        final Project project = FileOwnerQuery.getOwner(fileObject);
+        result = processFileObject(project, 0, fileObject);
+        fireProgressListenerStep(1);
+      }
+    }
+    finally {
+      synchronized(this.elements){
+        logger.info("Detected "+this.elements.size()+" elements for refactoring");
+        if (!isCanceled()){
+          session.addAll(refactoring, this.elements);
+        }
+      }
+      
+      fireProgressListenerStop();
+    }
+
+    return result;
+  }
+
+  private Problem processFileObject(final Project project, int level, final FileObject fileObject) {
     final Project theProject;
     if (project == null) {
       theProject = FileOwnerQuery.getOwner(fileObject);
@@ -103,7 +156,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
     }
     final File projectFolder = FileUtil.toFile(theProject.getProjectDirectory());
 
-    Problem result = processFile(theProject, level, projectFolder, session, fileObject);
+    Problem result = processFile(theProject, level, projectFolder, fileObject);
     level++;
     if (fileObject.isFolder()) {
       for (final FileObject fo : fileObject.getChildren()) {
@@ -112,10 +165,10 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
         }
 
         if (fo.isFolder()) {
-          result = processFileObject(theProject, level, session, fo);
+          result = processFileObject(theProject, level, fo);
         }
         else {
-          result = processFile(theProject, level, projectFolder, session, fo);
+          result = processFile(theProject, level, projectFolder, fo);
         }
       }
     }
@@ -123,18 +176,27 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> implements R
     return result;
   }
 
-  protected abstract Problem processFile(Project project, int level, File projectFolder, RefactoringElementsBag session, FileObject fileObject);
+  protected abstract Problem processFile(Project project, int level, File projectFolder, FileObject fileObject);
 
   protected boolean doesMindMapContainFileLink(final Project project, final FileObject mindMap, final MMapURI fileToCheck) throws IOException {
     final FileObject baseFolder = project.getProjectDirectory();
     try {
-      final MindMap parsedMap = new MindMap(new StringReader(mindMap.asText("UTF-8")));
+      final MindMap parsedMap = new MindMap(new StringReader(mindMap.asText("UTF-8"))); //NOI18N
       return parsedMap.doesContainFileLink(FileUtil.toFile(baseFolder), fileToCheck);
     }
     catch (IllegalArgumentException ex) {
       // not mind map
       return false;
     }
+  }
+
+  @Override
+  public final void cancelRequest() {
+    this.canceled = true;
+  }
+
+  protected boolean isCanceled() {
+    return this.canceled;
   }
 
 }
