@@ -1,6 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
+  <folder name="Loaders">
+    <folder name="text">
+      <folder name="x-nbmmd+plain">
+        <folder name="Actions">
+          <file name="CopyAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-CopyAction.instance"/>
+            <attr name="position" intvalue="1100"/>
+          </file>
+          <file name="CutAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-CutAction.instance"/>
+            <attr name="position" intvalue="1000"/>
+          </file>
+          <file name="DeleteAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-DeleteAction.instance"/>
+            <attr name="position" intvalue="1400"/>
+          </file>
+          <file name="FileSystemAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-FileSystemAction.instance"/>
+            <attr name="position" intvalue="1750"/>
+          </file>
+          <file name="OpenAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-OpenAction.instance"/>
+            <attr name="position" intvalue="100"/>
+          </file>
+          <file name="PasteAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-PasteAction.instance"/>
+            <attr name="position" intvalue="1200"/>
+          </file>
+          <file name="PropertiesAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-PropertiesAction.instance"/>
+            <attr name="position" intvalue="2000"/>
+          </file>
+          <file name="org-netbeans-modules-refactoring-api-ui-WhereUsedAction.instance">
+            <attr bundlevalue="org.netbeans.modules.refactoring.spi.impl.Bundle#LBL_WhereUsedAction" name="displayName"/>
+            <attr name="instanceCreate" newvalue="org.netbeans.modules.refactoring.spi.impl.WhereUsedAction"/>
+            <attr name="position" intvalue="1450"/>
+          </file>
+          <file name="RefactoringAll.shadow">
+            <attr name="originalFile" stringvalue="Actions/Refactoring/RefactoringAll.instance"/>
+            <attr name="position" intvalue="1500"/>
+          </file>
+          <file name="SaveAsTemplateAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-SaveAsTemplateAction.instance"/>
+            <attr name="position" intvalue="1700"/>
+          </file>
+          <file name="ToolsAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-ToolsAction.instance"/>
+            <attr name="position" intvalue="1900"/>
+          </file>
+          <file name="ViewAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-ViewAction.instance"/>
+            <attr name="position" intvalue="200"/>
+          </file>
+          <file name="html-project-separator-1.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+            <attr name="position" intvalue="300"/>
+          </file>
+          <file name="html-project-separator-3.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+            <attr name="position" intvalue="900"/>
+          </file>
+          <file name="html-project-separator-4.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+            <attr name="position" intvalue="1300"/>
+          </file>
+          <file name="html-project-separator-5.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+            <attr name="position" intvalue="1600"/>
+          </file>
+          <file name="html-project-separator-6.instance">
+            <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+            <attr name="position" intvalue="1800"/>
+          </file>
+        </folder>      
+      </folder>
+    </folder>
+  </folder>
   <folder name="QuickSearch">
     <folder name="NBMindMap">
       <attr name="position" intvalue="0"/>

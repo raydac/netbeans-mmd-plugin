@@ -217,7 +217,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         tc.setToolTipText(this.getToolTipText());
       }
     }
-    this.editorSupport.updateTitles();
+    if (this.editorSupport!=null) this.editorSupport.updateTitles();
   }
 
   @Override
@@ -290,7 +290,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       MindMapUtils.removeCollapseAttributeFromTopicsWithoutChildren(theMap);
       theMap.write(writer);
       this.editorSupport.replaceDocumentText(writer.toString());
-      this.editorSupport.notifyModified();
+      this.editorSupport.getDataObject().setModified(true);
     }
     catch (Exception ex) {
       logger.error("Can't get document text", ex); //NOI18N

@@ -15,77 +15,85 @@
  */
 package com.igormaznitsa.nbmindmap.nb;
 
-import java.awt.Image;
-import java.beans.BeanInfo;
 import java.io.IOException;
+import org.openide.cookies.SaveCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.MIMEResolver;
-import org.openide.loaders.DataNode;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectExistsException;
+import org.openide.loaders.Environment;
 import org.openide.loaders.MultiDataObject;
 import org.openide.loaders.MultiFileLoader;
-import org.openide.nodes.Children;
+import org.openide.nodes.CookieSet;
 import org.openide.nodes.Node;
-import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
 
 @MIMEResolver.ExtensionRegistration(displayName = "#MMDDataObject.extensionDisplayName", mimeType = MMDDataObject.MIME, extension = {MMDDataObject.MMD_EXT})
 @DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "#MMDDataObject.displayName", mimeType = MMDDataObject.MIME)
-public class MMDDataObject extends MultiDataObject {
+public class MMDDataObject extends MultiDataObject implements CookieSet.Factory {
 
   private static final long serialVersionUID = -833567211826863321L;
 
-  public static final String MIME = "text/x-nbmmd+markdown"; //NOI18N
+  public static final String MIME = "text/x-nbmmd+plain"; //NOI18N
   public static final String MMD_EXT = "mmd"; //NOI18N
 
-  private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N
-  private static final Image NODE_ICON_32x32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo32.png"); //NOI18N
+  private MMDEditorSupport editorSupport;
 
-  final InstanceContent ic;
-  private final AbstractLookup lookup;
+  private final SaveCookie saveCookie = new SaveCookie() {
+    @Override
+    public void save() throws IOException {
+      getEditorSupport().saveDocument();
+      setModified(false);
+    }
+  };
   
   public MMDDataObject(final FileObject pf, final MultiFileLoader loader) throws DataObjectExistsException, IOException {
     super(pf, loader);
-    registerEditor(MIME, true);
+    getCookieSet().add(MMDEditorSupport.class, this);
+  }
 
-    this.ic = new InstanceContent();
-    this.lookup = new AbstractLookup(ic);
-    ic.add(MMDEditorSupport.create(this));
-    ic.add(this);
+  private synchronized MMDEditorSupport getEditorSupport() {
+    if (this.editorSupport == null) {
+      this.editorSupport = new MMDEditorSupport(this);
+    }
+    return this.editorSupport;
+  }
+
+  @Override
+  public <T extends Node.Cookie> T createCookie(Class<T> klass) {
+    if (klass.isAssignableFrom(MMDEditorSupport.class)) {
+      return klass.cast(getEditorSupport());
+    }
+    return null;
   }
 
   @Override
   protected Node createNodeDelegate() {
-    return new DataNode(this, Children.LEAF, this.lookup) {
-      @Override
-      public Image getIcon(final int type) {
-        switch (type) {
-          case BeanInfo.ICON_COLOR_32x32:
-          case BeanInfo.ICON_MONO_32x32:
-            return NODE_ICON_32x32;
-          default:
-            return NODE_ICON_16x16;
-        }
-      }
-    };
+    final Lookup env = Environment.find(this);
+    Node result = env == null ? null : env.lookup(Node.class);
+    if (result == null){
+      result = new MMDDataNode(this);
+    }
+    return result;
   }
 
   @Override
-  protected int associateLookup() {
-    return 1;
+  public void setModified(final boolean modif) {
+    super.setModified(modif);
+    if (modif){
+      if (this.getCookie(SaveCookie.class) == null){
+          getCookieSet().add(this.saveCookie);
+      }
+    }else{
+      if (this.saveCookie.equals(getCookie(SaveCookie.class))){
+        getCookieSet().remove(this.saveCookie);
+      }
+    }
   }
 
+  
   @Override
   public Lookup getLookup() {
-    return this.lookup;
+    return this.getCookieSet().getLookup();
   }
-
-  @Override
-  public <T extends Node.Cookie> T getCookie(final Class<T> type) {
-    return lookup.lookup(type);
-  }
-
 }

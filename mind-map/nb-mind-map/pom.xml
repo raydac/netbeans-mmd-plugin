@@ -19,7 +19,7 @@
   <url>https://github.com/raydac/netbeans-mmd-plugin</url>
 
   <properties>
-    <nb.platform>RELEASE80</nb.platform>
+    <nb.platform>RELEASE74</nb.platform>
   </properties>
 
   <profiles>

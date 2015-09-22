@@ -31,7 +31,6 @@ import org.openide.awt.UndoRedo;
 import org.openide.cookies.EditCookie;
 import org.openide.cookies.EditorCookie;
 import org.openide.cookies.OpenCookie;
-import org.openide.cookies.SaveCookie;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -41,36 +40,33 @@ import org.openide.windows.CloneableTopComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, ChangeListener {
+public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, EditorCookie.Observable, ChangeListener {
 
   private final List<WeakReference<MMDGraphEditor>> listeners = new ArrayList<>();
 
   private static final Logger logger = LoggerFactory.getLogger(MMDEditorSupport.class);
-  
-  public static MMDEditorSupport create(final MMDDataObject obj) {
-    return new MMDEditorSupport(obj);
-  }
 
-  private MMDEditorSupport(final MMDDataObject obj) {
+  public MMDEditorSupport(final MMDDataObject obj) {
     super(obj, new MMDDataEnv(obj));
+    setMIMEType(MMDDataObject.MIME);
   }
 
   public Project getProject() {
     return FileOwnerQuery.getOwner(getDataObject().getPrimaryFile());
   }
 
-  public File getProjectDirectory(){
+  public File getProjectDirectory() {
     File result = null;
     final Project project = getProject();
-    if (project!=null){
+    if (project != null) {
       final FileObject projDir = project.getProjectDirectory();
-      if (projDir!=null){
+      if (projDir != null) {
         return FileUtil.toFile(projDir);
       }
     }
     return result;
   }
-  
+
   @Override
   protected CloneableEditor createCloneableEditor() {
     final MMDGraphEditor editor = new MMDGraphEditor(this);
@@ -104,44 +100,22 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   public void onEditorActivated() {
   }
 
-  public UndoRedo.Manager getUndoRedoObject() {
-    return this.getUndoRedo();
+  public org.openide.awt.UndoRedo getUndoRedoObject() {
+    return super.getUndoRedo();
   }
 
   @Override
-  protected boolean notifyModified() {
-    boolean retValue = super.notifyModified();
-    if (retValue) {
-      final MMDDataObject obj = (MMDDataObject) getDataObject();
-      obj.ic.add(env);
-    }
-
-    return retValue;
-  }
-
-  public boolean notifyModifiedVisual() {
-    return this.notifyModified();
-  }
-
-  @Override
-  protected void notifyUnmodified() {
-    super.notifyUnmodified();
-    MMDDataObject obj = (MMDDataObject) getDataObject();
-    obj.ic.remove(env);
-  }
-
-  @Override
-  public String messageHtmlName() {
+  protected String messageHtmlName() {
     return super.messageHtmlName();
   }
 
   @Override
-  public String messageName() {
+  protected String messageName() {
     return super.messageName();
   }
 
   @Override
-  public String messageToolTip() {
+  protected String messageToolTip() {
     return super.messageToolTip();
   }
 
@@ -179,13 +153,13 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
 
   public void focusToPosition(final boolean enforceVisibilityOfTopic, final int[] positionPath) {
     final Enumeration<CloneableTopComponent> editors = this.allEditors.getComponents();
-    while(editors.hasMoreElements()){
-      final MMDGraphEditor editor = (MMDGraphEditor)editors.nextElement();
+    while (editors.hasMoreElements()) {
+      final MMDGraphEditor editor = (MMDGraphEditor) editors.nextElement();
       editor.focusToPath(enforceVisibilityOfTopic, positionPath);
     }
   }
 
-  private static final class MMDDataEnv extends DataEditorSupport.Env implements SaveCookie {
+  private static final class MMDDataEnv extends DataEditorSupport.Env {
 
     private static final long serialVersionUID = 6101101548072950629L;
 
@@ -204,12 +178,6 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     @Override
     protected FileLock takeLock() throws IOException {
       return this.dataObj.getPrimaryEntry().takeLock();
-    }
-
-    @Override
-    public void save() throws IOException {
-      final MMDEditorSupport ed = (MMDEditorSupport) this.findCloneableOpenSupport();
-      ed.saveDocument();
     }
   }
 
