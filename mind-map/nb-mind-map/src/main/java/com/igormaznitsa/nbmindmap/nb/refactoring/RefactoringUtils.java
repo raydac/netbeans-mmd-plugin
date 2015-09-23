@@ -19,8 +19,12 @@ import com.igormaznitsa.nbmindmap.nb.MMDDataObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.io.FileUtils;
+import org.netbeans.api.fileinfo.NonRecursiveFolder;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
@@ -36,7 +40,22 @@ import org.openide.util.Lookup;
 public enum RefactoringUtils {
 
   ;
-    
+
+    public static Collection<FileObject> findAllMindMapsInFolder(final NonRecursiveFolder folder){
+      final File folderFile = FileUtil.toFile(folder.getFolder());
+      if (folderFile == null){
+        return Collections.<FileObject>emptyList();
+      }else{
+        final Collection<File> files = FileUtils.listFiles(folderFile, new String[]{"mmd", "MMD", "Mmd"}, true);
+        final Set<FileObject> result = new HashSet<>();
+        for(final File f : files){
+          final FileObject fo = FileUtil.toFileObject(f);
+          result.add(fo);
+        }
+        return result;
+      }
+    }
+        
     public static List<FileObject> findAllMindMapsInProject(final Project project) {
     final List<FileObject> result = new ArrayList<>();
 
@@ -85,6 +104,20 @@ public enum RefactoringUtils {
     return result;
   }
   
+  public static FileObject [] getMMDs(final Lookup lookup){
+    final Collection<? extends Node> nodes = lookup.lookupAll(Node.class);
+    final List<FileObject> result = new ArrayList<>();
+    for (final Node n : nodes) {
+      final FileObject fo = n.getLookup().lookup(FileObject.class);
+      if (fo != null) {
+        if (isMMD(fo)) {
+          result.add(fo);
+        }
+      }
+    }
+    return result.toArray(new FileObject[result.size()]);
+  }
+  
   public static boolean isFromEditor(final Lookup lookup) {
     final EditorCookie cookie = lookup.lookup(EditorCookie.class);
     return cookie != null && cookie.getOpenedPanes() != null;
@@ -96,7 +129,7 @@ public enum RefactoringUtils {
   }
   
   public static boolean isMMD(final FileObject fo){
-    return fo!=null &&  MMDDataObject.MIME.equals(fo.getMIMEType());
+    return fo!=null &&  MMDDataObject.MMD_EXT.equalsIgnoreCase(fo.getExt());
   }
 
 }

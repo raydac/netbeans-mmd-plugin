@@ -29,6 +29,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.RenameRefactoring;
+import org.netbeans.modules.refactoring.api.Scope;
 import org.netbeans.modules.refactoring.spi.ProgressProviderAdapter;
 import org.netbeans.modules.refactoring.spi.RefactoringElementImplementation;
 import org.netbeans.modules.refactoring.spi.RefactoringElementsBag;
@@ -44,10 +45,10 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
   protected static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
   protected final T refactoring;
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-  private final Map<FileObject, List<FileObject>> cache = new HashMap<>();
+  private final Map<FileObject, Collection<FileObject>> cache = new HashMap<>();
 
   private final List<RefactoringElementImplementation> elements = new ArrayList<>();
-  
+
   private volatile boolean canceled;
 
   public AbstractPlugin(final T refactoring) {
@@ -55,24 +56,45 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
     this.refactoring = refactoring;
   }
 
-  protected void addElement(final RefactoringElementImplementation element){
-    synchronized(this.elements){
+  protected void addElement(final RefactoringElementImplementation element) {
+    synchronized (this.elements) {
       this.elements.add(element);
     }
   }
-  
-  protected List<FileObject> allMapsInProject(final Project project) {
-    if (project == null) {
-      return Collections.<FileObject>emptyList();
-    }
-    final FileObject projectFolder = project.getProjectDirectory();
 
-    List<FileObject> result = this.cache.get(projectFolder);
-    if (result == null) {
-      result = RefactoringUtils.findAllMindMapsInProject(project);
-      this.cache.put(projectFolder, result);
+  protected Collection<FileObject> allMapsInProject(final Project project) {
+    final Collection<? extends Scope> scopes = this.refactoring.getRefactoringSource().lookupAll(Scope.class);
+
+    if (!scopes.isEmpty()) {
+      final Collection<FileObject> mindMaps = new HashSet<>();
+      for (final Scope s : scopes) {
+        for (final NonRecursiveFolder f : s.getFolders()) {
+          synchronized (this.cache) {
+            Collection<FileObject> found = this.cache.get(f.getFolder());
+            if (found == null) {
+              found = RefactoringUtils.findAllMindMapsInFolder(f);
+              this.cache.put(f.getFolder(), found);
+            }
+            mindMaps.addAll(found);
+          }
+        }
+      }
+      return mindMaps;
     }
-    return result;
+    else {
+      if (project == null) {
+        return Collections.<FileObject>emptyList();
+      }
+      final FileObject projectFolder = project.getProjectDirectory();
+      synchronized (this.cache) {
+        Collection<FileObject> result = this.cache.get(projectFolder);
+        if (result == null) {
+          result = RefactoringUtils.findAllMindMapsInProject(project);
+          this.cache.put(projectFolder, result);
+        }
+        return result;
+      }
+    }
   }
 
   private Collection<? extends FileObject> findFileObjectInLookup(final Lookup lookup) {
@@ -133,13 +155,13 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
       }
     }
     finally {
-      synchronized(this.elements){
-        logger.info("Detected "+this.elements.size()+" elements for refactoring");
-        if (!isCanceled()){
+      synchronized (this.elements) {
+        logger.info("Detected " + this.elements.size() + " elements for refactoring");
+        if (!isCanceled()) {
           session.addAll(refactoring, this.elements);
         }
       }
-      
+
       fireProgressListenerStop();
     }
 

@@ -18,63 +18,64 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 import javax.swing.event.ChangeListener;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
-import org.netbeans.modules.refactoring.api.WhereUsedQuery;
+import org.netbeans.modules.refactoring.api.SafeDeleteRefactoring;
 import org.netbeans.modules.refactoring.spi.ui.CustomRefactoringPanel;
 import org.openide.filesystems.FileObject;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
-public class WhereUsedRefactoringUI extends AbstractRefactoringUI {
+public class SafeDeleteUI extends AbstractRefactoringUI {
 
-  private final WhereUsedQuery query;
-  private WhereUsedPanel panel;
+  private final SafeDeleteRefactoring refactoring;
+  private SafeDeletePanel panel;
   private final String name;
-  private final String nameWithExt;
-  private final FileObject fileObj;
+  private final FileObject  []files;
   private final Lookup lookup;
   
-  public WhereUsedRefactoringUI(final Lookup lookup, final FileObject mmd){
-    this.fileObj = mmd;
+  public SafeDeleteUI(final Lookup lookup, final FileObject [] files){
+    this.files = files;
     this.lookup = lookup;
-    
-    this.name = mmd.getName();
-    this.nameWithExt = mmd.getNameExt();
-    this.query = new WhereUsedQuery(Lookups.singleton(mmd));
+    this.name = files.length>1 ? Integer.toString(files.length) : files[0].getName();
+    this.refactoring = new SafeDeleteRefactoring(Lookups.fixed((Object[])files));
   }
   
   @Override
   public String getName() {
-    return String.format(BUNDLE.getString("WhereUsedUI.getName"),this.nameWithExt);
+    return BUNDLE.getString("SafeDeleteUI.getName");
   }
 
   @Override
   public String getDescription() {
-    return String.format(BUNDLE.getString("WhereUsedUI.getDescription"),this.nameWithExt);
+    final StringBuilder result = new StringBuilder();
+    for(final FileObject fo : this.files){
+      if (result.length()>0) result.append(","); //NOI18N
+      result.append(fo.getName());
+    }
+    return String.format(BUNDLE.getString("SafeDeleteUI.getDescription"),result.toString());
   }
 
   @Override
   public boolean isQuery() {
-    return true;
+    return false;
   }
 
   @Override
   public CustomRefactoringPanel getPanel(final ChangeListener parent) {
     if (this.panel == null){
-      this.panel = new WhereUsedPanel(lookup,this.name, false, parent);
+      this.panel = new SafeDeletePanel(this.lookup, files, parent);
     }
     return this.panel;
   }
 
   @Override
   public Problem setParameters() {
-    this.query.putValue(WhereUsedQuery.SEARCH_IN_COMMENTS, this.panel.isSearchInComments());
-    return this.query.checkParameters();
+    return this.refactoring.checkParameters();
   }
 
   @Override
   public Problem checkParameters() {
-    return null;
+    return this.refactoring.checkParameters();
   }
 
   @Override
@@ -84,9 +85,9 @@ public class WhereUsedRefactoringUI extends AbstractRefactoringUI {
 
   @Override
   public AbstractRefactoring getRefactoring() {
-    return this.query;
+    return this.refactoring;
   }
-
+  
   @Override
   public HelpCtx getHelpCtx() {
     return null;

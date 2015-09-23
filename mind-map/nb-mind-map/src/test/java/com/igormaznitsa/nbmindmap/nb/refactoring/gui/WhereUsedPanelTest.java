@@ -17,12 +17,13 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.openide.util.lookup.Lookups;
 
 public class WhereUsedPanelTest {
   
   @Test
   public void testCreate() {
-    final WhereUsedPanel panel = new WhereUsedPanel("test", true, null);
+    final WhereUsedPanel panel = new WhereUsedPanel(Lookups.fixed(),"test", true, null);
   }
   
 }

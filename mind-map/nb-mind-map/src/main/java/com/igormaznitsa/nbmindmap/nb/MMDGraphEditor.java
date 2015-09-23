@@ -110,7 +110,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   private static final Logger logger = LoggerFactory.getLogger(MMDGraphEditor.class);
 
-  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem";
+  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
   public static final String ID = "mmd-graph-editor"; //NOI18N
 
@@ -388,7 +388,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
           }
 
           try {
-            if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) {
+            if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
               Desktop.getDesktop().open(uri.asFile(this.editorSupport.getProjectDirectory()));
             }
             else {
@@ -607,7 +607,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     }
     else {
       final MMapURI uri = file.getValue();
-      final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
+      final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
 
       final FileEditPanel.DataContainer origPath;
       if (uri.isAbsolute()) {
@@ -633,11 +633,11 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
       else {
         final Properties props = new Properties();
         if (path.isShowWithSystemTool()) {
-          props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true");
+          props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
         }
-        final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props);
+        final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props); //NOI18N
         final File theFile = fileUri.asFile(projectFolder);
-        logger.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true)));
+        logger.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
 
         if (theFile.exists()) {
           topic.setExtra(new ExtraFile(fileUri));
@@ -796,12 +796,12 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source) {
-    return NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true);
+    return NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true); //NOI18N
   }
 
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(final MindMapPanel source) {
-    return NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true);
+    return NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true); //NOI18N
   }
 
   @Override

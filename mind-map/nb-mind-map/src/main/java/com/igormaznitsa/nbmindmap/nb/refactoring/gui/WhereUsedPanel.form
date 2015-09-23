@@ -17,16 +17,26 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="labelTextFieldName" min="-2" max="-2" attributes="0"/>
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="checkBoxFindInComments" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="180" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="labelTextFieldName" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="checkBoxFindInComments" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="labelMindMapName" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
-                  <Component id="labelMindMapName" max="32767" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="labelScopeName" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="panelScope" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -42,6 +52,11 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="checkBoxFindInComments" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="labelScopeName" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="panelScope" alignment="2" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -72,6 +87,18 @@
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="WhereUsedPanel.labelMindMapName.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="org.netbeans.modules.refactoring.spi.ui.ScopePanel" name="panelScope">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new org.netbeans.modules.refactoring.spi.ui.ScopePanel(WhereUsedPanel.class.getCanonicalName().replace(&apos;.&apos;, &apos;-&apos;),NbPreferences.forModule(WhereUsedPanel.class),&quot;whereUsed.scope&quot;)"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelScopeName">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="WhereUsedPanel.labelScopeName.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>

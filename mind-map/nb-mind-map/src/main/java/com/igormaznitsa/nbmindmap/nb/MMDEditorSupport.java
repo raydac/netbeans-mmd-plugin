@@ -75,12 +75,18 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   }
 
   public String getDocumentText() {
-    try {
-      final StyledDocument doc = this.openDocument();
-      return doc.getText(0, doc.getLength());
+    if (this.getDataObject().isValid()) {
+      try {
+        final StyledDocument doc = this.openDocument();
+        return doc.getText(0, doc.getLength());
+      }
+      catch (Exception ex) {
+        logger.error("Can't get document text", ex); //NOI18N
+        return null;
+      }
     }
-    catch (Exception ex) {
-      logger.error("Can't get document text", ex); //NOI18N
+    else {
+      logger.warn("DataObject " + this.getDataObject() + " is not valid");
       return null;
     }
   }

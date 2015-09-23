@@ -21,7 +21,6 @@ import java.io.File;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.WhereUsedQuery;
-import org.netbeans.modules.refactoring.spi.RefactoringElementsBag;
 import org.openide.ErrorManager;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;

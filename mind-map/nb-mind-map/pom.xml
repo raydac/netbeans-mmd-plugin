@@ -178,6 +178,11 @@
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-actions</artifactId>
+      <version>${nb.platform}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-text</artifactId>
       <version>${nb.platform}</version>
     </dependency>

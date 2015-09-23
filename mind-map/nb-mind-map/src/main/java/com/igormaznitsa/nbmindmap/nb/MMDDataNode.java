@@ -20,13 +20,14 @@ import java.beans.BeanInfo;
 import org.openide.loaders.DataNode;
 import org.openide.nodes.Children;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 
 public class MMDDataNode extends DataNode {
   private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N
   private static final Image NODE_ICON_32x32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo32.png"); //NOI18N
 
-  public MMDDataNode(final MMDDataObject obj) {
-    super(obj, Children.LEAF);
+  public MMDDataNode(final MMDDataObject obj, final Lookup lookup) {
+    super(obj, Children.LEAF, lookup);
   }
   
   @Override

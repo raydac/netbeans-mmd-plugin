@@ -16,6 +16,8 @@
 package com.igormaznitsa.nbmindmap.nb;
 
 import java.io.IOException;
+import org.netbeans.api.project.FileOwnerQuery;
+import org.netbeans.api.project.Project;
 import org.openide.cookies.SaveCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.MIMEResolver;
@@ -59,6 +61,15 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
     return this.editorSupport;
   }
 
+  public Project findProject(){
+    Project result = null;
+    final FileObject primary = this.getPrimaryFile();
+    if (primary!=null){
+      result = FileOwnerQuery.getOwner(primary);
+    }
+    return result;
+  }
+  
   @Override
   public <T extends Node.Cookie> T createCookie(Class<T> klass) {
     if (klass.isAssignableFrom(MMDEditorSupport.class)) {
@@ -72,7 +83,7 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
     final Lookup env = Environment.find(this);
     Node result = env == null ? null : env.lookup(Node.class);
     if (result == null){
-      result = new MMDDataNode(this);
+      result = new MMDDataNode(this, getLookup());
     }
     return result;
   }

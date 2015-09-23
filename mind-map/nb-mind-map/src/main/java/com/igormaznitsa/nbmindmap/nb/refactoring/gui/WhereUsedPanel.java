@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import org.netbeans.modules.refactoring.spi.ui.CustomRefactoringPanel;
+import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 
 public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactoringPanel {
 
@@ -28,9 +30,11 @@ public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactor
   private final String mindMapName;
   private final boolean findInCommentsDefaultFlag;
   private final ChangeListener parent;
+  private final Lookup lookup;
   
-  public WhereUsedPanel(final String mindMapName, final boolean findInComments, final ChangeListener parent) {
+  public WhereUsedPanel(final Lookup lookup, final String mindMapName, final boolean findInComments, final ChangeListener parent) {
     initComponents();
+    this.lookup = lookup;
     this.mindMapName = mindMapName;
     this.findInCommentsDefaultFlag = findInComments;
     this.parent = parent;
@@ -48,6 +52,8 @@ public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactor
     labelTextFieldName = new javax.swing.JLabel();
     checkBoxFindInComments = new javax.swing.JCheckBox();
     labelMindMapName = new javax.swing.JLabel();
+    panelScope = new org.netbeans.modules.refactoring.spi.ui.ScopePanel(WhereUsedPanel.class.getCanonicalName().replace('.', '-'),NbPreferences.forModule(WhereUsedPanel.class),"whereUsed.scope");
+    labelScopeName = new javax.swing.JLabel();
 
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     org.openide.awt.Mnemonics.setLocalizedText(labelTextFieldName, bundle.getString("WhereUsedPanel.labelTextFieldName.text")); // NOI18N
@@ -62,19 +68,28 @@ public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactor
     labelMindMapName.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo16.png"))); // NOI18N
     org.openide.awt.Mnemonics.setLocalizedText(labelMindMapName, bundle.getString("WhereUsedPanel.labelMindMapName.text")); // NOI18N
 
+    org.openide.awt.Mnemonics.setLocalizedText(labelScopeName, bundle.getString("WhereUsedPanel.labelScopeName.text")); // NOI18N
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(labelTextFieldName)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(checkBoxFindInComments)
-            .addGap(0, 180, Short.MAX_VALUE))
-          .addComponent(labelMindMapName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(labelTextFieldName)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(checkBoxFindInComments)
+                .addGap(0, 0, Short.MAX_VALUE))
+              .addComponent(labelMindMapName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(labelScopeName)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(panelScope, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -86,6 +101,10 @@ public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactor
           .addComponent(labelMindMapName))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(checkBoxFindInComments)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+          .addComponent(labelScopeName)
+          .addComponent(panelScope, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
@@ -98,7 +117,9 @@ public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactor
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JCheckBox checkBoxFindInComments;
   private javax.swing.JLabel labelMindMapName;
+  private javax.swing.JLabel labelScopeName;
   private javax.swing.JLabel labelTextFieldName;
+  private org.netbeans.modules.refactoring.spi.ui.ScopePanel panelScope;
   // End of variables declaration//GEN-END:variables
 
   @Override
@@ -110,6 +131,13 @@ public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactor
         public void run() {
           labelMindMapName.setText(mindMapName);
           checkBoxFindInComments.setSelected(findInCommentsDefaultFlag);
+          if (!panelScope.initialize(lookup, new AtomicBoolean())){
+            labelScopeName.setVisible(false);
+            panelScope.setVisible(false);
+          }else{
+            labelScopeName.setVisible(true);
+            panelScope.setVisible(true);
+          }
         }
       });
     }
