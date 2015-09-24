@@ -19,5 +19,7 @@ import java.util.ResourceBundle;
 import org.netbeans.modules.refactoring.spi.ui.RefactoringUI;
 
 public abstract class AbstractRefactoringUI implements RefactoringUI {
+
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-  }
+
+}

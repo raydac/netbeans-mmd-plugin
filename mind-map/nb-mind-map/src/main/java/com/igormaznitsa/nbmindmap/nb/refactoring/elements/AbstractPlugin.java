@@ -115,17 +115,17 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
   }
 
   @Override
-  public final Problem checkParameters() {
+  public Problem checkParameters() {
     return null;
   }
 
   @Override
-  public final Problem preCheck() {
+  public Problem preCheck() {
     return null;
   }
 
   @Override
-  public final Problem fastCheckParameters() {
+  public Problem fastCheckParameters() {
     return null;
   }
 

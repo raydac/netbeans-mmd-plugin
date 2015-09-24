@@ -28,6 +28,11 @@ public class RefactoringActionsProvider extends ActionsImplementationProvider {
   private static final String NODE_ATTRIBUTE_NAME = RefactoringActionsProvider.class.getName();
   
   @Override
+  public boolean canRename(final Lookup lookup) {
+    return RefactoringUtils.hasOnlyMMDNodes(lookup);
+  }
+
+  @Override
   public boolean canFindUsages(final Lookup lookup) {
     return RefactoringUtils.hasOnlyMMDNodes(lookup);
   }
@@ -47,6 +52,12 @@ public class RefactoringActionsProvider extends ActionsImplementationProvider {
   public void doDelete(final Lookup lookup) {
     final FileObject [] files = RefactoringUtils.getMMDs(lookup);
     UI.openRefactoringUI(new SafeDeleteUI(lookup, files));
+  }
+  
+  @Override
+  public void doRename(final Lookup lookup) {
+    final FileObject file = RefactoringUtils.getMMD(lookup);
+    UI.openRefactoringUI(new RenameUI(lookup, file));
   }
   
 }

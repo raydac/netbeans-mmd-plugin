@@ -19,6 +19,7 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import org.apache.commons.io.FilenameUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.Problem;
@@ -41,6 +42,15 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
       }
     }
     return result;
+  }
+
+  @Override
+  public Problem fastCheckParameters() {
+    final String name = this.refactoring.getNewName();
+    if (name == null) return new Problem(true,BUNDLE.getString("RenameFileActionPlugin.errorNameIsNull"));
+    if (name.trim().isEmpty()) return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameIsEmpty"));
+    if (name.indexOf('.')>=0) return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameContainsDots"));
+    return null;
   }
 
   protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path, final String newName) {
@@ -85,6 +95,7 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
     if (level == 0 && !fileObject.isFolder()) {
       final String ext = FilenameUtils.getExtension(fileObject.getNameExt());
       if (!ext.isEmpty()) {
+        if (!newFileName.toLowerCase(Locale.ENGLISH).endsWith('.'+ext))
         newFileName += '.' + ext;
       }
     }
