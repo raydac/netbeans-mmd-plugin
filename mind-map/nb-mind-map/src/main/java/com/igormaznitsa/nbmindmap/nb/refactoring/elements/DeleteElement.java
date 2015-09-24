@@ -17,13 +17,13 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
+import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
 import org.openide.ErrorManager;
 
 public class DeleteElement extends AbstractElement {
 
-  public DeleteElement(final MutableFileLink mindMap, final File projectFolder, final MMapURI fileObject) {
+  public DeleteElement(final MindMapLink mindMap, final File projectFolder, final MMapURI fileObject) {
     super(mindMap, projectFolder, fileObject);
   }
 
@@ -36,9 +36,9 @@ public class DeleteElement extends AbstractElement {
   public void performChange() {
     super.performChange();
     try{
-      final MindMap parsed = readMindMap(this.mindMapFile.getFile());
+      final MindMap parsed = this.mindMapFile.asMindMap();
       if (parsed.deleteAllLinksToFile(this.projectFolder, this.processedFile)){
-        writeMindMap(this.mindMapFile.getFile(), parsed);
+        this.mindMapFile.writeMindMap();
       }
     }catch(Exception ex){
       logger.error("Error during mind map refactoring",ex); //NOI18N

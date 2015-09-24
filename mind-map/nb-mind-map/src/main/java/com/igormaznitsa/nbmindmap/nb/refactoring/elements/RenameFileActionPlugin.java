@@ -16,7 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
+import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Locale;
@@ -123,7 +123,7 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
       }
       try {
         if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
-          final RenameElement element = new RenameElement(new MutableFileLink(FileUtil.toFile(mmap)), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null));
+          final RenameElement element = new RenameElement(new MindMapLink(mmap), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null));
           element.setNewFile(newFileAsURI);
           addElement(element);
         }

@@ -17,8 +17,7 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
-import static com.igormaznitsa.nbmindmap.nb.refactoring.elements.AbstractElement.readMindMap;
+import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
 import org.openide.ErrorManager;
 
@@ -26,7 +25,7 @@ public class RenameElement extends AbstractElement {
 
   private MMapURI newFile;
 
-  public RenameElement(final MutableFileLink mindMap, final File projectFolder, final MMapURI file) {
+  public RenameElement(final MindMapLink mindMap, final File projectFolder, final MMapURI file) {
     super(mindMap, projectFolder, file);
   }
 
@@ -44,9 +43,9 @@ public class RenameElement extends AbstractElement {
     super.performChange();
     try {
       if (this.newFile != null) {
-        final MindMap parsed = readMindMap(this.mindMapFile.getFile());
+        final MindMap parsed = this.mindMapFile.asMindMap();
         if (parsed.replaceAllLinksToFile(this.projectFolder, this.processedFile, this.newFile)) {
-          writeMindMap(this.mindMapFile.getFile(), parsed);
+          this.mindMapFile.writeMindMap();
         }
       }
       else {

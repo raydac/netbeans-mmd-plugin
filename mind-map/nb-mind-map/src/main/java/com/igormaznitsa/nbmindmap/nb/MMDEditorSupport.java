@@ -125,7 +125,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return super.messageToolTip();
   }
 
-  public void replaceDocumentText(final String text) {
+  public synchronized void replaceDocumentText(final String text) {
     try {
       final GuardedDocument doc = (GuardedDocument) this.openDocument();
       doc.runAtomic(new Runnable() {

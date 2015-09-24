@@ -16,12 +16,12 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
+import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
 
 public class WhereUsedElement extends AbstractElement {
 
-  public WhereUsedElement(final MutableFileLink mindMap, final File projectFolder, final MMapURI fileObject) {
+  public WhereUsedElement(final MindMapLink mindMap, final File projectFolder, final MMapURI fileObject) {
     super(mindMap, projectFolder, fileObject);
   }
 

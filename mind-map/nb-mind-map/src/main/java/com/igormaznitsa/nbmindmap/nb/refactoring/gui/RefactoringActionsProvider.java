@@ -25,8 +25,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ActionsImplementationProvider.class, position = 400)
 public class RefactoringActionsProvider extends ActionsImplementationProvider {
 
-  private static final String NODE_ATTRIBUTE_NAME = RefactoringActionsProvider.class.getName();
-  
   @Override
   public boolean canRename(final Lookup lookup) {
     return RefactoringUtils.hasOnlyMMDNodes(lookup);
@@ -42,6 +40,17 @@ public class RefactoringActionsProvider extends ActionsImplementationProvider {
     return RefactoringUtils.hasOnlyMMDNodes(lookup);
   }
 
+  @Override
+  public boolean canMove(final Lookup lookup) {
+    return RefactoringUtils.hasOnlyMMDNodes(lookup);
+  }
+
+  @Override
+  public void doMove(final Lookup lookup) {
+    final FileObject [] fileObjects = RefactoringUtils.getMMDs(lookup);
+    UI.openRefactoringUI(new MoveUI(lookup, fileObjects));
+  }
+  
   @Override
   public void doFindUsages(final Lookup lookup) {
     final FileObject fileObject = RefactoringUtils.getMMD(lookup);

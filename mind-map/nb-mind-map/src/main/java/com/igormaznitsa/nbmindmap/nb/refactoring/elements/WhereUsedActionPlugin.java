@@ -16,14 +16,13 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
+import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.WhereUsedQuery;
 import org.openide.ErrorManager;
 import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
 
 public class WhereUsedActionPlugin extends AbstractPlugin<WhereUsedQuery> {
 
@@ -41,7 +40,7 @@ public class WhereUsedActionPlugin extends AbstractPlugin<WhereUsedQuery> {
       }
       try {
         if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
-            addElement(new WhereUsedElement(new MutableFileLink(FileUtil.toFile(mmap)), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)));
+            addElement(new WhereUsedElement(new MindMapLink(mmap), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)));
         }
       }
       catch (Exception ex) {

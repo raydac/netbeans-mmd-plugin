@@ -16,7 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.nbmindmap.nb.refactoring.MutableFileLink;
+import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.Problem;
@@ -39,7 +39,7 @@ public class SafeDeleteFileActionPlugin extends AbstractPlugin<SafeDeleteRefacto
       if (isCanceled()) break;
       try {
         if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
-          addElement(new DeleteElement(new MutableFileLink(FileUtil.toFile(mmap)), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)));
+          addElement(new DeleteElement(new MindMapLink(mmap), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)));
         }
       }
       catch (Exception ex) {
