@@ -17,7 +17,6 @@ package com.igormaznitsa.nbmindmap.nb;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Enumeration;

@@ -81,7 +81,9 @@ import org.netbeans.spi.print.PrintProvider;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.loaders.DataNode;
 import org.openide.loaders.DataObject;
+import org.openide.nodes.Node;
 import org.openide.text.CloneableEditor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
@@ -178,10 +180,10 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         @Override
         public void run() {
           final Topic root = mindMapPanel.getModel() == null ? null : mindMapPanel.getModel().getRoot();
-          if (mindMapPanel.hasSelectedTopics()){
+          if (mindMapPanel.hasSelectedTopics()) {
             topicToCentre(mindMapPanel.getFirstSelected());
-          }else
-          if (root != null) {
+          }
+          else if (root != null) {
             mindMapPanel.select(root, false);
             topicToCentre(root);
           }
@@ -216,7 +218,9 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
         tc.setToolTipText(this.getToolTipText());
       }
     }
-    if (this.editorSupport!=null) this.editorSupport.updateTitles();
+    if (this.editorSupport != null) {
+      this.editorSupport.updateTitles();
+    }
   }
 
   @Override
@@ -530,25 +534,53 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
   @Override
   public void drop(final DropTargetDropEvent dtde) {
-    DataFlavor dataObject = null;
+    DataFlavor dataObjectFlavor = null;
+    DataFlavor nodeObjectFlavor = null;
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
       final Class<?> representation = df.getRepresentationClass();
-      if (DataObject.class.isAssignableFrom(representation)) {
-        dataObject = df;
+      if (Node.class.isAssignableFrom(representation)) {
+        nodeObjectFlavor = df;
+        break;
+      }
+      else if (DataObject.class.isAssignableFrom(representation)) {
+        dataObjectFlavor = df;
         break;
       }
     }
 
-    if (dataObject != null) {
+    final DataObject dataObject;
+
+    if (nodeObjectFlavor != null) {
       try {
-        addDataObjectToElement((DataObject) dtde.getTransferable().getTransferData(dataObject), this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
+        final Node theNode = (Node) dtde.getTransferable().getTransferData(nodeObjectFlavor);
+        dataObject = theNode.getLookup().lookup(DataObject.class);
       }
-      catch (UnsupportedFlavorException ex) {
-        logger.error("Can't get DataObject flavor", ex); //NOI18N
+      catch (Exception ex) {
+        logger.error("Can't extract node from dragged element", ex);
+        dtde.rejectDrop();
+        return;
       }
-      catch (IOException ex) {
-        logger.error("Can't extract DataObject", ex); //NOI18N
+    }
+    else if (dataObjectFlavor != null) {
+      try {
+        dataObject = (DataObject) dtde.getTransferable().getTransferData(dataObjectFlavor);
       }
+      catch (Exception ex) {
+        logger.error("Can't extract data object from dragged element", ex);
+        dtde.rejectDrop();
+        return;
+      }
+    }
+    else {
+      dataObject = null;
+    }
+
+    if (dataObject != null) {
+      addDataObjectToElement(dataObject, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
+    }
+    else {
+      logger.error("There is not any DataObject in the dragged element");
+      dtde.rejectDrop();
     }
   }
 
@@ -577,7 +609,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     boolean result = false;
     for (final DataFlavor fl1 : dtde.getCurrentDataFlavors()) {
       final Class dataClass = fl1.getRepresentationClass();
-      if (DataObject.class.isAssignableFrom(dataClass)) {
+      if (Node.class.isAssignableFrom(dataClass) || DataObject.class.isAssignableFrom(dataClass)) {
         result = true;
         break;
       }
@@ -761,10 +793,11 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     if (topic != null) {
       if (enforceVisibility) {
         mapChanged = MindMapUtils.ensureVisibility(topic);
-      }else{
+      }
+      else {
         topic = MindMapUtils.findFirstVisibleAncestor(topic);
       }
-      if (mapChanged){
+      if (mapChanged) {
         this.mindMapPanel.updateView(true);
         topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
       }
