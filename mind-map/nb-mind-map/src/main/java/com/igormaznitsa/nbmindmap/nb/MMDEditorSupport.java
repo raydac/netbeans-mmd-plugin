@@ -31,8 +31,13 @@ import org.openide.awt.UndoRedo;
 import org.openide.cookies.EditCookie;
 import org.openide.cookies.EditorCookie;
 import org.openide.cookies.OpenCookie;
+import org.openide.filesystems.FileAttributeEvent;
+import org.openide.filesystems.FileChangeAdapter;
+import org.openide.filesystems.FileChangeListener;
+import org.openide.filesystems.FileEvent;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileRenameEvent;
 import org.openide.filesystems.FileUtil;
 import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
@@ -125,7 +130,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return super.messageToolTip();
   }
 
-  public synchronized void replaceDocumentText(final String text) {
+  public void replaceDocumentText(final String text) {
     try {
       final GuardedDocument doc = (GuardedDocument) this.openDocument();
       doc.runAtomic(new Runnable() {

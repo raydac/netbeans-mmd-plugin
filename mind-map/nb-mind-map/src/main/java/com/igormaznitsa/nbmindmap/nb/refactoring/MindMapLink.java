@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.nbmindmap.nb.MMDDataObject;
 import com.igormaznitsa.nbmindmap.nb.MMDEditorSupport;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import org.openide.filesystems.FileAlreadyLockedException;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.loaders.DataLoaderPool;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.slf4j.Logger;
@@ -114,7 +116,12 @@ public class MindMapLink {
     }finally{
       flock.releaseLock();
     }
-    foj.refresh(true);
+    
+    final DataObject doj = DataObject.find(foj);
+    if (doj!=null && doj instanceof MMDDataObject){
+      logger.info("Notify about change primary file");
+      ((MMDDataObject)doj).firePrimaryFileChanged();
+    }
   }
   
   public String readUTF8Text() throws IOException {

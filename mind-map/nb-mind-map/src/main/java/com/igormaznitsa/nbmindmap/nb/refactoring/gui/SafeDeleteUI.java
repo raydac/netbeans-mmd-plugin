@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
+import com.igormaznitsa.mindmap.model.ModelUtils;
 import javax.swing.event.ChangeListener;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
@@ -25,7 +26,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
-public class SafeDeleteUI extends AbstractRefactoringUI {
+public class SafeDeleteUI extends AbstractMMDRefactoringUI {
 
   private final SafeDeleteRefactoring refactoring;
   private SafeDeletePanel panel;
@@ -37,7 +38,7 @@ public class SafeDeleteUI extends AbstractRefactoringUI {
     this.files = files;
     this.lookup = lookup;
     this.name = files.length>1 ? Integer.toString(files.length) : files[0].getName();
-    this.refactoring = new SafeDeleteRefactoring(Lookups.fixed((Object[])files));
+    this.refactoring = new SafeDeleteRefactoring(Lookups.fixed(ModelUtils.joinArrays(files,new Object[]{this})));
   }
   
   @Override

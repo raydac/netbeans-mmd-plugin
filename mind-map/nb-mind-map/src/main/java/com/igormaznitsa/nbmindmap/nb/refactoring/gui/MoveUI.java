@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
+import com.igormaznitsa.mindmap.model.ModelUtils;
 import javax.swing.event.ChangeListener;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.MoveRefactoring;
@@ -25,7 +26,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
-public class MoveUI extends AbstractRefactoringUI {
+public class MoveUI extends AbstractMMDRefactoringUI {
 
   private final Lookup lookup;
   private final FileObject [] files;
@@ -35,7 +36,7 @@ public class MoveUI extends AbstractRefactoringUI {
   public MoveUI(final Lookup lookup, final FileObject [] files) {
     this.files = files;
     this.lookup = lookup;
-    this.refactoring = new MoveRefactoring(Lookups.fixed((Object[])files));
+    this.refactoring = new MoveRefactoring(Lookups.fixed(ModelUtils.joinArrays(files, new Object[]{this})));
   }
   
   @Override

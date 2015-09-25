@@ -70,6 +70,10 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
     return result;
   }
   
+  public void firePrimaryFileChanged(){
+    super.firePropertyChange(PROP_PRIMARY_FILE, getPrimaryFile(), getPrimaryFile());
+  }
+  
   @Override
   public <T extends Node.Cookie> T createCookie(Class<T> klass) {
     if (klass.isAssignableFrom(MMDEditorSupport.class)) {

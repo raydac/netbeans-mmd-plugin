@@ -25,7 +25,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
-public class WhereUsedRefactoringUI extends AbstractRefactoringUI {
+public class WhereUsedRefactoringUI extends AbstractMMDRefactoringUI {
 
   private final WhereUsedQuery query;
   private WhereUsedPanel panel;
@@ -40,7 +40,7 @@ public class WhereUsedRefactoringUI extends AbstractRefactoringUI {
     
     this.name = mmd.getName();
     this.nameWithExt = mmd.getNameExt();
-    this.query = new WhereUsedQuery(Lookups.singleton(mmd));
+    this.query = new WhereUsedQuery(Lookups.fixed(mmd, this));
   }
   
   @Override

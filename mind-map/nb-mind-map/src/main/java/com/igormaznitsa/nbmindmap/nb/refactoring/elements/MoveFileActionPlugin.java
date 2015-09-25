@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
+import com.igormaznitsa.nbmindmap.nb.refactoring.gui.AbstractMMDRefactoringUI;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -112,23 +113,25 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
 
   @Override
   public Problem checkParameters() {
-    final Lookup targetLookup = this.refactoring.getTarget();
-    if (targetLookup == null) {
-      return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.cantFindLookup"));
-    }
+    if (this.refactoring.getRefactoringSource().lookup(AbstractMMDRefactoringUI.class) != null) {
+      final Lookup targetLookup = this.refactoring.getTarget();
+      if (targetLookup == null) {
+        return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.cantFindLookup"));
+      }
 
-    final URL url = targetLookup.lookup(URL.class);
+      final URL url = targetLookup.lookup(URL.class);
 
-    if (url == null) {
-      return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.cantFindURL"));
-    }
+      if (url == null) {
+        return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.cantFindURL"));
+      }
 
-    final FileObject obj = URLMapper.findFileObject(url);
-    if (obj == null) {
-      return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.cantFindTargetFolder"));
-    }
-    if (!obj.isFolder()) {
-      return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.targetIsNotFolder"));
+      final FileObject obj = URLMapper.findFileObject(url);
+      if (obj == null) {
+        return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.cantFindTargetFolder"));
+      }
+      if (!obj.isFolder()) {
+        return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.targetIsNotFolder"));
+      }
     }
     return null;
   }

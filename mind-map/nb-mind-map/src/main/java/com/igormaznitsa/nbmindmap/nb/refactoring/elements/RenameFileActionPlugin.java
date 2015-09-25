@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
+import com.igormaznitsa.nbmindmap.nb.refactoring.gui.AbstractMMDRefactoringUI;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Locale;
@@ -26,7 +27,6 @@ import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.RenameRefactoring;
 import org.openide.ErrorManager;
 import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
 
 public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
 
@@ -45,11 +45,24 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
   }
 
   @Override
+  public Problem checkParameters() {
+    return this.fastCheckParameters();
+  }
+
+  @Override
   public Problem fastCheckParameters() {
-    final String name = this.refactoring.getNewName();
-    if (name == null) return new Problem(true,BUNDLE.getString("RenameFileActionPlugin.errorNameIsNull"));
-    if (name.trim().isEmpty()) return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameIsEmpty"));
-    if (name.indexOf('.')>=0) return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameContainsDots"));
+    if (this.refactoring.getRefactoringSource().lookup(AbstractMMDRefactoringUI.class) != null) {
+      final String name = this.refactoring.getNewName();
+      if (name == null) {
+        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameIsNull"));
+      }
+      if (name.trim().isEmpty()) {
+        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameIsEmpty"));
+      }
+      if (name.indexOf('.') >= 0) {
+        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameContainsDots"));
+      }
+    }
     return null;
   }
 
@@ -95,8 +108,9 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
     if (level == 0 && !fileObject.isFolder()) {
       final String ext = FilenameUtils.getExtension(fileObject.getNameExt());
       if (!ext.isEmpty()) {
-        if (!newFileName.toLowerCase(Locale.ENGLISH).endsWith('.'+ext))
-        newFileName += '.' + ext;
+        if (!newFileName.toLowerCase(Locale.ENGLISH).endsWith('.' + ext)) {
+          newFileName += '.' + ext;
+        }
       }
     }
     else {

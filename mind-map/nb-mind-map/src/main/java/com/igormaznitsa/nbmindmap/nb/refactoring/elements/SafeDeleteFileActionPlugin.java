@@ -23,7 +23,6 @@ import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.SafeDeleteRefactoring;
 import org.openide.ErrorManager;
 import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
 
 public class SafeDeleteFileActionPlugin extends AbstractPlugin<SafeDeleteRefactoring> {
 

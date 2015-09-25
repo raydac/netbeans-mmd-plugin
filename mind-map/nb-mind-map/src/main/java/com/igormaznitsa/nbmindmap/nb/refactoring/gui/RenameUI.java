@@ -25,7 +25,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
-public class RenameUI extends AbstractRefactoringUI {
+public class RenameUI extends AbstractMMDRefactoringUI {
 
   private final RenameRefactoring refactoring;
   private RenamePanel panel;
@@ -37,7 +37,7 @@ public class RenameUI extends AbstractRefactoringUI {
     this.file = file;
     this.lookup = lookup;
     this.name = file.getName();
-    this.refactoring = new RenameRefactoring(Lookups.fixed(file));
+    this.refactoring = new RenameRefactoring(Lookups.fixed(file, this));
   }
   
   @Override
