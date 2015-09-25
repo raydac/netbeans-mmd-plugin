@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
-import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
@@ -24,24 +23,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class FileEditPanel extends javax.swing.JPanel {
+
   public static final class DataContainer {
+
     private final String path;
     private final boolean showWithSystemTool;
-    
-    public DataContainer(final String path, final boolean showWithSystemTool){
+
+    public DataContainer(final String path, final boolean showWithSystemTool) {
       this.path = path == null ? "" : path;
       this.showWithSystemTool = showWithSystemTool;
     }
-    
-    public String getPath(){
+
+    public String getPath() {
       return this.path;
     }
-    
-    public boolean isShowWithSystemTool(){
+
+    public boolean isShowWithSystemTool() {
       return this.showWithSystemTool;
     }
-    
-    public boolean isEmpty(){
+
+    public boolean isEmpty() {
       return this.path.trim().isEmpty();
     }
   }
@@ -49,10 +50,9 @@ public final class FileEditPanel extends javax.swing.JPanel {
   private static final long serialVersionUID = -6683682013891751388L;
 
   private static final Logger logger = LoggerFactory.getLogger(FileEditPanel.class);
-  
+
   private final File projectFolder;
-  
-  
+
   public FileEditPanel(final File projectFolder, final DataContainer initialData) {
     initComponents();
     this.projectFolder = projectFolder;
@@ -61,7 +61,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
   }
 
   public DataContainer getData() {
-    return new DataContainer(this.textFieldFilePath.getText().trim(),this.checkBoxShowFileInSystem.isSelected());
+    return new DataContainer(this.textFieldFilePath.getText().trim(), this.checkBoxShowFileInSystem.isSelected());
   }
 
   /**
@@ -136,32 +136,28 @@ public final class FileEditPanel extends javax.swing.JPanel {
     gridBagConstraints.ipadx = 2;
     add(optionPanel, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
- 
+
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
-    if (evt.getClickCount()>1){
-      try {
-        final File file = new File(this.textFieldFilePath.getText().trim());
-        Desktop.getDesktop().open(file);
-      }
-      catch (IOException ex) {
-        logger.error("Can't open file "+this.textFieldFilePath.getText(), ex);
-        Toolkit.getDefaultToolkit().beep();
-      }
+    if (evt.getClickCount() > 1) {
+      final File file = new File(this.textFieldFilePath.getText().trim());
+      NbUtils.openInExternalEditor(file);
     }
   }//GEN-LAST:event_labelBrowseCurrentLinkMouseClicked
 
   private void buttonChooseFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseFileActionPerformed
     final File theFile = new File(this.labelBrowseCurrentLink.getText().trim());
     final File parent = theFile.getParentFile();
-    
+
     final JFileChooser chooser = new JFileChooser(parent == null ? this.projectFolder : parent);
-    if (theFile.isFile()) chooser.setSelectedFile(theFile);
+    if (theFile.isFile()) {
+      chooser.setSelectedFile(theFile);
+    }
     chooser.setApproveButtonText("Select");
     chooser.setDialogTitle("Select file");
     chooser.setMultiSelectionEnabled(false);
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-    
-    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+
+    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
       final File selected = chooser.getSelectedFile();
       this.textFieldFilePath.setText(selected.getAbsolutePath());
     }

@@ -20,17 +20,22 @@ import com.igormaznitsa.mindmap.model.Topic;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
 import com.igormaznitsa.nbmindmap.nb.MMDCfgOptionsPanelController;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.prefs.Preferences;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.HtmlBrowser;
+import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +62,7 @@ public enum NbUtils {
       DARK_THEME = false;
     }
     else {
-      DARK_THEME = calculateBrightness(color)<150;
+      DARK_THEME = calculateBrightness(color) < 150;
     }
   }
 
@@ -83,7 +88,6 @@ public enum NbUtils {
     }
     return result;
   }
-
 
   public static Preferences getPreferences() {
     return NbPreferences.forModule(MMDCfgOptionsPanelController.class);
@@ -206,5 +210,46 @@ public enum NbUtils {
       logger.error("MalformedURLException", ex); //NOI18N
       return false;
     }
+  }
+
+  public static void openInExternalEditor(final File file) {
+    final Runnable startEdit = new Runnable() {
+      @Override
+      public void run() {
+        boolean ok = false;
+        if (Desktop.isDesktopSupported()) {
+          final Desktop dsk = Desktop.getDesktop();
+          if (dsk.isSupported(Desktop.Action.EDIT)) {
+            try {
+              dsk.edit(file);
+              ok = true;
+            }
+            catch (IOException ex) {
+              logger.error("Can't start file edit: "+file, ex);
+            }
+          } else if (dsk.isSupported(Desktop.Action.OPEN)){
+            try {
+              dsk.open(file);
+              ok = true;
+            }
+            catch (IOException ex) {
+              logger.error("Can't start file open: " + file, ex);
+            }
+          }
+        }
+        if (!ok) {
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              NbUtils.msgError("Can't open file to edit! See the log!");
+              Toolkit.getDefaultToolkit().beep();
+            }
+          });
+        }
+      }
+    };
+    final Thread thr = new Thread(startEdit," MMDStartFileEdit");
+    thr.setDaemon(true);
+    thr.start();
   }
 }

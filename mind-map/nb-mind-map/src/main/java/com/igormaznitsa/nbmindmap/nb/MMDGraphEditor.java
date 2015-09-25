@@ -42,7 +42,6 @@ import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
@@ -389,7 +388,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
 
           try {
             if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
-              Desktop.getDesktop().open(uri.asFile(this.editorSupport.getProjectDirectory()));
+              NbUtils.openInExternalEditor(uri.asFile(this.editorSupport.getProjectDirectory()));
             }
             else {
               if (fileObj.isFolder()) {
@@ -397,7 +396,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
                 if (manager.isProject(fileObj)) {
                   final Project project = manager.findProject(fileObj);
                   if (project == null) {
-                    Desktop.getDesktop().open(uri.asFile(this.editorSupport.getProjectDirectory()));
+                    NbUtils.openInExternalEditor(uri.asFile(this.editorSupport.getProjectDirectory()));
                   }
                   else {
                     final OpenProjects openManager = OpenProjects.getDefault();
@@ -407,7 +406,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
                   }
                 }
                 else {
-                  Desktop.getDesktop().open(uri.asFile(this.editorSupport.getProjectDirectory()));
+                  NbUtils.openInExternalEditor(uri.asFile(this.editorSupport.getProjectDirectory()));
                 }
               }
               else {
