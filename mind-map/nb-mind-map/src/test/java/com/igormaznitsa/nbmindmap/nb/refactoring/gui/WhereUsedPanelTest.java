@@ -16,7 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
+//import static org.junit.Assert.*;
 import org.openide.util.lookup.Lookups;
 
 public class WhereUsedPanelTest {

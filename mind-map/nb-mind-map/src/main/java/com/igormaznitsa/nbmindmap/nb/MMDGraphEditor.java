@@ -858,8 +858,8 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     }
 
     if (element != null || this.mindMapPanel.hasOnlyTopicSelected()) {
-      final Topic theTopic = this.mindMapPanel.getFirstSelected() == null ? element.getModel() : this.mindMapPanel.getFirstSelected();
-      if (theTopic.getParent() != null) {
+      final Topic theTopic = this.mindMapPanel.getFirstSelected() == null ? (element != null ? element.getModel() : null) : this.mindMapPanel.getFirstSelected();
+      if (theTopic != null && theTopic.getParent() != null) {
         final JMenuItem cloneItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? BUNDLE.getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") : BUNDLE.getString("MMDGraphEditor.makePopUp.miCloneTheTopic"), Icons.CLONE.getIcon());
         cloneItem.addActionListener(new ActionListener() {
 

@@ -54,6 +54,22 @@ public enum ModelUtils {
     return true;
   }
 
+  public static Object [] joinArrays(final Object [] ... arrs){
+    int totalLen = 0;
+    for(final Object [] a : arrs){
+      totalLen += a.length;
+    }
+    
+    final Object [] result = new Object[totalLen];
+    
+    int pos = 0;
+    for(final Object [] a : arrs){
+      System.arraycopy(a, 0, result, pos, a.length);
+      pos += a.length;
+    }
+    return result;
+  }
+  
   public static String makePreBlock(final String text) {
     return "<pre>" + StringEscapeUtils.escapeHtml(text) + "</pre>"; //NOI18N
   }

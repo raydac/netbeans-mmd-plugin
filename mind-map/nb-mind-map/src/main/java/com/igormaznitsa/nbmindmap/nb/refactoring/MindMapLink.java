@@ -17,19 +17,15 @@ package com.igormaznitsa.nbmindmap.nb.refactoring;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.nb.MMDDataObject;
-import com.igormaznitsa.nbmindmap.nb.MMDEditorSupport;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
-import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
-import org.netbeans.api.editor.EditorUtilities;
 import org.openide.filesystems.FileAlreadyLockedException;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.loaders.DataLoaderPool;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.slf4j.Logger;
@@ -82,7 +78,7 @@ public class MindMapLink {
     try{
       Thread.sleep(time);
     }catch(InterruptedException ex){
-      this.logger.warn("Delay has been interrupted");
+      logger.warn("Delay has been interrupted");
     }
   }
   

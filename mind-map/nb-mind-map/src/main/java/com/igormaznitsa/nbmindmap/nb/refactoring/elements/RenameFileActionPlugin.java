@@ -104,7 +104,11 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
     final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
 
     String newFileName = this.refactoring.getNewName();
-
+    
+    if (newFileName == null){
+      return new Problem(false, "Detected null as new file name for rename refactoring action");
+    }
+    
     if (level == 0 && !fileObject.isFolder()) {
       final String ext = FilenameUtils.getExtension(fileObject.getNameExt());
       if (!ext.isEmpty()) {

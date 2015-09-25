@@ -41,12 +41,21 @@ public class MoveUI extends AbstractMMDRefactoringUI {
   
   @Override
   public String getName() {
-    return "Name";
+    if (this.files.length>1){
+      return String.format(BUNDLE.getString("MoveUI.getNameMultiFile"),Integer.toString(this.files.length));
+    }else{
+      return String.format(BUNDLE.getString("MoveUI.getNameSingleFile"),this.files[0].getName());
+    }
   }
 
   @Override
   public String getDescription() {
-    return "Description";
+    final StringBuilder buffer = new StringBuilder();
+    for(final FileObject fo : files){
+      if (buffer.length()>0) buffer.append(',');
+      buffer.append(fo.getNameExt());
+    }
+    return String.format(BUNDLE.getString("MoveUI.getDescription"),buffer.toString());
   }
 
   @Override

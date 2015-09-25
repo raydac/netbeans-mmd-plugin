@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb;
 
 import java.io.IOException;
+import java.io.Serializable;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.openide.cookies.SaveCookie;
@@ -41,13 +42,21 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
 
   private MMDEditorSupport editorSupport;
 
-  private final SaveCookie saveCookie = new SaveCookie() {
+  private static class MMDSaveCookie implements SaveCookie, Serializable {
+    private static final long serialVersionUID = -6003127964248038260L;
+    private final MMDDataObject dobj;
+    public MMDSaveCookie(final MMDDataObject obj) {
+      this.dobj = obj;
+    }
+    
     @Override
     public void save() throws IOException {
-      getEditorSupport().saveDocument();
-      setModified(false);
+      this.dobj.getEditorSupport().saveDocument();
+      this.dobj.setModified(false);
     }
-  };
+  }
+  
+  private final SaveCookie saveCookie = new MMDSaveCookie(this);
   
   public MMDDataObject(final FileObject pf, final MultiFileLoader loader) throws DataObjectExistsException, IOException {
     super(pf, loader);

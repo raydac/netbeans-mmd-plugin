@@ -22,7 +22,6 @@ import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.ResourceBundle;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

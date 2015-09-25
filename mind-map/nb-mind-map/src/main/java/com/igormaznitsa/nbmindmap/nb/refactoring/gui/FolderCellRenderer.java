@@ -21,9 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.plaf.UIResource;
-import org.netbeans.api.project.FileOwnerQuery;
-import org.netbeans.api.project.Project;
-import org.openide.filesystems.FileObject;
 import org.openide.util.ImageUtilities;
 
 public class FolderCellRenderer extends JLabel implements ListCellRenderer, UIResource{
