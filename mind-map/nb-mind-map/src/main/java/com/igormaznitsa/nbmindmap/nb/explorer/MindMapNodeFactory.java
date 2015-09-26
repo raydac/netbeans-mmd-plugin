@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.nb.explorer;
 
+import com.igormaznitsa.nbmindmap.nb.MMDDataObject;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,9 +31,16 @@ import org.netbeans.spi.project.ui.support.NodeFactorySupport;
 import org.netbeans.spi.project.ui.support.NodeList;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.loaders.DataFolder.FolderNode;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
+import org.openide.nodes.ChildFactory;
+import org.openide.nodes.Children;
+import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
+import org.openide.util.HelpCtx;
+import org.openide.util.datatransfer.NewType;
+import org.openide.util.datatransfer.PasteType;
 
 @NodeFactory.Registration(projectType = {
   "org-netbeans-modules-ant-freeform",
@@ -66,11 +78,10 @@ import org.openide.nodes.Node;
   "org-netbeans-modules-xslt-project",
   "org-netbeans-modules-gradle-project",
   "org-netbeans-modules-scala-project",
-  "org-netbeans-modules-scala-sbt",
-},position = 10000)
-public class MindMapNodeFactory implements NodeFactory, FilenameFilter {
+  "org-netbeans-modules-scala-sbt",}, position = 10000)
+public class MindMapNodeFactory implements NodeFactory, FilenameFilter  {
 
-  private static final String LCASED_EXTENSION = '.'+MMDDataObject.MMD_EXT.toLowerCase(Locale.ENGLISH);
+  private static final String LCASED_EXTENSION = '.' + MMDDataObject.MMD_EXT.toLowerCase(Locale.ENGLISH);
   
   @Override
   public NodeList<?> createNodes(final Project p) {
@@ -95,7 +106,6 @@ public class MindMapNodeFactory implements NodeFactory, FilenameFilter {
         foundNodes.add(cloned);
       }
     }
-
     return NodeFactorySupport.fixedNodeList(foundNodes.toArray(new Node[foundNodes.size()]));
   }
 
@@ -103,5 +113,4 @@ public class MindMapNodeFactory implements NodeFactory, FilenameFilter {
   public boolean accept(final File dir, final String name) {
     return name.toLowerCase(Locale.ENGLISH).endsWith(LCASED_EXTENSION);
   }
-
 }
