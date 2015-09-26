@@ -16,7 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
 import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.nbmindmap.nb.MMDDataObject;
+import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;

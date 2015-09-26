@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.nb.editor;
 
+import com.igormaznitsa.nbmindmap.nb.explorer.MMFileDataNode;
 import java.io.IOException;
 import java.io.Serializable;
 import org.netbeans.api.project.FileOwnerQuery;
@@ -96,7 +97,7 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
     final Lookup env = Environment.find(this);
     Node result = env == null ? null : env.lookup(Node.class);
     if (result == null){
-      result = new MMDDataNode(this, getLookup());
+      result = new MMFileDataNode(this, getLookup());
     }
     return result;
   }

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.utils;
+package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Toolkit;
 import java.net.URI;
 import java.net.URISyntaxException;

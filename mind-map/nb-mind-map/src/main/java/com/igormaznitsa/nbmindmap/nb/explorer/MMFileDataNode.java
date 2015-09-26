@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.nb.explorer;
 
+import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.util.ResourceBundle;
@@ -23,13 +24,13 @@ import org.openide.nodes.Children;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 
-public class MMDDataNode extends DataNode {
+public class MMFileDataNode extends DataNode {
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   
   private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N
   private static final Image NODE_ICON_32x32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo32.png"); //NOI18N
 
-  public MMDDataNode(final MMDDataObject obj, final Lookup lookup) {
+  public MMFileDataNode(final MMDDataObject obj, final Lookup lookup) {
     super(obj, Children.LEAF, lookup);
     setShortDescription(BUNDLE.getString("MMDDataNode.shortDescription"));
   }

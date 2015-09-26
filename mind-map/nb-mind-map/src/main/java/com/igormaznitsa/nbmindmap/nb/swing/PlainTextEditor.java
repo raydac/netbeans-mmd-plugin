@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.utils;
+package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -146,8 +147,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
 
     buttonSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_save16.png"))); // NOI18N
     buttonSave.setText(bundle.getString("PlaintextEditor.buttonExport")); // NOI18N
-    java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-    buttonSave.setToolTipText(bundle1.getString("PlainTextEditor.buttonSave.toolTipText")); // NOI18N
+    buttonSave.setToolTipText(bundle.getString("PlainTextEditor.buttonSave.toolTipText")); // NOI18N
     buttonSave.setFocusable(false);
     buttonSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -159,7 +159,8 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonSave);
 
     buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/page_copy16.png"))); // NOI18N
-    buttonCopy.setText(bundle1.getString("PlainTextEditor.buttonCopy.text")); // NOI18N
+    buttonCopy.setText(bundle.getString("PlainTextEditor.buttonCopy.text")); // NOI18N
+    java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
     buttonCopy.setToolTipText(bundle1.getString("PlainTextEditor.buttonCopy.toolTipText")); // NOI18N
     buttonCopy.setFocusable(false);
     buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -172,8 +173,8 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonCopy);
 
     buttonPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/paste_plain16.png"))); // NOI18N
-    buttonPaste.setText(bundle1.getString("PlainTextEditor.buttonPaste.text")); // NOI18N
-    buttonPaste.setToolTipText(bundle1.getString("PlainTextEditor.buttonPaste.toolTipText")); // NOI18N
+    buttonPaste.setText(bundle.getString("PlainTextEditor.buttonPaste.text")); // NOI18N
+    buttonPaste.setToolTipText(bundle.getString("PlainTextEditor.buttonPaste.toolTipText")); // NOI18N
     buttonPaste.setFocusable(false);
     buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -185,8 +186,8 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonPaste);
 
     buttonClearAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
-    buttonClearAll.setText(bundle1.getString("PlainTextEditor.buttonClearAll.text")); // NOI18N
-    buttonClearAll.setToolTipText(bundle1.getString("PlainTextEditor.buttonClearAll.toolTipText")); // NOI18N
+    buttonClearAll.setText(bundle.getString("PlainTextEditor.buttonClearAll.text")); // NOI18N
+    buttonClearAll.setToolTipText(bundle.getString("PlainTextEditor.buttonClearAll.toolTipText")); // NOI18N
     buttonClearAll.setFocusable(false);
     buttonClearAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonClearAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

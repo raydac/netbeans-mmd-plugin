@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.nb.swing;
 
 import java.awt.Color;
 
@@ -67,9 +67,9 @@ public class ColorAttributePanel extends javax.swing.JPanel {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    colorChooserBorder = new com.igormaznitsa.nbmindmap.utils.ColorChooserButton();
-    colorChooserFill = new com.igormaznitsa.nbmindmap.utils.ColorChooserButton();
-    colorChooserText = new com.igormaznitsa.nbmindmap.utils.ColorChooserButton();
+    colorChooserBorder = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
+    colorChooserFill = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
+    colorChooserText = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
     buttonResetBorder = new javax.swing.JButton();
     buttonResetFill = new javax.swing.JButton();
     buttonResetText = new javax.swing.JButton();
@@ -126,17 +126,19 @@ public class ColorAttributePanel extends javax.swing.JPanel {
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(colorChooserBorder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(buttonResetBorder))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(buttonResetBorder)
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(colorChooserBorder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(colorChooserFill, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(buttonResetFill))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(colorChooserText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(buttonResetText))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(buttonResetText)
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(colorChooserText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
@@ -158,8 +160,8 @@ public class ColorAttributePanel extends javax.swing.JPanel {
   private javax.swing.JButton buttonResetBorder;
   private javax.swing.JButton buttonResetFill;
   private javax.swing.JButton buttonResetText;
-  private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserBorder;
-  private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserFill;
-  private com.igormaznitsa.nbmindmap.utils.ColorChooserButton colorChooserText;
+  private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserBorder;
+  private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserFill;
+  private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserText;
   // End of variables declaration//GEN-END:variables
 }

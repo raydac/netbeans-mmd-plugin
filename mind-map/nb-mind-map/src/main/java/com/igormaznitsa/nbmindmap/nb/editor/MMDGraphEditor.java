@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.nb.editor;
 
 import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
 import com.igormaznitsa.mindmap.exporters.Exporters;
@@ -35,11 +35,13 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.nbmindmap.utils.AboutPanel;
-import com.igormaznitsa.nbmindmap.utils.ColorChooserButton;
-import com.igormaznitsa.nbmindmap.utils.FileEditPanel;
+import com.igormaznitsa.nbmindmap.nb.swing.ColorAttributePanel;
+import com.igormaznitsa.nbmindmap.nb.print.MMDPrint;
+import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
+import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
+import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
 import com.igormaznitsa.nbmindmap.utils.Icons;
-import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
+import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

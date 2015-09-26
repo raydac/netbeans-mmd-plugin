@@ -1,6 +1,6 @@
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.nb.quicksearch;
 
-import com.igormaznitsa.nbmindmap.utils.AboutPanel;
+import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.util.Arrays;
 import java.util.List;

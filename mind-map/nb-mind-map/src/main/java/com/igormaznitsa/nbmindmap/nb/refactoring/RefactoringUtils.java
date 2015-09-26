@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
-import com.igormaznitsa.nbmindmap.nb.MMDDataObject;
+import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;

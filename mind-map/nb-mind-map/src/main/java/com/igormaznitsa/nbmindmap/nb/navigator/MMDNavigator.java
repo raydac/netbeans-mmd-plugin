@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb;
+package com.igormaznitsa.nbmindmap.nb.navigator;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.nbmindmap.utils.MindMapTreePanel;
+import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
+import com.igormaznitsa.nbmindmap.nb.editor.MMDEditorSupport;
+import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;

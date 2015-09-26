@@ -15,10 +15,14 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
+import com.igormaznitsa.nbmindmap.nb.swing.UriEditPanel;
+import com.igormaznitsa.nbmindmap.nb.swing.PlainTextEditor;
+import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
-import com.igormaznitsa.nbmindmap.nb.MMDCfgOptionsPanelController;
+import com.igormaznitsa.nbmindmap.nb.options.MMDCfgOptionsPanelController;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;

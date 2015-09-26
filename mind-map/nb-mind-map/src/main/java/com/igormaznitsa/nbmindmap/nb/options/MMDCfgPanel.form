@@ -193,7 +193,7 @@
                     <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="spinnerConnectorWidthStateChanged"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserConnectorColor">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserConnectorColor">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserConnectorColor.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -204,7 +204,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserConnectorColorActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserCollapsatorBorder">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserCollapsatorBorder">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserCollapsatorBorder.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -215,7 +215,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserCollapsatorBorderActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserCollapsatorBackground">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserCollapsatorBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserCollapsatorBackground.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -257,7 +257,7 @@
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserJumpLink">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserJumpLink">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserJumpLink.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -343,7 +343,7 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserPaperColor">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserPaperColor">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserPaperColor.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -364,7 +364,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxShowGridActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserGridColor">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserGridColor">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserGridColor.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -488,7 +488,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxDropShadowActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserRootBackground">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserRootBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserRootBackground.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -499,7 +499,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserRootBackgroundActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserRootText">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserRootText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserRootText.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -510,7 +510,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooserRootTextActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooser1stBackground">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooser1stBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooser1stBackground.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -521,7 +521,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooser1stBackgroundActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooser1stText">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooser1stText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooser1stText.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -532,7 +532,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooser1stTextActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooser2ndBackground">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooser2ndBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooser2ndBackground.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -543,7 +543,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorChooser2ndBackgroundActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooser2ndText">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooser2ndText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooser2ndText.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
@@ -808,7 +808,7 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="com.igormaznitsa.nbmindmap.utils.ColorChooserButton" name="colorChooserSelectLine">
+                <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserSelectLine">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.colorChooserSelectLine.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
