@@ -43,7 +43,7 @@ public enum Icons {
   SHOWJUMPS("showjumps16.png"); //NOI18N
 
   private final ImageIcon icon;
-
+  
   public ImageIcon getIcon(){
     return this.icon;
   }
