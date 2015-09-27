@@ -16,10 +16,12 @@
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
+import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.ResourceBundle;
+import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -27,6 +29,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
+import org.netbeans.spi.project.support.GenericSources;
 import org.netbeans.spi.project.ui.support.NodeList;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFilter;
@@ -39,51 +42,54 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener, DataFilter {
+
   private static final long serialVersionUID = -1360299214288653958L;
+
+  public static final ResourceBundle BUNDLE = ResourceBundle.getBundle ("com/igormaznitsa/nbmindmap/i18n/Bundle");
   
-  private static Map<String,String[]> PROJECT_SOURCES = new HashMap<>();
-  static{
-    PROJECT_SOURCES.put("org.netbeans.modules.php.project.PhpProject", new String[]{"PHPSOURCE"});
-    PROJECT_SOURCES.put("org.netbeans.modules.maven.NbMavenProjectImpl", new String[]{"java","main","resources"});
-    PROJECT_SOURCES.put("org.netbeans.modules.groovy.grailsproject.GrailsProject", new String[]{"docs","grails-app","scripts","src","web-app","conf","controllers","domain","services","utils","views"});
-    PROJECT_SOURCES.put("org.netbeans.modules.java.j2seproject.J2SEProject", new String[]{"java", "main", "resources"});
-    PROJECT_SOURCES.put("org.netbeans.modules.web.clientproject.ClientSideProject", new String[]{"HTML5-Sources"});
-    PROJECT_SOURCES.put("org.netbeans.modules.j2ee.earproject.EarProject", new String[]{"java", "main", "resources"});
-    PROJECT_SOURCES.put("org.netbeans.modules.j2ee.ejbjarproject.EjbJarProject", new String[]{"java", "main", "resources"});
-    PROJECT_SOURCES.put("org.netbeans.modules.web.project.WebProject", new String[]{"java", "main", "resources"});
-  }
-  
+  private static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
+
   private final Project project;
   private final Sources projectSources;
   private final ChangeListener changeListener;
   private final ChangeSupport changeSupport = new ChangeSupport(this);
 
   private static final Logger logger = LoggerFactory.getLogger(MMKnowledgeSources.class);
-  
+
   public MMKnowledgeSources(final Project project) {
     this.project = project;
     this.projectSources = ProjectUtils.getSources(project);
     this.changeListener = WeakListeners.change(this, this.projectSources);
   }
-  
 
-  private static SourceGroup [] getSourceGroups(final Project project){
+  private static SourceGroup[] getSourceGroups(final Project project) {
     final String klazz = project.getClass().getName();
-    logger.info("Request sources for project type "+klazz);
-    final String [] srcNames = PROJECT_SOURCES.get(klazz);
-    if (srcNames!=null){
-      final List<SourceGroup> result = new ArrayList<>();
-      for(final String groupName : srcNames){
-        for(final SourceGroup g : ProjectUtils.getSources(project).getSourceGroups(groupName)){
-          result.add(g);
-        }
+    logger.info("Request sources for project type " + klazz);
+
+    SourceGroup knowledgeSrc = null;
+    try {
+      FileObject knowledgeFolder = project.getProjectDirectory().getFileObject(KNOWLEDGE_FOLDER_NAME);
+      if (knowledgeFolder == null) {
+        knowledgeFolder = project.getProjectDirectory().createFolder(KNOWLEDGE_FOLDER_NAME);
       }
-      return result.toArray(new SourceGroup[result.size()]);
-    }else{
-      return ProjectUtils.getSources(project).getSourceGroups(Sources.TYPE_GENERIC);
+      final String rootKnowledgeFolderName = BUNDLE.getString("KnowledgeSourceGroup.displayName");
+      knowledgeSrc = GenericSources.group(project, knowledgeFolder, KNOWLEDGE_FOLDER_NAME, rootKnowledgeFolderName, new ImageIcon(BadgeIcons.BADGED_FOLDER), new ImageIcon(BadgeIcons.BADGED_FOLDER_OPEN));
     }
+    catch (IOException ex) {
+      logger.error("Can't make source group for knowledge folder", ex);
+    }
+
+    final SourceGroup[] result;
+    if (knowledgeSrc == null) {
+      result = new SourceGroup[0];
+    }
+    else {
+      result = new SourceGroup[]{knowledgeSrc};
+    }
+
+    return result;
   }
-  
+
   @Override
   public List<SourceGroup> keys() {
     final SourceGroup[] sourceGroups = getSourceGroups(this.project);
@@ -111,17 +117,21 @@ final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener,
 
   @Override
   public Node node(final SourceGroup key) {
-    Node node = null;
+    SourceNode node = null;
     if (key != null) {
       final FileObject rootFolder = key.getRootFolder();
       final DataFolder folder = getFolder(rootFolder);
       if (folder != null) {
-        return new SourceNode(project, folder, this, key.getDisplayName());
+        node = new SourceNode(project, folder, this, key.getDisplayName());
+        if (KNOWLEDGE_FOLDER_NAME.equals(folder.getName())){
+          node.setIcons(BadgeIcons.BADGED_FOLDER, BadgeIcons.BADGED_FOLDER_OPEN);
+          node.setShortDescription(BUNDLE.getString("KnowledgeSourceGroup.tooltip"));
+        }
       }
     }
     return node;
   }
-  
+
   @Override
   public void addNotify() {
     this.projectSources.addChangeListener(this.changeListener);
@@ -161,11 +171,16 @@ final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener,
 
   @Override
   public boolean acceptDataObject(final DataObject obj) {
-    if (obj instanceof  MMDDataObject) return true;
-    
+    if (obj instanceof MMDDataObject) {
+      return true;
+    }
+
     final FileObject fobj = obj.getPrimaryFile();
-    if (fobj.getName().startsWith(".")) return false;
-    return fobj.isFolder() || MMDDataObject.MMD_EXT.equalsIgnoreCase(fobj.getExt());
+    if (fobj.getName().startsWith(".")) {
+      return false;
+    }
+    return true;
+//    return fobj.isFolder() || MMDDataObject.MMD_EXT.equalsIgnoreCase(fobj.getExt());
   }
-  
+
 }

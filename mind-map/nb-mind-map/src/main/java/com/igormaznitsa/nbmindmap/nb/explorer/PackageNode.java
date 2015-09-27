@@ -27,6 +27,7 @@ import org.openide.util.lookup.ProxyLookup;
 final class PackageNode extends AbstractMMFilter {
 
   private final Project project;
+
   
   public PackageNode(Project project, final Node originalNode) {
     super(originalNode, new FolderChildren(project, originalNode), new ProxyLookup(originalNode.getLookup()));
@@ -35,8 +36,9 @@ final class PackageNode extends AbstractMMFilter {
 
   @Override
   public Action[] getActions(boolean context) {
-    final List<Action> actions = new ArrayList<>();
-    return actions.toArray(new Action[actions.size()]);
+//    final List<Action> actions = new ArrayList<>();
+//    return actions.toArray(new Action[actions.size()]);
+    return EMPTY_ACTION;
   }
 
   @Override

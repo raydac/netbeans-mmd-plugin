@@ -13,7 +13,6 @@ import org.openide.actions.FindAction;
 import org.openide.actions.PasteAction;
 import org.openide.actions.ToolsAction;
 import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataFilter;
 import org.openide.loaders.DataFolder;
 import org.openide.nodes.FilterNode;
@@ -24,12 +23,14 @@ class SourceNode extends AbstractMMFilter {
 
   private final Project project;
   private final FileObject fo;
-
+  private volatile Image icon;
+  private volatile Image iconOpen;
+  
   SourceNode(final Project project, final DataFolder folder, final DataFilter filter, final String name) {
     this(project, folder, new FilterNode(folder.getNodeDelegate(), folder.createNodeChildren(filter)), name);
   }
 
-  private SourceNode(final Project project, final DataFolder folder, final FilterNode node, String name) {
+  private SourceNode(final Project project, final DataFolder folder, final FilterNode node, final String name) {
     super(node, org.openide.nodes.Children.createLazy(new Callable<org.openide.nodes.Children>() {
       @Override
       public org.openide.nodes.Children call() throws Exception {
@@ -39,24 +40,29 @@ class SourceNode extends AbstractMMFilter {
 
     this.project = project;
     fo = folder.getPrimaryFile();
-
+    
     disableDelegation(DELEGATE_GET_DISPLAY_NAME | DELEGATE_SET_DISPLAY_NAME | DELEGATE_GET_SHORT_DESCRIPTION | DELEGATE_GET_ACTIONS);
     setDisplayName(name);
   }
 
+  public void setIcons(final Image icon, final Image iconOpen){
+    this.icon = icon;
+    this.iconOpen = iconOpen;
+  }
+  
   @Override
   public String getShortDescription() {
-    return FileUtil.getFileDisplayName(fo);
+    return this.getOriginal().getShortDescription();
   }
 
   @Override
   public Image getIcon(final int type) {
-    return BadgeIcons.getTreeFolderIcon(false);
+    return  this.icon == null ? BadgeIcons.getTreeFolderIcon(false) : this.icon;
   }
 
   @Override
   public Image getOpenedIcon(final int type) {
-    return BadgeIcons.getTreeFolderIcon(true);
+    return this.iconOpen == null ? BadgeIcons.getTreeFolderIcon(true) : this.iconOpen;
   }
 
   @Override
@@ -79,9 +85,9 @@ class SourceNode extends AbstractMMFilter {
     return false;
   }
 
-  @Override
-  public Action[] getActions(boolean context) {
-    List<Action> actions = new ArrayList<>();
+  @Override 
+  public Action[] getActions(final boolean context) {
+    final List<Action> actions = new ArrayList<>();
     actions.add(CommonProjectActions.newFileAction());
     actions.add(null);
     actions.add(SystemAction.get(FileSystemAction.class));
@@ -93,7 +99,7 @@ class SourceNode extends AbstractMMFilter {
     actions.add(SystemAction.get(ToolsAction.class));
     actions.add(null);
     // customizer - open sources for source node, testing for test node
-    Action customizeAction = null;
+    Action customizeAction;
     customizeAction = CommonProjectActions.customizeProjectAction();
     if (customizeAction != null) {
       actions.add(customizeAction);

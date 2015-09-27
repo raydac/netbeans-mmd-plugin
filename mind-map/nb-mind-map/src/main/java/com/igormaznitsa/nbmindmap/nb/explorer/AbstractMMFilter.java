@@ -15,15 +15,19 @@
  */
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
+import javax.swing.Action;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMMFilter extends FilterNode  {
+public abstract class AbstractMMFilter extends FilterNode {
+
   protected static final Logger logger = LoggerFactory.getLogger(AbstractMMFilter.class);
 
+  protected static final Action [] EMPTY_ACTION = new Action[0];
+  
   public AbstractMMFilter(Node original) {
     super(original);
   }
@@ -35,5 +39,5 @@ public abstract class AbstractMMFilter extends FilterNode  {
   public AbstractMMFilter(Node original, org.openide.nodes.Children children, Lookup lookup) {
     super(original, children, lookup);
   }
-  
+
 }

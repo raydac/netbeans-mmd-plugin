@@ -25,6 +25,7 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 
 public class MMFileDataNode extends DataNode {
+
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
   private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N
@@ -34,7 +35,7 @@ public class MMFileDataNode extends DataNode {
     super(obj, Children.LEAF, lookup);
     setShortDescription(BUNDLE.getString("MMDDataNode.shortDescription"));
   }
-  
+
   @Override
   public Image getIcon(final int type) {
     switch (type) {

@@ -15,22 +15,24 @@
  */
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
 import org.openide.filesystems.FileObject;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class FolderChildren extends FilterNode.Children {
 
   private final Project project;
 
+  private static final Logger logger = LoggerFactory.getLogger(FolderChildren.class);
+  
   FolderChildren(final Project project, final Node originalNode) {
     super(originalNode);
     this.project = project;
   }
-  
+
   @Override
   protected Node[] createNodes(final Node key) {
     return super.createNodes(key);
@@ -40,7 +42,7 @@ class FolderChildren extends FilterNode.Children {
   protected Node copyNode(final Node originalNode) {
     final FileObject fo = originalNode.getLookup().lookup(FileObject.class);
     if (fo == null) {
-      Logger.getLogger(FolderChildren.class.getName()).log(Level.WARNING, "No fileobject found for node: {0}", originalNode);
+      logger.warn(String.format("No fileobject found for node: %s", originalNode));
       return super.copyNode(originalNode);
     }
     if (fo.isFolder()) {

@@ -17,8 +17,8 @@ package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import java.awt.Image;
-import java.beans.BeanInfo;
 import java.util.List;
+import java.util.ResourceBundle;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.spi.project.ui.support.NodeFactory;
@@ -27,7 +27,6 @@ import org.netbeans.spi.project.ui.support.NodeList;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
-import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,40 +75,7 @@ public class MMNodeFactory implements NodeFactory {
   @Override
   public NodeList<?> createNodes(final Project project) {
     logger.debug("Creating knowledge nodes for " + project);
-
-    final Node node = new AbstractNode(Children.create(new ChildFactory<SourceGroup>() {
-      private final MMKnowledgeSources sources = new MMKnowledgeSources(project);
-
-      @Override
-      protected Node createNodeForKey(SourceGroup key) {
-        return sources.node(key);
-      }
-
-      @Override
-      protected boolean createKeys(List<SourceGroup> toPopulate) {
-        toPopulate.addAll(sources.keys());
-        return true;
-      }
-    },true)){
-
-      @Override
-      public String getName() {
-        return "Knowledge";
-      }
-
-      @Override
-      public Image getOpenedIcon(int type) {
-        return BadgeIcons.BADGED_FOLDER_OPEN;
-      }
-
-      @Override
-      public Image getIcon(int type) {
-        return BadgeIcons.BADGED_FOLDER;
-      }
-      
-    };
-
-    return NodeFactorySupport.fixedNodeList(node);
+    return new MMKnowledgeSources(project);
   }
 
 }
