@@ -1267,7 +1267,6 @@ public final class MindMapPanel extends JPanel {
   }
 
   private static void drawArrowToDestination(final Graphics2D gfx, final Rectangle2D start, final Rectangle2D destination, final Stroke lineStroke, final Stroke arrowStroke, final float arrowSize) {
-    gfx.setStroke(lineStroke);
 
     final double startx = start.getCenterX();
     final double starty = start.getCenterY();
@@ -1277,6 +1276,7 @@ public final class MindMapPanel extends JPanel {
     final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startx, starty);
 
     if (arrowPoint != null) {
+      gfx.setStroke(lineStroke);
       gfx.drawLine((int) startx, (int) starty, (int) endx, (int) endy);
       gfx.setStroke(arrowStroke);
 

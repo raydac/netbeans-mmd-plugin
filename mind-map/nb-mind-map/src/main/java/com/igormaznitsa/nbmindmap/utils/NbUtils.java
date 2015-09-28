@@ -27,20 +27,26 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.prefs.Preferences;
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.HtmlBrowser;
+import org.openide.filesystems.FileUtil;
+import org.openide.loaders.DataFolder;
+import org.openide.util.ContextAwareAction;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
+import org.openide.util.lookup.Lookups;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +81,14 @@ public enum NbUtils {
             color.getRed() * color.getRed() * .241d
             + color.getGreen() * color.getGreen() * .691d
             + color.getBlue() * color.getBlue() * .068d);
+  }
+
+  public static void selectInProjectsView(final Object source, final DataFolder destinationFolder) {
+    ContextAwareAction action = FileUtil.getConfigObject("Actions/Window/SelectDocumentNode/org-netbeans-modules-project-ui-SelectInProjects.instance", ContextAwareAction.class); //NOI18N
+    if (action != null) {
+      final Action contextAction = action.createContextAwareInstance(Lookups.fixed(destinationFolder));
+      contextAction.actionPerformed(new ActionEvent(source, ActionEvent.ACTION_PERFORMED, null));
+    }
   }
 
   public static Color extractCommonColorForColorChooserButton(final String colorAttribute, final Topic[] topics) {
@@ -229,9 +243,10 @@ public enum NbUtils {
               ok = true;
             }
             catch (IOException ex) {
-              logger.error("Can't start file edit: "+file, ex);
+              logger.error("Can't start file edit: " + file, ex);
             }
-          } else if (dsk.isSupported(Desktop.Action.OPEN)){
+          }
+          else if (dsk.isSupported(Desktop.Action.OPEN)) {
             try {
               dsk.open(file);
               ok = true;
@@ -252,7 +267,7 @@ public enum NbUtils {
         }
       }
     };
-    final Thread thr = new Thread(startEdit," MMDStartFileEdit");
+    final Thread thr = new Thread(startEdit, " MMDStartFileEdit");
     thr.setDaemon(true);
     thr.start();
   }

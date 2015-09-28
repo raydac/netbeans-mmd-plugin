@@ -82,6 +82,7 @@ import org.netbeans.spi.print.PrintProvider;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObject;
 import org.openide.nodes.Node;
 import org.openide.text.CloneableEditor;
@@ -396,6 +397,17 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
             }
             else {
               if (fileObj.isFolder()) {
+                final DataObject dobj = DataObject.find(fileObj);
+                if (dobj instanceof DataFolder) {
+                    try {
+                      NbUtils.selectInProjectsView(this, (DataFolder)dobj);
+                      return;
+                    }
+                    catch (Exception ex) {
+                      logger.error("Can't open node " + dobj, ex);
+                    }
+                }
+
                 final ProjectManager manager = ProjectManager.getDefault();
                 if (manager.isProject(fileObj)) {
                   final Project project = manager.findProject(fileObj);
