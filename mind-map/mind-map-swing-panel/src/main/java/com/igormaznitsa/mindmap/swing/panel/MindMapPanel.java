@@ -1222,7 +1222,7 @@ public final class MindMapPanel extends JPanel {
     if (deltax == 0.0d) {
       return Math.PI / 2;
     }
-    return Math.atan((ey - sy) / deltax) + (ex<sx ? Math.PI : 0);
+    return Math.atan((ey - sy) / deltax) + (ex < sx ? Math.PI : 0);
   }
 
   private static void drawJumps(final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg) {
@@ -1274,28 +1274,28 @@ public final class MindMapPanel extends JPanel {
     final double endx = destination.getCenterX();
     final double endy = destination.getCenterY();
 
-    gfx.drawLine((int) startx, (int) starty, (int) endx, (int) endy);
-
-    gfx.setStroke(arrowStroke);
-
     final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startx, starty);
 
-    double angle = findLineAngle(arrowPoint.getX(), arrowPoint.getY(), startx, starty);
-    
-    
-    final double arrowAngle = Math.PI/20.0d;
-    
-    final double x1 = arrowSize * Math.cos(angle-arrowAngle);
-    final double y1 = arrowSize * Math.sin(angle-arrowAngle);
-    final double x2 = arrowSize * Math.cos(angle + arrowAngle);
-    final double y2 = arrowSize * Math.sin(angle + arrowAngle);
+    if (arrowPoint != null) {
+      gfx.drawLine((int) startx, (int) starty, (int) endx, (int) endy);
+      gfx.setStroke(arrowStroke);
 
-    final GeneralPath polygon = new GeneralPath();
-    polygon.moveTo(arrowPoint.getX(), arrowPoint.getY());
-    polygon.lineTo(arrowPoint.getX()+x1, arrowPoint.getY()+y1);
-    polygon.lineTo(arrowPoint.getX() + x2, arrowPoint.getY() + y2);
-    polygon.closePath();
-    gfx.fill(polygon);
+      double angle = findLineAngle(arrowPoint.getX(), arrowPoint.getY(), startx, starty);
+
+      final double arrowAngle = Math.PI / 20.0d;
+
+      final double x1 = arrowSize * Math.cos(angle - arrowAngle);
+      final double y1 = arrowSize * Math.sin(angle - arrowAngle);
+      final double x2 = arrowSize * Math.cos(angle + arrowAngle);
+      final double y2 = arrowSize * Math.sin(angle + arrowAngle);
+
+      final GeneralPath polygon = new GeneralPath();
+      polygon.moveTo(arrowPoint.getX(), arrowPoint.getY());
+      polygon.lineTo(arrowPoint.getX() + x1, arrowPoint.getY() + y1);
+      polygon.lineTo(arrowPoint.getX() + x2, arrowPoint.getY() + y2);
+      polygon.closePath();
+      gfx.fill(polygon);
+    }
   }
 
   private static void drawTopicTree(final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {
