@@ -18,6 +18,8 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import java.awt.Color;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -137,5 +139,45 @@ public class Utils {
       }
     }
     return result;
+  }
+
+  public static Point2D findRectEdgeIntersection(final Rectangle2D rect, final double outboundX, final double outboundY) {
+    final int detectedSide = rect.outcode(outboundX, outboundY);
+
+    if ((detectedSide & (Rectangle2D.OUT_TOP | Rectangle2D.OUT_BOTTOM)) != 0) {
+      final boolean top = (detectedSide & Rectangle2D.OUT_BOTTOM) == 0;
+
+      final double dx = outboundX - rect.getCenterX();
+      if (dx == 0.0d) {
+        return new Point2D.Double(rect.getCenterX(), top ? rect.getMinY() : rect.getMaxY());
+      }
+      else {
+        final double halfy = top ? rect.getHeight() / 2 : -rect.getHeight() / 2;
+        final double coeff = (outboundY - rect.getCenterY()) / dx;
+        final double calculatedX = rect.getCenterX() - (halfy / coeff);
+        if (calculatedX >= rect.getMinX() && calculatedX <= rect.getMaxX()) {
+          return new Point2D.Double(calculatedX, top ? rect.getMinY() : rect.getMaxY());
+        }
+      }
+    }
+
+    if ((detectedSide & (Rectangle2D.OUT_LEFT | Rectangle2D.OUT_RIGHT)) != 0) {
+      final boolean left = (detectedSide & Rectangle2D.OUT_RIGHT) == 0;
+
+      final double dy = outboundY - rect.getCenterY();
+      if (dy == 0.0d) {
+        return new Point2D.Double(left ? rect.getMinX() : rect.getMaxX(), rect.getCenterY());
+      }
+      else {
+        final double halfx = left ? rect.getWidth()/ 2 : -rect.getWidth()/ 2;
+        final double coeff = (outboundX - rect.getCenterX()) / dy;
+        final double calculatedY = rect.getCenterY() - (halfx / coeff);
+        if (calculatedY >= rect.getMinY() && calculatedY <= rect.getMaxY()) {
+          return new Point2D.Double(left ? rect.getMinX() : rect.getMaxX(), calculatedY);
+        }
+      }
+    }
+
+    return null;
   }
 }

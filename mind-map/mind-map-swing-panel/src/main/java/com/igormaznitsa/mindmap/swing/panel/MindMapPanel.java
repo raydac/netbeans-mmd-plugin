@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
@@ -31,7 +32,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Dimension2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -1212,21 +1217,31 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
+  private static double findLineAngle(final double sx, final double sy, final double ex, final double ey) {
+    final double deltax = ex - sx;
+    if (deltax == 0.0d) {
+      return Math.PI / 2;
+    }
+    return Math.atan((ey - sy) / deltax) + (ex<sx ? Math.PI : 0);
+  }
+
   private static void drawJumps(final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg) {
     final List<Topic> allTopicsWithJumps = map.findAllTopicsForExtraType(Extra.ExtraType.TOPIC);
 
     final float scaledSize = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
 
-    final Stroke dashed = new BasicStroke(scaledSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{scaledSize, scaledSize * 3.0f}, 0);
-    gfx.setStroke(dashed);
+    final Stroke lineStroke = new BasicStroke(scaledSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{scaledSize, scaledSize * 3.0f}, 0);
+    final Stroke arrowStroke = new BasicStroke(cfg.safeScaleFloatValue(cfg.getJumpLinkWidth() * 1.0f, 0.3f));
 
     gfx.setColor(cfg.getJumpLinkColor());
 
+    final float arrowSize = cfg.safeScaleFloatValue(15.0f, 0.2f);
+
     for (Topic src : allTopicsWithJumps) {
       final ExtraTopic extra = (ExtraTopic) src.getExtras().get(Extra.ExtraType.TOPIC);
-      
+
       src = MindMapUtils.isHidden(src) ? MindMapUtils.findFirstVisibleAncestor(src) : src;
-      
+
       final AbstractElement srcElement = (AbstractElement) src.getPayload();
       if (extra != null) {
         Topic dst = map.findTopicForLink(extra);
@@ -1243,14 +1258,44 @@ public final class MindMapPanel extends JPanel {
             if (!MindMapUtils.isHidden(dst)) {
               final Rectangle2D srcRect = srcElement.getBounds();
               final Rectangle2D dstRect = dstElement.getBounds();
-
-              gfx.drawLine((int) srcRect.getCenterX(), (int) srcRect.getCenterY(), (int) dstRect.getCenterX(), (int) dstRect.getCenterY());
+              drawArrowToDestination(gfx, srcRect, dstRect, lineStroke, arrowStroke, arrowSize);
             }
           }
         }
       }
     }
+  }
 
+  private static void drawArrowToDestination(final Graphics2D gfx, final Rectangle2D start, final Rectangle2D destination, final Stroke lineStroke, final Stroke arrowStroke, final float arrowSize) {
+    gfx.setStroke(lineStroke);
+
+    final double startx = start.getCenterX();
+    final double starty = start.getCenterY();
+    final double endx = destination.getCenterX();
+    final double endy = destination.getCenterY();
+
+    gfx.drawLine((int) startx, (int) starty, (int) endx, (int) endy);
+
+    gfx.setStroke(arrowStroke);
+
+    final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startx, starty);
+
+    double angle = findLineAngle(arrowPoint.getX(), arrowPoint.getY(), startx, starty);
+    
+    
+    final double arrowAngle = Math.PI/20.0d;
+    
+    final double x1 = arrowSize * Math.cos(angle-arrowAngle);
+    final double y1 = arrowSize * Math.sin(angle-arrowAngle);
+    final double x2 = arrowSize * Math.cos(angle + arrowAngle);
+    final double y2 = arrowSize * Math.sin(angle + arrowAngle);
+
+    final GeneralPath polygon = new GeneralPath();
+    polygon.moveTo(arrowPoint.getX(), arrowPoint.getY());
+    polygon.lineTo(arrowPoint.getX()+x1, arrowPoint.getY()+y1);
+    polygon.lineTo(arrowPoint.getX() + x2, arrowPoint.getY() + y2);
+    polygon.closePath();
+    gfx.fill(polygon);
   }
 
   private static void drawTopicTree(final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {

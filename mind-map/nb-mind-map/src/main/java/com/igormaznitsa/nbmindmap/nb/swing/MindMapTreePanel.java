@@ -18,7 +18,6 @@ package com.igormaznitsa.nbmindmap.nb.swing;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreeCellRenderer;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

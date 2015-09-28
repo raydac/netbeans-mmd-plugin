@@ -1,4 +1,4 @@
-1.0.1
+1.1.0
 - added support of "Knowledge" folder in project explorer, content saved in the .projectKnowledge project folder
 - added base support for project refactoring actions "move", "delete", "rename" and "find usages" (for Java projects)
 - added "show jump links" pop-up menu item to show inside mind-map jump links as lines
