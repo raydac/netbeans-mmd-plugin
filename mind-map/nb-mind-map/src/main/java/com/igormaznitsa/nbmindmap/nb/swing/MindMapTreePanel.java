@@ -23,28 +23,34 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Comparator;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public final class MindMapTreePanel extends javax.swing.JPanel {
+public final class MindMapTreePanel extends javax.swing.JPanel implements Comparator<Object>{
 
   private static final long serialVersionUID = 2652308291444091807L;
 
   private final MindMapTreeCellRenderer cellRenderer = new MindMapTreeCellRenderer();
 
+  private final SortedTreeModelWrapper sortedModel;
+  
   public MindMapTreePanel(final MindMap map, final ExtraTopic selectedTopicUid, final boolean expandAll, final ActionListener listener) {
     initComponents();
     this.treeMindMap.setCellRenderer(this.cellRenderer);
     this.treeMindMap.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     if (map != null) {
-      this.treeMindMap.setModel(map);
+      this.sortedModel = new SortedTreeModelWrapper(map, this);
+      this.treeMindMap.setModel(this.sortedModel);
       if (selectedTopicUid != null) {
         final Topic topic = map.findTopicForLink(selectedTopicUid);
         if (topic != null) {
           this.treeMindMap.setSelectionPath(new TreePath(topic.getPath()));
         }
       }
+    }else{
+      this.sortedModel = null;
     }
 
     this.treeMindMap.addMouseListener(new MouseAdapter() {
@@ -165,7 +171,12 @@ public final class MindMapTreePanel extends javax.swing.JPanel {
     collapseAll();
   }//GEN-LAST:event_buttonCollapseAllActionPerformed
 
-
+  public void dispose(){
+    if (this.sortedModel != null){
+      this.sortedModel.dispose();
+    }
+  }
+  
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonCollapseAll;
   private javax.swing.JButton buttonExpandAll;
@@ -174,4 +185,9 @@ public final class MindMapTreePanel extends javax.swing.JPanel {
   private javax.swing.JTree treeMindMap;
   private javax.swing.JScrollPane treeScrollPane;
   // End of variables declaration//GEN-END:variables
+
+  @Override
+  public int compare(final Object o1, final Object o2) {
+    return String.CASE_INSENSITIVE_ORDER.compare(String.valueOf(o1), String.valueOf(o2));
+  }
 }

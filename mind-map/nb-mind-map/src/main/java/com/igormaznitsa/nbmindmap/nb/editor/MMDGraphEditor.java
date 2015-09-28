@@ -71,6 +71,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
+import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectManager;
 import org.netbeans.api.project.ui.OpenProjects;
@@ -397,15 +398,17 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
             }
             else {
               if (fileObj.isFolder()) {
-                final DataObject dobj = DataObject.find(fileObj);
-                if (dobj instanceof DataFolder) {
+                if (FileOwnerQuery.getOwner(fileObj) != null) {
+                  final DataObject dobj = DataObject.find(fileObj);
+                  if (dobj instanceof DataFolder) {
                     try {
-                      NbUtils.selectInProjectsView(this, (DataFolder)dobj);
+                      NbUtils.selectInProjectsView(this, (DataFolder) dobj);
                       return;
                     }
                     catch (Exception ex) {
                       logger.error("Can't open node " + dobj, ex);
                     }
+                  }
                 }
 
                 final ProjectManager manager = ProjectManager.getDefault();
@@ -708,9 +711,10 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     final ExtraTopic remove = new ExtraTopic("_______"); //NOI18N
 
     if (link == null) {
-      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
-      if (NbUtils.plainMessageOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), panel)) {
-        final Topic selected = panel.getSelectedTopic();
+      final MindMapTreePanel treePanel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
+      if (NbUtils.plainMessageOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
+        final Topic selected = treePanel.getSelectedTopic();
+        treePanel.dispose();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
         }

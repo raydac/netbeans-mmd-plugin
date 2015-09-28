@@ -20,11 +20,13 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDEditorSupport;
 import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
+import com.igormaznitsa.nbmindmap.nb.swing.SortedTreeModelWrapper;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Comparator;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -43,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @NavigatorPanel.Registration(displayName = "Mind map", mimeType = MMDDataObject.MIME)
-public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupListener, FileChangeListener {
+public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupListener, FileChangeListener, Comparator<Object> {
 
   private static final Logger logger = LoggerFactory.getLogger(MMDNavigator.class);
   
@@ -51,7 +53,8 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
   private static final long serialVersionUID = -4344090966601180253L;
 
   private final JTree mindMapTree;
-
+  private SortedTreeModelWrapper treeModel;
+  
   private transient Lookup.Result<? extends MMDEditorSupport> context;
   private transient MMDEditorSupport currentSupport;
 
@@ -138,10 +141,15 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
   }
 
   private void updateContent() {
+    if (this.treeModel!=null){
+      this.treeModel.dispose();
+    }
+    
     final String text = getDocumentText();
     if (text != null) {
       try {
-        this.mindMapTree.setModel(new MindMap(new StringReader(text)));
+        this.treeModel = new SortedTreeModelWrapper(new MindMap(new StringReader(text)), this);
+        this.mindMapTree.setModel(this.treeModel);
       }
       catch (IOException ex) {
         logger.error("Can't parse mind map text", ex); //NOI18N
@@ -162,7 +170,10 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
     if (this.currentSupport != null) {
       this.currentSupport.getDataObject().getPrimaryFile().removeFileChangeListener(this);
     }
-
+    
+    if(this.treeModel!=null){
+      this.treeModel.dispose();
+    }
     this.mindMapTree.setModel(null);
     this.currentSupport = null;
     this.context = null;
@@ -207,6 +218,11 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
 
   @Override
   public void fileAttributeChanged(FileAttributeEvent fe) {
+  }
+
+  @Override
+  public int compare(final Object o1, final Object o2) {
+    return String.CASE_INSENSITIVE_ORDER.compare(String.valueOf(o1), String.valueOf(o2));
   }
 
 }
