@@ -214,22 +214,40 @@ public class Utils {
     bounds.setRect(0.0d, 0.0d, imageWidth, imageHeight);
     
     final BufferedImage result = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
-
+    
+    for(int y=0;y<imageHeight;y++){
+      for(int x=0;x<imageWidth;x++){
+        result.setRGB(x, y, 0);
+      }
+    }
     
     final Graphics2D gfx = (Graphics2D) result.createGraphics();
     try {
       prepareGraphicsForQuality(gfx);
-      gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
-      gfx.setColor(new Color(0, 0, 0, 0));
-      gfx.fillRect(0, 0, imageWidth, imageHeight);
-
-      gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, opacity));
       cloned.doPaint(gfx, config);
     }
     finally {
       gfx.dispose();
     }
 
+    int alpha;
+    if (opacity<=0.0f){
+      alpha = 0x00;
+    }else if (opacity>=1.0f){
+      alpha = 0xFF;
+    }else{
+      alpha = Math.round(0xFF*opacity);
+    }
+    
+    alpha<<=24;
+    
+    for (int y = 0; y < imageHeight; y++) {
+      for (int x = 0; x < imageWidth; x++) {
+        result.setRGB(x, y, (result.getRGB(x, y) & 0xFFFFFF)|alpha);
+      }
+    }
+    
+    
     return result;
   }
 

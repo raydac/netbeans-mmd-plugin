@@ -160,7 +160,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
 
     buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/page_copy16.png"))); // NOI18N
     buttonCopy.setText(bundle.getString("PlainTextEditor.buttonCopy.text")); // NOI18N
-    java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18/Bundle"); // NOI18N
+    java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     buttonCopy.setToolTipText(bundle1.getString("PlainTextEditor.buttonCopy.toolTipText")); // NOI18N
     buttonCopy.setFocusable(false);
     buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
