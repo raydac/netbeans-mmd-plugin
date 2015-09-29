@@ -163,12 +163,18 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  private boolean canBeDeletedSilently() {
+    final MindMapController controller = this.map.getController();
+    if (controller != null) {
+      return controller.canBeDeletedSilently(this.map, this);
+    }
+    return false;
+  }
+
   public boolean canBeLost() {
     this.map.lock();
     try {
-      final boolean hasNotImportantAttributes = this.attributes.isEmpty() || (this.attributes.size() == 1 && this.attributes.containsKey("leftSide")); //NOI18N
-
-      boolean noImportantContent = this.text.trim().isEmpty() && hasNotImportantAttributes && this.extras.isEmpty();
+      boolean noImportantContent = this.text.trim().isEmpty() && this.extras.isEmpty() && canBeDeletedSilently();
       if (noImportantContent) {
         for (final Topic t : this.children) {
           noImportantContent &= t.canBeLost();

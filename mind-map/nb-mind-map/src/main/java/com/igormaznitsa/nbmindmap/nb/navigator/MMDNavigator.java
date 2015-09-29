@@ -148,7 +148,7 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
     final String text = getDocumentText();
     if (text != null) {
       try {
-        this.treeModel = new SortedTreeModelWrapper(new MindMap(new StringReader(text)), this);
+        this.treeModel = new SortedTreeModelWrapper(new MindMap(null,new StringReader(text)), this);
         this.mindMapTree.setModel(this.treeModel);
       }
       catch (IOException ex) {

@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import java.io.File;
 import java.io.IOException;
@@ -130,9 +131,9 @@ public class MindMapLink {
     }
   }
   
-  public synchronized MindMap asMindMap() throws IOException {
+  public synchronized MindMap asMindMap(final MindMapController controller) throws IOException {
     if (this.model == null){
-      this.model = new MindMap(new StringReader(readUTF8Text()));
+      this.model = new MindMap(controller, new StringReader(readUTF8Text()));
     }
     return this.model;
   }

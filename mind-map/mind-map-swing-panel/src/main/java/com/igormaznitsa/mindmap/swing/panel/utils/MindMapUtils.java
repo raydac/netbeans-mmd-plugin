@@ -17,18 +17,16 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
+import java.util.Map;
 
 public enum MindMapUtils {;
-  public static final String ATTR_BORDER_COLOR = "borderColor";
-  public static final String ATTR_FILL_COLOR = "fillColor";
-  public static final String ATTR_TEXT_COLOR = "textColor";
-  public static final String ATTR_COLLAPSED = "collapsed";
-
+  
   public static boolean isHidden(final Topic topic) {
     if (topic == null) {
       return true;
     }
-    final String collapsed = topic.findAttributeInAncestors(ATTR_COLLAPSED);
+    final String collapsed = topic.findAttributeInAncestors(ATTR_COLLAPSED.getText());
     return collapsed != null && Boolean.parseBoolean(collapsed);
   }
 
@@ -44,7 +42,7 @@ public enum MindMapUtils {;
     if (path.length > 0) {
       for (final Topic t : path) {
         lastVisible = t;
-        final boolean collapsed = Boolean.parseBoolean(t.getAttribute(ATTR_COLLAPSED));
+        final boolean collapsed = Boolean.parseBoolean(t.getAttribute(ATTR_COLLAPSED.getText()));
         if (collapsed) {
           break;
         }
@@ -68,11 +66,11 @@ public enum MindMapUtils {;
   }
   
   public static boolean isCollapsed(final Topic topic) {
-    return "true".equalsIgnoreCase(topic.getAttribute(ATTR_COLLAPSED));//NOI18N
+    return "true".equalsIgnoreCase(topic.getAttribute(ATTR_COLLAPSED.getText()));//NOI18N
   }
   
   public static boolean setCollapsed(final Topic topic, final boolean flag) {
-    return topic.setAttribute(ATTR_COLLAPSED, flag ? "true" : null);//NOI18N
+    return topic.setAttribute(ATTR_COLLAPSED.getText(), flag ? "true" : null);//NOI18N
   }
   
   public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map) {
@@ -82,7 +80,7 @@ public enum MindMapUtils {;
   public static void removeCollapseAttrIfNoChildren(final Topic topic) {
     if (topic != null) {
       if (!topic.hasChildren()) {
-        topic.setAttribute(ATTR_COLLAPSED, null);
+        topic.setAttribute(ATTR_COLLAPSED.getText(), null);
       }
       else {
         for (final Topic t : topic.getChildren()) {
@@ -93,9 +91,9 @@ public enum MindMapUtils {;
   }
 
   public static void copyColorAttributes(final Topic source, final Topic destination) {
-    destination.setAttribute(ATTR_FILL_COLOR, source.getAttribute(ATTR_FILL_COLOR));
-    destination.setAttribute(ATTR_BORDER_COLOR, source.getAttribute(ATTR_BORDER_COLOR));
-    destination.setAttribute(ATTR_TEXT_COLOR, source.getAttribute(ATTR_TEXT_COLOR));
+    destination.setAttribute(ATTR_FILL_COLOR.getText(), source.getAttribute(ATTR_FILL_COLOR.getText()));
+    destination.setAttribute(ATTR_BORDER_COLOR.getText(), source.getAttribute(ATTR_BORDER_COLOR.getText()));
+    destination.setAttribute(ATTR_TEXT_COLOR.getText(), source.getAttribute(ATTR_TEXT_COLOR.getText()));
   }
   
 }

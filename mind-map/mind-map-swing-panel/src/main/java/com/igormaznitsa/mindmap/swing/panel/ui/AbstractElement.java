@@ -17,9 +17,7 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
-import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_BORDER_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_FILL_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_TEXT_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -61,9 +59,9 @@ public abstract class AbstractElement {
   }
 
   public final void updateColorAttributeFromModel(){
-    this.borderColor = Utils.html2color(this.model.getAttribute(ATTR_BORDER_COLOR), false);
-    this.textColor = Utils.html2color(this.model.getAttribute(ATTR_TEXT_COLOR), false);
-    this.fillColor = Utils.html2color(this.model.getAttribute(ATTR_FILL_COLOR), false);
+    this.borderColor = Utils.html2color(this.model.getAttribute(ATTR_BORDER_COLOR.getText()), false);
+    this.textColor = Utils.html2color(this.model.getAttribute(ATTR_TEXT_COLOR.getText()), false);
+    this.fillColor = Utils.html2color(this.model.getAttribute(ATTR_FILL_COLOR.getText()), false);
   }
   
   public AbstractElement getParent() {

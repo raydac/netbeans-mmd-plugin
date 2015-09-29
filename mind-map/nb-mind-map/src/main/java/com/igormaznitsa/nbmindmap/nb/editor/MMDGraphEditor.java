@@ -17,20 +17,15 @@ package com.igormaznitsa.nbmindmap.nb.editor;
 
 import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
 import com.igormaznitsa.mindmap.exporters.Exporters;
+import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
+import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -105,7 +100,7 @@ import org.slf4j.LoggerFactory;
         preferredID = MMDGraphEditor.ID,
         position = 1
 )
-public final class MMDGraphEditor extends CloneableEditor implements PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, DialogProvider {
+public final class MMDGraphEditor extends CloneableEditor implements MindMapController, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, DialogProvider {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -244,7 +239,7 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
     }
     else {
       try {
-        this.mindMapPanel.setModel(new MindMap(new StringReader(text)));
+        this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)));
       }
       catch (IllegalArgumentException ex) {
         logger.warn("Can't detect mind map"); //NOI18N
@@ -1095,24 +1090,24 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   }
 
   private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {
-    final Color borderColor = NbUtils.extractCommonColorForColorChooserButton(MindMapUtils.ATTR_BORDER_COLOR, topics);
-    final Color fillColor = NbUtils.extractCommonColorForColorChooserButton(MindMapUtils.ATTR_FILL_COLOR, topics);
-    final Color textColor = NbUtils.extractCommonColorForColorChooserButton(MindMapUtils.ATTR_TEXT_COLOR, topics);
+    final Color borderColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_BORDER_COLOR.getText(), topics);
+    final Color fillColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_FILL_COLOR.getText(), topics);
+    final Color textColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
 
     final ColorAttributePanel panel = new ColorAttributePanel(borderColor, fillColor, textColor);
     if (NbUtils.plainMessageOkCancel(String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
       ColorAttributePanel.Result result = panel.getResult();
 
       if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
-        Utils.setAttribute(MindMapUtils.ATTR_BORDER_COLOR, Utils.color2html(result.getBorderColor(), false), topics);
+        Utils.setAttribute(ATTR_BORDER_COLOR.getText(), Utils.color2html(result.getBorderColor(), false), topics);
       }
 
       if (result.getTextColor() != ColorChooserButton.DIFF_COLORS) {
-        Utils.setAttribute(MindMapUtils.ATTR_TEXT_COLOR, Utils.color2html(result.getTextColor(), false), topics);
+        Utils.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(result.getTextColor(), false), topics);
       }
 
       if (result.getFillColor() != ColorChooserButton.DIFF_COLORS) {
-        Utils.setAttribute(MindMapUtils.ATTR_FILL_COLOR, Utils.color2html(result.getFillColor(), false), topics);
+        Utils.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
       }
 
       source.updateView(true);
@@ -1202,6 +1197,11 @@ public final class MMDGraphEditor extends CloneableEditor implements PrintProvid
   @Override
   public boolean isMouseClickProcessingAllowed(final MindMapPanel source) {
     return true;
+  }
+
+  @Override
+  public boolean canBeDeletedSilently(final MindMap map, final Topic topic) {
+    return topic.getText().isEmpty() && topic.getExtras().isEmpty() && doesContainOnlyStandardAttributes(topic);
   }
 
 }

@@ -203,7 +203,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
   protected boolean doesMindMapContainFileLink(final Project project, final FileObject mindMap, final MMapURI fileToCheck) throws IOException {
     final FileObject baseFolder = project.getProjectDirectory();
     try {
-      final MindMap parsedMap = new MindMap(new StringReader(mindMap.asText("UTF-8"))); //NOI18N
+      final MindMap parsedMap = new MindMap(null,new StringReader(mindMap.asText("UTF-8"))); //NOI18N
       return parsedMap.doesContainFileLink(FileUtil.toFile(baseFolder), fileToCheck);
     }
     catch (IllegalArgumentException ex) {

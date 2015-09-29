@@ -43,7 +43,7 @@ public class RenameElement extends AbstractElement {
     super.performChange();
     try {
       if (this.newFile != null) {
-        final MindMap parsed = this.mindMapFile.asMindMap();
+        final MindMap parsed = this.mindMapFile.asMindMap(null);
         if (parsed.replaceAllLinksToFile(this.projectFolder, this.processedFile, this.newFile)) {
           this.mindMapFile.writeMindMap();
         }

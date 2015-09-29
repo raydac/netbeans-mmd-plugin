@@ -18,9 +18,7 @@ package com.igormaznitsa.mindmap.exporters;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_BORDER_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_FILL_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils.ATTR_TEXT_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.io.File;
@@ -47,7 +45,7 @@ public abstract class AbstractMindMapExporter {
   public abstract ImageIcon getIcon();
 
   public static Color getBackgroundColor(final MindMapPanelConfig cfg, final Topic topic) {
-    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_FILL_COLOR), false);
+    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_FILL_COLOR.getText()), false);
     final Color result;
     if (extracted == null) {
       switch (topic.getTopicLevel()) {
@@ -72,7 +70,7 @@ public abstract class AbstractMindMapExporter {
   }
 
   public static Color getTextColor(final MindMapPanelConfig cfg, final Topic topic) {
-    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_TEXT_COLOR), false);
+    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_TEXT_COLOR.getText()), false);
     final Color result;
     if (extracted == null) {
       switch (topic.getTopicLevel()) {
@@ -97,7 +95,7 @@ public abstract class AbstractMindMapExporter {
   }
 
   public static Color getBorderColor(final MindMapPanelConfig cfg, final Topic topic) {
-    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_BORDER_COLOR), false);
+    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_BORDER_COLOR.getText()), false);
     return extracted == null ? cfg.getElementBorderColor() : extracted;
   }
 

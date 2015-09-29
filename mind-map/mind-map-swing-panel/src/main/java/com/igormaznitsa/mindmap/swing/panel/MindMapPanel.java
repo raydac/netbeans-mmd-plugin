@@ -1599,7 +1599,7 @@ public final class MindMapPanel extends JPanel {
   }
 
   public static BufferedImage renderMindMapAsImage(final MindMap model, final MindMapPanelConfig cfg, final boolean expandAll) {
-    final MindMap workMap = new MindMap(model);
+    final MindMap workMap = new MindMap(model,null);
     workMap.resetPayload();
 
     BufferedImage img = new BufferedImage(32, 32, cfg.isDrawBackground() ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);

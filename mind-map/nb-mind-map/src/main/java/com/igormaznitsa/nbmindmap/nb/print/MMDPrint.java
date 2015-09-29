@@ -62,7 +62,7 @@ public class MMDPrint {
 
       cfg.setScale(1.0d);
 
-      final MindMap theModel = new MindMap(panel.getModel());
+      final MindMap theModel = new MindMap(panel.getModel(), null);
 
       BufferedImage renderedMap = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
 

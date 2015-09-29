@@ -54,16 +54,21 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
   private final transient List<TreeModelListener> treeListeners = new ArrayList<>();
 
-  public MindMap() {
+  private final MindMapController controller;
+  
+  public MindMap(final MindMapController nullableController) {
     this.root = new Topic(this, null, ""); //NOI18N
+    this.controller = nullableController;
   }
 
-  public MindMap(final MindMap map) {
+  public MindMap(final MindMap map,final MindMapController nullableController) {
     this.attributes.putAll(map.attributes);
     this.root = map.getRoot() == null ? null : map.getRoot().makeCopy(this, null);
+    this.controller = nullableController;
   }
 
-  public MindMap(final Reader reader) throws IOException {
+  public MindMap(final MindMapController nullableController, final Reader reader) throws IOException {
+    this.controller = nullableController;
     final StringBuilder lineBuffer = new StringBuilder();
     while (true) {
       final int chr = reader.read();
@@ -92,6 +97,10 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     this.attributes.put(GENERATOR_VERSION_NAME, GENERATOR_VERSION);
   }
 
+  public MindMapController getController(){
+    return this.controller;
+  }
+  
   private void fireModelChanged() {
     final TreeModelEvent evt = new TreeModelEvent(this, this.root == null ? null : this.root.getPath());
     for (final TreeModelListener l : this.treeListeners) {

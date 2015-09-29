@@ -43,7 +43,7 @@ public class MoveElement extends AbstractElement {
     super.performChange();
     try {
       if (this.targetFile != null) {
-        final MindMap parsed = this.mindMapFile.asMindMap();
+        final MindMap parsed = this.mindMapFile.asMindMap(null);
         if (parsed.replaceAllLinksToFile(this.projectFolder, this.processedFile, this.targetFile)) {
           this.mindMapFile.writeMindMap();
         }
