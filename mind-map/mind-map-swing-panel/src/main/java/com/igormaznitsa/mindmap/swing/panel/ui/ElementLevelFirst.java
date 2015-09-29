@@ -29,20 +29,30 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
     super(model);
   }
 
-  protected Shape makeShape(final float x, final float y) {
-    return new Rectangle2D.Float(x, y, (float) this.bounds.getWidth(), (float) this.bounds.getHeight());
+  protected ElementLevelFirst(final  ElementLevelFirst element) {
+    super(element);
+  }
+
+  @Override
+  public AbstractElement makeCopy() {
+    return new ElementLevelFirst(this);
+  }
+
+  protected Shape makeShape(final MindMapPanelConfig cfg, final float x, final float y) {
+    final float border = cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.5f);
+    return new Rectangle2D.Float(x, y, (float) this.bounds.getWidth() - border, (float) this.bounds.getHeight() - border);
   }
 
   @Override
   public void drawComponent(final Graphics2D g, final MindMapPanelConfig cfg) {
     g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f)));
 
-    final Shape shape = makeShape(0f, 0f);
+    final Shape shape = makeShape(cfg, 0f, 0f);
 
     if (cfg.isDropShadow()) {
       g.setColor(cfg.getShadowColor());
       final float offset = cfg.safeScaleFloatValue(5.0f, 0.1f);
-      g.fill(makeShape(offset, offset));
+      g.fill(makeShape(cfg, offset, offset));
     }
 
     g.setColor(getBackgroundColor(cfg));

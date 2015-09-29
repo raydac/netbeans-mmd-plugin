@@ -16,21 +16,44 @@
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Utils {
 
   ;
-        
   private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+
+  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<>();
+
+  static {
+    RENDERING_HINTS.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    RENDERING_HINTS.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    RENDERING_HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    RENDERING_HINTS.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    RENDERING_HINTS.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+    RENDERING_HINTS.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+  }
+
+  public static void prepareGraphicsForQuality(final Graphics2D gfx) {
+    gfx.setRenderingHints(RENDERING_HINTS);
+  }
 
   public static Topic[] getLeftToRightOrderedChildrens(final Topic topic) {
     final List<Topic> result = new ArrayList<>();
@@ -169,7 +192,7 @@ public class Utils {
         return new Point2D.Double(left ? rect.getMinX() : rect.getMaxX(), rect.getCenterY());
       }
       else {
-        final double halfx = left ? rect.getWidth()/ 2 : -rect.getWidth()/ 2;
+        final double halfx = left ? rect.getWidth() / 2 : -rect.getWidth() / 2;
         final double coeff = (outboundX - rect.getCenterX()) / dy;
         final double calculatedY = rect.getCenterY() - (halfx / coeff);
         if (calculatedY >= rect.getMinY() && calculatedY <= rect.getMaxY()) {
@@ -180,4 +203,34 @@ public class Utils {
 
     return null;
   }
+
+  public static Image renderWithTransparency(final float opacity, final AbstractElement element, final MindMapPanelConfig config) {
+    final AbstractElement cloned = element.makeCopy();
+    final Rectangle2D bounds = cloned.getBounds();
+    
+    final int imageWidth = (int)Math.round(bounds.getWidth());
+    final int imageHeight = (int)Math.round(bounds.getHeight());
+    
+    bounds.setRect(0.0d, 0.0d, imageWidth, imageHeight);
+    
+    final BufferedImage result = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+
+    
+    final Graphics2D gfx = (Graphics2D) result.createGraphics();
+    try {
+      prepareGraphicsForQuality(gfx);
+      gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
+      gfx.setColor(new Color(0, 0, 0, 0));
+      gfx.fillRect(0, 0, imageWidth, imageHeight);
+
+      gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, opacity));
+      cloned.doPaint(gfx, config);
+    }
+    finally {
+      gfx.dispose();
+    }
+
+    return result;
+  }
+
 }

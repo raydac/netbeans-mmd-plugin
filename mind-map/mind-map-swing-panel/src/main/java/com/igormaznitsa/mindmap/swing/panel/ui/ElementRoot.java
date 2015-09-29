@@ -40,6 +40,18 @@ public final class ElementRoot extends AbstractElement {
     super(topic);
   }
 
+  protected ElementRoot(final ElementRoot element) {
+    super(element);
+    this.leftBlockSize.setSize(element.leftBlockSize);
+    this.rightBlockSize.setSize(element.rightBlockSize);
+  }
+
+  @Override
+  public AbstractElement makeCopy() {
+    return new ElementRoot(this);
+  }
+  
+  
   @Override
   public boolean isMoveable() {
     return false;
@@ -52,7 +64,8 @@ public final class ElementRoot extends AbstractElement {
 
   private Shape makeShape(final MindMapPanelConfig cfg, final float x, final float y) {
     final float round = cfg.safeScaleFloatValue(10.0f, 0.1f);
-    return new RoundRectangle2D.Float(x, y, (float) this.bounds.getWidth(), (float) this.bounds.getHeight(), round, round);
+    final float border = cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.5f);
+    return new RoundRectangle2D.Float(x, y, (float) this.bounds.getWidth()-border, (float) this.bounds.getHeight()-border, round, round);
   }
 
   @Override
@@ -171,7 +184,7 @@ public final class ElementRoot extends AbstractElement {
   @Override
   public void updateElementBounds(final Graphics2D gfx, final MindMapPanelConfig cfg) {
     super.updateElementBounds(gfx, cfg);
-    final double marginOffset = (cfg.getTextMargins() << 1) * cfg.getScale();
+    final double marginOffset = ((cfg.getTextMargins()+cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
   }
 

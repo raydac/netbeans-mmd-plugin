@@ -30,6 +30,11 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   protected final Rectangle2D collapsatorZone = new Rectangle2D.Double();
 
+  protected AbstractCollapsableElement(final AbstractCollapsableElement element){
+    super(element);
+    this.collapsatorZone.setRect(element.collapsatorZone);
+  }
+  
   public AbstractCollapsableElement(final Topic model) {
     super(model);
   }
@@ -267,7 +272,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   @Override
   public void updateElementBounds(final Graphics2D gfx, final MindMapPanelConfig cfg) {
     super.updateElementBounds(gfx, cfg);
-    final double marginOffset = (cfg.getTextMargins() << 1) * cfg.getScale();
+    final double marginOffset = ((cfg.getTextMargins() + cfg.getElementBorderWidth())*2.0d) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
   }
 

@@ -24,7 +24,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import javax.swing.text.JTextComponent;
 
-public final class TextBlock {
+public final class TextBlock implements Cloneable {
 
   private static final class Line {
 
@@ -46,6 +46,15 @@ public final class TextBlock {
   
   private static final Rectangle2D ZERO = new Rectangle2D.Float();
 
+  public TextBlock(final TextBlock orig){
+    this.text = orig.text;
+    this.lines = orig.lines.clone();
+    this.font = orig.font;
+    this.maxLineAscent = orig.maxLineAscent;
+    this.bounds.setRect(orig.getBounds());
+    this.textAlign = orig.textAlign;
+  }
+  
   public TextBlock(final String text, final TextAlign justify) {
     assertNotNull("Text must not be null", text); //NOI18N
     updateText(text);

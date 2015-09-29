@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import javax.swing.text.JTextComponent;
@@ -34,13 +35,13 @@ public abstract class AbstractElement {
   protected final TextBlock textBlock;
   protected final IconBlock extrasIconBlock;
 
-  protected final Rectangle2D bounds = new Rectangle2D.Float();
+  protected final Rectangle2D bounds = new Rectangle2D.Double();
   protected final Dimension2D blockSize = new Dimension();
 
   protected Color fillColor;
   protected Color textColor;
   protected Color borderColor;
-  
+
   public String getText() {
     return this.model.getText();
   }
@@ -48,6 +49,17 @@ public abstract class AbstractElement {
   public void setText(final String text) {
     this.model.setText(text);
     this.textBlock.updateText(text);
+  }
+
+  protected AbstractElement(final AbstractElement orig) {
+    this.model = orig.model;
+    this.textBlock = new TextBlock(orig.textBlock);
+    this.extrasIconBlock = new IconBlock(orig.extrasIconBlock);
+    this.bounds.setRect(orig.bounds);
+    this.blockSize.setSize(orig.blockSize);
+    this.fillColor = orig.fillColor;
+    this.textColor = orig.textColor;
+    this.borderColor = orig.borderColor;
   }
 
   public AbstractElement(final Topic model) {
@@ -58,12 +70,12 @@ public abstract class AbstractElement {
     updateColorAttributeFromModel();
   }
 
-  public final void updateColorAttributeFromModel(){
+  public final void updateColorAttributeFromModel() {
     this.borderColor = Utils.html2color(this.model.getAttribute(ATTR_BORDER_COLOR.getText()), false);
     this.textColor = Utils.html2color(this.model.getAttribute(ATTR_TEXT_COLOR.getText()), false);
     this.fillColor = Utils.html2color(this.model.getAttribute(ATTR_FILL_COLOR.getText()), false);
   }
-  
+
   public AbstractElement getParent() {
     final Topic parent = this.model.getParent();
     return parent == null ? null : (AbstractElement) parent.getPayload();
@@ -130,9 +142,17 @@ public abstract class AbstractElement {
         doPaintConnectors(g, isLeftDirection(), cfg);
       }
 
-      if (g.getClipBounds().intersects(this.bounds)) {
+      final Rectangle clip = g.getClipBounds();
+
+      if (clip == null) {
         gfx.translate(this.bounds.getX(), this.bounds.getY());
         drawComponent(gfx, cfg);
+      }
+      else {
+        if (clip.intersects(this.bounds)) {
+          gfx.translate(this.bounds.getX(), this.bounds.getY());
+          drawComponent(gfx, cfg);
+        }
       }
     }
     finally {
@@ -238,14 +258,14 @@ public abstract class AbstractElement {
 
   private AbstractElement findNearestTopic(final AbstractElement elementToIgnore, double maxDistance, final Point point) {
     AbstractElement result = null;
-    if (elementToIgnore != this){
+    if (elementToIgnore != this) {
       final double dist = calcAverageDistanceToPoint(point);
-      if (dist<maxDistance){
+      if (dist < maxDistance) {
         maxDistance = dist;
         result = this;
       }
     }
-    
+
     if (!this.isCollapsed()) {
       for (final Topic t : this.model.getChildren()) {
         final AbstractElement element = t.getPayload() == null ? null : (AbstractElement) t.getPayload();
@@ -266,7 +286,7 @@ public abstract class AbstractElement {
     final double d2 = point.distance(this.bounds.getMaxX(), this.bounds.getY());
     final double d3 = point.distance(this.bounds.getX(), this.bounds.getMaxY());
     final double d4 = point.distance(this.bounds.getMaxX(), this.bounds.getMaxY());
-    return (d1+d2+d3+d4)/(this.bounds.contains(point) ? 8.0d : 4.0d);
+    return (d1 + d2 + d3 + d4) / (this.bounds.contains(point) ? 8.0d : 4.0d);
   }
 
   public AbstractElement findTopicBlockForPoint(final Point point) {
@@ -358,11 +378,14 @@ public abstract class AbstractElement {
   }
 
   public abstract Color getBackgroundColor(MindMapPanelConfig config);
+
   public abstract Color getTextColor(MindMapPanelConfig config);
- 
-  public Color getBorderColor(final MindMapPanelConfig config){
+
+  public Color getBorderColor(final MindMapPanelConfig config) {
     final Color dflt = this.borderColor == null ? config.getElementBorderColor() : this.borderColor;
     return dflt;
   }
+
+  public abstract AbstractElement makeCopy();
 
 }

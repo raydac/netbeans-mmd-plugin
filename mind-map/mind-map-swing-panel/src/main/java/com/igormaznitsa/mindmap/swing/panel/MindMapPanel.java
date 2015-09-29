@@ -32,10 +32,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -67,17 +65,58 @@ public final class MindMapPanel extends JPanel {
   private static final Logger logger = LoggerFactory.getLogger(MindMapPanel.class);
   private final MindMapPanelController controller;
 
-  private static final Map<Key, Object> RENDERING_HINTS = new HashMap<>();
-
-  static {
-    RENDERING_HINTS.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-    RENDERING_HINTS.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    RENDERING_HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    RENDERING_HINTS.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-    RENDERING_HINTS.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-    RENDERING_HINTS.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+  public class DraggedElement {
+    private final AbstractElement element;
+    private final Image prerenderedImage;
+    private final Point mousePointerOffset;
+    private final Point currentPosition;
+    
+    public DraggedElement(final AbstractElement element, final Point mousePointerOffset){
+      this.element = element;
+      this.prerenderedImage = Utils.renderWithTransparency(0.75f, element, config);
+      this.mousePointerOffset = mousePointerOffset;
+      this.currentPosition = new Point();
+    }
+    
+    public boolean isPositionInside(){
+      return this.element.getBounds().contains(this.currentPosition);
+    }
+    
+    public AbstractElement getElement(){
+      return this.element;
+    }
+    
+    public void updatePosition(final Point point){
+      this.currentPosition.setLocation(point);
+    }
+    
+    public Point getPosition(){
+      return this.currentPosition;
+    }
+    
+    public Point getMousePointerOffset(){
+      return this.mousePointerOffset;
+    }
+    
+    public int getDrawPositionX(){
+      return this.currentPosition.x - this.mousePointerOffset.x;
+    }
+    
+    public int getDrawPositionY(){
+      return this.currentPosition.y - this.mousePointerOffset.y;
+    }
+    
+    public Image getImage(){
+      return this.prerenderedImage;
+    }
+    
+    public void draw(final Graphics2D gfx){
+      final int x = getDrawPositionX();
+      final int y = getDrawPositionY();
+      gfx.drawImage(this.prerenderedImage, x, y, null);
+    }
   }
-
+  
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
   private volatile MindMap model;
@@ -96,9 +135,7 @@ public final class MindMapPanel extends JPanel {
   private final List<Topic> selectedTopics = new ArrayList<>();
 
   private transient MouseSelectedArea mouseDragSelection = null;
-  private transient AbstractElement draggedElement = null;
-  private transient Point draggedElementPoint = null;
-  private transient Point draggedElementPointDrawOffset = null;
+  private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
 
   private volatile boolean popupMenuActive = false;
@@ -326,8 +363,8 @@ public final class MindMapPanel extends JPanel {
           return;
         }
         try {
-          if (draggedElementPoint != null) {
-            if (endDragOfElement(draggedElementPoint, draggedElement, destinationElement)) {
+          if (draggedElement != null) {
+            if (endDragOfElement(draggedElement.getPosition(), draggedElement.getElement(), destinationElement)) {
               updateView(true);
             }
           }
@@ -367,7 +404,6 @@ public final class MindMapPanel extends JPanel {
         finally {
           mouseDragSelection = null;
           draggedElement = null;
-          draggedElementPoint = null;
           destinationElement = null;
           repaint();
         }
@@ -381,7 +417,7 @@ public final class MindMapPanel extends JPanel {
         scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
 
         if (!popupMenuActive) {
-          if (draggedElementPoint == null && mouseDragSelection == null) {
+          if (draggedElement == null && mouseDragSelection == null) {
             final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
             if (elementUnderMouse == null) {
               MindMap theMap = model;
@@ -394,14 +430,15 @@ public final class MindMapPanel extends JPanel {
             }
             else {
               if (controller.isElementDragAllowed(theInstance)) {
-                draggedElement = elementUnderMouse;
-                if (elementUnderMouse.isMoveable()) {
+                if (elementUnderMouse!=null && elementUnderMouse.isMoveable()) {
                   selectedTopics.clear();
-                  draggedElementPoint = e.getPoint();
-                  draggedElementPointDrawOffset = new Point((int) Math.round(draggedElementPoint.getX() - draggedElement.getBounds().getX()), (int) Math.round(draggedElementPoint.getY() - draggedElement.getBounds().getY()));
+                  draggedElement = new DraggedElement(elementUnderMouse, new Point((int)Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()),(int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY())));
+                  draggedElement.updatePosition(e.getPoint());
                   findDestinationElementForDragged();
-                  repaint();
+                }else{
+                  draggedElement = null;
                 }
+                  repaint();
               }
             }
           }
@@ -414,21 +451,18 @@ public final class MindMapPanel extends JPanel {
             }
             repaint();
           }
-          else if (draggedElementPoint != null) {
+          else if (draggedElement != null) {
             if (controller.isElementDragAllowed(theInstance)) {
-              draggedElementPoint.setLocation(e.getPoint());
+              draggedElement.updatePosition(e.getPoint());
               findDestinationElementForDragged();
             }
             else {
               draggedElement = null;
-              draggedElementPoint = null;
-              draggedElementPointDrawOffset = null;
             }
             repaint();
           }
         }
         else {
-          draggedElementPoint = null;
           mouseDragSelection = null;
         }
       }
@@ -438,7 +472,6 @@ public final class MindMapPanel extends JPanel {
         if (controller.isMouseWheelProcessingAllowed(theInstance)) {
           mouseDragSelection = null;
           draggedElement = null;
-          draggedElementPoint = null;
 
           if (!e.isConsumed() && e.isControlDown()) {
             endEdit(false);
@@ -461,7 +494,6 @@ public final class MindMapPanel extends JPanel {
         }
         mouseDragSelection = null;
         draggedElement = null;
-        draggedElementPoint = null;
 
         MindMap theMap = model;
         AbstractElement element = null;
@@ -991,9 +1023,9 @@ public final class MindMapPanel extends JPanel {
   }
 
   private void findDestinationElementForDragged() {
-    if (this.draggedElementPoint != null && this.draggedElement != null) {
+    if (this.draggedElement != null) {
       final AbstractElement root = (AbstractElement) this.model.getRoot().getPayload();
-      this.destinationElement = root.findNearestOpenedTopicToPoint(this.draggedElement, this.draggedElementPoint);
+      this.destinationElement = root.findNearestOpenedTopicToPoint(this.draggedElement.getElement(), this.draggedElement.getPosition());
     }
     else {
       this.destinationElement = null;
@@ -1146,7 +1178,7 @@ public final class MindMapPanel extends JPanel {
   }
 
   private void drawDestinationElement(final Graphics2D g, final MindMapPanelConfig cfg) {
-    if (this.destinationElement != null && this.draggedElement != null && this.draggedElementPoint != null) {
+    if (this.destinationElement != null && this.draggedElement != null) {
       g.setColor(new Color((cfg.getSelectLineColor().getRGB() & 0xFFFFFF) | 0x80000000, true));
       g.setStroke(new BasicStroke(this.config.safeScaleFloatValue(3.0f, 0.1f)));
 
@@ -1155,9 +1187,9 @@ public final class MindMapPanel extends JPanel {
       final double selectLineGap = cfg.getSelectLineGap() * 3.0d * cfg.getScale();
       rectToDraw.setRect(rectToDraw.getX() - selectLineGap, rectToDraw.getY() - selectLineGap, rectToDraw.getWidth() + selectLineGap * 2, rectToDraw.getHeight() + selectLineGap * 2);
 
-      final int position = calcDropPosition(this.destinationElement, this.draggedElementPoint);
+      final int position = calcDropPosition(this.destinationElement, this.draggedElement.getPosition());
 
-      boolean draw = !this.draggedElement.getBounds().contains(this.draggedElementPoint) && !this.destinationElement.getModel().hasAncestor(this.draggedElement.getModel());
+      boolean draw = !this.draggedElement.isPositionInside() && !this.destinationElement.getModel().hasAncestor(this.draggedElement.getElement().getModel());
 
       switch (position) {
         case DRAG_POSITION_TOP: {
@@ -1463,10 +1495,6 @@ public final class MindMapPanel extends JPanel {
     }
   }
 
-  public static void prepareGraphicsForQuality(final Graphics2D gfx) {
-    gfx.setRenderingHints(RENDERING_HINTS);
-  }
-
   private static void drawErrorText(final Graphics2D gfx, final Dimension fullSize, final String error) {
     final Font font = new Font(Font.DIALOG, Font.BOLD, 24);
     final FontMetrics metrics = gfx.getFontMetrics(font);
@@ -1489,7 +1517,7 @@ public final class MindMapPanel extends JPanel {
     try {
       final String error = this.errorText;
 
-      prepareGraphicsForQuality(gfx);
+      Utils.prepareGraphicsForQuality(gfx);
       if (error != null) {
         drawErrorText(gfx, this.getSize(), error);
       }
@@ -1501,16 +1529,8 @@ public final class MindMapPanel extends JPanel {
 
       paintChildren(g);
 
-      if (this.draggedElement != null && this.draggedElementPoint != null) {
-        final int px = this.draggedElementPoint.x - this.draggedElementPointDrawOffset.x;
-        final int py = this.draggedElementPoint.y - this.draggedElementPointDrawOffset.y;
-        gfx.translate(px, py);
-        try {
-          this.draggedElement.drawComponent(gfx, this.config);
-        }
-        finally {
-          gfx.translate(-px, -py);
-        }
+      if (this.draggedElement != null) {
+        this.draggedElement.draw(gfx);
       }
       else if (this.mouseDragSelection != null) {
         gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
@@ -1599,14 +1619,14 @@ public final class MindMapPanel extends JPanel {
   }
 
   public static BufferedImage renderMindMapAsImage(final MindMap model, final MindMapPanelConfig cfg, final boolean expandAll) {
-    final MindMap workMap = new MindMap(model,null);
+    final MindMap workMap = new MindMap(model, null);
     workMap.resetPayload();
 
     BufferedImage img = new BufferedImage(32, 32, cfg.isDrawBackground() ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
     Dimension2D blockSize = null;
     Graphics2D gfx = img.createGraphics();
     try {
-      prepareGraphicsForQuality(gfx);
+      Utils.prepareGraphicsForQuality(gfx);
       if (calculateElementSizes(gfx, workMap, cfg)) {
         if (expandAll) {
           final AbstractElement root = (AbstractElement) workMap.getRoot().getPayload();
@@ -1629,7 +1649,7 @@ public final class MindMapPanel extends JPanel {
     img = new BufferedImage((int) blockSize.getWidth(), (int) blockSize.getHeight(), BufferedImage.TYPE_INT_ARGB);
     gfx = img.createGraphics();
     try {
-      prepareGraphicsForQuality(gfx);
+      Utils.prepareGraphicsForQuality(gfx);
       gfx.setClip(0, 0, img.getWidth(), img.getHeight());
       layoutFullDiagramWithCenteringToPaper(gfx, workMap, cfg, blockSize);
       drawOnGraphicsForConfiguration(gfx, cfg, workMap, false, null);

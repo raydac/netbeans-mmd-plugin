@@ -18,6 +18,7 @@ package com.igormaznitsa.nbmindmap.nb.print;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -85,7 +86,7 @@ public class MMDPrint {
           if (Math.abs(currentRatio - possibleRatio) <= SCALE_RATIO_THRESHOLD) {
             final BufferedImage scaledImage = new BufferedImage(potentialPageWidth, potentialPageHeight, BufferedImage.TYPE_INT_ARGB);
             final Graphics2D sigfx = scaledImage.createGraphics();
-            MindMapPanel.prepareGraphicsForQuality(sigfx);
+            Utils.prepareGraphicsForQuality(sigfx);
             try {
               sigfx.drawImage(renderedMap, 0, 0, scaledImage.getWidth(), scaledImage.getHeight(), null);
             }
@@ -113,7 +114,7 @@ public class MMDPrint {
               @Override
               public void print(final Graphics g) {
                 final Graphics2D gfx = (Graphics2D) g.create();
-                MindMapPanel.prepareGraphicsForQuality(gfx);
+                Utils.prepareGraphicsForQuality(gfx);
                 try {
                   final int xoffset = paperWidthInPixels * pageX;
                   final int yoffset = paperHeightInPixels * pageY;
@@ -149,7 +150,7 @@ public class MMDPrint {
             @Override
             public void print(final Graphics g) {
               final Graphics2D gfx = (Graphics2D) g.create();
-              MindMapPanel.prepareGraphicsForQuality(gfx);
+              Utils.prepareGraphicsForQuality(gfx);
               try {
                 if (theImage != null) {
                   gfx.translate(((double) paperWidthInPixels - theImage.getWidth()) / 2, ((double) paperHeightInPixels - theImage.getHeight()) / 2);

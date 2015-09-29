@@ -34,6 +34,14 @@ public class IconBlock {
   private boolean contentPresented;
   
   private Extra<?> [] currentExtras = null;
+
+  public IconBlock(final IconBlock orig){
+    this.bounds.setRect(orig.bounds);
+    this.model = orig.model;
+    this.scale = orig.scale;
+    this.contentPresented = orig.contentPresented;
+    this.currentExtras = orig.currentExtras == null ? null : orig.currentExtras.clone();
+  }
   
   public IconBlock(final Topic model){
     this.model = model;
