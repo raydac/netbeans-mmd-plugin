@@ -208,8 +208,8 @@ public class Utils {
     final AbstractElement cloned = element.makeCopy();
     final Rectangle2D bounds = cloned.getBounds();
     
-    final int imageWidth = (int)Math.round(bounds.getWidth());
-    final int imageHeight = (int)Math.round(bounds.getHeight());
+    final int imageWidth = (int)bounds.getWidth();
+    final int imageHeight = (int)bounds.getHeight();
     
     bounds.setRect(0.0d, 0.0d, imageWidth, imageHeight);
     
