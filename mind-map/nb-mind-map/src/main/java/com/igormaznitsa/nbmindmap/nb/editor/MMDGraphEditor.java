@@ -388,20 +388,18 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
           }
 
           try {
+            final File theFile = uri.asFile(this.editorSupport.getProjectDirectory());
+
             if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
-              NbUtils.openInExternalEditor(uri.asFile(this.editorSupport.getProjectDirectory()));
+              NbUtils.openInExternalEditor(theFile);
             }
             else {
               if (fileObj.isFolder()) {
                 if (FileOwnerQuery.getOwner(fileObj) != null) {
                   final DataObject dobj = DataObject.find(fileObj);
                   if (dobj instanceof DataFolder) {
-                    try {
-                      NbUtils.selectInProjectsView(this, (DataFolder) dobj);
+                    if (NbUtils.SelectIn.PROJECTS.select(this, dobj)) {
                       return;
-                    }
-                    catch (Exception ex) {
-                      logger.error("Can't open node " + dobj, ex);
                     }
                   }
                 }
@@ -410,7 +408,9 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                 if (manager.isProject(fileObj)) {
                   final Project project = manager.findProject(fileObj);
                   if (project == null) {
-                    NbUtils.openInExternalEditor(uri.asFile(this.editorSupport.getProjectDirectory()));
+                    if (!NbUtils.SelectIn.FAVORITES.select(this, fileObj)) {
+                      NbUtils.openInExternalEditor(theFile);
+                    }
                   }
                   else {
                     final OpenProjects openManager = OpenProjects.getDefault();
@@ -420,7 +420,9 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                   }
                 }
                 else {
-                  NbUtils.openInExternalEditor(uri.asFile(this.editorSupport.getProjectDirectory()));
+                  if (!NbUtils.SelectIn.FAVORITES.select(this, fileObj)) {
+                    NbUtils.openInExternalEditor(theFile);
+                  }
                 }
               }
               else {
@@ -524,21 +526,21 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   @Override
   public boolean processDropTopicToAnotherTopic(final MindMapPanel source, final Point dropPoint, final Topic draggedTopic, final Topic destinationTopic) {
     boolean result = false;
-    if (draggedTopic!=null && destinationTopic!=null && draggedTopic!=destinationTopic){
-      if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)){
+    if (draggedTopic != null && destinationTopic != null && draggedTopic != destinationTopic) {
+      if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
         if (!NbUtils.msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
           return result;
         }
       }
-      
+
       final ExtraTopic topicLink = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), draggedTopic);
       destinationTopic.setExtra(topicLink);
-      
+
       result = true;
     }
     return result;
   }
-  
+
   private void addDataObjectToElement(final DataObject dataObject, final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();
