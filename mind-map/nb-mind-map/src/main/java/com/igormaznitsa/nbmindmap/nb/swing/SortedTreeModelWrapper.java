@@ -16,7 +16,6 @@
 package com.igormaznitsa.nbmindmap.nb.swing;
 
 import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.Topic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

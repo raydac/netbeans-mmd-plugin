@@ -175,12 +175,7 @@ final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener,
       return true;
     }
 
-    final FileObject fobj = obj.getPrimaryFile();
-    if (fobj.getName().startsWith(".")) {
-      return false;
-    }
-    return true;
-//    return fobj.isFolder() || MMDDataObject.MMD_EXT.equalsIgnoreCase(fobj.getExt());
+    return !obj.getPrimaryFile().getName().startsWith(".");
   }
 
 }

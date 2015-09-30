@@ -24,7 +24,6 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
-import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;

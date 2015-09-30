@@ -43,15 +43,12 @@ import org.openide.NotifyDescriptor;
 import org.openide.awt.HtmlBrowser;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.nodes.Node;
 import org.openide.util.ContextAwareAction;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
-import org.openide.util.actions.NodeAction;
 import org.openide.util.lookup.Lookups;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,26 +72,30 @@ public final class NbUtils {
       final Action action = FileUtil.getConfigObject("Actions/Window/SelectDocumentNode/" + actionName, ContextAwareAction.class); //NOI18N
       if (action != null) {
         try {
-          switch(this){
-            case FAVORITES : {
+          switch (this) {
+            case FAVORITES: {
               final Node node = extractNode(object);
               if (node != null) {
                 final Action contextAction = ((ContextAwareAction) action).createContextAwareInstance(Lookups.singleton(node));
                 contextAction.actionPerformed(new ActionEvent(source, ActionEvent.ACTION_PERFORMED, null));
                 result = true;
               }
-            }break;
-            case PROJECTS : {
+            }
+            break;
+            case PROJECTS: {
               final Action contextAction = ((ContextAwareAction) action).createContextAwareInstance(Lookups.singleton(object));
               contextAction.actionPerformed(new ActionEvent(source, ActionEvent.ACTION_PERFORMED, null));
               result = true;
-            }break;
-            case FILES : {
+            }
+            break;
+            case FILES: {
               final Action contextAction = ((ContextAwareAction) action).createContextAwareInstance(Lookups.singleton(object));
               contextAction.actionPerformed(new ActionEvent(source, ActionEvent.ACTION_PERFORMED, null));
               result = true;
-            }break;
-            default : throw new Error("Unexpected type "+this);
+            }
+            break;
+            default:
+              throw new Error("Unexpected type " + this);
           }
         }
         catch (Exception ex) {
@@ -131,59 +132,65 @@ public final class NbUtils {
   }
 
   public static DataObject extractDataObject(final Object object) {
-    if (object instanceof DataObject){
+    if (object instanceof DataObject) {
       return (DataObject) object;
-    }else
-    if (object instanceof FileObject) {
+    }
+    else if (object instanceof FileObject) {
       try {
-        return DataObject.find((FileObject)object);
+        return DataObject.find((FileObject) object);
       }
       catch (DataObjectNotFoundException ex) {
         return null;
       }
-    }else if (object instanceof Node){
-      return ((Node)object).getLookup().lookup(DataObject.class);
-    }else if (object instanceof Lookup){
-      return ((Lookup)object).lookup(DataObject.class);
+    }
+    else if (object instanceof Node) {
+      return ((Node) object).getLookup().lookup(DataObject.class);
+    }
+    else if (object instanceof Lookup) {
+      return ((Lookup) object).lookup(DataObject.class);
     }
     return null;
   }
-  
+
   public static FileObject extractFileObject(final Object object) {
-    if (object instanceof DataObject){
+    if (object instanceof DataObject) {
       return ((DataObject) object).getPrimaryFile();
-    }else
-    if (object instanceof FileObject) {
-      return (FileObject)object;
-    }else if (object instanceof Node){
+    }
+    else if (object instanceof FileObject) {
+      return (FileObject) object;
+    }
+    else if (object instanceof Node) {
       final DataObject dobj = extractDataObject(object);
-      return dobj == null ? ((Node)object).getLookup().lookup(FileObject.class) : dobj.getPrimaryFile();
-    }else if (object instanceof Lookup){
-      return ((Lookup)object).lookup(FileObject.class);
+      return dobj == null ? ((Node) object).getLookup().lookup(FileObject.class) : dobj.getPrimaryFile();
+    }
+    else if (object instanceof Lookup) {
+      return ((Lookup) object).lookup(FileObject.class);
     }
     return null;
   }
-  
+
   public static Node extractNode(final Object object) {
-    if (object instanceof DataObject){
-      return ((DataObject)object).getNodeDelegate();
-    }else
-    if (object instanceof FileObject) {
+    if (object instanceof DataObject) {
+      return ((DataObject) object).getNodeDelegate();
+    }
+    else if (object instanceof FileObject) {
       try {
-        final DataObject dobj = DataObject.find((FileObject)object);
+        final DataObject dobj = DataObject.find((FileObject) object);
         return dobj == null ? null : dobj.getNodeDelegate();
       }
       catch (DataObjectNotFoundException ex) {
         return null;
       }
-    }else if (object instanceof Node){
-      return (Node)object;
-    }else if (object instanceof Lookup){
-      return ((Lookup)object).lookup(Node.class);
+    }
+    else if (object instanceof Node) {
+      return (Node) object;
+    }
+    else if (object instanceof Lookup) {
+      return ((Lookup) object).lookup(Node.class);
     }
     return null;
   }
-  
+
   public static int calculateBrightness(final Color color) {
     return (int) Math.sqrt(
             color.getRed() * color.getRed() * .241d
