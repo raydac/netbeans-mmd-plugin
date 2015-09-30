@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.swing.panel;
 
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import java.awt.Point;
@@ -31,4 +32,5 @@ public interface MindMapPanelController {
   MindMapPanelConfig provideConfigForMindMapPanel(MindMapPanel source);
   JPopupMenu makePopUpForMindMapPanel(MindMapPanel source,  Point point, AbstractElement elementUnderMouse,  ElementPart elementPartUnderMouse);
   DialogProvider getDialogProvider(MindMapPanel source);
+  boolean processDropTopicToAnotherTopic(MindMapPanel source, Point dropPoint, Topic draggedTopic, Topic destinationTopic);
 }

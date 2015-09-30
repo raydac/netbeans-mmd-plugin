@@ -56,7 +56,8 @@ public class MMDPrint {
       cfg.setOtherLevelTextColor(Color.black);
       cfg.setCollapsatorBorderColor(Color.black);
       cfg.setCollapsatorBackgroundColor(Color.white);
-
+      cfg.setJumpLinkColor(Color.DARK_GRAY);
+      
       cfg.setElementBorderWidth(1.5f);
       cfg.setCollapsatorBorderWidth(1.0f);
       cfg.setConnectorWidth(2.0f);

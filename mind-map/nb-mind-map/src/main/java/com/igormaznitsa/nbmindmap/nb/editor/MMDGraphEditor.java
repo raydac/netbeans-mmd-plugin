@@ -521,6 +521,24 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   public void dragExit(DropTargetEvent dte) {
   }
 
+  @Override
+  public boolean processDropTopicToAnotherTopic(final MindMapPanel source, final Point dropPoint, final Topic draggedTopic, final Topic destinationTopic) {
+    boolean result = false;
+    if (draggedTopic!=null && destinationTopic!=null && draggedTopic!=destinationTopic){
+      if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)){
+        if (!NbUtils.msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
+          return result;
+        }
+      }
+      
+      final ExtraTopic topicLink = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), draggedTopic);
+      destinationTopic.setExtra(topicLink);
+      
+      result = true;
+    }
+    return result;
+  }
+  
   private void addDataObjectToElement(final DataObject dataObject, final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();

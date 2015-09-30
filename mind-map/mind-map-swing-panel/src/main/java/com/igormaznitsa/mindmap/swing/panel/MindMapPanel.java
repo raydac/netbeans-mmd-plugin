@@ -26,7 +26,6 @@ import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -38,9 +37,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.BorderFactory;
@@ -65,58 +62,73 @@ public final class MindMapPanel extends JPanel {
   private static final Logger logger = LoggerFactory.getLogger(MindMapPanel.class);
   private final MindMapPanelController controller;
 
-  public class DraggedElement {
+  private static final int ALL_KEY_MODIFIERS = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.META_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK;
+  
+  public static class DraggedElement {
+
+    public enum Modifier {
+
+      NONE,
+      MAKE_JUMP;
+    }
+
     private final AbstractElement element;
     private final Image prerenderedImage;
     private final Point mousePointerOffset;
     private final Point currentPosition;
-    
-    public DraggedElement(final AbstractElement element, final Point mousePointerOffset){
+    private final DraggedElement.Modifier modifier;
+
+    public DraggedElement(final AbstractElement element, final MindMapPanelConfig cfg, final Point mousePointerOffset, final DraggedElement.Modifier modifier) {
       this.element = element;
-      this.prerenderedImage = Utils.renderWithTransparency(0.65f, element, config);
+      this.prerenderedImage = Utils.renderWithTransparency(0.65f, element, cfg);
       this.mousePointerOffset = mousePointerOffset;
       this.currentPosition = new Point();
+      this.modifier = modifier;
     }
-    
-    public boolean isPositionInside(){
+
+    public DraggedElement.Modifier getModifier() {
+      return this.modifier;
+    }
+
+    public boolean isPositionInside() {
       return this.element.getBounds().contains(this.currentPosition);
     }
-    
-    public AbstractElement getElement(){
+
+    public AbstractElement getElement() {
       return this.element;
     }
-    
-    public void updatePosition(final Point point){
+
+    public void updatePosition(final Point point) {
       this.currentPosition.setLocation(point);
     }
-    
-    public Point getPosition(){
+
+    public Point getPosition() {
       return this.currentPosition;
     }
-    
-    public Point getMousePointerOffset(){
+
+    public Point getMousePointerOffset() {
       return this.mousePointerOffset;
     }
-    
-    public int getDrawPositionX(){
+
+    public int getDrawPositionX() {
       return this.currentPosition.x - this.mousePointerOffset.x;
     }
-    
-    public int getDrawPositionY(){
+
+    public int getDrawPositionY() {
       return this.currentPosition.y - this.mousePointerOffset.y;
     }
-    
-    public Image getImage(){
+
+    public Image getImage() {
       return this.prerenderedImage;
     }
-    
-    public void draw(final Graphics2D gfx){
+
+    public void draw(final Graphics2D gfx) {
       final int x = getDrawPositionX();
       final int y = getDrawPositionY();
       gfx.drawImage(this.prerenderedImage, x, y, null);
     }
   }
-  
+
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
   private volatile MindMap model;
@@ -161,7 +173,7 @@ public final class MindMapPanel extends JPanel {
           }
           break;
           case KeyEvent.VK_TAB: {
-            if ((e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.META_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)) == 0) {
+            if ((e.getModifiersEx() & ALL_KEY_MODIFIERS) == 0) {
               e.consume();
               final Topic edited = elementUnderEdit.getModel();
               final int[] topicPosition = edited.getPositionPath();
@@ -186,7 +198,7 @@ public final class MindMapPanel extends JPanel {
       @Override
       public void keyTyped(final KeyEvent e) {
         if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-          if (((KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK) & e.getModifiersEx()) == 0) {
+          if (!e.isControlDown() && !e.isShiftDown()) {
             e.consume();
             endEdit(true);
           }
@@ -260,7 +272,7 @@ public final class MindMapPanel extends JPanel {
             if (!hasSelectedTopics()) {
               select(getModel().getRoot(), false);
             }
-            else if (hasOnlyTopicSelected() & (e.getModifiersEx() & (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK | KeyEvent.META_DOWN_MASK)) != 0) {
+            else if (hasOnlyTopicSelected() & (e.getModifiersEx() & ALL_KEY_MODIFIERS) != 0) {
               startEdit((AbstractElement) selectedTopics.get(0).getPayload());
             }
           }
@@ -364,18 +376,19 @@ public final class MindMapPanel extends JPanel {
         }
         try {
           if (draggedElement != null) {
-            if (endDragOfElement(draggedElement.getPosition(), draggedElement.getElement(), destinationElement)) {
+            draggedElement.updatePosition(e.getPoint());
+            if (endDragOfElement(draggedElement, destinationElement)) {
               updateView(true);
             }
           }
           else if (mouseDragSelection != null) {
             final List<Topic> covered = mouseDragSelection.getAllSelectedElements(model);
-            if ((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
+            if (e.isShiftDown()) {
               for (final Topic m : covered) {
                 select(m, false);
               }
             }
-            else if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+            else if (e.isControlDown()) {
               for (final Topic m : covered) {
                 select(m, true);
               }
@@ -430,15 +443,18 @@ public final class MindMapPanel extends JPanel {
             }
             else {
               if (controller.isElementDragAllowed(theInstance)) {
-                if (elementUnderMouse!=null && elementUnderMouse.isMoveable()) {
+                if (elementUnderMouse != null && elementUnderMouse.isMoveable()) {
                   selectedTopics.clear();
-                  draggedElement = new DraggedElement(elementUnderMouse, new Point((int)Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()),(int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY())));
+
+                  final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
+                  draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE);
                   draggedElement.updatePosition(e.getPoint());
                   findDestinationElementForDragged();
-                }else{
+                }
+                else {
                   draggedElement = null;
                 }
-                  repaint();
+                repaint();
               }
             }
           }
@@ -520,7 +536,7 @@ public final class MindMapPanel extends JPanel {
         }
         else {
           if (element != null) {
-            if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0) {
+            if (!e.isControlDown()) {
               // only
               removeAllSelection();
               select(element.getModel(), false);
@@ -629,7 +645,10 @@ public final class MindMapPanel extends JPanel {
     return result;
   }
 
-  private boolean endDragOfElement(final Point dropPoint, final AbstractElement dragged, final AbstractElement destination) {
+  private boolean endDragOfElement(final DraggedElement draggedElement, final AbstractElement destination) {
+    final AbstractElement dragged = draggedElement.getElement();
+    final Point dropPoint = draggedElement.getPosition();
+
     final boolean ignore = dragged.getModel() == destination.getModel() || dragged.getBounds().contains(dropPoint) || destination.getModel().hasAncestor(dragged.getModel());
     if (ignore) {
       return false;
@@ -638,6 +657,12 @@ public final class MindMapPanel extends JPanel {
     boolean changed = true;
 
     final AbstractElement destParent = destination.getParent();
+
+    if (draggedElement.getModifier() == DraggedElement.Modifier.MAKE_JUMP) {
+      // make link
+      return this.controller.processDropTopicToAnotherTopic(this, dropPoint, dragged.getModel(), destination.getModel());
+    }
+
     final int pos = calcDropPosition(destination, dropPoint);
     switch (pos) {
       case DRAG_POSITION_TOP:
@@ -1191,26 +1216,36 @@ public final class MindMapPanel extends JPanel {
 
       boolean draw = !this.draggedElement.isPositionInside() && !this.destinationElement.getModel().hasAncestor(this.draggedElement.getElement().getModel());
 
-      switch (position) {
-        case DRAG_POSITION_TOP: {
-          rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY(), rectToDraw.getWidth(), rectToDraw.getHeight() / 2);
+      switch (this.draggedElement.getModifier()) {
+        case NONE: {
+          switch (position) {
+            case DRAG_POSITION_TOP: {
+              rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY(), rectToDraw.getWidth(), rectToDraw.getHeight() / 2);
+            }
+            break;
+            case DRAG_POSITION_BOTTOM: {
+              rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY() + rectToDraw.getHeight() / 2, rectToDraw.getWidth(), rectToDraw.getHeight() / 2);
+            }
+            break;
+            case DRAG_POSITION_LEFT: {
+              rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY(), rectToDraw.getWidth() / 2, rectToDraw.getHeight());
+            }
+            break;
+            case DRAG_POSITION_RIGHT: {
+              rectToDraw.setRect(rectToDraw.getX() + rectToDraw.getWidth() / 2, rectToDraw.getY(), rectToDraw.getWidth() / 2, rectToDraw.getHeight());
+            }
+            break;
+            default:
+              draw = false;
+              break;
+          }
         }
         break;
-        case DRAG_POSITION_BOTTOM: {
-          rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY() + rectToDraw.getHeight() / 2, rectToDraw.getWidth(), rectToDraw.getHeight() / 2);
-        }
-        break;
-        case DRAG_POSITION_LEFT: {
-          rectToDraw.setRect(rectToDraw.getX(), rectToDraw.getY(), rectToDraw.getWidth() / 2, rectToDraw.getHeight());
-        }
-        break;
-        case DRAG_POSITION_RIGHT: {
-          rectToDraw.setRect(rectToDraw.getX() + rectToDraw.getWidth() / 2, rectToDraw.getY(), rectToDraw.getWidth() / 2, rectToDraw.getHeight());
+        case MAKE_JUMP: {
         }
         break;
         default:
-          draw = false;
-          break;
+          throw new Error("Unexpected state " + this.draggedElement.getModifier());
       }
 
       if (draw) {
@@ -1308,18 +1343,19 @@ public final class MindMapPanel extends JPanel {
     final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startx, starty);
 
     if (arrowPoint != null) {
-      gfx.setStroke(lineStroke);
-      gfx.drawLine((int) startx, (int) starty, (int) endx, (int) endy);
       gfx.setStroke(arrowStroke);
 
       double angle = findLineAngle(arrowPoint.getX(), arrowPoint.getY(), startx, starty);
 
-      final double arrowAngle = Math.PI / 20.0d;
+      final double arrowAngle = Math.PI / 12.0d;
 
       final double x1 = arrowSize * Math.cos(angle - arrowAngle);
       final double y1 = arrowSize * Math.sin(angle - arrowAngle);
       final double x2 = arrowSize * Math.cos(angle + arrowAngle);
       final double y2 = arrowSize * Math.sin(angle + arrowAngle);
+
+      final double cx = (arrowSize / 2.0f) * Math.cos(angle);
+      final double cy = (arrowSize / 2.0f) * Math.sin(angle);
 
       final GeneralPath polygon = new GeneralPath();
       polygon.moveTo(arrowPoint.getX(), arrowPoint.getY());
@@ -1327,6 +1363,9 @@ public final class MindMapPanel extends JPanel {
       polygon.lineTo(arrowPoint.getX() + x2, arrowPoint.getY() + y2);
       polygon.closePath();
       gfx.fill(polygon);
+
+      gfx.setStroke(lineStroke);
+      gfx.drawLine((int) startx, (int) starty, (int) (arrowPoint.getX() + cx), (int) (arrowPoint.getY() + cy));
     }
   }
 
