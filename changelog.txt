@@ -1,15 +1,16 @@
 1.1.0
-- added support of "Knowledge" folder in project explorer, content saved in the .projectKnowledge project folder
-- added base support for project refactoring actions "move", "delete", "rename" and "find usages" (for Java projects)
-- added "show jump links" pop-up menu item to show inside mind-map jump links as lines
-- added support of folders to be added to topics and opened through click, a Netbeans project folder will be opened in IDE
-- added editing of colors for every topic
-- added support of opening files via system
-- added special icons for MMD files and files with absolute path
-- indicator for topic drop target is changed to filled half-transparent rectangle, improved topic d&d algorithm
-- improved print subsystem to support print of multi-page documents
-- refactoring, project splitted to modules
-- minimal version of Java changed to 1.7
+- minor bugfixing and refactoring
+- minimal allowed Java version updated to 1.7
+- added "Knowledge" view to projects, all related items saved in generated .projectKnowledge folder (the feature can be disabled)
+- added base support for refactoring actions "Move", "Delete", "Rename" and "Find usages" (works for Java projects)
+- added support of showing transitions (renamed to "jumps") between topics on mind maps
+- added support of folders as file links, also now it is possible to define special flag to open link in system defined viewer
+- added support of personal color scheme for every topic
+- links to folders inside project will be focused in explorer (if they don't have flag to be opened in system default viewer)
+- file links to another mind maps have special icons
+- file links to files outbound of project have special badge
+- improved drag and drop for topics, D&D of a topic with CTRL (pressed on start of operation) will make link to the topic in the destination topic
+- improved print feature
 
 1.0.0
 - Initial version
