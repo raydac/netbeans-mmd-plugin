@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb.options;
 
 import com.igormaznitsa.nbmindmap.nb.editor.MMDGraphEditor;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.nbmindmap.nb.explorer.MMKnowledgeSources;
 import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Font;
@@ -94,6 +95,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
     checkBoxUnfoldCollapsedTarget = new javax.swing.JCheckBox();
     checkBoxCopyColorInfoToNewAllowed = new javax.swing.JCheckBox();
+    checkBoxKnowledgeFolderAutogenerationAllowed = new javax.swing.JCheckBox();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
     jLabel3 = new javax.swing.JLabel();
@@ -548,6 +550,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
+    checkBoxKnowledgeFolderAutogenerationAllowed.setText(bundle.getString("MMDCfgPanel.checkBoxKnowledgeFolderAutogenerationAllowed.text")); // NOI18N
+    checkBoxKnowledgeFolderAutogenerationAllowed.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxKnowledgeFolderAutogenerationAllowedActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
@@ -558,7 +567,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(checkboxUseInsideBrowser)
           .addComponent(checkboxRelativePathsForFilesInTheProject)
           .addComponent(checkBoxUnfoldCollapsedTarget)
-          .addComponent(checkBoxCopyColorInfoToNewAllowed))
+          .addComponent(checkBoxCopyColorInfoToNewAllowed)
+          .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed))
         .addContainerGap(100, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
@@ -571,6 +581,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addComponent(checkBoxUnfoldCollapsedTarget)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addComponent(checkBoxCopyColorInfoToNewAllowed)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed)
         .addContainerGap())
     );
 
@@ -652,7 +664,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(buttonAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(23, Short.MAX_VALUE))
+        .addContainerGap(51, Short.MAX_VALUE))
     );
     jPanel6Layout.setVerticalGroup(
       jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -883,6 +895,12 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_checkBoxCopyColorInfoToNewAllowedActionPerformed
 
+  private void checkBoxKnowledgeFolderAutogenerationAllowedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxKnowledgeFolderAutogenerationAllowedActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkBoxKnowledgeFolderAutogenerationAllowedActionPerformed
+
   void load() {
     this.config.loadFrom(NbUtils.getPreferences());
 
@@ -929,6 +947,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.checkboxRelativePathsForFilesInTheProject.setSelected(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true));
       this.checkBoxUnfoldCollapsedTarget.setSelected(NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true));
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true));
+      this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(NbUtils.getPreferences().getBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true));
 
       updateFontButton();
     }
@@ -974,6 +993,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       NbUtils.getPreferences().putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
       NbUtils.getPreferences().putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
       NbUtils.getPreferences().putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
+      NbUtils.getPreferences().putBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
     }
     finally {
       MMDGraphEditor.notifyReloadConfig();
@@ -989,6 +1009,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JButton buttonFont;
   private javax.swing.JCheckBox checkBoxCopyColorInfoToNewAllowed;
   private javax.swing.JCheckBox checkBoxDropShadow;
+  private javax.swing.JCheckBox checkBoxKnowledgeFolderAutogenerationAllowed;
   private javax.swing.JCheckBox checkBoxShowGrid;
   private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;

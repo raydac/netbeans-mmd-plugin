@@ -143,7 +143,8 @@ public final class MindMapPanel extends JPanel {
   private final JTextArea textEditor = new JTextArea();
   private final JPanel textEditorPanel = new JPanel(new BorderLayout(0, 0));
   private transient AbstractElement elementUnderEdit = null;
-
+  private transient int [] pathToPrevTopicBeforeEdit = null;
+  
   private final List<Topic> selectedTopics = new ArrayList<>();
 
   private transient MouseSelectedArea mouseDragSelection = null;
@@ -217,6 +218,19 @@ public final class MindMapPanel extends JPanel {
           endEdit(false);
           if (edited != null && edited.canBeLost()) {
             deleteTopics(edited);
+            if (pathToPrevTopicBeforeEdit!=null) {
+              final int [] path = pathToPrevTopicBeforeEdit;
+              pathToPrevTopicBeforeEdit = null;
+              SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                  final Topic topic = model.findForPositionPath(path);
+                  if (topic!=null){
+                    select(topic, false);
+                  }
+                }
+              });
+            }
           }
         }
       }
@@ -859,6 +873,9 @@ public final class MindMapPanel extends JPanel {
 
   public void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
     if (parent != null) {
+      final Topic currentSelected = getFirstSelected();
+      this.pathToPrevTopicBeforeEdit = currentSelected == null ? null : currentSelected.getPositionPath();
+      
       removeAllSelection();
 
       final Topic newTopic = parent.makeChild("", baseTopic); //NOI18N
@@ -1013,6 +1030,7 @@ public final class MindMapPanel extends JPanel {
   public void endEdit(final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
+        this.pathToPrevTopicBeforeEdit = null;
         final AbstractElement editedElement = this.elementUnderEdit;
         final Topic editedTopic = this.elementUnderEdit.getModel();
         editedElement.setText(this.textEditor.getText());

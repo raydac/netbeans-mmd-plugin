@@ -47,7 +47,7 @@
                       <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="buttonAbout" min="-2" pref="137" max="-2" attributes="0"/>
-                      <EmptySpace pref="23" max="32767" attributes="0"/>
+                      <EmptySpace pref="51" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -695,6 +695,7 @@
                               <Component id="checkboxRelativePathsForFilesInTheProject" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="checkBoxUnfoldCollapsedTarget" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="checkBoxCopyColorInfoToNewAllowed" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkBoxKnowledgeFolderAutogenerationAllowed" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace pref="100" max="32767" attributes="0"/>
                       </Group>
@@ -710,6 +711,8 @@
                           <Component id="checkBoxUnfoldCollapsedTarget" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="checkBoxCopyColorInfoToNewAllowed" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="checkBoxKnowledgeFolderAutogenerationAllowed" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -754,6 +757,16 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxCopyColorInfoToNewAllowedActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="checkBoxKnowledgeFolderAutogenerationAllowed">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.checkBoxKnowledgeFolderAutogenerationAllowed.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxKnowledgeFolderAutogenerationAllowedActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>

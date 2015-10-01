@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ import org.openide.util.WeakListeners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener, DataFilter {
+public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener, DataFilter {
 
   private static final long serialVersionUID = -1360299214288653958L;
 
@@ -49,6 +50,8 @@ final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener,
   
   private static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
 
+  public static final String PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED = "knowledgeFolderGenerationAllowed";
+  
   private final Project project;
   private final Sources projectSources;
   private final ChangeListener changeListener;
@@ -62,6 +65,10 @@ final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener,
     this.changeListener = WeakListeners.change(this, this.projectSources);
   }
 
+  private static boolean isKnowledgeFolderAllowedForCreation(){
+    return NbUtils.getPreferences().getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true);
+  }
+  
   private static SourceGroup[] getSourceGroups(final Project project) {
     final String klazz = project.getClass().getName();
     logger.info("Request sources for project type " + klazz);
@@ -69,11 +76,15 @@ final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener,
     SourceGroup knowledgeSrc = null;
     try {
       FileObject knowledgeFolder = project.getProjectDirectory().getFileObject(KNOWLEDGE_FOLDER_NAME);
-      if (knowledgeFolder == null) {
+      if (knowledgeFolder == null && isKnowledgeFolderAllowedForCreation()) {
         knowledgeFolder = project.getProjectDirectory().createFolder(KNOWLEDGE_FOLDER_NAME);
       }
-      final String rootKnowledgeFolderName = BUNDLE.getString("KnowledgeSourceGroup.displayName");
-      knowledgeSrc = GenericSources.group(project, knowledgeFolder, KNOWLEDGE_FOLDER_NAME, rootKnowledgeFolderName, new ImageIcon(BadgeIcons.BADGED_FOLDER), new ImageIcon(BadgeIcons.BADGED_FOLDER_OPEN));
+      if (knowledgeFolder!=null){
+        final String rootKnowledgeFolderName = BUNDLE.getString("KnowledgeSourceGroup.displayName");
+        knowledgeSrc = GenericSources.group(project, knowledgeFolder, KNOWLEDGE_FOLDER_NAME, rootKnowledgeFolderName, new ImageIcon(BadgeIcons.BADGED_FOLDER), new ImageIcon(BadgeIcons.BADGED_FOLDER_OPEN));
+      }else{
+        logger.info("Knowledge folder is not presented in "+project);
+      }
     }
     catch (IOException ex) {
       logger.error("Can't make source group for knowledge folder", ex);
