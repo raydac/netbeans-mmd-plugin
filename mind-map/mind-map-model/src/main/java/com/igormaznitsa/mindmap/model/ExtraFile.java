@@ -104,7 +104,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
     if (theFilePath.startsWith(thatFilePath)) {
       final String diff = theFilePath.substring(thatFilePath.length());
-      return diff.isEmpty() || diff.startsWith("\\") || diff.startsWith("/") || thatFilePath.endsWith("/") || thatFilePath.endsWith("\\s");
+      return diff.isEmpty() || diff.startsWith("\\") || diff.startsWith("/") || thatFilePath.endsWith("/") || thatFilePath.endsWith("\\");
     }
     else {
       return false;
