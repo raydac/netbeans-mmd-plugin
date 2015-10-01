@@ -1302,7 +1302,7 @@ public final class MindMapPanel extends JPanel {
 
     gfx.setColor(cfg.getJumpLinkColor());
 
-    final float arrowSize = cfg.safeScaleFloatValue(15.0f, 0.2f);
+    final float arrowSize = cfg.safeScaleFloatValue(10.0f*cfg.getJumpLinkWidth(), 0.2f);
 
     for (Topic src : allTopicsWithJumps) {
       final ExtraTopic extra = (ExtraTopic) src.getExtras().get(Extra.ExtraType.TOPIC);
