@@ -15,8 +15,10 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Properties;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -82,13 +84,26 @@ public class ModelUtilsTest {
   public void testMakeFileForPath() throws Exception {
     assertNull(ModelUtils.makeFileForPath(null));
     assertNull(ModelUtils.makeFileForPath(""));
-    assertEquals("/some/who/files/2012-11-02 13.47.10.jpg", ModelUtils.makeFileForPath("file:///some/who/files/2012-11-02 13.47.10.jpg").getAbsolutePath());
-    assertEquals("/some/who/files/2012-11-02 13.47.10.jpg", ModelUtils.makeFileForPath("file:///some/who/files/2012-11-02%2013.47.10.jpg").getAbsolutePath());
-    assertEquals("/some/who/files/main.c++", ModelUtils.makeFileForPath("file:///some/who/files/main.c++").getAbsolutePath());
-    assertEquals("/some/folder/temp/<: ,,,, ... main.c++ >", ModelUtils.makeFileForPath("file:///some/folder/temp/<: ,,,, ... main.c++ >").getAbsolutePath());
-    assertEquals("/some/folder/temp/ :<>?", ModelUtils.makeFileForPath("file:///some/folder/temp/ :<>?").getAbsolutePath());
-    assertEquals("/some/folder&ssd/temp/ :<>?test=jks&lls=1", ModelUtils.makeFileForPath("file:///some/folder&ssd/temp/ :<>?test=jks&lls=1").getAbsolutePath());
-    assertEquals("src/main/java/com/igormaznitsa/nbmindmap/nb/QuickSearchProvider.java", ModelUtils.makeFileForPath("src/main/java/com/igormaznitsa/nbmindmap/nb/QuickSearchProvider.java").getPath());
+
+    assertEquals(new File((File) null, "/some/who/files/2012-11-02 13.47.10.jpg").getCanonicalPath(), ModelUtils.makeFileForPath("file:///some/who/files/2012-11-02 13.47.10.jpg").getAbsolutePath());
+    assertEquals(new File((File) null, "/some/who/files/2012-11-02 13.47.10.jpg").getCanonicalPath(), ModelUtils.makeFileForPath("file:///some/who/files/2012-11-02%2013.47.10.jpg").getAbsolutePath());
+    assertEquals(new File((File) null, "/some/who/files/main.c++").getCanonicalPath(), ModelUtils.makeFileForPath("file:///some/who/files/main.c++").getAbsolutePath());
+
+    assertEquals(new File((File) null, "/some/folder/temp/").getCanonicalPath(), ModelUtils.makeFileForPath("file:///some/folder/temp/").getAbsolutePath());
+
+    if (SystemUtils.IS_OS_LINUX) {
+      assertEquals(new File((File) null, "/some/folder/temp/ :<>?").getCanonicalPath(), ModelUtils.makeFileForPath("file:///some/folder/temp/ :<>?").getAbsolutePath());
+      assertEquals(new File((File) null, "/some/folder&ssd/temp/ :<>?test=jks&lls=1").getCanonicalPath(), ModelUtils.makeFileForPath("file:///some/folder&ssd/temp/ :<>?test=jks&lls=1").getAbsolutePath());
+    }
+    assertEquals("src/main/java/com/igormaznitsa/nbmindmap/nb/QuickSearchProvider.java".replace('/', File.separatorChar), ModelUtils.makeFileForPath("src/main/java/com/igormaznitsa/nbmindmap/nb/QuickSearchProvider.java").getPath());
+  }
+
+  @Test
+  public void testToFile() throws Exception{
+    if (SystemUtils.IS_OS_WINDOWS)
+      assertEquals("P:\\Some text document.txt",new MMapURI("file://P:/Some%20text%20document.txt").asFile(null).getAbsolutePath());
+    else
+      assertEquals("/Some text document.txt",new MMapURI("file:///Some%20text%20document.txt").asFile(null).getAbsolutePath());
   }
   
 }

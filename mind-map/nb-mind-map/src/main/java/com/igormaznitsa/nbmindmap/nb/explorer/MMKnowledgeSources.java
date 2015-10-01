@@ -19,6 +19,7 @@ import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.io.IOException;
+import java.io.SyncFailedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -46,12 +47,12 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
 
   private static final long serialVersionUID = -1360299214288653958L;
 
-  public static final ResourceBundle BUNDLE = ResourceBundle.getBundle ("com/igormaznitsa/nbmindmap/i18n/Bundle");
-  
+  public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+
   private static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
 
   public static final String PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED = "knowledgeFolderGenerationAllowed";
-  
+
   private final Project project;
   private final Sources projectSources;
   private final ChangeListener changeListener;
@@ -65,10 +66,10 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
     this.changeListener = WeakListeners.change(this, this.projectSources);
   }
 
-  private static boolean isKnowledgeFolderAllowedForCreation(){
+  private static boolean isKnowledgeFolderAllowedForCreation() {
     return NbUtils.getPreferences().getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true);
   }
-  
+
   private static SourceGroup[] getSourceGroups(final Project project) {
     final String klazz = project.getClass().getName();
     logger.info("Request sources for project type " + klazz);
@@ -79,11 +80,12 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
       if (knowledgeFolder == null && isKnowledgeFolderAllowedForCreation()) {
         knowledgeFolder = project.getProjectDirectory().createFolder(KNOWLEDGE_FOLDER_NAME);
       }
-      if (knowledgeFolder!=null){
+      if (knowledgeFolder != null) {
         final String rootKnowledgeFolderName = BUNDLE.getString("KnowledgeSourceGroup.displayName");
         knowledgeSrc = GenericSources.group(project, knowledgeFolder, KNOWLEDGE_FOLDER_NAME, rootKnowledgeFolderName, new ImageIcon(BadgeIcons.BADGED_FOLDER), new ImageIcon(BadgeIcons.BADGED_FOLDER_OPEN));
-      }else{
-        logger.info("Knowledge folder is not presented in "+project);
+      }
+      else {
+        logger.info("Knowledge folder is not presented in " + project);
       }
     }
     catch (IOException ex) {
@@ -134,7 +136,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
       final DataFolder folder = getFolder(rootFolder);
       if (folder != null) {
         node = new SourceNode(project, folder, this, key.getDisplayName());
-        if (KNOWLEDGE_FOLDER_NAME.equals(folder.getName())){
+        if (KNOWLEDGE_FOLDER_NAME.equals(folder.getName())) {
           node.setIcons(BadgeIcons.BADGED_FOLDER, BadgeIcons.BADGED_FOLDER_OPEN);
           node.setShortDescription(BUNDLE.getString("KnowledgeSourceGroup.tooltip"));
         }

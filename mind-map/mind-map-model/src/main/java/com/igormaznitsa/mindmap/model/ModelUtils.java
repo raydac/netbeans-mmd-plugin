@@ -23,6 +23,10 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -54,22 +58,22 @@ public enum ModelUtils {
     return true;
   }
 
-  public static Object [] joinArrays(final Object [] ... arrs){
+  public static Object[] joinArrays(final Object[]... arrs) {
     int totalLen = 0;
-    for(final Object [] a : arrs){
+    for (final Object[] a : arrs) {
       totalLen += a.length;
     }
-    
-    final Object [] result = new Object[totalLen];
-    
+
+    final Object[] result = new Object[totalLen];
+
     int pos = 0;
-    for(final Object [] a : arrs){
+    for (final Object[] a : arrs) {
       System.arraycopy(a, 0, result, pos, a.length);
       pos += a.length;
     }
     return result;
   }
-  
+
   public static String makePreBlock(final String text) {
     return "<pre>" + StringEscapeUtils.escapeHtml(text) + "</pre>"; //NOI18N
   }
@@ -273,19 +277,19 @@ public enum ModelUtils {
     }
   }
 
-  public static String escapeURIPath(final String text){
+  public static String escapeURIPath(final String text) {
     final String chars = "% :<>?"; //NOI18N
     String result = text;
     for (final char ch : chars.toCharArray()) {
       result = result.replace(Character.toString(ch), "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH)); //NOI18N
     }
-    
+
     return result;
   }
-  
+
   private static String normalizeFileURI(final String fileUri) {
     final int schemePosition = fileUri.indexOf(':');
-    final String scheme = schemePosition < 0 ? "" : fileUri.substring(0, schemePosition + 1);
+    final String scheme = schemePosition < 0 ? "" : fileUri.substring(0, schemePosition + 1); //NOI18N
     final String chars = " :<>?"; //NOI18N
     String result = fileUri.substring(scheme.length());
     for (final char ch : chars.toCharArray()) {
@@ -301,15 +305,20 @@ public enum ModelUtils {
     try {
       final StringBuilder buffer = new StringBuilder();
 
+      final Path root = path.getRoot();
+      if (root != null) {
+        buffer.append(root.toString().replace('\\', '/'));
+      }
+
       for (final Path p : path) {
-        if (buffer.length() > 0) {
+        if (buffer.length() > 0 && buffer.charAt(buffer.length() - 1) != '/') {
           buffer.append('/');
         }
         buffer.append(encodeForURI(p.toFile().getName()));
       }
 
       if (path.isAbsolute()) {
-        buffer.insert(0, "file:///"); //NOI18N
+        buffer.insert(0, "file://" + (root == null ? "/" : "")); //NOI18N
       }
 
       return new URI(buffer.toString());
@@ -319,18 +328,38 @@ public enum ModelUtils {
     }
   }
 
-  public static File toFile(final URI uri) throws IllegalArgumentException {
-    try {
-      return new File(new URI(uri.getScheme(), null, uri.getHost(), -1, uri.getPath(), null, null));
+  public static File toFile(final URI uri) {
+    final List<String> pathItems = new ArrayList<>();
+
+    final String authority = uri.getAuthority();
+    if (authority != null && !authority.isEmpty()) {
+      pathItems.add(authority);
     }
-    catch (Exception ex) {
-      logger.warn(String.format("Can't convert %s to a file", uri), ex); //NOI18N
+
+    final String[] splittedPath = uri.getPath().split("\\/");
+    boolean separator = false;
+    if (splittedPath.length == 0) {
+      separator = true;
     }
-    final String host = uri.getHost();
-    if (host != null && !host.isEmpty() && "file".equals(uri.getScheme())) { //NOI18N
-      return new File("\\\\" + host + uri.getPath().replace('/', '\\')); //NOI18N
+    else {
+      for (final String s : splittedPath) {
+        if (!s.isEmpty()) {
+          pathItems.add(separator ? File.separatorChar + s : s);
+          separator = false;
+        }
+        else {
+          separator = true;
+        }
+      }
     }
-    return new File(uri);
+
+    if (separator) {
+      pathItems.add(File.separator);
+    }
+
+    final String[] fullArray = pathItems.toArray(new String[pathItems.size()]);
+    final String[] next = Arrays.copyOfRange(fullArray, 1, fullArray.length);
+    return Paths.get(fullArray[0], next).toFile();
   }
 
 }
