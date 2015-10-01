@@ -112,11 +112,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-validator</groupId>
-      <artifactId>commons-validator</artifactId>
-      <version>1.4.1</version>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
       <version>1.7.12</version>
@@ -130,11 +125,6 @@
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-swing-panel</artifactId>
       <version>1.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>net.minidev</groupId>
-      <artifactId>json-smart</artifactId>
-      <version>2.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>

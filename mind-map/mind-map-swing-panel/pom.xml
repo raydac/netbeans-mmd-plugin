@@ -21,9 +21,9 @@
         <optional>true</optional>
       </dependency>
       <dependency>
-        <groupId>net.minidev</groupId>
-        <artifactId>json-smart</artifactId>
-        <version>2.1.1</version>
+        <groupId>com.grack</groupId>
+        <artifactId>nanojson</artifactId>
+        <version>1.0</version>
       </dependency>
     </dependencies>
 </project>

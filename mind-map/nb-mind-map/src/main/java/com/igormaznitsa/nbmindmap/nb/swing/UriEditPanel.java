@@ -22,7 +22,6 @@ import java.net.URISyntaxException;
 import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import org.apache.commons.validator.routines.UrlValidator;
 import org.openide.util.ImageUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +35,7 @@ public final class UriEditPanel extends javax.swing.JPanel {
   private static final long serialVersionUID = -6683682013891751388L;
 
   private static final Logger logger = LoggerFactory.getLogger(UriEditPanel.class);
-  
-  public static final UrlValidator VALIDATOR = UrlValidator.getInstance();
+
   private static final ImageIcon IMAGE_OK = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/tick16.png"));
   private static final ImageIcon IMAGE_BAD = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/cross16.png"));
   private static final ImageIcon IMAGE_QUESTION = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/question16.png"));
@@ -79,7 +77,18 @@ public final class UriEditPanel extends javax.swing.JPanel {
       this.labelValidator.setIcon(IMAGE_QUESTION);
     }
     else {
-      this.labelValidator.setIcon(VALIDATOR.isValid(text) ? IMAGE_OK : IMAGE_BAD);
+      try {
+        final URI uri = URI.create(text);
+        if (uri!=null && uri.getScheme()!=null && uri.getHost()!=null) {
+          this.labelValidator.setIcon(IMAGE_OK);
+        }
+        else {
+          throw new NullPointerException();
+        }
+      }
+      catch (Exception ex) {
+        this.labelValidator.setIcon(IMAGE_BAD);
+      }
     }
   }
 
@@ -129,7 +138,7 @@ public final class UriEditPanel extends javax.swing.JPanel {
   }// </editor-fold>//GEN-END:initComponents
 
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
-    if (evt.getClickCount()>1){
+    if (evt.getClickCount() > 1) {
       try {
         NbUtils.browseURI(new URI(this.getText().trim()), false);
       }

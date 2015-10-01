@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.exporters;
 
+import com.grack.nanojson.JsonStringWriter;
+import com.grack.nanojson.JsonWriter;
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
 import com.igormaznitsa.mindmap.model.Extra;
@@ -37,10 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import javax.swing.ImageIcon;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -75,13 +74,11 @@ public class MindmupExporter extends AbstractMindMapExporter {
 
   private static class State {
 
-    private final JSONObject main = new JSONObject();
-    private final Stack<Object> stack = new Stack<>();
+    private JsonStringWriter json = JsonWriter.string();
     private final Map<String, TopicData> topicsWithId = new HashMap<>();
     private final List<TopicData> topicsContainsJump = new ArrayList<>();
 
     public State() {
-      stack.push(main);
     }
 
     public void processTopic(final int uid, final int id, final Topic topic) {
@@ -104,45 +101,39 @@ public class MindmupExporter extends AbstractMindMapExporter {
       return topicsWithId.get(link.getValue());
     }
 
-    public State start(final String key) {
-      final JSONObject newObject = new JSONObject();
+    public State startObj(final String key) {
+      this.json = this.json.object(key);
+      return this;
+    }
 
-      final Object top = stack.peek();
-      if (top instanceof JSONObject) {
-        ((JSONObject) stack.peek()).put(key, newObject);
-      }
-      else if (top instanceof JSONArray) {
-        ((JSONArray) stack.peek()).add(newObject);
-      }
-      stack.push(newObject);
+    public State startObj() {
+      this.json = this.json.object();
       return this;
     }
 
     public State startArray(final String key) {
-      final JSONArray newArray = new JSONArray();
-      ((JSONObject) stack.peek()).put(key, newArray);
-      stack.push(newArray);
+      this.json = this.json.array(key);
       return this;
     }
 
     public State set(final String key, final String value) {
-      ((JSONObject) stack.peek()).put(key, value);
+      this.json.value(key,value);
       return this;
     }
 
     public State set(final String key, final int value) {
-      ((JSONObject) stack.peek()).put(key, value);
+      this.json.value(key, value);
       return this;
     }
 
     public State end() {
-      stack.pop();
+      this.json = json.end();
       return this;
     }
 
     @Override
     public String toString() {
-      return main.toJSONString();
+      return json.done();
     }
   }
 
@@ -151,7 +142,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
   }
 
   private int writeTopic(final State state, int id, final MindMapPanelConfig cfg, final Topic topic) {
-    state.start(Integer.toString(idCounter));
+    state.startObj(Integer.toString(idCounter));
 
     state.processTopic(idCounter, id, topic);
 
@@ -162,18 +153,18 @@ public class MindmupExporter extends AbstractMindMapExporter {
 
     id = Math.abs(id);
 
-    state.start("ideas"); //NOI18N
+    state.startObj("ideas"); //NOI18N
     for (final Topic t : topic.getChildren()) {
       id = writeTopic(state, id + 1, cfg, t);
     }
     state.end();
 
-    state.start("attr"); //NOI18N
-    state.start("style").set("background", Utils.color2html(getBackgroundColor(cfg, topic),false)).set("color", Utils.color2html(getTextColor(cfg, topic), false)).end(); //NOI18N
+    state.startObj("attr"); //NOI18N
+    state.startObj("style").set("background", Utils.color2html(getBackgroundColor(cfg, topic),false)).set("color", Utils.color2html(getTextColor(cfg, topic), false)).end(); //NOI18N
 
     final String attachment = makeHtmlFromExtras(topic);
     if (attachment != null) {
-      state.start("attachment"); //NOI18N
+      state.startObj("attachment"); //NOI18N
       state.set("contentType", "text/html"); //NOI18N
       state.set("content", attachment); //NOI18N
       state.end();
@@ -214,6 +205,8 @@ public class MindmupExporter extends AbstractMindMapExporter {
   }
 
   private void writeRoot(final State state, final MindMapPanelConfig cfg, final Topic root) {
+    state.startObj();
+    
     if (root == null) {
       state.set("title", ""); //NOI18N
     }
@@ -236,34 +229,36 @@ public class MindmupExporter extends AbstractMindMapExporter {
         }
       }
     }
-    state.start("ideas"); //NOI18N
+    state.startObj("ideas"); //NOI18N
 
-    if (root != null) {
-      state.processTopic(0, 1, root);
-    }
+      if (root != null) {
+        state.processTopic(0, 1, root);
+      }
 
-    int id = 2;
-    for (final Topic right : rightChildren) {
-      id = writeTopic(state, id + 1, cfg, right);
-    }
+      int id = 2;
+      for (final Topic right : rightChildren) {
+        id = writeTopic(state, id + 1, cfg, right);
+      }
 
-    for (final Topic left : leftChildren) {
-      id = writeTopic(state, -(id + 1), cfg, left);
-    }
+      for (final Topic left : leftChildren) {
+        id = writeTopic(state, -(id + 1), cfg, left);
+      }
 
     state.end();
 
-    state.start("attr"); //NOI18N
-    state.start("style").set("background", Utils.color2html(getBackgroundColor(cfg, root), false)).set("color", Utils.color2html(getTextColor(cfg, root), false)).end(); //NOI18N
+    state.startObj("attr"); //NOI18N
+      state.startObj("style")
+              .set("background", Utils.color2html(getBackgroundColor(cfg, root), false))
+              .set("color", Utils.color2html(getTextColor(cfg, root), false))
+            .end(); //NOI18N
 
-    final String attachment = root == null ? null : makeHtmlFromExtras(root);
-    if (attachment != null) {
-      state.start("attachment"); //NOI18N
-      state.set("contentType", "text/html"); //NOI18N
-      state.set("content", attachment); //NOI18N
+      final String attachment = root == null ? null : makeHtmlFromExtras(root);
+      if (attachment != null) {
+      state.startObj("attachment"); //NOI18N
+        state.set("contentType", "text/html"); //NOI18N
+        state.set("content", attachment); //NOI18N
       state.end();
-    }
-
+      }
     state.end();
 
     final List<TopicData> topicsWithJumps = state.getTopicsContainingJump();
@@ -272,17 +267,20 @@ public class MindmupExporter extends AbstractMindMapExporter {
       for (final TopicData src : topicsWithJumps) {
         final TopicData dest = state.findTopic((ExtraTopic) src.getTopic().getExtras().get(Extra.ExtraType.TOPIC));
         if (dest != null) {
-          state.start(""); //NOI18N
-          state.set("ideaIdFrom", src.getID()); //NOI18N
-          state.set("ideaIdTo", dest.getID()); //NOI18N
-          state.start("attr").start("style").set("color", "#FF0000").set("lineStyle", "dashed").end().end(); //NOI18N
+          state.startObj(); //NOI18N
+            state.set("ideaIdFrom", src.getID()); //NOI18N
+            state.set("ideaIdTo", dest.getID()); //NOI18N
+            state.startObj("attr")
+                    .startObj("style")
+                      .set("color", "#FF0000")
+                      .set("lineStyle", "dashed")
+                    .end()
+                  .end(); //NOI18N
           state.end();
         }
       }
-
       state.end();
     }
-
     state.end();
   }
 

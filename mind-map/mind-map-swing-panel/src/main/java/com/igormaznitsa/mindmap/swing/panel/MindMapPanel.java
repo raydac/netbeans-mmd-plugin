@@ -53,7 +53,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class MindMapPanel extends JPanel {
+public class MindMapPanel extends JPanel {
 
   public static final long serialVersionUID = 2783412123454232L;
 
