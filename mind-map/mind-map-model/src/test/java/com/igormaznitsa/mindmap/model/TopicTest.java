@@ -43,6 +43,17 @@ public class TopicTest {
   }
   
   @Test
+  public void testParse_TopicWithURLContainingSpaces() throws Exception {
+    final MindMap mm = new MindMap(null);
+    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n< pre  >Some\ntext</  pre  >\n- LINK\n<pre>  http://www.google.com </pre>\n## Topic2");
+    assertEquals("Topic",topic.getText());
+    assertEquals(1,topic.getChildren().size());
+    assertEquals(2,topic.getExtras().size());
+    assertEquals("Some\ntext",(String)topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+    assertEquals(new URI("http://www.google.com"),((MMapURI)topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
+  }
+  
+  @Test
   public void testParse_OnlyTopicWithExtrasAndAttributes() throws Exception {
     final MindMap mm = new MindMap(null);
     final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n> attr1=`hello`,attr2=``wor`ld``");

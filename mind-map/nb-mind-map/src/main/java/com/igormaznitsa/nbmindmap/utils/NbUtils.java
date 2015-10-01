@@ -349,16 +349,16 @@ public final class NbUtils {
               dsk.edit(file);
               ok = true;
             }
-            catch (IOException ex) {
+            catch (Throwable ex) {
               logger.error("Can't start file edit: " + file, ex);
             }
           }
-          else if (dsk.isSupported(Desktop.Action.OPEN)) {
+          if (!ok && dsk.isSupported(Desktop.Action.OPEN)) {
             try {
               dsk.open(file);
               ok = true;
             }
-            catch (IOException ex) {
+            catch (Throwable ex) {
               logger.error("Can't start file open: " + file, ex);
             }
           }

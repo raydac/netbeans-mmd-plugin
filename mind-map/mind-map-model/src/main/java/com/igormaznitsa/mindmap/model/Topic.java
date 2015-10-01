@@ -245,8 +245,8 @@ public final class Topic implements Serializable, Constants {
         else if (matcher.group(MD_GROUP_PRE) != null) {
           if (topic != null && extraType != null) {
             try {
-              final String groupPre = matcher.group(MD_GROUP_PRE);
-              if (extraType.isStringValid(groupPre)) {
+              final String groupPre = extraType.preprocessString(matcher.group(MD_GROUP_PRE));
+              if (groupPre != null) {
                 topic.setExtra(extraType.parseLoaded(groupPre));
               }
               else {
