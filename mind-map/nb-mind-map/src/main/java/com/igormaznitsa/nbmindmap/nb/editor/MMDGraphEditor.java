@@ -395,10 +395,20 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             else {
               if (fileObj.isFolder()) {
                 if (FileOwnerQuery.getOwner(fileObj) != null) {
-                  final DataObject dobj = DataObject.find(fileObj);
-                  if (dobj instanceof DataFolder) {
-                    if (NbUtils.SelectIn.PROJECTS.select(this, dobj)) {
-                      return;
+                  final DataObject dataObj = DataObject.find(fileObj);
+                  if (dataObj instanceof DataFolder) {
+                    final ProjectManager manager = ProjectManager.getDefault();
+
+                    if (manager.isProject(fileObj)) {
+                      final Project project = manager.findProject(fileObj);
+                      final OpenProjects openProjects = OpenProjects.getDefault();
+                      if (!openProjects.isProjectOpen(project)) {
+                        openProjects.open(new Project[]{project}, false);
+                      }
+
+                      if (NbUtils.SelectIn.PROJECTS.select(this, project.getProjectDirectory())) {
+                        return;
+                      }
                     }
                   }
                 }
@@ -565,6 +575,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   public void drop(final DropTargetDropEvent dtde) {
     DataFlavor dataObjectFlavor = null;
     DataFlavor nodeObjectFlavor = null;
+    DataFlavor projectObjectFlavor = null;
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
       final Class<?> representation = df.getRepresentationClass();
       if (Node.class.isAssignableFrom(representation)) {
@@ -575,14 +586,24 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         dataObjectFlavor = df;
         break;
       }
+      else if (Project.class.isAssignableFrom(representation)) {
+        projectObjectFlavor = df;
+        break;
+      }
     }
 
-    final DataObject dataObject;
+    DataObject dataObject = null;
 
     if (nodeObjectFlavor != null) {
       try {
         final Node theNode = (Node) dtde.getTransferable().getTransferData(nodeObjectFlavor);
         dataObject = theNode.getLookup().lookup(DataObject.class);
+        if (dataObject == null) {
+          final Project proj = theNode.getLookup().lookup(Project.class);
+          if (proj != null) {
+            dataObject = DataObject.find(proj.getProjectDirectory());
+          }
+        }
       }
       catch (Exception ex) {
         logger.error("Can't extract node from dragged element", ex);
@@ -596,6 +617,16 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       }
       catch (Exception ex) {
         logger.error("Can't extract data object from dragged element", ex);
+        dtde.rejectDrop();
+        return;
+      }
+    }
+    else if (projectObjectFlavor != null) {
+      try {
+        dataObject = DataObject.find(((Project) dtde.getTransferable().getTransferData(projectObjectFlavor)).getProjectDirectory());
+      }
+      catch (Exception ex) {
+        logger.error("Can't extract data object from project", ex);
         dtde.rejectDrop();
         return;
       }

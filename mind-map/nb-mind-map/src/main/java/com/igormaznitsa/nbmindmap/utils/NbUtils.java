@@ -29,7 +29,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,6 +37,7 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import org.netbeans.api.project.Project;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.HtmlBrowser;
@@ -60,7 +60,6 @@ public final class NbUtils {
     PROJECTS("org-netbeans-modules-project-ui-SelectInProjects.instance"),
     FILES("org-netbeans-modules-project-ui-SelectInFiles.instance"),
     FAVORITES("org-netbeans-modules-favorites-Select.instance");
-
     private final String actionName;
 
     private SelectIn(final String actionInstance) {
@@ -187,6 +186,13 @@ public final class NbUtils {
     }
     else if (object instanceof Lookup) {
       return ((Lookup) object).lookup(Node.class);
+    } else if (object instanceof Project){
+      try{
+        final DataObject dobj = DataObject.find(((Project)object).getProjectDirectory());
+        return dobj.getNodeDelegate();
+      }catch(DataObjectNotFoundException ex){
+        // to do nothing
+      }
     }
     return null;
   }

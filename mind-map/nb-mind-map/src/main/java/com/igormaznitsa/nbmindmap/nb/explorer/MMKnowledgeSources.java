@@ -19,7 +19,6 @@ import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.io.IOException;
-import java.io.SyncFailedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
