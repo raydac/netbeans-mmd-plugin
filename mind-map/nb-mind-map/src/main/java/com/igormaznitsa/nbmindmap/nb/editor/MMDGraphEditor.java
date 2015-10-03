@@ -380,7 +380,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             if (fileObj == null) {
               logger.warn("Can't find FileObject for " + theFile);
               if (theFile.exists()) {
-                NbUtils.openInExternalEditor(theFile);
+                NbUtils.openInSystemViewer(theFile);
               }
               else {
                 NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), theFile.getAbsolutePath()));
@@ -396,11 +396,13 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
           try {
             if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
-              NbUtils.openInExternalEditor(theFile);
+              NbUtils.openInSystemViewer(theFile);
             }
             else {
+              Project projectOwner = null;
               if (fileObj.isFolder()) {
-                if (FileOwnerQuery.getOwner(fileObj) != null) {
+                projectOwner = FileOwnerQuery.getOwner(fileObj);
+                if (projectOwner != null) {
                   final DataObject dataObj = DataObject.find(fileObj);
                   if (dataObj instanceof DataFolder) {
                     final ProjectManager manager = ProjectManager.getDefault();
@@ -420,23 +422,29 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                 }
 
                 final ProjectManager manager = ProjectManager.getDefault();
+                final OpenProjects openManager = OpenProjects.getDefault();
                 if (manager.isProject(fileObj)) {
                   final Project project = manager.findProject(fileObj);
                   if (project == null) {
                     if (!NbUtils.SelectIn.FAVORITES.select(this, fileObj)) {
-                      NbUtils.openInExternalEditor(theFile);
+                      NbUtils.openInSystemViewer(theFile);
                     }
                   }
                   else {
-                    final OpenProjects openManager = OpenProjects.getDefault();
                     if (!openManager.isProjectOpen(project)) {
                       openManager.open(new Project[]{project}, false, true);
                     }
                   }
                 }
                 else {
+                  if (projectOwner!=null){
+                    openManager.open(new Project[]{projectOwner}, false);
+                    if (!NbUtils.SelectIn.PROJECTS.select(this, fileObj)) {
+                      NbUtils.openInSystemViewer(theFile);
+                    }                    
+                  }else
                   if (!NbUtils.SelectIn.FAVORITES.select(this, fileObj)) {
-                    NbUtils.openInExternalEditor(theFile);
+                    NbUtils.openInSystemViewer(theFile);
                   }
                 }
               }
@@ -446,6 +454,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                 if (openable != null) {
                   openable.open();
                 }
+                NbUtils.SelectIn.PROJECTS.select(this, fileObj);
               }
             }
           }
@@ -598,7 +607,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       }
     }
 
-    DataObject dataObject = null;
+    DataObject dataObject;
 
     if (nodeObjectFlavor != null) {
       try {

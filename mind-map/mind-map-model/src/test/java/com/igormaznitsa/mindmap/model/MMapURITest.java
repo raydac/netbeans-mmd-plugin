@@ -74,7 +74,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_Linux_Uri() throws Exception {
+  public void testCreate_Linux_Uri_NoProps() throws Exception {
     if (SystemUtils.IS_OS_LINUX) {
       MMapURI uri = new MMapURI(new URI("file:///K%C3%B5ik/v%C3%B5i/mitte/midagi.txt"));
       assertEquals("file:///K%C3%B5ik/v%C3%B5i/mitte/midagi.txt", uri.asString(false, false));
@@ -95,7 +95,29 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_Windows_Uri() throws Exception {
+  public void testCreate_Linux_Uri_Props() throws Exception {
+    if (SystemUtils.IS_OS_LINUX) {
+      MMapURI uri = new MMapURI(new URI("file:///K%C3%B5ik/v%C3%B5i/mitte/midagi.txt?one=two"));
+      assertEquals("two",uri.getParameters().getProperty("one"));
+      assertEquals("file:///K%C3%B5ik/v%C3%B5i/mitte/midagi.txt?one=two", uri.asString(false, true));
+      assertEquals(new File("/Kõik/või/mitte/midagi.txt"), uri.asFile(null));
+      assertTrue(uri.isAbsolute());
+      assertFalse(uri.getParameters().isEmpty());
+
+      uri = new MMapURI(new URI("/some/test"));
+      assertEquals("/some/test", uri.asString(false, false));
+      assertFalse(uri.isAbsolute());
+      assertTrue(uri.getParameters().isEmpty());
+
+      uri = new MMapURI(new URI("/some/test?hello=1234"));
+      assertEquals("/some/test?hello=1234", uri.asString(false, true));
+      assertFalse(uri.isAbsolute());
+      assertEquals(1, uri.getParameters().size());
+    }
+  }
+
+  @Test
+  public void testCreate_Windows_Uri_NoProps() throws Exception {
     if (SystemUtils.IS_OS_WINDOWS) {
       MMapURI uri = new MMapURI(new URI("file://C:/K%C3%B5ik/v%C3%B5i/mitte/midagi.txt"));
       assertEquals("file://C:/K%C3%B5ik/v%C3%B5i/mitte/midagi.txt", uri.asString(false, false));
@@ -103,6 +125,28 @@ public class MMapURITest {
       assertTrue(uri.isAbsolute());
       assertTrue(uri.getParameters().isEmpty());
 
+      uri = new MMapURI(new URI("/some/test"));
+      assertEquals("/some/test", uri.asString(false, false));
+      assertFalse(uri.isAbsolute());
+      assertTrue(uri.getParameters().isEmpty());
+
+      uri = new MMapURI(new URI("/some/test?hello=1234"));
+      assertEquals("/some/test?hello=1234", uri.asString(false, true));
+      assertFalse(uri.isAbsolute());
+      assertEquals(1, uri.getParameters().size());
+    }
+  }
+
+  @Test
+  public void testCreate_Windows_Uri_Props() throws Exception {
+    if (SystemUtils.IS_OS_WINDOWS) {
+      MMapURI uri = new MMapURI(new URI("file://C:/K%C3%B5ik/v%C3%B5i/mitte/midagi.txt?one=two"));
+      assertEquals("file://C:/K%C3%B5ik/v%C3%B5i/mitte/midagi.txt?one=two", uri.asString(false, true));
+      assertEquals(new File("C:\\Kõik\\või\\mitte\\midagi.txt"), uri.asFile(null));
+      assertTrue(uri.isAbsolute());
+      assertFalse(uri.getParameters().isEmpty());
+      assertEquals("two",uri.getParameters().getProperty("one"));
+      
       uri = new MMapURI(new URI("/some/test"));
       assertEquals("/some/test", uri.asString(false, false));
       assertFalse(uri.isAbsolute());

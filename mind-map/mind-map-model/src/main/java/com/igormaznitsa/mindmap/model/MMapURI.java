@@ -63,7 +63,9 @@ public class MMapURI implements Serializable {
       this.parameters = ModelUtils.extractQueryPropertiesFromURI(uri);
       if (this.fileUriFlag) {
         try {
-          preparedURI = new URI(uri.getScheme(), null, extractHost(uri), -1, uri.getPath(), null, null);
+          final String uriAsString = uri.toString();
+          final int queryStart = uriAsString.lastIndexOf('?');
+          preparedURI = new URI(queryStart >= 0 ? uriAsString.substring(0,queryStart) : uriAsString);
         }
         catch (URISyntaxException ex) {
           throw new Error("Unexpected error", ex);

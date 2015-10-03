@@ -343,29 +343,20 @@ public final class NbUtils {
     }
   }
 
-  public static void openInExternalEditor(final File file) {
+  public static void openInSystemViewer(final File file) {
     final Runnable startEdit = new Runnable() {
       @Override
       public void run() {
         boolean ok = false;
         if (Desktop.isDesktopSupported()) {
           final Desktop dsk = Desktop.getDesktop();
-          if (dsk.isSupported(Desktop.Action.EDIT)) {
-            try {
-              dsk.edit(file);
-              ok = true;
-            }
-            catch (Throwable ex) {
-              logger.error("Can't start file edit: " + file, ex);
-            }
-          }
-          if (!ok && dsk.isSupported(Desktop.Action.OPEN)) {
+          if (dsk.isSupported(Desktop.Action.OPEN)) {
             try {
               dsk.open(file);
               ok = true;
             }
             catch (Throwable ex) {
-              logger.error("Can't start file open: " + file, ex);
+              logger.error("Can't open file in system viewer : " + file, ex);//NOI18N
             }
           }
         }
@@ -373,14 +364,21 @@ public final class NbUtils {
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-              NbUtils.msgError("Can't open file to edit! See the log!");
+              NbUtils.msgError("Can't open file in system viewer! See the log!");//NOI18N
               Toolkit.getDefaultToolkit().beep();
             }
           });
         }
       }
     };
-    final Thread thr = new Thread(startEdit, " MMDStartFileEdit");
+    final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
+    thr.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(final Thread t, final Throwable e) {
+        logger.error("Detected uncaught exception in openInSystemViewer() for file " + file, e);
+      }
+    });
+
     thr.setDaemon(true);
     thr.start();
   }
