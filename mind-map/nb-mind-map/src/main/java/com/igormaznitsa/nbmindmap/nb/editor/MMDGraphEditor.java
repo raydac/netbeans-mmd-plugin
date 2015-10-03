@@ -77,6 +77,7 @@ import org.netbeans.spi.print.PrintProvider;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.filesystems.URLMapper;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObject;
 import org.openide.nodes.Node;
@@ -373,10 +374,17 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         case FILE: {
           final FileObject fileObj;
           final MMapURI uri = (MMapURI) extra.getValue();
+          final File theFile = uri.asFile(this.editorSupport.getProjectDirectory());
           try {
-            fileObj = FileUtil.toFileObject(uri.asFile(this.editorSupport.getProjectDirectory()));
+            fileObj = FileUtil.toFileObject(theFile);
             if (fileObj == null) {
-              NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), uri.toString()));
+              logger.warn("Can't find FileObject for " + theFile);
+              if (theFile.exists()) {
+                NbUtils.openInExternalEditor(theFile);
+              }
+              else {
+                NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), theFile.getAbsolutePath()));
+              }
               return;
             }
           }
@@ -387,8 +395,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
           }
 
           try {
-            final File theFile = uri.asFile(this.editorSupport.getProjectDirectory());
-
             if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
               NbUtils.openInExternalEditor(theFile);
             }
