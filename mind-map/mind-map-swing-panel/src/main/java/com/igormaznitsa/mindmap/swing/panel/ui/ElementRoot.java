@@ -64,8 +64,7 @@ public final class ElementRoot extends AbstractElement {
 
   private Shape makeShape(final MindMapPanelConfig cfg, final float x, final float y) {
     final float round = cfg.safeScaleFloatValue(10.0f, 0.1f);
-    final float border = cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.5f);
-    return new RoundRectangle2D.Float(x, y, (float) this.bounds.getWidth()-border, (float) this.bounds.getHeight()-border, round, round);
+    return new RoundRectangle2D.Float(x, y, (float) this.bounds.getWidth(), (float) this.bounds.getHeight(), round, round);
   }
 
   @Override

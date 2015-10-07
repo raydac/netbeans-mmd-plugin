@@ -1277,13 +1277,17 @@ public class MindMapPanel extends JPanel {
       g.setColor(cfg.getSelectLineColor());
       final Stroke dashed = new BasicStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(), 0.1f), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{cfg.safeScaleFloatValue(1.0f, 0.1f), cfg.safeScaleFloatValue(4.0f, 0.1f)}, 0);
       g.setStroke(dashed);
-      final double selectLineGap = cfg.getSelectLineGap() * cfg.getScale();
-      final double dblLineGap = selectLineGap * 2.0d;
+      final double selectLineGap = (double)cfg.safeScaleFloatValue(cfg.getSelectLineGap(),0.05f);
+      final double selectLineGapX2 = selectLineGap +  selectLineGap;
 
       for (final Topic s : selectedTopics) {
         final AbstractElement e = (AbstractElement) s.getPayload();
         if (e != null) {
-          g.drawRect((int) Math.round(e.getBounds().getX() - selectLineGap), (int) Math.round(e.getBounds().getY() - selectLineGap), (int) Math.round(e.getBounds().getWidth() + dblLineGap), (int) Math.round(e.getBounds().getHeight() + dblLineGap));
+          final int x = (int) Math.round(e.getBounds().getX() - selectLineGap);
+          final int y = (int) Math.round(e.getBounds().getY() - selectLineGap);
+          final int w = (int) Math.round(e.getBounds().getWidth() + selectLineGapX2);
+          final int h = (int) Math.round(e.getBounds().getHeight()+ selectLineGapX2);
+          g.drawRect(x,y,w,h);
         }
       }
     }

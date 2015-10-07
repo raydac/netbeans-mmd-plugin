@@ -14,8 +14,8 @@
 
   <modules>
     <module>mind-map-model</module>
-    <module>nb-mind-map</module>
     <module>mind-map-swing-panel</module>
+    <module>nb-mind-map</module>
   </modules>
 
   <developers>

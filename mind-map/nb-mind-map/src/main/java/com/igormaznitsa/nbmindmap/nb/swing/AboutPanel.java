@@ -93,7 +93,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(textLabel)
+          .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(labelIcon)
             .addGap(0, 0, Short.MAX_VALUE)))

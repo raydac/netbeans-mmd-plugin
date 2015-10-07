@@ -38,13 +38,6 @@ public class ElementLevelOther extends ElementLevelFirst {
     return new ElementLevelOther(this);
   }
   
-  
-  @Override
-  protected Shape makeShape(final MindMapPanelConfig cfg, final float x, final float y) {
-    final float border = cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.5f);
-    return new Rectangle2D.Float(x, y, (float) this.bounds.getWidth() - border, (float) this.bounds.getHeight() - border);
-  }
-
   @Override
   public void drawComponent(final Graphics2D g, final MindMapPanelConfig cfg) {
     g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f)));

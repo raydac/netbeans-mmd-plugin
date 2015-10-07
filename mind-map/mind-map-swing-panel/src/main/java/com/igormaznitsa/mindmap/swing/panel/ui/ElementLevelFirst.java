@@ -39,8 +39,7 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
   }
 
   protected Shape makeShape(final MindMapPanelConfig cfg, final float x, final float y) {
-    final float border = cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.5f);
-    return new Rectangle2D.Float(x, y, (float) this.bounds.getWidth() - border, (float) this.bounds.getHeight() - border);
+    return new Rectangle2D.Float(x, y, (float) this.bounds.getWidth(), (float) this.bounds.getHeight());
   }
 
   @Override
