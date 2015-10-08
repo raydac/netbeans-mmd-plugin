@@ -308,7 +308,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(colorChooserGridColor, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(colorChooserPaperColor, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(89, Short.MAX_VALUE))
     );
 
     jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {colorChooserGridColor, colorChooserPaperColor});
@@ -593,7 +593,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(checkBoxUnfoldCollapsedTarget)
           .addComponent(checkBoxCopyColorInfoToNewAllowed)
           .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(48, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -688,6 +688,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addComponent(buttonAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
+
+    jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jPanel1, jPanel3, jPanel4, jPanel5});
+
     jPanel6Layout.setVerticalGroup(
       jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel6Layout.createSequentialGroup()

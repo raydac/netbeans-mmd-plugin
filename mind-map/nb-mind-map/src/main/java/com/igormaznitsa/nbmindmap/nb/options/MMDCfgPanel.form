@@ -34,10 +34,10 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jPanel5" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jPanel4" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jPanel3" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jPanel5" linkSize="18" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jPanel4" linkSize="18" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jPanel3" linkSize="18" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jPanel1" linkSize="18" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
@@ -317,7 +317,7 @@
                               <Component id="colorChooserGridColor" linkSize="5" min="-2" pref="165" max="-2" attributes="0"/>
                               <Component id="colorChooserPaperColor" linkSize="5" min="-2" pref="165" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="89" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -721,7 +721,7 @@
                               <Component id="checkBoxCopyColorInfoToNewAllowed" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="checkBoxKnowledgeFolderAutogenerationAllowed" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="48" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
