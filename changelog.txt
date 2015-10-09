@@ -1,16 +1,15 @@
-1.1.0
-- minor bugfixing and refactoring
-- minimal allowed Java version updated to 1.7
-- added "Knowledge" view to projects, all related items saved in generated .projectKnowledge folder (the feature can be disabled)
+1.1.0 (09-oct-2015)
+- minor bugfix and refactoring
+- minimal Java version updated to 1.7+
+- added "Knowledge" view to projects, it shows content of the .projectKnowledge project folder (the feature can be disabled through "Options")
 - added base support for refactoring actions "Move", "Delete", "Rename" and "Find usages" (works for Java projects)
-- added support of showing transitions (renamed to "jumps") between topics on mind maps
-- added support of folders as file links, also now it is possible to define special flag to open link in system defined viewer
-- added support of personal color scheme for every topic
-- links to folders inside project will be focused in explorer (if they don't have flag to be opened in system default viewer)
-- file links to another mind maps have special icons
-- file links to files outbound of project have special badge
-- improved drag and drop for topics, D&D of a topic with CTRL (pressed on start of operation) will make link to the topic in the destination topic
-- improved print feature
+- added support of showing transitions (which are renamed to "jumps") between topics on mind maps as arrowed lines
+- added support of folders in file links, also now it is possible to define special flag to open a file link in the default system viewer
+- added support of colorization for every topic
+- file links to another mind maps are shown as NB MindMap icons
+- file links to files with absolute path have special badge
+- improved drag and drop for topics, D&D of a topic with CTRL (pressed on start of operation) will make link to the dragged topic
+- improved print support
 
-1.0.0
+1.0.0 (06-sep-2015)
 - Initial version
