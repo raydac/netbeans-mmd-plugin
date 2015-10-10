@@ -3,6 +3,23 @@
 # Introduction
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
+# Changelog
+__1.1.0 (09-oct-2015)__
+- minor bugfix and refactoring
+- minimal Java version updated to 1.7+
+- added "Knowledge" view to projects, it shows content of the .projectKnowledge project folder (the feature can be disabled through "Options")
+- added base support for refactoring actions "Move", "Delete", "Rename" and "Find usages" (works for Java projects)
+- added support of transitions show (which are renamed to "jumps") between topics on mind maps as arrowed lines
+- added support of folders in file links, also now it is possible to define special flag to open a file link in the default system viewer
+- added support of colorization for every topic
+- file links to another mind maps are shown as NB MindMap icons
+- file links to files with absolute path have special badge
+- improved drag and drop for topics, D&D of a topic with CTRL (pressed on start of operation) will make link to the dragged topic
+- improved print support  
+
+__1.0.0 (06-sep-2015)__
+- Initial version  
+
 # Implementation
 Because my main programming tool is [NetBeans IDE](https://netbeans.org/), I have developed plugin for the IDE. It is compatible with Java 1.7+ and NetBeans 7.4+.  
 ![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshot1.png)  
