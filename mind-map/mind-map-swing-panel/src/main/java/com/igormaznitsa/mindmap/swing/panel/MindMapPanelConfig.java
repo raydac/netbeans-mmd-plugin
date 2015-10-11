@@ -61,6 +61,7 @@ public final class MindMapPanelConfig implements Serializable {
   private Color selectLineColor = Color.ORANGE;
   private Color jumpLinkColor = Color.CYAN;
 
+  private float shadowOffset = 5.0f;
   private float elementBorderWidth = 1.0f;
   private float collapsatorBorderWidth = 1.0f;
   private float connectorWidth = 1.5f;
@@ -511,6 +512,14 @@ public final class MindMapPanelConfig implements Serializable {
     return this.collapsatorBorderWidth;
   }
 
+  public float getShadowOffset(){
+    return this.shadowOffset;
+  }
+  
+  public void setShadowOffset(final float value){
+    this.shadowOffset = value;
+  }
+  
   public void setCollapsatorBorderWidth(final float width) {
     this.collapsatorBorderWidth = width;
     notifyCfgListenersAboutChange();

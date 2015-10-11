@@ -19,7 +19,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -51,11 +50,11 @@ public class Utils {
     RENDERING_HINTS.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
   }
 
-  public static void prepareGraphicsForQuality(final Graphics2D gfx) {
+  public static void prepareGraphicsForQuality (final Graphics2D gfx) {
     gfx.setRenderingHints(RENDERING_HINTS);
   }
 
-  public static Topic[] getLeftToRightOrderedChildrens(final Topic topic) {
+  public static Topic[] getLeftToRightOrderedChildrens (final Topic topic) {
     final List<Topic> result = new ArrayList<>();
     if (topic.getTopicLevel() == 0) {
       for (final Topic t : topic.getChildren()) {
@@ -75,13 +74,13 @@ public class Utils {
     return result.toArray(new Topic[result.size()]);
   }
 
-  public static void setAttribute(final String name, final String value, final Topic[] topics) {
+  public static void setAttribute (final String name, final String value, final Topic[] topics) {
     for (final Topic t : topics) {
       t.setAttribute(name, value);
     }
   }
 
-  public static Color html2color(final String str, final boolean hasAlpha) {
+  public static Color html2color (final String str, final boolean hasAlpha) {
     Color result = null;
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
@@ -94,7 +93,7 @@ public class Utils {
     return result;
   }
 
-  public static String color2html(final Color color, final boolean hasAlpha) {
+  public static String color2html (final Color color, final boolean hasAlpha) {
     if (color == null) {
       return null;
     }
@@ -123,18 +122,18 @@ public class Utils {
     return buffer.toString();
   }
 
-  public static String getFirstLine(final String text) {
+  public static String getFirstLine (final String text) {
     return text.replace("\r", "").split("\\n")[0]; //NOI18N
   }
 
-  public static String makeShortTextVersion(String text, final int maxLength) {
+  public static String makeShortTextVersion (String text, final int maxLength) {
     if (text.length() > maxLength) {
       text = text.substring(0, maxLength) + "..."; //NOI18N
     }
     return text;
   }
 
-  public static String[] breakToLines(final String text) {
+  public static String[] breakToLines (final String text) {
     final int lineNum = numberOfLines(text);
     final String[] result = new String[lineNum];
     final StringBuilder line = new StringBuilder();
@@ -154,7 +153,7 @@ public class Utils {
     return result;
   }
 
-  public static int numberOfLines(final String text) {
+  public static int numberOfLines (final String text) {
     int result = 1;
     for (int i = 0; i < text.length(); i++) {
       if (text.charAt(i) == '\n') {
@@ -164,7 +163,7 @@ public class Utils {
     return result;
   }
 
-  public static Point2D findRectEdgeIntersection(final Rectangle2D rect, final double outboundX, final double outboundY) {
+  public static Point2D findRectEdgeIntersection (final Rectangle2D rect, final double outboundX, final double outboundY) {
     final int detectedSide = rect.outcode(outboundX, outboundY);
 
     if ((detectedSide & (Rectangle2D.OUT_TOP | Rectangle2D.OUT_BOTTOM)) != 0) {
@@ -204,23 +203,24 @@ public class Utils {
     return null;
   }
 
-  public static Image renderWithTransparency(final float opacity, final AbstractElement element, final MindMapPanelConfig config) {
+  public static Image renderWithTransparency (final float opacity, final AbstractElement element, final MindMapPanelConfig config) {
     final AbstractElement cloned = element.makeCopy();
     final Rectangle2D bounds = cloned.getBounds();
-    
-    final int imageWidth = (int)bounds.getWidth();
-    final int imageHeight = (int)bounds.getHeight();
-    
-    bounds.setRect(0.0d, 0.0d, imageWidth, imageHeight);
-    
+
+    final float increase = config.safeScaleFloatValue(config.getElementBorderWidth() + config.getShadowOffset(), 0.0f);
+    final int imageWidth = (int) Math.round(bounds.getWidth() + increase);
+    final int imageHeight = (int) Math.round(bounds.getHeight() + increase);
+
+    bounds.setRect(0.0d, 0.0d, bounds.getWidth(), bounds.getHeight());
+
     final BufferedImage result = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
-    
-    for(int y=0;y<imageHeight;y++){
-      for(int x=0;x<imageWidth;x++){
+
+    for (int y = 0; y < imageHeight; y++) {
+      for (int x = 0; x < imageWidth; x++) {
         result.setRGB(x, y, 0);
       }
     }
-    
+
     final Graphics2D gfx = (Graphics2D) result.createGraphics();
     try {
       prepareGraphicsForQuality(gfx);
@@ -231,23 +231,31 @@ public class Utils {
     }
 
     int alpha;
-    if (opacity<=0.0f){
+    if (opacity <= 0.0f) {
       alpha = 0x00;
-    }else if (opacity>=1.0f){
-      alpha = 0xFF;
-    }else{
-      alpha = Math.round(0xFF*opacity);
     }
-    
-    alpha<<=24;
-    
+    else if (opacity >= 1.0f) {
+      alpha = 0xFF;
+    }
+    else {
+      alpha = Math.round(0xFF * opacity);
+    }
+
+    alpha <<= 24;
+
     for (int y = 0; y < imageHeight; y++) {
       for (int x = 0; x < imageWidth; x++) {
-        result.setRGB(x, y, (result.getRGB(x, y) & 0xFFFFFF)|alpha);
+        final int curAlpha = result.getRGB(x, y) >>> 24;
+        if (curAlpha == 0xFF) {
+          result.setRGB(x, y, (result.getRGB(x, y) & 0xFFFFFF) | alpha);
+        }
+        else if (curAlpha != 0x00) {
+          final int calculated = Math.round(curAlpha * opacity) << 24;
+          result.setRGB(x, y, (result.getRGB(x, y) & 0xFFFFFF) | calculated);
+        }
       }
     }
-    
-    
+
     return result;
   }
 

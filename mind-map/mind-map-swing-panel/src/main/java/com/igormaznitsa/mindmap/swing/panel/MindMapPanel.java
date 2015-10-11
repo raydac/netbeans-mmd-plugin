@@ -374,7 +374,7 @@ public class MindMapPanel extends JPanel {
             e.consume();
           }
           else {
-            endEdit(false);
+            endEdit(elementUnderEdit!=null);
             mouseDragSelection = null;
           }
         }
@@ -504,7 +504,7 @@ public class MindMapPanel extends JPanel {
           draggedElement = null;
 
           if (!e.isConsumed() && e.isControlDown()) {
-            endEdit(false);
+            endEdit(elementUnderEdit != null);
 
             setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), 10.0d)));
 
@@ -1033,7 +1033,12 @@ public class MindMapPanel extends JPanel {
         this.pathToPrevTopicBeforeEdit = null;
         final AbstractElement editedElement = this.elementUnderEdit;
         final Topic editedTopic = this.elementUnderEdit.getModel();
-        editedElement.setText(this.textEditor.getText());
+        
+        final String oldText = editedElement.getText();
+        final String newText = this.textEditor.getText();
+        if (!oldText.equals(newText)){
+          editedElement.setText(newText);
+        }
         this.textEditorPanel.setVisible(false);
         updateView(true);
         fireNotificationEnsureTopicVisibility(editedTopic);

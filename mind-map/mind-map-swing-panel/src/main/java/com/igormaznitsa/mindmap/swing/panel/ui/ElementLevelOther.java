@@ -46,7 +46,7 @@ public class ElementLevelOther extends ElementLevelFirst {
 
     if (cfg.isDropShadow()) {
       g.setColor(cfg.getShadowColor());
-      final float offset = cfg.safeScaleFloatValue(5.0f, 0.1f);
+      final float offset = cfg.safeScaleFloatValue(cfg.getShadowOffset(), 0.0f);
       g.fill(makeShape(cfg, offset, offset));
     }
 

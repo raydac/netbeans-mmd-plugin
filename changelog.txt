@@ -1,3 +1,6 @@
+1.1.1
+- Improved focus loosing of topic text editor, now the editing text saved if editor lost focus
+
 1.1.0 (09-oct-2015)
 - minor bugfix and refactoring
 - minimal Java version updated to 1.7+
