@@ -224,7 +224,7 @@ public class Utils {
     final Graphics2D gfx = (Graphics2D) result.createGraphics();
     try {
       prepareGraphicsForQuality(gfx);
-      cloned.doPaint(gfx, config);
+      cloned.doPaint(gfx, config, false);
     }
     finally {
       gfx.dispose();

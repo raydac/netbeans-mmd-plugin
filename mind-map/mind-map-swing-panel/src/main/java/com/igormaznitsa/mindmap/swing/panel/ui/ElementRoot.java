@@ -68,7 +68,7 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public void drawComponent(final Graphics2D g, final MindMapPanelConfig cfg) {
+  public void drawComponent(final Graphics2D g, final MindMapPanelConfig cfg, final boolean drawCollapsator) {
     g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f)));
 
     final Shape shape = makeShape(cfg, 0f, 0f);

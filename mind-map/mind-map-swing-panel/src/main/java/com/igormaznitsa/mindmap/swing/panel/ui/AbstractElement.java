@@ -135,7 +135,7 @@ public abstract class AbstractElement {
     return this.bounds;
   }
 
-  public final void doPaint(final Graphics2D g, final MindMapPanelConfig cfg) {
+  public final void doPaint(final Graphics2D g, final MindMapPanelConfig cfg, final boolean drawCollapsator) {
     final Graphics2D gfx = (Graphics2D) g.create();
     try {
       if (this.hasChildren() && !isCollapsed()) {
@@ -146,12 +146,12 @@ public abstract class AbstractElement {
 
       if (clip == null) {
         gfx.translate(this.bounds.getX(), this.bounds.getY());
-        drawComponent(gfx, cfg);
+        drawComponent(gfx, cfg, drawCollapsator);
       }
       else {
         if (clip.intersects(this.bounds)) {
           gfx.translate(this.bounds.getX(), this.bounds.getY());
-          drawComponent(gfx, cfg);
+          drawComponent(gfx, cfg, drawCollapsator);
         }
       }
     }
@@ -176,7 +176,7 @@ public abstract class AbstractElement {
     return compo;
   }
 
-  public abstract void drawComponent(Graphics2D g, MindMapPanelConfig cfg);
+  public abstract void drawComponent(Graphics2D g, MindMapPanelConfig cfg, boolean drawCollapsator);
 
   public abstract void drawConnector(Graphics2D g, Rectangle2D source, Rectangle2D destination, boolean leftDirection, MindMapPanelConfig cfg);
 

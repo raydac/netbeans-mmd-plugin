@@ -1408,7 +1408,7 @@ public class MindMapPanel extends JPanel {
   }
 
   private static void paintTopic(final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {
-    ((AbstractElement) topic.getPayload()).doPaint(gfx, cfg);
+    ((AbstractElement) topic.getPayload()).doPaint(gfx, cfg, true);
   }
 
   private static void setElementSizesForElementAndChildren(final Graphics2D gfx, final MindMapPanelConfig cfg, final Topic topic, final int level) {
