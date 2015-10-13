@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
@@ -90,15 +91,15 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   public static boolean isLeftSidedTopic(final Topic t) {
-    return "true".equals(t.getAttribute("leftSide"));//NOI18N
+    return "true".equals(t.getAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText()));
   }
 
   public static void makeTopicLeftSided(final Topic topic, final boolean left) {
     if (left) {
-      topic.setAttribute("leftSide", "true");//NOI18N
+      topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), "true");//NOI18N
     }
     else {
-      topic.setAttribute("leftSide", null);//NOI18N
+      topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), null);
     }
   }
 

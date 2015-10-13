@@ -22,6 +22,7 @@ public enum StandardTopicAttribute {
   ATTR_BORDER_COLOR("borderColor"),
   ATTR_FILL_COLOR("fillColor"),
   ATTR_TEXT_COLOR("textColor"),
+  ATTR_LEFTSIDE("leftSide"),
   ATTR_COLLAPSED("collapsed");
   
   private final String textName;
