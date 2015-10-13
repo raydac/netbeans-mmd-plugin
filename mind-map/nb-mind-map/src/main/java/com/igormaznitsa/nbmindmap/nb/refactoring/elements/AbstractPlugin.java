@@ -176,7 +176,20 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
     else {
       theProject = project;
     }
-    final File projectFolder = FileUtil.toFile(theProject.getProjectDirectory());
+    
+    if (theProject == null){
+      logger.warn("Request process file object without a project as the owner : "+fileObject);
+      return null;
+    }
+    
+    final FileObject projectDirectory = theProject.getProjectDirectory();
+    
+    if (projectDirectory == null){
+      logger.warn("Request process file object in a project which doesn't have folder : " + fileObject+", project : "+project);
+      return null;
+    }
+    
+    final File projectFolder = FileUtil.toFile(projectDirectory);
 
     Problem result = processFile(theProject, level, projectFolder, fileObject);
     level++;
