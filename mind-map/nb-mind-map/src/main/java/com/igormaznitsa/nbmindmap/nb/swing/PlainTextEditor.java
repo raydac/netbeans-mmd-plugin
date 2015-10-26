@@ -119,6 +119,8 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     final JEditorPane editor = new JEditorPane();
     editor.setEditorKit(getEditorKit());
     this.document = Utilities.getDocument(editor);
+
+    setText(text);
     
     final Preferences docPreferences = CodeStylePreferences.get(this.document).getPreferences();
     this.oldWrapping = Wrapping.findFor(docPreferences.get(SimpleValueNames.TEXT_LINE_WRAP, "none"));
@@ -163,7 +165,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
   }
 
   private void updateBottomPanel () {
-    this.labelWrapMode.setText("Wrap : " + this.wrapping.getDisplay());
+    this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
   }
 
   private void setText (final String text) {
