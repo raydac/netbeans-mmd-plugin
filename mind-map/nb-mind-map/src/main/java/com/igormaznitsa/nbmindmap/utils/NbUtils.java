@@ -279,11 +279,15 @@ public final class NbUtils {
 
   public static String editText(final String title, final String text) {
     final PlainTextEditor textEditor = new PlainTextEditor(text);
+    try{
     if (plainMessageOkCancel(title, textEditor)) {
       return textEditor.getText();
     }
     else {
       return null;
+    }
+    }finally{
+      textEditor.dispose();
     }
   }
 

@@ -183,6 +183,22 @@
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-editor-settings</artifactId>
+      <version>${nb.platform}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-editor-lib2</artifactId>
+      <version>${nb.platform}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.netbeans.api</groupId>
+        <artifactId>org-netbeans-modules-editor-indent</artifactId>
+        <version>${nb.platform}</version>
+        <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-core-multiview</artifactId>
       <version>${nb.platform}</version>
     </dependency>
