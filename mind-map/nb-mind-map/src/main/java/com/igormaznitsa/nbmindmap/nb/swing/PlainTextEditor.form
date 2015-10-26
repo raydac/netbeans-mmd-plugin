@@ -138,6 +138,11 @@
         <Property name="alignment" type="int" value="2"/>
       </Layout>
       <SubComponents>
+        <Component class="javax.swing.JLabel" name="labelCursorPos">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="...:..." noResource="true"/>
+          </Properties>
+        </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator2">
           <Properties>
             <Property name="orientation" type="int" value="1"/>

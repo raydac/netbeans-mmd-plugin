@@ -19,6 +19,7 @@ import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -31,10 +32,14 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
+import javax.swing.text.JTextComponent;
 import org.apache.commons.io.FileUtils;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.editor.BaseDocument;
@@ -46,7 +51,7 @@ import org.openide.text.NbDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class PlainTextEditor extends javax.swing.JPanel {
+public final class PlainTextEditor extends javax.swing.JPanel implements CaretListener {
 
   private enum Wrapping {
 
@@ -121,7 +126,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     this.document = Utilities.getDocument(editor);
 
     setText(text);
-    
+
     final Preferences docPreferences = CodeStylePreferences.get(this.document).getPreferences();
     this.oldWrapping = Wrapping.findFor(docPreferences.get(SimpleValueNames.TEXT_LINE_WRAP, "none"));
     this.wrapping = oldWrapping;
@@ -136,9 +141,16 @@ public final class PlainTextEditor extends javax.swing.JPanel {
   }
 
   private Component makeEditorForText (final Document document) {
+    if (this.lastEditor != null) {
+      this.lastEditor.removeCaretListener(this);
+    }
+
     this.lastEditor = new JEditorPane();
     this.lastEditor.setEditorKit(getEditorKit());
     this.lastEditor.setDocument(document);
+
+    this.lastEditor.addCaretListener(this);
+
     final Component result;
     if (document instanceof NbDocument.CustomEditor) {
       NbDocument.CustomEditor ce = (NbDocument.CustomEditor) document;
@@ -147,6 +159,9 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     else {
       result = new JScrollPane(this.lastEditor);
     }
+
+    this.caretUpdate(null);
+
     return result;
   }
 
@@ -186,7 +201,6 @@ public final class PlainTextEditor extends javax.swing.JPanel {
   @SuppressWarnings ("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
-    java.awt.GridBagConstraints gridBagConstraints;
 
     mainToolBar = new javax.swing.JToolBar();
     buttonLoad = new javax.swing.JButton();
@@ -195,6 +209,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     buttonPaste = new javax.swing.JButton();
     buttonClearAll = new javax.swing.JButton();
     jPanel1 = new javax.swing.JPanel();
+    labelCursorPos = new javax.swing.JLabel();
     jSeparator2 = new javax.swing.JSeparator();
     labelWrapMode = new javax.swing.JLabel();
     filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 32767));
@@ -273,6 +288,9 @@ public final class PlainTextEditor extends javax.swing.JPanel {
     add(mainToolBar, java.awt.BorderLayout.PAGE_START);
 
     jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+    labelCursorPos.setText("...:..."); // NOI18N
+    jPanel1.add(labelCursorPos);
 
     jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
     jSeparator2.setPreferredSize(new java.awt.Dimension(8, 16));
@@ -374,6 +392,7 @@ public final class PlainTextEditor extends javax.swing.JPanel {
   private javax.swing.Box.Filler filler1;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JSeparator jSeparator2;
+  private javax.swing.JLabel labelCursorPos;
   private javax.swing.JLabel labelWrapMode;
   private javax.swing.JToolBar mainToolBar;
   // End of variables declaration//GEN-END:variables
@@ -390,7 +409,52 @@ public final class PlainTextEditor extends javax.swing.JPanel {
   }
 
   public void dispose () {
+    if (this.lastEditor != null) {
+      this.lastEditor.removeCaretListener(this);
+    }
+
     writeWrappingCode(this.oldWrapping); // restore old wrapping for mime type
     logger.info("PlainTextEditor has been disposed");
   }
+
+  private static int getRow (final int pos, final JTextComponent editor) {
+    int rn = (pos == 0) ? 1 : 0;
+    try {
+      int offs = pos;
+      while (offs > 0) {
+        offs = Utilities.getRowStart(editor, offs) - 1;
+        rn++;
+      }
+    }
+    catch (BadLocationException e) {
+      e.printStackTrace();
+    }
+    return rn;
+  }
+
+  private static int getColumn (final int pos, final JTextComponent editor) {
+    try {
+      return pos - Utilities.getRowStart(editor, pos) + 1;
+    }
+    catch (BadLocationException e) {
+      e.printStackTrace();
+    }
+    return -1;
+  }
+
+  @Override
+  public void caretUpdate (final CaretEvent e) {
+    final String text;
+    if (this.lastEditor == null) {
+      text = "...:...";
+    }
+    else {
+      final int pos = this.lastEditor.getCaretPosition();
+      final int col = getColumn(pos, this.lastEditor);
+      final int row = getRow(pos, this.lastEditor);
+      text = row + ":" + col;
+    }
+    this.labelCursorPos.setText(text);
+  }
+
 }
