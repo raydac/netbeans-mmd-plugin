@@ -25,6 +25,9 @@ import org.openide.util.NbPreferences;
 
 public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactoringPanel {
 
+  private static final long serialVersionUID = -8079025593983130439L;
+  
+  
   private final AtomicBoolean initialized = new AtomicBoolean();
 
   private final String mindMapName;

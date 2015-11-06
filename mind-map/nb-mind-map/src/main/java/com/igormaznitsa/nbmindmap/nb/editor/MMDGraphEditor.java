@@ -77,7 +77,6 @@ import org.netbeans.spi.print.PrintProvider;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.filesystems.URLMapper;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObject;
 import org.openide.nodes.Node;
@@ -399,7 +398,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
               NbUtils.openInSystemViewer(theFile);
             }
             else {
-              Project projectOwner = null;
+              Project projectOwner;
               if (fileObj.isFolder()) {
                 projectOwner = FileOwnerQuery.getOwner(fileObj);
                 if (projectOwner != null) {

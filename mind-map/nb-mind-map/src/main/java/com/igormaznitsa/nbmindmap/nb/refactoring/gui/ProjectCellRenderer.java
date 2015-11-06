@@ -26,6 +26,8 @@ import org.netbeans.api.project.ProjectUtils;
 
 public class ProjectCellRenderer extends JLabel implements ListCellRenderer, UIResource{
 
+  private static final long serialVersionUID = -9028250303574049796L;
+
   public ProjectCellRenderer(){
     super();
     setOpaque(true);

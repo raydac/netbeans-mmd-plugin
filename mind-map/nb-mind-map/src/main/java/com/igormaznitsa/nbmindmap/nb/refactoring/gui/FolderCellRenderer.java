@@ -26,6 +26,7 @@ import org.openide.util.ImageUtilities;
 public class FolderCellRenderer extends JLabel implements ListCellRenderer, UIResource{
 
   private static final Icon FOLDER_ICON = ImageUtilities.loadImageIcon("org/openide/loaders/defaultFolder.gif", false);
+  private static final long serialVersionUID = 2326069387034253192L;
   
   public FolderCellRenderer(){
     super();

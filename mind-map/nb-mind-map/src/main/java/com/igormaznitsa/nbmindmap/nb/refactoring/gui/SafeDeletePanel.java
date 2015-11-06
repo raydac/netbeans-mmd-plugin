@@ -27,6 +27,7 @@ import org.openide.util.NbPreferences;
 
 public class SafeDeletePanel extends javax.swing.JPanel implements CustomRefactoringPanel {
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+  private static final long serialVersionUID = 8032492831487495590L;
 
   private final AtomicBoolean initialized = new AtomicBoolean();
   
