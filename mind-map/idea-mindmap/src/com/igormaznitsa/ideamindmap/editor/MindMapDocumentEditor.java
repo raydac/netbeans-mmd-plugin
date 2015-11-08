@@ -1,21 +1,32 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
 import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
+import com.intellij.ide.projectView.ProjectView;
+import com.intellij.ide.projectView.impl.ProjectViewPane;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.VirtualFileWrapper;
+import com.intellij.openapi.vfs.ex.VirtualFileManagerEx;
+import com.intellij.psi.impl.file.impl.FileManager;
+import com.intellij.psi.impl.file.impl.FileManagerImpl;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.xml.ui.Committable;
 import com.intellij.util.xml.ui.UndoHelper;
@@ -30,6 +41,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ResourceBundle;
@@ -41,6 +53,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     private static final Logger LOGGER = Logger.getInstance(MindMapDocumentEditor.class);
     private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
+    private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
     private final JScrollPane mainScrollPane;
     private final MindMapPanel mindMapPanel;
@@ -49,6 +62,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     private final Document[] documents;
     private final UndoHelper undoHelper;
     private boolean dragAcceptableType = false;
+    private final MindMapPanelControllerImpl panelController;
 
     public MindMapDocumentEditor(final Project project, final VirtualFile file) {
         this.project = project;
@@ -56,7 +70,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
         this.undoHelper = new UndoHelper(this.project, this);
 
-        final MindMapPanelControllerImpl panelController = new MindMapPanelControllerImpl(this);
+        this.panelController = new MindMapPanelControllerImpl(this);
 
         this.mindMapPanel = new MindMapPanel(panelController);
         this.mindMapPanel.addMindMapListener(this);
@@ -83,6 +97,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
         loadMindMapFromDocument();
+
     }
 
     @Nullable
@@ -297,11 +312,16 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         if (clicks > 1) {
             switch (extra.getType()) {
                 case FILE: {
-
+                    final MMapURI uri = (MMapURI) extra.getValue();
+                    final boolean flagOpenFileLinkINSystem =  Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
+//                    final VirtualFileWrapper theFile = new VirtualFileWrapper(uri.asFile(this.project.getBaseDir()));
                 }
                 break;
                 case LINK: {
-
+                    final MMapURI uri = ((ExtraLink) extra).getValue();
+                    if (!IdeaUtils.browseURI(uri.asURI(), IdeaUtils.getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
+                        getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+                    }
                 }
                 break;
                 case NOTE: {
@@ -309,7 +329,15 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
                 }
                 break;
                 case TOPIC: {
-
+                    final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic) extra);
+                    if (theTopic == null) {
+                        // not presented
+                        getDialogProvider().msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+                    }
+                    else {
+                        // detected
+                        this.mindMapPanel.focusTo(theTopic);
+                    }
                 }
                 break;
                 default:
@@ -321,6 +349,10 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     @Override
     public void onChangedSelection(MindMapPanel mindMapPanel, Topic[] topics) {
         // do nothing at present
+    }
+
+    public DialogProvider getDialogProvider(){
+        return this.panelController.getDialogProvider();
     }
 
     @Override
@@ -339,7 +371,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         if (topicsNotImportant) {
             result = true;
         } else {
-            result = IdeaUtils.msgConfirmYesNo(this.project, BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
+            result = this.getDialogProvider().msgConfirmYesNo(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
         }
         return result;
     }
@@ -419,4 +451,11 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         return result;
     }
 
+    public MindMapPanel getMindMapPanel() {
+        return this.mindMapPanel;
+    }
+
+    public Project getProject() {
+        return this.project;
+    }
 }

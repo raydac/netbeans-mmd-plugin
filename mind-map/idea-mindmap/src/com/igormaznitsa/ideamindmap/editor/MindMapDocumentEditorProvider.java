@@ -2,12 +2,13 @@ package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.filetype.MindMapFileType;
 import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
-public class MindMapDocumentEditorProvider implements FileEditorProvider{
+public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware{
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
         return virtualFile.getFileType() instanceof MindMapFileType;
