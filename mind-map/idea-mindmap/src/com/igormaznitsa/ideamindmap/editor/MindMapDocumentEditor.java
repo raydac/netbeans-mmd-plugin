@@ -19,19 +19,16 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.impl.event.DocumentEventImpl;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
-import com.intellij.util.xml.ui.Committable;
-import com.intellij.util.xml.ui.UndoHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +40,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ResourceBundle;
@@ -103,19 +101,19 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
     private void saveMindMapToDocument() {
         final Document document = getDocument();
-            final MindMap model = this.mindMapPanel.getModel();
+        final MindMap model = this.mindMapPanel.getModel();
         if (document != null && model != null) {
             CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-                    @Override
-                    public void run() {
-                       ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                           @Override
-                           public void run() {
-                               document.replaceString(0,document.getTextLength(),model.packToString());
-                           }
-                       });
-                    }
-                },null,null,document);
+                @Override
+                public void run() {
+                    ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            document.replaceString(0, document.getTextLength(), model.packToString());
+                        }
+                    });
+                }
+            }, null, null, document);
         }
     }
 
@@ -433,7 +431,10 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     protected static boolean checkDragType(final DropTargetDragEvent dtde) {
         boolean result = false;
         for (final DataFlavor fl1 : dtde.getCurrentDataFlavors()) {
-            final Class dataClass = fl1.getRepresentationClass();
+            if (fl1.isFlavorJavaFileListType()) {
+                result = true;
+                break;
+            }
         }
         return result;
     }
@@ -467,8 +468,45 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     }
 
     @Override
-    public void drop(DropTargetDropEvent dtde) {
+    public void drop(final DropTargetDropEvent dtde) {
+        try {
+            final java.util.List<File> files = (java.util.List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+            if (files.isEmpty()) {
+                LOGGER.warn("Empty list of files in DnD");
+            } else {
+                final File file = files.get(0);
+                addFiletToElement(file, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
+            }
+        } catch (Exception ex) {
+            LOGGER.error("Can't complete DnD operation for error", ex);
+        }
+    }
 
+    private void addFiletToElement(final File file, final AbstractElement element) {
+        if (element != null) {
+            final Topic topic = element.getModel();
+
+            final VirtualFile theFile = VfsUtil.findFileByIoFile(file, true);
+            if (theFile != null) {
+                final File rootFolder = IdeaUtils.vfile2iofile(findRootFolderForEditedFile());
+                final File theFileIo = IdeaUtils.vfile2iofile(theFile);
+
+                final MMapURI theURI = IdeaUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? new MMapURI(rootFolder, theFileIo, null) : new MMapURI(null, theFileIo, null); //NOI18N
+
+                if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
+                    if (!getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+                        return;
+                    }
+                }
+
+                topic.setExtra(new ExtraFile(theURI));
+                this.mindMapPanel.invalidate();
+                this.mindMapPanel.repaint();
+                onMindMapModelChanged(this.mindMapPanel);
+            } else {
+                LOGGER.warn("Can't find VirtualFile for " + file);
+            }
+        }
     }
 
     protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
