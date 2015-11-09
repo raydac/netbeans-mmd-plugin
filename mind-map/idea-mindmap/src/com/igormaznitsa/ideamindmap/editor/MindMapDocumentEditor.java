@@ -15,7 +15,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.impl.EditorChangeAction;
 import com.intellij.openapi.command.undo.UndoManager;
-import com.intellij.openapi.command.undo.UndoableAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -25,8 +24,8 @@ import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -50,7 +49,7 @@ import java.util.ResourceBundle;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 
-public class MindMapDocumentEditor implements DocumentsEditor, MindMapController, MindMapListener, Committable, DropTargetListener, DocumentListener {
+public class MindMapDocumentEditor implements DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, DocumentListener {
 
     private static final Logger LOGGER = Logger.getInstance(MindMapDocumentEditor.class);
     private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
@@ -62,15 +61,12 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     private final Project project;
     private final VirtualFile file;
     private final Document[] documents;
-    private final UndoHelper undoHelper;
     private boolean dragAcceptableType = false;
     private final MindMapPanelControllerImpl panelController;
 
     public MindMapDocumentEditor(final Project project, final VirtualFile file) {
         this.project = project;
         this.file = file;
-
-        this.undoHelper = new UndoHelper(this.project, this);
 
         this.panelController = new MindMapPanelControllerImpl(this);
 
@@ -88,13 +84,10 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
             }
         });
 
-        this.undoHelper.startListeningDocuments();
 
         final Document document = FileDocumentManager.getInstance().getDocument(this.file);
+
         this.documents = new Document[]{document};
-        if (document != null) {
-            this.undoHelper.addWatchedDocument(document);
-        }
 
         this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
@@ -110,22 +103,19 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
     private void saveMindMapToDocument() {
         final Document document = getDocument();
-        document.removeDocumentListener(this);
-        try {
             final MindMap model = this.mindMapPanel.getModel();
-            if (document != null && model != null) {
-                final String oldText = getDocument().getText();
-                final String newText = model.packToString();
-                final DocumentEventImpl docEvent = new DocumentEventImpl(getDocument(), 0, oldText, newText, System.currentTimeMillis(), true);
-                CommandProcessor.getInstance().executeCommand(this.project, new Runnable() {
+        if (document != null && model != null) {
+            CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
                     @Override
                     public void run() {
-                        UndoManager.getInstance(getProject()).undoableActionPerformed(new EditorChangeAction(docEvent));
+                       ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                           @Override
+                           public void run() {
+                               document.replaceString(0,document.getTextLength(),model.packToString());
+                           }
+                       });
                     }
-                }, null, null);
-            }
-        } finally {
-            document.addDocumentListener(this);
+                },null,null,document);
         }
     }
 
@@ -248,16 +238,6 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
     @Override
     public <T> void putUserData(@NotNull Key<T> key, @Nullable T t) {
-
-    }
-
-    @Override
-    public void commit() {
-
-    }
-
-    @Override
-    public void reset() {
 
     }
 
@@ -518,6 +498,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
     @Override
     public void documentChanged(final DocumentEvent documentEvent) {
+        UndoManager.getInstance(getProject()).undoableActionPerformed(new EditorChangeAction(documentEvent));
         loadMindMapFromDocument();
     }
 }
