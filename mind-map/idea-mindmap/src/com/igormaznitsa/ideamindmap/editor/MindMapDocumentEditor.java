@@ -7,26 +7,22 @@ import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
-import com.intellij.ide.projectView.ProjectView;
-import com.intellij.ide.projectView.impl.ProjectViewPane;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.VirtualFileWrapper;
-import com.intellij.openapi.vfs.ex.VirtualFileManagerEx;
-import com.intellij.psi.impl.file.impl.FileManager;
-import com.intellij.psi.impl.file.impl.FileManagerImpl;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.xml.ui.Committable;
 import com.intellij.util.xml.ui.UndoHelper;
@@ -41,7 +37,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ResourceBundle;
@@ -161,7 +156,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     @NotNull
     @Override
     public String getName() {
-        return null;
+        return "nb-mm-editor";
     }
 
     @NotNull
@@ -266,7 +261,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     }
 
     @Override
-    public void onEnsureVisibilityOfTopic(MindMapPanel mindMapPanel, Topic topic) {
+    public void onEnsureVisibilityOfTopic(MindMapPanel mindMapPanel, final Topic topic) {
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
@@ -307,14 +302,53 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
     }
 
+    private @Nullable VirtualFile findRootFolderForEditedFile() {
+        final Module module = ModuleUtil.findModuleForFile(this.file, this.project);
+
+        final VirtualFile rootFolder;
+        if (module == null) {
+            rootFolder = this.project.getBaseDir();
+        } else {
+            VirtualFile moduleRoot = module.getModuleFile().getParent();
+            if (moduleRoot.getName().equals(".idea")) {
+                moduleRoot = moduleRoot.getParent();
+            }
+            rootFolder = moduleRoot;
+        }
+
+        return rootFolder;
+    }
+
     @Override
     public void onClickOnExtra(final MindMapPanel source, final int clicks, final Topic topic, final Extra<?> extra) {
         if (clicks > 1) {
             switch (extra.getType()) {
                 case FILE: {
-                    final MMapURI uri = (MMapURI) extra.getValue();
-                    final boolean flagOpenFileLinkINSystem =  Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
-//                    final VirtualFileWrapper theFile = new VirtualFileWrapper(uri.asFile(this.project.getBaseDir()));
+                    final MMapURI fileURI = (MMapURI) extra.getValue();
+                    final boolean flagOpenFileLinkInSystemViewer = Boolean.parseBoolean(fileURI.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
+
+                    final VirtualFile rootFolder = findRootFolderForEditedFile();
+                    final VirtualFile theFile = LocalFileSystem.getInstance().findFileByIoFile(fileURI.asFile(IdeaUtils.vfile2iofile(rootFolder)));
+
+                    if (theFile == null) {
+                        // file not found
+                        LOGGER.warn("Can't find FileObject for " + fileURI);
+                        getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI.toString()));
+                    } else if (VfsUtilCore.isAncestor(rootFolder, theFile, false)) {
+                        // inside project
+                        if (flagOpenFileLinkInSystemViewer) {
+                            SelectIn.SYSTEM.open(this, theFile);
+                        } else {
+                            SelectIn.IDE.open(this, theFile);
+                        }
+                    } else {
+                        // outside project
+                        if (flagOpenFileLinkInSystemViewer) {
+                            SelectIn.SYSTEM.open(this, theFile);
+                        } else {
+                            SelectIn.IDE.open(this, theFile);
+                        }
+                    }
                 }
                 break;
                 case LINK: {
@@ -333,8 +367,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
                     if (theTopic == null) {
                         // not presented
                         getDialogProvider().msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
-                    }
-                    else {
+                    } else {
                         // detected
                         this.mindMapPanel.focusTo(theTopic);
                     }
@@ -344,6 +377,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
                     throw new Error("Unexpected type " + extra);
             }
         }
+
     }
 
     @Override
@@ -351,7 +385,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         // do nothing at present
     }
 
-    public DialogProvider getDialogProvider(){
+    public DialogProvider getDialogProvider() {
         return this.panelController.getDialogProvider();
     }
 
