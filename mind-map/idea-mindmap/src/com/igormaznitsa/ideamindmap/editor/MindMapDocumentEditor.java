@@ -14,6 +14,7 @@ import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.impl.EditorChangeAction;
+import com.intellij.openapi.command.impl.UndoManagerImpl;
 import com.intellij.openapi.command.undo.UndoManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -29,6 +30,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.util.xml.ui.UndoHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,22 +123,27 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         final Document document = getDocument();
         if (document != null) {
             final MindMapDocumentEditor theEditor = this;
-            ApplicationManager.getApplication().runReadAction(new Runnable() {
+            CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        mindMapPanel.setModel(new MindMap(theEditor, new StringReader(document.getText())));
-                    } catch (IOException ex) {
-                        LOGGER.error("Can't parse mind map", ex);
-                        SwingUtils.safeSwing(new Runnable() {
-                            @Override
-                            public void run() {
-                                theEditor.mindMapPanel.setErrorText("Can't load mind map");
+                    ApplicationManager.getApplication().runReadAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                mindMapPanel.setModel(new MindMap(theEditor, new StringReader(document.getText())));
+                            } catch (IOException ex) {
+                                LOGGER.error("Can't parse mind map", ex);
+                                SwingUtils.safeSwing(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        theEditor.mindMapPanel.setErrorText("Can't load mind map");
+                                    }
+                                });
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-            });
+            },null,null,document);
         }
     }
 
