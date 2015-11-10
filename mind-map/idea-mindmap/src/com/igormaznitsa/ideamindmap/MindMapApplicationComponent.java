@@ -11,20 +11,20 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
 public class MindMapApplicationComponent implements ApplicationComponent {
-    public MindMapApplicationComponent() {
-    }
+  public MindMapApplicationComponent() {
+  }
 
-    @Override
-    public void initComponent() {
-    }
+  @Override
+  public void initComponent() {
+  }
 
-    @Override
-    public void disposeComponent() {
-    }
+  @Override
+  public void disposeComponent() {
+  }
 
-    @Override
-    @NotNull
-    public String getComponentName() {
-        return "com.igormaznitsa.ideamindmap.MindMapApplicationComponent";
-    }
+  @Override
+  @NotNull
+  public String getComponentName() {
+    return "com.igormaznitsa.ideamindmap.MindMapApplicationComponent";
+  }
 }

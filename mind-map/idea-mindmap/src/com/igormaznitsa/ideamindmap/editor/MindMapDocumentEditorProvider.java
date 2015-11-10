@@ -8,43 +8,43 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
-public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware{
-    @Override
-    public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-        return virtualFile.getFileType() instanceof MindMapFileType;
-    }
+public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware {
+  @Override
+  public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
+    return virtualFile.getFileType() instanceof MindMapFileType;
+  }
 
-    @NotNull
-    @Override
-    public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-        return new MindMapDocumentEditor(project,virtualFile);
-    }
+  @NotNull
+  @Override
+  public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
+    return new MindMapDocumentEditor(project, virtualFile);
+  }
 
-    @Override
-    public void disposeEditor(@NotNull FileEditor fileEditor) {
+  @Override
+  public void disposeEditor(@NotNull FileEditor fileEditor) {
 
-    }
+  }
 
-    @NotNull
-    @Override
-    public FileEditorState readState(@NotNull Element element, @NotNull Project project, @NotNull VirtualFile virtualFile) {
-        return MindMapFileEditorState.DUMMY;
-    }
+  @NotNull
+  @Override
+  public FileEditorState readState(@NotNull Element element, @NotNull Project project, @NotNull VirtualFile virtualFile) {
+    return MindMapFileEditorState.DUMMY;
+  }
 
-    @Override
-    public void writeState(@NotNull FileEditorState fileEditorState, @NotNull Project project, @NotNull Element element) {
+  @Override
+  public void writeState(@NotNull FileEditorState fileEditorState, @NotNull Project project, @NotNull Element element) {
 
-    }
+  }
 
-    @NotNull
-    @Override
-    public String getEditorTypeId() {
-        return "com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor";
-    }
+  @NotNull
+  @Override
+  public String getEditorTypeId() {
+    return "com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor";
+  }
 
-    @NotNull
-    @Override
-    public FileEditorPolicy getPolicy() {
-        return FileEditorPolicy.HIDE_DEFAULT_EDITOR;
-    }
+  @NotNull
+  @Override
+  public FileEditorPolicy getPolicy() {
+    return FileEditorPolicy.HIDE_DEFAULT_EDITOR;
+  }
 }
