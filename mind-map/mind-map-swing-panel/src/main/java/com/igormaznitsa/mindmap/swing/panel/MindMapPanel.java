@@ -461,7 +461,7 @@ public class MindMapPanel extends JPanel {
                   selectedTopics.clear();
 
                   final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
-                  draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE);
+                  draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE);
                   draggedElement.updatePosition(e.getPoint());
                   findDestinationElementForDragged();
                 }
