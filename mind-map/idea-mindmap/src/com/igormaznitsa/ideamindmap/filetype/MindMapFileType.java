@@ -19,8 +19,6 @@ public class MindMapFileType extends LanguageFileType {
     super(MindMapLanguage.INSTANCE);
   }
 
-  ;
-
   @Override
   public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
     return "UTF-8";
@@ -29,13 +27,13 @@ public class MindMapFileType extends LanguageFileType {
   @NotNull
   @Override
   public String getName() {
-    return "NB Mind map";
+    return "NBMindMap";
   }
 
   @NotNull
   @Override
   public String getDescription() {
-    return "NB Mind map files";
+    return "NB Mind Map files";
   }
 
   @NotNull

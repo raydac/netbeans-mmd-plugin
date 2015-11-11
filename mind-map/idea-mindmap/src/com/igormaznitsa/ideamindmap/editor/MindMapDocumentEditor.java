@@ -3,8 +3,6 @@ package com.igormaznitsa.ideamindmap.editor;
 import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 
-import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
-import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.mindmap.model.Extra;
@@ -19,20 +17,16 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.command.impl.EditorChangeAction;
-import com.intellij.openapi.command.undo.UndoManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.DocumentsEditor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
@@ -56,7 +50,6 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -73,7 +66,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ResourceBundle;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class MindMapDocumentEditor implements DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable {
 

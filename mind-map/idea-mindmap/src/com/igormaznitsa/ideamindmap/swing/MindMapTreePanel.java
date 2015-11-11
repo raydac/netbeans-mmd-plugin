@@ -19,6 +19,8 @@ import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.treeStructure.Tree;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -71,6 +73,8 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
 
     this.setPreferredSize(new Dimension(450, 400));
 
+    this.treeMindMap.requestFocus();
+
     if (expandAll) {
       expandAll();
     }
@@ -100,8 +104,8 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
   @SuppressWarnings("unchecked")
   private void initComponents() {
 
-    treeScrollPane = new javax.swing.JScrollPane();
-    treeMindMap = new javax.swing.JTree();
+    treeScrollPane = new JBScrollPane();
+    treeMindMap = new Tree();
     toolBar = new javax.swing.JToolBar();
     buttonExpandAll = new javax.swing.JButton();
     buttonCollapseAll = new javax.swing.JButton();

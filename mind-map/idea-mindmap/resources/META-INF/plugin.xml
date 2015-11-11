@@ -1,40 +1,45 @@
 <idea-plugin version="2">
-  <id>com.igormaznitsa.ideamindmap</id>
-  <name>IDEA Mind Map</name>
-  <version>1.0</version>
-  <vendor url="https://github.com/raydac/netbeans-mmd-plugin"/>
+    <id>nb-mind-map-idea</id>
+    <name>IDEA Mind Map</name>
+    <version>1.0</version>
+    <vendor logo="/icons/logo/logo@2x.png" url="https://github.com/raydac/netbeans-mmd-plugin">Igor Maznitsa</vendor>
 
-  <description><![CDATA[
-      Support of work with MMD mind maps in IntelliJ IDEA
+    <category>Knowledge management</category>
+
+    <description><![CDATA[
+      A Port of <a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">the NetBeans Mind Map editor</a> to create and edit mind maps represented by MMD files.
     ]]></description>
 
-  <change-notes><![CDATA[
+    <change-notes><![CDATA[
+        <p>1.0.0</p>
+        <ul>
+            <li>Initial port</li>
+        </ul>
      ]]>
-  </change-notes>
+    </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="143.0"/>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="143.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
 
-  <extensions defaultExtensionNs="com.intellij">
-    <fileEditorProvider implementation="com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditorProvider"/>
-    <fileTypeFactory implementation="com.igormaznitsa.ideamindmap.filetype.MindMapFileTypeFactory"/>
-    <fileTemplateGroup implementation="com.igormaznitsa.ideamindmap.filetemplate.MindMapTemplateGroupDescriptionFactory"/>
-  </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileEditorProvider implementation="com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditorProvider"/>
+        <fileTypeFactory implementation="com.igormaznitsa.ideamindmap.filetype.MindMapFileTypeFactory"/>
+        <fileTemplateGroup implementation="com.igormaznitsa.ideamindmap.filetemplate.MindMapTemplateGroupDescriptionFactory"/>
+    </extensions>
 
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
 
-  <application-components>
-    <component>
-      <implementation-class>com.igormaznitsa.ideamindmap.MindMapApplicationComponent</implementation-class>
-      <implementation-class>com.igormaznitsa.ideamindmap.MindMapApplicationComponent</implementation-class>
-    </component>
-  </application-components>
+    <application-components>
+        <component>
+            <implementation-class>com.igormaznitsa.ideamindmap.MindMapApplicationComponent</implementation-class>
+        </component>
+    </application-components>
 </idea-plugin>

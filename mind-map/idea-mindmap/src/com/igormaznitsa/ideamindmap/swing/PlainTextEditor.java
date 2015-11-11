@@ -18,6 +18,7 @@ public class PlainTextEditor extends EditorTextField {
     final EditorEx result = super.createEditor();
     result.setVerticalScrollbarVisible(true);
     result.setHorizontalScrollbarVisible(true);
+    result.getCaretModel().moveToOffset(0);
     return result;
   }
 }
