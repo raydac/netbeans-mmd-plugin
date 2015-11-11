@@ -2,6 +2,7 @@ package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
+import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
@@ -340,7 +341,52 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
   private void editLinkForTopic(Topic topic) {
   }
 
-  private void editTopicLinkForTopic(Topic topic) {
+  private void editTopicLinkForTopic(final Topic topic) {
+    final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
+
+    final ExtraTopic link = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+
+    ExtraTopic result = null;
+
+    final ExtraTopic remove = new ExtraTopic("_______"); //NOI18N
+
+    if (link == null) {
+      final MindMapTreePanel treePanel = new MindMapTreePanel(mindMapPanel.getModel(), null, true, null);
+      if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
+        final Topic selected = treePanel.getSelectedTopic();
+        treePanel.dispose();
+        if (selected != null) {
+          result = ExtraTopic.makeLinkTo(mindMapPanel.getModel(), selected);
+        }
+        else {
+          result = remove;
+        }
+      }
+    }
+    else {
+      final MindMapTreePanel panel = new MindMapTreePanel(mindMapPanel.getModel(), link, true, null);
+      if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(),BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+        final Topic selected = panel.getSelectedTopic();
+        if (selected != null) {
+          result = ExtraTopic.makeLinkTo(mindMapPanel.getModel(), selected);
+        }
+        else {
+          result = remove;
+        }
+      }
+    }
+
+    if (result != null) {
+      if (result == remove) {
+        topic.removeExtra(Extra.ExtraType.TOPIC);
+      }
+      else {
+        topic.setExtra(result);
+      }
+      mindMapPanel.invalidate();
+      mindMapPanel.repaint();
+      this.editor.onMindMapModelChanged(mindMapPanel);
+    }
   }
 
   private void editFileLinkForTopic(Topic topic) {

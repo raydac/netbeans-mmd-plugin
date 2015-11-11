@@ -9,8 +9,17 @@ public class AllIcons {
     public static final Icon MINDMAP = IconLoader.getIcon("/icons/mmdfile.png");
   }
 
+  public static class Tree {
+    public static final Icon DOCUMENT= IconLoader.getIcon("/icons/document.png");
+    public static final Icon BLUEBALL= IconLoader.getIcon("/icons/blueball.png");
+    public static final Icon GOLDBALL= IconLoader.getIcon("/icons/goldball.png");
+  }
+
   public static class Buttons {
     public static final Icon CROSS= IconLoader.getIcon("/icons/cross.png");
+    public static final Icon EXPANDALL = IconLoader.getIcon("/icons/toggle_expand.png");
+    public static final Icon COLLAPSEALL = IconLoader.getIcon("/icons/toggle.png");
+    public static final Icon SELECT = IconLoader.getIcon("/icons/select.png");
   }
 
   public static class PopUp {
