@@ -17,9 +17,14 @@ public class AllIcons {
 
   public static class Buttons {
     public static final Icon CROSS= IconLoader.getIcon("/icons/cross.png");
+    public static final Icon TICK= IconLoader.getIcon("/icons/tick.png");
+    public static final Icon QUESTION= IconLoader.getIcon("/icons/question.png");
     public static final Icon EXPANDALL = IconLoader.getIcon("/icons/toggle_expand.png");
     public static final Icon COLLAPSEALL = IconLoader.getIcon("/icons/toggle.png");
     public static final Icon SELECT = IconLoader.getIcon("/icons/select.png");
+    public static final Icon FILE_LINK_BIG = IconLoader.getIcon("/icons/file_link.png");
+    public static final Icon URL_LINK_BIG = IconLoader.getIcon("/icons/url_link.png");
+    public static final Icon FILE_MANAGER = IconLoader.getIcon("/icons/file_manager.png");
   }
 
   public static class PopUp {

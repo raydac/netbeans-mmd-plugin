@@ -1,8 +1,11 @@
 package com.igormaznitsa.ideamindmap.utils;
 
+import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
+import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
+import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
@@ -14,6 +17,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.ColorChooser;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +25,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.prefs.Preferences;
 
 public enum IdeaUtils {
@@ -28,7 +33,17 @@ public enum IdeaUtils {
   private static final Logger LOGGER = Logger.getInstance(IdeaUtils.class);
 
   private static final PluginPreferences PREFERENCES = new PluginPreferences();
-  private static boolean darkTheme;
+
+  public static final MMapURI EMPTY_URI;
+
+  static {
+    try {
+      EMPTY_URI = new MMapURI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
+    }
+    catch (URISyntaxException ex) {
+      throw new Error("Unexpected exception", ex); //NOI18N
+    }
+  }
 
   public static Preferences getPreferences() {
     return PREFERENCES;
@@ -111,7 +126,7 @@ public enum IdeaUtils {
   }
 
   public static boolean isDarkTheme() {
-    return darkTheme;
+    return UIUtil.isUnderDarcula();
   }
 
 
@@ -154,8 +169,9 @@ public enum IdeaUtils {
     return dialog.showAndGet();
   }
 
-  public static File vfile2iofile(@NotNull final VirtualFile vfFile) {
-    return VfsUtilCore.virtualToIoFile(vfFile);
+  @Nullable
+  public static File vfile2iofile(@Nullable final VirtualFile vfFile) {
+    return vfFile == null ? null : VfsUtilCore.virtualToIoFile(vfFile);
   }
 
   public static Color extractCommonColorForColorChooserButton(final String colorAttribute, final Topic[] topics) {
@@ -185,6 +201,43 @@ public enum IdeaUtils {
       }
     }
     return result;
+  }
+
+  public static FileEditPanel.DataContainer editFilePath(final MindMapDocumentEditor editor, final String title, final File projectFolder, final FileEditPanel.DataContainer data) {
+    final FileEditPanel filePathEditor = new FileEditPanel(editor.getDialogProvider(), projectFolder, data);
+
+    filePathEditor.doLayout();
+    filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
+
+    if (plainMessageOkCancel(editor.getProject(),title,filePathEditor)) {
+      return filePathEditor.getData();
+    }
+    else {
+      return null;
+    }
+  }
+
+  public static MMapURI editURI(final MindMapDocumentEditor editor, final String title, final MMapURI uri) {
+    final UriEditPanel uriEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
+
+    uriEditor.doLayout();
+    uriEditor.setPreferredSize(new Dimension(450, uriEditor.getPreferredSize().height));
+
+    if (plainMessageOkCancel(editor.getProject(), title, uriEditor)){
+      final String text = uriEditor.getText();
+      if (text.isEmpty()) {
+        return EMPTY_URI;
+      }
+      try {
+        return new MMapURI(text.trim());
+      }
+      catch (URISyntaxException ex) {
+        editor.getDialogProvider().msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
+        return null;
+      }
+    }else{
+      return null;
+    }
   }
 
 

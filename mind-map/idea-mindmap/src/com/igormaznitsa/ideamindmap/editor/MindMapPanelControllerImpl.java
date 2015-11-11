@@ -2,6 +2,7 @@ package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
+import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
@@ -24,11 +25,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class MindMapPanelControllerImpl implements MindMapPanelController {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
   private static final Logger LOGGER = Logger.getInstance(MindMapPanelControllerImpl.class);
+  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
   private final MindMapDocumentEditor editor;
   private final MindMapDialogProvider dialogProvider;
@@ -338,7 +342,30 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
 
   }
 
-  private void editLinkForTopic(Topic topic) {
+  private void editLinkForTopic(final Topic topic) {
+    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
+    final MMapURI result;
+    if (link == null) {
+      // create new
+      result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
+    }
+    else {
+      // edit
+      result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
+    }
+    if (result != null) {
+      if (result == IdeaUtils.EMPTY_URI) {
+        topic.removeExtra(Extra.ExtraType.LINK);
+      }
+      else {
+        topic.setExtra(new ExtraLink(result));
+      }
+
+      final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
+      mindMapPanel.invalidate();
+      mindMapPanel.repaint();
+      this.editor.onMindMapModelChanged(mindMapPanel);
+    }
   }
 
   private void editTopicLinkForTopic(final Topic topic) {
@@ -365,7 +392,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
     }
     else {
       final MindMapTreePanel panel = new MindMapTreePanel(mindMapPanel.getModel(), link, true, null);
-      if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(),BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+      if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(mindMapPanel.getModel(), selected);
@@ -389,7 +416,74 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
     }
   }
 
-  private void editFileLinkForTopic(Topic topic) {
+  private void editFileLinkForTopic(final Topic topic) {
+    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+
+    final FileEditPanel.DataContainer path;
+
+    final File projectFolder = IdeaUtils.vfile2iofile(this.editor.findRootFolderForEditedFile());
+
+    if (projectFolder == null){
+      LOGGER.error("Can't find root folder for project or module!");
+      dialogProvider.msgError("Can't find the project or module root folder!");
+      return;
+    }
+
+    if (file == null) {
+      path = IdeaUtils.editFilePath(this.editor, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
+    }
+    else {
+      final MMapURI uri = file.getValue();
+      final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
+
+      final FileEditPanel.DataContainer origPath;
+      if (uri.isAbsolute()) {
+        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
+      }
+      else {
+        if (projectFolder == null) {
+          dialogProvider.msgWarn(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
+          origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getPath(), flagOpenInSystem);
+        }
+        else {
+          origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
+        }
+      }
+      path = IdeaUtils.editFilePath(this.editor, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
+    }
+
+    if (path != null) {
+      final boolean changed;
+      if (path.isEmpty()) {
+        changed = topic.removeExtra(Extra.ExtraType.FILE);
+      }
+      else {
+        final Properties props = new Properties();
+        if (path.isShowWithSystemTool()) {
+          props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
+        }
+        final MMapURI fileUri = MMapURI
+          .makeFromFilePath(IdeaUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props); //NOI18N
+        final File theFile = fileUri.asFile(projectFolder);
+        LOGGER.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
+
+        if (theFile.exists()) {
+          topic.setExtra(new ExtraFile(fileUri));
+          changed = true;
+        }
+        else {
+          dialogProvider.msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
+          changed = false;
+        }
+      }
+
+      if (changed) {
+        final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
+        mindMapPanel.invalidate();
+        mindMapPanel.repaint();
+        this.editor.onMindMapModelChanged(mindMapPanel);
+      }
+    }
   }
 
   private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {
@@ -416,7 +510,6 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
       source.updateView(true);
     }
   }
-
 
   private void editTextForTopic(final Topic topic) {
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);

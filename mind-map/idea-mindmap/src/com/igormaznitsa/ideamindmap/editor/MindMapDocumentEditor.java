@@ -342,8 +342,8 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   }
 
-  private
-  @Nullable VirtualFile findRootFolderForEditedFile() {
+  @Nullable
+  public VirtualFile findRootFolderForEditedFile() {
     final Module module = ModuleUtil.findModuleForFile(this.file, this.project);
 
     final VirtualFile rootFolder;
