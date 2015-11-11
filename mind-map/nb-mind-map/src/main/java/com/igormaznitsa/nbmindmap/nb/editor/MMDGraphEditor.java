@@ -798,7 +798,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     if (result != null) {
       if (result == remove) {
         topic.removeExtra(Extra.ExtraType.TOPIC);
-      }
+      } 
       else {
         topic.setExtra(result);
       }

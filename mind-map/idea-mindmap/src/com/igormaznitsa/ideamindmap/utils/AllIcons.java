@@ -5,6 +5,10 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 
 public class AllIcons {
+  public static class Logo {
+    public static final Icon MINDMAP = IconLoader.getIcon("/icons/logo/logo.png");
+  }
+
   public static class File {
     public static final Icon MINDMAP = IconLoader.getIcon("/icons/mmdfile.png");
   }
