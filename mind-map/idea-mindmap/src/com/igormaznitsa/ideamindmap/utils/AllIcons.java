@@ -9,6 +9,10 @@ public class AllIcons {
     public static final Icon MINDMAP = IconLoader.getIcon("/icons/mmdfile.png");
   }
 
+  public static class Buttons {
+    public static final Icon CROSS= IconLoader.getIcon("/icons/cross.png");
+  }
+
   public static class PopUp {
 
     public static final Icon EDITTEXT = IconLoader.getIcon("/icons/text.png");

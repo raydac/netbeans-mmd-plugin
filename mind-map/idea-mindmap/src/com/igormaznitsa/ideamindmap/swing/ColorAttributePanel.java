@@ -1,0 +1,152 @@
+package com.igormaznitsa.ideamindmap.swing;
+
+import com.igormaznitsa.ideamindmap.utils.AllIcons;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+
+import javax.swing.JPanel;
+import java.awt.Color;
+import java.util.ResourceBundle;
+
+public class ColorAttributePanel extends JPanel {
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+
+  public static class Result {
+    private final Color borderColor;
+    private final Color textColor;
+    private final Color fillColor;
+
+    private Result(final Color border, final Color text, final Color fill) {
+      this.borderColor = border;
+      this.textColor = text;
+      this.fillColor = fill;
+    }
+
+    public Color getTextColor() {
+      return this.textColor;
+    }
+
+    public Color getFillColor() {
+      return this.fillColor;
+    }
+
+    public Color getBorderColor() {
+      return this.borderColor;
+    }
+  }
+
+  private final DialogProvider dialogProvider;
+
+  public ColorAttributePanel(final DialogProvider dialogProvider, final Color border, final Color fill, final Color text) {
+    this.dialogProvider = dialogProvider;
+    initComponents();
+    this.colorChooserBorder.setValue(border);
+    this.colorChooserFill.setValue(fill);
+    this.colorChooserText.setValue(text);
+  }
+
+  public Result getResult() {
+    return new Result(
+      this.colorChooserBorder.getValue(),
+      this.colorChooserText.getValue(),
+      this.colorChooserFill.getValue());
+  }
+
+  @SuppressWarnings("unchecked")
+  // <editor-fold defaultstate="collapsed" desc="Generated Code">
+  private void initComponents() {
+
+    colorChooserBorder = new ColorChooserButton(this.dialogProvider);
+    colorChooserFill = new ColorChooserButton(this.dialogProvider);
+    colorChooserText = new ColorChooserButton(this.dialogProvider);
+    buttonResetBorder = new javax.swing.JButton();
+    buttonResetFill = new javax.swing.JButton();
+    buttonResetText = new javax.swing.JButton();
+
+    java.util.ResourceBundle bundle = BUNDLE;
+    colorChooserBorder.setText(bundle.getString("ColorAttributePanel.colorChooserBorder.text"));
+    colorChooserBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+
+    colorChooserFill.setText(bundle.getString("ColorAttributePanel.colorChooserFill.text"));
+    colorChooserFill.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+
+    colorChooserText.setText(bundle.getString("ColorAttributePanel.colorChooserText.text"));
+    colorChooserText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+
+    buttonResetBorder.setIcon(AllIcons.Buttons.CROSS);
+    buttonResetBorder.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonResetBorderActionPerformed(evt);
+      }
+    });
+
+    buttonResetFill.setIcon(AllIcons.Buttons.CROSS);
+    buttonResetFill.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonResetFillActionPerformed(evt);
+      }
+    });
+
+    buttonResetText.setIcon(AllIcons.Buttons.CROSS);
+    buttonResetText.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonResetTextActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+    this.setLayout(layout);
+    layout.setHorizontalGroup(
+      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+          .addContainerGap()
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(colorChooserText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(colorChooserFill, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(colorChooserBorder, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE))
+          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(buttonResetBorder, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(buttonResetFill, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(buttonResetText, javax.swing.GroupLayout.Alignment.TRAILING))
+          .addContainerGap())
+    );
+    layout.setVerticalGroup(
+      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+          .addContainerGap()
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(buttonResetBorder)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(colorChooserBorder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(colorChooserFill, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(buttonResetFill))
+          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(buttonResetText)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(colorChooserText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+  }// </editor-fold>
+
+  private void buttonResetBorderActionPerformed(java.awt.event.ActionEvent evt) {
+    this.colorChooserBorder.setValue(null);
+  }
+
+  private void buttonResetFillActionPerformed(java.awt.event.ActionEvent evt) {
+    this.colorChooserFill.setValue(null);
+  }
+
+  private void buttonResetTextActionPerformed(java.awt.event.ActionEvent evt) {
+    this.colorChooserText.setValue(null);
+  }
+
+  private javax.swing.JButton buttonResetBorder;
+  private javax.swing.JButton buttonResetFill;
+  private javax.swing.JButton buttonResetText;
+  private ColorChooserButton colorChooserBorder;
+  private ColorChooserButton colorChooserFill;
+  private ColorChooserButton colorChooserText;
+}

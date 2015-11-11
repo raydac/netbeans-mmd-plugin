@@ -1,5 +1,7 @@
 package com.igormaznitsa.ideamindmap.editor;
 
+import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
+import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
@@ -9,6 +11,7 @@ import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
+import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -343,8 +346,31 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
   private void editFileLinkForTopic(Topic topic) {
   }
 
-  private void processColorDialogForTopics(MindMapPanel source, Topic[] topics) {
+  private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {
+    final Color borderColor = IdeaUtils.extractCommonColorForColorChooserButton(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(), topics);
+    final Color fillColor = IdeaUtils.extractCommonColorForColorChooserButton(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), topics);
+    final Color textColor = IdeaUtils.extractCommonColorForColorChooserButton(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(), topics);
+
+    final ColorAttributePanel panel = new ColorAttributePanel(getDialogProvider(), borderColor, fillColor, textColor);
+    if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
+      ColorAttributePanel.Result result = panel.getResult();
+
+      if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
+        Utils.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(), Utils.color2html(result.getBorderColor(), false), topics);
+      }
+
+      if (result.getTextColor() != ColorChooserButton.DIFF_COLORS) {
+        Utils.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(), Utils.color2html(result.getTextColor(), false), topics);
+      }
+
+      if (result.getFillColor() != ColorChooserButton.DIFF_COLORS) {
+        Utils.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
+      }
+
+      source.updateView(true);
+    }
   }
+
 
   private void editTextForTopic(final Topic topic) {
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
