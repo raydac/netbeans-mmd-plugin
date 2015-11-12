@@ -31,6 +31,8 @@
         <fileEditorProvider implementation="com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditorProvider"/>
         <fileTypeFactory implementation="com.igormaznitsa.ideamindmap.filetype.MindMapFileTypeFactory"/>
         <fileTemplateGroup implementation="com.igormaznitsa.ideamindmap.filetemplate.MindMapTemplateGroupDescriptionFactory"/>
+        <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
+        <framework.detector implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetDetector"/>
     </extensions>
 
     <actions>

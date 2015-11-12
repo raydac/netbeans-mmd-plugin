@@ -3,6 +3,8 @@ package com.igormaznitsa.ideamindmap.editor;
 import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 
+import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
+import com.igormaznitsa.ideamindmap.facet.MindMapFacetType;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.mindmap.model.Extra;
@@ -20,6 +22,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
+import com.intellij.facet.FacetManager;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
@@ -33,6 +36,7 @@ import com.intellij.openapi.fileEditor.FileEditorLocation;
 import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.fileEditor.FileEditorStateLevel;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -336,18 +340,14 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   @Nullable
   public VirtualFile findRootFolderForEditedFile() {
-    final Module module = ModuleUtil.findModuleForFile(this.file, this.project);
+    final Module module = IdeaUtils.findModuleForFile(this.project,this.file);
 
     final VirtualFile rootFolder;
     if (module == null) {
       rootFolder = this.project.getBaseDir();
     }
     else {
-      VirtualFile moduleRoot = module.getModuleFile().getParent();
-      if (moduleRoot.getName().equals(".idea")) {
-        moduleRoot = moduleRoot.getParent();
-      }
-      rootFolder = moduleRoot;
+      rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
     }
 
     return rootFolder;
@@ -391,7 +391,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
       break;
       case LINK: {
         final MMapURI uri = ((ExtraLink) extra).getValue();
-        if (!IdeaUtils.browseURI(uri.asURI(), IdeaUtils.getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
+        if (!IdeaUtils.browseURI(uri.asURI(), isUseInsideBrowser())) { //NOI18N
           getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
         }
       }
@@ -416,7 +416,21 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         throw new Error("Unexpected type " + extra);
       }
     }
+  }
 
+  @Nullable
+  private final MindMapFacet findFacet(){
+    return MindMapFacet.getInstance(IdeaUtils.findModuleForFile(this.project, this.file));
+  }
+
+  boolean isUseInsideBrowser(){
+    final MindMapFacet facet = findFacet();
+    return facet == null ? false : facet.getConfiguration().isUseInsideBrowser();
+  }
+
+  boolean isMakeRelativePath(){
+    final MindMapFacet facet = findFacet();
+    return facet == null ? true : facet.getConfiguration().isMakeRelativePath();
   }
 
   @Override
@@ -553,7 +567,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         final File rootFolder = IdeaUtils.vfile2iofile(findRootFolderForEditedFile());
         final File theFileIo = IdeaUtils.vfile2iofile(theFile);
 
-        final MMapURI theURI = IdeaUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ?
+        final MMapURI theURI = isMakeRelativePath() ?
           new MMapURI(rootFolder, theFileIo, null) :
           new MMapURI(null, theFileIo, null); //NOI18N
 

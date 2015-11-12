@@ -1,7 +1,7 @@
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
-import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
+import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
@@ -9,32 +9,42 @@ import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.intellij.facet.FacetManager;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.ColorChooser;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.prefs.Preferences;
+import java.util.concurrent.atomic.AtomicReference;
 
 public enum IdeaUtils {
   ;
   private static final Logger LOGGER = Logger.getInstance(IdeaUtils.class);
 
-  private static final PluginPreferences PREFERENCES = new PluginPreferences();
-
   public static final MMapURI EMPTY_URI;
+  public static final String PROJECT_KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
+
 
   static {
     try {
@@ -45,8 +55,48 @@ public enum IdeaUtils {
     }
   }
 
-  public static Preferences getPreferences() {
-    return PREFERENCES;
+  @Nullable
+  public static VirtualFile findPotentialRootFolderForModule(@Nullable final Module module){
+    VirtualFile moduleRoot = module == null ? null : module.getModuleFile();
+    if(moduleRoot !=null){
+      moduleRoot = module.getModuleFile().getParent();
+      if (moduleRoot.getName().equals(".idea")) {
+        moduleRoot = moduleRoot.getParent();
+      }
+    }
+    return moduleRoot;
+  }
+
+  @Nullable
+  public static VirtualFile findKnowledgeFolderForModule(@Nullable final Module module, final boolean createIfMissing){
+    final VirtualFile rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
+    final AtomicReference<VirtualFile> result = new AtomicReference<>();
+    if (rootFolder != null){
+      result.set(rootFolder.findChild(PROJECT_KNOWLEDGE_FOLDER_NAME));
+      if (result.get()== null || !result.get().isDirectory()){
+        if (createIfMissing) {
+          ApplicationManager.getApplication().runWriteAction(new Runnable() {
+            @Override public void run() {
+              try {
+                result.set(VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
+                LOGGER.info("Created knowledge folder for "+module);
+              }
+              catch (IOException ex) {
+                LOGGER.error("Can't create knowledge folder for "+module,ex);
+              }
+            }
+          });
+        }else{
+          result.set(null);
+        }
+      }
+    }
+    return result.get();
+  }
+
+  @Nullable
+  public static Module findModuleForFile(@Nullable final Project project, @Nullable final VirtualFile file){
+    return project == null || file == null ? null : ModuleUtil.findModuleForFile(file, project);
   }
 
   public static boolean browseURI(final URI uri, final boolean useInsideBrowser) {

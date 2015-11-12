@@ -462,8 +462,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
         if (path.isShowWithSystemTool()) {
           props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
         }
-        final MMapURI fileUri = MMapURI
-          .makeFromFilePath(IdeaUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props); //NOI18N
+        final MMapURI fileUri = MMapURI.makeFromFilePath(this.editor.isMakeRelativePath() ? projectFolder : null, path.getPath(), props); //NOI18N
         final File theFile = fileUri.asFile(projectFolder);
         LOGGER.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
 

@@ -27,7 +27,7 @@ public class MindMapFileType extends LanguageFileType {
   @NotNull
   @Override
   public String getName() {
-    return "NBMindMap";
+    return "NB Mind Map";
   }
 
   @NotNull
