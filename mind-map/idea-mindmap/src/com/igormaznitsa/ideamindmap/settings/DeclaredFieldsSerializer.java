@@ -25,7 +25,6 @@ public class DeclaredFieldsSerializer implements Serializable {
     }
   });
 
-
   public interface Converter {
     @Nullable Object fromString(@NotNull Class<?> fieldType, @NotNull String value);
 
@@ -43,7 +42,7 @@ public class DeclaredFieldsSerializer implements Serializable {
 
   private static void visitFields(@NotNull final Object object, @NotNull final FieldVisitor visitor) {
     for (final Field f : object.getClass().getDeclaredFields()) {
-      if ((f.getModifiers() & (Modifier.FINAL | Modifier.NATIVE | Modifier.STATIC | Modifier.TRANSIENT)) == 0){
+      if ((f.getModifiers() & (Modifier.FINAL | Modifier.NATIVE | Modifier.STATIC | Modifier.TRANSIENT)) == 0) {
         f.setAccessible(true);
         visitor.visitField(object, f, f.getName(), f.getType());
       }
@@ -67,7 +66,14 @@ public class DeclaredFieldsSerializer implements Serializable {
           final Object value = field.get(instance);
 
           if (fieldType.isPrimitive()) {
-            storage.put(makeName(fieldName, value, false), value.toString());
+            if (fieldType == float.class) {
+              storage.put(makeName(fieldName,value,false),Integer.toString((Float.floatToIntBits((Float)value))));
+            }
+            else if (fieldType == double.class) {
+              storage.put(makeName(fieldName,value,false),Long.toString((Double.doubleToLongBits((Double)value))));
+            }
+            else
+              storage.put(makeName(fieldName, value, false), value.toString());
           }
           else if (fieldType == String.class) {
             storage.put(makeName(fieldName, value, false), value == null ? "" : (String) value);
@@ -83,7 +89,7 @@ public class DeclaredFieldsSerializer implements Serializable {
           }
         }
         catch (Exception ex) {
-          LOGGER.error("Can't make data for field ["+fieldName+']');
+          LOGGER.error("Can't make data for field [" + fieldName + ']');
           if (ex instanceof RuntimeException) {
             throw ((RuntimeException) ex);
           }
@@ -173,10 +179,10 @@ public class DeclaredFieldsSerializer implements Serializable {
                 field.set(instance, Long.parseLong(value));
               }
               else if (fieldType == float.class) {
-                field.set(instance, Float.parseFloat(value));
+                field.set(instance, Float.intBitsToFloat(Integer.parseInt(value)));
               }
               else if (fieldType == double.class) {
-                field.set(instance, Double.parseDouble(value));
+                field.set(instance, Double.longBitsToDouble(Long.parseLong(value)));
               }
               else if (fieldType == String.class) {
                 field.set(instance, value);
@@ -187,12 +193,12 @@ public class DeclaredFieldsSerializer implements Serializable {
           }
         }
         catch (Exception ex) {
-          LOGGER.error("Can't fill field by data ["+fieldName+']');
+          LOGGER.error("Can't fill field by data [" + fieldName + ']');
           if (ex instanceof RuntimeException) {
             throw (RuntimeException) ex;
           }
           else {
-            throw new Error("Unexpected exception for field processing ["+field+']',ex);
+            throw new Error("Unexpected exception for field processing [" + field + ']', ex);
           }
         }
       }
