@@ -29,6 +29,69 @@ import org.mockito.stubbing.Answer;
 public class MindMapPanelConfigTest {
 
   @Test
+  public void testHasDifferenceInParameters_NoDifference () {
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+
+    assertFalse(one.hasDifferenceInParameters(two));
+  }
+
+  @Test
+  public void testHasDifferenceInParameters_DifferenceInBoolean(){
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+    
+    one.setDropShadow(!two.isDropShadow());
+    assertTrue(one.hasDifferenceInParameters(two));
+  }
+  
+  @Test
+  public void testHasDifferenceInParameters_DifferenceInFloat(){
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+    
+    one.setCollapsatorBorderWidth(two.getCollapsatorBorderWidth()+0.001f);
+    assertTrue(one.hasDifferenceInParameters(two));
+  }
+  
+  @Test
+  public void testHasDifferenceInParameters_DifferenceInInt(){
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+    
+    one.setCollapsatorSize(two.getCollapsatorSize()+1);
+    assertTrue(one.hasDifferenceInParameters(two));
+  }
+  
+  @Test
+  public void testHasDifferenceInParameters_DifferenceInColor(){
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+    
+    one.setCollapsatorBackgroundColor(new Color(two.getCollapsatorBackgroundColor().getRGB()^0xFFFFFFFF));
+    assertTrue(one.hasDifferenceInParameters(two));
+  }
+  
+  
+  @Test
+  public void testHasDifferenceInParameters_DifferenceInFont(){
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+    
+    one.setFont(two.getFont().deriveFont(17));
+    assertTrue(one.hasDifferenceInParameters(two));
+  }
+  
+  @Test
+  public void testHasDifferenceInParameters_DifferenceInDouble(){
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+    
+    one.setScale(two.getScale()+0.00001d);
+    assertTrue(one.hasDifferenceInParameters(two));
+  }
+  
+  @Test
   public void testSaveRestoreState(){
     final Map<String, Object> storage = new HashMap<>();
     final Preferences prefs = mock(Preferences.class);

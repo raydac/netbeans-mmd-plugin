@@ -30,7 +30,7 @@ public final class MindMapPanelConfig implements Serializable {
 
   private static final long serialVersionUID = -4273687011484460064L;
 
-  private final List<WeakReference<MindMapConfigListener>> listeners = new ArrayList<>();
+  private transient final List<WeakReference<MindMapConfigListener>> listeners = new ArrayList<>();
 
   private int collapsatorSize = 16;
   private int textMargins = 10;
@@ -74,12 +74,40 @@ public final class MindMapPanelConfig implements Serializable {
 
   private transient volatile boolean notificationEnabled = true;
 
-  public MindMapPanelConfig(final MindMapPanelConfig cfg, final boolean copyListeners) {
+  public MindMapPanelConfig (final MindMapPanelConfig cfg, final boolean copyListeners) {
     this();
     this.makeFullCopyOf(cfg, copyListeners, false);
   }
 
-  public Preferences saveTo(final Preferences prefs) {
+  public boolean hasDifferenceInParameters (final MindMapPanelConfig etalon) {
+    for (final Field f : MindMapPanelConfig.class.getDeclaredFields()) {
+      if ((f.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT | Modifier.FINAL)) != 0) {
+        continue;
+      }
+      try {
+        final Object thisValue = f.get(this);
+        final Object thatValue = f.get(etalon);
+
+        if (thisValue == null && thatValue == null) {
+          continue;
+        }
+        if (thisValue == null || thatValue == null || !thisValue.equals(thatValue)) {
+          return true;
+        }
+
+      }
+      catch (IllegalAccessException ex) {
+        throw new Error("IllegalAccessException [" + f.getName() + ']', ex);
+      }
+      catch (IllegalArgumentException ex) {
+        throw new Error("IllegalArgumentException [" + f.getName() + ']', ex);
+      }
+    }
+
+    return false;
+  }
+
+  public Preferences saveTo (final Preferences prefs) {
     if (prefs != null) {
       final String prefix = MindMapPanelConfig.class.getSimpleName();
 
@@ -131,12 +159,12 @@ public final class MindMapPanelConfig implements Serializable {
     return prefs;
   }
 
-  public Preferences loadFrom(final Preferences prefs) {
+  public Preferences loadFrom (final Preferences prefs) {
     if (prefs != null) {
       final String prefix = MindMapPanelConfig.class.getSimpleName();
 
       final MindMapPanelConfig etalon = new MindMapPanelConfig();
-      
+
       for (final Field f : MindMapPanelConfig.class.getDeclaredFields()) {
         if ((f.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT | Modifier.FINAL)) != 0) {
           continue;
@@ -160,19 +188,19 @@ public final class MindMapPanelConfig implements Serializable {
           }
           else if (fieldClass == Font.class) {
             final Font etalonFont = (Font) etalon.getFont();
-            
-            final String fontName = (String)prefs.get(fieldName+".name", etalonFont.getName());
-            final int fontSize = prefs.getInt(fieldName+".size", etalonFont.getSize());
-            final int fontStyle = prefs.getInt(fieldName+".style", etalonFont.getStyle());
 
-            f.set(this,new Font(fontName, fontStyle, fontSize));
+            final String fontName = (String) prefs.get(fieldName + ".name", etalonFont.getName());
+            final int fontSize = prefs.getInt(fieldName + ".size", etalonFont.getSize());
+            final int fontStyle = prefs.getInt(fieldName + ".style", etalonFont.getStyle());
+
+            f.set(this, new Font(fontName, fontStyle, fontSize));
           }
           else if (fieldClass == Color.class) {
-            final int argb = prefs.getInt(fieldName, ((Color)f.get(etalon)).getRGB());
-            f.set(this, new Color(argb,true));
+            final int argb = prefs.getInt(fieldName, ((Color) f.get(etalon)).getRGB());
+            f.set(this, new Color(argb, true));
           }
           else if (fieldClass == String.class) {
-            f.set(this,prefs.get(fieldName, (String)f.get(etalon)));
+            f.set(this, prefs.get(fieldName, (String) f.get(etalon)));
           }
           else {
             throw new Error("Unexpected field type " + fieldClass.getName());
@@ -189,7 +217,7 @@ public final class MindMapPanelConfig implements Serializable {
     return prefs;
   }
 
-  public void makeAtomicChange(final Runnable runnable) {
+  public void makeAtomicChange (final Runnable runnable) {
     this.notificationEnabled = false;
     try {
       runnable.run();
@@ -200,12 +228,12 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public float safeScaleFloatValue(final float value, final float minimal) {
+  public float safeScaleFloatValue (final float value, final float minimal) {
     final float result = (float) (this.scale * (double) value);
     return Float.compare(result, minimal) >= 0 ? result : minimal;
   }
 
-  public void makeFullCopyOf(final MindMapPanelConfig src, final boolean copyListeners, final boolean makeNotification) {
+  public void makeFullCopyOf (final MindMapPanelConfig src, final boolean copyListeners, final boolean makeNotification) {
     if (src != null) {
       for (final Field f : MindMapPanelConfig.class.getDeclaredFields()) {
         if (f.getName().equals("listeners")) { //NOI18N
@@ -219,14 +247,12 @@ public final class MindMapPanelConfig implements Serializable {
             }
           }
         }
-        else {
-          if ((f.getModifiers() & (Modifier.STATIC | Modifier.FINAL)) == 0) {
-            try {
-              f.set(this, f.get(src));
-            }
-            catch (Exception ex) {
-              throw new Error("Unexpected state during cloning field " + f, ex); //NOI18N
-            }
+        else if ((f.getModifiers() & (Modifier.STATIC | Modifier.FINAL)) == 0) {
+          try {
+            f.set(this, f.get(src));
+          }
+          catch (Exception ex) {
+            throw new Error("Unexpected state during cloning field " + f, ex); //NOI18N
           }
         }
       }
@@ -236,11 +262,11 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public void addConfigurationListener(final MindMapConfigListener l) {
+  public void addConfigurationListener (final MindMapConfigListener l) {
     this.listeners.add(new WeakReference<>(l));
   }
 
-  public void removeConfigurationListener(final MindMapConfigListener l) {
+  public void removeConfigurationListener (final MindMapConfigListener l) {
     final Iterator<WeakReference<MindMapConfigListener>> iter = this.listeners.iterator();
     while (iter.hasNext()) {
       final WeakReference<MindMapConfigListener> wr = iter.next();
@@ -251,7 +277,7 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  private void notifyCfgListenersAboutChange() {
+  private void notifyCfgListenersAboutChange () {
     if (this.notificationEnabled) {
       for (final WeakReference<MindMapConfigListener> l : this.listeners) {
         final MindMapConfigListener c = l.get();
@@ -262,328 +288,330 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public MindMapPanelConfig() {
+  
+  
+  public MindMapPanelConfig () {
   }
 
-  public int getHorizontalBlockGap() {
+  public int getHorizontalBlockGap () {
     return this.horizontalBlockGap;
   }
 
-  public void setHorizontalBlockGap(final int gap) {
+  public void setHorizontalBlockGap (final int gap) {
     this.horizontalBlockGap = gap;
     notifyCfgListenersAboutChange();
   }
 
-  public float getSelectLineWidth() {
+  public float getSelectLineWidth () {
     return this.selectLineWidth;
   }
 
-  public void setSelectLineWidth(final float f) {
+  public void setSelectLineWidth (final float f) {
     this.selectLineWidth = f;
     notifyCfgListenersAboutChange();
   }
 
-  public float getJumpLinkWidth(){
+  public float getJumpLinkWidth () {
     return this.jumpLinkWidth;
   }
 
-  public void setJumpLinkWidth(final float f){
+  public void setJumpLinkWidth (final float f) {
     this.jumpLinkWidth = f;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getJumpLinkColor(){
+
+  public Color getJumpLinkColor () {
     return this.jumpLinkColor;
   }
 
-  public void setJumpLinkColor(final Color color){
+  public void setJumpLinkColor (final Color color) {
     this.jumpLinkColor = color;
     notifyCfgListenersAboutChange();
   }
-  
-  public Color getSelectLineColor() {
+
+  public Color getSelectLineColor () {
     return this.selectLineColor;
   }
 
-  public void setSelectLineColor(final Color color) {
+  public void setSelectLineColor (final Color color) {
     this.selectLineColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public void setPaperMargins(final int size) {
+  public void setPaperMargins (final int size) {
     this.paperMargins = size;
     notifyCfgListenersAboutChange();
   }
 
-  public int getPaperMargins() {
+  public int getPaperMargins () {
     return this.paperMargins;
   }
 
-  public boolean isDrawBackground() {
+  public boolean isDrawBackground () {
     return this.drawBackground;
   }
 
-  public void setDrawBackground(final boolean flag) {
+  public void setDrawBackground (final boolean flag) {
     this.drawBackground = flag;
     notifyCfgListenersAboutChange();
   }
 
-  public void setOtherLevelVerticalInset(final int value) {
+  public void setOtherLevelVerticalInset (final int value) {
     this.otherLevelVerticalInset = value;
     notifyCfgListenersAboutChange();
   }
 
-  public int getOtherLevelVerticalInset() {
+  public int getOtherLevelVerticalInset () {
     return this.otherLevelVerticalInset;
   }
 
-  public void setOtherLevelHorizontalInset(final int value) {
+  public void setOtherLevelHorizontalInset (final int value) {
     this.otherLevelHorizontalInset = value;
     notifyCfgListenersAboutChange();
   }
 
-  public int getOtherLevelHorizontalInset() {
+  public int getOtherLevelHorizontalInset () {
     return this.otherLevelHorizontalInset;
   }
 
-  public void setFirstLevelVerticalInset(final int value) {
+  public void setFirstLevelVerticalInset (final int value) {
     this.firstLevelVerticalInset = value;
     notifyCfgListenersAboutChange();
   }
 
-  public int getFirstLevelVerticalInset() {
+  public int getFirstLevelVerticalInset () {
     return this.firstLevelVerticalInset;
   }
 
-  public void setFirstLevelHorizontalInset(final int value) {
+  public void setFirstLevelHorizontalInset (final int value) {
     this.firstLevelHorizontalInset = value;
     notifyCfgListenersAboutChange();
   }
 
-  public int getFirstLevelHorizontalInset() {
+  public int getFirstLevelHorizontalInset () {
     return this.firstLevelHorizontalInset;
   }
 
-  public Color getPaperColor() {
+  public Color getPaperColor () {
     return this.paperColor;
   }
 
-  public void setPaperColor(final Color color) {
+  public void setPaperColor (final Color color) {
     this.paperColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public void setGridColor(final Color color) {
+  public void setGridColor (final Color color) {
     this.gridColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public Color getGridColor() {
+  public Color getGridColor () {
     return this.gridColor;
   }
 
-  public void setShowGrid(final boolean flag) {
+  public void setShowGrid (final boolean flag) {
     this.showGrid = flag;
     notifyCfgListenersAboutChange();
   }
 
-  public boolean isShowGrid() {
+  public boolean isShowGrid () {
     return this.showGrid;
   }
 
-  public void setGridStep(final int step) {
+  public void setGridStep (final int step) {
     this.gridStep = step;
     notifyCfgListenersAboutChange();
   }
 
-  public int getGridStep() {
+  public int getGridStep () {
     return this.gridStep;
   }
 
-  public void setRootBackgroundColor(final Color color) {
+  public void setRootBackgroundColor (final Color color) {
     this.rootBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public Color getRootBackgroundColor() {
+  public Color getRootBackgroundColor () {
     return this.rootBackgroundColor;
   }
 
-  public Color getFirstLevelBackgroundColor() {
+  public Color getFirstLevelBackgroundColor () {
     return this.firstLevelBackgroundColor;
   }
 
-  public void setFirstLevelBackgroundColor(final Color color) {
+  public void setFirstLevelBackgroundColor (final Color color) {
     this.firstLevelBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public void setOtherLevelBackgroundColor(final Color color) {
+  public void setOtherLevelBackgroundColor (final Color color) {
     this.otherLevelBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public Color getOtherLevelBackgroundColor() {
+  public Color getOtherLevelBackgroundColor () {
     return this.otherLevelBackgroundColor;
   }
 
-  public Color getRootTextColor() {
+  public Color getRootTextColor () {
     return this.rootTextColor;
   }
 
-  public void setRootTextColor(final Color color) {
+  public void setRootTextColor (final Color color) {
     this.rootTextColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public void setFirstLevelTextColor(final Color color) {
+  public void setFirstLevelTextColor (final Color color) {
     this.firstLevelTextColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public Color getFirstLevelTextColor() {
+  public Color getFirstLevelTextColor () {
     return this.firstLevelTextColor;
   }
 
-  public Color getOtherLevelTextColor() {
+  public Color getOtherLevelTextColor () {
     return this.otherLevelTextColor;
   }
 
-  public void setOtherLevelTextColor(final Color color) {
+  public void setOtherLevelTextColor (final Color color) {
     this.otherLevelTextColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public Color getElementBorderColor() {
+  public Color getElementBorderColor () {
     return this.elementBorderColor;
   }
 
-  public void setElementBorderColor(final Color color) {
+  public void setElementBorderColor (final Color color) {
     this.elementBorderColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public void setConnectorColor(final Color color) {
+  public void setConnectorColor (final Color color) {
     this.connectorColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public Color getConnectorColor() {
+  public Color getConnectorColor () {
     return this.connectorColor;
   }
 
-  public void setShadowColor(final Color color) {
+  public void setShadowColor (final Color color) {
     this.shadowColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public Color getShadowColor() {
+  public Color getShadowColor () {
     return this.shadowColor;
   }
 
-  public Color getCollapsatorBorderColor() {
+  public Color getCollapsatorBorderColor () {
     return this.collapsatorBorderColor;
   }
 
-  public void setCollapsatorBorderColor(final Color color) {
-    this.collapsatorBorderColor = color;
+  public void setCollapsatorBorderColor (final Color color) {
+    this.collapsatorBorderColor =  color;
     notifyCfgListenersAboutChange();
   }
 
-  public Color getCollapsatorBackgroundColor() {
+  public Color getCollapsatorBackgroundColor () {
     return this.collapsatorBackgroundColor;
   }
 
-  public void setCollapsatorBackgroundColor(final Color color) {
+  public void setCollapsatorBackgroundColor (final Color color) {
     this.collapsatorBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  public void setElementBorderWidth(final float value) {
+  public void setElementBorderWidth (final float value) {
     this.elementBorderWidth = value;
     notifyCfgListenersAboutChange();
   }
 
-  public float getElementBorderWidth() {
+  public float getElementBorderWidth () {
     return this.elementBorderWidth;
   }
 
-  public float getCollapsatorBorderWidth() {
+  public float getCollapsatorBorderWidth () {
     return this.collapsatorBorderWidth;
   }
 
-  public float getShadowOffset(){
+  public float getShadowOffset () {
     return this.shadowOffset;
   }
-  
-  public void setShadowOffset(final float value){
+
+  public void setShadowOffset (final float value) {
     this.shadowOffset = value;
   }
-  
-  public void setCollapsatorBorderWidth(final float width) {
+
+  public void setCollapsatorBorderWidth (final float width) {
     this.collapsatorBorderWidth = width;
     notifyCfgListenersAboutChange();
   }
 
-  public float getConnectorWidth() {
+  public float getConnectorWidth () {
     return this.connectorWidth;
   }
 
-  public void setConnectorWidth(final float value) {
+  public void setConnectorWidth (final float value) {
     this.connectorWidth = value;
     notifyCfgListenersAboutChange();
   }
 
-  public void setFont(final Font f) {
+  public void setFont (final Font f) {
     this.font = f;
     notifyCfgListenersAboutChange();
   }
 
-  public Font getFont() {
+  public Font getFont () {
     return this.font;
   }
 
-  public double getScale() {
+  public double getScale () {
     return this.scale;
   }
 
-  public void setScale(final double value) {
+  public void setScale (final double value) {
     this.scale = Math.max(0.01d, value);
     notifyCfgListenersAboutChange();
   }
 
-  public boolean isDropShadow() {
+  public boolean isDropShadow () {
     return this.dropShadow;
   }
 
-  public void setDropShadow(final boolean value) {
+  public void setDropShadow (final boolean value) {
     this.dropShadow = value;
     notifyCfgListenersAboutChange();
   }
 
-  public int getCollapsatorSize() {
+  public int getCollapsatorSize () {
     return this.collapsatorSize;
   }
 
-  public void setCollapsatorSize(final int size) {
+  public void setCollapsatorSize (final int size) {
     this.collapsatorSize = size;
     notifyCfgListenersAboutChange();
   }
 
-  public int getTextMargins() {
+  public int getTextMargins () {
     return this.textMargins;
   }
 
-  public void setTextMargins(final int value) {
+  public void setTextMargins (final int value) {
     this.textMargins = value;
     notifyCfgListenersAboutChange();
   }
 
-  public int getSelectLineGap() {
+  public int getSelectLineGap () {
     return this.selectLineGap;
   }
 
-  public void setSelectLineGap(final int value) {
+  public void setSelectLineGap (final int value) {
     this.selectLineGap = value;
     notifyCfgListenersAboutChange();
   }
