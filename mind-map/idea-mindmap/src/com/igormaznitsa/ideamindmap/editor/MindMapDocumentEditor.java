@@ -608,4 +608,10 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   public Project getProject() {
     return this.project;
   }
+
+  public void refreshConfiguration() {
+    this.mindMapPanel.refreshConfiguration();
+    this.mindMapPanel.revalidate();
+    this.mindMapPanel.repaint();
+  }
 }

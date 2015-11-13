@@ -1,5 +1,6 @@
 package com.igormaznitsa.ideamindmap.editor;
 
+import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
@@ -10,6 +11,7 @@ import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
 import com.igormaznitsa.mindmap.exporters.Exporters;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapConfigListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
@@ -29,7 +31,7 @@ import java.io.File;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class MindMapPanelControllerImpl implements MindMapPanelController {
+public class MindMapPanelControllerImpl implements MindMapPanelController, MindMapConfigListener {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
   private static final Logger LOGGER = Logger.getInstance(MindMapPanelControllerImpl.class);
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
@@ -40,6 +42,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
   public MindMapPanelControllerImpl(final MindMapDocumentEditor editor) {
     this.editor = editor;
     this.dialogProvider = new MindMapDialogProvider(editor.getProject());
+    MindMapApplicationSettings.findInstance().getConfig().addConfigurationListener(this);
   }
 
   public MindMapDialogProvider getDialogProvider() {
@@ -87,7 +90,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
 
   @Override
   public MindMapPanelConfig provideConfigForMindMapPanel(MindMapPanel mindMapPanel) {
-    return null;
+    return MindMapApplicationSettings.findInstance().getConfig();
   }
 
   @Override
@@ -565,5 +568,9 @@ public class MindMapPanelControllerImpl implements MindMapPanelController {
     }
     return result;
 
+  }
+
+  @Override public void onConfigurationPropertyChanged(final MindMapPanelConfig mindMapPanelConfig) {
+    this.editor.refreshConfiguration();
   }
 }

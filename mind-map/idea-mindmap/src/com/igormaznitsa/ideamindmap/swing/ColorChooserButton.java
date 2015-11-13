@@ -5,6 +5,7 @@ import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.ColorChooser;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.DefaultButtonModel;
 import javax.swing.ImageIcon;
@@ -28,7 +29,11 @@ public class ColorChooserButton extends JButton {
   public static final Color DIFF_COLORS = new Color(0,true);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
-  public ColorChooserButton(final DialogProvider dialogProvider) {
+  public ColorChooserButton(){
+    this(null);
+  }
+
+  public ColorChooserButton(@Nullable final DialogProvider dialogProvider) {
     super();
 
     final ColorChooserButton theInstance = this;
@@ -41,7 +46,7 @@ public class ColorChooserButton extends JButton {
         final PropertyEditor editor = PropertyEditorManager.findEditor(Color.class);
         if (editor == null) {
           LOGGER.error("Can't find registered color editor");
-          dialogProvider.msgError("Can't find color editor! unexpected state! Contact developer!");
+          if (dialogProvider != null) dialogProvider.msgError("Can't find color editor! unexpected state! Contact developer!");
           return;
         }
 

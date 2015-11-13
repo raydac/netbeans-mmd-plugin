@@ -13,7 +13,7 @@
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
-          <text value="Use internal web browser if possible"/>
+          <text value="Use internal web browser (if possible)"/>
         </properties>
       </component>
       <hspacer id="aa862">
@@ -28,7 +28,7 @@
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
-          <text value="Make relative path if possible"/>
+          <text value="Make relative path (if possible)"/>
         </properties>
       </component>
       <vspacer id="7397f">
