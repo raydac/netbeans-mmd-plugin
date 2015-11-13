@@ -67,7 +67,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
     }
     else if (fieldType == Font.class) {
       final Font font = (Font) value;
-      return font.getFontName() + ':' + Integer.toString(font.getStyle()) + ':' + Integer.toString(font.getSize());
+      return font.getFamily() + ':' + Integer.toString(font.getStyle()) + ':' + Integer.toString(font.getSize());
     }
     else
       throw new Error("Unexpected field type" + fieldType);

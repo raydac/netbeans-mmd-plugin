@@ -1,6 +1,7 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
+import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
@@ -9,7 +10,13 @@ import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
 import com.igormaznitsa.mindmap.exporters.Exporters;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapConfigListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -20,11 +27,16 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -342,7 +354,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   private void startOptionsEdit() {
-
+    ShowSettingsUtil.getInstance().showSettingsDialog(this.editor.getProject(),MindMapSettingsComponent.class);
   }
 
   private void editLinkForTopic(final Topic topic) {
