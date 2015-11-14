@@ -21,6 +21,17 @@
           <verticalAlignment value="1"/>
         </properties>
       </component>
+      <grid id="369e1" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="f6bbd" class="com.igormaznitsa.ideamindmap.swing.DonateButton">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>

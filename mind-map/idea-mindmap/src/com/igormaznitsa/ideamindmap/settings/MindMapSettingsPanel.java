@@ -3,6 +3,7 @@ package com.igormaznitsa.ideamindmap.settings;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FontSelector;
+import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.intellij.application.options.colors.FontEditorPreview;
@@ -27,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
+import java.net.URI;
 
 public class MindMapSettingsPanel {
   private JPanel mainPanel;

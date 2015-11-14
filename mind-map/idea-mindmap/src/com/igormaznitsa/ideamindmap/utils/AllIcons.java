@@ -29,6 +29,7 @@ public class AllIcons {
     public static final Icon FILE_LINK_BIG = IconLoader.getIcon("/icons/file_link.png");
     public static final Icon URL_LINK_BIG = IconLoader.getIcon("/icons/url_link.png");
     public static final Icon FILE_MANAGER = IconLoader.getIcon("/icons/file_manager.png");
+    public static final Icon COINS = IconLoader.getIcon("/icons/coins_in_hand.png");
   }
 
   public static class PopUp {
