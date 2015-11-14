@@ -17,6 +17,8 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
 
   private static final String KEY_USE_INSIDE_BROWSER = "useInsideBrowser";
   private static final String KEY_MAKE_RELATIVE_PATH = "makeRelativePath";
+  private static final String KEY_COPY_COLOR_INFO_FROM_PARENT= "copyParentColorInfoInNew";
+  private static final String KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET= "unfoldCollapsedTopicInDrop";
 
   public MindMapFacetConfiguration() {
   }
@@ -55,6 +57,22 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
 
   public boolean isUseInsideBrowser() {
     return this.preferences.getBoolean(KEY_USE_INSIDE_BROWSER,false);
+  }
+
+  public boolean isCopyColorInformationFromParent() {
+    return this.preferences.getBoolean(KEY_COPY_COLOR_INFO_FROM_PARENT,true);
+  }
+
+  public void setCopyColorInformationFromParent(final boolean flag) {
+    this.preferences.putBoolean(KEY_COPY_COLOR_INFO_FROM_PARENT,flag);
+  }
+
+  public boolean isUnfoldTopicWhenItIsDropTarget() {
+    return this.preferences.getBoolean(KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET,true);
+  }
+
+  public void setUnfoldTopicWhenItIsDropTarget(final boolean flag) {
+    this.preferences.putBoolean(KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET,flag);
   }
 
   public void setUseInsideBrowser(final boolean flag) {

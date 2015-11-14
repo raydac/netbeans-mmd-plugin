@@ -419,7 +419,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   @Nullable
-  private final MindMapFacet findFacet(){
+  public final MindMapFacet findFacet(){
     return MindMapFacet.getInstance(IdeaUtils.findModuleForFile(this.project, this.file));
   }
 

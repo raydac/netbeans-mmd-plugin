@@ -1,5 +1,6 @@
 package com.igormaznitsa.ideamindmap.editor;
 
+import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
@@ -31,6 +32,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -67,17 +69,19 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   @Override
-  public boolean isUnfoldCollapsedTopicDropTarget(MindMapPanel mindMapPanel) {
-    return false;
+  public boolean isUnfoldCollapsedTopicDropTarget(@NotNull final MindMapPanel mindMapPanel) {
+    final MindMapFacet facet = this.editor.findFacet();
+    return facet == null ? true : facet.getConfiguration().isUnfoldTopicWhenItIsDropTarget();
   }
 
   @Override
-  public boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel mindMapPanel) {
-    return false;
+  public boolean isCopyColorInfoFromParentToNewChildAllowed(@NotNull final MindMapPanel mindMapPanel) {
+    final MindMapFacet facet = this.editor.findFacet();
+    return facet == null ? true : facet.getConfiguration().isCopyColorInformationFromParent();
   }
 
   @Override
-  public boolean isSelectionAllowed(MindMapPanel mindMapPanel) {
+  public boolean isSelectionAllowed(@NotNull final MindMapPanel mindMapPanel) {
     return true;
   }
 
