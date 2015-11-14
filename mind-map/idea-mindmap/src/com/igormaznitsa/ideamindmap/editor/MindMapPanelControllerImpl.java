@@ -2,6 +2,7 @@ package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
+import com.igormaznitsa.ideamindmap.swing.AboutForm;
 import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
@@ -554,7 +555,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   public void showAbout() {
-    //                IdeaUtils.plainMessageOk(editor.getProject(), BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());
+    AboutForm.show(this.editor.getProject());
   }
 
   @Override

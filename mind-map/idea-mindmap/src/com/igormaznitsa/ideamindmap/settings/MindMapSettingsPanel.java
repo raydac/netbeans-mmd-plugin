@@ -1,5 +1,6 @@
 package com.igormaznitsa.ideamindmap.settings;
 
+import com.igormaznitsa.ideamindmap.swing.AboutForm;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FontSelector;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
@@ -100,7 +101,7 @@ public class MindMapSettingsPanel {
 
     buttonAbout.addActionListener(new ActionListener() {
       @Override public void actionPerformed(final ActionEvent e) {
-
+        AboutForm.show(mainPanel);
       }
     });
 
