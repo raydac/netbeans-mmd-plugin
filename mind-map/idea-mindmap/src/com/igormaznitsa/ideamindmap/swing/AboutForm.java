@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.net.URI;
