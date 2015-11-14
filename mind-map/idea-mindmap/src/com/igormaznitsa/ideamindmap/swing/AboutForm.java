@@ -1,6 +1,8 @@
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +57,7 @@ public class AboutForm {
 
 
   public AboutForm() {
-    this.htmlLabelText.setText(BUNDLE.getString("AboutText"));
+    this.htmlLabelText.setText(BUNDLE.getString("AboutText").replace("${version}", PluginManager.getPlugin(PluginId.getId("nb-mind-map-idea")).getVersion()));
     this.htmlLabelText.addLinkListener(new JHtmlLabel.LinkListener() {
       @Override public void onLinkActivated(final JHtmlLabel source, final String link) {
         try {
