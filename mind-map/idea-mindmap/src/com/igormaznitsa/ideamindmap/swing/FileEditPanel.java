@@ -17,7 +17,6 @@ package com.igormaznitsa.ideamindmap.swing;
 
 import java.io.File;
 import java.util.ResourceBundle;
-import javax.swing.JFileChooser;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
@@ -40,6 +39,15 @@ public final class FileEditPanel extends javax.swing.JPanel {
 
     public String getPath() {
       return this.path;
+    }
+
+    public boolean isValid() {
+      try {
+        return this.path.isEmpty() ? true : new File(this.path).exists();
+      }
+      catch (Exception ex) {
+        return false;
+      }
     }
 
     public boolean isShowWithSystemTool() {
@@ -142,20 +150,12 @@ public final class FileEditPanel extends javax.swing.JPanel {
   }
 
   private void buttonChooseFileActionPerformed(java.awt.event.ActionEvent evt) {
-    final File theFile = new File(this.labelBrowseCurrentLink.getText().trim());
-    final File parent = theFile.getParentFile();
+    final String text = this.textFieldFilePath.getText().trim();
+    final File predefinedFile = text.isEmpty() ? this.projectFolder : new File(text);
 
-    final JFileChooser chooser = new JFileChooser(parent == null ? this.projectFolder : parent);
-    if (theFile.isFile()) {
-      chooser.setSelectedFile(theFile);
-    }
-    chooser.setApproveButtonText("Select");
-    chooser.setDialogTitle("Select file");
-    chooser.setMultiSelectionEnabled(false);
-    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    final File selected = IdeaUtils.chooseFile(this, false, "Select file", predefinedFile, null);
 
-    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      final File selected = chooser.getSelectedFile();
+    if (selected != null) {
       this.textFieldFilePath.setText(selected.getAbsolutePath());
     }
   }

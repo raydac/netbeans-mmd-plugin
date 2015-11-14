@@ -30,6 +30,11 @@ public class AllIcons {
     public static final Icon URL_LINK_BIG = IconLoader.getIcon("/icons/url_link.png");
     public static final Icon FILE_MANAGER = IconLoader.getIcon("/icons/file_manager.png");
     public static final Icon COINS = IconLoader.getIcon("/icons/coins_in_hand.png");
+    public static final Icon IMPORT = IconLoader.getIcon("/icons/disk.png");
+    public static final Icon EXPORT = IconLoader.getIcon("/icons/file_save.png");
+    public static final Icon COPY = IconLoader.getIcon("/icons/page_copy.png");
+    public static final Icon PASTE = IconLoader.getIcon("/icons/paste_plain.png");
+    public static final Icon CLEARALL = IconLoader.getIcon("/icons/cross.png");
   }
 
   public static class PopUp {

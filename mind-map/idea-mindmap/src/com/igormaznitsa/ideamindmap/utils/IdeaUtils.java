@@ -1,7 +1,6 @@
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
-import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
@@ -9,15 +8,14 @@ import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.intellij.facet.FacetManager;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
@@ -27,8 +25,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -36,15 +37,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 public enum IdeaUtils {
   ;
   private static final Logger LOGGER = Logger.getInstance(IdeaUtils.class);
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   public static final MMapURI EMPTY_URI;
   public static final String PROJECT_KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
-
 
   static {
     try {
@@ -56,10 +58,10 @@ public enum IdeaUtils {
   }
 
   @Nullable
-  public static VirtualFile findPotentialRootFolderForModule(@Nullable final Module module){
+  public static VirtualFile findPotentialRootFolderForModule(@Nullable final Module module) {
     VirtualFile moduleRoot = module == null ? null : module.getModuleFile();
-    if(moduleRoot !=null){
-      moduleRoot = module.getModuleFile().getParent();
+    if (moduleRoot != null) {
+      moduleRoot = moduleRoot.isDirectory() ? moduleRoot : moduleRoot.getParent();
       if (moduleRoot.getName().equals(".idea")) {
         moduleRoot = moduleRoot.getParent();
       }
@@ -68,25 +70,26 @@ public enum IdeaUtils {
   }
 
   @Nullable
-  public static VirtualFile findKnowledgeFolderForModule(@Nullable final Module module, final boolean createIfMissing){
+  public static VirtualFile findKnowledgeFolderForModule(@Nullable final Module module, final boolean createIfMissing) {
     final VirtualFile rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
     final AtomicReference<VirtualFile> result = new AtomicReference<>();
-    if (rootFolder != null){
+    if (rootFolder != null) {
       result.set(rootFolder.findChild(PROJECT_KNOWLEDGE_FOLDER_NAME));
-      if (result.get()== null || !result.get().isDirectory()){
+      if (result.get() == null || !result.get().isDirectory()) {
         if (createIfMissing) {
           ApplicationManager.getApplication().runWriteAction(new Runnable() {
             @Override public void run() {
               try {
                 result.set(VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
-                LOGGER.info("Created knowledge folder for "+module);
+                LOGGER.info("Created knowledge folder for " + module);
               }
               catch (IOException ex) {
-                LOGGER.error("Can't create knowledge folder for "+module,ex);
+                LOGGER.error("Can't create knowledge folder for " + module, ex);
               }
             }
           });
-        }else{
+        }
+        else {
           result.set(null);
         }
       }
@@ -95,7 +98,7 @@ public enum IdeaUtils {
   }
 
   @Nullable
-  public static Module findModuleForFile(@Nullable final Project project, @Nullable final VirtualFile file){
+  public static Module findModuleForFile(@Nullable final Project project, @Nullable final VirtualFile file) {
     return project == null || file == null ? null : ModuleUtil.findModuleForFile(file, project);
   }
 
@@ -179,16 +182,18 @@ public enum IdeaUtils {
     return UIUtil.isUnderDarcula();
   }
 
-
   private static class DialogComponent extends DialogWrapper {
     private final JComponent component;
+    private final JComponent prefferedComponent;
 
-    public DialogComponent(final Project project, final String title, final JComponent component, final boolean defaultButtonEnabled) {
+    public DialogComponent(final Project project, final String title, final JComponent component, final JComponent prefferedComponent, final boolean defaultButtonEnabled) {
       super(project, false, IdeModalityType.PROJECT);
       this.component = component;
+      this.prefferedComponent = prefferedComponent == null ? component : prefferedComponent;
       init();
       setTitle(title);
-      if (!defaultButtonEnabled) getRootPane().setDefaultButton(null);
+      if (!defaultButtonEnabled)
+        getRootPane().setDefaultButton(null);
     }
 
     @Nullable
@@ -204,18 +209,40 @@ public enum IdeaUtils {
     }
   }
 
+  public static File chooseFile(final Component parent, final boolean filesOnly, final String title, final File selectedFile, final FileFilter filter) {
+    final JFileChooser chooser = new JFileChooser(selectedFile);
+
+    chooser.setApproveButtonText("Select");
+    if (filter != null)
+      chooser.setFileFilter(filter);
+
+    chooser.setDialogTitle(title);
+    chooser.setMultiSelectionEnabled(false);
+
+    if (filesOnly)
+      chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    else
+      chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+    if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+      return chooser.getSelectedFile();
+    }
+    else {
+      return null;
+    }
+  }
 
   public static String editText(final Project project, final String title, final String text) {
     final PlainTextEditor editor = new PlainTextEditor(project, text);
     editor.setPreferredSize(new Dimension(550, 450));
 
-    final DialogComponent dialog = new DialogComponent(project, title, editor, false);
+    final DialogComponent dialog = new DialogComponent(project, title, editor, editor.getEditor(), false);
 
-    return dialog.showAndGet() ? editor.getText() : null;
+    return dialog.showAndGet() ? editor.getEditor().getText() : null;
   }
 
   public static boolean plainMessageOkCancel(final Project project, final String title, final JComponent centerComponent) {
-    final DialogComponent dialog = new DialogComponent(project,title,centerComponent, true);
+    final DialogComponent dialog = new DialogComponent(project, title, centerComponent, centerComponent, true);
     return dialog.showAndGet();
   }
 
@@ -240,7 +267,7 @@ public enum IdeaUtils {
     return result;
   }
 
-  public static Color html2color (final String str, final boolean hasAlpha) {
+  public static Color html2color(final String str, final boolean hasAlpha) {
     Color result = null;
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
@@ -259,8 +286,14 @@ public enum IdeaUtils {
     filePathEditor.doLayout();
     filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
 
-    if (plainMessageOkCancel(editor.getProject(),title,filePathEditor)) {
-      return filePathEditor.getData();
+    if (plainMessageOkCancel(editor.getProject(), title, filePathEditor)) {
+      final FileEditPanel.DataContainer result = filePathEditor.getData();
+      if (result.isValid()){
+        return result;
+      }else{
+        Messages.showErrorDialog(editor.getMindMapPanel(),String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),result.getPath()),"Error");
+        return null;
+      }
     }
     else {
       return null;
@@ -273,7 +306,7 @@ public enum IdeaUtils {
     uriEditor.doLayout();
     uriEditor.setPreferredSize(new Dimension(450, uriEditor.getPreferredSize().height));
 
-    if (plainMessageOkCancel(editor.getProject(), title, uriEditor)){
+    if (plainMessageOkCancel(editor.getProject(), title, uriEditor)) {
       final String text = uriEditor.getText();
       if (text.isEmpty()) {
         return EMPTY_URI;
@@ -282,13 +315,14 @@ public enum IdeaUtils {
         return new MMapURI(text.trim());
       }
       catch (URISyntaxException ex) {
-        editor.getDialogProvider().msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
+        editor.getDialogProvider()
+          .msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
-    }else{
+    }
+    else {
       return null;
     }
   }
-
 
 }

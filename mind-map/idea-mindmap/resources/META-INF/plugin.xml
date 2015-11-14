@@ -1,19 +1,24 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <vendor logo="/icons/logo/logo@2x.png" url="https://github.com/raydac/netbeans-mmd-plugin">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
 
     <description><![CDATA[
-      A Port of <a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">the NetBeans Mind Map editor</a> to create and edit mind maps represented by MMD files.
+      <img src="https://github.com/raydac/netbeans-mmd-plugin/blob/master/assets/screenshot1thmb.jpg?raw=true"><br>
+      Ported version of <a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">the NetBeans Mind Map editor</a> to create and edit mind maps represented by MMD files.<br>
+      <ul>
+        <li><a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">The Project home page</a></li>
+        <li><a href="https://www.youtube.com/watch?v=7TUU25dsOfM">The Screencast about the NetBeans version</a></li>
+      </ul>
     ]]></description>
 
     <change-notes><![CDATA[
         <p>1.0.0</p>
         <ul>
-            <li>Initial port</li>
+            <li>Initial version (ported functionality of the NB 1.1.1 version, without refactoring support)</li>
         </ul>
      ]]>
     </change-notes>
