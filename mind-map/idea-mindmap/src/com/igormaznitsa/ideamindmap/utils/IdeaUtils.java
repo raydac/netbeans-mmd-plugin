@@ -312,11 +312,12 @@ public enum IdeaUtils {
         return EMPTY_URI;
       }
       try {
+        if (!new URI(text).isAbsolute()) throw new URISyntaxException(text,"URI is not absolute one");
         return new MMapURI(text.trim());
       }
       catch (URISyntaxException ex) {
         editor.getDialogProvider()
-          .msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
+          .msgError(String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     }
