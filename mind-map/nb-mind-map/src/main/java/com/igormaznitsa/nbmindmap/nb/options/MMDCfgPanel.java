@@ -105,6 +105,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     jLabel4 = new javax.swing.JLabel();
     spinnerSelectLineGap = new javax.swing.JSpinner();
     buttonAbout = new javax.swing.JButton();
+    donateButton1 = new com.igormaznitsa.nbmindmap.nb.swing.DonateButton();
 
     setLayout(new java.awt.BorderLayout());
 
@@ -685,18 +686,25 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(buttonAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(buttonAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jPanel1, jPanel3, jPanel4, jPanel5});
+
+    jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {buttonAbout, donateButton1});
 
     jPanel6Layout.setVerticalGroup(
       jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel6Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(buttonAbout)
+          .addGroup(jPanel6Layout.createSequentialGroup()
+            .addComponent(buttonAbout)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addGroup(jPanel6Layout.createSequentialGroup()
             .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1059,6 +1067,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserRootBackground;
   private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserRootText;
   private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserSelectLine;
+  private com.igormaznitsa.nbmindmap.nb.swing.DonateButton donateButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;

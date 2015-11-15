@@ -40,6 +40,7 @@ public enum Icons {
   GOLDBALL("goldball16.png"), //NOI18N
   FILE("disk16.png"), //NOI18N
   CLONE("draw_clone16.png"), //NOI18N
+  COINS("coins_in_hand16.png"), //NOI18N
   SHOWJUMPS("showjumps16.png"); //NOI18N
 
   private final ImageIcon icon;
