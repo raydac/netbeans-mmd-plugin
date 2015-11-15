@@ -10,7 +10,7 @@
   </parent>
   
   <artifactId>nb-mind-map</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.1.1</version>
   <packaging>nbm</packaging>
 
   <name>NetBeans Mind Map Editor plugin</name>
@@ -92,7 +92,7 @@
           <licenseFile>src/main/nbm/LICENSE-2.0.txt</licenseFile>
           <codeNameBase>com.igormaznitsa.nbmindmap/1</codeNameBase>
           <requiresRestart>true</requiresRestart>
-          <keystore>private/keystore.jks</keystore>
+          <keystore>../private/keystore.jks</keystore>
           <keystorealias>iam</keystorealias>
         </configuration>
       </plugin>
