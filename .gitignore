@@ -10,3 +10,7 @@ buildNumber.properties
 /build.properties
 /mind-map/nb-mind-map/private/
 /mind-map/nb-mind-map/build.properties
+/mind-map/idea-mindmap/.idea/
+/mind-map/idea-mindmap/out/
+/mind-map/idea-mindmap/idea-mindmap.iml
+/mind-map/idea-mindmap/idea-mindmap.zip

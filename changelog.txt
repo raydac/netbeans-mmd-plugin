@@ -1,5 +1,10 @@
-1.1.1
-- Improved focus loosing of topic text editor, now the editing text saved if editor lost focus
+1.1.1 (maintenance)
+- very small refactoring
+- added support of word-wrap mode change into the plain text editor
+- improved focus loose processing for topic text editor, now the editing text saved if editor lost focus (issue #1)
+- "leftSide" attribute added into standard attribute list to support removing of topic contains only the attribute
+- added extra check for file existence in file link edit
+- fixed seldom NPE in refactoring module to avoid NPE if not found Project for FileObject or the Project doesn't have folder (issue #4)
 
 1.1.0 (09-oct-2015)
 - minor bugfix and refactoring

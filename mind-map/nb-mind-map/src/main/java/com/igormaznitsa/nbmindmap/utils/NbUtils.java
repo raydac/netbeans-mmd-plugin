@@ -29,6 +29,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -62,11 +63,11 @@ public final class NbUtils {
     FAVORITES("org-netbeans-modules-favorites-Select.instance");
     private final String actionName;
 
-    private SelectIn(final String actionInstance) {
+    private SelectIn (final String actionInstance) {
       this.actionName = actionInstance;
     }
 
-    public boolean select(final Object source, final Object object) {
+    public boolean select (final Object source, final Object object) {
       boolean result = false;
       final Action action = FileUtil.getConfigObject("Actions/Window/SelectDocumentNode/" + actionName, ContextAwareAction.class); //NOI18N
       if (action != null) {
@@ -127,10 +128,10 @@ public final class NbUtils {
     }
   }
 
-  private NbUtils() {
+  private NbUtils () {
   }
 
-  public static DataObject extractDataObject(final Object object) {
+  public static DataObject extractDataObject (final Object object) {
     if (object instanceof DataObject) {
       return (DataObject) object;
     }
@@ -151,7 +152,7 @@ public final class NbUtils {
     return null;
   }
 
-  public static FileObject extractFileObject(final Object object) {
+  public static FileObject extractFileObject (final Object object) {
     if (object instanceof DataObject) {
       return ((DataObject) object).getPrimaryFile();
     }
@@ -168,7 +169,7 @@ public final class NbUtils {
     return null;
   }
 
-  public static Node extractNode(final Object object) {
+  public static Node extractNode (final Object object) {
     if (object instanceof DataObject) {
       return ((DataObject) object).getNodeDelegate();
     }
@@ -186,69 +187,69 @@ public final class NbUtils {
     }
     else if (object instanceof Lookup) {
       return ((Lookup) object).lookup(Node.class);
-    } else if (object instanceof Project){
-      try{
-        final DataObject dobj = DataObject.find(((Project)object).getProjectDirectory());
+    }
+    else if (object instanceof Project) {
+      try {
+        final DataObject dobj = DataObject.find(((Project) object).getProjectDirectory());
         return dobj.getNodeDelegate();
-      }catch(DataObjectNotFoundException ex){
+      }
+      catch (DataObjectNotFoundException ex) {
         // to do nothing
       }
     }
     return null;
   }
 
-  public static int calculateBrightness(final Color color) {
+  public static int calculateBrightness (final Color color) {
     return (int) Math.sqrt(
-            color.getRed() * color.getRed() * .241d
-            + color.getGreen() * color.getGreen() * .691d
-            + color.getBlue() * color.getBlue() * .068d);
+        color.getRed() * color.getRed() * .241d
+        + color.getGreen() * color.getGreen() * .691d
+        + color.getBlue() * color.getBlue() * .068d);
   }
 
-  public static Color extractCommonColorForColorChooserButton(final String colorAttribute, final Topic[] topics) {
+  public static Color extractCommonColorForColorChooserButton (final String colorAttribute, final Topic[] topics) {
     Color result = null;
     for (final Topic t : topics) {
       final Color color = html2color(t.getAttribute(colorAttribute), false);
       if (result == null) {
         result = color;
       }
-      else {
-        if (!result.equals(color)) {
-          return ColorChooserButton.DIFF_COLORS;
-        }
+      else if (!result.equals(color)) {
+        return ColorChooserButton.DIFF_COLORS;
       }
     }
     return result;
   }
 
-  public static Preferences getPreferences() {
+  public static Preferences getPreferences () {
     return NbPreferences.forModule(MMDCfgOptionsPanelController.class);
   }
 
-  public static void msgError(final String text) {
+  public static void msgError (final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.ERROR_MESSAGE));
   }
 
-  public static void msgInfo(final String text) {
+  public static void msgInfo (final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.INFORMATION_MESSAGE));
   }
 
-  public static void msgWarn(final String text) {
+  public static void msgWarn (final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.WARNING_MESSAGE));
   }
 
-  public static boolean msgConfirmOkCancel(final String title, final String query) {
+  public static boolean msgConfirmOkCancel (final String title, final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.OK_CANCEL_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     return NotifyDescriptor.OK_OPTION.equals(obj);
   }
 
-  public static boolean msgConfirmYesNo(final String title, final String query) {
+  public static boolean msgConfirmYesNo (final String title, final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
-  public static Boolean msgConfirmYesNoCancel(final String title, final String query) {
+  public static Boolean msgConfirmYesNoCancel (final String title, final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_CANCEL_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     if (NotifyDescriptor.CANCEL_OPTION.equals(obj)) {
@@ -257,41 +258,42 @@ public final class NbUtils {
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
-  public static boolean msgComponentOkCancel(final String title, final JComponent component) {
+  public static boolean msgComponentOkCancel (final String title, final JComponent component) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(component, title, NotifyDescriptor.OK_CANCEL_OPTION);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
 
-  public static void msgInfo(final JComponent component) {
+  public static void msgInfo (final JComponent component) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(component, NotifyDescriptor.INFORMATION_MESSAGE));
   }
 
-  public static boolean plainMessageOkCancel(final String title, final JComponent compo) {
+  public static boolean plainMessageOkCancel (final String title, final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(compo, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
 
-  public static void plainMessageOk(final String title, final JComponent compo) {
+  public static void plainMessageOk (final String title, final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Message(compo, NotifyDescriptor.PLAIN_MESSAGE);
     desc.setTitle(title);
     DialogDisplayer.getDefault().notify(desc);
   }
 
-  public static String editText(final String title, final String text) {
+  public static String editText (final String title, final String text) {
     final PlainTextEditor textEditor = new PlainTextEditor(text);
-    try{
-    if (plainMessageOkCancel(title, textEditor)) {
-      return textEditor.getText();
+    try {
+      if (plainMessageOkCancel(title, textEditor)) {
+        return textEditor.getText();
+      }
+      else {
+        return null;
+      }
     }
-    else {
-      return null;
-    }
-    }finally{
+    finally {
       textEditor.dispose();
     }
   }
 
-  public static MMapURI editURI(final String title, final MMapURI uri) {
+  public static MMapURI editURI (final String title, final MMapURI uri) {
     final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
 
     textEditor.doLayout();
@@ -316,22 +318,27 @@ public final class NbUtils {
     }
   }
 
-  public static FileEditPanel.DataContainer editFilePath(final String title, final File projectFolder, final FileEditPanel.DataContainer data) {
+  public static FileEditPanel.DataContainer editFilePath (final String title, final File projectFolder, final FileEditPanel.DataContainer data) {
     final FileEditPanel filePathEditor = new FileEditPanel(projectFolder, data);
 
     filePathEditor.doLayout();
     filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
 
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(filePathEditor, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
+    FileEditPanel.DataContainer result = null;
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
-      return filePathEditor.getData();
+      result = filePathEditor.getData();
+      if (result != null) {
+        if (!result.isValid()) {
+          NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
+        }
+        result = null;
+      }
     }
-    else {
-      return null;
-    }
+    return result;
   }
 
-  public static boolean browseURI(final URI uri, final boolean preferInsideBrowserIfPossible) {
+  public static boolean browseURI (final URI uri, final boolean preferInsideBrowserIfPossible) {
     try {
       if (preferInsideBrowserIfPossible) {
         HtmlBrowser.URLDisplayer.getDefault().showURL(uri.toURL());
@@ -347,10 +354,10 @@ public final class NbUtils {
     }
   }
 
-  public static void openInSystemViewer(final File file) {
+  public static void openInSystemViewer (final File file) {
     final Runnable startEdit = new Runnable() {
       @Override
-      public void run() {
+      public void run () {
         boolean ok = false;
         if (Desktop.isDesktopSupported()) {
           final Desktop dsk = Desktop.getDesktop();
@@ -367,7 +374,7 @@ public final class NbUtils {
         if (!ok) {
           SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void run() {
+            public void run () {
               NbUtils.msgError("Can't open file in system viewer! See the log!");//NOI18N
               Toolkit.getDefaultToolkit().beep();
             }
@@ -378,7 +385,7 @@ public final class NbUtils {
     final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
     thr.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
       @Override
-      public void uncaughtException(final Thread t, final Throwable e) {
+      public void uncaughtException (final Thread t, final Throwable e) {
         logger.error("Detected uncaught exception in openInSystemViewer() for file " + file, e);
       }
     });

@@ -44,6 +44,16 @@ public final class FileEditPanel extends javax.swing.JPanel {
     public boolean isEmpty() {
       return this.path.trim().isEmpty();
     }
+    
+    public boolean isValid () {
+      try {
+        return this.path.isEmpty() ? true : new File(this.path).exists();
+      }
+      catch (Exception ex) {
+        return false;
+      }
+    }
+
   }
 
   private static final long serialVersionUID = -6683682013891751388L;
@@ -144,7 +154,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_labelBrowseCurrentLinkMouseClicked
 
   private void buttonChooseFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseFileActionPerformed
-    final File theFile = new File(this.labelBrowseCurrentLink.getText().trim());
+    final File theFile = new File(this.textFieldFilePath.getText().trim());
     final File parent = theFile.getParentFile();
 
     final JFileChooser chooser = new JFileChooser(parent == null ? this.projectFolder : parent);
