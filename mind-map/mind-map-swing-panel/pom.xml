@@ -8,7 +8,7 @@
     </parent>
     
     <artifactId>mind-map-swing-panel</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
     
     <description>Swing based panel to show and interact with mind map</description>
