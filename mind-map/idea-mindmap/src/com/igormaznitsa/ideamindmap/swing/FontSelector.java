@@ -25,11 +25,11 @@ public class FontSelector implements ActionListener {
 
   public FontSelector(final Font initial) {
 
-    final DefaultComboBoxModel<String> modelName = new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+    final DefaultComboBoxModel<String> modelName = new DefaultComboBoxModel<String>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
     this.comboBoxName.setModel(modelName);
     this.comboBoxName.setSelectedItem(initial.getFamily());
 
-    final DefaultComboBoxModel<String> modelStyle = new DefaultComboBoxModel<>(new String[] { "Plain", "Bold", "Italic", "Bold+Italic" });
+    final DefaultComboBoxModel<String> modelStyle = new DefaultComboBoxModel<String>(new String[] { "Plain", "Bold", "Italic", "Bold+Italic" });
     this.comboBoxStyle.setModel(modelStyle);
 
     this.textArea.setWrapStyleWord(true);
@@ -39,11 +39,11 @@ public class FontSelector implements ActionListener {
 
     selectForStyle(initial.getStyle());
 
-    final List<Integer> sizes = new ArrayList<>();
+    final List<Integer> sizes = new ArrayList<Integer>();
     for(int i=3;i<72;i++){
       sizes.add(i);
     }
-    final DefaultComboBoxModel<Integer> modelSize = new DefaultComboBoxModel<>(sizes.toArray(new Integer[]{sizes.size()}));
+    final DefaultComboBoxModel<Integer> modelSize = new DefaultComboBoxModel<Integer>(sizes.toArray(new Integer[]{sizes.size()}));
     this.comboBoxSize.setModel(modelSize);
 
     this.comboBoxSize.setSelectedItem(initial.getSize());
@@ -89,7 +89,7 @@ public class FontSelector implements ActionListener {
   public Font getValue() {
     final String family = (String) this.comboBoxName.getSelectedItem();
     final int style = getFontStyle();
-    final int size = (int)this.comboBoxSize.getSelectedItem();
+    final int size = (Integer)this.comboBoxSize.getSelectedItem();
     return new Font(family,style,size);
   }
 

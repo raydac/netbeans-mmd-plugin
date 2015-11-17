@@ -19,7 +19,7 @@ public class DeclaredFieldsSerializer implements Serializable {
   private static final Logger LOGGER = Logger.getInstance(DeclaredFieldsSerializer.class);
 
   @Property
-  private final Map<String, String> storage = new TreeMap<>(new Comparator<String>() {
+  private final Map<String, String> storage = new TreeMap<String, String>(new Comparator<String>() {
     @Override public int compare(String o1, String o2) {
       return o1.compareTo(o2);
     }

@@ -63,7 +63,7 @@ public class MindMapPanel extends JPanel {
   private final MindMapPanelController controller;
 
   private static final int ALL_KEY_MODIFIERS = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.META_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK;
-  
+
   public static class DraggedElement {
 
     public enum Modifier {
@@ -78,7 +78,7 @@ public class MindMapPanel extends JPanel {
     private final Point currentPosition;
     private final DraggedElement.Modifier modifier;
 
-    public DraggedElement(final AbstractElement element, final MindMapPanelConfig cfg, final Point mousePointerOffset, final DraggedElement.Modifier modifier) {
+    public DraggedElement (final AbstractElement element, final MindMapPanelConfig cfg, final Point mousePointerOffset, final DraggedElement.Modifier modifier) {
       this.element = element;
       this.prerenderedImage = Utils.renderWithTransparency(0.65f, element, cfg);
       this.mousePointerOffset = mousePointerOffset;
@@ -86,43 +86,43 @@ public class MindMapPanel extends JPanel {
       this.modifier = modifier;
     }
 
-    public DraggedElement.Modifier getModifier() {
+    public DraggedElement.Modifier getModifier () {
       return this.modifier;
     }
 
-    public boolean isPositionInside() {
+    public boolean isPositionInside () {
       return this.element.getBounds().contains(this.currentPosition);
     }
 
-    public AbstractElement getElement() {
+    public AbstractElement getElement () {
       return this.element;
     }
 
-    public void updatePosition(final Point point) {
+    public void updatePosition (final Point point) {
       this.currentPosition.setLocation(point);
     }
 
-    public Point getPosition() {
+    public Point getPosition () {
       return this.currentPosition;
     }
 
-    public Point getMousePointerOffset() {
+    public Point getMousePointerOffset () {
       return this.mousePointerOffset;
     }
 
-    public int getDrawPositionX() {
+    public int getDrawPositionX () {
       return this.currentPosition.x - this.mousePointerOffset.x;
     }
 
-    public int getDrawPositionY() {
+    public int getDrawPositionY () {
       return this.currentPosition.y - this.mousePointerOffset.y;
     }
 
-    public Image getImage() {
+    public Image getImage () {
       return this.prerenderedImage;
     }
 
-    public void draw(final Graphics2D gfx) {
+    public void draw (final Graphics2D gfx) {
       final int x = getDrawPositionX();
       final int y = getDrawPositionY();
       gfx.drawImage(this.prerenderedImage, x, y, null);
@@ -143,8 +143,8 @@ public class MindMapPanel extends JPanel {
   private final JTextArea textEditor = new JTextArea();
   private final JPanel textEditorPanel = new JPanel(new BorderLayout(0, 0));
   private transient AbstractElement elementUnderEdit = null;
-  private transient int [] pathToPrevTopicBeforeEdit = null;
-  
+  private transient int[] pathToPrevTopicBeforeEdit = null;
+
   private final List<Topic> selectedTopics = new ArrayList<Topic>();
 
   private transient MouseSelectedArea mouseDragSelection = null;
@@ -155,7 +155,7 @@ public class MindMapPanel extends JPanel {
 
   private final MindMapPanelConfig config;
 
-  public MindMapPanel(final MindMapPanelController controller) {
+  public MindMapPanel (final MindMapPanelController controller) {
     super(null);
     this.controller = controller;
 
@@ -167,7 +167,7 @@ public class MindMapPanel extends JPanel {
     this.textEditor.addKeyListener(new KeyAdapter() {
 
       @Override
-      public void keyPressed(final KeyEvent e) {
+      public void keyPressed (final KeyEvent e) {
         switch (e.getKeyCode()) {
           case KeyEvent.VK_ENTER: {
             e.consume();
@@ -181,7 +181,7 @@ public class MindMapPanel extends JPanel {
               endEdit(true);
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
-                public void run() {
+                public void run () {
                   final Topic theTopic = model.findForPositionPath(topicPosition);
                   if (theTopic != null) {
                     makeNewChildAndStartEdit(theTopic, null);
@@ -197,9 +197,9 @@ public class MindMapPanel extends JPanel {
       }
 
       @Override
-      public void keyTyped(final KeyEvent e) {
+      public void keyTyped (final KeyEvent e) {
         if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-          if (!e.isControlDown() && !e.isShiftDown()) {
+          if ((e.getModifiers() & ALL_KEY_MODIFIERS)==0) {
             e.consume();
             endEdit(true);
           }
@@ -211,21 +211,21 @@ public class MindMapPanel extends JPanel {
       }
 
       @Override
-      public void keyReleased(final KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+      public void keyReleased (final KeyEvent e) {
+        if (config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
           e.consume();
           final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
           endEdit(false);
           if (edited != null && edited.canBeLost()) {
             deleteTopics(edited);
-            if (pathToPrevTopicBeforeEdit!=null) {
-              final int [] path = pathToPrevTopicBeforeEdit;
+            if (pathToPrevTopicBeforeEdit != null) {
+              final int[] path = pathToPrevTopicBeforeEdit;
               pathToPrevTopicBeforeEdit = null;
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
-                public void run() {
+                public void run () {
                   final Topic topic = model.findForPositionPath(path);
-                  if (topic!=null){
+                  if (topic != null) {
                     select(topic, false);
                   }
                 }
@@ -238,7 +238,7 @@ public class MindMapPanel extends JPanel {
 
     this.textEditor.getDocument().addDocumentListener(new DocumentListener() {
 
-      private void updateEditorPanelSize(final Dimension newSize) {
+      private void updateEditorPanelSize (final Dimension newSize) {
         final Dimension editorPanelMinSize = textEditorPanel.getMinimumSize();
         final Dimension newDimension = new Dimension(Math.max(editorPanelMinSize.width, newSize.width), Math.max(editorPanelMinSize.height, newSize.height));
         textEditorPanel.setSize(newDimension);
@@ -246,17 +246,17 @@ public class MindMapPanel extends JPanel {
       }
 
       @Override
-      public void insertUpdate(DocumentEvent e) {
+      public void insertUpdate (DocumentEvent e) {
         updateEditorPanelSize(textEditor.getPreferredSize());
       }
 
       @Override
-      public void removeUpdate(DocumentEvent e) {
+      public void removeUpdate (DocumentEvent e) {
         updateEditorPanelSize(textEditor.getPreferredSize());
       }
 
       @Override
-      public void changedUpdate(DocumentEvent e) {
+      public void changedUpdate (DocumentEvent e) {
         updateEditorPanelSize(textEditor.getPreferredSize());
       }
     });
@@ -267,53 +267,37 @@ public class MindMapPanel extends JPanel {
     final KeyAdapter keyAdapter = new KeyAdapter() {
 
       @Override
-      public void keyTyped(KeyEvent e) {
-        switch (e.getKeyChar()) {
-          case '\t': {
-            if (hasOnlyTopicSelected()) {
-              makeNewChildAndStartEdit(selectedTopics.get(0), null);
-            }
-          }
-          break;
-          case '\n': {
+      public void keyTyped (KeyEvent e) {
+        if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT,e)) {
+          makeNewChildAndStartEdit(selectedTopics.get(0), null);
+        }
+        else {
+          if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_SIBLING_AND_START_EDIT,e)) {
             if (!hasActiveEditor() && hasOnlyTopicSelected()) {
               final Topic baseTopic = selectedTopics.get(0);
               makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
             }
           }
-          break;
-          case ' ': {
+          else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_ROOT_OR_START_EDIT,e)) {
             if (!hasSelectedTopics()) {
               select(getModel().getRoot(), false);
             }
-            else if (hasOnlyTopicSelected() & (e.getModifiersEx() & ALL_KEY_MODIFIERS) != 0) {
+            else if (hasOnlyTopicSelected()) {
               startEdit((AbstractElement) selectedTopics.get(0).getPayload());
             }
           }
-          break;
-          default:
-            break;
         }
       }
 
       @Override
-      public void keyReleased(final KeyEvent e) {
-        switch (e.getKeyCode()) {
-          case KeyEvent.VK_DELETE: {
-            e.consume();
-            deleteSelectedTopics();
-          }
-          break;
-          case KeyEvent.VK_LEFT:
-          case KeyEvent.VK_RIGHT:
-          case KeyEvent.VK_UP:
-          case KeyEvent.VK_DOWN: {
-            e.consume();
-            processMoveFocusByKey(e.getKeyCode());
-          }
-          break;
-          default:
-            break;
+      public void keyReleased (final KeyEvent e) {
+        if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC,e)) {
+          e.consume();
+          deleteSelectedTopics();
+        }
+        else if (config.isKeyEventDetected(e, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_UP, MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN)) {
+          e.consume();
+          processMoveFocusByKey(e);
         }
       }
     };
@@ -325,12 +309,12 @@ public class MindMapPanel extends JPanel {
     final MouseAdapter adapter = new MouseAdapter() {
 
       @Override
-      public void mouseEntered(final MouseEvent e) {
+      public void mouseEntered (final MouseEvent e) {
         setCursor(Cursor.getDefaultCursor());
       }
 
       @Override
-      public void mouseMoved(final MouseEvent e) {
+      public void mouseMoved (final MouseEvent e) {
         if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
           return;
         }
@@ -358,7 +342,7 @@ public class MindMapPanel extends JPanel {
       }
 
       @Override
-      public void mousePressed(final MouseEvent e) {
+      public void mousePressed (final MouseEvent e) {
         if (!controller.isMouseClickProcessingAllowed(theInstance)) {
           return;
         }
@@ -374,7 +358,7 @@ public class MindMapPanel extends JPanel {
             e.consume();
           }
           else {
-            endEdit(elementUnderEdit!=null);
+            endEdit(elementUnderEdit != null);
             mouseDragSelection = null;
           }
         }
@@ -384,7 +368,7 @@ public class MindMapPanel extends JPanel {
       }
 
       @Override
-      public void mouseReleased(final MouseEvent e) {
+      public void mouseReleased (final MouseEvent e) {
         if (!controller.isMouseClickProcessingAllowed(theInstance)) {
           return;
         }
@@ -437,7 +421,7 @@ public class MindMapPanel extends JPanel {
       }
 
       @Override
-      public void mouseDragged(final MouseEvent e) {
+      public void mouseDragged (final MouseEvent e) {
         if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
           return;
         }
@@ -455,21 +439,19 @@ public class MindMapPanel extends JPanel {
                 }
               }
             }
-            else {
-              if (controller.isElementDragAllowed(theInstance)) {
-                if (elementUnderMouse != null && elementUnderMouse.isMoveable()) {
-                  selectedTopics.clear();
+            else if (controller.isElementDragAllowed(theInstance)) {
+              if (elementUnderMouse != null && elementUnderMouse.isMoveable()) {
+                selectedTopics.clear();
 
-                  final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
-                  draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE);
-                  draggedElement.updatePosition(e.getPoint());
-                  findDestinationElementForDragged();
-                }
-                else {
-                  draggedElement = null;
-                }
-                repaint();
+                final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
+                draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE);
+                draggedElement.updatePosition(e.getPoint());
+                findDestinationElementForDragged();
               }
+              else {
+                draggedElement = null;
+              }
+              repaint();
             }
           }
           else if (mouseDragSelection != null) {
@@ -498,7 +480,7 @@ public class MindMapPanel extends JPanel {
       }
 
       @Override
-      public void mouseWheelMoved(final MouseWheelEvent e) {
+      public void mouseWheelMoved (final MouseWheelEvent e) {
         if (controller.isMouseWheelProcessingAllowed(theInstance)) {
           mouseDragSelection = null;
           draggedElement = null;
@@ -518,7 +500,7 @@ public class MindMapPanel extends JPanel {
       }
 
       @Override
-      public void mouseClicked(final MouseEvent e) {
+      public void mouseClicked (final MouseEvent e) {
         if (!controller.isMouseClickProcessingAllowed(theInstance)) {
           return;
         }
@@ -548,22 +530,18 @@ public class MindMapPanel extends JPanel {
             fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
           }
         }
-        else {
-          if (element != null) {
-            if (!e.isControlDown()) {
-              // only
-              removeAllSelection();
-              select(element.getModel(), false);
-            }
-            else {
-              // group
-              if (selectedTopics.isEmpty()) {
-                select(element.getModel(), false);
-              }
-              else {
-                select(element.getModel(), true);
-              }
-            }
+        else if (element != null) {
+          if (!e.isControlDown()) {
+            // only
+            removeAllSelection();
+            select(element.getModel(), false);
+          }
+          else // group
+          if (selectedTopics.isEmpty()) {
+            select(element.getModel(), false);
+          }
+          else {
+            select(element.getModel(), true);
           }
         }
       }
@@ -578,7 +556,7 @@ public class MindMapPanel extends JPanel {
     this.add(this.textEditorPanel);
   }
 
-  private String makeHtmlTooltipForExtra(final Extra<?> extra) {
+  private String makeHtmlTooltipForExtra (final Extra<?> extra) {
     final StringBuilder builder = new StringBuilder();
 
     builder.append("<html>"); //NOI18N
@@ -612,12 +590,12 @@ public class MindMapPanel extends JPanel {
     return builder.toString();
   }
 
-  public void refreshConfiguration() {
+  public void refreshConfiguration () {
     final MindMapPanel theInstance = this;
     final double scale = this.config.getScale();
     this.config.makeAtomicChange(new Runnable() {
       @Override
-      public void run() {
+      public void run () {
         config.makeFullCopyOf(controller.provideConfigForMindMapPanel(theInstance), false, false);
         config.setScale(scale);
       }
@@ -632,7 +610,7 @@ public class MindMapPanel extends JPanel {
   private static final int DRAG_POSITION_BOTTOM = 3;
   private static final int DRAG_POSITION_RIGHT = 4;
 
-  private int calcDropPosition(final AbstractElement destination, final Point dropPoint) {
+  private int calcDropPosition (final AbstractElement destination, final Point dropPoint) {
     int result = DRAG_POSITION_UNKNOWN;
     if (destination.getClass() == ElementRoot.class) {
       result = dropPoint.getX() < destination.getBounds().getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_RIGHT;
@@ -646,20 +624,18 @@ public class MindMapPanel extends JPanel {
         if (dropPoint.getX() >= (bounds.getX() + edgeOffset) && dropPoint.getX() <= (bounds.getMaxX() - edgeOffset)) {
           result = dropPoint.getY() < bounds.getCenterY() ? DRAG_POSITION_TOP : DRAG_POSITION_BOTTOM;
         }
+        else if (destinationIsLeft) {
+          result = dropPoint.getX() < bounds.getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_UNKNOWN;
+        }
         else {
-          if (destinationIsLeft) {
-            result = dropPoint.getX() < bounds.getCenterX() ? DRAG_POSITION_LEFT : DRAG_POSITION_UNKNOWN;
-          }
-          else {
-            result = dropPoint.getX() > bounds.getCenterX() ? DRAG_POSITION_RIGHT : DRAG_POSITION_UNKNOWN;
-          }
+          result = dropPoint.getX() > bounds.getCenterX() ? DRAG_POSITION_RIGHT : DRAG_POSITION_UNKNOWN;
         }
       }
     }
     return result;
   }
 
-  private boolean endDragOfElement(final DraggedElement draggedElement, final AbstractElement destination) {
+  private boolean endDragOfElement (final DraggedElement draggedElement, final AbstractElement destination) {
     final AbstractElement dragged = draggedElement.getElement();
     final Point dropPoint = draggedElement.getPosition();
 
@@ -736,14 +712,14 @@ public class MindMapPanel extends JPanel {
     return changed;
   }
 
-  private void sendToParent(final AWTEvent evt) {
+  private void sendToParent (final AWTEvent evt) {
     final Container parent = this.getParent();
     if (parent != null) {
       parent.dispatchEvent(evt);
     }
   }
 
-  private void processMoveFocusByKey(final int key) {
+  private void processMoveFocusByKey (final KeyEvent key) {
     if (hasOnlyTopicSelected()) {
       final AbstractElement current = (AbstractElement) this.selectedTopics.get(0).getPayload();
       if (current == null) {
@@ -756,53 +732,45 @@ public class MindMapPanel extends JPanel {
 
       if (current.isMoveable()) {
         boolean processFirstChild = false;
-        switch (key) {
-          case KeyEvent.VK_LEFT: {
+        if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,key)) {
+          if (current.isLeftDirection()) {
+            processFirstChild = true;
+          }
+          else {
+            nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
+          }
+        }
+        else {
+          if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,key)) {
             if (current.isLeftDirection()) {
-              processFirstChild = true;
-            }
-            else {
               nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
             }
-          }
-          break;
-          case KeyEvent.VK_RIGHT: {
-            if (current.isLeftDirection()) {
-              nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
-            }
             else {
               processFirstChild = true;
             }
           }
-          break;
-          case KeyEvent.VK_UP:
-          case KeyEvent.VK_DOWN: {
+          else {
+            final boolean buttonUp = config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_UP);
             final boolean firstLevel = current.getClass() == ElementLevelFirst.class;
             final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(current.getModel());
 
             final TopicChecker checker = new TopicChecker() {
               @Override
-              public boolean check(final Topic topic) {
+              public boolean check (final Topic topic) {
                 if (!firstLevel) {
                   return true;
                 }
+                else if (currentLeft) {
+                  return AbstractCollapsableElement.isLeftSidedTopic(topic);
+                }
                 else {
-                  if (currentLeft) {
-                    return AbstractCollapsableElement.isLeftSidedTopic(topic);
-                  }
-                  else {
-                    return !AbstractCollapsableElement.isLeftSidedTopic(topic);
-                  }
+                  return !AbstractCollapsableElement.isLeftSidedTopic(topic);
                 }
               }
             };
-
-            final Topic topic = key == KeyEvent.VK_UP ? current.getModel().findPrev(checker) : current.getModel().findNext(checker);
+            final Topic topic = buttonUp ? current.getModel().findPrev(checker) : current.getModel().findNext(checker);
             nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
           }
-          break;
-          default:
-            break;
         }
 
         if (processFirstChild) {
@@ -816,28 +784,22 @@ public class MindMapPanel extends JPanel {
           }
         }
       }
-      else {
-        switch (key) {
-          case KeyEvent.VK_LEFT: {
-            for (final Topic t : current.getModel().getChildren()) {
-              final AbstractElement e = (AbstractElement) t.getPayload();
-              if (e != null && e.isLeftDirection()) {
-                nextFocused = e;
-                break;
-              }
-            }
+      else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, key)) {
+        for (final Topic t : current.getModel().getChildren()) {
+          final AbstractElement e = (AbstractElement) t.getPayload();
+          if (e != null && e.isLeftDirection()) {
+            nextFocused = e;
+            break;
           }
-          break;
-          case KeyEvent.VK_RIGHT: {
-            for (final Topic t : current.getModel().getChildren()) {
-              final AbstractElement e = (AbstractElement) t.getPayload();
-              if (e != null && !e.isLeftDirection()) {
-                nextFocused = e;
-                break;
-              }
-            }
+        }
+      }
+      else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, key)) {
+        for (final Topic t : current.getModel().getChildren()) {
+          final AbstractElement e = (AbstractElement) t.getPayload();
+          if (e != null && !e.isLeftDirection()) {
+            nextFocused = e;
+            break;
           }
-          break;
         }
       }
 
@@ -853,29 +815,29 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private void ensureVisibility(final AbstractElement e) {
+  private void ensureVisibility (final AbstractElement e) {
     fireNotificationEnsureTopicVisibility(e.getModel());
   }
 
-  private boolean hasActiveEditor() {
+  private boolean hasActiveEditor () {
     return this.elementUnderEdit != null;
   }
 
-  public boolean isShowJumps() {
+  public boolean isShowJumps () {
     return Boolean.parseBoolean(this.model.getAttribute(ATTR_SHOW_JUMPS));
   }
 
-  public void setShowJumps(final boolean flag) {
+  public void setShowJumps (final boolean flag) {
     this.model.setAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
     repaint();
     fireNotificationMindMapChanged();
   }
 
-  public void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
+  public void makeNewChildAndStartEdit (final Topic parent, final Topic baseTopic) {
     if (parent != null) {
       final Topic currentSelected = getFirstSelected();
       this.pathToPrevTopicBeforeEdit = currentSelected == null ? null : currentSelected.getPositionPath();
-      
+
       removeAllSelection();
 
       final Topic newTopic = parent.makeChild("", baseTopic); //NOI18N
@@ -900,11 +862,9 @@ public class MindMapPanel extends JPanel {
 
         AbstractCollapsableElement.makeTopicLeftSided(newTopic, numLeft < numRight);
       }
-      else {
-        if (baseTopic != null && baseTopic.getPayload() != null) {
-          final AbstractElement element = (AbstractElement) baseTopic.getPayload();
-          AbstractCollapsableElement.makeTopicLeftSided(newTopic, element.isLeftDirection());
-        }
+      else if (baseTopic != null && baseTopic.getPayload() != null) {
+        final AbstractElement element = (AbstractElement) baseTopic.getPayload();
+        AbstractCollapsableElement.makeTopicLeftSided(newTopic, element.isLeftDirection());
       }
 
       if (parentElement instanceof AbstractCollapsableElement && parentElement.isCollapsed()) {
@@ -917,32 +877,32 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  protected void fireNotificationSelectionChanged() {
+  protected void fireNotificationSelectionChanged () {
     final Topic[] selected = this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
     for (final MindMapListener l : this.mindMapListeners) {
       l.onChangedSelection(this, selected);
     }
   }
 
-  protected void fireNotificationMindMapChanged() {
+  protected void fireNotificationMindMapChanged () {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onMindMapModelChanged(this);
     }
   }
 
-  protected void fireNotificationClickOnExtra(final Topic topic, final int clicks, final Extra<?> extra) {
+  protected void fireNotificationClickOnExtra (final Topic topic, final int clicks, final Extra<?> extra) {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onClickOnExtra(this, clicks, topic, extra);
     }
   }
 
-  protected void fireNotificationEnsureTopicVisibility(final Topic topic) {
+  protected void fireNotificationEnsureTopicVisibility (final Topic topic) {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onEnsureVisibilityOfTopic(this, topic);
     }
   }
 
-  public void deleteTopics(final Topic... topics) {
+  public void deleteTopics (final Topic... topics) {
     endEdit(false);
     removeAllSelection();
     boolean allowed = true;
@@ -957,7 +917,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void collapseOrExpandAll(final boolean collapse) {
+  public void collapseOrExpandAll (final boolean collapse) {
     endEdit(false);
     removeAllSelection();
 
@@ -969,21 +929,21 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void deleteSelectedTopics() {
+  public void deleteSelectedTopics () {
     if (!this.selectedTopics.isEmpty()) {
       deleteTopics(this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
     }
   }
 
-  public boolean hasSelectedTopics() {
+  public boolean hasSelectedTopics () {
     return !this.selectedTopics.isEmpty();
   }
 
-  public boolean hasOnlyTopicSelected() {
+  public boolean hasOnlyTopicSelected () {
     return this.selectedTopics.size() == 1;
   }
 
-  public void removeFromSelection(final Topic t) {
+  public void removeFromSelection (final Topic t) {
     if (this.selectedTopics.contains(t)) {
       if (this.selectedTopics.remove(t)) {
         fireNotificationSelectionChanged();
@@ -992,7 +952,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void select(final Topic t, final boolean removeIfPresented) {
+  public void select (final Topic t, final boolean removeIfPresented) {
     if (this.controller.isSelectionAllowed(this) && t != null) {
       if (!this.selectedTopics.contains(t)) {
         if (this.selectedTopics.add(t)) {
@@ -1007,11 +967,11 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public Topic[] getSelectedTopics() {
+  public Topic[] getSelectedTopics () {
     return this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
   }
 
-  public void updateEditorAfterResizing() {
+  public void updateEditorAfterResizing () {
     if (this.elementUnderEdit != null) {
       final AbstractElement element = this.elementUnderEdit;
       final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
@@ -1022,21 +982,21 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void hideEditor() {
+  public void hideEditor () {
     this.textEditorPanel.setVisible(false);
     this.elementUnderEdit = null;
   }
 
-  public void endEdit(final boolean commit) {
+  public void endEdit (final boolean commit) {
     try {
       if (commit && this.elementUnderEdit != null) {
         this.pathToPrevTopicBeforeEdit = null;
         final AbstractElement editedElement = this.elementUnderEdit;
         final Topic editedTopic = this.elementUnderEdit.getModel();
-        
+
         final String oldText = editedElement.getText();
         final String newText = this.textEditor.getText();
-        if (!oldText.equals(newText)){
+        if (!oldText.equals(newText)) {
           editedElement.setText(newText);
         }
         this.textEditorPanel.setVisible(false);
@@ -1051,7 +1011,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void startEdit(final AbstractElement element) {
+  public void startEdit (final AbstractElement element) {
     if (element == null) {
       this.elementUnderEdit = null;
       this.textEditorPanel.setVisible(false);
@@ -1070,7 +1030,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private void findDestinationElementForDragged() {
+  private void findDestinationElementForDragged () {
     if (this.draggedElement != null) {
       final AbstractElement root = (AbstractElement) this.model.getRoot().getPayload();
       this.destinationElement = root.findNearestOpenedTopicToPoint(this.draggedElement.getElement(), this.draggedElement.getPosition());
@@ -1080,7 +1040,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  protected void processPopUp(final Point point, final AbstractElement elementUnderMouse) {
+  protected void processPopUp (final Point point, final AbstractElement elementUnderMouse) {
     if (this.controller != null) {
       final ElementPart partUnderMouse = elementUnderMouse == null ? null : elementUnderMouse.findPartForPoint(point);
 
@@ -1096,19 +1056,19 @@ public class MindMapPanel extends JPanel {
         menu.addPopupMenuListener(new PopupMenuListener() {
 
           @Override
-          public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
+          public void popupMenuWillBecomeVisible (final PopupMenuEvent e) {
             theInstance.mouseDragSelection = null;
             theInstance.popupMenuActive = true;
           }
 
           @Override
-          public void popupMenuWillBecomeInvisible(final PopupMenuEvent e) {
+          public void popupMenuWillBecomeInvisible (final PopupMenuEvent e) {
             theInstance.mouseDragSelection = null;
             theInstance.popupMenuActive = false;
           }
 
           @Override
-          public void popupMenuCanceled(final PopupMenuEvent e) {
+          public void popupMenuCanceled (final PopupMenuEvent e) {
             theInstance.mouseDragSelection = null;
             theInstance.popupMenuActive = false;
           }
@@ -1119,18 +1079,18 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void addMindMapListener(final MindMapListener l) {
+  public void addMindMapListener (final MindMapListener l) {
     ModelUtils.assertNotNull("Listener must not be null", l); //NOI18N
     this.mindMapListeners.add(l);
   }
 
-  public void removeMindMapListener(final MindMapListener l) {
+  public void removeMindMapListener (final MindMapListener l) {
     if (l != null) {
       this.mindMapListeners.remove(l);
     }
   }
 
-  public void setModel(final MindMap model) {
+  public void setModel (final MindMap model) {
     final List<int[]> selectedPaths = new ArrayList<int[]>();
     for (final Topic t : this.selectedTopics) {
       selectedPaths.add(t.getPositionPath());
@@ -1148,10 +1108,8 @@ public class MindMapPanel extends JPanel {
       if (topic == null) {
         selectionChanged = true;
       }
-      else {
-        if (!MindMapUtils.isHidden(topic)) {
-          this.selectedTopics.add(topic);
-        }
+      else if (!MindMapUtils.isHidden(topic)) {
+        this.selectedTopics.add(topic);
       }
     }
     if (selectionChanged) {
@@ -1161,23 +1119,23 @@ public class MindMapPanel extends JPanel {
   }
 
   @Override
-  public boolean isFocusable() {
+  public boolean isFocusable () {
     return true;
   }
 
-  public MindMap getModel() {
+  public MindMap getModel () {
     return this.model;
   }
 
-  public void setScale(final double zoom) {
+  public void setScale (final double zoom) {
     this.config.setScale(zoom);
   }
 
-  public double getScale() {
+  public double getScale () {
     return this.config.getScale();
   }
 
-  private static void drawBackground(final Graphics2D g, final MindMapPanelConfig cfg) {
+  private static void drawBackground (final Graphics2D g, final MindMapPanelConfig cfg) {
     final Rectangle clipBounds = g.getClipBounds();
 
     if (cfg.isDrawBackground()) {
@@ -1213,11 +1171,11 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static boolean isModelValid(final MindMap map) {
+  private static boolean isModelValid (final MindMap map) {
     return map == null || map.getRoot() == null ? true : map.getRoot().getPayload() != null;
   }
 
-  public static void drawOnGraphicsForConfiguration(final Graphics2D g, final MindMapPanelConfig config, final MindMap map, final boolean drawSelection, final List<Topic> selectedTopics) {
+  public static void drawOnGraphicsForConfiguration (final Graphics2D g, final MindMapPanelConfig config, final MindMap map, final boolean drawSelection, final List<Topic> selectedTopics) {
     drawBackground(g, config);
     drawTopics(g, config, map);
     if (drawSelection && selectedTopics != null && !selectedTopics.isEmpty()) {
@@ -1225,7 +1183,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private void drawDestinationElement(final Graphics2D g, final MindMapPanelConfig cfg) {
+  private void drawDestinationElement (final Graphics2D g, final MindMapPanelConfig cfg) {
     if (this.destinationElement != null && this.draggedElement != null) {
       g.setColor(new Color((cfg.getSelectLineColor().getRGB() & 0xFFFFFF) | 0x80000000, true));
       g.setStroke(new BasicStroke(this.config.safeScaleFloatValue(3.0f, 0.1f)));
@@ -1277,13 +1235,13 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static void drawSelection(final Graphics2D g, final MindMapPanelConfig cfg, final List<Topic> selectedTopics) {
+  private static void drawSelection (final Graphics2D g, final MindMapPanelConfig cfg, final List<Topic> selectedTopics) {
     if (selectedTopics != null && !selectedTopics.isEmpty()) {
       g.setColor(cfg.getSelectLineColor());
       final Stroke dashed = new BasicStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(), 0.1f), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{cfg.safeScaleFloatValue(1.0f, 0.1f), cfg.safeScaleFloatValue(4.0f, 0.1f)}, 0);
       g.setStroke(dashed);
-      final double selectLineGap = (double)cfg.safeScaleFloatValue(cfg.getSelectLineGap(),0.05f);
-      final double selectLineGapX2 = selectLineGap +  selectLineGap;
+      final double selectLineGap = (double) cfg.safeScaleFloatValue(cfg.getSelectLineGap(), 0.05f);
+      final double selectLineGapX2 = selectLineGap + selectLineGap;
 
       for (final Topic s : selectedTopics) {
         final AbstractElement e = (AbstractElement) s.getPayload();
@@ -1291,14 +1249,14 @@ public class MindMapPanel extends JPanel {
           final int x = (int) Math.round(e.getBounds().getX() - selectLineGap);
           final int y = (int) Math.round(e.getBounds().getY() - selectLineGap);
           final int w = (int) Math.round(e.getBounds().getWidth() + selectLineGapX2);
-          final int h = (int) Math.round(e.getBounds().getHeight()+ selectLineGapX2);
-          g.drawRect(x,y,w,h);
+          final int h = (int) Math.round(e.getBounds().getHeight() + selectLineGapX2);
+          g.drawRect(x, y, w, h);
         }
       }
     }
   }
 
-  private static void drawTopics(final Graphics2D g, final MindMapPanelConfig cfg, final MindMap map) {
+  private static void drawTopics (final Graphics2D g, final MindMapPanelConfig cfg, final MindMap map) {
     if (map != null) {
       if (Boolean.parseBoolean(map.getAttribute(ATTR_SHOW_JUMPS))) {
         drawJumps(g, map, cfg);
@@ -1311,7 +1269,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static double findLineAngle(final double sx, final double sy, final double ex, final double ey) {
+  private static double findLineAngle (final double sx, final double sy, final double ex, final double ey) {
     final double deltax = ex - sx;
     if (deltax == 0.0d) {
       return Math.PI / 2;
@@ -1319,7 +1277,7 @@ public class MindMapPanel extends JPanel {
     return Math.atan((ey - sy) / deltax) + (ex < sx ? Math.PI : 0);
   }
 
-  private static void drawJumps(final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg) {
+  private static void drawJumps (final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg) {
     final List<Topic> allTopicsWithJumps = map.findAllTopicsForExtraType(Extra.ExtraType.TOPIC);
 
     final float scaledSize = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
@@ -1329,7 +1287,7 @@ public class MindMapPanel extends JPanel {
 
     gfx.setColor(cfg.getJumpLinkColor());
 
-    final float arrowSize = cfg.safeScaleFloatValue(10.0f*cfg.getJumpLinkWidth(), 0.2f);
+    final float arrowSize = cfg.safeScaleFloatValue(10.0f * cfg.getJumpLinkWidth(), 0.2f);
 
     for (Topic src : allTopicsWithJumps) {
       final ExtraTopic extra = (ExtraTopic) src.getExtras().get(Extra.ExtraType.TOPIC);
@@ -1360,7 +1318,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static void drawArrowToDestination(final Graphics2D gfx, final Rectangle2D start, final Rectangle2D destination, final Stroke lineStroke, final Stroke arrowStroke, final float arrowSize) {
+  private static void drawArrowToDestination (final Graphics2D gfx, final Rectangle2D start, final Rectangle2D destination, final Stroke lineStroke, final Stroke arrowStroke, final float arrowSize) {
 
     final double startx = start.getCenterX();
     final double starty = start.getCenterY();
@@ -1396,7 +1354,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static void drawTopicTree(final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {
+  private static void drawTopicTree (final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {
     paintTopic(gfx, topic, cfg);
     final AbstractElement w = (AbstractElement) topic.getPayload();
     if (w.isCollapsed()) {
@@ -1407,11 +1365,11 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static void paintTopic(final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {
+  private static void paintTopic (final Graphics2D gfx, final Topic topic, final MindMapPanelConfig cfg) {
     ((AbstractElement) topic.getPayload()).doPaint(gfx, cfg, true);
   }
 
-  private static void setElementSizesForElementAndChildren(final Graphics2D gfx, final MindMapPanelConfig cfg, final Topic topic, final int level) {
+  private static void setElementSizesForElementAndChildren (final Graphics2D gfx, final MindMapPanelConfig cfg, final Topic topic, final int level) {
     AbstractElement widget = (AbstractElement) topic.getPayload();
     if (widget == null) {
       switch (level) {
@@ -1435,7 +1393,7 @@ public class MindMapPanel extends JPanel {
     widget.updateBlockSize(cfg);
   }
 
-  public static boolean calculateElementSizes(final Graphics2D gfx, final MindMap model, final MindMapPanelConfig cfg) {
+  public static boolean calculateElementSizes (final Graphics2D gfx, final MindMap model, final MindMapPanelConfig cfg) {
     boolean result = false;
 
     final Topic root = model == null ? null : model.getRoot();
@@ -1452,7 +1410,7 @@ public class MindMapPanel extends JPanel {
     return result;
   }
 
-  public static Dimension2D layoutModelElements(final MindMap model, final MindMapPanelConfig cfg) {
+  public static Dimension2D layoutModelElements (final MindMap model, final MindMapPanelConfig cfg) {
     Dimension2D result = null;
     final AbstractElement root = model == null ? null : model.getRoot() == null ? null : (AbstractElement) model.getRoot().getPayload();
     if (root != null) {
@@ -1462,14 +1420,14 @@ public class MindMapPanel extends JPanel {
     return result;
   }
 
-  protected static void moveDiagram(final MindMap model, final double deltaX, final double deltaY) {
+  protected static void moveDiagram (final MindMap model, final double deltaX, final double deltaY) {
     final AbstractElement root = model == null ? null : model.getRoot() == null ? null : (AbstractElement) model.getRoot().getPayload();
     if (root != null) {
       root.moveWholeTreeBranchCoordinates(deltaX, deltaY);
     }
   }
 
-  private void changeSizeOfComponentWithNotification(final Dimension size) {
+  private void changeSizeOfComponentWithNotification (final Dimension size) {
     if (size != null) {
       setMinimumSize(size);
       setPreferredSize(size);
@@ -1479,7 +1437,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public static Dimension layoutFullDiagramWithCenteringToPaper(final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg, final Dimension2D paperSize) {
+  public static Dimension layoutFullDiagramWithCenteringToPaper (final Graphics2D gfx, final MindMap map, final MindMapPanelConfig cfg, final Dimension2D paperSize) {
     Dimension resultSize = null;
     if (calculateElementSizes(gfx, map, cfg)) {
       Dimension2D rootBlockSize = layoutModelElements(map, cfg);
@@ -1504,7 +1462,7 @@ public class MindMapPanel extends JPanel {
     return resultSize;
   }
 
-  public void updateView(final boolean structureWasChanged) {
+  public void updateView (final boolean structureWasChanged) {
     invalidate();
     revalidate();
     if (structureWasChanged) {
@@ -1514,10 +1472,10 @@ public class MindMapPanel extends JPanel {
   }
 
   @Override
-  public void revalidate() {
+  public void revalidate () {
     final Runnable runnable = new Runnable() {
       @Override
-      public void run() {
+      public void run () {
         if (!isValid()) {
           final Graphics2D gfx = (Graphics2D) getGraphics();
           if (gfx != null && calculateElementSizes(gfx, model, config)) {
@@ -1534,34 +1492,34 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void setErrorText(final String text) {
+  public void setErrorText (final String text) {
     this.errorText = text;
     repaint();
   }
 
-  public String getErrorText() {
+  public String getErrorText () {
     return this.errorText;
   }
 
   @Override
-  public boolean isValid() {
+  public boolean isValid () {
     return isModelValid(this.model);
   }
 
   @Override
-  public boolean isValidateRoot() {
+  public boolean isValidateRoot () {
     return true;
   }
 
   @Override
-  public void invalidate() {
+  public void invalidate () {
     super.invalidate();
     if (this.model != null && this.model.getRoot() != null) {
       this.model.resetPayload();
     }
   }
 
-  private static void drawErrorText(final Graphics2D gfx, final Dimension fullSize, final String error) {
+  private static void drawErrorText (final Graphics2D gfx, final Dimension fullSize, final String error) {
     final Font font = new Font(Font.DIALOG, Font.BOLD, 24);
     final FontMetrics metrics = gfx.getFontMetrics(font);
     final Rectangle2D textBounds = metrics.getStringBounds(error, gfx);
@@ -1577,8 +1535,8 @@ public class MindMapPanel extends JPanel {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public void paintComponent(final Graphics g) {
+  @SuppressWarnings ("unchecked")
+  public void paintComponent (final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g.create();
     try {
       final String error = this.errorText;
@@ -1608,7 +1566,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public AbstractElement findTopicUnderPoint(final Point point) {
+  public AbstractElement findTopicUnderPoint (final Point point) {
     AbstractElement result = null;
     if (this.model != null) {
       final Topic root = this.model.getRoot();
@@ -1623,7 +1581,7 @@ public class MindMapPanel extends JPanel {
     return result;
   }
 
-  public void removeAllSelection() {
+  public void removeAllSelection () {
     if (!this.selectedTopics.isEmpty()) {
       try {
         this.selectedTopics.clear();
@@ -1635,7 +1593,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void focusTo(final Topic theTopic) {
+  public void focusTo (final Topic theTopic) {
     if (theTopic != null) {
       final AbstractElement element = (AbstractElement) theTopic.getPayload();
       if (element != null && element instanceof AbstractCollapsableElement) {
@@ -1652,7 +1610,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public boolean cloneTopic(final Topic topic) {
+  public boolean cloneTopic (final Topic topic) {
     if (topic == null || topic.getTopicLevel() == 0) {
       return false;
     }
@@ -1672,19 +1630,19 @@ public class MindMapPanel extends JPanel {
     return true;
   }
 
-  public MindMapPanelConfig getConfiguration() {
+  public MindMapPanelConfig getConfiguration () {
     return this.config;
   }
 
-  public MindMapPanelController getController() {
+  public MindMapPanelController getController () {
     return this.controller;
   }
 
-  public Topic getFirstSelected() {
+  public Topic getFirstSelected () {
     return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
   }
 
-  public static BufferedImage renderMindMapAsImage(final MindMap model, final MindMapPanelConfig cfg, final boolean expandAll) {
+  public static BufferedImage renderMindMapAsImage (final MindMap model, final MindMapPanelConfig cfg, final boolean expandAll) {
     final MindMap workMap = new MindMap(model, null);
     workMap.resetPayload();
 

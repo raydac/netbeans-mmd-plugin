@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <vendor logo="/icons/logo/logo@2x.png" url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -17,6 +17,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.0.1</p>
+        <ul>
+            <li>...</li>
+        </ul>
         <p>1.0.0</p>
         <ul>
             <li>Initial version (ported functionality of the NB 1.1.1 version, without refactoring support)</li>

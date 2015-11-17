@@ -15,15 +15,20 @@
  */
 package com.igormaznitsa.mindmap.swing.panel;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public final class MindMapPanelConfig implements Serializable {
@@ -68,15 +73,40 @@ public final class MindMapPanelConfig implements Serializable {
   private float selectLineWidth = 3.0f;
   private float jumpLinkWidth = 1.5f;
 
+  public static final String KEY_ADD_CHILD_AND_START_EDIT = "addChildAndStartEdit";
+  public static final String KEY_ADD_SIBLING_AND_START_EDIT = "addSiblingAndStartEdit";
+  public static final String KEY_FOCUS_ROOT_OR_START_EDIT = "focusRootOrStartEdit";
+  public static final String KEY_CANCEL_EDIT = "cancelEdit";
+  public static final String KEY_FOCUS_MOVE_UP = "focusMoveUp";
+  public static final String KEY_FOCUS_MOVE_DOWN = "focusMoveDown";
+  public static final String KEY_FOCUS_MOVE_LEFT = "focusMoveLeft";
+  public static final String KEY_FOCUS_MOVE_RIGHT = "focusMoveRight";
+  public static final String KEY_DELETE_TOPIC = "deleteTopic";
+
   private Font font = new Font("Arial", Font.BOLD, 18); //NOI18N
   private double scale = 1.0d;
   private boolean dropShadow = true;
 
   private transient volatile boolean notificationEnabled = true;
 
+  private transient final Map<String, KeyShortcut> mapShortCut = new HashMap<String, KeyShortcut>();
+
   public MindMapPanelConfig (final MindMapPanelConfig cfg, final boolean copyListeners) {
     this();
     this.makeFullCopyOf(cfg, copyListeners, false);
+  }
+
+  public boolean isKeyEvent(final String id, final KeyEvent event){
+    final KeyShortcut shortCut = this.mapShortCut.get(id);
+    return shortCut == null ? false : shortCut.isEvent(event);
+  }
+  
+  public KeyShortcut getKeyShortCut (final String id) {
+    return this.mapShortCut.get(id);
+  }
+
+  public void setKeyShortCut (final KeyShortcut shortCut) {
+    this.mapShortCut.put(shortCut.getID(), shortCut);
   }
 
   public boolean hasDifferenceInParameters (final MindMapPanelConfig etalon) {
@@ -155,6 +185,10 @@ public final class MindMapPanelConfig implements Serializable {
           throw new Error("IllegalArgumentException [" + fieldClass.getName() + ']', ex);
         }
       }
+      
+      for(final Map.Entry<String,KeyShortcut> e : this.mapShortCut.entrySet()){
+        prefs.put("mapShortCut."+e.getValue().getID(), e.getValue().packToString());
+      }
     }
     return prefs;
   }
@@ -213,6 +247,25 @@ public final class MindMapPanelConfig implements Serializable {
           throw new Error("IllegalArgumentException [" + fieldClass.getName() + ']', ex);
         }
       }
+      this.mapShortCut.clear();
+      this.mapShortCut.putAll(etalon.mapShortCut);
+      try {
+        for (final String k : prefs.keys()) {
+          if (k.startsWith("mapShortCut.")) {
+            final int dotIndex = k.indexOf('.');
+            final String id = k.substring(dotIndex + 1);
+            final String packedValue = prefs.get(k, null);
+            if (packedValue == null) {
+              throw new Error("Unexpected situation, short cut value is null [" + k + ']');
+            }
+            final KeyShortcut unpacked = new KeyShortcut(packedValue);
+            this.mapShortCut.put(unpacked.getID(), unpacked);
+          }
+        }
+      }
+      catch (BackingStoreException ex) {
+        throw new Error("Can't get list of keys from storage", ex);
+      }
     }
     return prefs;
   }
@@ -256,6 +309,10 @@ public final class MindMapPanelConfig implements Serializable {
           }
         }
       }
+
+      this.mapShortCut.clear();
+      this.mapShortCut.putAll(src.mapShortCut);
+
       if (makeNotification) {
         this.notifyCfgListenersAboutChange();
       }
@@ -288,11 +345,26 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  
-  
   public MindMapPanelConfig () {
+    this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT, new KeyShortcut(KEY_ADD_CHILD_AND_START_EDIT, KeyEvent.VK_TAB, 0));
+    this.mapShortCut.put(KEY_ADD_SIBLING_AND_START_EDIT, new KeyShortcut(KEY_ADD_SIBLING_AND_START_EDIT, KeyEvent.VK_ENTER, 0));
+    this.mapShortCut.put(KEY_CANCEL_EDIT, new KeyShortcut(KEY_CANCEL_EDIT, KeyEvent.VK_ESCAPE, 0));
+    this.mapShortCut.put(KEY_FOCUS_ROOT_OR_START_EDIT, new KeyShortcut(KEY_FOCUS_ROOT_OR_START_EDIT, KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK));
+    this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN, new KeyShortcut(KEY_FOCUS_MOVE_DOWN, KeyEvent.VK_DOWN, 0));
+    this.mapShortCut.put(KEY_FOCUS_MOVE_UP, new KeyShortcut(KEY_FOCUS_MOVE_UP, KeyEvent.VK_UP, 0));
+    this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT, new KeyShortcut(KEY_FOCUS_MOVE_LEFT, KeyEvent.VK_LEFT, 0));
+    this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT, KeyEvent.VK_RIGHT, 0));
+    this.mapShortCut.put(KEY_DELETE_TOPIC, new KeyShortcut(KEY_DELETE_TOPIC, KeyEvent.VK_DELETE, 0));
   }
 
+  public boolean isKeyEventDetected(final KeyEvent event, final String ... shortCutIDs){
+    for(final String k : shortCutIDs){
+      final KeyShortcut shortCut = this.mapShortCut.get(k);
+      if (shortCut!=null && shortCut.isEvent(event)) return true;
+    }
+    return false;
+  }
+  
   public int getHorizontalBlockGap () {
     return this.horizontalBlockGap;
   }
@@ -514,7 +586,7 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   public void setCollapsatorBorderColor (final Color color) {
-    this.collapsatorBorderColor =  color;
+    this.collapsatorBorderColor = color;
     notifyCfgListenersAboutChange();
   }
 

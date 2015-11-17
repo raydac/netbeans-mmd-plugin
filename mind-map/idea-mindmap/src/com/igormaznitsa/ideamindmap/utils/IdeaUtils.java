@@ -72,7 +72,7 @@ public enum IdeaUtils {
   @Nullable
   public static VirtualFile findKnowledgeFolderForModule(@Nullable final Module module, final boolean createIfMissing) {
     final VirtualFile rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
-    final AtomicReference<VirtualFile> result = new AtomicReference<>();
+    final AtomicReference<VirtualFile> result = new AtomicReference<VirtualFile>();
     if (rootFolder != null) {
       result.set(rootFolder.findChild(PROJECT_KNOWLEDGE_FOLDER_NAME));
       if (result.get() == null || !result.get().isDirectory()) {

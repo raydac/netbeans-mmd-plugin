@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
   private static final Logger LOGGER = Logger.getInstance(MindMapFacet.class);
 
-  public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<>("NBMindMap");
+  public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<MindMapFacet>("NBMindMap");
 
   public MindMapFacet(@NotNull FacetType facetType, @NotNull Module module,
     @NotNull String name, @NotNull MindMapFacetConfiguration configuration, Facet underlyingFacet) {

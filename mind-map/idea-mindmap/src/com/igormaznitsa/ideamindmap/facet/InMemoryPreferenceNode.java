@@ -19,10 +19,10 @@ import java.util.prefs.Preferences;
 
 public class InMemoryPreferenceNode extends Preferences {
 
-  private final List<PreferenceChangeListener> preferenceChangeListeners = new ArrayList<>();
-  private final List<NodeChangeListener> nodeChangeListeners = new ArrayList<>();
+  private final List<PreferenceChangeListener> preferenceChangeListeners = new ArrayList<PreferenceChangeListener>();
+  private final List<NodeChangeListener> nodeChangeListeners = new ArrayList<NodeChangeListener>();
 
-  private final Map<String,String> storage = new HashMap<>();
+  private final Map<String,String> storage = new HashMap<String,String>();
 
   private void firePreferenceListeners(final String key, final String newValue){
     final PreferenceChangeEvent event = new PreferenceChangeEvent(this,key,newValue);
@@ -47,7 +47,7 @@ public class InMemoryPreferenceNode extends Preferences {
   }
 
   @Override public void clear() throws BackingStoreException {
-    final Map<String,String> copy = new HashMap<>(this.storage);
+    final Map<String,String> copy = new HashMap<String,String>(this.storage);
     this.storage.clear();
     for(final String k : copy.keySet()){
       firePreferenceListeners(k,null);

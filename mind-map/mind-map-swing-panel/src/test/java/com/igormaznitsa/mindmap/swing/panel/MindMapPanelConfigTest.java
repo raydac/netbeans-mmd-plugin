@@ -37,190 +37,201 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testHasDifferenceInParameters_DifferenceInBoolean(){
+  public void testHasDifferenceInParameters_DifferenceInBoolean () {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
-    
+
     one.setDropShadow(!two.isDropShadow());
     assertTrue(one.hasDifferenceInParameters(two));
   }
-  
+
   @Test
-  public void testHasDifferenceInParameters_DifferenceInFloat(){
+  public void testHasDifferenceInParameters_DifferenceInFloat () {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
-    
-    one.setCollapsatorBorderWidth(two.getCollapsatorBorderWidth()+0.001f);
+
+    one.setCollapsatorBorderWidth(two.getCollapsatorBorderWidth() + 0.001f);
     assertTrue(one.hasDifferenceInParameters(two));
   }
-  
+
   @Test
-  public void testHasDifferenceInParameters_DifferenceInInt(){
+  public void testHasDifferenceInParameters_DifferenceInInt () {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
-    
-    one.setCollapsatorSize(two.getCollapsatorSize()+1);
+
+    one.setCollapsatorSize(two.getCollapsatorSize() + 1);
     assertTrue(one.hasDifferenceInParameters(two));
   }
-  
+
   @Test
-  public void testHasDifferenceInParameters_DifferenceInColor(){
+  public void testHasDifferenceInParameters_DifferenceInColor () {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
-    
-    one.setCollapsatorBackgroundColor(new Color(two.getCollapsatorBackgroundColor().getRGB()^0xFFFFFFFF));
+
+    one.setCollapsatorBackgroundColor(new Color(two.getCollapsatorBackgroundColor().getRGB() ^ 0xFFFFFFFF));
     assertTrue(one.hasDifferenceInParameters(two));
   }
-  
-  
+
   @Test
-  public void testHasDifferenceInParameters_DifferenceInFont(){
+  public void testHasDifferenceInParameters_DifferenceInFont () {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
-    
+
     one.setFont(two.getFont().deriveFont(17));
     assertTrue(one.hasDifferenceInParameters(two));
   }
-  
+
   @Test
-  public void testHasDifferenceInParameters_DifferenceInDouble(){
+  public void testHasDifferenceInParameters_DifferenceInDouble () {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
-    
-    one.setScale(two.getScale()+0.00001d);
+
+    one.setScale(two.getScale() + 0.00001d);
     assertTrue(one.hasDifferenceInParameters(two));
   }
-  
+
   @Test
-  public void testSaveRestoreState(){
+  public void testSaveRestoreState () {
     final Map<String, Object> storage = new HashMap<String, Object>();
     final Preferences prefs = mock(Preferences.class);
-     
-    doAnswer(new Answer(){
+
+    doAnswer(new Answer() {
       @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
+      public Object answer (final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final String value = invocation.getArgumentAt(1, String.class);
-        storage.put(key,value);
+        storage.put(key, value);
         return null;
       }
     }).when(prefs).put(anyString(), anyString());
-    
-    doAnswer(new Answer(){
+
+    doAnswer(new Answer() {
       @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
+      public Object answer (final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final Integer value = invocation.getArgumentAt(1, Integer.class);
-        storage.put(key,value);
+        storage.put(key, value);
         return null;
       }
     }).when(prefs).putInt(anyString(), anyInt());
-    
-    doAnswer(new Answer(){
+
+    doAnswer(new Answer() {
       @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
+      public Object answer (final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final Boolean value = invocation.getArgumentAt(1, Boolean.class);
-        storage.put(key,value);
+        storage.put(key, value);
         return null;
       }
     }).when(prefs).putBoolean(anyString(), anyBoolean());
-    
-    doAnswer(new Answer(){
+
+    doAnswer(new Answer() {
       @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
+      public Object answer (final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final Float value = invocation.getArgumentAt(1, Float.class);
-        storage.put(key,value);
+        storage.put(key, value);
         return null;
       }
     }).when(prefs).putFloat(anyString(), anyFloat());
-    
-    doAnswer(new Answer(){
+
+    doAnswer(new Answer() {
       @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
+      public Object answer (final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final Double value = invocation.getArgumentAt(1, Double.class);
-        storage.put(key,value);
+        storage.put(key, value);
         return null;
       }
     }).when(prefs).putDouble(anyString(), anyDouble());
 
-    when(prefs.get(anyString(), anyString())).thenAnswer(new Answer<String>(){
+    when(prefs.get(anyString(), anyString())).thenAnswer(new Answer<String>() {
       @Override
-      public String  answer(InvocationOnMock invocation) throws Throwable {
+      public String answer (InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final String def = invocation.getArgumentAt(1, String.class);
-        return storage.containsKey(key) ? (String)storage.get(key) : def; 
+        return storage.containsKey(key) ? (String) storage.get(key) : def;
       }
     });
-    
-    when(prefs.getBoolean(anyString(), anyBoolean())).thenAnswer(new Answer<Boolean>(){
+
+    when(prefs.getBoolean(anyString(), anyBoolean())).thenAnswer(new Answer<Boolean>() {
       @Override
-      public Boolean  answer(InvocationOnMock invocation) throws Throwable {
+      public Boolean answer (InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final Boolean def = invocation.getArgumentAt(1, Boolean.class);
-        return storage.containsKey(key) ? (Boolean)storage.get(key) : def; 
+        return storage.containsKey(key) ? (Boolean) storage.get(key) : def;
       }
     });
-    
-    when(prefs.getInt(anyString(), anyInt())).thenAnswer(new Answer<Integer>(){
+
+    when(prefs.getInt(anyString(), anyInt())).thenAnswer(new Answer<Integer>() {
       @Override
-      public Integer  answer(InvocationOnMock invocation) throws Throwable {
+      public Integer answer (InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final Integer def = invocation.getArgumentAt(1, Integer.class);
-        return storage.containsKey(key) ? (Integer)storage.get(key) : def; 
+        return storage.containsKey(key) ? (Integer) storage.get(key) : def;
       }
     });
-    
-    when(prefs.getFloat(anyString(), anyFloat())).thenAnswer(new Answer<Float>(){
+
+    when(prefs.getFloat(anyString(), anyFloat())).thenAnswer(new Answer<Float>() {
       @Override
-      public Float  answer(InvocationOnMock invocation) throws Throwable {
+      public Float answer (InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final Float def = invocation.getArgumentAt(1, Float.class);
-        return storage.containsKey(key) ? (Float)storage.get(key) : def; 
+        return storage.containsKey(key) ? (Float) storage.get(key) : def;
       }
     });
-    
-    when(prefs.getDouble(anyString(), anyDouble())).thenAnswer(new Answer<Double>(){
+
+    when(prefs.getDouble(anyString(), anyDouble())).thenAnswer(new Answer<Double>() {
       @Override
-      public Double answer(InvocationOnMock invocation) throws Throwable {
+      public Double answer (InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgumentAt(0, String.class);
         final Double def = invocation.getArgumentAt(1, Double.class);
-        return storage.containsKey(key) ? (Double)storage.get(key) : def; 
+        return storage.containsKey(key) ? (Double) storage.get(key) : def;
       }
     });
-    
+
+    try {
+      when(prefs.keys()).thenAnswer(new Answer<String[]>() {
+        @Override
+        public String[] answer (final InvocationOnMock invocation) throws Throwable {
+          return storage.keySet().toArray(new String[storage.size()]);
+        }
+      });
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+      fail("Unexpected exception");
+    }
+
     final MindMapPanelConfig config = new MindMapPanelConfig();
-    
+
     config.setScale(100.5d);
     config.setGridColor(Color.orange);
     config.setShowGrid(false);
-    config.setFont(new Font("Helvetica",Font.ITALIC,36));
-    
+    config.setFont(new Font("Helvetica", Font.ITALIC, 36));
+
     config.saveTo(prefs);
     assertFalse(storage.isEmpty());
 
     final MindMapPanelConfig newConfig = new MindMapPanelConfig();
-    
+
     newConfig.loadFrom(prefs);
 
     assertFalse(newConfig.isShowGrid());
     assertEquals(Color.orange, newConfig.getGridColor());
     assertEquals(new Font("Helvetica", Font.ITALIC, 36), newConfig.getFont());
-    assertEquals(100.5d, newConfig.getScale(),0.0d);
-    
+    assertEquals(100.5d, newConfig.getScale(), 0.0d);
+
     storage.clear();
-    
+
     newConfig.loadFrom(prefs);
 
     final MindMapPanelConfig etalon = new MindMapPanelConfig();
-    
+
     assertEquals(etalon.isShowGrid(), newConfig.isShowGrid());
     assertEquals(etalon.getGridColor(), newConfig.getGridColor());
-    assertEquals(etalon.getFont(),  newConfig.getFont());
+    assertEquals(etalon.getFont(), newConfig.getFont());
     assertEquals(etalon.getScale(), newConfig.getScale(), 0.0d);
   }
-      
-  
+
 }
