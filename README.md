@@ -4,6 +4,15 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
+__1.1.1 (maintenance) (15-oct-2015)__
+- [Intellij IDEA plugin published in the IDEA repository](https://plugins.jetbrains.com/plugin/8045)
+- very small refactoring
+- added support of word-wrap mode change into the plain text editor
+- improved focus loose processing for topic text editor, now the editing text saved if editor lost focus (issue #1)
+- "leftSide" attribute added into standard attribute list to support removing of topic contains only the attribute
+- added extra check for file existence in file link edit
+- fixed seldom NPE in refactoring module to avoid NPE if not found Project for FileObject or the Project doesn't have folder (issue #4)  
+
 __1.1.0 (09-oct-2015)__
 - minor bugfix and refactoring
 - minimal Java version updated to 1.7+
