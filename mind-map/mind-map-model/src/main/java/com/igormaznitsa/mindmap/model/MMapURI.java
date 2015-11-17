@@ -15,13 +15,15 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import com.igormaznitsa.mindmap.model.nio.Path;
+import com.igormaznitsa.mindmap.model.nio.Paths;
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.nio.file.Path;
+//import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -95,13 +97,13 @@ public class MMapURI implements Serializable {
       this.parameters.putAll(nullableParameters);
     }
 
-    final Path filePath = file.toPath();
+    final Path filePath = Paths.toPath(file);
 
     if (nullableBase == null) {
       this.uri = ModelUtils.toURI(filePath);
     }
     else {
-      final Path basePath = nullableBase.toPath();
+      final Path basePath = Paths.toPath(nullableBase);
       if (basePath.isAbsolute()) {
         final Path path = filePath.startsWith(basePath) ? basePath.relativize(filePath) : filePath;
         this.uri = ModelUtils.toURI(path);
