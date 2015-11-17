@@ -47,7 +47,7 @@ public class MouseSelectedArea {
   }
 
   public List<Topic> getAllSelectedElements(final MindMap map) {
-    final List<Topic> result = new ArrayList<>();
+    final List<Topic> result = new ArrayList<Topic>();
     final Rectangle rect = asRectangle();
     addCoveredToList(result, map.getRoot(), rect.getBounds2D());
     return result;

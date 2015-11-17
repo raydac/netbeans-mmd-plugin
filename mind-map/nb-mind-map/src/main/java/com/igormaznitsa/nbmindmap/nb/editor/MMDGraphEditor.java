@@ -123,7 +123,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   private final JToolBar toolBar = new JToolBar();
 
-  private static final WeakSet<MMDGraphEditor> allEditors = new WeakSet<>();
+  private static final WeakSet<MMDGraphEditor> allEditors = new WeakSet<MMDGraphEditor>();
 
   public MMDGraphEditor() {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));

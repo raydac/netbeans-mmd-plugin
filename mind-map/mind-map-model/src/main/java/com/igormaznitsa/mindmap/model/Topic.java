@@ -41,13 +41,13 @@ public final class Topic implements Serializable, Constants {
   private static final AtomicLong LOCALUID_GENERATOR = new AtomicLong();
 
   private Topic parent;
-  private final EnumMap<Extra.ExtraType, Extra<?>> extras = new EnumMap<>(Extra.ExtraType.class);
+  private final EnumMap<Extra.ExtraType, Extra<?>> extras = new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
   private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras = Collections.unmodifiableMap(this.extras);
-  private final Map<String, String> attributes = new HashMap<>();
+  private final Map<String, String> attributes = new HashMap<String, String>();
   private final Map<String, String> unmodifableAttributes = Collections.unmodifiableMap(this.attributes);
 
   private volatile String text;
-  private final List<Topic> children = new ArrayList<>();
+  private final List<Topic> children = new ArrayList<Topic>();
   private final List<Topic> unmodifableChildren = Collections.unmodifiableList(this.children);
 
   private transient Object payload;
@@ -739,7 +739,7 @@ public final class Topic implements Serializable, Constants {
   }
 
   public Topic[] getPath() {
-    final List<Topic> list = new ArrayList<>();
+    final List<Topic> list = new ArrayList<Topic>();
     Topic current = this;
     do {
       list.add(0, current);

@@ -45,14 +45,14 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
   private final Topic root;
   private final Lock locker = new ReentrantLock();
-  private final Map<String, String> attributes = new HashMap<>();
+  private final Map<String, String> attributes = new HashMap<String, String>();
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s(.+)$"); //NOI18N
   private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*(\\`+)(.*?)\\2"); //NOI18N
 
   private static final String GENERATOR_VERSION_NAME = "__version__"; //NOI18N
   private static final String GENERATOR_VERSION = "1.0"; //NOI18N
 
-  private final transient List<TreeModelListener> treeListeners = new ArrayList<>();
+  private final transient List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
 
   private final MindMapController controller;
   
@@ -175,7 +175,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   }
 
   public List<Topic> removeNonExistingTopics(final List<Topic> origList) {
-    final List<Topic> result = new ArrayList<>();
+    final List<Topic> result = new ArrayList<Topic>();
     this.locker.lock();
     try {
       if (this.root != null) {
@@ -331,7 +331,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   }
 
   public List<Topic> findAllTopicsForExtraType(final Extra.ExtraType type) {
-    final List<Topic> result = new ArrayList<>();
+    final List<Topic> result = new ArrayList<Topic>();
     this.locker.lock();
     try {
       if (this.root != null) {

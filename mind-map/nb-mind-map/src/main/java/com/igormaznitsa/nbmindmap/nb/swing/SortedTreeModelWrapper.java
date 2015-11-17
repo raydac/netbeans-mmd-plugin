@@ -30,7 +30,7 @@ import javax.swing.tree.TreePath;
 public class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
   private final MindMap model;
   
-  private final Map<Object,List<Object>> sortedCache = new HashMap<>();
+  private final Map<Object,List<Object>> sortedCache = new HashMap<Object, List<Object>>();
   private final Comparator<Object> comparator;
   
   public SortedTreeModelWrapper(final MindMap model, final Comparator<Object> comparator){
@@ -87,7 +87,7 @@ public class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
   private List<Object> getChildrenFromCache(final Object parent){
     List<Object> result = this.sortedCache.get(parent);
     if (result == null){
-      result = new ArrayList<>();
+      result = new ArrayList<Object>();
       final int childCount = model.getChildCount(parent);
       for(int i=0;i<childCount;i++){
         result.add(model.getChild(parent, i));

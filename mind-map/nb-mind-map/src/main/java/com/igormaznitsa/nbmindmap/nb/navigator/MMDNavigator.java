@@ -49,7 +49,7 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
 
   private static final Logger logger = LoggerFactory.getLogger(MMDNavigator.class);
   
-  private static final Lookup.Template<? extends MMDEditorSupport> MY_DATA = new Lookup.Template<>(MMDEditorSupport.class);
+  private static final Lookup.Template<MMDEditorSupport> MY_DATA = new Lookup.Template<MMDEditorSupport>(MMDEditorSupport.class);
   private static final long serialVersionUID = -4344090966601180253L;
 
   private final JTree mindMapTree;

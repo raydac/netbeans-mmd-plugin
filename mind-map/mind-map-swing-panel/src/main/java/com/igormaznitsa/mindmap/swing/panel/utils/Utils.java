@@ -39,7 +39,7 @@ public class Utils {
   ;
   private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
-  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<>();
+  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
 
   static {
     RENDERING_HINTS.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -55,7 +55,7 @@ public class Utils {
   }
 
   public static Topic[] getLeftToRightOrderedChildrens (final Topic topic) {
-    final List<Topic> result = new ArrayList<>();
+    final List<Topic> result = new ArrayList<Topic>();
     if (topic.getTopicLevel() == 0) {
       for (final Topic t : topic.getChildren()) {
         if (AbstractCollapsableElement.isLeftSidedTopic(t)) {

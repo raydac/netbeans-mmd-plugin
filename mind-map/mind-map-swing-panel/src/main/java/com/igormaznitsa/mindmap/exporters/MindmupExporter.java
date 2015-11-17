@@ -75,8 +75,8 @@ public class MindmupExporter extends AbstractMindMapExporter {
   private static class State {
 
     private JsonStringWriter json = JsonWriter.string();
-    private final Map<String, TopicData> topicsWithId = new HashMap<>();
-    private final List<TopicData> topicsContainsJump = new ArrayList<>();
+    private final Map<String, TopicData> topicsWithId = new HashMap<String, TopicData>();
+    private final List<TopicData> topicsContainsJump = new ArrayList<TopicData>();
 
     public State() {
     }
@@ -216,8 +216,8 @@ public class MindmupExporter extends AbstractMindMapExporter {
     state.set("id", 1); //NOI18N
     state.set("formatVersion", 2); //NOI18N
 
-    final List<Topic> leftChildren = new ArrayList<>();
-    final List<Topic> rightChildren = new ArrayList<>();
+    final List<Topic> leftChildren = new ArrayList<Topic>();
+    final List<Topic> rightChildren = new ArrayList<Topic>();
 
     if (root != null) {
       for (final Topic t : root.getChildren()) {

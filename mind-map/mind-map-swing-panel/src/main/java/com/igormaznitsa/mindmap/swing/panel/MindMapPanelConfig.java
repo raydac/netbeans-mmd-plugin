@@ -30,7 +30,7 @@ public final class MindMapPanelConfig implements Serializable {
 
   private static final long serialVersionUID = -4273687011484460064L;
 
-  private transient final List<WeakReference<MindMapConfigListener>> listeners = new ArrayList<>();
+  private transient final List<WeakReference<MindMapConfigListener>> listeners = new ArrayList<WeakReference<MindMapConfigListener>>();
 
   private int collapsatorSize = 16;
   private int textMargins = 10;
@@ -242,7 +242,7 @@ public final class MindMapPanelConfig implements Serializable {
             for (final WeakReference<MindMapConfigListener> weakContainer : src.listeners) {
               final MindMapConfigListener theListener = weakContainer.get();
               if (theListener != null) {
-                this.listeners.add(new WeakReference<>(theListener));
+                this.listeners.add(new WeakReference<MindMapConfigListener>(theListener));
               }
             }
           }
@@ -263,7 +263,7 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   public void addConfigurationListener (final MindMapConfigListener l) {
-    this.listeners.add(new WeakReference<>(l));
+    this.listeners.add(new WeakReference<MindMapConfigListener>(l));
   }
 
   public void removeConfigurationListener (final MindMapConfigListener l) {

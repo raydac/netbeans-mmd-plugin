@@ -87,7 +87,7 @@ class SourceNode extends AbstractMMFilter {
 
   @Override 
   public Action[] getActions(final boolean context) {
-    final List<Action> actions = new ArrayList<>();
+    final List<Action> actions = new ArrayList<Action>();
     actions.add(CommonProjectActions.newFileAction());
     actions.add(null);
     actions.add(SystemAction.get(FileSystemAction.class));

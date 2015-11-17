@@ -134,7 +134,7 @@ public class MindMapPanel extends JPanel {
   private volatile MindMap model;
   private volatile String errorText;
 
-  private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<>();
+  private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
 
   private static final double SCALE_STEP = 0.2d;
 
@@ -145,7 +145,7 @@ public class MindMapPanel extends JPanel {
   private transient AbstractElement elementUnderEdit = null;
   private transient int [] pathToPrevTopicBeforeEdit = null;
   
-  private final List<Topic> selectedTopics = new ArrayList<>();
+  private final List<Topic> selectedTopics = new ArrayList<Topic>();
 
   private transient MouseSelectedArea mouseDragSelection = null;
   private transient DraggedElement draggedElement = null;
@@ -1131,7 +1131,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void setModel(final MindMap model) {
-    final List<int[]> selectedPaths = new ArrayList<>();
+    final List<int[]> selectedPaths = new ArrayList<int[]>();
     for (final Topic t : this.selectedTopics) {
       selectedPaths.add(t.getPositionPath());
     }

@@ -274,7 +274,7 @@ public final class ElementRoot extends AbstractElement {
 
         Topic prev = null;
 
-        final List<Topic> childForDirection = new ArrayList<>();
+        final List<Topic> childForDirection = new ArrayList<Topic>();
         if (point.getX() < this.bounds.getCenterX()) {
           for (final Topic t : this.model.getChildren()) {
             if (((AbstractElement) t.getPayload()).isLeftDirection()) {

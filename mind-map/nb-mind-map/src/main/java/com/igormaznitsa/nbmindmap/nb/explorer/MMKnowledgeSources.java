@@ -105,7 +105,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
   @Override
   public List<SourceGroup> keys() {
     final SourceGroup[] sourceGroups = getSourceGroups(this.project);
-    final List<SourceGroup> keysList = new ArrayList<>();
+    final List<SourceGroup> keysList = new ArrayList<SourceGroup>();
     FileObject fileObject;
     for (final SourceGroup g : sourceGroups) {
       fileObject = g.getRootFolder();

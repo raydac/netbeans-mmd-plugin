@@ -32,7 +32,7 @@ final class ObjectNode extends AbstractMMFilter {
 
   @Override
   public Action[] getActions(boolean context) {
-    final List<Action> actions = new ArrayList<>();
+    final List<Action> actions = new ArrayList<Action>();
     actions.addAll(Arrays.asList(getOriginal().getActions(context)));
     return actions.toArray(new Action[actions.size()]);
   }

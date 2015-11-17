@@ -329,7 +329,7 @@ public enum ModelUtils {
   }
 
   public static File toFile(final URI uri) {
-    final List<String> pathItems = new ArrayList<>();
+    final List<String> pathItems = new ArrayList<String>();
 
     final String authority = uri.getAuthority();
     if (authority != null && !authority.isEmpty()) {

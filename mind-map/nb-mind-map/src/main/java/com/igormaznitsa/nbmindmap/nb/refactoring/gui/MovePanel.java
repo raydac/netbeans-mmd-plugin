@@ -49,7 +49,7 @@ public class MovePanel extends javax.swing.JPanel implements CustomRefactoringPa
   private final Lookup lookup;
   private final FileObject[] files;
   private final ChangeListener parent;
-  private final Map<Project, String[]> cachedFolders = new HashMap<>();
+  private final Map<Project, String[]> cachedFolders = new HashMap<Project, String[]>();
 
   public MovePanel(final Lookup lookup, final FileObject[] files, final ChangeListener parent) {
     initComponents();
@@ -90,11 +90,11 @@ public class MovePanel extends javax.swing.JPanel implements CustomRefactoringPa
     }
     this.labelMessage.setText(text);
 
-    final List<Project> projects = new ArrayList<>();
+    final List<Project> projects = new ArrayList<Project>();
     for (final Project p : OpenProjects.getDefault().getOpenProjects()) {
       projects.add(p);
     }
-    final ComboBoxModel<Project> projectModel = new DefaultComboBoxModel<>(projects.toArray(new Project[projects.size()]));
+    final ComboBoxModel<Project> projectModel = new DefaultComboBoxModel<Project>(projects.toArray(new Project[projects.size()]));
 
     final ItemListener listener = new ItemListener() {
       @Override
@@ -160,7 +160,7 @@ public class MovePanel extends javax.swing.JPanel implements CustomRefactoringPa
         this.cachedFolders.put(project, foldersForProject);
       }
 
-      final ComboBoxModel<String> folderModel = new DefaultComboBoxModel<>(foldersForProject);
+      final ComboBoxModel<String> folderModel = new DefaultComboBoxModel<String>(foldersForProject);
       this.comboFolders.setModel(folderModel);
       if (folderModel.getSize() > 0) {
         this.comboFolders.setSelectedIndex(0);
@@ -169,7 +169,7 @@ public class MovePanel extends javax.swing.JPanel implements CustomRefactoringPa
   }
 
   private String[] collectAllFoldersForProject(final Project project) {
-    final List<String> result = new ArrayList<>();
+    final List<String> result = new ArrayList<String>();
     getFolders(project.getProjectDirectory(), project.getProjectDirectory(), result);
     return result.toArray(new String[result.size()]);
   }

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, EditorCookie.Observable, ChangeListener {
 
-  private final List<WeakReference<MMDGraphEditor>> listeners = new ArrayList<>();
+  private final List<WeakReference<MMDGraphEditor>> listeners = new ArrayList<WeakReference<MMDGraphEditor>>();
 
   private static final Logger logger = LoggerFactory.getLogger(MMDEditorSupport.class);
 
@@ -70,7 +70,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Override
   protected CloneableEditor createCloneableEditor() {
     final MMDGraphEditor editor = new MMDGraphEditor(this);
-    this.listeners.add(new WeakReference<>(editor));
+    this.listeners.add(new WeakReference<MMDGraphEditor>(editor));
     return editor;
   }
 

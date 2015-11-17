@@ -47,7 +47,7 @@ public enum RefactoringUtils {
         return Collections.<FileObject>emptyList();
       }else{
         final Collection<File> files = FileUtils.listFiles(folderFile, new String[]{"mmd", "MMD", "Mmd"}, true);
-        final Set<FileObject> result = new HashSet<>();
+        final Set<FileObject> result = new HashSet<FileObject>();
         for(final File f : files){
           final FileObject fo = FileUtil.toFileObject(f);
           result.add(fo);
@@ -57,7 +57,7 @@ public enum RefactoringUtils {
     }
         
     public static List<FileObject> findAllMindMapsInProject(final Project project) {
-    final List<FileObject> result = new ArrayList<>();
+    final List<FileObject> result = new ArrayList<FileObject>();
 
     final Sources sources = ProjectUtils.getSources(project);
     final SourceGroup[] groups = sources.getSourceGroups(Sources.TYPE_GENERIC);
@@ -106,7 +106,7 @@ public enum RefactoringUtils {
   
   public static FileObject [] getMMDs(final Lookup lookup){
     final Collection<? extends Node> nodes = lookup.lookupAll(Node.class);
-    final List<FileObject> result = new ArrayList<>();
+    final List<FileObject> result = new ArrayList<FileObject>();
     for (final Node n : nodes) {
       final FileObject fo = n.getLookup().lookup(FileObject.class);
       if (fo != null) {

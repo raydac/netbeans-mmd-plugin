@@ -45,9 +45,9 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
   protected static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
   protected final T refactoring;
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-  private final Map<FileObject, Collection<FileObject>> cache = new HashMap<>();
+  private final Map<FileObject, Collection<FileObject>> cache = new HashMap<FileObject, Collection<FileObject>>();
 
-  private final List<RefactoringElementImplementation> elements = new ArrayList<>();
+  private final List<RefactoringElementImplementation> elements = new ArrayList<RefactoringElementImplementation>();
 
   private volatile boolean canceled;
 
@@ -66,7 +66,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
     final Collection<? extends Scope> scopes = this.refactoring.getRefactoringSource().lookupAll(Scope.class);
 
     if (!scopes.isEmpty()) {
-      final Collection<FileObject> mindMaps = new HashSet<>();
+      final Collection<FileObject> mindMaps = new HashSet<FileObject>();
       for (final Scope s : scopes) {
         for (final NonRecursiveFolder f : s.getFolders()) {
           synchronized (this.cache) {
@@ -100,7 +100,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
   private Collection<? extends FileObject> findFileObjectInLookup(final Lookup lookup) {
     final Collection<? extends FileObject> files = lookup.lookupAll(FileObject.class);
     final Collection<? extends NonRecursiveFolder> folders = lookup.lookupAll(NonRecursiveFolder.class);
-    final Set<FileObject> result = new HashSet<>();
+    final Set<FileObject> result = new HashSet<FileObject>();
     for (final NonRecursiveFolder f : folders) {
       result.add(f.getFolder());
     }
