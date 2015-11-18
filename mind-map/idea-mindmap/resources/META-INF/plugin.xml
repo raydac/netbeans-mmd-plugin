@@ -19,7 +19,9 @@
     <change-notes><![CDATA[
         <p>1.0.1</p>
         <ul>
-            <li>...</li>
+            <li>Added missing libraries</li>
+            <li>Minimal supported IDEA version changed to 13 (the plugin works well but can't open files in IDE, only make focusing)</li>
+            <li>Refactoring of core to increase compatibility with IDEA 13</li>
         </ul>
         <p>1.0.0</p>
         <ul>

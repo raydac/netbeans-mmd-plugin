@@ -6,6 +6,7 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesCo
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
+import com.igormaznitsa.ideamindmap.utils.SwingUtils;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -151,33 +152,37 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   private void loadMindMapFromDocument() {
-    final Document document = getDocument();
-    if (document != null) {
-      final MindMapDocumentEditor theEditor = this;
-      CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-        @Override
-        public void run() {
-          ApplicationManager.getApplication().runReadAction(new Runnable() {
+    final MindMapDocumentEditor editorIstance = this;
+    SwingUtils.safeSwing(new Runnable() {
+      @Override public void run() {
+        final Document document = getDocument();
+        if (document != null) {
+          CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
             @Override
             public void run() {
-              final String documentText = document.getText();
-              safeSwing(new Runnable() {
+              ApplicationManager.getApplication().runReadAction(new Runnable() {
                 @Override
                 public void run() {
-                  try {
-                    mindMapPanel.setModel(new MindMap(theEditor, new StringReader(documentText)));
-                  }
-                  catch (Exception ex) {
-                    LOGGER.error("Can't parse MindMap text", ex);
-                    theEditor.mindMapPanel.setErrorText("Can't parse mind map content");
-                  }
+                  final String documentText = document.getText();
+                  safeSwing(new Runnable() {
+                    @Override
+                    public void run() {
+                      try {
+                        mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
+                      }
+                      catch (Exception ex) {
+                        LOGGER.error("Can't parse MindMap text", ex);
+                        editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
+                      }
+                    }
+                  });
                 }
               });
             }
-          });
+          }, null, null, document);
         }
-      }, null, null, document);
-    }
+      }
+    });
   }
 
   @Override
