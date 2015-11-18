@@ -1,3 +1,8 @@
+1.1.2 (maintenance)
+- refactoring to increase compatibility with different IDEs
+- changed byte-code version to Java 6 (but it still needs Java 7 for work with file paths)
+- bug fixing in the IDEA version (1.0.1), changed minimal IDEA version to IDEA 13 (it works but with some restrictions)
+
 1.1.1 (maintenance)
 - very small refactoring
 - added support of word-wrap mode change into the plain text editor
