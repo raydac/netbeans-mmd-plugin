@@ -18,6 +18,8 @@ package com.igormaznitsa.nbmindmap.nb.editor;
 import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
 import com.igormaznitsa.mindmap.exporters.Exporters;
 import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
@@ -88,8 +90,6 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @MultiViewElement.Registration(
         displayName = "#MMDGraphEditor.displayName",

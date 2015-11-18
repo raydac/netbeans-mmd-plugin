@@ -17,6 +17,8 @@ package com.igormaznitsa.nbmindmap.nb.navigator;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDEditorSupport;
 import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
@@ -41,8 +43,6 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @NavigatorPanel.Registration(displayName = "Mind map", mimeType = MMDDataObject.MIME)
 public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupListener, FileChangeListener, Comparator<Object> {

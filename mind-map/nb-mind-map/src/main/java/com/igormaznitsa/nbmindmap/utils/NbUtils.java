@@ -21,6 +21,8 @@ import com.igormaznitsa.nbmindmap.nb.swing.PlainTextEditor;
 import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
 import com.igormaznitsa.nbmindmap.nb.options.MMDCfgOptionsPanelController;
 import java.awt.Color;
@@ -51,8 +53,6 @@ import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 import org.openide.util.lookup.Lookups;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class NbUtils {
 

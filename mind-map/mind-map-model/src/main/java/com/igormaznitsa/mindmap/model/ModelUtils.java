@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import java.io.File;
@@ -32,8 +34,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public enum ModelUtils {
 

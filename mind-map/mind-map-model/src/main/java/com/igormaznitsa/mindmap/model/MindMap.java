@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -34,8 +36,6 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class MindMap implements Serializable, Constants, TreeModel {
 

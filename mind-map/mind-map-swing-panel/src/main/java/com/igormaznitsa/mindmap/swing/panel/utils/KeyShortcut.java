@@ -40,6 +40,27 @@ public final class KeyShortcut {
     this.keyCode = keyCode;
   }
   
+  /**
+   * Get modifiers used by the shortcut.
+   * @return the modifier flags
+   * @see KeyEvent#CTRL_MASK
+   * @see KeyEvent#SHIFT_MASK
+   * @see KeyEvent#ALT_MASK
+   * @see KeyEvent#META_MASK
+   */
+  public int getModifiers(){
+    return this.modifiers;
+  }
+  
+  /**
+   * Get the key code used by the shortcut.
+   * @return the key code
+   * @see KeyEvent
+   */
+  public int getKeyCode(){
+    return this.keyCode;
+  }
+  
   public String getID(){
     return this.id;
   }

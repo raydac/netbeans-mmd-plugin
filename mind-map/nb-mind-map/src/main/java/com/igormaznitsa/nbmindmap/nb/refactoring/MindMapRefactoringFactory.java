@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.MoveFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.RenameFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.SafeDeleteFileActionPlugin;
@@ -27,8 +29,6 @@ import org.netbeans.modules.refactoring.api.WhereUsedQuery;
 import org.netbeans.modules.refactoring.spi.RefactoringPlugin;
 import org.netbeans.modules.refactoring.spi.RefactoringPluginFactory;
 import org.openide.util.lookup.ServiceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @ServiceProvider(service = RefactoringPluginFactory.class)
 public class MindMapRefactoringFactory implements RefactoringPluginFactory {

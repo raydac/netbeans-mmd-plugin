@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
@@ -39,8 +41,6 @@ import org.openide.loaders.DataObject;
 import org.openide.nodes.Node;
 import org.openide.util.ChangeSupport;
 import org.openide.util.WeakListeners;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener, DataFilter {
 

@@ -17,6 +17,8 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.refactoring.RefactoringUtils;
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +39,6 @@ import org.netbeans.modules.refactoring.spi.RefactoringPlugin;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Lookup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractPlugin<T extends AbstractRefactoring> extends ProgressProviderAdapter implements RefactoringPlugin {
 

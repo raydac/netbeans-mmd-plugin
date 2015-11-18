@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.options;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDGraphEditor;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.nbmindmap.nb.explorer.MMKnowledgeSources;
@@ -26,8 +28,6 @@ import java.beans.PropertyEditorManager;
 import java.net.URI;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 final class MMDCfgPanel extends javax.swing.JPanel {
 

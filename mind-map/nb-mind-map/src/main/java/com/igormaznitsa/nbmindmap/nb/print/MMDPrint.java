@@ -16,6 +16,8 @@
 package com.igormaznitsa.nbmindmap.nb.print;
 
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -24,8 +26,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import org.netbeans.spi.print.PrintPage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MMDPrint {
 

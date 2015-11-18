@@ -15,14 +15,14 @@
  */
 package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import com.igormaznitsa.ui.JHtmlLabel;
 import java.net.URI;
 import java.util.Properties;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.Modules;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkListener {
 

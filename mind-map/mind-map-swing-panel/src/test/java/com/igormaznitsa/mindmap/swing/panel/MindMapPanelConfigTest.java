@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.swing.panel;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.HashMap;
@@ -42,6 +43,15 @@ public class MindMapPanelConfigTest {
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
     one.setDropShadow(!two.isDropShadow());
+    assertTrue(one.hasDifferenceInParameters(two));
+  }
+
+  @Test
+  public void testHasDifferenceInParameters_DifferenceInKeyShortcuts () {
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+
+    one.setKeyShortCut(new KeyShortcut(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT, Integer.MAX_VALUE, Integer.MIN_VALUE));
     assertTrue(one.hasDifferenceInParameters(two));
   }
 
@@ -210,6 +220,8 @@ public class MindMapPanelConfigTest {
     config.setShowGrid(false);
     config.setFont(new Font("Helvetica", Font.ITALIC, 36));
 
+    config.setKeyShortCut(new KeyShortcut("testShortCut", 1234, 5678));
+    
     config.saveTo(prefs);
     assertFalse(storage.isEmpty());
 
@@ -221,6 +233,12 @@ public class MindMapPanelConfigTest {
     assertEquals(Color.orange, newConfig.getGridColor());
     assertEquals(new Font("Helvetica", Font.ITALIC, 36), newConfig.getFont());
     assertEquals(100.5d, newConfig.getScale(), 0.0d);
+    
+    final KeyShortcut shortCut = newConfig.getKeyShortCut("testShortCut");
+    assertNotNull(shortCut);
+    assertEquals("testShortCut",shortCut.getID());
+    assertEquals(1234,shortCut.getKeyCode());
+    assertEquals(5678,shortCut.getModifiers());
 
     storage.clear();
 
@@ -232,6 +250,8 @@ public class MindMapPanelConfigTest {
     assertEquals(etalon.getGridColor(), newConfig.getGridColor());
     assertEquals(etalon.getFont(), newConfig.getFont());
     assertEquals(etalon.getScale(), newConfig.getScale(), 0.0d);
+    assertNull(newConfig.getKeyShortCut("testShortCut"));
+    assertNotNull(newConfig.getKeyShortCut(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT));
   }
 
 }

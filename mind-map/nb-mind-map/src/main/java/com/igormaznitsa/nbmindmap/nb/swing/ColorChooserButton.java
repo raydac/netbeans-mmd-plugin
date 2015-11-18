@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -28,8 +30,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class ColorChooserButton extends JButton {
 

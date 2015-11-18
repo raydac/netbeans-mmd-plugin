@@ -15,11 +15,11 @@
  */
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import org.netbeans.api.project.Project;
 import org.netbeans.spi.project.ui.support.NodeFactory;
 import org.netbeans.spi.project.ui.support.NodeList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @NodeFactory.Registration(projectType = {
   "org-netbeans-modules-ant-freeform",
@@ -63,7 +63,7 @@ public class MMNodeFactory implements NodeFactory {
 
   @Override
   public NodeList<?> createNodes(final Project project) {
-    logger.debug("Creating knowledge nodes for " + project);
+    logger.info("Creating knowledge nodes for " + project);
     return new MMKnowledgeSources(project);
   }
 

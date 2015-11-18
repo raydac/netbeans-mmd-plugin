@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -46,8 +48,6 @@ import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.text.CloneableEditorSupport;
 import org.openide.text.NbDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class PlainTextEditor extends javax.swing.JPanel implements CaretListener {
 

@@ -17,6 +17,8 @@ package com.igormaznitsa.mindmap.exporters;
 
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
@@ -30,8 +32,6 @@ import java.io.OutputStream;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class PNGImageExporter extends AbstractMindMapExporter {
 

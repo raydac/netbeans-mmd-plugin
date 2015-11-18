@@ -15,12 +15,12 @@
  */
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import org.netbeans.api.project.Project;
 import org.openide.filesystems.FileObject;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class FolderChildren extends FilterNode.Children {
 

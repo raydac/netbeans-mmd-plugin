@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -29,8 +31,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class Topic implements Serializable, Constants {
 

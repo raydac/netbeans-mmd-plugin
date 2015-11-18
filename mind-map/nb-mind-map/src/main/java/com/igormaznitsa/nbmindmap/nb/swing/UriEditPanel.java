@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Toolkit;
 import java.net.URI;
@@ -23,8 +25,6 @@ import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.openide.util.ImageUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *

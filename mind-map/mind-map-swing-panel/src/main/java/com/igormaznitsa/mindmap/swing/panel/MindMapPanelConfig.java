@@ -134,6 +134,15 @@ public final class MindMapPanelConfig implements Serializable {
       }
     }
 
+    final Map<String,KeyShortcut> thisShortcuts = this.mapShortCut;
+    final Map<String,KeyShortcut> thatShortcuts = etalon.mapShortCut;
+    
+    if (thatShortcuts.size()!=thatShortcuts.size()) return true;
+    for(final Map.Entry<String,KeyShortcut> e : thisShortcuts.entrySet()){
+      if (!thatShortcuts.containsKey(e.getKey())) return true;
+      if (!thatShortcuts.get(e.getKey()).equals(thisShortcuts.get(e.getKey()))) return true;
+    }
+    
     return false;
   }
 

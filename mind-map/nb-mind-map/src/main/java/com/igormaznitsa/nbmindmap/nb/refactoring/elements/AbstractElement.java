@@ -17,6 +17,8 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.refactoring.CannotUndoMindMapException;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
@@ -33,8 +35,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.text.PositionBounds;
 import org.openide.util.Lookup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractElement extends SimpleRefactoringElementImplementation {
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");

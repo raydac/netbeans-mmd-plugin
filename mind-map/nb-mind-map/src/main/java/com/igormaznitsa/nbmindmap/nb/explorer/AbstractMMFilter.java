@@ -15,12 +15,12 @@
  */
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import javax.swing.Action;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMMFilter extends FilterNode {
 

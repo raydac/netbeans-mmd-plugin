@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.editor;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -37,8 +39,6 @@ import org.openide.filesystems.FileUtil;
 import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
 import org.openide.windows.CloneableTopComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, EditorCookie.Observable, ChangeListener {
 

@@ -15,12 +15,12 @@
  */
 package com.igormaznitsa.mindmap.model.nio;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.impl.J7PathService;
 import java.io.File;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public enum Paths {
   ;

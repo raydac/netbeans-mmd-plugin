@@ -13,19 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.model.nio;
+package com.igormaznitsa.mindmap.model.logger;
 
-import java.io.File;
-
-public abstract class AbstractPath implements Path {
-
-  protected AbstractPath(){
-  }
-  
-  public AbstractPath(final File file){
-  }
-  
-  public AbstractPath(final String first, final String... items){
-  }
-  
+public interface LoggerService {
+  Logger getLogger(Class<?> klazz);
+  Logger getLogger(String name);
 }
