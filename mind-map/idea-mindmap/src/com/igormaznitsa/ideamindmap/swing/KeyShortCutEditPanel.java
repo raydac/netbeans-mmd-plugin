@@ -25,6 +25,7 @@ import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +75,43 @@ public class KeyShortCutEditPanel extends JPanel implements TableModel {
     updateForSelected();
 
     this.tableKeyShortcuts.requestFocus();
+
+    final KeyShortCutEditPanel theInstance = this;
+
+    final ActionListener actionCheckBox = new ActionListener() {
+      @Override
+      public void actionPerformed (final ActionEvent e) {
+        final int selectedRow = tableKeyShortcuts.getSelectedRow();
+        if (selectedRow>=0){
+          final KeyShortcut oldShortCut = listOfKeys.get(selectedRow);
+
+          int modifiers = oldShortCut.getModifiers();
+          final JBCheckBox source = (JBCheckBox) e.getSource();
+          if (e.getSource() == checkBoxALT){
+            modifiers = source.isSelected() ? modifiers | KeyEvent.ALT_MASK : modifiers & ~KeyEvent.ALT_MASK;
+          } else if (e.getSource() == checkBoxCTRL){
+            modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
+          } else if (e.getSource() == checkBoxMeta) {
+            modifiers = modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
+          } else if (e.getSource() == checkBoxSHIFT) {
+            modifiers = source.isSelected() ? modifiers | KeyEvent.SHIFT_MASK : modifiers & ~KeyEvent.SHIFT_MASK;
+          }
+
+          listOfKeys.set(selectedRow, new KeyShortcut(oldShortCut.getID(), oldShortCut.getKeyCode(), modifiers));
+
+          for(final TableModelListener l : listeners){
+            l.tableChanged(new TableModelEvent(theInstance,selectedRow));
+          }
+
+          updateForSelected();
+        }
+      }
+    };
+
+    this.checkBoxALT.addActionListener(actionCheckBox);
+    this.checkBoxCTRL.addActionListener(actionCheckBox);
+    this.checkBoxMeta.addActionListener(actionCheckBox);
+    this.checkBoxSHIFT.addActionListener(actionCheckBox);
   }
 
   private void updateCurrentSelectedForKey (final KeyEvent evt) {
