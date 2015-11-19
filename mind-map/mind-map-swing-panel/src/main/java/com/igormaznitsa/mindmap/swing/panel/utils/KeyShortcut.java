@@ -83,7 +83,7 @@ public final class KeyShortcut {
   
   public boolean isEvent(final KeyEvent event){
     final int code = event.getKeyCode() == 0 ? event.getKeyChar() : event.getKeyCode();
-    return code == this.keyCode && (event.getModifiers() & ALL_MASKS & this.modifiers) == this.modifiers;
+    return code == this.keyCode && (event.getModifiers() & ALL_MASKS) == this.modifiers;
   }
   
   @Override
