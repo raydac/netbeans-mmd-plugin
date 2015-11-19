@@ -18,10 +18,12 @@ package com.igormaznitsa.nbmindmap.nb.swing;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
@@ -37,9 +39,9 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
   private final List<KeyShortcut> listOfKeys;
   private final List<TableModelListener> listeners = new ArrayList<TableModelListener>();
   
-  public KeyShortCutEditPanel (final List<KeyShortcut> list) {
+  public KeyShortCutEditPanel (final List<KeyShortcut> startList) {
     initComponents();
-    this.listOfKeys = new ArrayList<KeyShortcut>(list);
+    this.listOfKeys = new ArrayList<KeyShortcut>(startList);
     this.tableKeyShortcuts.setModel(this);
     this.tableKeyShortcuts.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
@@ -60,6 +62,43 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
     updateForSelected();
     
     this.tableKeyShortcuts.requestFocus();
+  
+    final KeyShortCutEditPanel theInstance = this;
+    
+    final ActionListener actionCheckBox = new ActionListener() {
+      @Override
+      public void actionPerformed (final ActionEvent e) {
+        final int selectedRow = tableKeyShortcuts.getSelectedRow();
+        if (selectedRow>=0){
+          final KeyShortcut oldShortCut = listOfKeys.get(selectedRow);
+          
+          int modifiers = oldShortCut.getModifiers();
+          final JCheckBox source = (JCheckBox) e.getSource();
+          if (e.getSource() == checkBoxALT){
+            modifiers = source.isSelected() ? modifiers | KeyEvent.ALT_MASK : modifiers & ~KeyEvent.ALT_MASK;
+          } else if (e.getSource() == checkBoxCTRL){
+            modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
+          } else if (e.getSource() == checkBoxMeta) {
+            modifiers = modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
+          } else if (e.getSource() == checkBoxSHIFT) {
+            modifiers = source.isSelected() ? modifiers | KeyEvent.SHIFT_MASK : modifiers & ~KeyEvent.SHIFT_MASK;
+          }
+          
+          listOfKeys.set(selectedRow, new KeyShortcut(oldShortCut.getID(), oldShortCut.getKeyCode(), modifiers));
+          
+          for(final TableModelListener l : listeners){
+            l.tableChanged(new TableModelEvent(theInstance,selectedRow));
+          }
+          
+          updateForSelected();
+        }
+      }
+    };
+    
+    this.checkBoxALT.addActionListener(actionCheckBox);
+    this.checkBoxCTRL.addActionListener(actionCheckBox);
+    this.checkBoxMeta.addActionListener(actionCheckBox);
+    this.checkBoxSHIFT.addActionListener(actionCheckBox);
   }
 
   private void updateCurrentSelectedForKey (final KeyEvent evt) {
