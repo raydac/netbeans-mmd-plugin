@@ -54,6 +54,31 @@ public class Utils {
     gfx.setRenderingHints(RENDERING_HINTS);
   }
 
+  public static String convertCamelCasedToHumanForm(final String camelCasedString, final boolean capitalizeFirstChar){
+    final StringBuilder result = new StringBuilder();
+    
+    boolean notFirst = false;
+    
+    for(final char c : camelCasedString.toCharArray()){
+      if (notFirst){
+        if (Character.isUpperCase(c)){
+          result.append(' ');
+          result.append(Character.toLowerCase(c));
+        }else{
+          result.append(c);
+        }
+      }else{
+        notFirst =  true;
+        if (capitalizeFirstChar){
+          result.append(Character.toUpperCase(c));
+        }else{
+          result.append(c);
+        }
+      }
+    }
+    return result.toString();
+  } 
+  
   public static Topic[] getLeftToRightOrderedChildrens (final Topic topic) {
     final List<Topic> result = new ArrayList<Topic>();
     if (topic.getTopicLevel() == 0) {

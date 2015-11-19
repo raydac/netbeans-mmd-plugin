@@ -24,13 +24,29 @@ public final class KeyShortcut {
   private final int keyCode;
   
   private static final int ALL_MASKS = KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
-  
+
   public KeyShortcut(final String packed){
     final String [] split = packed.split("\\*");
     this.id = split[0];
     final long code = Long.parseLong(split[1], 16);
     this.keyCode = (int)(code >>> 32);
     this.modifiers = (int)code;
+  }
+
+  public boolean isCtrl(){
+    return (this.modifiers & KeyEvent.CTRL_MASK) != 0;
+  }
+  
+  public boolean isAlt(){
+    return (this.modifiers & KeyEvent.ALT_MASK) != 0;
+  }
+  
+  public boolean isShift(){
+    return (this.modifiers & KeyEvent.SHIFT_MASK) != 0;
+  }
+  
+  public boolean isMeta(){
+    return (this.modifiers & KeyEvent.META_MASK) != 0;
   }
   
   public KeyShortcut(final String id, final int keyCode, final int modifiers){
@@ -94,7 +110,7 @@ public final class KeyShortcut {
   @Override
   public String toString(){
     final String modifierText = KeyEvent.getKeyModifiersText(this.modifiers);
-    final String keyText = KeyEvent.getKeyText(this.modifiers);
+    final String keyText = KeyEvent.getKeyText(this.keyCode);
     final StringBuilder builder = new StringBuilder();
     builder.append(keyText);
     if (!modifierText.isEmpty()){
@@ -102,5 +118,9 @@ public final class KeyShortcut {
     }
         
     return builder.toString();
+  }
+
+  public String getKeyCodeName () {
+    return KeyEvent.getKeyText(this.keyCode);
   }
 }

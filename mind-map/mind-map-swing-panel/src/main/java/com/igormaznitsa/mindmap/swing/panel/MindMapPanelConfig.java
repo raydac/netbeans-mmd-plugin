@@ -75,13 +75,13 @@ public final class MindMapPanelConfig implements Serializable {
 
   public static final String KEY_ADD_CHILD_AND_START_EDIT = "addChildAndStartEdit";
   public static final String KEY_ADD_SIBLING_AND_START_EDIT = "addSiblingAndStartEdit";
-  public static final String KEY_FOCUS_ROOT_OR_START_EDIT = "focusRootOrStartEdit";
+  public static final String KEY_FOCUS_ROOT_OR_START_EDIT = "focusToRootOrStartEdit";
   public static final String KEY_CANCEL_EDIT = "cancelEdit";
-  public static final String KEY_FOCUS_MOVE_UP = "focusMoveUp";
-  public static final String KEY_FOCUS_MOVE_DOWN = "focusMoveDown";
-  public static final String KEY_FOCUS_MOVE_LEFT = "focusMoveLeft";
-  public static final String KEY_FOCUS_MOVE_RIGHT = "focusMoveRight";
-  public static final String KEY_DELETE_TOPIC = "deleteTopic";
+  public static final String KEY_FOCUS_MOVE_UP = "moveFocusUp";
+  public static final String KEY_FOCUS_MOVE_DOWN = "moveFocusDown";
+  public static final String KEY_FOCUS_MOVE_LEFT = "moveFocusLeft";
+  public static final String KEY_FOCUS_MOVE_RIGHT = "moveFocusRight";
+  public static final String KEY_DELETE_TOPIC = "deleteSelectedTopic";
 
   private Font font = new Font("Arial", Font.BOLD, 18); //NOI18N
   private double scale = 1.0d;
@@ -109,6 +109,10 @@ public final class MindMapPanelConfig implements Serializable {
     this.mapShortCut.put(shortCut.getID(), shortCut);
   }
 
+  public Map<String,KeyShortcut> getKeyShortcutMap(){
+    return new HashMap<String, KeyShortcut>(this.mapShortCut);
+  }
+  
   public boolean hasDifferenceInParameters (final MindMapPanelConfig etalon) {
     for (final Field f : MindMapPanelConfig.class.getDeclaredFields()) {
       if ((f.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT | Modifier.FINAL)) != 0) {

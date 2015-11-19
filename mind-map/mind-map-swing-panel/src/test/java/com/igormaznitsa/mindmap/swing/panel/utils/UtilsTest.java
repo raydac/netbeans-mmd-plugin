@@ -21,6 +21,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class UtilsTest {
+
+  @Test
+  public void testconvertCamelCasedToHumanForm(){
+    assertEquals("Hello world and universe",Utils.convertCamelCasedToHumanForm("helloWorldAndUniverse", true));
+    assertEquals("hello world and universe",Utils.convertCamelCasedToHumanForm("helloWorldAndUniverse", false));
+  }
   
   @Test
   public void testFindRectEdgeIntersection() {

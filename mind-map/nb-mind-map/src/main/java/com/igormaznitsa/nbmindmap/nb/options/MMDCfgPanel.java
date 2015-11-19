@@ -19,13 +19,21 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDGraphEditor;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.nbmindmap.nb.explorer.MMKnowledgeSources;
 import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
+import com.igormaznitsa.nbmindmap.nb.swing.KeyShortCutEditPanel;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Font;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.swing.JOptionPane;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 
@@ -41,7 +49,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private static final URI DONATION_URI = URI.create("http://goo.gl/l7nDk2");
   
   private final MindMapPanelConfig config = new MindMapPanelConfig();
-
+  private Map<String,KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
+    @Override
+    public int compare (final String o1, final String o2) {
+      return o1.compareTo(o2);
+    }
+  });
+  
   MMDCfgPanel(final MMDCfgOptionsPanelController controller) {
     this.controller = controller;
     initComponents();
@@ -92,6 +106,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     buttonFont = new javax.swing.JButton();
     labelBorderWidth = new javax.swing.JLabel();
     spinnerElementBorderWidth = new javax.swing.JSpinner();
+    jPanel8 = new javax.swing.JPanel();
+    buttonOpenShortcutEditor = new javax.swing.JButton();
     jPanel1 = new javax.swing.JPanel();
     checkboxUseInsideBrowser = new javax.swing.JCheckBox();
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -304,16 +320,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
             .addGap(11, 11, 11)
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(spinnerGridStep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(spinnerGridStep, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(colorChooserGridColor, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(colorChooserPaperColor, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(89, Short.MAX_VALUE))
+          .addComponent(colorChooserGridColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(colorChooserPaperColor, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE))
+        .addContainerGap())
     );
-
-    jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {colorChooserGridColor, colorChooserPaperColor});
-
     jPanel4Layout.setVerticalGroup(
       jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel4Layout.createSequentialGroup()
@@ -472,6 +485,32 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
+    jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.ShortCutsTitle"))); // NOI18N
+
+    buttonOpenShortcutEditor.setText(bundle.getString("MMDCfgPanel.ShortCutsButtonText")); // NOI18N
+    buttonOpenShortcutEditor.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonOpenShortcutEditorActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+    jPanel8.setLayout(jPanel8Layout);
+    jPanel8Layout.setHorizontalGroup(
+      jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel8Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(buttonOpenShortcutEditor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+    jPanel8Layout.setVerticalGroup(
+      jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel8Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(buttonOpenShortcutEditor)
+        .addContainerGap(14, Short.MAX_VALUE))
+    );
+
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -503,7 +542,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
                   .addComponent(colorChooser1stText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addComponent(colorChooserRootText, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addComponent(colorChooser2ndText, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
 
@@ -540,6 +580,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(spinnerElementBorderWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -700,21 +742,24 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel6Layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel6Layout.createSequentialGroup()
+            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+              .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
           .addGroup(jPanel6Layout.createSequentialGroup()
             .addComponent(buttonAbout)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(jPanel6Layout.createSequentialGroup()
-            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
     );
 
     jScrollPane1.setViewportView(jPanel6);
@@ -939,6 +984,20 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_spinnerElementBorderWidthStateChanged
 
+  private void buttonOpenShortcutEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOpenShortcutEditorActionPerformed
+    final List<KeyShortcut> list = new ArrayList<KeyShortcut>();
+    for(final Map.Entry<String,KeyShortcut> e : this.mapKeyShortCuts.entrySet()){
+      list.add(e.getValue());
+    }
+    final KeyShortCutEditPanel panel = new KeyShortCutEditPanel(list);
+    if (NbUtils.plainMessageOkCancel("Edit shortcuts", panel)){
+      for(final KeyShortcut s : panel.getResult()){
+        this.mapKeyShortCuts.put(s.getID(), s);
+      }
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_buttonOpenShortcutEditorActionPerformed
+
   void load() {
     this.config.loadFrom(NbUtils.getPreferences());
 
@@ -980,6 +1039,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
       this.slider2ndLevelHorzGap.setValue(this.config.getOtherLevelHorizontalInset());
       this.slider2ndLevelVertGap.setValue(this.config.getOtherLevelVerticalInset());
+
+      this.mapKeyShortCuts.clear();
+      this.mapKeyShortCuts.putAll(this.config.getKeyShortcutMap());
 
       // Common behaviour options
       this.checkboxUseInsideBrowser.setSelected(NbUtils.getPreferences().getBoolean("useInsideBrowser", false));
@@ -1026,6 +1088,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.config.setOtherLevelHorizontalInset(this.slider2ndLevelHorzGap.getValue());
       this.config.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
 
+      for(final Map.Entry<String,KeyShortcut> e : this.mapKeyShortCuts.entrySet()){
+        this.config.setKeyShortCut(e.getValue());
+      }
+      
       this.config.saveTo(NbUtils.getPreferences());
 
       // Common behaviour options
@@ -1047,6 +1113,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonAbout;
   private javax.swing.JButton buttonFont;
+  private javax.swing.JButton buttonOpenShortcutEditor;
   private javax.swing.JCheckBox checkBoxCopyColorInfoToNewAllowed;
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxKnowledgeFolderAutogenerationAllowed;
@@ -1082,6 +1149,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JPanel jPanel5;
   private javax.swing.JPanel jPanel6;
   private javax.swing.JPanel jPanel7;
+  private javax.swing.JPanel jPanel8;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JLabel labelBorderWidth;
   private javax.swing.JSlider slider1stLevelHorzGap;
