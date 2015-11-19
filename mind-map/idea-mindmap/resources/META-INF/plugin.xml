@@ -11,7 +11,7 @@
       IDE-integrated mind map editor, it is ported version of <a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">the NetBeans Mind Map editor</a>. It allows to create and edit mind maps represented by MMD files.<br>
       <ul>
         <li><a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">The Project home page</a></li>
-        <li><a href="https://github.com/raydac/netbeans-mmd-plugin">Github projct sources</a></li>
+        <li><a href="https://github.com/raydac/netbeans-mmd-plugin">The Github project sources</a></li>
         <li><a href="https://www.youtube.com/watch?v=7TUU25dsOfM">The Screencast about the NetBeans version</a></li>
       </ul>
     ]]></description>
@@ -19,9 +19,10 @@
     <change-notes><![CDATA[
         <p>1.0.1</p>
         <ul>
-            <li>Added missing libraries</li>
-            <li>Minimal supported IDEA version changed to 13 (the plugin works well but can't open files in IDE, only make focusing)</li>
-            <li>Refactoring of core to increase compatibility with IDEA 13</li>
+            <li>Added option into facet to disable auto-generation of .projectKnowledge folder in the root</li>
+            <li>Added key shortcuts tuning</li>
+            <li>Added missed JSON library (it made error during Mindmup export)</li>
+            <li>Minimal supported IDEA version changed to 13 (the plugin works well but can't open files in IDE, only make focusing), IDE still must be started under Java 7+</li>
         </ul>
         <p>1.0.0</p>
         <ul>
