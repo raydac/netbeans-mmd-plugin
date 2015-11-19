@@ -15,7 +15,9 @@
  */
 package com.igormaznitsa.mindmap.model;
 
-public interface MindMapController {
+import java.io.Serializable;
+
+public interface MindMapController extends Serializable {
 
   public boolean canBeDeletedSilently(MindMap map, Topic topic);
   

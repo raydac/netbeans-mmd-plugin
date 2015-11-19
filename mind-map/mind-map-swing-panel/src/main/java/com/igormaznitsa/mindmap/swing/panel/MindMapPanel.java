@@ -62,7 +62,7 @@ public class MindMapPanel extends JPanel {
   private static final Logger logger = LoggerFactory.getLogger(MindMapPanel.class);
   private final MindMapPanelController controller;
 
-  private static final int ALL_KEY_MODIFIERS = KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.META_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK;
+  private static final int ALL_SUPPORTED_MODIFIERS = KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
 
   public static class DraggedElement {
 
@@ -174,7 +174,7 @@ public class MindMapPanel extends JPanel {
           }
           break;
           case KeyEvent.VK_TAB: {
-            if ((e.getModifiersEx() & ALL_KEY_MODIFIERS) == 0) {
+            if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
               e.consume();
               final Topic edited = elementUnderEdit.getModel();
               final int[] topicPosition = edited.getPositionPath();
@@ -199,7 +199,7 @@ public class MindMapPanel extends JPanel {
       @Override
       public void keyTyped (final KeyEvent e) {
         if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-          if ((e.getModifiers() & ALL_KEY_MODIFIERS)==0) {
+          if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS)==0) {
             e.consume();
             endEdit(true);
           }

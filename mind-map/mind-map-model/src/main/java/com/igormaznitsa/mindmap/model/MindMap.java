@@ -41,7 +41,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
   private static final long serialVersionUID = 5929181596778047354L;
 
-  private static final Logger logger = LoggerFactory.getLogger(MindMap.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMap.class);
 
   private final Topic root;
   private final Lock locker = new ReentrantLock();
@@ -375,7 +375,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
       fireTopicChanged((Topic) path.getLastPathComponent());
     }
     else {
-      logger.warn("Attempt to set non string value to path : " + path); //NOI18N
+      LOGGER.warn("Attempt to set non string value to path : " + path); //NOI18N
     }
   }
 
