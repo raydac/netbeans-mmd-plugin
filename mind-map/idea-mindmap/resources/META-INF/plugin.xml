@@ -1,14 +1,14 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <vendor logo="/icons/logo/logo@2x.png" url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
 
     <description><![CDATA[
       <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshotIdeaThumb.jpg"><br>
-      IDE-integrated mind map editor, it is ported version of <a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">the NetBeans Mind Map editor</a>. It allows to create and edit mind maps represented by MMD files.<br>
+      IDE-integrated mind map editor, it is ported version of <a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">the NetBeans Mind Map editor</a>. It allows to create and edit mind maps represented by MMD files. The Editor allows to keep simple text notes, web links and links to files just in mind map topics.<br>
       <ul>
         <li><a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">The Project home page</a></li>
         <li><a href="https://github.com/raydac/netbeans-mmd-plugin">The Github project sources</a></li>
@@ -17,14 +17,19 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.0.1</p>
+        <p>1.0.2 (in development)</p>
         <ul>
             <li>Added option into facet to disable auto-generation of .projectKnowledge folder in the root</li>
             <li>Added key shortcuts tuning</li>
             <li>Added missed JSON library (it made error during Mindmup export)</li>
             <li>Minimal supported IDEA version changed to 13 (the plugin works well but can't open files in IDE, only make focusing), IDE still must be started under Java 7+</li>
         </ul>
-        <p>1.0.0</p>
+        <p>1.0.1 (was not released)</p>
+        <ul>
+            <li>Byte-code version of compiled classes downshifted to Java 6.</li>
+            <li>Removed slf4j to increase compatibility</li>
+        </ul>
+        <p>1.0.0 (15-nov-2015)</p>
         <ul>
             <li>Initial version (ported functionality of the NB 1.1.1 version, without refactoring support)</li>
         </ul>
