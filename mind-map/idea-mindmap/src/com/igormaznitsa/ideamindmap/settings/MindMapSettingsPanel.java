@@ -3,13 +3,11 @@ package com.igormaznitsa.ideamindmap.settings;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FontSelector;
-import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
-import com.igormaznitsa.ideamindmap.utils.SwingUtils;
+import com.igormaznitsa.ideamindmap.swing.KeyShortCutEditPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.intellij.application.options.colors.FontEditorPreview;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.util.ui.JBFont;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JButton;
@@ -20,15 +18,16 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyEditor;
-import java.beans.PropertyEditorManager;
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MindMapSettingsPanel {
   private JPanel mainPanel;
@@ -61,6 +60,7 @@ public class MindMapSettingsPanel {
   private ColorChooserButton colorButton1stLevelText;
   private ColorChooserButton colorButton2ndLevelFill;
   private ColorChooserButton colorButton2ndLevelText;
+  private JButton buttonEditKeyShortcuts;
 
   private static final Logger LOGGER = Logger.getInstance(MindMapSettingsPanel.class);
 
@@ -68,6 +68,12 @@ public class MindMapSettingsPanel {
 
   private final MindMapPanelConfig etalon = new MindMapPanelConfig();
   private Font theFont;
+
+  private final Map<String,KeyShortcut> mapKeyShortCuts = new TreeMap<String,KeyShortcut>(new Comparator<String>(){
+    @Override public int compare(String o1, String o2) {
+      return o1.compareTo(o2);
+    }
+  });
 
   private static class DialogComponent extends DialogWrapper {
     private final JComponent component;
@@ -117,6 +123,21 @@ public class MindMapSettingsPanel {
 
       }
     });
+    buttonEditKeyShortcuts.addActionListener(new ActionListener() {
+      @Override public void actionPerformed(ActionEvent evt) {
+        final List<KeyShortcut> list = new ArrayList<KeyShortcut>();
+        for(final Map.Entry<String,KeyShortcut> e : mapKeyShortCuts.entrySet()){
+          list.add(e.getValue());
+        }
+
+        final KeyShortCutEditPanel editPanel = new KeyShortCutEditPanel(list);
+        if (new DialogComponent(mainPanel, "Edit shortcuts", editPanel).showAndGet()){
+          for(final KeyShortcut k : editPanel.getResult()){
+            mapKeyShortCuts.put(k.getID(),k);
+          }
+        }
+      }
+    });
   }
 
   public void reset(final MindMapPanelConfig config) {
@@ -156,6 +177,12 @@ public class MindMapSettingsPanel {
     this.slider2ndLevelVertGap.setValue(this.etalon.getOtherLevelVerticalInset());
 
     this.theFont = this.etalon.getFont();
+
+    this.mapKeyShortCuts.clear();
+    for(final Map.Entry<String,KeyShortcut> e : this.etalon.getKeyShortcutMap().entrySet()){
+      this.mapKeyShortCuts.put(e.getKey(),e.getValue());
+    }
+
     updateFontButton();
   }
 
@@ -246,6 +273,10 @@ public class MindMapSettingsPanel {
     result.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
 
     result.setFont(this.theFont);
+
+    for(final Map.Entry<String,KeyShortcut> e : this.mapKeyShortCuts.entrySet()){
+      result.setKeyShortCut(e.getValue());
+    }
 
     return result;
   }

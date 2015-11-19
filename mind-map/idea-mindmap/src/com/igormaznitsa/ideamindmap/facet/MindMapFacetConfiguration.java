@@ -1,6 +1,5 @@
 package com.igormaznitsa.ideamindmap.facet;
 
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.intellij.facet.FacetConfiguration;
 import com.intellij.facet.ui.FacetEditorContext;
 import com.intellij.facet.ui.FacetEditorTab;
@@ -19,6 +18,7 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
   private static final String KEY_MAKE_RELATIVE_PATH = "makeRelativePath";
   private static final String KEY_COPY_COLOR_INFO_FROM_PARENT= "copyParentColorInfoInNew";
   private static final String KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET= "unfoldCollapsedTopicInDrop";
+  private static final String KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION= "disableAutocreateProjectKnowledgeFolder";
 
   public MindMapFacetConfiguration() {
   }
@@ -85,6 +85,14 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
 
   public void setMakeRelativePath(final boolean flag) {
     this.preferences.putBoolean(KEY_MAKE_RELATIVE_PATH,flag);
+  }
+
+  public boolean isDisableAutoCreateProjectKnowledgeFolder() {
+    return this.preferences.getBoolean(KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION,false);
+  }
+
+  public void setDisableAutoCreateProjectKnowledgeFolder(final boolean flag) {
+    this.preferences.putBoolean(KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION,flag);
   }
 
 }

@@ -18,7 +18,7 @@ public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
   public MindMapFacet(@NotNull FacetType facetType, @NotNull Module module,
     @NotNull String name, @NotNull MindMapFacetConfiguration configuration, Facet underlyingFacet) {
     super(facetType, module, name, configuration, underlyingFacet);
-    IdeaUtils.findKnowledgeFolderForModule(module,true);
+    IdeaUtils.findKnowledgeFolderForModule(module,!this.getConfiguration().isDisableAutoCreateProjectKnowledgeFolder());
   }
 
   @Nullable

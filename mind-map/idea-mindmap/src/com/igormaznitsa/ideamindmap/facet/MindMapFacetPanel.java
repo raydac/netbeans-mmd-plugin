@@ -15,6 +15,7 @@ public class MindMapFacetPanel {
   private JCheckBox checkBoxCopyColorInfoFromParent;
   private JCheckBox checkBoxUnfoldCollapsedDropTarget;
   private JButton buttonAbout;
+  private JCheckBox checkBoxDisableAutocreateProjectKnowledge;
 
   private final MindMapFacetEditorTab controller;
 
@@ -38,6 +39,7 @@ public class MindMapFacetPanel {
     result |= this.controller.getConfiguration().isMakeRelativePath() ^ this.checkBoxMakeRelativePath.isSelected();
     result |= this.controller.getConfiguration().isCopyColorInformationFromParent() ^ this.checkBoxCopyColorInfoFromParent.isSelected();
     result |= this.controller.getConfiguration().isUnfoldTopicWhenItIsDropTarget() ^ this.checkBoxUnfoldCollapsedDropTarget.isSelected();
+    result |= this.controller.getConfiguration().isDisableAutoCreateProjectKnowledgeFolder() ^ this.checkBoxDisableAutocreateProjectKnowledge.isSelected();
 
     return result;
   }
@@ -47,6 +49,7 @@ public class MindMapFacetPanel {
     this.controller.getConfiguration().setUseInsideBrowser(this.checkBoxUseInternalBrowser.isSelected());
     this.controller.getConfiguration().setCopyColorInformationFromParent(this.checkBoxCopyColorInfoFromParent.isSelected());
     this.controller.getConfiguration().setUnfoldTopicWhenItIsDropTarget(this.checkBoxUnfoldCollapsedDropTarget.isSelected());
+    this.controller.getConfiguration().setDisableAutoCreateProjectKnowledgeFolder(this.checkBoxDisableAutocreateProjectKnowledge.isSelected());
   }
 
   public void reset(){
@@ -54,6 +57,7 @@ public class MindMapFacetPanel {
     this.checkBoxMakeRelativePath.setSelected(this.controller.getConfiguration().isMakeRelativePath());
     this.checkBoxCopyColorInfoFromParent.setSelected(this.controller.getConfiguration().isCopyColorInformationFromParent());
     this.checkBoxUnfoldCollapsedDropTarget.setSelected(this.controller.getConfiguration().isUnfoldTopicWhenItIsDropTarget());
+    this.checkBoxDisableAutocreateProjectKnowledge.setSelected(this.controller.getConfiguration().isDisableAutoCreateProjectKnowledgeFolder());
   }
 
 }
