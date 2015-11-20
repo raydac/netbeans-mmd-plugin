@@ -91,13 +91,13 @@ import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
-@MultiViewElement.Registration(
-        displayName = "#MMDGraphEditor.displayName",
-        mimeType = MMDDataObject.MIME,
-        persistenceType = PERSISTENCE_NEVER,
-        iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
-        preferredID = MMDGraphEditor.ID,
-        position = 1
+@MultiViewElement.Registration (
+    displayName = "#MMDGraphEditor.displayName",
+    mimeType = MMDDataObject.MIME,
+    persistenceType = PERSISTENCE_NEVER,
+    iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
+    preferredID = MMDGraphEditor.ID,
+    position = 1
 )
 public final class MMDGraphEditor extends CloneableEditor implements MindMapController, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, DialogProvider {
 
@@ -125,11 +125,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   private static final WeakSet<MMDGraphEditor> allEditors = new WeakSet<MMDGraphEditor>();
 
-  public MMDGraphEditor() {
+  public MMDGraphEditor () {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
   }
 
-  public MMDGraphEditor(final MMDEditorSupport support) {
+  public MMDGraphEditor (final MMDEditorSupport support) {
     super(support);
 
     this.editorSupport = support;
@@ -149,7 +149,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     this.mindMapPanel.addComponentListener(new ComponentAdapter() {
       @Override
-      public void componentResized(final ComponentEvent e) {
+      public void componentResized (final ComponentEvent e) {
         processEditorResizing(mindMapPanel);
       }
     });
@@ -161,12 +161,12 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public JComponent getVisualRepresentation() {
+  public JComponent getVisualRepresentation () {
     return this;
   }
 
   @Override
-  public void componentActivated() {
+  public void componentActivated () {
     super.componentActivated();
     this.editorSupport.onEditorActivated();
 
@@ -174,7 +174,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       this.rootToCentre = false;
       SwingUtilities.invokeLater(new Runnable() {
         @Override
-        public void run() {
+        public void run () {
           final Topic root = mindMapPanel.getModel() == null ? null : mindMapPanel.getModel().getRoot();
           if (mindMapPanel.hasSelectedTopics()) {
             topicToCentre(mindMapPanel.getFirstSelected());
@@ -189,21 +189,21 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void componentClosed() {
+  public void componentClosed () {
     super.componentClosed();
   }
 
   @Override
-  public void componentOpened() {
+  public void componentOpened () {
     super.componentOpened();
   }
 
   @Override
-  public void componentShowing() {
+  public void componentShowing () {
     updateModel();
   }
 
-  private void copyNameToCallbackTopComponent() {
+  private void copyNameToCallbackTopComponent () {
     final MultiViewElementCallback c = this.callback;
     if (c != null) {
       final TopComponent tc = c.getTopComponent();
@@ -220,16 +220,16 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void componentDeactivated() {
+  public void componentDeactivated () {
     super.componentDeactivated();
   }
 
   @Override
-  public void componentHidden() {
+  public void componentHidden () {
     super.componentHidden();
   }
 
-  private void updateModel() {
+  private void updateModel () {
     this.mindMapPanel.hideEditor();
 
     final String text = this.editorSupport.getDocumentText();
@@ -252,14 +252,14 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void setMultiViewCallback(final MultiViewElementCallback callback) {
+  public void setMultiViewCallback (final MultiViewElementCallback callback) {
     this.callback = callback;
     updateName();
     copyNameToCallbackTopComponent();
   }
 
   @Override
-  public boolean allowedRemovingOfTopics(final MindMapPanel source, final Topic[] topics) {
+  public boolean allowedRemovingOfTopics (final MindMapPanel source, final Topic[] topics) {
     boolean topicsNotImportant = true;
 
     for (final Topic t : topics) {
@@ -281,7 +281,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void onMindMapModelChanged(final MindMapPanel source) {
+  public void onMindMapModelChanged (final MindMapPanel source) {
     try {
       final StringWriter writer = new StringWriter(16384);
 
@@ -300,15 +300,15 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void onMindMapModelRealigned(final MindMapPanel source, final Dimension coveredAreaSize) {
+  public void onMindMapModelRealigned (final MindMapPanel source, final Dimension coveredAreaSize) {
     this.mainScrollPane.getViewport().revalidate();
   }
 
-  public void topicToCentre(final Topic topic) {
+  public void topicToCentre (final Topic topic) {
     if (topic != null) {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
-        public void run() {
+        public void run () {
           final AbstractElement element = (AbstractElement) topic.getPayload();
           if (element != null) {
             final Rectangle2D bounds = element.getBounds();
@@ -325,11 +325,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void onEnsureVisibilityOfTopic(final MindMapPanel source, final Topic topic) {
+  public void onEnsureVisibilityOfTopic (final MindMapPanel source, final Topic topic) {
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
-      public void run() {
+      public void run () {
         if (topic == null) {
           return;
         }
@@ -366,8 +366,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public void onClickOnExtra(final MindMapPanel source, final int clicks, final Topic topic, final Extra<?> extra) {
+  @SuppressWarnings ("unchecked")
+  public void onClickOnExtra (final MindMapPanel source, final int clicks, final Topic topic, final Extra<?> extra) {
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {
@@ -419,32 +419,30 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                     }
                   }
                 }
+      
+                NbUtils.SelectIn selector = NbUtils.SelectIn.FAVORITES;
 
                 final ProjectManager manager = ProjectManager.getDefault();
                 final OpenProjects openManager = OpenProjects.getDefault();
                 if (manager.isProject(fileObj)) {
                   final Project project = manager.findProject(fileObj);
-                  if (project == null) {
-                    if (!NbUtils.SelectIn.FAVORITES.select(this, fileObj)) {
-                      NbUtils.openInSystemViewer(theFile);
-                    }
-                  }
-                  else {
-                    if (!openManager.isProjectOpen(project)) {
-                      openManager.open(new Project[]{project}, false, true);
-                    }
+                  if (project != null && !openManager.isProjectOpen(project)) {
+                    openManager.open(new Project[]{project}, false, true);
                   }
                 }
-                else {
-                  if (projectOwner!=null){
-                    openManager.open(new Project[]{projectOwner}, false);
-                    if (!NbUtils.SelectIn.PROJECTS.select(this, fileObj)) {
-                      NbUtils.openInSystemViewer(theFile);
-                    }                    
-                  }else
-                  if (!NbUtils.SelectIn.FAVORITES.select(this, fileObj)) {
-                    NbUtils.openInSystemViewer(theFile);
+                else if (projectOwner != null) {
+                  openManager.open(new Project[]{projectOwner}, false);
+                  
+                  if (NbUtils.isFileInProjectScope(projectOwner, fileObj)) {
+                    selector = NbUtils.SelectIn.PROJECTS;
                   }
+                  else if (FileUtil.isParentOf(projectOwner.getProjectDirectory(), fileObj)) {
+                    selector = NbUtils.SelectIn.FILES;
+                  }
+                }
+                
+                if (!selector.select(this, fileObj)){
+                  NbUtils.openInSystemViewer(theFile);
                 }
               }
               else {
@@ -493,22 +491,22 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void onChangedSelection(final MindMapPanel source, final Topic[] currentSelectedTopics) {
+  public void onChangedSelection (final MindMapPanel source, final Topic[] currentSelectedTopics) {
   }
 
-  private static void processEditorResizing(final MindMapPanel panel) {
+  private static void processEditorResizing (final MindMapPanel panel) {
     panel.updateView(false);
     panel.updateEditorAfterResizing();
   }
 
-  public void updateView() {
+  public void updateView () {
     if (SwingUtilities.isEventDispatchThread()) {
       this.updateModel();
     }
     else {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
-        public void run() {
+        public void run () {
           updateModel();
         }
       });
@@ -516,7 +514,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void dragEnter(DropTargetDragEvent dtde) {
+  public void dragEnter (DropTargetDragEvent dtde) {
     this.dragAcceptableType = checkDragType(dtde);
     if (!this.dragAcceptableType) {
       dtde.rejectDrag();
@@ -524,7 +522,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void dragOver(final DropTargetDragEvent dtde) {
+  public void dragOver (final DropTargetDragEvent dtde) {
     if (acceptOrRejectDragging(dtde)) {
       dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
     }
@@ -534,20 +532,20 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public Image getIcon() {
+  public Image getIcon () {
     return ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N
   }
 
   @Override
-  public void dropActionChanged(DropTargetDragEvent dtde) {
+  public void dropActionChanged (DropTargetDragEvent dtde) {
   }
 
   @Override
-  public void dragExit(DropTargetEvent dte) {
+  public void dragExit (DropTargetEvent dte) {
   }
 
   @Override
-  public boolean processDropTopicToAnotherTopic(final MindMapPanel source, final Point dropPoint, final Topic draggedTopic, final Topic destinationTopic) {
+  public boolean processDropTopicToAnotherTopic (final MindMapPanel source, final Point dropPoint, final Topic draggedTopic, final Topic destinationTopic) {
     boolean result = false;
     if (draggedTopic != null && destinationTopic != null && draggedTopic != destinationTopic) {
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
@@ -564,7 +562,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return result;
   }
 
-  private void addDataObjectToElement(final DataObject dataObject, final AbstractElement element) {
+  private void addDataObjectToElement (final DataObject dataObject, final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();
 
@@ -586,7 +584,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void drop(final DropTargetDropEvent dtde) {
+  public void drop (final DropTargetDropEvent dtde) {
     DataFlavor dataObjectFlavor = null;
     DataFlavor nodeObjectFlavor = null;
     DataFlavor projectObjectFlavor = null;
@@ -658,7 +656,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
   }
 
-  public File getProjectFolder() {
+  public File getProjectFolder () {
     File result = null;
     final Project proj = this.editorSupport.getProject();
     if (proj != null) {
@@ -667,7 +665,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return result;
   }
 
-  protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
+  protected boolean acceptOrRejectDragging (final DropTargetDragEvent dtde) {
     final int dropAction = dtde.getDropAction();
 
     boolean result = false;
@@ -679,7 +677,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return result;
   }
 
-  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
+  protected static boolean checkDragType (final DropTargetDragEvent dtde) {
     boolean result = false;
     for (final DataFlavor fl1 : dtde.getCurrentDataFlavors()) {
       final Class dataClass = fl1.getRepresentationClass();
@@ -692,16 +690,16 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public CloseOperationState canCloseElement() {
+  public CloseOperationState canCloseElement () {
     return CloseOperationState.STATE_OK;
   }
 
   @Override
-  public JComponent getToolbarRepresentation() {
+  public JComponent getToolbarRepresentation () {
     return this.toolBar;
   }
 
-  private void editFileLinkForTopic(final Topic topic) {
+  private void editFileLinkForTopic (final Topic topic) {
     final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
     final FileEditPanel.DataContainer path;
@@ -718,14 +716,12 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       if (uri.isAbsolute()) {
         origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getAbsolutePath(), flagOpenInSystem);
       }
+      else if (projectFolder == null) {
+        NbUtils.msgWarn(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
+        origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getPath(), flagOpenInSystem);
+      }
       else {
-        if (projectFolder == null) {
-          NbUtils.msgWarn(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
-          origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getPath(), flagOpenInSystem);
-        }
-        else {
-          origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
-        }
+        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
       }
       path = NbUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
     }
@@ -762,7 +758,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
   }
 
-  private void editTopicLinkForTopic(final Topic topic) {
+  private void editTopicLinkForTopic (final Topic topic) {
     final ExtraTopic link = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
 
     ExtraTopic result = null;
@@ -798,7 +794,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     if (result != null) {
       if (result == remove) {
         topic.removeExtra(Extra.ExtraType.TOPIC);
-      } 
+      }
       else {
         topic.setExtra(result);
       }
@@ -808,7 +804,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
   }
 
-  private void editLinkForTopic(final Topic topic) {
+  private void editLinkForTopic (final Topic topic) {
     final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
     final MMapURI result;
     if (link == null) {
@@ -832,7 +828,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
   }
 
-  private void editTextForTopic(final Topic topic) {
+  private void editTextForTopic (final Topic topic) {
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
     final String result;
     if (note == null) {
@@ -857,11 +853,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public int getPersistenceType() {
+  public int getPersistenceType () {
     return TopComponent.PERSISTENCE_NEVER;
   }
 
-  public boolean focusToPath(final boolean enforceVisibility, final int[] positionPath) {
+  public boolean focusToPath (final boolean enforceVisibility, final int[] positionPath) {
     this.mindMapPanel.removeAllSelection();
     Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
     boolean mapChanged = false;
@@ -882,17 +878,17 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public Lookup getLookup() {
+  public Lookup getLookup () {
     return new ProxyLookup(Lookups.singleton(this), super.getLookup());
   }
 
   @Override
-  public PrintPage[][] getPages(final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
+  public PrintPage[][] getPages (final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
     return new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, pageZoomFactor).getPages();
   }
 
   @Override
-  public Date lastModified() {
+  public Date lastModified () {
     if (this.editorSupport.isModified()) {
       return new Date();
     }
@@ -902,24 +898,24 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source) {
+  public boolean isCopyColorInfoFromParentToNewChildAllowed (MindMapPanel source) {
     return NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true); //NOI18N
   }
 
   @Override
-  public boolean isUnfoldCollapsedTopicDropTarget(final MindMapPanel source) {
+  public boolean isUnfoldCollapsedTopicDropTarget (final MindMapPanel source) {
     return NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true); //NOI18N
   }
 
   @Override
-  public MindMapPanelConfig provideConfigForMindMapPanel(final MindMapPanel source) {
+  public MindMapPanelConfig provideConfigForMindMapPanel (final MindMapPanel source) {
     final MindMapPanelConfig config = new MindMapPanelConfig();
     config.loadFrom(NbUtils.getPreferences());
     return config;
   }
 
   @Override
-  public JPopupMenu makePopUpForMindMapPanel(final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
+  public JPopupMenu makePopUpForMindMapPanel (final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
     final JPopupMenu result = new JPopupMenu();
 
     if (element != null) {
@@ -927,7 +923,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       editText.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed (ActionEvent e) {
           mindMapPanel.startEdit(element);
         }
       });
@@ -938,7 +934,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       addChild.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed (ActionEvent e) {
           mindMapPanel.makeNewChildAndStartEdit(element.getModel(), null);
         }
       });
@@ -951,7 +947,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       deleteItem.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed (ActionEvent e) {
           if (mindMapPanel.hasSelectedTopics()) {
             mindMapPanel.deleteSelectedTopics();
           }
@@ -971,7 +967,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         cloneItem.addActionListener(new ActionListener() {
 
           @Override
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed (ActionEvent e) {
             mindMapPanel.cloneTopic(theTopic);
           }
         });
@@ -990,7 +986,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       final JMenuItem editText = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditNote") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddNote"), Icons.NOTE.getIcon());
       editText.addActionListener(new ActionListener() {
         @Override
-        public void actionPerformed(final ActionEvent e) {
+        public void actionPerformed (final ActionEvent e) {
           editTextForTopic(topic);
           mindMapPanel.requestFocus();
         }
@@ -1002,7 +998,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       editLink.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed (ActionEvent e) {
           editLinkForTopic(topic);
           mindMapPanel.requestFocus();
         }
@@ -1014,7 +1010,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       editTopicLink.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed (ActionEvent e) {
           editTopicLinkForTopic(topic);
           mindMapPanel.requestFocus();
         }
@@ -1026,7 +1022,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       editFileLink.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed (ActionEvent e) {
           editFileLinkForTopic(topic);
           mindMapPanel.requestFocus();
         }
@@ -1055,7 +1051,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       colors.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed (ActionEvent e) {
           processColorDialogForTopics(source, topics);
         }
       });
@@ -1071,7 +1067,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     expandAll.addActionListener(new ActionListener() {
 
       @Override
-      public void actionPerformed(final ActionEvent e) {
+      public void actionPerformed (final ActionEvent e) {
         mindMapPanel.collapseOrExpandAll(false);
       }
 
@@ -1081,7 +1077,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     collapseAll.addActionListener(new ActionListener() {
 
       @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed (ActionEvent e) {
         mindMapPanel.collapseOrExpandAll(true);
       }
 
@@ -1091,7 +1087,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     showJumps.addActionListener(new ActionListener() {
 
       @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed (ActionEvent e) {
         mindMapPanel.setShowJumps(showJumps.isSelected());
       }
     });
@@ -1112,7 +1108,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       item.setIcon(exp.getIcon());
       item.addActionListener(new ActionListener() {
         @Override
-        public void actionPerformed(final ActionEvent e) {
+        public void actionPerformed (final ActionEvent e) {
           try {
             exp.doExport(mindMapPanel, null);
           }
@@ -1132,7 +1128,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     optionsMenu.addActionListener(new ActionListener() {
 
       @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed (ActionEvent e) {
         OptionsDisplayer.getDefault().open("nb-mmd-config-main"); //NOI18N
       }
     });
@@ -1143,7 +1139,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     infoMenu.addActionListener(new ActionListener() {
 
       @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed (ActionEvent e) {
         NbUtils.plainMessageOk(BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());
       }
     });
@@ -1153,7 +1149,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return result;
   }
 
-  private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {
+  private void processColorDialogForTopics (final MindMapPanel source, final Topic[] topics) {
     final Color borderColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_BORDER_COLOR.getText(), topics);
     final Color fillColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_FILL_COLOR.getText(), topics);
     final Color textColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
@@ -1179,49 +1175,49 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public DialogProvider getDialogProvider(final MindMapPanel source) {
+  public DialogProvider getDialogProvider (final MindMapPanel source) {
     return this;
   }
 
   @Override
-  public void msgError(final String text) {
+  public void msgError (final String text) {
     NbUtils.msgError(text);
   }
 
   @Override
-  public void msgInfo(final String text) {
+  public void msgInfo (final String text) {
     NbUtils.msgInfo(text);
   }
 
   @Override
-  public void msgWarn(final String text) {
+  public void msgWarn (final String text) {
     NbUtils.msgWarn(text);
   }
 
   @Override
-  public boolean msgConfirmOkCancel(String title, String question) {
+  public boolean msgConfirmOkCancel (String title, String question) {
     return NbUtils.msgConfirmOkCancel(title, question);
   }
 
   @Override
-  public boolean msgConfirmYesNo(String title, String question) {
+  public boolean msgConfirmYesNo (String title, String question) {
     return NbUtils.msgConfirmYesNo(title, question);
   }
 
   @Override
-  public Boolean msgConfirmYesNoCancel(String title, String question) {
+  public Boolean msgConfirmYesNoCancel (String title, String question) {
     return NbUtils.msgConfirmYesNoCancel(title, question);
   }
 
   @Override
-  public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
+  public File msgSaveFileDialog (final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
     return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showSaveDialog();
   }
 
-  private void updateConfigFromPreferences() {
+  private void updateConfigFromPreferences () {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
-      public void run() {
+      public void run () {
         mindMapPanel.refreshConfiguration();
         mindMapPanel.invalidate();
         mindMapPanel.revalidate();
@@ -1230,7 +1226,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     });
   }
 
-  public static void notifyReloadConfig() {
+  public static void notifyReloadConfig () {
     synchronized (allEditors) {
       for (final MMDGraphEditor e : allEditors) {
         e.updateConfigFromPreferences();
@@ -1239,32 +1235,32 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public boolean isSelectionAllowed(MindMapPanel source) {
+  public boolean isSelectionAllowed (MindMapPanel source) {
     return true;
   }
 
   @Override
-  public boolean isElementDragAllowed(MindMapPanel source) {
+  public boolean isElementDragAllowed (MindMapPanel source) {
     return true;
   }
 
   @Override
-  public boolean isMouseMoveProcessingAllowed(MindMapPanel source) {
+  public boolean isMouseMoveProcessingAllowed (MindMapPanel source) {
     return true;
   }
 
   @Override
-  public boolean isMouseWheelProcessingAllowed(MindMapPanel source) {
+  public boolean isMouseWheelProcessingAllowed (MindMapPanel source) {
     return true;
   }
 
   @Override
-  public boolean isMouseClickProcessingAllowed(final MindMapPanel source) {
+  public boolean isMouseClickProcessingAllowed (final MindMapPanel source) {
     return true;
   }
 
   @Override
-  public boolean canBeDeletedSilently(final MindMap map, final Topic topic) {
+  public boolean canBeDeletedSilently (final MindMap map, final Topic topic) {
     return topic.getText().isEmpty() && topic.getExtras().isEmpty() && doesContainOnlyStandardAttributes(topic);
   }
 

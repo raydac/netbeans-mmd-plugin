@@ -31,16 +31,26 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.prefs.Preferences;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.ProjectUtils;
+import org.netbeans.api.project.SourceGroup;
+import org.netbeans.api.project.Sources;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.HtmlBrowser;
@@ -56,6 +66,8 @@ import org.openide.util.lookup.Lookups;
 
 public final class NbUtils {
 
+  private static final List<String> ALL_KNOWN_SCOPE_TYPES = Arrays.asList("Resources","TestResources","GeneratedSources","java","resources","main","test","doc_root","web_inf","PHPSOURCE","groovy","grails","grails_unknown","HTML5-Sources","HTML5-Tests");
+  
   public enum SelectIn {
 
     PROJECTS("org-netbeans-modules-project-ui-SelectInProjects.instance"),
@@ -392,5 +404,40 @@ public final class NbUtils {
 
     thr.setDaemon(true);
     thr.start();
+  }
+
+  public static Collection<SourceGroup> findAllSourceGroups(final Project project){
+    final Sources sources = ProjectUtils.getSources(project);
+    final Set<SourceGroup> result = new HashSet<SourceGroup>();
+    for(final String scopeType : ALL_KNOWN_SCOPE_TYPES){
+      for(final SourceGroup s : sources.getSourceGroups(scopeType)){
+        result.add(s);
+      }
+    }
+    
+    if (result.isEmpty() && !project.getClass().getName().equals("org.netbeans.modules.maven.NbMavenProjectImpl")){
+      for(final SourceGroup s : sources.getSourceGroups(Sources.TYPE_GENERIC)){
+        result.add(s);
+      }
+    }
+    
+    return result;
+  }
+  
+  public static boolean isFileInProjectScope(final Project project, final FileObject file) {
+    if (file == null || project == null) return false;
+    
+    final FileObject projectFolder = project.getProjectDirectory();
+    if (FileUtil.isParentOf(projectFolder, file)) {
+      for(final SourceGroup srcGroup : findAllSourceGroups(project)){
+        final FileObject root = srcGroup.getRootFolder();
+        if (root!=null){
+          if (FileUtil.isParentOf(root, file)) return true;
+        }
+      }
+      return false;
+    }else{
+      return false;
+    }
   }
 }
