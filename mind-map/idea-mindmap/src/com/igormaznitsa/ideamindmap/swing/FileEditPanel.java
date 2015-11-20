@@ -23,7 +23,9 @@ import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.openapi.vfs.LocalFileSystem;
 
-public final class FileEditPanel extends javax.swing.JPanel {
+import javax.swing.JComponent;
+
+public final class FileEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
   private static final com.intellij.openapi.diagnostic.Logger LOGGER = com.intellij.openapi.diagnostic.Logger.getInstance(FileEditPanel.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
@@ -73,6 +75,11 @@ public final class FileEditPanel extends javax.swing.JPanel {
 
   public DataContainer getData() {
     return new DataContainer(this.textFieldFilePath.getText().trim(), this.checkBoxShowFileInSystem.isSelected());
+  }
+
+  @Override
+  public JComponent getComponentPreferredForFocus(){
+    return this.textFieldFilePath;
   }
 
   @SuppressWarnings("unchecked")

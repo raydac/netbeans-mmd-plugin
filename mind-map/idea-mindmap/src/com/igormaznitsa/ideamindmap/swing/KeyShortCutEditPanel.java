@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
@@ -41,7 +41,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-public class KeyShortCutEditPanel extends JPanel implements TableModel {
+public class KeyShortCutEditPanel extends JBPanel implements TableModel {
 
   private static final long serialVersionUID = -8892558469392323517L;
 
@@ -180,7 +180,7 @@ public class KeyShortCutEditPanel extends JPanel implements TableModel {
 
     scrollPaneTable = new JBScrollPane();
     tableKeyShortcuts = new JBTable();
-    mainPanel = new javax.swing.JPanel();
+    mainPanel = new JBPanel();
     labelKeyCode = new JBLabel();
     checkBoxALT = new JBCheckBox();
     checkBoxCTRL = new JBCheckBox();
@@ -320,7 +320,7 @@ public class KeyShortCutEditPanel extends JPanel implements TableModel {
   private JBCheckBox checkBoxCTRL;
   private JBCheckBox checkBoxMeta;
   private JBCheckBox checkBoxSHIFT;
-  private JPanel mainPanel;
+  private JBPanel mainPanel;
   private JBScrollPane scrollPaneTable;
   private JBLabel labelKeyCode;
   private JBTable tableKeyShortcuts;

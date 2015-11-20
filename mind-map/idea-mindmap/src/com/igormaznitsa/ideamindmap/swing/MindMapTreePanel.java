@@ -22,6 +22,12 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JToolBar;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,11 +35,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Comparator;
 import java.util.ResourceBundle;
-import javax.swing.JTree;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
-public final class MindMapTreePanel extends javax.swing.JPanel implements Comparator<Object> {
+public final class MindMapTreePanel extends javax.swing.JPanel implements Comparator<Object>, HasPreferredFocusComponent {
 
   private static final long serialVersionUID = 2652308291444091807L;
 
@@ -78,6 +81,10 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
     if (expandAll) {
       expandAll();
     }
+  }
+
+  @Override public JComponent getComponentPreferredForFocus() {
+    return this.treeMindMap;
   }
 
   public void expandAll() {
@@ -178,12 +185,12 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
     }
   }
 
-  private javax.swing.JButton buttonCollapseAll;
-  private javax.swing.JButton buttonExpandAll;
-  private javax.swing.JButton buttonUnselect;
-  private javax.swing.JToolBar toolBar;
-  private javax.swing.JTree treeMindMap;
-  private javax.swing.JScrollPane treeScrollPane;
+  private JButton buttonCollapseAll;
+  private JButton buttonExpandAll;
+  private JButton buttonUnselect;
+  private JToolBar toolBar;
+  private JTree treeMindMap;
+  private JBScrollPane treeScrollPane;
 
   @Override
   public int compare(final Object o1, final Object o2) {

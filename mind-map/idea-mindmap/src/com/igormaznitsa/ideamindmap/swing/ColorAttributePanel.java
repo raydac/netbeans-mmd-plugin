@@ -18,6 +18,7 @@ package com.igormaznitsa.ideamindmap.swing;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.util.ResourceBundle;
@@ -158,9 +159,9 @@ public class ColorAttributePanel extends JPanel {
     this.colorChooserText.setValue(null);
   }
 
-  private javax.swing.JButton buttonResetBorder;
-  private javax.swing.JButton buttonResetFill;
-  private javax.swing.JButton buttonResetText;
+  private JButton buttonResetBorder;
+  private JButton buttonResetFill;
+  private JButton buttonResetText;
   private ColorChooserButton colorChooserBorder;
   private ColorChooserButton colorChooserFill;
   private ColorChooserButton colorChooserText;

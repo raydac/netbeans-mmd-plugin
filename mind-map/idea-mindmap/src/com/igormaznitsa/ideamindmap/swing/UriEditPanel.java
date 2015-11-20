@@ -18,6 +18,7 @@ package com.igormaznitsa.ideamindmap.swing;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 
+import javax.swing.JComponent;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.Toolkit;
@@ -25,7 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ResourceBundle;
 
-public final class UriEditPanel extends javax.swing.JPanel {
+public final class UriEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
   private static final com.intellij.openapi.diagnostic.Logger LOGGER = com.intellij.openapi.diagnostic.Logger.getInstance(UriEditPanel.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
@@ -55,6 +56,11 @@ public final class UriEditPanel extends javax.swing.JPanel {
     });
 
     validateUri();
+  }
+
+  @Override
+  public JComponent getComponentPreferredForFocus(){
+    return this.textFieldURI;
   }
 
   public String getText() {

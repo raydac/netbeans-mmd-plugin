@@ -17,6 +17,7 @@ package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.intellij.ide.projectView.ProjectView;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
@@ -44,8 +45,7 @@ public enum SelectIn {
       }
       else {
         projectFocusTo(source.getProject(),file);
-        final ProjectView view = ProjectView.getInstance(source.getProject());
-        view.select(null, file, true);
+        FileEditorManager.getInstance(source.getProject()).openFile(file,true);
       }
     }
     break;

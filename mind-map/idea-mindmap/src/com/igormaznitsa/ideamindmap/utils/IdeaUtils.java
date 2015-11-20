@@ -18,6 +18,7 @@ package com.igormaznitsa.ideamindmap.utils;
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
+import com.igormaznitsa.ideamindmap.swing.HasPreferredFocusComponent;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -214,7 +215,7 @@ public enum IdeaUtils {
     @Nullable
     @Override
     public JComponent getPreferredFocusedComponent() {
-      return this.component;
+      return this.prefferedComponent == null ? this.component : this.prefferedComponent;
     }
 
     @Nullable
@@ -257,7 +258,7 @@ public enum IdeaUtils {
   }
 
   public static boolean plainMessageOkCancel(final Project project, final String title, final JComponent centerComponent) {
-    final DialogComponent dialog = new DialogComponent(project, title, centerComponent, centerComponent, true);
+    final DialogComponent dialog = new DialogComponent(project, title, centerComponent, centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
     return dialog.showAndGet();
   }
 

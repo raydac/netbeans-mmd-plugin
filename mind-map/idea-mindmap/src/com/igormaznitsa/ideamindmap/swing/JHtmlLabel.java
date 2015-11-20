@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.ideamindmap.swing;
 
+import com.intellij.ui.components.JBLabel;
+
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -25,7 +27,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.View;
 import javax.swing.text.html.HTML;
@@ -38,10 +39,8 @@ import javax.swing.text.html.HTMLDocument;
  * tags then such tags will be added automatically.</b>
  *
  * @author Igor Maznitsa (http://www.igormaznitsa.com)
- *
- * @version 1.00
  */
-public class JHtmlLabel extends JLabel {
+public class JHtmlLabel extends JBLabel {
 
   private static final long serialVersionUID = -166975925687523220L;
 

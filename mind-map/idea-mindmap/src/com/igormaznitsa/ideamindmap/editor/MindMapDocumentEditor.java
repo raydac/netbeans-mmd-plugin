@@ -63,7 +63,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import java.awt.Dimension;
@@ -90,7 +89,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
-  private final JScrollPane mainScrollPane;
+  private final JBScrollPane mainScrollPane;
   private final MindMapPanel mindMapPanel;
   private final Project project;
   private final VirtualFile file;

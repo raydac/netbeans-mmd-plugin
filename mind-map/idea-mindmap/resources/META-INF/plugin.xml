@@ -22,7 +22,7 @@
             <li>Added option into facet to disable auto-generation of .projectKnowledge folder in the root</li>
             <li>Added key shortcuts tuning</li>
             <li>Added missed JSON library (it made error during Mindmup export)</li>
-            <li>Minimal supported IDEA version changed to 13 (the plugin works well but can't open files in IDE, only make focusing), IDE still must be started under Java 7+</li>
+            <li>Minimal supported IDEA version changed to 13 (build 133), still needs Java 7+ for work</li>
         </ul>
         <p>1.0.1 (was not released)</p>
         <ul>
