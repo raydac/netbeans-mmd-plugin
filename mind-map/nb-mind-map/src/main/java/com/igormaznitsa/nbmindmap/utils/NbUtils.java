@@ -34,13 +34,10 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.prefs.Preferences;
 import javax.swing.Action;
@@ -66,6 +63,7 @@ import org.openide.util.lookup.Lookups;
 
 public final class NbUtils {
 
+  // List of all found types of source groups in NetBeans sources.
   private static final List<String> ALL_KNOWN_SCOPE_TYPES = Arrays.asList("Resources","TestResources","GeneratedSources","java","resources","main","test","doc_root","web_inf","PHPSOURCE","groovy","grails","grails_unknown","HTML5-Sources","HTML5-Tests");
   
   public enum SelectIn {
@@ -111,14 +109,14 @@ public final class NbUtils {
           }
         }
         catch (Exception ex) {
-          logger.error("Error during SelectIn(" + this.name() + ')', ex);
+          LOGGER.error("Error during SelectIn(" + this.name() + ')', ex);
         }
       }
       return result;
     }
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(NbUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(NbUtils.class);
 
   public static final MMapURI EMPTY_URI;
   public static final boolean DARK_THEME;
@@ -361,7 +359,7 @@ public final class NbUtils {
       return true;
     }
     catch (MalformedURLException ex) {
-      logger.error("MalformedURLException", ex); //NOI18N
+      LOGGER.error("MalformedURLException", ex); //NOI18N
       return false;
     }
   }
@@ -379,7 +377,7 @@ public final class NbUtils {
               ok = true;
             }
             catch (Throwable ex) {
-              logger.error("Can't open file in system viewer : " + file, ex);//NOI18N
+              LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
             }
           }
         }
@@ -398,7 +396,7 @@ public final class NbUtils {
     thr.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
       @Override
       public void uncaughtException (final Thread t, final Throwable e) {
-        logger.error("Detected uncaught exception in openInSystemViewer() for file " + file, e);
+        LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e);
       }
     });
 
