@@ -19,6 +19,7 @@
     <change-notes><![CDATA[
         <p>1.0.2 (in development)</p>
         <ul>
+            <li>Improved opening of file link</li>
             <li>Added option into facet to disable auto-generation of .projectKnowledge folder in the root</li>
             <li>Added key shortcuts tuning</li>
             <li>Added missed JSON library (it made error during Mindmup export)</li>
