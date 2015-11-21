@@ -16,9 +16,12 @@
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
@@ -29,6 +32,8 @@ public enum SelectIn {
   IDE,
   SYSTEM,;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(SelectIn.class);
+
   private static void projectFocusTo(final Project project,final VirtualFile file){
     final ProjectView view = ProjectView.getInstance(project);
     view.select(null, file, true);
@@ -38,10 +43,20 @@ public enum SelectIn {
   }
 
   public void open(@NotNull final MindMapDocumentEditor source, @NotNull final VirtualFile file) {
+    final ProjectManager manager = ProjectManager.getInstance();
     switch (this) {
     case IDE: {
       if (file.isDirectory()) {
-        projectFocusTo(source.getProject(),file);
+        if (IdeaUtils.isInProjectContentRoot(source.getProject(),file)) {
+          projectFocusTo(source.getProject(), file);
+        }else{
+          try {
+            manager.loadAndOpenProject(file.getCanonicalPath());
+          }catch(Exception ex){
+            LOGGER.error("Can't open folder as project ["+file+']',ex);
+            IdeaUtils.openInSystemViewer(source.getDialogProvider(), file);
+          }
+        }
       }
       else {
         projectFocusTo(source.getProject(),file);

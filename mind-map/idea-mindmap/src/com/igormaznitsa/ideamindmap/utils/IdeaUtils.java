@@ -30,6 +30,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -258,7 +259,8 @@ public enum IdeaUtils {
   }
 
   public static boolean plainMessageOkCancel(final Project project, final String title, final JComponent centerComponent) {
-    final DialogComponent dialog = new DialogComponent(project, title, centerComponent, centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
+    final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
+      centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
     return dialog.showAndGet();
   }
 
@@ -304,10 +306,11 @@ public enum IdeaUtils {
 
     if (plainMessageOkCancel(editor.getProject(), title, filePathEditor)) {
       final FileEditPanel.DataContainer result = filePathEditor.getData();
-      if (result.isValid()){
+      if (result.isValid()) {
         return result;
-      }else{
-        Messages.showErrorDialog(editor.getMindMapPanel(),String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),result.getPath()),"Error");
+      }
+      else {
+        Messages.showErrorDialog(editor.getMindMapPanel(), String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()), "Error");
         return null;
       }
     }
@@ -328,7 +331,8 @@ public enum IdeaUtils {
         return EMPTY_URI;
       }
       try {
-        if (!new URI(text).isAbsolute()) throw new URISyntaxException(text,"URI is not absolute one");
+        if (!new URI(text).isAbsolute())
+          throw new URISyntaxException(text, "URI is not absolute one");
         return new MMapURI(text.trim());
       }
       catch (URISyntaxException ex) {
@@ -340,6 +344,16 @@ public enum IdeaUtils {
     else {
       return null;
     }
+  }
+
+  public static boolean isInProjectContentRoot(@NotNull final Project project, @NotNull final VirtualFile file) {
+    VirtualFile[] projectContentRoots = ProjectRootManager.getInstance(project).getContentRoots();
+    for (final VirtualFile root : ProjectRootManager.getInstance(project).getContentRoots()) {
+      if (VfsUtil.isAncestor(root, file, false)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
