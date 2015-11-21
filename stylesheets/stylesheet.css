@@ -162,9 +162,6 @@ a.button:hover {
   border-left: solid 1px #b3b3b3;
 }
 
-#anchor {
-}
-
 a.button span {
   display: block;
   height: 23px;
@@ -179,9 +176,6 @@ a.button span {
 }
 #download-tar-gz span {
   background: transparent url(../images/tar-gz-icon.png) 12px 50% no-repeat;
-}
-#download-idea span {
-  background: transparent url(../images/idea-icon.png) 12px 50% no-repeat;
 }
 #view-on-github span {
   background: transparent url(../images/octocat-icon.png) 12px 50% no-repeat;
