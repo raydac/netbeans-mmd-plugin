@@ -119,6 +119,7 @@ header h2 {
 }
 
 a.button {
+  cursor: pointer;
   display: block;
   float: left;
   width: 179px;
