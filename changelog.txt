@@ -1,7 +1,9 @@
 1.1.2 (maintenance)
 - refactoring to increase compatibility with different IDEs
-- changed byte-code version to Java 6 (but it still needs Java 7 for work with file paths)
-- bug fixing in the IDEA version (1.0.1), changed minimal IDEA version to IDEA 13 (it works but with some restrictions)
+- removed slf4j usage
+- improved logic of opening file link in both IDEs
+- changed byte-code version to Java 6 (but it still uses java.nio.file.Path from Java 7+)
+- bug fixing in the IDEA version (1.0.2), changed minimal IDEA version to IDEA 13 (133 build), but it should be started under Java 7+
 
 1.1.1 (maintenance)
 - very small refactoring
