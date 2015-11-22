@@ -17,7 +17,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.0.2 (in development)</p>
+        <p>1.0.2 (21-nov-2015)</p>
         <ul>
             <li>Improved opening of file link</li>
             <li>Added option into facet to disable auto-generation of .projectKnowledge folder in the root</li>

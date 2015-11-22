@@ -30,7 +30,8 @@ public enum Paths {
   private static final PathService PATH_SERVICE;
     
   static {
-    final ServiceLoader<PathService> service = ServiceLoader.load(PathService.class);
+    final ServiceLoader<PathService> service = ServiceLoader.load(PathService.class, Paths.class.getClassLoader());
+    service.reload();
     final Iterator<PathService> iterator = service.iterator();
     PATH_SERVICE = iterator.hasNext() ? iterator.next() : new J7PathService();
     

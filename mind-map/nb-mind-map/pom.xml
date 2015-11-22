@@ -5,18 +5,18 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   
   <artifactId>nb-mind-map</artifactId>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.1.2</version>
   <packaging>nbm</packaging>
 
   <name>NetBeans Mind Map Editor plugin</name>
   <description>NetBeans editor plugin to create and edit mind maps within NetBeans IDE projects.</description>
 
-  <url>https://github.com/raydac/netbeans-mmd-plugin</url>
+  <url>http://www.igormaznitsa.com/netbeans-mmd-plugin/</url>
 
   <properties>
     <nb.platform>RELEASE74</nb.platform>
@@ -115,12 +115,12 @@
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-model</artifactId>
-      <version>1.0.2-SNAPSHOT</version>
+      <version>1.0.2</version>
     </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-swing-panel</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.3</version>
     </dependency>
 
     <dependency>

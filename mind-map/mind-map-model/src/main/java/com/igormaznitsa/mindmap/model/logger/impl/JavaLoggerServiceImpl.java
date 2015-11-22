@@ -17,17 +17,36 @@ package com.igormaznitsa.mindmap.model.logger.impl;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerService;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JavaLoggerServiceImpl implements LoggerService {
 
+  private final Map<Class<?>,Logger> cacheForClasses = new HashMap<Class<?>, Logger>();
+  private final Map<String,Logger> cacheForNames = new HashMap<String, Logger>();
+  
   @Override
   public Logger getLogger (final Class<?> klazz) {
-    return new JavaLogger(klazz);
+    synchronized(this.cacheForClasses){
+      Logger result = this.cacheForClasses.get(klazz);
+      if(result == null){
+        result = new JavaLogger(klazz);
+        this.cacheForClasses.put(klazz, result);
+      }
+      return result;
+    }
   }
 
   @Override
   public Logger getLogger (final String name) {
-    return new JavaLogger(name);
+    synchronized (this.cacheForNames) {
+      Logger result = this.cacheForNames.get(name);
+      if (result == null) {
+        result = new JavaLogger(name);
+        this.cacheForNames.put(name, result);
+      }
+      return result;
+    }
   }
 
 }

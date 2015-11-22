@@ -341,8 +341,8 @@ public final class NbUtils {
       if (result != null) {
         if (!result.isValid()) {
           NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
+          result = null;
         }
-        result = null;
       }
     }
     return result;
