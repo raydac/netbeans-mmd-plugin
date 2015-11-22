@@ -15,10 +15,6 @@
  */
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.swing.Action;
 import org.openide.nodes.Node;
 
 final class ObjectNode extends AbstractMMFilter {
@@ -30,10 +26,4 @@ final class ObjectNode extends AbstractMMFilter {
     this.originalNode = originalNode;
   }
 
-  @Override
-  public Action[] getActions(boolean context) {
-    final List<Action> actions = new ArrayList<Action>();
-    actions.addAll(Arrays.asList(getOriginal().getActions(context)));
-    return actions.toArray(new Action[actions.size()]);
-  }
 }

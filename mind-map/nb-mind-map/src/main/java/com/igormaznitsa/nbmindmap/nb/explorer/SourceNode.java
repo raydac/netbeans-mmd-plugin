@@ -2,21 +2,12 @@ package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import java.awt.Image;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
-import javax.swing.Action;
 import org.netbeans.api.project.Project;
-import org.netbeans.spi.project.ui.support.CommonProjectActions;
-import org.openide.actions.FileSystemAction;
-import org.openide.actions.FindAction;
-import org.openide.actions.PasteAction;
-import org.openide.actions.ToolsAction;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFilter;
 import org.openide.loaders.DataFolder;
 import org.openide.nodes.FilterNode;
-import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.ProxyLookup;
 
 class SourceNode extends AbstractMMFilter {
@@ -83,28 +74,6 @@ class SourceNode extends AbstractMMFilter {
   @Override
   public boolean canDestroy() {
     return false;
-  }
-
-  @Override 
-  public Action[] getActions(final boolean context) {
-    final List<Action> actions = new ArrayList<Action>();
-    actions.add(CommonProjectActions.newFileAction());
-    actions.add(null);
-    actions.add(SystemAction.get(FileSystemAction.class));
-    actions.add(null);
-    actions.add(SystemAction.get(FindAction.class));
-    actions.add(null);
-    actions.add(SystemAction.get(PasteAction.class));
-    actions.add(null);
-    actions.add(SystemAction.get(ToolsAction.class));
-    actions.add(null);
-    // customizer - open sources for source node, testing for test node
-    Action customizeAction;
-    customizeAction = CommonProjectActions.customizeProjectAction();
-    if (customizeAction != null) {
-      actions.add(customizeAction);
-    }
-    return actions.toArray(new Action[actions.size()]);
   }
 
 }

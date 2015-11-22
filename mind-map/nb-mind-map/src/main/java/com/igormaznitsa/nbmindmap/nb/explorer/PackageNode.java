@@ -17,7 +17,6 @@ package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import java.awt.Image;
-import javax.swing.Action;
 import org.netbeans.api.project.Project;
 import org.openide.nodes.Node;
 import org.openide.util.lookup.ProxyLookup;
@@ -27,16 +26,9 @@ final class PackageNode extends AbstractMMFilter {
   private final Project project;
 
   
-  public PackageNode(Project project, final Node originalNode) {
+  public PackageNode(final Project project, final Node originalNode) {
     super(originalNode, new FolderChildren(project, originalNode), new ProxyLookup(originalNode.getLookup()));
     this.project = project;
-  }
-
-  @Override
-  public Action[] getActions(boolean context) {
-//    final List<Action> actions = new ArrayList<>();
-//    return actions.toArray(new Action[actions.size()]);
-    return EMPTY_ACTION;
   }
 
   @Override
