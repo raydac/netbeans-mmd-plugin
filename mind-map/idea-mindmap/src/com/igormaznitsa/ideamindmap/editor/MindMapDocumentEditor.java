@@ -37,6 +37,11 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
+import com.intellij.ide.dnd.DnDAction;
+import com.intellij.ide.dnd.DnDDragStartBean;
+import com.intellij.ide.dnd.DnDSource;
+import com.intellij.ide.dnd.TransferableWrapper;
+import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
@@ -355,7 +360,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   @Nullable
   public VirtualFile findRootFolderForEditedFile() {
-    final Module module = IdeaUtils.findModuleForFile(this.project,this.file);
+    final Module module = IdeaUtils.findModuleForFile(this.project, this.file);
 
     final VirtualFile rootFolder;
     if (module == null) {
@@ -434,16 +439,16 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   @Nullable
-  public final MindMapFacet findFacet(){
+  public final MindMapFacet findFacet() {
     return MindMapFacet.getInstance(IdeaUtils.findModuleForFile(this.project, this.file));
   }
 
-  boolean isUseInsideBrowser(){
+  boolean isUseInsideBrowser() {
     final MindMapFacet facet = findFacet();
     return facet == null ? false : facet.getConfiguration().isUseInsideBrowser();
   }
 
-  boolean isMakeRelativePath(){
+  boolean isMakeRelativePath() {
     final MindMapFacet facet = findFacet();
     return facet == null ? true : facet.getConfiguration().isMakeRelativePath();
   }
@@ -559,13 +564,27 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   @Override
   public void drop(final DropTargetDropEvent dtde) {
     try {
-      final java.util.List<File> files = (java.util.List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-      if (files.isEmpty()) {
-        LOGGER.warn("Empty list of files in DnD");
+      java.util.List<File> files = null;
+      final Object objectToDrop = dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+      if (objectToDrop instanceof DnDDragStartBean) {
+        final Object wrapper = ((DnDDragStartBean)objectToDrop).getAttachedObject();
+        if (wrapper instanceof TransferableWrapper){
+          files = ((TransferableWrapper)wrapper).asFileList();
+        }
       }
-      else {
-        final File file = files.get(0);
-        addFileToElement(file, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
+      else if (objectToDrop instanceof java.util.List) {
+        files = (java.util.List<File>) objectToDrop;
+      }
+      if (files == null) {
+        this.getDialogProvider().msgWarn("Dragged element doesn't contain file references!");
+      }else{
+        if (files.isEmpty()) {
+          LOGGER.warn("Empty list of files in DnD");
+        }
+        else {
+          final File file = files.get(0);
+          addFileToElement(file, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
+        }
       }
     }
     catch (Exception ex) {
