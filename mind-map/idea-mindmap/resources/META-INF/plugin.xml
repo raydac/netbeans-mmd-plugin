@@ -20,6 +20,7 @@
         <p>1.0.3 (in development)</p>
         <ul>
             <li>Improved processing of DnD operations to avoid NPE for objects without file references</li>
+            <li><b>The Plugin enabled in all Intellij Products</b></li>
         </ul>
         <p>1.0.2 (22-nov-2015)</p>
         <ul>
@@ -44,11 +45,8 @@
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="133.0"/>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
-    -->
 
     <extensions defaultExtensionNs="com.intellij">
         <fileEditorProvider implementation="com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditorProvider"/>
