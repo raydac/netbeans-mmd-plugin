@@ -33,11 +33,11 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = RefactoringPluginFactory.class)
 public class MindMapRefactoringFactory implements RefactoringPluginFactory {
 
-  private static final Logger logger = LoggerFactory.getLogger(MindMapRefactoringFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapRefactoringFactory.class);
   
   @Override
   public RefactoringPlugin createInstance(final AbstractRefactoring refactoring) {
-    logger.info("Request to create refactoring plugin : "+refactoring);
+    LOGGER.info("Request to create refactoring plugin : "+refactoring);
     
     final RefactoringPlugin result;
 

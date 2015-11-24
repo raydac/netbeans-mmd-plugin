@@ -42,7 +42,7 @@ import org.openide.util.Lookup;
 
 public abstract class AbstractPlugin<T extends AbstractRefactoring> extends ProgressProviderAdapter implements RefactoringPlugin {
 
-  protected static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
+  protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractPlugin.class);
   protected final T refactoring;
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   private final Map<FileObject, Collection<FileObject>> cache = new HashMap<FileObject, Collection<FileObject>>();
@@ -150,13 +150,13 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
           break;
         }
         final Project project = FileOwnerQuery.getOwner(fileObject);
-        result = processFileObject(project, 0, fileObject);
+        result = processFileObject(project, fileObject);
         fireProgressListenerStep(1);
       }
     }
     finally {
       synchronized (this.elements) {
-        logger.info("Detected " + this.elements.size() + " elements for refactoring");
+        LOGGER.info("Detected " + this.elements.size() + " elements for refactoring");
         if (!isCanceled()) {
           session.addAll(refactoring, this.elements);
         }
@@ -168,7 +168,11 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
     return result;
   }
 
-  private Problem processFileObject(final Project project, int level, final FileObject fileObject) {
+  public Problem processFileObject(final Project project, final FileObject fileObject) {
+    return _processFileObject(project, 0, fileObject);
+  }
+  
+  private Problem _processFileObject(final Project project, int level, final FileObject fileObject) {
     final Project theProject;
     if (project == null) {
       theProject = FileOwnerQuery.getOwner(fileObject);
@@ -178,14 +182,14 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
     }
     
     if (theProject == null){
-      logger.warn("Request process file object without a project as the owner : "+fileObject);
+      LOGGER.warn("Request process file object without a project as the owner : "+fileObject);
       return null;
     }
     
     final FileObject projectDirectory = theProject.getProjectDirectory();
     
     if (projectDirectory == null){
-      logger.warn("Request process file object in a project which doesn't have folder : " + fileObject+", project : "+project);
+      LOGGER.warn("Request process file object in a project which doesn't have folder : " + fileObject+", project : "+project);
       return null;
     }
     
@@ -200,7 +204,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
         }
 
         if (fo.isFolder()) {
-          result = processFileObject(theProject, level, fo);
+          result = _processFileObject(theProject, level, fo);
         }
         else {
           result = processFile(theProject, level, projectFolder, fo);

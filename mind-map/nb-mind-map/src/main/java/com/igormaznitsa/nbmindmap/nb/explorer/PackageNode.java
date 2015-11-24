@@ -25,8 +25,7 @@ final class PackageNode extends AbstractMMFilter {
 
   private final Project project;
 
-  
-  public PackageNode(final Project project, final Node originalNode) {
+  public PackageNode (final Project project, final Node originalNode) {
     super(originalNode, new FolderChildren(project, originalNode), new ProxyLookup(originalNode.getLookup()));
     this.project = project;
   }
@@ -37,7 +36,7 @@ final class PackageNode extends AbstractMMFilter {
   }
 
   @Override
-  public Image getOpenedIcon(final int type) {
+  public Image getOpenedIcon (final int type) {
     return BadgeIcons.getTreeFolderIcon(true);
   }
 

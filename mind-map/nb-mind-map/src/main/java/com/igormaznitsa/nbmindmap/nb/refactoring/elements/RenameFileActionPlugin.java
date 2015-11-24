@@ -131,7 +131,7 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
       }
     }
     catch (URISyntaxException ex) {
-      logger.error("Can't make new file uri for " + fileObject.getPath(), ex); //NOI18N
+      LOGGER.error("Can't make new file uri for " + fileObject.getPath(), ex); //NOI18N
       return new Problem(true, BUNDLE.getString("Refactoring.CantMakeURI"));
     }
 
