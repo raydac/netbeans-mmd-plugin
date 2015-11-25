@@ -17,13 +17,11 @@ package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
 import org.openide.actions.FileSystemAction;
 import org.openide.actions.PropertiesAction;
-import org.openide.filesystems.FileObject;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -40,11 +38,11 @@ public abstract class AbstractMMFilter extends FilterNode {
     super(original);
   }
 
-  public AbstractMMFilter(Node original, org.openide.nodes.Children children) {
+  public AbstractMMFilter(final Node original, final org.openide.nodes.Children children) {
     super(original, children);
   }
 
-  public AbstractMMFilter(Node original, org.openide.nodes.Children children, Lookup lookup) {
+  public AbstractMMFilter(final Node original, final org.openide.nodes.Children children, final Lookup lookup) {
     super(original, children, lookup);
   }
 
@@ -82,9 +80,4 @@ public abstract class AbstractMMFilter extends FilterNode {
       return super.getActions(context);
     }
   }
-
-  protected FileObject findFileObject(){
-    return NbUtils.extractFileObject(this);
-  }
-  
 }

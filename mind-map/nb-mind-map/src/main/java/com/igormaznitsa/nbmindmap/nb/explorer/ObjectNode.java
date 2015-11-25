@@ -18,12 +18,8 @@ package com.igormaznitsa.nbmindmap.nb.explorer;
 import org.openide.nodes.Node;
 
 final class ObjectNode extends AbstractMMFilter {
-
-  private final Node originalNode;
-
   public ObjectNode(final Node originalNode) {
     super(originalNode);
-    this.originalNode = originalNode;
   }
 
 }

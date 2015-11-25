@@ -23,11 +23,8 @@ import org.openide.util.lookup.ProxyLookup;
 
 final class PackageNode extends AbstractMMFilter {
 
-  private final Project project;
-
   public PackageNode (final Project project, final Node originalNode) {
     super(originalNode, new FolderChildren(project, originalNode), new ProxyLookup(originalNode.getLookup()));
-    this.project = project;
   }
 
   @Override

@@ -12,7 +12,6 @@ import org.openide.util.lookup.ProxyLookup;
 
 class SourceNode extends AbstractMMFilter {
 
-  private final Project project;
   private final FileObject fo;
   private volatile Image icon;
   private volatile Image iconOpen;
@@ -29,7 +28,6 @@ class SourceNode extends AbstractMMFilter {
       }
     }), new ProxyLookup(folder.getNodeDelegate().getLookup()));
 
-    this.project = project;
     fo = folder.getPrimaryFile();
     
     disableDelegation(DELEGATE_GET_DISPLAY_NAME | DELEGATE_SET_DISPLAY_NAME | DELEGATE_GET_SHORT_DESCRIPTION | DELEGATE_GET_ACTIONS);

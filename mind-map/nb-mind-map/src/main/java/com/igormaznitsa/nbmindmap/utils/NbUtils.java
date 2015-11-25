@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
+import com.igormaznitsa.nbmindmap.nb.explorer.MMKnowledgeSources;
 import com.igormaznitsa.nbmindmap.nb.options.MMDCfgOptionsPanelController;
 import java.awt.Color;
 import java.awt.Desktop;
@@ -64,8 +65,8 @@ import org.openide.util.lookup.Lookups;
 public final class NbUtils {
 
   // List of all found types of source groups in NetBeans sources.
-  private static final List<String> ALL_KNOWN_SCOPE_TYPES = Arrays.asList("Resources","TestResources","GeneratedSources","java","resources","main","test","doc_root","web_inf","PHPSOURCE","groovy","grails","grails_unknown","HTML5-Sources","HTML5-Tests");
-  
+  private static final List<String> ALL_KNOWN_SCOPE_TYPES = Arrays.asList("Resources", "TestResources", "GeneratedSources", "java", "resources", "main", "test", "doc_root", "web_inf", "PHPSOURCE", "groovy", "grails", "grails_unknown", "HTML5-Sources", "HTML5-Tests");
+
   public enum SelectIn {
 
     PROJECTS("org-netbeans-modules-project-ui-SelectInProjects.instance"),
@@ -404,37 +405,48 @@ public final class NbUtils {
     thr.start();
   }
 
-  public static Collection<SourceGroup> findAllSourceGroups(final Project project){
+  public static Collection<SourceGroup> findAllSourceGroups (final Project project) {
     final Sources sources = ProjectUtils.getSources(project);
     final Set<SourceGroup> result = new HashSet<SourceGroup>();
-    for(final String scopeType : ALL_KNOWN_SCOPE_TYPES){
-      for(final SourceGroup s : sources.getSourceGroups(scopeType)){
+    for (final String scopeType : ALL_KNOWN_SCOPE_TYPES) {
+      for (final SourceGroup s : sources.getSourceGroups(scopeType)) {
         result.add(s);
       }
     }
-    
-    if (result.isEmpty() && !project.getClass().getName().equals("org.netbeans.modules.maven.NbMavenProjectImpl")){
-      for(final SourceGroup s : sources.getSourceGroups(Sources.TYPE_GENERIC)){
+
+    if (result.isEmpty() && !project.getClass().getName().equals("org.netbeans.modules.maven.NbMavenProjectImpl")) {
+      for (final SourceGroup s : sources.getSourceGroups(Sources.TYPE_GENERIC)) {
         result.add(s);
       }
     }
-    
+
     return result;
   }
-  
-  public static boolean isFileInProjectScope(final Project project, final FileObject file) {
-    if (file == null || project == null) return false;
-    
+
+  public static boolean isFileInProjectScope (final Project project, final FileObject file) {
+    if (file == null || project == null) {
+      return false;
+    }
+
     final FileObject projectFolder = project.getProjectDirectory();
+
+    final FileObject projectKnowledgeFolder = MMKnowledgeSources.findProjectKnowledgeFolder(project);
+    if (projectKnowledgeFolder != null && FileUtil.isParentOf(projectKnowledgeFolder, file)) {
+      return true;
+    }
+
     if (FileUtil.isParentOf(projectFolder, file)) {
-      for(final SourceGroup srcGroup : findAllSourceGroups(project)){
+      for (final SourceGroup srcGroup : findAllSourceGroups(project)) {
         final FileObject root = srcGroup.getRootFolder();
-        if (root!=null){
-          if (FileUtil.isParentOf(root, file)) return true;
+        if (root != null) {
+          if (FileUtil.isParentOf(root, file)) {
+            return true;
+          }
         }
       }
       return false;
-    }else{
+    }
+    else {
       return false;
     }
   }

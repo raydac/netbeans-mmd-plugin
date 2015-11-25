@@ -48,7 +48,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
 
   public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
-  private static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
+  public static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
 
   public static final String PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED = "knowledgeFolderGenerationAllowed";
 
@@ -65,6 +65,12 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
     this.changeListener = WeakListeners.change(this, this.projectSources);
   }
 
+  public static FileObject findProjectKnowledgeFolder(final Project project){
+    if (project == null) return null;
+    final FileObject projectFolder = project.getProjectDirectory();
+    return projectFolder.getFileObject(KNOWLEDGE_FOLDER_NAME);
+  }
+  
   private static boolean isKnowledgeFolderAllowedForCreation() {
     return NbUtils.getPreferences().getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true);
   }

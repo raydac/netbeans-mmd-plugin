@@ -26,7 +26,7 @@ class FolderChildren extends FilterNode.Children {
 
   private final Project project;
 
-  private static final Logger logger = LoggerFactory.getLogger(FolderChildren.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FolderChildren.class);
   
   FolderChildren(final Project project, final Node originalNode) {
     super(originalNode);
@@ -42,12 +42,13 @@ class FolderChildren extends FilterNode.Children {
   protected Node copyNode(final Node originalNode) {
     final FileObject fo = originalNode.getLookup().lookup(FileObject.class);
     if (fo == null) {
-      logger.warn(String.format("No fileobject found for node: %s", originalNode));
+      LOGGER.warn(String.format("No fileobject found for node: %s", originalNode));
       return super.copyNode(originalNode);
     }
     if (fo.isFolder()) {
-      return new PackageNode(project, originalNode);
+      return new PackageNode(this.project, originalNode);
     }
+    
     return new ObjectNode(originalNode);
   }
 

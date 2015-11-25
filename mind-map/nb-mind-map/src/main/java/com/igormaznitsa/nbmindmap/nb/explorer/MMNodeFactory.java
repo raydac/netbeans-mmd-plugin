@@ -59,12 +59,11 @@ import org.netbeans.spi.project.ui.support.NodeList;
   "org-netbeans-modules-scala-sbt",}, position = 10000)
 public class MMNodeFactory implements NodeFactory {
 
-  private static final Logger logger = LoggerFactory.getLogger(MMNodeFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMNodeFactory.class);
 
   @Override
   public NodeList<?> createNodes(final Project project) {
-    logger.info("Creating knowledge nodes for " + project);
+    LOGGER.info("Creating knowledge nodes for " + project);
     return new MMKnowledgeSources(project);
   }
-
 }
