@@ -419,7 +419,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                     }
                   }
                 }
-      
+
                 NbUtils.SelectIn selector = NbUtils.SelectIn.FAVORITES;
 
                 final ProjectManager manager = ProjectManager.getDefault();
@@ -432,16 +432,18 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                 }
                 else if (projectOwner != null) {
                   openManager.open(new Project[]{projectOwner}, false);
-                  
-                  if (NbUtils.isFileInProjectScope(projectOwner, fileObj)) {
-                    selector = NbUtils.SelectIn.PROJECTS;
-                  }
-                  else if (FileUtil.isParentOf(projectOwner.getProjectDirectory(), fileObj)) {
-                    selector = NbUtils.SelectIn.FILES;
+
+                  if (!NbUtils.isInProjectKnowledgeFolder(projectOwner, fileObj)) {
+                    if (NbUtils.isFileInProjectScope(projectOwner, fileObj)) {
+                      selector = NbUtils.SelectIn.PROJECTS;
+                    }
+                    else if (FileUtil.isParentOf(projectOwner.getProjectDirectory(), fileObj)) {
+                      selector = NbUtils.SelectIn.FILES;
+                    }
                   }
                 }
-                
-                if (!selector.select(this, fileObj)){
+
+                if (!selector.select(this, fileObj)) {
                   NbUtils.openInSystemViewer(theFile);
                 }
               }

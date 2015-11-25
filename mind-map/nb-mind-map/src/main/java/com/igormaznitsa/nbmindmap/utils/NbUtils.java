@@ -423,17 +423,17 @@ public final class NbUtils {
     return result;
   }
 
+  public static boolean isInProjectKnowledgeFolder(final Project project, final FileObject file){
+    final FileObject projectKnowledgeFolder = MMKnowledgeSources.findProjectKnowledgeFolder(project);
+    return projectKnowledgeFolder != null && FileUtil.isParentOf(projectKnowledgeFolder, file);
+  }
+  
   public static boolean isFileInProjectScope (final Project project, final FileObject file) {
     if (file == null || project == null) {
       return false;
     }
 
     final FileObject projectFolder = project.getProjectDirectory();
-
-    final FileObject projectKnowledgeFolder = MMKnowledgeSources.findProjectKnowledgeFolder(project);
-    if (projectKnowledgeFolder != null && FileUtil.isParentOf(projectKnowledgeFolder, file)) {
-      return true;
-    }
 
     if (FileUtil.isParentOf(projectFolder, file)) {
       for (final SourceGroup srcGroup : findAllSourceGroups(project)) {
