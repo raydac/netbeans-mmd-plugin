@@ -16,6 +16,7 @@
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
+import com.igormaznitsa.ideamindmap.view.KnowledgeViewPane;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.ide.projectView.ProjectView;
@@ -36,10 +37,20 @@ public enum SelectIn {
 
   private static void projectFocusTo(final Project project,final VirtualFile file){
     final ProjectView view = ProjectView.getInstance(project);
-    view.select(null, file, true);
+
+    if (IdeaUtils.isMMDFile(file)){
+      view.changeView(KnowledgeViewPane.ID);
+    }else {
+      view.changeView("ProjectPane");
+    }
+
     final ToolWindow toolwindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.PROJECT_VIEW);
     if (toolwindow != null)
-      toolwindow.activate(null);
+      toolwindow.activate(new Runnable() {
+        @Override public void run() {
+          view.select(null, file, true);
+        }
+      });
   }
 
   public void open(@NotNull final MindMapDocumentEditor source, @NotNull final VirtualFile file) {

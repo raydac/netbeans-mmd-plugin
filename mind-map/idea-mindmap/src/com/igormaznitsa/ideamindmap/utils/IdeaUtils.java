@@ -16,6 +16,7 @@
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
+import com.igormaznitsa.ideamindmap.filetype.MindMapFileType;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.HasPreferredFocusComponent;
@@ -84,6 +85,11 @@ public enum IdeaUtils {
       }
     }
     return moduleRoot;
+  }
+
+  public static boolean isMMDFile(@Nullable final VirtualFile file){
+    if (file == null || file.isDirectory()) return false;
+    return file.getFileType() == MindMapFileType.INSTANCE;
   }
 
   @Nullable

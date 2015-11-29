@@ -26,6 +26,7 @@ public class AllIcons {
 
   public static class File {
     public static final Icon MINDMAP = IconLoader.getIcon("/icons/mmdfile.png");
+    public static final Icon FOLDER = IconLoader.getIcon("/icons/folder.png");
   }
 
   public static class Tree {

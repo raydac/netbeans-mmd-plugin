@@ -55,6 +55,7 @@
         <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
         <framework.detector implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetDetector"/>
         <applicationConfigurable instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"/>
+        <projectViewPane implementation="com.igormaznitsa.ideamindmap.view.KnowledgeViewPane"/>
     </extensions>
 
     <application-components>
