@@ -155,6 +155,10 @@ public class MindMapSettingsPanel {
     });
   }
 
+  private static double toDouble(final Number number){
+    return number.doubleValue();
+  }
+
   public void reset(final MindMapPanelConfig config) {
     this.etalon.makeFullCopyOf(config, false, false);
 
@@ -178,12 +182,12 @@ public class MindMapSettingsPanel {
 
     this.spinnerGridStep.setValue(this.etalon.getGridStep());
     this.spinnerCollapsatorSize.setValue(this.etalon.getCollapsatorSize());
-    this.spinnerCollapsatorWidth.setValue(this.etalon.getCollapsatorBorderWidth());
-    this.spinnerConnectorWidth.setValue(this.etalon.getConnectorWidth());
-    this.spinnerJumpLinkWidth.setValue(this.etalon.getJumpLinkWidth());
-    this.spinnerSelectionFrameWidth.setValue(this.etalon.getSelectLineWidth());
+    this.spinnerCollapsatorWidth.setValue(toDouble(this.etalon.getCollapsatorBorderWidth()));
+    this.spinnerConnectorWidth.setValue(toDouble(this.etalon.getConnectorWidth()));
+    this.spinnerJumpLinkWidth.setValue(toDouble(this.etalon.getJumpLinkWidth()));
+    this.spinnerSelectionFrameWidth.setValue(toDouble(this.etalon.getSelectLineWidth()));
     this.spinnerSelectionFrameGap.setValue(this.etalon.getSelectLineGap());
-    this.spinnerBorderWidth.setValue(this.etalon.getElementBorderWidth());
+    this.spinnerBorderWidth.setValue(toDouble(this.etalon.getElementBorderWidth()));
 
     this.slider1stLevelHorzGap.setValue(this.etalon.getFirstLevelHorizontalInset());
     this.slider1stLevelVertGap.setValue(this.etalon.getFirstLevelVerticalInset());

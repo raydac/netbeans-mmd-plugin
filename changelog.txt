@@ -1,6 +1,8 @@
 1.1.3 (under development)
 - enabled folder actions for folders in .projectKnowledge folder (NetBeans)
 - improved DnD processing to avoid potential NPE for objects without file references (IDEA)
+- added "Knowledge" view into Project pane to show separately .projectKnowledge folder content
+- fixed incompatibility of the Settings panel with OpenJDK (IDEA)
 
 1.1.2 (22-nov-2015,maintenance)
 - refactoring to increase compatibility with different IDEs
