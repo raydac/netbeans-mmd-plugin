@@ -1,3 +1,6 @@
+1.1.4 (under development)
+-
+
 1.1.3 (29-nov-2015)
 - the IDEA plugin enabled for all products based on the IDEA platform (but not all of them allow to tune facets) (IDEA, 1.0.3)
 - enabled folder actions for folders within .projectKnowledge folder (NetBeans, 1.1.3)
