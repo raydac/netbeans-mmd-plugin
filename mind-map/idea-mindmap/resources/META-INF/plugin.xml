@@ -17,8 +17,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.0.3 (in development)</p>
+        <p>1.0.3 (29-nov-2015)</p>
         <ul>
+            <li>added "Knowledge" view into Project pane to show separately .projectKnowledge folder content</li>
+            <li>fixed incompatibility of the Settings panel with OpenJDK</li>
             <li>Improved processing of DnD operations to avoid NPE for objects without file references</li>
             <li><b>The Plugin enabled in all Intellij Products</b></li>
         </ul>
