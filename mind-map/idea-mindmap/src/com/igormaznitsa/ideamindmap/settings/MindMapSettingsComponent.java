@@ -15,8 +15,9 @@
  */
 package com.igormaznitsa.ideamindmap.settings;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurableProvider;
 import com.intellij.openapi.options.ConfigurationException;
@@ -28,7 +29,7 @@ import javax.swing.JComponent;
 
 public class MindMapSettingsComponent extends ConfigurableProvider implements Configurable,ApplicationComponent{
 
-  private static final Logger LOGGER = Logger.getInstance(MindMapSettingsComponent.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsComponent.class);
 
   private static MindMapSettingsComponent instance;
 
@@ -75,7 +76,7 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   }
 
   @Override public boolean isModified() {
-    return this.uiPanel == null ? false : this.uiPanel.isModified();
+    return this.uiPanel != null && this.uiPanel.isModified();
   }
 
   @Override public void apply() throws ConfigurationException {

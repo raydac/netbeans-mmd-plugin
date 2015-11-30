@@ -24,17 +24,18 @@ import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -60,7 +61,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public enum IdeaUtils {
   ;
-  private static final Logger LOGGER = Logger.getInstance(IdeaUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(IdeaUtils.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   public static final MMapURI EMPTY_URI;
@@ -87,8 +88,9 @@ public enum IdeaUtils {
     return moduleRoot;
   }
 
-  public static boolean isMMDFile(@Nullable final VirtualFile file){
-    if (file == null || file.isDirectory()) return false;
+  public static boolean isMMDFile(@Nullable final VirtualFile file) {
+    if (file == null || file.isDirectory())
+      return false;
     return file.getFileType() == MindMapFileType.INSTANCE;
   }
 
@@ -100,17 +102,21 @@ public enum IdeaUtils {
       result.set(rootFolder.findChild(PROJECT_KNOWLEDGE_FOLDER_NAME));
       if (result.get() == null || !result.get().isDirectory()) {
         if (createIfMissing) {
-          ApplicationManager.getApplication().runWriteAction(new Runnable() {
+          CommandProcessor.getInstance().executeCommand(module.getProject(), new Runnable() {
             @Override public void run() {
-              try {
-                result.set(VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
-                LOGGER.info("Created knowledge folder for " + module);
-              }
-              catch (IOException ex) {
-                LOGGER.error("Can't create knowledge folder for " + module, ex);
-              }
+              ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                @Override public void run() {
+                  try {
+                    result.set(VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
+                    LOGGER.info("Created knowledge folder for " + module);
+                  }
+                  catch (IOException ex) {
+                    LOGGER.error("Can't create knowledge folder for " + module, ex);
+                  }
+                }
+              });
             }
-          });
+          },null,null);
         }
         else {
           result.set(null);
@@ -134,23 +140,6 @@ public enum IdeaUtils {
       return false;
     }
     return true;
-  }
-
-  public static VirtualFile findInFolder(@NotNull final VirtualFile folder, @NotNull final MMapURI uri) {
-    VirtualFile result = null;
-    if (uri.isAbsolute()) {
-      final VirtualFile file = LocalFileSystem.getInstance().findFileByIoFile(uri.asFile(null));
-      if (file != null) {
-        result = VfsUtilCore.isAncestor(folder, file, false) ? file : null;
-      }
-    }
-    else {
-      final VirtualFile file = LocalFileSystem.getInstance().findFileByIoFile(uri.asFile(vfile2iofile(folder)));
-      if (file != null) {
-        result = file.exists() ? file : null;
-      }
-    }
-    return result;
   }
 
   public static void openInSystemViewer(@NotNull final DialogProvider dialogProvider, @NotNull final VirtualFile theFile) {
@@ -353,7 +342,6 @@ public enum IdeaUtils {
   }
 
   public static boolean isInProjectContentRoot(@NotNull final Project project, @NotNull final VirtualFile file) {
-    VirtualFile[] projectContentRoots = ProjectRootManager.getInstance(project).getContentRoots();
     for (final VirtualFile root : ProjectRootManager.getInstance(project).getContentRoots()) {
       if (VfsUtil.isAncestor(root, file, false)) {
         return true;

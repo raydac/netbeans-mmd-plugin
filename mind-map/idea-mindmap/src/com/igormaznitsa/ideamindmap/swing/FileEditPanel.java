@@ -20,13 +20,15 @@ import java.util.ResourceBundle;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.openapi.vfs.LocalFileSystem;
 
 import javax.swing.JComponent;
 
 public final class FileEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
-  private static final com.intellij.openapi.diagnostic.Logger LOGGER = com.intellij.openapi.diagnostic.Logger.getInstance(FileEditPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileEditPanel.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   public static final class DataContainer {
@@ -45,7 +47,7 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
 
     public boolean isValid() {
       try {
-        return this.path.isEmpty() ? true : new File(this.path).exists();
+        return this.path.isEmpty() || new File(this.path).exists();
       }
       catch (Exception ex) {
         return false;
@@ -70,7 +72,7 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
     initComponents();
     this.projectFolder = projectFolder;
     this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath());
-    this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
+    this.checkBoxShowFileInSystem.setSelected(initialData != null && initialData.isShowWithSystemTool());
   }
 
   public DataContainer getData() {

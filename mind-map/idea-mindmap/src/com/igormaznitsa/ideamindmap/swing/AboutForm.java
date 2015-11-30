@@ -16,10 +16,12 @@
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Action;
@@ -46,7 +48,7 @@ public class AboutForm {
       setTitle(title);
     }
 
-    protected Action[] createActions(){
+    @NotNull protected Action[] createActions(){
         return new Action[]{getOKAction()};
     }
 
@@ -72,7 +74,8 @@ public class AboutForm {
 
 
   public AboutForm() {
-    this.htmlLabelText.setText(BUNDLE.getString("AboutText").replace("${version}", PluginManager.getPlugin(PluginId.getId("nb-mind-map-idea")).getVersion()));
+    final IdeaPluginDescriptor descriptor = PluginManager.getPlugin(PluginId.getId("nb-mind-map-idea"));
+    this.htmlLabelText.setText(BUNDLE.getString("AboutText").replace("${version}", descriptor == null ? "<unknown>" : descriptor.getVersion()));
     this.htmlLabelText.addLinkListener(new JHtmlLabel.LinkListener() {
       @Override public void onLinkActivated(final JHtmlLabel source, final String link) {
         try {

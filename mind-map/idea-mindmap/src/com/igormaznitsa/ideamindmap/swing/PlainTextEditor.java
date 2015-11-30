@@ -17,10 +17,11 @@ package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileTypes;
@@ -51,7 +52,7 @@ import java.util.ResourceBundle;
 
 public class PlainTextEditor extends JPanel {
 
-  private static final Logger LOGGER = Logger.getInstance(PlainTextEditor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PlainTextEditor.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {

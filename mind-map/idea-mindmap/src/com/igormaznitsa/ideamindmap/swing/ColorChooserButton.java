@@ -16,9 +16,11 @@
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.ColorChooser;
+import com.intellij.ui.JBColor;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,13 +40,13 @@ public class ColorChooserButton extends JButton {
 
   private static final long serialVersionUID = -354752410805059103L;
 
-  private static final Logger LOGGER = Logger.getInstance(ColorChooserButton.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ColorChooserButton.class);
   private Color value = null;
   private volatile boolean lastResultOk;
-  public static final Color DIFF_COLORS = new Color(0,true);
+  public static final Color DIFF_COLORS = new Color(0, true);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
-  public ColorChooserButton(){
+  public ColorChooserButton() {
     this(null);
   }
 
@@ -61,14 +63,15 @@ public class ColorChooserButton extends JButton {
         final PropertyEditor editor = PropertyEditorManager.findEditor(Color.class);
         if (editor == null) {
           LOGGER.error("Can't find registered color editor");
-          if (dialogProvider != null) dialogProvider.msgError("Can't find color editor! unexpected state! Contact developer!");
+          if (dialogProvider != null)
+            dialogProvider.msgError("Can't find color editor! unexpected state! Contact developer!");
           return;
         }
 
         editor.setValue(value);
 
-        final Color selectedColor = ColorChooser.chooseColor(theInstance, String.format(BUNDLE.getString("ColorChoosingButton.dialogTitle"),getText()),getValue());
-        if (selectedColor!=null) {
+        final Color selectedColor = ColorChooser.chooseColor(theInstance, String.format(BUNDLE.getString("ColorChoosingButton.dialogTitle"), getText()), getValue());
+        if (selectedColor != null) {
           setValue(selectedColor);
           lastResultOk = true;
         }
@@ -79,10 +82,9 @@ public class ColorChooserButton extends JButton {
         super.fireActionPerformed(e);
       }
 
-
     });
 
-    setValue(Color.BLACK);
+    setValue(JBColor.BLACK);
   }
 
   public boolean isLastOkPressed() {
@@ -90,28 +92,30 @@ public class ColorChooserButton extends JButton {
   }
 
   private static ImageIcon makeColorIconForColor(final Color color) {
-    final Image img = UIUtil.createImage(16,16, BufferedImage.TYPE_INT_RGB);
+    final Image img = UIUtil.createImage(16, 16, BufferedImage.TYPE_INT_RGB);
     final Graphics gfx = img.getGraphics();
     try {
-      if (color == null){
-        gfx.setColor(IdeaUtils.isDarkTheme() ? Color.darkGray : Color.white);
+      if (color == null) {
+        gfx.setColor(IdeaUtils.isDarkTheme() ? JBColor.darkGray : JBColor.white);
         gfx.fillRect(0, 0, 16, 16);
-        gfx.setColor(IdeaUtils.isDarkTheme() ? Color.yellow : Color.black);
+        gfx.setColor(IdeaUtils.isDarkTheme() ? JBColor.yellow : JBColor.black);
         gfx.drawRect(0, 0, 15, 15);
         gfx.drawLine(0, 0, 15, 15);
-      }else if (color == DIFF_COLORS) {
-        gfx.setColor(Color.red);
+      }
+      else if (color == DIFF_COLORS) {
+        gfx.setColor(JBColor.red);
         gfx.fillRect(0, 0, 8, 8);
-        gfx.setColor(Color.green);
+        gfx.setColor(JBColor.green);
         gfx.fillRect(8, 0, 8, 8);
-        gfx.setColor(Color.blue);
+        gfx.setColor(JBColor.blue);
         gfx.fillRect(0, 8, 8, 8);
-        gfx.setColor(Color.yellow);
+        gfx.setColor(JBColor.yellow);
         gfx.fillRect(8, 8, 8, 8);
-      }else{
+      }
+      else {
         gfx.setColor(color);
         gfx.fillRect(0, 0, 16, 16);
-        gfx.setColor(Color.black);
+        gfx.setColor(JBColor.black);
         gfx.drawRect(0, 0, 15, 15);
       }
     }

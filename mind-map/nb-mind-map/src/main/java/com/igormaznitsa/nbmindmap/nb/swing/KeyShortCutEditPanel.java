@@ -79,7 +79,7 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
           } else if (e.getSource() == checkBoxCTRL){
             modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
           } else if (e.getSource() == checkBoxMeta) {
-            modifiers = modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
+            modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
           } else if (e.getSource() == checkBoxSHIFT) {
             modifiers = source.isSelected() ? modifiers | KeyEvent.SHIFT_MASK : modifiers & ~KeyEvent.SHIFT_MASK;
           }

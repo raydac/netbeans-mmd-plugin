@@ -19,7 +19,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -28,9 +27,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by igorm on 11/14/15.
- */
 public class FontSelector implements ActionListener {
   private JComboBox comboBoxName;
   private JComboBox comboBoxStyle;
@@ -38,7 +34,7 @@ public class FontSelector implements ActionListener {
   private JPanel mainPanel;
   private JTextArea textArea;
 
-  public FontSelector(final Font initial) {
+  @SuppressWarnings("unchecked") public FontSelector(final Font initial) {
 
     final DefaultComboBoxModel<String> modelName = new DefaultComboBoxModel<String>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
     this.comboBoxName.setModel(modelName);

@@ -20,9 +20,13 @@ import com.igormaznitsa.ideamindmap.view.KnowledgeViewPane;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.ide.projectView.ProjectView;
+import com.intellij.ide.projectView.impl.ProjectViewPane;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
@@ -38,10 +42,22 @@ public enum SelectIn {
   private static void projectFocusTo(final Project project,final VirtualFile file){
     final ProjectView view = ProjectView.getInstance(project);
 
-    if (IdeaUtils.isMMDFile(file)){
-      view.changeView(KnowledgeViewPane.ID);
-    }else {
-      view.changeView("ProjectPane");
+    String viewToActivate = ProjectViewPane.ID;
+
+    if (KnowledgeViewPane.ID.equals(view.getCurrentViewId())){
+      final Module theModule = ModuleUtil.findModuleForFile(file, project);
+      if (theModule == null){
+        viewToActivate = null;
+      }else{
+        final VirtualFile knowledgeFolder = IdeaUtils.findKnowledgeFolderForModule(theModule,false);
+        if (knowledgeFolder != null && VfsUtil.isAncestor(knowledgeFolder,file,true)){
+          viewToActivate = KnowledgeViewPane.ID;
+        }
+      }
+    }
+
+    if (viewToActivate!=null){
+      view.changeView(viewToActivate);
     }
 
     final ToolWindow toolwindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.PROJECT_VIEW);

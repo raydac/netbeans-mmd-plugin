@@ -16,17 +16,18 @@
 package com.igormaznitsa.ideamindmap.facet;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.facet.Facet;
 import com.intellij.facet.FacetManager;
 import com.intellij.facet.FacetType;
 import com.intellij.facet.FacetTypeId;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
-  private static final Logger LOGGER = Logger.getInstance(MindMapFacet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapFacet.class);
 
   public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<MindMapFacet>("NBMindMap");
 

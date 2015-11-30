@@ -34,6 +34,8 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapConfigListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -43,8 +45,6 @@ import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.intellij.ide.projectView.ProjectView;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
@@ -64,7 +64,7 @@ import java.util.ResourceBundle;
 
 public class MindMapPanelControllerImpl implements MindMapPanelController, MindMapConfigListener {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
-  private static final Logger LOGGER = Logger.getInstance(MindMapPanelControllerImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanelControllerImpl.class);
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
   private final MindMapDocumentEditor editor;
@@ -87,13 +87,13 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@NotNull final MindMapPanel mindMapPanel) {
     final MindMapFacet facet = this.editor.findFacet();
-    return facet == null ? true : facet.getConfiguration().isUnfoldTopicWhenItIsDropTarget();
+    return facet == null || facet.getConfiguration().isUnfoldTopicWhenItIsDropTarget();
   }
 
   @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(@NotNull final MindMapPanel mindMapPanel) {
     final MindMapFacet facet = this.editor.findFacet();
-    return facet == null ? true : facet.getConfiguration().isCopyColorInformationFromParent();
+    return facet == null || facet.getConfiguration().isCopyColorInformationFromParent();
   }
 
   @Override

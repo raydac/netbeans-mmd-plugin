@@ -31,21 +31,19 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
-import com.intellij.ide.dnd.DnDAction;
 import com.intellij.ide.dnd.DnDDragStartBean;
-import com.intellij.ide.dnd.DnDSource;
 import com.intellij.ide.dnd.TransferableWrapper;
-import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -89,7 +87,7 @@ import java.util.ResourceBundle;
 
 public class MindMapDocumentEditor implements DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable {
 
-  private static final Logger LOGGER = Logger.getInstance(MindMapDocumentEditor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapDocumentEditor.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
@@ -445,12 +443,12 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   boolean isUseInsideBrowser() {
     final MindMapFacet facet = findFacet();
-    return facet == null ? false : facet.getConfiguration().isUseInsideBrowser();
+    return facet != null && facet.getConfiguration().isUseInsideBrowser();
   }
 
   boolean isMakeRelativePath() {
     final MindMapFacet facet = findFacet();
-    return facet == null ? true : facet.getConfiguration().isMakeRelativePath();
+    return facet == null || facet.getConfiguration().isMakeRelativePath();
   }
 
   @Override
@@ -561,7 +559,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   }
 
-  @Override
+  @SuppressWarnings("unchecked") @Override
   public void drop(final DropTargetDropEvent dtde) {
     try {
       java.util.List<File> files = null;

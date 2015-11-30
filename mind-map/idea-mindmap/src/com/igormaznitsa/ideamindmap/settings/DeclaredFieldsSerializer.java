@@ -15,7 +15,8 @@
  */
 package com.igormaznitsa.ideamindmap.settings;
 
-import com.intellij.openapi.diagnostic.Logger;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.util.xmlb.annotations.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +32,7 @@ public class DeclaredFieldsSerializer implements Serializable {
 
   private static final long serialVersionUID = -92387498231123L;
 
-  private static final Logger LOGGER = Logger.getInstance(DeclaredFieldsSerializer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeclaredFieldsSerializer.class);
 
   @Property
   private final Map<String, String> storage = new TreeMap<String, String>(new Comparator<String>() {

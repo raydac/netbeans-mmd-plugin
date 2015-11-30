@@ -17,6 +17,8 @@ package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 
 import javax.swing.JComponent;
 import javax.swing.event.DocumentEvent;
@@ -27,7 +29,7 @@ import java.net.URISyntaxException;
 import java.util.ResourceBundle;
 
 public final class UriEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
-  private static final com.intellij.openapi.diagnostic.Logger LOGGER = com.intellij.openapi.diagnostic.Logger.getInstance(UriEditPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   private static final long serialVersionUID = -6683682013891751388L;

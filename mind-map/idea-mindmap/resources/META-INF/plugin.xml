@@ -1,3 +1,4 @@
+<!--suppress XmlUnboundNsPrefix -->
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
@@ -19,7 +20,7 @@
     <change-notes><![CDATA[
         <p>1.0.4 ()</p>
         <ul>
-            <li></li>
+            <li>Code refactoring and cleaning</li>
         </ul>
         <p>1.0.3 (29-nov-2015)</p>
         <ul>

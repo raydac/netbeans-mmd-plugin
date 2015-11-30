@@ -19,9 +19,10 @@ import com.igormaznitsa.ideamindmap.swing.AboutForm;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FontSelector;
 import com.igormaznitsa.ideamindmap.swing.KeyShortCutEditPanel;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,7 +78,7 @@ public class MindMapSettingsPanel {
   private ColorChooserButton colorButton2ndLevelText;
   private JButton buttonEditKeyShortcuts;
 
-  private static final Logger LOGGER = Logger.getInstance(MindMapSettingsPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsPanel.class);
 
   private final MindMapSettingsComponent controller;
 

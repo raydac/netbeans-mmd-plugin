@@ -1,9 +1,7 @@
 package com.igormaznitsa.ideamindmap.view.nodes;
 
-import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
-import com.intellij.facet.FacetManager;
 import com.intellij.ide.projectView.ViewSettings;
 import com.intellij.ide.projectView.impl.ModuleGroup;
 import com.intellij.ide.projectView.impl.nodes.AbstractProjectNode;
@@ -38,61 +36,52 @@ public class KnowledgeViewProjectNode extends AbstractProjectNode {
     return null;
   }
 
-
-
   @NotNull @Override public Collection<? extends AbstractTreeNode> getChildren() {
     final ArrayList<AbstractTreeNode> result = new ArrayList<AbstractTreeNode>();
     final PsiManager psiManager = PsiManager.getInstance(getProject());
 
     for (final Module m : ModuleManager.getInstance(myProject).getModules()) {
-      final FacetManager facetManager = FacetManager.getInstance(m);
-      if (facetManager.getFacetsByType(MindMapFacet.ID) != null) {
-        final VirtualFile moduleRoot = IdeaUtils.findPotentialRootFolderForModule(m);
-        if (moduleRoot!=null){
-          final VirtualFile projectKnowledge = moduleRoot.findChild(IdeaUtils.PROJECT_KNOWLEDGE_FOLDER_NAME);
-          if (projectKnowledge!=null){
+      final VirtualFile knowledgeFolder = IdeaUtils.findKnowledgeFolderForModule(m, false);
+      if (knowledgeFolder != null) {
 
-            final String moduleName = m.getName();
+        final String moduleName = m.getName();
 
-            final PsiDirectory dir = psiManager.findDirectory(projectKnowledge);
-            final PsiDirectoryNode node = new PsiDirectoryNode(myProject, dir, getSettings()){
+        final PsiDirectory dir = psiManager.findDirectory(knowledgeFolder);
+        final PsiDirectoryNode node = new PsiDirectoryNode(myProject, dir, getSettings()) {
 
-              @Override protected Icon patchIcon(Icon original, VirtualFile file) {
-                return AllIcons.File.FOLDER;
-              }
-
-              @Override public String getTitle() {
-                return moduleName;
-              }
-
-              @Override public String toString() {
-                return moduleName;
-              }
-
-              @Override public boolean isFQNameShown() {
-                return false;
-              }
-
-              @Override public VirtualFile getVirtualFile() {
-                return projectKnowledge;
-              }
-
-              @Nullable @Override protected String calcTooltip() {
-                return "The Knowledge folder for "+m.getName();
-              }
-
-              @Override protected boolean shouldShowModuleName() {
-                return false;
-              }
-
-              @Override protected boolean shouldShowSourcesRoot() {
-                return false;
-              }
-            };
-            result.add(node);
+          @Override protected Icon patchIcon(Icon original, VirtualFile file) {
+            return AllIcons.File.FOLDER;
           }
-        }
 
+          @Override public String getTitle() {
+            return moduleName;
+          }
+
+          @Override public String toString() {
+            return moduleName;
+          }
+
+          @Override public boolean isFQNameShown() {
+            return false;
+          }
+
+          @Override public VirtualFile getVirtualFile() {
+            return knowledgeFolder;
+          }
+
+          @Nullable @Override protected String calcTooltip() {
+            return "The Knowledge folder for " + m.getName();
+          }
+
+          @Override protected boolean shouldShowModuleName() {
+            return false;
+          }
+
+          @Override protected boolean shouldShowSourcesRoot() {
+            return false;
+          }
+        };
+        result.add(node);
       }
     }
     return result;

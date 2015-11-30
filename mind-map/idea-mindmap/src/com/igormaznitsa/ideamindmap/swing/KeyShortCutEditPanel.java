@@ -15,12 +15,13 @@
  */
 package com.igormaznitsa.ideamindmap.swing;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
@@ -45,7 +46,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
 
   private static final long serialVersionUID = -8892558469392323517L;
 
-  private static final com.intellij.openapi.diagnostic.Logger LOGGER = com.intellij.openapi.diagnostic.Logger.getInstance(FileEditPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileEditPanel.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   private final List<KeyShortcut> listOfKeys;
@@ -92,7 +93,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
           } else if (e.getSource() == checkBoxCTRL){
             modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
           } else if (e.getSource() == checkBoxMeta) {
-            modifiers = modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
+            modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
           } else if (e.getSource() == checkBoxSHIFT) {
             modifiers = source.isSelected() ? modifiers | KeyEvent.SHIFT_MASK : modifiers & ~KeyEvent.SHIFT_MASK;
           }

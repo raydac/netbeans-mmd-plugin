@@ -40,7 +40,7 @@ public class MindMapFacetEditorTab extends FacetEditorTab {
   }
 
   @Override public boolean isModified() {
-    return this.panel == null ? false : this.panel.isChanged();
+    return this.panel != null && this.panel.isChanged();
   }
 
   @Override public void apply() throws ConfigurationException {
