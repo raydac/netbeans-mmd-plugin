@@ -21,7 +21,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.spi.project.ui.support.NodeFactory;
 import org.netbeans.spi.project.ui.support.NodeList;
 
-@NodeFactory.Registration(projectType = {
+@NodeFactory.Registration (projectType = {
   "org-netbeans-modules-ant-freeform",
   "org-netbeans-modules-apisupport-project",
   "org-netbeans-modules-apisupport-project-suite",
@@ -31,6 +31,7 @@ import org.netbeans.spi.project.ui.support.NodeList;
   "org-netbeans-modules-autoproject",
   "org-netbeans-modules-bpel-project",
   "org-netbeans-modules-cnd-api-project",
+  "org-netbeans-gradle-project",
   "org-netbeans-modules-gradle-project",
   "org-netbeans-modules-groovy-grailsproject",
   "org-netbeans-modules-j2ee-clientproject",
@@ -56,13 +57,16 @@ import org.netbeans.spi.project.ui.support.NodeList;
   "org-netbeans-modules-web-clientproject",
   "org-netbeans-modules-web-project",
   "org-netbeans-modules-xslt-project",
-  "org-netbeans-modules-scala-sbt",}, position = 10000)
+  "org-netbeans-modules-scala-sbt",
+  "org-netbeans-modules-cnd-makeproject",
+  "org.netbeans.modules.web.clientproject"
+}, position = 10000)
 public class MMNodeFactory implements NodeFactory {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMNodeFactory.class);
 
   @Override
-  public NodeList<?> createNodes(final Project project) {
+  public NodeList<?> createNodes (final Project project) {
     LOGGER.info("Creating knowledge nodes for " + project);
     return new MMKnowledgeSources(project);
   }
