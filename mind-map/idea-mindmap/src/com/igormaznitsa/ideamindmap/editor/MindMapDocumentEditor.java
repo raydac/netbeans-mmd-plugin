@@ -563,6 +563,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   public void drop(final DropTargetDropEvent dtde) {
     try {
       java.util.List<File> files = null;
+      dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
       final Object objectToDrop = dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
       if (objectToDrop instanceof DnDDragStartBean) {
         final Object wrapper = ((DnDDragStartBean)objectToDrop).getAttachedObject();

@@ -1,4 +1,5 @@
 1.1.4 (under development)
+- improvements in work with DnD operations
 - minor refactoring of both plug-ins, improved stability of work
 
 1.1.3 (29-nov-2015)

@@ -20,6 +20,7 @@
     <change-notes><![CDATA[
         <p>1.0.4 ()</p>
         <ul>
+            <li>improvements in file DnD support</li>
             <li>Code refactoring and cleaning</li>
         </ul>
         <p>1.0.3 (29-nov-2015)</p>

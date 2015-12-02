@@ -45,6 +45,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -61,6 +62,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.swing.*;
@@ -105,7 +107,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
-  private static final Logger logger = LoggerFactory.getLogger(MMDGraphEditor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMDGraphEditor.class);
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
@@ -241,11 +243,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)));
       }
       catch (IllegalArgumentException ex) {
-        logger.warn("Can't detect mind map"); //NOI18N
+        LOGGER.warn("Can't detect mind map"); //NOI18N
         this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantDetectMMap"));
       }
       catch (IOException ex) {
-        logger.error("Can't parse mind map text", ex); //NOI18N
+        LOGGER.error("Can't parse mind map text", ex); //NOI18N
         this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantParseDoc"));
       }
     }
@@ -292,7 +294,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       this.editorSupport.getDataObject().setModified(true);
     }
     catch (Exception ex) {
-      logger.error("Can't get document text", ex); //NOI18N
+      LOGGER.error("Can't get document text", ex); //NOI18N
     }
     finally {
       copyNameToCallbackTopComponent();
@@ -377,7 +379,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
           try {
             fileObj = FileUtil.toFileObject(theFile);
             if (fileObj == null) {
-              logger.warn("Can't find FileObject for " + theFile);
+              LOGGER.warn("Can't find FileObject for " + theFile);
               if (theFile.exists()) {
                 NbUtils.openInSystemViewer(theFile);
               }
@@ -388,7 +390,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             }
           }
           catch (Exception ex) {
-            logger.error("onClickExtra#FILE", ex); //NOI18N
+            LOGGER.error("onClickExtra#FILE", ex); //NOI18N
             NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), uri.toString()));
             return;
           }
@@ -458,7 +460,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             }
           }
           catch (Exception ex) {
-            logger.error("Cant't find or open data object", ex); //NOI18N
+            LOGGER.error("Cant't find or open data object", ex); //NOI18N
             NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.cantFindFileObj"), uri.toString()));
           }
         }
@@ -564,12 +566,9 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return result;
   }
 
-  private void addDataObjectToElement (final DataObject dataObject, final AbstractElement element) {
-    if (element != null) {
+  private void addFileToElement (final File theFile, final AbstractElement element){
+    if (element!=null){
       final Topic topic = element.getModel();
-
-      final File theFile = FileUtil.toFile(dataObject.getPrimaryFile());
-
       final MMapURI theURI = NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? new MMapURI(getProjectFolder(), theFile, null) : new MMapURI(null, theFile, null); //NOI18N
 
       if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
@@ -584,12 +583,20 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       onMindMapModelChanged(this.mindMapPanel);
     }
   }
+  
+  private void addDataObjectToElement (final DataObject dataObject, final AbstractElement element) {
+    addFileToElement(FileUtil.toFile(dataObject.getPrimaryFile()), element);
+  }
 
   @Override
   public void drop (final DropTargetDropEvent dtde) {
     DataFlavor dataObjectFlavor = null;
     DataFlavor nodeObjectFlavor = null;
     DataFlavor projectObjectFlavor = null;
+    
+    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+    File detectedFileObject = null;
+    
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
       final Class<?> representation = df.getRepresentationClass();
       if (Node.class.isAssignableFrom(representation)) {
@@ -603,11 +610,20 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       else if (Project.class.isAssignableFrom(representation)) {
         projectObjectFlavor = df;
         break;
+      } else if (df.isFlavorJavaFileListType()){
+        try{
+          final List list = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+          if (list!=null && !list.isEmpty()){
+            detectedFileObject = (File)list.get(0);
+          }
+        }catch(Exception ex){
+          LOGGER.error("Can't extract file from DnD", ex);
+        }
       }
     }
 
     DataObject dataObject;
-
+    
     if (nodeObjectFlavor != null) {
       try {
         final Node theNode = (Node) dtde.getTransferable().getTransferData(nodeObjectFlavor);
@@ -620,7 +636,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         }
       }
       catch (Exception ex) {
-        logger.error("Can't extract node from dragged element", ex);
+        LOGGER.error("Can't extract node from dragged element", ex);
         dtde.rejectDrop();
         return;
       }
@@ -630,7 +646,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         dataObject = (DataObject) dtde.getTransferable().getTransferData(dataObjectFlavor);
       }
       catch (Exception ex) {
-        logger.error("Can't extract data object from dragged element", ex);
+        LOGGER.error("Can't extract data object from dragged element", ex);
         dtde.rejectDrop();
         return;
       }
@@ -640,7 +656,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         dataObject = DataObject.find(((Project) dtde.getTransferable().getTransferData(projectObjectFlavor)).getProjectDirectory());
       }
       catch (Exception ex) {
-        logger.error("Can't extract data object from project", ex);
+        LOGGER.error("Can't extract data object from project", ex);
         dtde.rejectDrop();
         return;
       }
@@ -651,9 +667,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     if (dataObject != null) {
       addDataObjectToElement(dataObject, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
+    } else if (detectedFileObject != null){
+      addFileToElement(detectedFileObject, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
     }
     else {
-      logger.error("There is not any DataObject in the dragged element");
+      LOGGER.error("There is not any DataObject in the dragged element");
       dtde.rejectDrop();
     }
   }
@@ -681,9 +699,9 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   protected static boolean checkDragType (final DropTargetDragEvent dtde) {
     boolean result = false;
-    for (final DataFlavor fl1 : dtde.getCurrentDataFlavors()) {
-      final Class dataClass = fl1.getRepresentationClass();
-      if (Node.class.isAssignableFrom(dataClass) || DataObject.class.isAssignableFrom(dataClass)) {
+    for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
+      final Class dataClass = flavor.getRepresentationClass();
+      if (Node.class.isAssignableFrom(dataClass) || DataObject.class.isAssignableFrom(dataClass) || flavor.isFlavorJavaFileListType()) {
         result = true;
         break;
       }
@@ -740,7 +758,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         }
         final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props); //NOI18N
         final File theFile = fileUri.asFile(projectFolder);
-        logger.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
+        LOGGER.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
 
         if (theFile.exists()) {
           topic.setExtra(new ExtraFile(fileUri));
@@ -1115,7 +1133,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             exp.doExport(mindMapPanel, null);
           }
           catch (Exception ex) {
-            logger.error("Error during map export", ex); //NOI18N
+            LOGGER.error("Error during map export", ex); //NOI18N
             NbUtils.msgError(BUNDLE.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
           }
         }
