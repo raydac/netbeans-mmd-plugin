@@ -20,7 +20,6 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.ui.ColorChooser;
-import com.intellij.ui.JBColor;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,7 +83,7 @@ public class ColorChooserButton extends JButton {
 
     });
 
-    setValue(JBColor.BLACK);
+    setValue(Color.BLACK);
   }
 
   public boolean isLastOkPressed() {
@@ -92,31 +91,34 @@ public class ColorChooserButton extends JButton {
   }
 
   private static ImageIcon makeColorIconForColor(final Color color) {
-    final Image img = UIUtil.createImage(16, 16, BufferedImage.TYPE_INT_RGB);
+    final int size = UIUtil.isRetina() ? 8 : 16;
+    final int halfSize = size / 2;
+
+    final Image img = UIUtil.createImage(size, size, BufferedImage.TYPE_INT_RGB);
     final Graphics gfx = img.getGraphics();
     try {
       if (color == null) {
-        gfx.setColor(IdeaUtils.isDarkTheme() ? JBColor.darkGray : JBColor.white);
-        gfx.fillRect(0, 0, 16, 16);
-        gfx.setColor(IdeaUtils.isDarkTheme() ? JBColor.yellow : JBColor.black);
-        gfx.drawRect(0, 0, 15, 15);
-        gfx.drawLine(0, 0, 15, 15);
+        gfx.setColor(IdeaUtils.isDarkTheme() ? Color.darkGray : Color.white);
+        gfx.fillRect(0, 0, size, size);
+        gfx.setColor(IdeaUtils.isDarkTheme() ? Color.yellow : Color.black);
+        gfx.drawRect(0, 0, size - 1, size - 1);
+        gfx.drawLine(0, 0, size - 1, size - 1);
       }
       else if (color == DIFF_COLORS) {
-        gfx.setColor(JBColor.red);
-        gfx.fillRect(0, 0, 8, 8);
-        gfx.setColor(JBColor.green);
-        gfx.fillRect(8, 0, 8, 8);
-        gfx.setColor(JBColor.blue);
-        gfx.fillRect(0, 8, 8, 8);
-        gfx.setColor(JBColor.yellow);
-        gfx.fillRect(8, 8, 8, 8);
+        gfx.setColor(Color.red);
+        gfx.fillRect(0, 0, halfSize, halfSize);
+        gfx.setColor(Color.green);
+        gfx.fillRect(halfSize, 0, halfSize, halfSize);
+        gfx.setColor(Color.blue);
+        gfx.fillRect(0, halfSize, halfSize, halfSize);
+        gfx.setColor(Color.yellow);
+        gfx.fillRect(halfSize, halfSize, halfSize, halfSize);
       }
       else {
         gfx.setColor(color);
-        gfx.fillRect(0, 0, 16, 16);
-        gfx.setColor(JBColor.black);
-        gfx.drawRect(0, 0, 15, 15);
+        gfx.fillRect(0, 0, size, size);
+        gfx.setColor(Color.black);
+        gfx.drawRect(0, 0, size - 1, size - 1);
       }
     }
     finally {

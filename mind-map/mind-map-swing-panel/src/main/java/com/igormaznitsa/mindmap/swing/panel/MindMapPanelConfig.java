@@ -47,6 +47,8 @@ public final class MindMapPanelConfig implements Serializable {
   private int selectLineGap = 5;
   private int horizontalBlockGap = 5;
 
+  private int scaleModifiers = KeyEvent.CTRL_MASK;
+  
   private boolean drawBackground = true;
   private Color paperColor = new Color(0x617B94);
   private Color gridColor = paperColor.darker();
@@ -282,7 +284,7 @@ public final class MindMapPanelConfig implements Serializable {
     }
     return prefs;
   }
-
+  
   public void makeAtomicChange (final Runnable runnable) {
     this.notificationEnabled = false;
     try {
@@ -414,6 +416,16 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
+  public int getScaleModifiers () {
+    return this.scaleModifiers;
+  }
+
+  public void setScaleModifiers (final int value) {
+    this.scaleModifiers = value;
+    notifyCfgListenersAboutChange();
+  }
+
+  
   public Color getSelectLineColor () {
     return this.selectLineColor;
   }

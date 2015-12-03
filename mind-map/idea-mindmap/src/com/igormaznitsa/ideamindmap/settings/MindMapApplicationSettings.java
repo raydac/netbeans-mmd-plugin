@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.ideamindmap.settings;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -26,11 +28,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.lang.reflect.Field;
 
 @State(name = "NBMindMapPlugin", storages = { @Storage(id = "nbmindmap", file = "$APP_CONFIG$/nbmindmapsettings.xml") })
 public class MindMapApplicationSettings implements ApplicationComponent, PersistentStateComponent<DeclaredFieldsSerializer>, DeclaredFieldsSerializer.Converter {
 
+  private static final MindMapPanelConfig etalon = new MindMapPanelConfig();
   private final MindMapPanelConfig editorConfig = new MindMapPanelConfig();
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapApplicationSettings.class);
 
   public MindMapPanelConfig getConfig() {
     return this.editorConfig;
@@ -88,7 +94,14 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
       throw new Error("Unexpected field type" + fieldType);
   }
 
-  @Nullable @Override public Object provideDefaultValue(@NotNull String fieldName, @NotNull Class<?> fieldType) {
-      throw new Error("Unexpected call to provide default value for field " + fieldType);
+  @Nullable @Override public Object provideDefaultValue(@NotNull final String fieldName, @NotNull final Class<?> fieldType) {
+    try{
+      final Field field = MindMapPanelConfig.class.getDeclaredField(fieldName);
+      field.setAccessible(true);
+      return field.get(etalon);
+    }catch(Exception ex){
+      LOGGER.error("Error during default value extraction ("+fieldType+" "+fieldName+')');
+      throw new RuntimeException("Can't extract default value from settings",ex);
+    }
   }
 }

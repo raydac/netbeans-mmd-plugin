@@ -199,7 +199,7 @@ public class MindMapPanel extends JPanel {
       @Override
       public void keyTyped (final KeyEvent e) {
         if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-          if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS)==0) {
+          if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
             e.consume();
             endEdit(true);
           }
@@ -268,30 +268,30 @@ public class MindMapPanel extends JPanel {
 
       @Override
       public void keyTyped (KeyEvent e) {
-        if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT,e)) {
-          makeNewChildAndStartEdit(selectedTopics.get(0), null);
-        }
-        else {
-          if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_SIBLING_AND_START_EDIT,e)) {
-            if (!hasActiveEditor() && hasOnlyTopicSelected()) {
-              final Topic baseTopic = selectedTopics.get(0);
-              makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
-            }
+        if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT, e)) {
+          if (!selectedTopics.isEmpty()) {
+            makeNewChildAndStartEdit(selectedTopics.get(0), null);
           }
-          else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_ROOT_OR_START_EDIT,e)) {
-            if (!hasSelectedTopics()) {
-              select(getModel().getRoot(), false);
-            }
-            else if (hasOnlyTopicSelected()) {
-              startEdit((AbstractElement) selectedTopics.get(0).getPayload());
-            }
+        }
+        else if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_SIBLING_AND_START_EDIT, e)) {
+          if (!hasActiveEditor() && hasOnlyTopicSelected()) {
+            final Topic baseTopic = selectedTopics.get(0);
+            makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
+          }
+        }
+        else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_ROOT_OR_START_EDIT, e)) {
+          if (!hasSelectedTopics()) {
+            select(getModel().getRoot(), false);
+          }
+          else if (hasOnlyTopicSelected()) {
+            startEdit((AbstractElement) selectedTopics.get(0).getPayload());
           }
         }
       }
 
       @Override
       public void keyReleased (final KeyEvent e) {
-        if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC,e)) {
+        if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
           e.consume();
           deleteSelectedTopics();
         }
@@ -485,7 +485,9 @@ public class MindMapPanel extends JPanel {
           mouseDragSelection = null;
           draggedElement = null;
 
-          if (!e.isConsumed() && e.isControlDown()) {
+          final MindMapPanelConfig theConfig = config;
+          
+          if (!e.isConsumed() && (theConfig!=null && ((e.getModifiers() & theConfig.getScaleModifiers())==theConfig.getScaleModifiers()))) {
             endEdit(elementUnderEdit != null);
 
             setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), 10.0d)));
@@ -537,11 +539,13 @@ public class MindMapPanel extends JPanel {
             select(element.getModel(), false);
           }
           else // group
-          if (selectedTopics.isEmpty()) {
-            select(element.getModel(), false);
-          }
-          else {
-            select(element.getModel(), true);
+          {
+            if (selectedTopics.isEmpty()) {
+              select(element.getModel(), false);
+            }
+            else {
+              select(element.getModel(), true);
+            }
           }
         }
       }
@@ -732,7 +736,7 @@ public class MindMapPanel extends JPanel {
 
       if (current.isMoveable()) {
         boolean processFirstChild = false;
-        if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,key)) {
+        if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, key)) {
           if (current.isLeftDirection()) {
             processFirstChild = true;
           }
@@ -740,37 +744,35 @@ public class MindMapPanel extends JPanel {
             nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
           }
         }
-        else {
-          if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,key)) {
-            if (current.isLeftDirection()) {
-              nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
-            }
-            else {
-              processFirstChild = true;
-            }
+        else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, key)) {
+          if (current.isLeftDirection()) {
+            nextFocused = (AbstractElement) current.getModel().getParent().getPayload();
           }
           else {
-            final boolean buttonUp = config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_UP);
-            final boolean firstLevel = current.getClass() == ElementLevelFirst.class;
-            final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(current.getModel());
-
-            final TopicChecker checker = new TopicChecker() {
-              @Override
-              public boolean check (final Topic topic) {
-                if (!firstLevel) {
-                  return true;
-                }
-                else if (currentLeft) {
-                  return AbstractCollapsableElement.isLeftSidedTopic(topic);
-                }
-                else {
-                  return !AbstractCollapsableElement.isLeftSidedTopic(topic);
-                }
-              }
-            };
-            final Topic topic = buttonUp ? current.getModel().findPrev(checker) : current.getModel().findNext(checker);
-            nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
+            processFirstChild = true;
           }
+        }
+        else {
+          final boolean buttonUp = config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_UP);
+          final boolean firstLevel = current.getClass() == ElementLevelFirst.class;
+          final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(current.getModel());
+
+          final TopicChecker checker = new TopicChecker() {
+            @Override
+            public boolean check (final Topic topic) {
+              if (!firstLevel) {
+                return true;
+              }
+              else if (currentLeft) {
+                return AbstractCollapsableElement.isLeftSidedTopic(topic);
+              }
+              else {
+                return !AbstractCollapsableElement.isLeftSidedTopic(topic);
+              }
+            }
+          };
+          final Topic topic = buttonUp ? current.getModel().findPrev(checker) : current.getModel().findNext(checker);
+          nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
         }
 
         if (processFirstChild) {

@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -39,6 +40,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -77,6 +79,10 @@ public class MindMapSettingsPanel {
   private ColorChooserButton colorButton2ndLevelFill;
   private ColorChooserButton colorButton2ndLevelText;
   private JButton buttonEditKeyShortcuts;
+  private JCheckBox checkBoxScalingModifierALT;
+  private JCheckBox checkBoxScalingModifierCTRL;
+  private JCheckBox checkBoxScalingModifierSHFT;
+  private JCheckBox checkBoxScalingModifierMETA;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsPanel.class);
 
@@ -180,6 +186,11 @@ public class MindMapSettingsPanel {
 
     this.checkBoxShowGrid.setSelected(this.etalon.isShowGrid());
     this.checkBoxDropShadow.setSelected(this.etalon.isDropShadow());
+
+    this.checkBoxScalingModifierALT.setSelected((this.etalon.getScaleModifiers() & KeyEvent.ALT_MASK)!=0);
+    this.checkBoxScalingModifierCTRL.setSelected((this.etalon.getScaleModifiers() & KeyEvent.CTRL_MASK)!=0);
+    this.checkBoxScalingModifierMETA.setSelected((this.etalon.getScaleModifiers() & KeyEvent.META_MASK)!=0);
+    this.checkBoxScalingModifierSHFT.setSelected((this.etalon.getScaleModifiers() & KeyEvent.SHIFT_MASK)!=0);
 
     this.spinnerGridStep.setValue(this.etalon.getGridStep());
     this.spinnerCollapsatorSize.setValue(this.etalon.getCollapsatorSize());
@@ -293,6 +304,13 @@ public class MindMapSettingsPanel {
     result.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
 
     result.setFont(this.theFont);
+
+    final int scaleModifier = (this.checkBoxScalingModifierALT.isSelected() ? KeyEvent.ALT_MASK : 0)
+      | (this.checkBoxScalingModifierCTRL.isSelected() ? KeyEvent.CTRL_MASK: 0)
+      | (this.checkBoxScalingModifierSHFT.isSelected() ? KeyEvent.SHIFT_MASK: 0)
+      | (this.checkBoxScalingModifierMETA.isSelected() ? KeyEvent.META_MASK: 0);
+
+    result.setScaleModifiers(scaleModifier);
 
     for(final Map.Entry<String,KeyShortcut> e : this.mapKeyShortCuts.entrySet()){
       result.setKeyShortCut(e.getValue());

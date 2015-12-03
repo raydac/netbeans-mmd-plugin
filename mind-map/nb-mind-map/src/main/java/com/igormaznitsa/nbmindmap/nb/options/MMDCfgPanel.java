@@ -25,6 +25,7 @@ import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.KeyShortCutEditPanel;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.net.URI;
@@ -108,6 +109,11 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     spinnerElementBorderWidth = new javax.swing.JSpinner();
     jPanel8 = new javax.swing.JPanel();
     buttonOpenShortcutEditor = new javax.swing.JButton();
+    panelScalingModifiers = new javax.swing.JPanel();
+    checkBoxScalingCTRL = new javax.swing.JCheckBox();
+    checkBoxScalingALT = new javax.swing.JCheckBox();
+    checkBoxScalingSHIFT = new javax.swing.JCheckBox();
+    checkBoxScalingMETA = new javax.swing.JCheckBox();
     jPanel1 = new javax.swing.JPanel();
     checkboxUseInsideBrowser = new javax.swing.JCheckBox();
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -494,13 +500,72 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
+    panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.panelScalingModifiers.border.title"))); // NOI18N
+
+    checkBoxScalingCTRL.setText("CTRL");
+    checkBoxScalingCTRL.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxScalingCTRLActionPerformed(evt);
+      }
+    });
+
+    checkBoxScalingALT.setText("ALT");
+    checkBoxScalingALT.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxScalingALTActionPerformed(evt);
+      }
+    });
+
+    checkBoxScalingSHIFT.setText("SHIFT");
+    checkBoxScalingSHIFT.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxScalingSHIFTActionPerformed(evt);
+      }
+    });
+
+    checkBoxScalingMETA.setText("META");
+    checkBoxScalingMETA.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxScalingMETAActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout panelScalingModifiersLayout = new javax.swing.GroupLayout(panelScalingModifiers);
+    panelScalingModifiers.setLayout(panelScalingModifiersLayout);
+    panelScalingModifiersLayout.setHorizontalGroup(
+      panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(panelScalingModifiersLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(checkBoxScalingCTRL)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxScalingALT)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxScalingSHIFT)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxScalingMETA)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+    panelScalingModifiersLayout.setVerticalGroup(
+      panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(panelScalingModifiersLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(checkBoxScalingCTRL)
+          .addComponent(checkBoxScalingALT)
+          .addComponent(checkBoxScalingSHIFT)
+          .addComponent(checkBoxScalingMETA))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
     javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
     jPanel8.setLayout(jPanel8Layout);
     jPanel8Layout.setHorizontalGroup(
       jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel8Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(buttonOpenShortcutEditor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(buttonOpenShortcutEditor, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+          .addComponent(panelScalingModifiers, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     jPanel8Layout.setVerticalGroup(
@@ -508,7 +573,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       .addGroup(jPanel8Layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(buttonOpenShortcutEditor)
-        .addContainerGap(14, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(panelScalingModifiers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -731,7 +798,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(buttonAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(17, Short.MAX_VALUE))
     );
 
     jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jPanel1, jPanel3, jPanel4, jPanel5});
@@ -743,23 +810,21 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       .addGroup(jPanel6Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel6Layout.createSequentialGroup()
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+              .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
           .addGroup(jPanel6Layout.createSequentialGroup()
             .addComponent(buttonAbout)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jScrollPane1.setViewportView(jPanel6);
@@ -998,6 +1063,30 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_buttonOpenShortcutEditorActionPerformed
 
+  private void checkBoxScalingCTRLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxScalingCTRLActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkBoxScalingCTRLActionPerformed
+
+  private void checkBoxScalingALTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxScalingALTActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkBoxScalingALTActionPerformed
+
+  private void checkBoxScalingSHIFTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxScalingSHIFTActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkBoxScalingSHIFTActionPerformed
+
+  private void checkBoxScalingMETAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxScalingMETAActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkBoxScalingMETAActionPerformed
+
   void load() {
     this.config.loadFrom(NbUtils.getPreferences());
 
@@ -1043,6 +1132,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.mapKeyShortCuts.clear();
       this.mapKeyShortCuts.putAll(this.config.getKeyShortcutMap());
 
+      setScalingModifiers(this.config.getScaleModifiers());
+      
       // Common behaviour options
       this.checkboxUseInsideBrowser.setSelected(NbUtils.getPreferences().getBoolean("useInsideBrowser", false));
       this.checkboxRelativePathsForFilesInTheProject.setSelected(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true));
@@ -1092,6 +1183,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         this.config.setKeyShortCut(e.getValue());
       }
       
+      this.config.setScaleModifiers(getScalingModifiers());
+      
       this.config.saveTo(NbUtils.getPreferences());
 
       // Common behaviour options
@@ -1106,6 +1199,20 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }
 
+  private void setScalingModifiers(final int value){
+    this.checkBoxScalingALT.setSelected((value & KeyEvent.ALT_MASK)!=0);
+    this.checkBoxScalingCTRL.setSelected((value & KeyEvent.CTRL_MASK)!=0);
+    this.checkBoxScalingMETA.setSelected((value & KeyEvent.META_MASK)!=0);
+    this.checkBoxScalingSHIFT.setSelected((value & KeyEvent.SHIFT_MASK)!=0);
+  }
+  
+  private int getScalingModifiers(){
+    return (this.checkBoxScalingALT.isSelected() ? KeyEvent.ALT_MASK : 0) |
+        (this.checkBoxScalingCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0) |
+        (this.checkBoxScalingMETA.isSelected() ? KeyEvent.ALT_MASK : 0) |
+        (this.checkBoxScalingSHIFT.isSelected() ? KeyEvent.SHIFT_MASK : 0);
+  }
+  
   boolean valid() {
     return true;
   }
@@ -1117,6 +1224,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JCheckBox checkBoxCopyColorInfoToNewAllowed;
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxKnowledgeFolderAutogenerationAllowed;
+  private javax.swing.JCheckBox checkBoxScalingALT;
+  private javax.swing.JCheckBox checkBoxScalingCTRL;
+  private javax.swing.JCheckBox checkBoxScalingMETA;
+  private javax.swing.JCheckBox checkBoxScalingSHIFT;
   private javax.swing.JCheckBox checkBoxShowGrid;
   private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
@@ -1152,6 +1263,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JPanel jPanel8;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JLabel labelBorderWidth;
+  private javax.swing.JPanel panelScalingModifiers;
   private javax.swing.JSlider slider1stLevelHorzGap;
   private javax.swing.JSlider slider1stLevelVertGap;
   private javax.swing.JSlider slider2ndLevelHorzGap;
