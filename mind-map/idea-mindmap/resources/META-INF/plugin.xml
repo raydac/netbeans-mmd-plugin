@@ -18,11 +18,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.0.4 ()</p>
+        <p>1.0.4 (...)</p>
         <ul>
             <li>improvements in file DnD support</li>
             <li>Code refactoring and cleaning</li>
-            <li>in options, provided support to tune key modifiers to activate scaling with mouse wheel (not all modifiers work under Intellij platform)</li>
+            <li>provided support to tune key modifiers to activate scaling with mouse wheel (not all modifiers work under Intellij platform)</li>
+            <li>fixed size of generated icons in color choosing buttons under Retina </li>
+            <li>improved panel, now clicking on '+' of a topic with pressed CTRL will open only 1th level children</li>
         </ul>
         <p>1.0.3 (29-nov-2015)</p>
         <ul>

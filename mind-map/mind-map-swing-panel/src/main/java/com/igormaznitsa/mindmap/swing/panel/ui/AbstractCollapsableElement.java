@@ -77,10 +77,16 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     return MindMapUtils.isCollapsed(this.model);
   }
 
-  public void setCollapse(final boolean flag) {
-    MindMapUtils.setCollapsed(this.model, flag);
+  public void setCollapse(final boolean collapseElementFlag) {
+    MindMapUtils.setCollapsed(this.model, collapseElementFlag);
   }
 
+  public void collapseAllFirstLevelChildren(){
+    for (final Topic t : this.model.getChildren()) {
+      MindMapUtils.setCollapsed(t, true);
+    }
+  }
+  
   @Override
   public boolean isLeftDirection() {
     return isLeftSidedTopic(this.model);

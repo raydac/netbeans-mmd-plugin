@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.swing.SwingUtilities;
 
 public class Utils {
 
@@ -158,6 +159,18 @@ public class Utils {
     return text;
   }
 
+  public static void safeSwingBlockingCall(final Runnable runnable)  {
+    if (SwingUtilities.isEventDispatchThread()){
+      runnable.run();
+    }else{
+      try{
+        SwingUtilities.invokeAndWait(runnable);
+      }catch(Exception ex){
+        throw new RuntimeException("Detected exception during SwingUtilities.invokeAndWait", ex);
+      }
+    }
+  }
+  
   public static String[] breakToLines (final String text) {
     final int lineNum = numberOfLines(text);
     final String[] result = new String[lineNum];

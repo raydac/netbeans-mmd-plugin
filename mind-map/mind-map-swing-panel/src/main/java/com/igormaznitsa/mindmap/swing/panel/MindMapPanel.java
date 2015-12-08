@@ -486,8 +486,8 @@ public class MindMapPanel extends JPanel {
           draggedElement = null;
 
           final MindMapPanelConfig theConfig = config;
-          
-          if (!e.isConsumed() && (theConfig!=null && ((e.getModifiers() & theConfig.getScaleModifiers())==theConfig.getScaleModifiers()))) {
+
+          if (!e.isConsumed() && (theConfig != null && ((e.getModifiers() & theConfig.getScaleModifiers()) == theConfig.getScaleModifiers()))) {
             endEdit(elementUnderEdit != null);
 
             setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), 10.0d)));
@@ -515,37 +515,46 @@ public class MindMapPanel extends JPanel {
           element = findTopicUnderPoint(e.getPoint());
         }
 
-        final ElementPart part = element == null ? ElementPart.NONE : element.findPartForPoint(e.getPoint());
-        if (part == ElementPart.COLLAPSATOR) {
-          removeAllSelection();
-          ((AbstractCollapsableElement) element).setCollapse(!element.isCollapsed());
-          invalidate();
-          fireNotificationMindMapChanged();
-          repaint();
-        }
-        else if (part != ElementPart.ICONS && e.getClickCount() > 1) {
-          startEdit(element);
-        }
-        else if (part == ElementPart.ICONS) {
-          final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-          if (extra != null) {
-            fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
-          }
-        }
-        else if (element != null) {
-          if (!e.isControlDown()) {
-            // only
+        if (element != null) {
+          final ElementPart part = element.findPartForPoint(e.getPoint());
+          if (part == ElementPart.COLLAPSATOR) {
             removeAllSelection();
-            select(element.getModel(), false);
-          }
-          else // group
-          {
-            if (selectedTopics.isEmpty()) {
-              select(element.getModel(), false);
+
+            if (element.isCollapsed()) {
+              ((AbstractCollapsableElement) element).setCollapse(false);
+              if ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+                ((AbstractCollapsableElement) element).collapseAllFirstLevelChildren();
+              }
             }
             else {
-              select(element.getModel(), true);
+              ((AbstractCollapsableElement) element).setCollapse(true);
             }
+            invalidate();
+            fireNotificationMindMapChanged();
+            repaint();
+          }
+          else if (part != ElementPart.ICONS && e.getClickCount() > 1) {
+            startEdit(element);
+          }
+          else if (part == ElementPart.ICONS) {
+            final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+            if (extra != null) {
+              fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
+            }
+          }
+          else if (element != null) {
+            if (!e.isControlDown()) {
+              // only
+              removeAllSelection();
+              select(element.getModel(), false);
+            }
+            else // group
+             if (selectedTopics.isEmpty()) {
+                select(element.getModel(), false);
+              }
+              else {
+                select(element.getModel(), true);
+              }
           }
         }
       }
@@ -1093,6 +1102,16 @@ public class MindMapPanel extends JPanel {
   }
 
   public void setModel (final MindMap model) {
+
+    if (this.elementUnderEdit!=null){
+      Utils.safeSwingBlockingCall(new Runnable() {
+        @Override
+        public void run () {
+          endEdit(false);
+        }
+      });
+    }
+    
     final List<int[]> selectedPaths = new ArrayList<int[]>();
     for (final Topic t : this.selectedTopics) {
       selectedPaths.add(t.getPositionPath());
@@ -1324,8 +1343,6 @@ public class MindMapPanel extends JPanel {
 
     final double startx = start.getCenterX();
     final double starty = start.getCenterY();
-    final double endx = destination.getCenterX();
-    final double endy = destination.getCenterY();
 
     final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startx, starty);
 

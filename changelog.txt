@@ -2,6 +2,8 @@
 - improvements in work with DnD operations
 - minor refactoring of both plug-ins, improved stability of work
 - added tuning of key modifiers to activate scaling with mouse wheel
+- fixed icons in color choosing buttons in IDEA version under Retina
+- improved panel, now clicking on '+' of a topic with pressed CTRL will open only 1th level children
 
 1.1.3 (29-nov-2015)
 - the IDEA plugin enabled for all products based on the IDEA platform (but not all of them allow to tune facets) (IDEA, 1.0.3)
