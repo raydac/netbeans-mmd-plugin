@@ -55,31 +55,34 @@ public class Utils {
     gfx.setRenderingHints(RENDERING_HINTS);
   }
 
-  public static String convertCamelCasedToHumanForm(final String camelCasedString, final boolean capitalizeFirstChar){
+  public static String convertCamelCasedToHumanForm (final String camelCasedString, final boolean capitalizeFirstChar) {
     final StringBuilder result = new StringBuilder();
-    
+
     boolean notFirst = false;
-    
-    for(final char c : camelCasedString.toCharArray()){
-      if (notFirst){
-        if (Character.isUpperCase(c)){
+
+    for (final char c : camelCasedString.toCharArray()) {
+      if (notFirst) {
+        if (Character.isUpperCase(c)) {
           result.append(' ');
           result.append(Character.toLowerCase(c));
-        }else{
+        }
+        else {
           result.append(c);
         }
-      }else{
-        notFirst =  true;
-        if (capitalizeFirstChar){
+      }
+      else {
+        notFirst = true;
+        if (capitalizeFirstChar) {
           result.append(Character.toUpperCase(c));
-        }else{
+        }
+        else {
           result.append(c);
         }
       }
     }
     return result.toString();
-  } 
-  
+  }
+
   public static Topic[] getLeftToRightOrderedChildrens (final Topic topic) {
     final List<Topic> result = new ArrayList<Topic>();
     if (topic.getTopicLevel() == 0) {
@@ -159,18 +162,29 @@ public class Utils {
     return text;
   }
 
-  public static void safeSwingBlockingCall(final Runnable runnable)  {
-    if (SwingUtilities.isEventDispatchThread()){
+  public static void safeSwingCall (final Runnable runnable) {
+    if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
-    }else{
-      try{
+    }
+    else {
+      SwingUtilities.invokeLater(runnable);
+    }
+  }
+
+  public static void safeSwingBlockingCall (final Runnable runnable) {
+    if (SwingUtilities.isEventDispatchThread()) {
+      runnable.run();
+    }
+    else {
+      try {
         SwingUtilities.invokeAndWait(runnable);
-      }catch(Exception ex){
+      }
+      catch (Exception ex) {
         throw new RuntimeException("Detected exception during SwingUtilities.invokeAndWait", ex);
       }
     }
   }
-  
+
   public static String[] breakToLines (final String text) {
     final int lineNum = numberOfLines(text);
     final String[] result = new String[lineNum];

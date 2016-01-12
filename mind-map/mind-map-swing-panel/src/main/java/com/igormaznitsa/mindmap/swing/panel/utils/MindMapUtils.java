@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
-import java.util.Map;
 
 public enum MindMapUtils {;
   
