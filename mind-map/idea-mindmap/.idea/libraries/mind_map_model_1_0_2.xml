@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="mind-map-model-1.0.2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../mind-map-model/target/mind-map-model-1.0.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
