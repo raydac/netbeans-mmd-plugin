@@ -29,7 +29,7 @@ import org.netbeans.spi.print.PrintPage;
 
 public class MMDPrint {
 
-  private static final Logger logger = LoggerFactory.getLogger(MMDPrint.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMDPrint.class);
 
   private final PrintPage[][] pages;
 
@@ -37,7 +37,7 @@ public class MMDPrint {
   private static final double SCALE_RATIO_THRESHOLD = 0.20d;
 
   public MMDPrint(final MindMapPanel panel, final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
-    logger.info(String.format("Request to prepare print pages for %dx%d with scale %f", paperWidthInPixels, paperHeightInPixels, pageZoomFactor));
+    LOGGER.info(String.format("Request to prepare print pages for %dx%d with scale %f", paperWidthInPixels, paperHeightInPixels, pageZoomFactor));
 
     if (panel == null || paperWidthInPixels <= 0 || paperHeightInPixels <= 0) {
       this.pages = new PrintPage[0][0];
