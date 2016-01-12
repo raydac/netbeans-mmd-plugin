@@ -28,6 +28,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.module.Module;
@@ -35,11 +36,19 @@ import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.BalloonBuilder;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.StatusBar;
+import com.intellij.openapi.wm.WindowManager;
+import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.ui.UIUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,6 +60,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
@@ -116,7 +126,7 @@ public enum IdeaUtils {
                 }
               });
             }
-          },null,null);
+          }, null, null);
         }
         else {
           result.set(null);
@@ -348,6 +358,20 @@ public enum IdeaUtils {
       }
     }
     return false;
+  }
+
+  public static void showPopup(@NotNull final String text, @NotNull final MessageType type) {
+    SwingUtils.safeSwing(new Runnable() {
+      @Override public void run() {
+        final JBPopupFactory factory = JBPopupFactory.getInstance();
+        final BalloonBuilder builder = factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml(text), type, null);
+        final Balloon balloon = builder.createBalloon();
+
+        final Component frame = WindowManager.getInstance().findVisibleFrame();
+        if (frame != null)
+          balloon.show(new RelativePoint(frame, new Point(frame.getWidth(),frame.getHeight())), Balloon.Position.below);
+      }
+    });
   }
 
 }

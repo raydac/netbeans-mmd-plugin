@@ -16,6 +16,7 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
+import com.igormaznitsa.ideamindmap.print.MMDPrintPanel;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
@@ -55,9 +56,13 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 import java.io.File;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -348,6 +353,19 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     result.add(exportMenu);
 
     result.add(new JSeparator());
+
+    JBMenuItem printPreviewMenu = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), AllIcons.PopUp.PRINTER);
+    printPreviewMenu.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        final MMDPrintPanel panel = new MMDPrintPanel(getEditor().getMindMapPanel(),dialogProvider);
+        IdeaUtils.plainMessageOkCancel(getEditor().getProject(),"Print mind map",panel);
+      }
+    });
+
+    result.add(printPreviewMenu);
+
 
     JBMenuItem optionsMenu = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miOptions"), AllIcons.PopUp.OPTIONS);
     optionsMenu.addActionListener(new ActionListener() {
