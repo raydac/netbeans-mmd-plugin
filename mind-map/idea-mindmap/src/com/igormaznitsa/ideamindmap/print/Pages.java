@@ -33,8 +33,8 @@ class Pages extends JBPanel {
     int pagesAtHorizontal = 0;
     int pagesAtVertical = pages.length;
 
-    final double paperWidth = this.parent.dpiToScreen(thePageFormat.getWidth());
-    final double paperHeight = this.parent.dpiToScreen(thePageFormat.getHeight());
+    final double paperWidth = thePageFormat.getWidth();
+    final double paperHeight = thePageFormat.getHeight();
 
     for (final PrintPage[] row : pages) {
       pagesAtHorizontal = Math.max(pagesAtHorizontal, row.length);
@@ -65,22 +65,21 @@ class Pages extends JBPanel {
 
     final PrintPage[][] allPages = this.parent.getPages();
 
-    final double PAGE_WIDTH = this.parent.dpiToScreen(thePageFormat.getWidth());
-    final double PAGE_HEIGHT = this.parent.dpiToScreen(thePageFormat.getHeight());
+    final double PAGE_WIDTH = thePageFormat.getWidth();
+    final double PAGE_HEIGHT = thePageFormat.getHeight();
 
-    final double AREA_WIDTH = this.parent.dpiToScreen(thePageFormat.getImageableWidth());
-    final double AREA_HEIGHT = this.parent.dpiToScreen(thePageFormat.getImageableHeight());
+    final double AREA_WIDTH = thePageFormat.getImageableWidth();
+    final double AREA_HEIGHT = thePageFormat.getImageableHeight();
 
     final Rectangle2D pageBack = new Rectangle2D.Double(0.0d, 0.0d, PAGE_WIDTH, PAGE_HEIGHT);
     final Rectangle2D pageArea = new Rectangle2D.Double(0.0d, 0.0d, AREA_WIDTH, AREA_HEIGHT);
 
     final Color SHADOW = new Color(0, 0, 0, 0x50);
 
-
     int y = INTERVAL_Y;
 
-    final double AREA_X = parent.dpiToScreen(thePageFormat.getImageableX());
-    final double AREA_Y = parent.dpiToScreen(thePageFormat.getImageableY());
+    final double AREA_X = thePageFormat.getImageableX();
+    final double AREA_Y = thePageFormat.getImageableY();
 
     gfx.scale(scale, scale);
     for (final PrintPage[] pages : allPages) {

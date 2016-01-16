@@ -904,7 +904,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public PrintPage[][] getPages (final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
-    final com.igormaznitsa.mindmap.print.PrintPage [][] pages = new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, pageZoomFactor).getPages();
+    final com.igormaznitsa.mindmap.print.PrintPage [][] pages = new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, 1.0d).getPages();
     final PrintPage [][] result = new PrintPage[pages.length][];
     for(int i=0;i<pages.length;i++){
       result [i]= new PrintPage[pages[i].length];

@@ -62,7 +62,7 @@ public class MMDPrint {
       cfg.setCollapsatorBorderWidth(1.0f);
       cfg.setConnectorWidth(2.0f);
 
-      cfg.setScale(1.0d);
+      cfg.setScale(pageZoomFactor);
 
       final MindMap theModel = new MindMap(panel.getModel(), null);
 

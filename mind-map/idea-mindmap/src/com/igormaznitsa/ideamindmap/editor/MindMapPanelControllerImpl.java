@@ -52,10 +52,13 @@ import com.intellij.openapi.ui.JBPopupMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+import javax.swing.JWindow;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -359,7 +362,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        final MMDPrintPanel panel = new MMDPrintPanel(getEditor().getMindMapPanel(),dialogProvider);
+        final MMDPrintPanel panel = new MMDPrintPanel(getEditor().getProject(), getEditor().getMindMapPanel());
         IdeaUtils.plainMessageClose(getEditor().getProject(),"Print mind map",panel);
       }
     });
