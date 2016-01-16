@@ -27,8 +27,8 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.intellij.CommonBundle;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.module.Module;
@@ -44,7 +44,6 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.ui.UIUtil;
@@ -52,6 +51,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
@@ -62,6 +62,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -267,6 +268,21 @@ public enum IdeaUtils {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
       centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
     return dialog.showAndGet();
+  }
+
+  public static void plainMessageClose(final Project project, final String title, final JComponent centerComponent) {
+    final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
+      centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true){
+      @NotNull @Override protected Action[] createActions() {
+        return new Action[]{new DialogWrapperAction(CommonBundle.getCloseButtonText()) {
+
+          @Override protected void doAction(ActionEvent e) {
+            doCancelAction();
+          }
+        }};
+      }
+    };
+    dialog.show();
   }
 
   @Nullable

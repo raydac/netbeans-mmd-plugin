@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.exporters.Exporters;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.print.MMDPrint;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
@@ -31,8 +32,8 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.nbmindmap.nb.print.PrintPageAdapter;
 import com.igormaznitsa.nbmindmap.nb.swing.ColorAttributePanel;
-import com.igormaznitsa.nbmindmap.nb.print.MMDPrint;
 import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
 import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
@@ -45,7 +46,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -904,7 +904,15 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public PrintPage[][] getPages (final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
-    return new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, pageZoomFactor).getPages();
+    final com.igormaznitsa.mindmap.print.PrintPage [][] pages = new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, pageZoomFactor).getPages();
+    final PrintPage [][] result = new PrintPage[pages.length][];
+    for(int i=0;i<pages.length;i++){
+      result [i]= new PrintPage[pages[i].length];
+      for(int p=0;p<pages[i].length;p++){
+        result[i][p]=new PrintPageAdapter(pages[i][p]);
+      }
+    }
+    return result;
   }
 
   @Override

@@ -3,6 +3,8 @@ package com.igormaznitsa.ideamindmap.print;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.print.MMDPrint;
+import com.igormaznitsa.mindmap.print.PrintPage;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.intellij.openapi.ui.ComboBox;
@@ -12,6 +14,9 @@ import com.intellij.ui.components.JBScrollPane;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
@@ -33,15 +38,29 @@ public class MMDPrintPanel extends JBPanel {
   private final MindMapPanel mmdPanel;
   private PrintPage[][] pages;
 
+  private final double screenDPIScale;
+
   public MMDPrintPanel(final MindMapPanel mindMapPanel, final DialogProvider dialogProvider) {
     super(new BorderLayout());
+
+    int screenResolution;
+    try{
+      screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
+    }catch(HeadlessException ex){
+      screenResolution = 72;
+    }
+    this.screenDPIScale = screenResolution / 72.0d;
+
     this.mmdPanel = mindMapPanel;
     this.dialogProvider = dialogProvider;
+
+    super.setPreferredSize(new Dimension(600,450));
 
     final JBScrollPane scrollPane = new JBScrollPane();
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
 
-    final JToolBar toolBar = new JToolBar();
+    final JToolBar toolBar = new JToolBar(JToolBar.HORIZONTAL);
+    toolBar.setFloatable(false);
     final JButton buttonPrint = new JButton("Print pages", AllIcons.PopUp.PRINTER);
     buttonPrint.addActionListener(new ActionListener() {
       @Override
@@ -61,6 +80,8 @@ public class MMDPrintPanel extends JBPanel {
       }
     });
     toolBar.add(buttonPrintOptions);
+
+    java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
 
     final List<String> scalesList = new ArrayList<String>();
     scalesList.add("10 %");
@@ -86,6 +107,8 @@ public class MMDPrintPanel extends JBPanel {
     comboBoxScale.setMaximumSize(comboBoxScale.getPreferredSize());
     toolBar.addSeparator();
     toolBar.add(comboBoxScale);
+
+
     this.add(toolBar, BorderLayout.NORTH);
 
     this.pageFormat = printerJob.defaultPage();
@@ -107,9 +130,13 @@ public class MMDPrintPanel extends JBPanel {
     return this.pageZoomFactor;
   }
 
+  double dpiToScreen(final double points){
+    return points*this.screenDPIScale;
+  }
+
   private void splitToPagesForFormat() {
-    final MMDPrint printer = new MMDPrint(this.mmdPanel, (int) Math.round(this.pageFormat.getPaper().getImageableWidth()),
-      (int) Math.round(this.pageFormat.getPaper().getImageableHeight()), this.pageZoomFactor);
+    final MMDPrint printer = new MMDPrint(this.mmdPanel, (int)Math.round(dpiToScreen(this.pageFormat.getImageableWidth())),
+      (int)Math.round(dpiToScreen(this.pageFormat.getImageableHeight())), this.pageZoomFactor);
     this.pages = printer.getPages();
   }
 

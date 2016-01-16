@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 public class MMDPrint {

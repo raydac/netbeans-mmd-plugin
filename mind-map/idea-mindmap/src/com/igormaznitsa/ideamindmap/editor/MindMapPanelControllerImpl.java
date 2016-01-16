@@ -360,7 +360,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       @Override
       public void actionPerformed(ActionEvent e) {
         final MMDPrintPanel panel = new MMDPrintPanel(getEditor().getMindMapPanel(),dialogProvider);
-        IdeaUtils.plainMessageOkCancel(getEditor().getProject(),"Print mind map",panel);
+        IdeaUtils.plainMessageClose(getEditor().getProject(),"Print mind map",panel);
       }
     });
 
