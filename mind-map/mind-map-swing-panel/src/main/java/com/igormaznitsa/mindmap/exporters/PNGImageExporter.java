@@ -35,7 +35,7 @@ import org.apache.commons.io.IOUtils;
 
 public final class PNGImageExporter extends AbstractMindMapExporter {
 
-  private static final Logger logger = LoggerFactory.getLogger(PNGImageExporter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PNGImageExporter.class);
   
   public PNGImageExporter() {
     super();
@@ -43,14 +43,17 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
 
   @Override
   public void doExport(final MindMapPanel panel, final OutputStream out) throws IOException {
+    final Boolean expandAllNodes = panel.getController().getDialogProvider(panel).msgConfirmYesNoCancel(BUNDLE.getString("PNGImageExporter.titleExpandAllNodes"),BUNDLE.getString("PNGImageExporter.textQuestionExpandAllNodes"));
+    if (expandAllNodes == null) return;
+    
     final MindMapPanelConfig newConfig = new MindMapPanelConfig(panel.getConfiguration(), false);
     newConfig.setScale(1.0f);
 
-    final RenderedImage image = MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, true);
+    final RenderedImage image = MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, expandAllNodes);
 
     if (image == null) {
       if (out  == null){
-      logger.error("Can't render map as image");
+      LOGGER.error("Can't render map as image");
       panel.getController().getDialogProvider(panel).msgError(BUNDLE.getString("PNGImageExporter.msgErrorDuringRendering"));
       return;
       }else{

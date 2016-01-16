@@ -98,7 +98,7 @@ public abstract class AbstractMindMapExporter {
     final Color extracted = Utils.html2color(topic.getAttribute(ATTR_BORDER_COLOR.getText()), false);
     return extracted == null ? cfg.getElementBorderColor() : extracted;
   }
-
+  
   public static File selectFileForFileFilter(final MindMapPanel panel, final String title, final String dottedFileExtension, final String filterDescription, final String approveButtonText) {
     final File home = new File(System.getProperty("user.home"));//NOI18N
 
