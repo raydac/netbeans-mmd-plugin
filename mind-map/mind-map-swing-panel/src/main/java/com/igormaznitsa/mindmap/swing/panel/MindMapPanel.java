@@ -1661,7 +1661,7 @@ public class MindMapPanel extends JPanel {
     return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
   }
 
-  public static BufferedImage renderMindMapAsImage (final MindMap model, final MindMapPanelConfig cfg, final boolean expandAll) {
+  public static Dimension2D calculateSizeOfMapInPixels(final MindMap model, final MindMapPanelConfig cfg, final boolean expandAll) {
     final MindMap workMap = new MindMap(model, null);
     workMap.resetPayload();
 
@@ -1677,20 +1677,27 @@ public class MindMapPanel extends JPanel {
           calculateElementSizes(gfx, workMap, cfg);
         }
         blockSize = layoutModelElements(workMap, cfg);
+        final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
+        blockSize.setSize(blockSize.getWidth() + paperMargin * 2, blockSize.getHeight() + paperMargin * 2);
       }
     }
     finally {
       gfx.dispose();
     }
+    return blockSize;
+  }
+  
+  public static BufferedImage renderMindMapAsImage (final MindMap model, final MindMapPanelConfig cfg, final boolean expandAll) {
+    final MindMap workMap = new MindMap(model, null);
+    workMap.resetPayload();
+
+    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, cfg, expandAll);
     if (blockSize == null) {
       return null;
     }
 
-    final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
-    blockSize.setSize(blockSize.getWidth() + paperMargin * 2, blockSize.getHeight() + paperMargin * 2);
-
-    img = new BufferedImage((int) blockSize.getWidth(), (int) blockSize.getHeight(), BufferedImage.TYPE_INT_ARGB);
-    gfx = img.createGraphics();
+    final BufferedImage img = new BufferedImage((int) blockSize.getWidth(), (int) blockSize.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    final Graphics2D gfx = img.createGraphics();
     try {
       Utils.prepareGraphicsForQuality(gfx);
       gfx.setClip(0, 0, img.getWidth(), img.getHeight());
