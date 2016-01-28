@@ -18,14 +18,21 @@ package com.igormaznitsa.mindmap.print;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import java.awt.BasicStroke;
 
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -35,11 +42,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.Icon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 public class MMDPrintPanel extends JPanel {
+
+  static final Color BORDER_COLOR = Color.GRAY;
+  static final Stroke BORDER_STYLE = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[]{1f, 3f}, 0f);
 
   public enum IconId {
     PRINTER,
@@ -64,6 +75,7 @@ public class MMDPrintPanel extends JPanel {
 
   private final MindMapPanel mmdPanel;
   private final Controller controller;
+  private final JCheckBox checkBoxDrawBorder;
   private PrintPage[][] pages;
 
   public MMDPrintPanel (final Controller controller, final MindMapPanel mindMapPanel) {
@@ -88,11 +100,15 @@ public class MMDPrintPanel extends JPanel {
       public void actionPerformed (final ActionEvent e) {
         final AtomicReference<PrintPage[][]> pages = new AtomicReference<PrintPage[][]>();
 
+        final boolean drawBorder = checkBoxDrawBorder.isSelected();
+        
         printerJob.setPrintable(new Printable() {
           private List<PrintPage> listOfPages = null;
 
           @Override
           public int print (final Graphics graphics, final PageFormat format, final int pageIndex) throws PrinterException {
+            final Graphics2D gfx = (Graphics2D)graphics;
+            
             if (this.listOfPages == null) {
               this.listOfPages = null;
               pages.set(new MMDPrint(mmdPanel, (int) format.getImageableWidth(), (int) format.getImageableHeight(), 1.0d).getPages());
@@ -112,9 +128,18 @@ public class MMDPrintPanel extends JPanel {
             }
             else {
               final PrintPage page = this.listOfPages.get(pageIndex);
-              graphics.translate((int) format.getImageableX(), (int) format.getImageableY());
-              page.print(graphics);
-              graphics.translate(-(int) format.getImageableX(), -(int) format.getImageableY());
+              gfx.translate((int) format.getImageableX(), (int) format.getImageableY());
+              page.print(gfx);
+              
+              if (drawBorder){
+                final Stroke stroke = gfx.getStroke();
+                gfx.setStroke(BORDER_STYLE);
+                gfx.draw(new Rectangle2D.Double(0d,0d,format.getImageableWidth(),format.getImageableHeight()));
+                gfx.setColor(BORDER_COLOR);
+                gfx.setStroke(stroke);
+              }
+              gfx.translate(-(int) format.getImageableX(), -(int) format.getImageableY());
+              
               return Printable.PAGE_EXISTS;
             }
           }
@@ -177,7 +202,17 @@ public class MMDPrintPanel extends JPanel {
     comboBoxScale.setMaximumSize(comboBoxScale.getPreferredSize());
     toolBar.addSeparator();
     toolBar.add(comboBoxScale);
-
+    
+    toolBar.addSeparator();
+    checkBoxDrawBorder = new JCheckBox(BUNDLE.getString("MMDPrintPanel.DrawBorder"), true);
+    checkBoxDrawBorder.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed (ActionEvent e) {
+        scrollPane.repaint();
+      }
+    });
+    toolBar.add(checkBoxDrawBorder);
+    
     this.add(toolBar, BorderLayout.NORTH);
 
     this.pageFormat = printerJob.defaultPage();
@@ -205,6 +240,10 @@ public class MMDPrintPanel extends JPanel {
     this.pages = printer.getPages();
   }
 
+  boolean isDrawBorder(){
+    return this.checkBoxDrawBorder.isSelected();
+  }
+  
   boolean isDarkTheme () {
     return this.controller.isDarkTheme(this);
   }

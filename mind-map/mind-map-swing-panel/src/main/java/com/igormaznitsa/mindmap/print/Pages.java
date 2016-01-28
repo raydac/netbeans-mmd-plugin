@@ -15,10 +15,12 @@
  */
 package com.igormaznitsa.mindmap.print;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 import javax.swing.JPanel;
@@ -28,8 +30,7 @@ class Pages extends JPanel {
   private static final long serialVersionUID = -6728277837828116266L;
 
   private final MMDPrintPanel parent;
-  
-  
+
   private static final int INTERVAL_X = 25;
   private static final int INTERVAL_Y = 25;
 
@@ -100,6 +101,8 @@ class Pages extends JPanel {
     final double AREA_X = thePageFormat.getImageableX();
     final double AREA_Y = thePageFormat.getImageableY();
 
+    final boolean drawBorder = this.parent.isDrawBorder();
+    
     gfx.scale(scale, scale);
     for (final PrintPage[] pages : allPages) {
       int x = INTERVAL_X;
@@ -119,6 +122,14 @@ class Pages extends JPanel {
         gfxCopy.clip(pageArea);
         p.print(gfxCopy);
         gfxCopy.dispose();
+
+        if (drawBorder) {
+          final Stroke oldStroke = gfx.getStroke();
+          gfx.setColor(MMDPrintPanel.BORDER_COLOR);
+          gfx.setStroke(MMDPrintPanel.BORDER_STYLE);
+          gfx.draw(pageArea);
+          gfx.setStroke(oldStroke);
+        }
 
         gfx.translate(-AREA_X, -AREA_Y);
 
