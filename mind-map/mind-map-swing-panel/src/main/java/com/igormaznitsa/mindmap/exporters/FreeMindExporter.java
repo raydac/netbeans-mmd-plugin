@@ -37,6 +37,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -194,7 +195,7 @@ public class FreeMindExporter extends AbstractMindMapExporter {
   }
 
   @Override
-  public void doExport(final MindMapPanel panel, final OutputStream out) throws IOException {
+  public void doExport(final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
     final State state = new State();
 
     state.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>").nextLine();//NOI18N

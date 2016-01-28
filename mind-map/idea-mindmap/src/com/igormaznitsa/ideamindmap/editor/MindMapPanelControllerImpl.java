@@ -53,6 +53,7 @@ import com.intellij.openapi.ui.JBPopupMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -337,7 +338,13 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         @Override
         public void actionPerformed(final ActionEvent e) {
           try {
-            exp.doExport(editor.getMindMapPanel(), null);
+            final JComponent options = exp.makeOptions();
+            if (options!=null){
+              if (!getDialogProvider().msgOkCancel(exp.getName(),options)){
+                return;
+              }
+            }
+            exp.doExport(editor.getMindMapPanel(), options, null);
           }
           catch (Exception ex) {
             LOGGER.error("Error during map export", ex); //NOI18N

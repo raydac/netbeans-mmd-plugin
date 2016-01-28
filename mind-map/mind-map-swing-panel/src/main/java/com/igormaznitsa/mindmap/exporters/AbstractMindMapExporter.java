@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 
 public abstract class AbstractMindMapExporter {
@@ -36,7 +37,11 @@ public abstract class AbstractMindMapExporter {
   public AbstractMindMapExporter() {
   }
 
-  public abstract void doExport(MindMapPanel panel, OutputStream out) throws IOException;
+  public JComponent makeOptions() {
+    return null;
+  }
+  
+  public abstract void doExport(MindMapPanel panel, JComponent options, OutputStream out) throws IOException;
 
   public abstract String getName();
 

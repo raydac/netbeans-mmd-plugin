@@ -22,6 +22,9 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
+import java.awt.Component;
 import java.awt.image.RenderedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,26 +33,64 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 import org.apache.commons.io.IOUtils;
 
 public final class PNGImageExporter extends AbstractMindMapExporter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PNGImageExporter.class);
+  private static final UIComponentFactory UI_FACTORY = UIComponentFactoryService.findInstance();
+  
+  private static boolean flagExpandAllNodes = false;
+  private static boolean flagSaveBackground = true;
   
   public PNGImageExporter() {
     super();
   }
 
   @Override
-  public void doExport(final MindMapPanel panel, final OutputStream out) throws IOException {
-    final Boolean expandAllNodes = panel.getController().getDialogProvider(panel).msgConfirmYesNoCancel(BUNDLE.getString("PNGImageExporter.titleExpandAllNodes"),BUNDLE.getString("PNGImageExporter.textQuestionExpandAllNodes"));
-    if (expandAllNodes == null) return;
+  public JComponent makeOptions () {
+    final JPanel panel = UI_FACTORY.makePanel();
+    final JCheckBox checkBoxExpandAll = UI_FACTORY.makeCheckBox();
+    checkBoxExpandAll.setSelected(flagExpandAllNodes);
+    checkBoxExpandAll.setText(BUNDLE.getString("PNGImageExporter.optionUnfoldAll"));
+    checkBoxExpandAll.setActionCommand("unfold");
+    
+    final JCheckBox checkSaveBackground = UI_FACTORY.makeCheckBox();
+    checkSaveBackground.setSelected(flagSaveBackground);
+    checkSaveBackground.setText(BUNDLE.getString("PNGImageExporter.optionDrawBackground"));
+    checkSaveBackground.setActionCommand("back");
+    
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    
+    panel.add(checkBoxExpandAll);
+    panel.add(checkSaveBackground);
+    
+    return panel;
+  }
+
+  @Override
+  public void doExport(final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
+    for(final Component compo : ((JPanel)options).getComponents()){
+      if (compo instanceof JCheckBox){
+        final JCheckBox cb = (JCheckBox)compo;
+        if ("unfold".equalsIgnoreCase(cb.getActionCommand())){
+          flagExpandAllNodes = cb.isSelected();
+        }else if ("back".equalsIgnoreCase(cb.getActionCommand())){
+          flagSaveBackground = cb.isSelected();
+        }
+      }
+    }
     
     final MindMapPanelConfig newConfig = new MindMapPanelConfig(panel.getConfiguration(), false);
+    newConfig.setDrawBackground(flagSaveBackground);
     newConfig.setScale(1.0f);
 
-    final RenderedImage image = MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, expandAllNodes);
+    final RenderedImage image = MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, flagExpandAllNodes);
 
     if (image == null) {
       if (out  == null){

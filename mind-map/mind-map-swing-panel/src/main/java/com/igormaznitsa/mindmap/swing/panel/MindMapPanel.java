@@ -1693,7 +1693,11 @@ public class MindMapPanel extends JPanel {
   public static BufferedImage renderMindMapAsImage (final MindMap model, final MindMapPanelConfig cfg, final boolean expandAll) {
     final MindMap workMap = new MindMap(model, null);
     workMap.resetPayload();
-
+    
+    if (expandAll){
+      MindMapUtils.removeCollapseAttr(workMap);
+    }
+    
     final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, cfg, expandAll);
     if (blockSize == null) {
       return null;

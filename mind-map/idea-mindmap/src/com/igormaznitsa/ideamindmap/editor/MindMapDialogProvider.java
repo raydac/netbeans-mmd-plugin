@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.ideamindmap.editor;
 
+import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.fileChooser.FileSaverDescriptor;
@@ -24,6 +25,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileWrapper;
 
+import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
@@ -53,6 +55,10 @@ public class MindMapDialogProvider implements DialogProvider {
   @Override
   public boolean msgConfirmOkCancel(final String title, final String text) {
     return Messages.showOkCancelDialog(this.project, text, title, Messages.getQuestionIcon()) == Messages.OK;
+  }
+
+  @Override public boolean msgOkCancel(final String title, final JComponent component) {
+    return IdeaUtils.plainMessageOkCancel(this.project, title, component);
   }
 
   @Override

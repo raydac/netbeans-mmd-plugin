@@ -19,6 +19,7 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import java.io.ByteArrayOutputStream;
+import javax.swing.JComponent;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractExporterTest <T extends AbstractMindMapExporter>{
@@ -34,8 +35,12 @@ public abstract class AbstractExporterTest <T extends AbstractMindMapExporter>{
     when(panel.getConfiguration()).thenReturn(config);
     
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    exporter.doExport(panel, buffer);
+    exporter.doExport(panel, prepareOptions(), buffer);
     return buffer.toByteArray();
+  }
+  
+  public JComponent prepareOptions(){
+    return null;
   }
   
   public abstract T generateExporterInstance();

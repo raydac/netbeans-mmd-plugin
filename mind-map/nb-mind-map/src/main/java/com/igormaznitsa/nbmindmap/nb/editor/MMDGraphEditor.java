@@ -1140,7 +1140,13 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         @Override
         public void actionPerformed (final ActionEvent e) {
           try {
-            exp.doExport(mindMapPanel, null);
+            final JComponent options = exp.makeOptions();
+            if (options!=null){
+              if (!getDialogProvider(mindMapPanel).msgOkCancel(exp.getName(), options)){
+                return;
+              }
+            }
+            exp.doExport(mindMapPanel, options, null);
           }
           catch (Exception ex) {
             LOGGER.error("Error during map export", ex); //NOI18N
@@ -1222,6 +1228,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   @Override
   public void msgWarn (final String text) {
     NbUtils.msgWarn(text);
+  }
+
+  @Override
+  public boolean msgOkCancel (String title, JComponent component) {
+    return NbUtils.msgComponentOkCancel(title, component);
   }
 
   @Override

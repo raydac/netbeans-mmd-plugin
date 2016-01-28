@@ -39,7 +39,7 @@ import javax.swing.UIManager;
 public class Utils {
 
   ;
-  private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
   private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
 
@@ -131,7 +131,7 @@ public class Utils {
         result = new Color(Integer.parseInt(str.substring(1), 16), hasAlpha);
       }
       catch (NumberFormatException ex) {
-        logger.warn(String.format("Can't convert %s to color", str));
+        LOGGER.warn(String.format("Can't convert %s to color", str));
       }
     }
     return result;

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -199,7 +200,7 @@ public class MDExporter extends AbstractMindMapExporter {
   }
 
   @Override
-  public void doExport(final MindMapPanel panel, final OutputStream out) throws IOException {
+  public void doExport(final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
     final State state = new State();
 
     state.append("<!--")//NOI18N

@@ -76,6 +76,19 @@ public enum MindMapUtils {;
     removeCollapseAttrIfNoChildren(map == null ? null : map.getRoot());
   }
   
+  public static void removeCollapseAttr(final MindMap map){
+    _removeCollapseAttr(map.getRoot());
+  }
+  
+  private static void _removeCollapseAttr(final Topic topic){
+    topic.setAttribute(ATTR_COLLAPSED.getText(), null);
+    if (topic.hasChildren()){
+      for(final Topic ch : topic.getChildren()){
+        _removeCollapseAttr(ch);
+      }
+    }
+  }
+  
   public static void removeCollapseAttrIfNoChildren(final Topic topic) {
     if (topic != null) {
       if (!topic.hasChildren()) {

@@ -16,6 +16,7 @@
 package com.igormaznitsa.mindmap.swing.panel;
 
 import java.io.File;
+import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 
 public interface DialogProvider {
@@ -23,6 +24,7 @@ public interface DialogProvider {
   void msgInfo(String text);
   void msgWarn(String text);
   boolean msgConfirmOkCancel(String title, String question);
+  boolean msgOkCancel(String title, JComponent component);
   boolean msgConfirmYesNo(String title, String question);
   Boolean msgConfirmYesNoCancel(String title, final String question);
   File msgSaveFileDialog(String id, String title, File defaultFolder, boolean filesnly, FileFilter fileFilter, String approveButtonText);

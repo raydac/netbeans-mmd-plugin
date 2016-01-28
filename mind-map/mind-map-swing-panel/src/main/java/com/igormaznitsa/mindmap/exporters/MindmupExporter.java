@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -285,7 +286,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
   }
 
   @Override
-  public void doExport(final MindMapPanel panel, final OutputStream out) throws IOException {
+  public void doExport(final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
     final State state = new State();
     writeRoot(state, panel.getConfiguration(), panel.getModel().getRoot());
 
