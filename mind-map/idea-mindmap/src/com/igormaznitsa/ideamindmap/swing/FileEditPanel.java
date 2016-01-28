@@ -23,6 +23,7 @@ import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.intellij.openapi.vfs.LocalFileSystem;
 
 import javax.swing.JComponent;

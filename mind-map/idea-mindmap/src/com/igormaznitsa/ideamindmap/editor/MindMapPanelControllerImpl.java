@@ -16,7 +16,7 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
-import com.igormaznitsa.ideamindmap.print.IdeaMMDPrintPanelController;
+import com.igormaznitsa.ideamindmap.print.IdeaMMDPrintPanelAdaptor;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
@@ -356,7 +356,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        final MMDPrintPanel panel = new MMDPrintPanel(new IdeaMMDPrintPanelController(getEditor().getProject()), getEditor().getMindMapPanel());
+        final MMDPrintPanel panel = new MMDPrintPanel(new IdeaMMDPrintPanelAdaptor(getEditor().getProject()), getEditor().getMindMapPanel());
         IdeaUtils.plainMessageClose(getEditor().getProject(),"Print mind map",panel);
       }
     });

@@ -19,6 +19,7 @@ import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 
 import javax.swing.JComponent;
 import javax.swing.event.DocumentEvent;
