@@ -1,8 +1,19 @@
-package com.igormaznitsa.ideamindmap.print;
-
-import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
-import com.igormaznitsa.mindmap.print.PrintPage;
-import com.intellij.ui.components.JBPanel;
+/*
+ * Copyright 2015-2016 Igor Maznitsa.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.igormaznitsa.mindmap.print;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,22 +21,27 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
+import javax.swing.JPanel;
 
-class Pages extends JBPanel {
+class Pages extends JPanel {
+
+  private static final long serialVersionUID = -6728277837828116266L;
 
   private final MMDPrintPanel parent;
-
+  
+  
   private static final int INTERVAL_X = 25;
   private static final int INTERVAL_Y = 25;
 
   private static final int SHADOW_X = 10;
   private static final int SHADOW_Y = 10;
 
-  public Pages(final MMDPrintPanel parent) {
+  public Pages (final MMDPrintPanel parent) {
     this.parent = parent;
   }
 
-  public Dimension getPreferredSize() {
+  @Override
+  public Dimension getPreferredSize () {
     final PrintPage[][] pages = this.parent.getPages();
     final PageFormat thePageFormat = this.parent.getPageFormat();
     final double scale = this.parent.getScale();
@@ -46,17 +62,20 @@ class Pages extends JBPanel {
     return new Dimension((int) Math.round(width * scale), (int) Math.round(height * scale));
   }
 
-  public Dimension getMinimumSize() {
+  @Override
+  public Dimension getMinimumSize () {
     return this.getPreferredSize();
   }
 
-  public Dimension getMaximumSize() {
+  @Override
+  public Dimension getMaximumSize () {
     return this.getPreferredSize();
   }
 
-  @Override public void paint(final Graphics g) {
+  @Override
+  public void paint (final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
-    gfx.setColor(IdeaUtils.isDarkTheme() ? Color.DARK_GRAY : Color.LIGHT_GRAY);
+    gfx.setColor(parent.isDarkTheme() ? Color.DARK_GRAY : Color.LIGHT_GRAY);
     final Dimension size = getSize();
     gfx.fillRect(0, 0, size.width, size.height);
 

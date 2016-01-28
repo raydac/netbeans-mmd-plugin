@@ -24,7 +24,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 public class MMDPrint {
@@ -36,7 +35,7 @@ public class MMDPrint {
   private static final double SMALL_SCALING_THRESHOLD = 0.20d;
   private static final double SCALE_RATIO_THRESHOLD = 0.20d;
 
-  public MMDPrint(final MindMapPanel panel, final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
+  public MMDPrint (final MindMapPanel panel, final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
     LOGGER.info(String.format("Request to prepare print pages for %dx%d with scale %f", paperWidthInPixels, paperHeightInPixels, pageZoomFactor));
 
     if (panel == null || paperWidthInPixels <= 0 || paperHeightInPixels <= 0) {
@@ -57,7 +56,7 @@ public class MMDPrint {
       cfg.setCollapsatorBorderColor(Color.black);
       cfg.setCollapsatorBackgroundColor(Color.white);
       cfg.setJumpLinkColor(Color.DARK_GRAY);
-      
+
       cfg.setElementBorderWidth(1.5f);
       cfg.setCollapsatorBorderWidth(1.0f);
       cfg.setConnectorWidth(2.0f);
@@ -113,20 +112,20 @@ public class MMDPrint {
 
             this.pages[pageY][pageX] = new PrintPage() {
               @Override
-              public void print(final Graphics g) {
+              public void print (final Graphics g) {
                 final Graphics2D gfx = (Graphics2D) g.create();
                 Utils.prepareGraphicsForQuality(gfx);
                 try {
                   final int xoffset = paperWidthInPixels * pageX;
                   final int yoffset = paperHeightInPixels * pageY;
 
-                  int drawx = - xoffset;
+                  int drawx = -xoffset;
                   int drawy = -yoffset;
-                  
+
                   if (centerX) {
                     drawx = (paperWidthInPixels - theImage.getWidth()) / 2;
                   }
-                  
+
                   if (centerY) {
                     drawy = (paperHeightInPixels - theImage.getHeight()) / 2;
                   }
@@ -149,7 +148,7 @@ public class MMDPrint {
         this.pages = new PrintPage[][]{{
           new PrintPage() {
             @Override
-            public void print(final Graphics g) {
+            public void print (final Graphics g) {
               final Graphics2D gfx = (Graphics2D) g.create();
               Utils.prepareGraphicsForQuality(gfx);
               try {
@@ -168,7 +167,7 @@ public class MMDPrint {
     }
   }
 
-  public PrintPage[][] getPages() {
+  public PrintPage[][] getPages () {
     return this.pages;
   }
 }

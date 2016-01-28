@@ -26,7 +26,9 @@ public enum Icons {
   ICO_MARKDOWN("md16.png"), 
   ICO_MINDMUP("mup16.png"), 
   ICO_PNG("png16.png"), 
-  ICO_TXT("txt16.png");
+  ICO_TXT("txt16.png"),
+  ICO_PRINTER("printer16.png"),
+  ICO_PAGE("page16.png");
 
   private final ImageIcon icon;
 

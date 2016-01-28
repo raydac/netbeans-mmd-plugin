@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class Utils {
 
@@ -49,6 +50,20 @@ public class Utils {
     RENDERING_HINTS.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
     RENDERING_HINTS.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
     RENDERING_HINTS.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+  }
+
+  public static int calculateColorBrightness (final Color color) {
+    return (int) Math.sqrt(color.getRed() * color.getRed() * .241d + color.getGreen() * color.getGreen() * .691d + color.getBlue() * color.getBlue() * .068d);
+  }
+
+  public static boolean isDarkTheme () {
+    final Color panelBack = UIManager.getColor("Panel.background");
+    if (panelBack == null) {
+      return false;
+    }
+    else {
+      return calculateColorBrightness(panelBack) < 150;
+    }
   }
 
   public static void prepareGraphicsForQuality (final Graphics2D gfx) {

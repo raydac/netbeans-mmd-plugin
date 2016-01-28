@@ -16,7 +16,7 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
-import com.igormaznitsa.ideamindmap.print.MMDPrintPanel;
+import com.igormaznitsa.ideamindmap.print.IdeaMMDPrintPanelController;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
@@ -37,6 +37,7 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapConfigListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -52,20 +53,13 @@ import com.intellij.openapi.ui.JBPopupMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-import javax.swing.JWindow;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
 import java.io.File;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -362,7 +356,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        final MMDPrintPanel panel = new MMDPrintPanel(getEditor().getProject(), getEditor().getMindMapPanel());
+        final MMDPrintPanel panel = new MMDPrintPanel(new IdeaMMDPrintPanelController(getEditor().getProject()), getEditor().getMindMapPanel());
         IdeaUtils.plainMessageClose(getEditor().getProject(),"Print mind map",panel);
       }
     });
