@@ -19,11 +19,18 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import java.awt.Dimension;
 import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 
-public class DefaultMMDPrintPanelController implements MMDPrintPanel.Controller {
+public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMMDPrintPanelController.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMMDPrintPanelAdaptor.class);
   
   @Override
   public void startBackgroundTask (final MMDPrintPanel source, final String name, final Runnable task) {
@@ -49,5 +56,41 @@ public class DefaultMMDPrintPanelController implements MMDPrintPanel.Controller 
   @Override
   public void onPrintTaskStarted (final MMDPrintPanel source) {
   }
+
+  @Override
+  public Dimension getPreferredSizeOfPanel (final MMDPrintPanel source) {
+    return new Dimension(600, 450);
+  }
+
+  @Override
+  public JPanel makePanel (final MMDPrintPanel source) {
+    return new JPanel();
+  }
+
+  @Override
+  public JScrollPane makeScrollPane (final MMDPrintPanel source) {
+    return new JScrollPane();
+  }
+
+  @Override
+  public JButton makeButton (final MMDPrintPanel source, final String text, final Icon icon) {
+    return new JButton(text, icon);
+  }
+
+  @Override
+  public JToolBar makeToolBar (final MMDPrintPanel source, final int orientation) {
+    return new JToolBar(orientation);
+  }
+
+  @Override
+  public JComboBox makeComboBox (final MMDPrintPanel source, final String[] values) {
+    return new JComboBox(values);
+  }
+
+  @Override
+  public JCheckBox makeCheckBox (final MMDPrintPanel source, final String text, final boolean selected) {
+    return new JCheckBox(text, selected);
+  }
+  
   
 }
