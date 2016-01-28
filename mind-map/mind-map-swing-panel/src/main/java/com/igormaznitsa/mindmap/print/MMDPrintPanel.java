@@ -27,13 +27,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -56,14 +55,18 @@ public class MMDPrintPanel extends JPanel {
     PRINTER,
     PAGE
   }
-  
+
   public interface Controller {
-    void startBackgroundTask(MMDPrintPanel source, String name, Runnable task);
-    boolean isDarkTheme(MMDPrintPanel source);
-    Icon getIcon(MMDPrintPanel source, IconId iconId);
-    void onPrintTaskStarted(MMDPrintPanel source);
+
+    void startBackgroundTask (MMDPrintPanel source, String name, Runnable task);
+
+    boolean isDarkTheme (MMDPrintPanel source);
+
+    Icon getIcon (MMDPrintPanel source, IconId iconId);
+
+    void onPrintTaskStarted (MMDPrintPanel source);
   }
-  
+
   private static final long serialVersionUID = -2588424836865316862L;
 
   protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
@@ -98,63 +101,67 @@ public class MMDPrintPanel extends JPanel {
     buttonPrint.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed (final ActionEvent e) {
-        final AtomicReference<PrintPage[][]> pages = new AtomicReference<PrintPage[][]>();
-
+        pageFormat = printerJob.getPageFormat(null);
+        splitToPagesForFormat();
+        final PageFormat format = pageFormat;
+        final int numOfPages = countPages();
         final boolean drawBorder = checkBoxDrawBorder.isSelected();
         
-        printerJob.setPrintable(new Printable() {
-          private List<PrintPage> listOfPages = null;
+        printerJob.setPageable(new Pageable() {
+          @Override
+          public int getNumberOfPages () {
+            return numOfPages;
+          }
 
           @Override
-          public int print (final Graphics graphics, final PageFormat format, final int pageIndex) throws PrinterException {
-            final Graphics2D gfx = (Graphics2D)graphics;
-            
-            if (this.listOfPages == null) {
-              this.listOfPages = null;
-              pages.set(new MMDPrint(mmdPanel, (int) format.getImageableWidth(), (int) format.getImageableHeight(), 1.0d).getPages());
-            }
+          public PageFormat getPageFormat (final int pageIndex) throws IndexOutOfBoundsException {
+            final PrintPage thepage = findPageForIndex(pageIndex);
+            if (thepage == null) throw new IndexOutOfBoundsException();
+            return format;
+          }
 
-            if (this.listOfPages == null) {
-              this.listOfPages = new ArrayList<PrintPage>();
-              for (final PrintPage[] row : pages.get()) {
-                for (final PrintPage p : row) {
-                  listOfPages.add(p);
+          @Override
+          public Printable getPrintable (final int pageIndex) throws IndexOutOfBoundsException {
+            final PrintPage thePage = findPageForIndex(pageIndex);
+            if (thePage == null) throw new IndexOutOfBoundsException();
+            return new Printable() {
+              @Override
+              public int print (final Graphics graphics, final PageFormat format, final int pageIndex) throws PrinterException {
+                final Graphics2D gfx = (Graphics2D) graphics;
+
+                if (thePage == null) {
+                  return Printable.NO_SUCH_PAGE;
+                }
+                else {
+                  gfx.translate((int) format.getImageableX(), (int) format.getImageableY());
+                  thePage.print(gfx);
+
+                  if (drawBorder) {
+                    final Stroke stroke = gfx.getStroke();
+                    gfx.setStroke(BORDER_STYLE);
+                    gfx.draw(new Rectangle2D.Double(0d, 0d, format.getImageableWidth(), format.getImageableHeight()));
+                    gfx.setColor(BORDER_COLOR);
+                    gfx.setStroke(stroke);
+                  }
+                  gfx.translate(-(int) format.getImageableX(), -(int) format.getImageableY());
+                  return Printable.PAGE_EXISTS;
                 }
               }
-            }
-
-            if (pageIndex < 0 || pageIndex >= this.listOfPages.size()) {
-              return Printable.NO_SUCH_PAGE;
-            }
-            else {
-              final PrintPage page = this.listOfPages.get(pageIndex);
-              gfx.translate((int) format.getImageableX(), (int) format.getImageableY());
-              page.print(gfx);
-              
-              if (drawBorder){
-                final Stroke stroke = gfx.getStroke();
-                gfx.setStroke(BORDER_STYLE);
-                gfx.draw(new Rectangle2D.Double(0d,0d,format.getImageableWidth(),format.getImageableHeight()));
-                gfx.setColor(BORDER_COLOR);
-                gfx.setStroke(stroke);
-              }
-              gfx.translate(-(int) format.getImageableX(), -(int) format.getImageableY());
-              
-              return Printable.PAGE_EXISTS;
-            }
+            };
           }
-        }, pageFormat);
+        });
 
         if (printerJob.printDialog()) {
           controller.startBackgroundTask(theInstance, BUNDLE.getString("MMDPrintPanel.JobTitle"), new Runnable() {
             @Override
             public void run () {
-              try{
+              try {
                 LOGGER.info("Start print job");
                 printerJob.print();
-              }catch(PrinterException ex){
+              }
+              catch (PrinterException ex) {
                 LOGGER.error("Print error", ex);
-                throw new RuntimeException("Error during print job",ex);
+                throw new RuntimeException("Error during print job", ex);
               }
             }
           });
@@ -202,7 +209,7 @@ public class MMDPrintPanel extends JPanel {
     comboBoxScale.setMaximumSize(comboBoxScale.getPreferredSize());
     toolBar.addSeparator();
     toolBar.add(comboBoxScale);
-    
+
     toolBar.addSeparator();
     checkBoxDrawBorder = new JCheckBox(BUNDLE.getString("MMDPrintPanel.DrawBorder"), true);
     checkBoxDrawBorder.addActionListener(new ActionListener() {
@@ -212,7 +219,7 @@ public class MMDPrintPanel extends JPanel {
       }
     });
     toolBar.add(checkBoxDrawBorder);
-    
+
     this.add(toolBar, BorderLayout.NORTH);
 
     this.pageFormat = printerJob.defaultPage();
@@ -226,8 +233,29 @@ public class MMDPrintPanel extends JPanel {
     return this.pageFormat;
   }
 
+  int countPages () {
+    int result = 0;
+    for (final PrintPage[] p : this.pages) {
+      result += p.length;
+    }
+    return result;
+  }
+
   PrintPage[][] getPages () {
     return this.pages;
+  }
+
+  PrintPage findPageForIndex (final int value) {
+    int i = 0;
+    for (final PrintPage[] row : this.pages) {
+      for (final PrintPage page : row) {
+        if (i == value) {
+          return page;
+        }
+        i++;
+      }
+    }
+    return null;
   }
 
   double getScale () {
@@ -240,10 +268,10 @@ public class MMDPrintPanel extends JPanel {
     this.pages = printer.getPages();
   }
 
-  boolean isDrawBorder(){
+  boolean isDrawBorder () {
     return this.checkBoxDrawBorder.isSelected();
   }
-  
+
   boolean isDarkTheme () {
     return this.controller.isDarkTheme(this);
   }
