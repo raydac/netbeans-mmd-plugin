@@ -77,30 +77,6 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
     return;
   }
 
-  @Override public JPanel makePanel(final MMDPrintPanel mmdPrintPanel) {
-    return new JBPanel();
-  }
-
-  @Override public JButton makeButton(final MMDPrintPanel mmdPrintPanel, final String s, final Icon icon) {
-    return new JButton(s,icon);
-  }
-
-  @Override public JToolBar makeToolBar(final MMDPrintPanel mmdPrintPanel, final int i) {
-    return new JToolBar(i);
-  }
-
-  @Override public JComboBox makeComboBox(final MMDPrintPanel mmdPrintPanel, final String[] strings) {
-    return new ComboBox(strings);
-  }
-
-  @Override public JCheckBox makeCheckBox(final MMDPrintPanel mmdPrintPanel, final String s, final boolean b) {
-    return new JBCheckBox(s, b);
-  }
-
-  @Override public JScrollPane makeScrollPane(final MMDPrintPanel mmdPrintPanel) {
-    return new JBScrollPane();
-  }
-
   @Override public Dimension getPreferredSizeOfPanel(final MMDPrintPanel mmdPrintPanel) {
     return new Dimension(600, 450);
   }

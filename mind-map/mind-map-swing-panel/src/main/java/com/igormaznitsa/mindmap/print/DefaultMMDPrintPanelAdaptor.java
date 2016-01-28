@@ -61,36 +61,4 @@ public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
   public Dimension getPreferredSizeOfPanel (final MMDPrintPanel source) {
     return new Dimension(600, 450);
   }
-
-  @Override
-  public JPanel makePanel (final MMDPrintPanel source) {
-    return new JPanel();
-  }
-
-  @Override
-  public JScrollPane makeScrollPane (final MMDPrintPanel source) {
-    return new JScrollPane();
-  }
-
-  @Override
-  public JButton makeButton (final MMDPrintPanel source, final String text, final Icon icon) {
-    return new JButton(text, icon);
-  }
-
-  @Override
-  public JToolBar makeToolBar (final MMDPrintPanel source, final int orientation) {
-    return new JToolBar(orientation);
-  }
-
-  @Override
-  public JComboBox makeComboBox (final MMDPrintPanel source, final String[] values) {
-    return new JComboBox(values);
-  }
-
-  @Override
-  public JCheckBox makeCheckBox (final MMDPrintPanel source, final String text, final boolean selected) {
-    return new JCheckBox(text, selected);
-  }
-  
-  
 }

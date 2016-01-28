@@ -17,6 +17,8 @@ package com.igormaznitsa.nbmindmap.nb.swing;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -51,6 +53,8 @@ import org.openide.text.NbDocument;
 
 public final class PlainTextEditor extends javax.swing.JPanel implements CaretListener {
 
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryService.findInstance();
+  
   private enum Wrapping {
 
     NONE("none", "off"),
@@ -119,7 +123,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
   public PlainTextEditor (final String text) {
     initComponents();
 
-    final JEditorPane editor = new JEditorPane();
+    final JEditorPane editor = UI_COMPO_FACTORY.makeEditorPane();
     editor.setEditorKit(getEditorKit());
     this.document = Utilities.getDocument(editor);
 
@@ -143,7 +147,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       this.lastEditor.removeCaretListener(this);
     }
 
-    this.lastEditor = new JEditorPane();
+    this.lastEditor = UI_COMPO_FACTORY.makeEditorPane();
     this.lastEditor.setEditorKit(getEditorKit());
     this.lastEditor.setDocument(document);
 
@@ -155,7 +159,9 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       result = ce.createEditor(this.lastEditor);
     }
     else {
-      result = new JScrollPane(this.lastEditor);
+      final JScrollPane scroll = UI_COMPO_FACTORY.makeScrollPane();
+      scroll.setViewportView(this.lastEditor);
+      result = scroll;
     }
 
     this.caretUpdate(null);

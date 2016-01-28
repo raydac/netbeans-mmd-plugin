@@ -19,6 +19,8 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
 import java.awt.BasicStroke;
 
 import javax.swing.JButton;
@@ -40,6 +42,7 @@ import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -67,12 +70,6 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     void onPrintTaskStarted (MMDPrintPanel source);
     
-    JPanel makePanel(MMDPrintPanel source);
-    JButton makeButton(MMDPrintPanel source, String text, Icon icon);
-    JToolBar makeToolBar(MMDPrintPanel source, int orientation);
-    JComboBox makeComboBox(MMDPrintPanel source, String [] values);
-    JCheckBox makeCheckBox(MMDPrintPanel source, String text, boolean selected);
-    JScrollPane makeScrollPane(MMDPrintPanel source);
     Dimension getPreferredSizeOfPanel(MMDPrintPanel source);
   }
 
@@ -80,7 +77,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDPrintPanel.class);
-
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryService.findInstance();
+  
   private PageFormat pageFormat;
   private final Pages previewContainer;
   private double pageZoomFactor;
@@ -98,13 +96,16 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     super.setPreferredSize(this.adaptor.getPreferredSizeOfPanel(this));
 
-    final JScrollPane scrollPane = new JScrollPane();
+    final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
     printerJob.setJobName("MMD file");
 
-    final JToolBar toolBar = this.adaptor.makeToolBar(this, JToolBar.HORIZONTAL);
+    final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
+    toolBar.setOrientation(JToolBar.HORIZONTAL);
     toolBar.setFloatable(false);
-    final JButton buttonPrint = this.adaptor.makeButton(this, BUNDLE.getString("MMDPrintPanel.PrintPages"), this.adaptor.getIcon(this, IconId.PRINTER));
+    final JButton buttonPrint = UI_COMPO_FACTORY.makeButton();
+    buttonPrint.setText(BUNDLE.getString("MMDPrintPanel.PrintPages"));
+    buttonPrint.setIcon(this.adaptor.getIcon(this, IconId.PRINTER));
     
     final MMDPrintPanel theInstance = this;
 
@@ -181,7 +182,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     });
     toolBar.add(buttonPrint);
 
-    final JButton buttonPrintOptions = this.adaptor.makeButton(this, BUNDLE.getString("MMDPrintPanel.PageSetup"), this.adaptor.getIcon(this, IconId.PAGE));
+    final JButton buttonPrintOptions = UI_COMPO_FACTORY.makeButton();
+    buttonPrintOptions.setText(BUNDLE.getString("MMDPrintPanel.PageSetup"));
+    buttonPrintOptions.setIcon(this.adaptor.getIcon(this, IconId.PAGE));
     buttonPrintOptions.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed (final ActionEvent e) {
@@ -201,7 +204,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     final String[] scales = scalesList.toArray(new String[scalesList.size()]);
     this.pageZoomFactor = 0.1d;
-    final JComboBox comboBoxScale = this.adaptor.makeComboBox(this, scales);
+    final JComboBox comboBoxScale = UI_COMPO_FACTORY.makeComboBox();
+    comboBoxScale.setModel(new DefaultComboBoxModel(scales));
     comboBoxScale.setEditable(false);
 
     comboBoxScale.addActionListener(new ActionListener() {
@@ -219,7 +223,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.add(comboBoxScale);
 
     toolBar.addSeparator();
-    checkBoxDrawBorder = this.adaptor.makeCheckBox(this, BUNDLE.getString("MMDPrintPanel.DrawBorder"), true);
+    checkBoxDrawBorder = UI_COMPO_FACTORY.makeCheckBox();
+    checkBoxDrawBorder.setSelected(true);
+    checkBoxDrawBorder.setText(BUNDLE.getString("MMDPrintPanel.DrawBorder"));
     checkBoxDrawBorder.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed (ActionEvent e) {

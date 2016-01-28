@@ -32,6 +32,8 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
 import com.igormaznitsa.nbmindmap.nb.print.PrintPageAdapter;
 import com.igormaznitsa.nbmindmap.nb.swing.ColorAttributePanel;
 import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
@@ -108,6 +110,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDGraphEditor.class);
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryService.findInstance();
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
@@ -123,7 +126,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   private boolean dragAcceptableType = false;
 
-  private final JToolBar toolBar = new JToolBar();
+  private final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
 
   private static final WeakSet<MMDGraphEditor> allEditors = new WeakSet<MMDGraphEditor>();
 
@@ -136,7 +139,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     this.editorSupport = support;
 
-    this.mainScrollPane = new JScrollPane();
+    this.mainScrollPane = UI_COMPO_FACTORY.makeScrollPane();
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
 
@@ -944,10 +947,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public JPopupMenu makePopUpForMindMapPanel (final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
-    final JPopupMenu result = new JPopupMenu();
+    final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
 
     if (element != null) {
-      final JMenuItem editText = new JMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miEditText"), Icons.EDITTEXT.getIcon());
+      final JMenuItem editText = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miEditText"), Icons.EDITTEXT.getIcon());
       editText.addActionListener(new ActionListener() {
 
         @Override
@@ -958,7 +961,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
       result.add(editText);
 
-      final JMenuItem addChild = new JMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miAddChild"), Icons.ADD.getIcon());
+      final JMenuItem addChild = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miAddChild"), Icons.ADD.getIcon());
       addChild.addActionListener(new ActionListener() {
 
         @Override
@@ -971,7 +974,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
 
     if (element != null || this.mindMapPanel.hasSelectedTopics()) {
-      final JMenuItem deleteItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? BUNDLE.getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") : BUNDLE.getString("MMDGraphEditor.makePopUp.miRemoveTheTopic"), Icons.DELETE.getIcon());
+      final JMenuItem deleteItem = UI_COMPO_FACTORY.makeMenuItem(this.mindMapPanel.hasSelectedTopics() ? BUNDLE.getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") : BUNDLE.getString("MMDGraphEditor.makePopUp.miRemoveTheTopic"), Icons.DELETE.getIcon());
       deleteItem.addActionListener(new ActionListener() {
 
         @Override
@@ -991,7 +994,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     if (element != null || this.mindMapPanel.hasOnlyTopicSelected()) {
       final Topic theTopic = this.mindMapPanel.getFirstSelected() == null ? (element != null ? element.getModel() : null) : this.mindMapPanel.getFirstSelected();
       if (theTopic != null && theTopic.getParent() != null) {
-        final JMenuItem cloneItem = new JMenuItem(this.mindMapPanel.hasSelectedTopics() ? BUNDLE.getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") : BUNDLE.getString("MMDGraphEditor.makePopUp.miCloneTheTopic"), Icons.CLONE.getIcon());
+        final JMenuItem cloneItem = UI_COMPO_FACTORY.makeMenuItem(this.mindMapPanel.hasSelectedTopics() ? BUNDLE.getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") : BUNDLE.getString("MMDGraphEditor.makePopUp.miCloneTheTopic"), Icons.CLONE.getIcon());
         cloneItem.addActionListener(new ActionListener() {
 
           @Override
@@ -1006,12 +1009,12 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     if (element != null) {
       if (result.getComponentCount() > 0) {
-        result.add(new JSeparator());
+        result.add(UI_COMPO_FACTORY.makeMenuSeparator());
       }
 
       final Topic topic = element.getModel();
 
-      final JMenuItem editText = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditNote") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddNote"), Icons.NOTE.getIcon());
+      final JMenuItem editText = UI_COMPO_FACTORY.makeMenuItem(topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditNote") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddNote"), Icons.NOTE.getIcon());
       editText.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed (final ActionEvent e) {
@@ -1022,7 +1025,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
       result.add(editText);
 
-      final JMenuItem editLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditURI") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddURI"), Icons.URL.getIcon());
+      final JMenuItem editLink = UI_COMPO_FACTORY.makeMenuItem(topic.getExtras().containsKey(Extra.ExtraType.LINK) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditURI") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddURI"), Icons.URL.getIcon());
       editLink.addActionListener(new ActionListener() {
 
         @Override
@@ -1034,7 +1037,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
       result.add(editLink);
 
-      final JMenuItem editTopicLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.TOPIC) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditTransition") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddTransition"), Icons.TOPIC.getIcon());
+      final JMenuItem editTopicLink = UI_COMPO_FACTORY.makeMenuItem(topic.getExtras().containsKey(Extra.ExtraType.TOPIC) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditTransition") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddTransition"), Icons.TOPIC.getIcon());
       editTopicLink.addActionListener(new ActionListener() {
 
         @Override
@@ -1046,7 +1049,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
       result.add(editTopicLink);
 
-      final JMenuItem editFileLink = new JMenuItem(topic.getExtras().containsKey(Extra.ExtraType.FILE) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditFile") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddFile"), Icons.FILE.getIcon());
+      final JMenuItem editFileLink = UI_COMPO_FACTORY.makeMenuItem(topic.getExtras().containsKey(Extra.ExtraType.FILE) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditFile") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddFile"), Icons.FILE.getIcon());
       editFileLink.addActionListener(new ActionListener() {
 
         @Override
@@ -1061,7 +1064,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     if (element != null || source.hasSelectedTopics()) {
       if (result.getComponentCount() > 0) {
-        result.add(new JSeparator());
+        result.add(UI_COMPO_FACTORY.makeMenuSeparator());
       }
 
       final Topic[] topics;
@@ -1075,7 +1078,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         name = BUNDLE.getString("MMDGraphEditor.makePopUp.miColorsForTopic");
       }
 
-      final JMenuItem colors = new JMenuItem(name, Icons.COLORS.getIcon());
+      final JMenuItem colors = UI_COMPO_FACTORY.makeMenuItem(name, Icons.COLORS.getIcon());
       colors.addActionListener(new ActionListener() {
 
         @Override
@@ -1088,10 +1091,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
 
     if (result.getComponentCount() > 0) {
-      result.add(new JSeparator());
+      result.add(UI_COMPO_FACTORY.makeMenuSeparator());
     }
 
-    final JMenuItem expandAll = new JMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miExpandAll"), Icons.EXPANDALL.getIcon());
+    final JMenuItem expandAll = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miExpandAll"), Icons.EXPANDALL.getIcon());
     expandAll.addActionListener(new ActionListener() {
 
       @Override
@@ -1101,7 +1104,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     });
 
-    final JMenuItem collapseAll = new JMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miCollapseAll"), Icons.COLLAPSEALL.getIcon());
+    final JMenuItem collapseAll = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miCollapseAll"), Icons.COLLAPSEALL.getIcon());
     collapseAll.addActionListener(new ActionListener() {
 
       @Override
@@ -1111,7 +1114,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     });
 
-    final JCheckBoxMenuItem showJumps = new JCheckBoxMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miShowJumps"), Icons.SHOWJUMPS.getIcon(), source.isShowJumps());
+    final JCheckBoxMenuItem showJumps = UI_COMPO_FACTORY.makeCheckboxMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miShowJumps"), Icons.SHOWJUMPS.getIcon(), source.isShowJumps());
     showJumps.addActionListener(new ActionListener() {
 
       @Override
@@ -1125,15 +1128,14 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     result.add(collapseAll);
 
     if (result.getComponentCount() > 0) {
-      result.add(new JSeparator());
+      result.add(UI_COMPO_FACTORY.makeMenuSeparator());
     }
-    final JMenu exportMenu = new JMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
+    final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
     exportMenu.setIcon(Icons.EXPORT.getIcon());
     for (final Exporters e : Exporters.values()) {
       final AbstractMindMapExporter exp = e.getExporter();
-      final JMenuItem item = new JMenuItem(exp.getName());
+      final JMenuItem item = UI_COMPO_FACTORY.makeMenuItem(exp.getName(),exp.getIcon());
       item.setToolTipText(exp.getReference());
-      item.setIcon(exp.getIcon());
       item.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed (final ActionEvent e) {
@@ -1150,9 +1152,9 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
     result.add(exportMenu);
 
-    result.add(new JSeparator());
+    result.add(UI_COMPO_FACTORY.makeMenuSeparator());
 
-    JMenuItem optionsMenu = new JMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miOptions"), Icons.OPTIONS.getIcon());
+    JMenuItem optionsMenu = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miOptions"), Icons.OPTIONS.getIcon());
     optionsMenu.addActionListener(new ActionListener() {
 
       @Override
@@ -1163,7 +1165,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     result.add(optionsMenu);
 
-    JMenuItem infoMenu = new JMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miAbout"), Icons.INFO.getIcon());
+    JMenuItem infoMenu = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miAbout"), Icons.INFO.getIcon());
     infoMenu.addActionListener(new ActionListener() {
 
       @Override

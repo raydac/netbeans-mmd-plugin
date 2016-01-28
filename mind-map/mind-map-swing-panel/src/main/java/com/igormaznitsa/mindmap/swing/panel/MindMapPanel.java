@@ -27,6 +27,8 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -58,8 +60,8 @@ public class MindMapPanel extends JPanel {
   public static final long serialVersionUID = 2783412123454232L;
 
   public static final String ATTR_SHOW_JUMPS = "showJumps";
-
-  private static final Logger logger = LoggerFactory.getLogger(MindMapPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanel.class);
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryService.findInstance();
   private final MindMapPanelController controller;
 
   private static final int ALL_SUPPORTED_MODIFIERS = KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
@@ -140,8 +142,8 @@ public class MindMapPanel extends JPanel {
 
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
 
-  private final JTextArea textEditor = new JTextArea();
-  private final JPanel textEditorPanel = new JPanel(new BorderLayout(0, 0));
+  private final JTextArea textEditor = UI_COMPO_FACTORY.makeTextArea();
+  private final JPanel textEditorPanel = UI_COMPO_FACTORY.makePanel();
   private transient AbstractElement elementUnderEdit = null;
   private transient int[] pathToPrevTopicBeforeEdit = null;
 
@@ -157,6 +159,7 @@ public class MindMapPanel extends JPanel {
 
   public MindMapPanel (final MindMapPanelController controller) {
     super(null);
+    this.textEditorPanel.setLayout(new BorderLayout(0, 0));
     this.controller = controller;
 
     this.config = new MindMapPanelConfig(controller.provideConfigForMindMapPanel(this), false);
@@ -363,7 +366,7 @@ public class MindMapPanel extends JPanel {
           }
         }
         catch (Exception ex) {
-          logger.error("Error during mousePressed()", ex);
+          LOGGER.error("Error during mousePressed()", ex);
         }
       }
 
@@ -410,7 +413,7 @@ public class MindMapPanel extends JPanel {
           }
         }
         catch (Exception ex) {
-          logger.error("Error during mouseReleased()", ex);
+          LOGGER.error("Error during mouseReleased()", ex);
         }
         finally {
           mouseDragSelection = null;

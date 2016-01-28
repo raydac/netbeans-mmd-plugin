@@ -19,8 +19,7 @@ import com.igormaznitsa.mindmap.model.logger.impl.JavaLoggerServiceImpl;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
-public class LoggerFactory {
-  ;
+public final class LoggerFactory {
   private static final LoggerService LOGGER_SERVICE;
 
   static {

@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.mindmap.print;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;

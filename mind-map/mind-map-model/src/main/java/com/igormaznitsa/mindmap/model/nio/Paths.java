@@ -22,8 +22,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
-public enum Paths {
-  ;
+public final class Paths {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Paths.class);
     
