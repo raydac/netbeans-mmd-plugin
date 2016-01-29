@@ -49,11 +49,11 @@ public class MoveElement extends AbstractElement {
         }
       }
       else {
-        logger.warn("Detected null as new file uri for rename refactoring"); //NOI18N
+        LOGGER.warn("Detected null as new file uri for rename refactoring"); //NOI18N
       }
     }
     catch (Exception ex) {
-      logger.error("Error during mind map refactoring", ex); //NOI18N
+      LOGGER.error("Error during mind map refactoring", ex); //NOI18N
       ErrorManager.getDefault().log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
     }
   }

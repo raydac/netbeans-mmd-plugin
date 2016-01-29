@@ -38,7 +38,7 @@ import org.openide.util.Lookup;
 
 public abstract class AbstractElement extends SimpleRefactoringElementImplementation {
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-  protected static final Logger logger = LoggerFactory.getLogger("MindMapRefactoringPlugin"); //NOI18N
+  protected static final Logger LOGGER = LoggerFactory.getLogger("MindMapRefactoringPlugin"); //NOI18N
 
   protected final File projectFolder;
   protected final MMapURI processedFile;
@@ -97,7 +97,7 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
       this.oldMindMapText = FileUtils.readFileToString(this.mindMapFile.asFile(), "UTF-8"); //NOI18N
     }
     catch (IOException ex) {
-      logger.error("Can't load mind map file", ex); //NOI18N
+      LOGGER.error("Can't load mind map file", ex); //NOI18N
       ErrorManager.getDefault().log(ErrorManager.ERROR, "Can't load mind map file during refactoring"); //NOI18N
     }
   }
@@ -109,7 +109,7 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
         FileUtils.writeStringToFile(this.mindMapFile.asFile(), this.oldMindMapText, "UTF-8"); //NOI18N
       }
       catch (IOException ex) {
-        logger.error("Can't undo old mind map text", ex); //NOI18N
+        LOGGER.error("Can't undo old mind map text", ex); //NOI18N
         throw new CannotUndoMindMapException(this.mindMapFile.asFile());
       }
     }

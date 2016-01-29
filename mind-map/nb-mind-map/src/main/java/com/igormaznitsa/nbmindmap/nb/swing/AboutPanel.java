@@ -28,7 +28,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
   private static final long serialVersionUID = -3231534203788095969L;
 
-  private static final Logger logger = LoggerFactory.getLogger(AboutPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AboutPanel.class);
   
   public AboutPanel() {
     initComponents();
@@ -54,7 +54,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     try{
       NbUtils.browseURI(new URI(href), false);
     }catch(Exception ex){
-      logger.error("Can't process link in 'About'", ex);
+      LOGGER.error("Can't process link in 'About'", ex);
     }
   }
 

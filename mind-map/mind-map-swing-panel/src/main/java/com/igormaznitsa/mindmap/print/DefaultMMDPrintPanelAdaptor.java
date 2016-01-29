@@ -21,12 +21,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Dimension;
 import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 
 public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
 

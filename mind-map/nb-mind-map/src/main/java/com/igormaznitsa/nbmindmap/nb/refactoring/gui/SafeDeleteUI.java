@@ -30,68 +30,68 @@ public class SafeDeleteUI extends AbstractMMDRefactoringUI {
 
   private final SafeDeleteRefactoring refactoring;
   private SafeDeletePanel panel;
-  private final String name;
-  private final FileObject  []files;
+  private final FileObject[] files;
   private final Lookup lookup;
-  
-  public SafeDeleteUI(final Lookup lookup, final FileObject [] files){
+
+  public SafeDeleteUI (final Lookup lookup, final FileObject[] files) {
     this.files = files;
     this.lookup = lookup;
-    this.name = files.length>1 ? Integer.toString(files.length) : files[0].getName();
-    this.refactoring = new SafeDeleteRefactoring(Lookups.fixed(ModelUtils.joinArrays(files,new Object[]{this})));
+    this.refactoring = new SafeDeleteRefactoring(Lookups.fixed(ModelUtils.joinArrays(files, new Object[]{this})));
   }
-  
+
   @Override
-  public String getName() {
+  public String getName () {
     return BUNDLE.getString("SafeDeleteUI.getName");
   }
 
   @Override
-  public String getDescription() {
+  public String getDescription () {
     final StringBuilder result = new StringBuilder();
-    for(final FileObject fo : this.files){
-      if (result.length()>0) result.append(","); //NOI18N
+    for (final FileObject fo : this.files) {
+      if (result.length() > 0) {
+        result.append(","); //NOI18N
+      }
       result.append(fo.getName());
     }
-    return String.format(BUNDLE.getString("SafeDeleteUI.getDescription"),result.toString());
+    return String.format(BUNDLE.getString("SafeDeleteUI.getDescription"), result.toString());
   }
 
   @Override
-  public boolean isQuery() {
+  public boolean isQuery () {
     return false;
   }
 
   @Override
-  public CustomRefactoringPanel getPanel(final ChangeListener parent) {
-    if (this.panel == null){
+  public CustomRefactoringPanel getPanel (final ChangeListener parent) {
+    if (this.panel == null) {
       this.panel = new SafeDeletePanel(this.lookup, files, parent);
     }
     return this.panel;
   }
 
   @Override
-  public Problem setParameters() {
+  public Problem setParameters () {
     return this.refactoring.checkParameters();
   }
 
   @Override
-  public Problem checkParameters() {
+  public Problem checkParameters () {
     return this.refactoring.checkParameters();
   }
 
   @Override
-  public boolean hasParameters() {
+  public boolean hasParameters () {
     return true;
   }
 
   @Override
-  public AbstractRefactoring getRefactoring() {
+  public AbstractRefactoring getRefactoring () {
     return this.refactoring;
   }
-  
+
   @Override
-  public HelpCtx getHelpCtx() {
+  public HelpCtx getHelpCtx () {
     return null;
   }
-  
+
 }

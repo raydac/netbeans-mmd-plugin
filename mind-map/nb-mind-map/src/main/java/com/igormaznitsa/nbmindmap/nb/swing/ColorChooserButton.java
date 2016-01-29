@@ -35,7 +35,7 @@ public final class ColorChooserButton extends JButton {
 
   private static final long serialVersionUID = -354752410805059103L;
   
-  private static final Logger logger = LoggerFactory.getLogger(ColorChooserButton.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ColorChooserButton.class);
   
   private Color value = null;
 
@@ -53,7 +53,7 @@ public final class ColorChooserButton extends JButton {
       protected void fireActionPerformed(ActionEvent e) {
         final PropertyEditor editor = PropertyEditorManager.findEditor(Color.class);
         if (editor == null) {
-          logger.error("Can't find registered color editor");
+          LOGGER.error("Can't find registered color editor");
           NbUtils.msgError("Can't find color editor! unexpected state! Contact developer!");
           return;
         }

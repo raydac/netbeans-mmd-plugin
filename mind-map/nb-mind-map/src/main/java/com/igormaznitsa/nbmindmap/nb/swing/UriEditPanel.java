@@ -26,15 +26,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.openide.util.ImageUtilities;
 
-/**
- *
- * @author Igor Maznitsa (http://www.igormaznitsa.com)
- */
 public final class UriEditPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -6683682013891751388L;
 
-  private static final Logger logger = LoggerFactory.getLogger(UriEditPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
 
   private static final ImageIcon IMAGE_OK = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/tick16.png"));
   private static final ImageIcon IMAGE_BAD = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/cross16.png"));
@@ -79,7 +75,7 @@ public final class UriEditPanel extends javax.swing.JPanel {
     else {
       try {
         final URI uri = URI.create(text);
-        if (uri!=null && uri.getScheme()!=null && uri.getHost()!=null) {
+        if (uri.getScheme()!=null && uri.getHost()!=null) {
           this.labelValidator.setIcon(IMAGE_OK);
         }
         else {
@@ -143,7 +139,7 @@ public final class UriEditPanel extends javax.swing.JPanel {
         NbUtils.browseURI(new URI(this.getText().trim()), false);
       }
       catch (URISyntaxException ex) {
-        logger.error("Can't start browser for URI syntax error", ex);
+        LOGGER.error("Can't start browser for URI syntax error", ex);
         Toolkit.getDefaultToolkit().beep();
       }
     }

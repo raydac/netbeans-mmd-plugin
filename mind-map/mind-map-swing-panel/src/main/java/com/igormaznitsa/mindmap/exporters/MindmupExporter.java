@@ -54,21 +54,21 @@ public class MindmupExporter extends AbstractMindMapExporter {
     private final int id;
     private final Topic topic;
 
-    public TopicData(final int uid, final int id, final Topic topic) {
+    public TopicData (final int uid, final int id, final Topic topic) {
       this.uid = uid;
       this.id = id;
       this.topic = topic;
     }
 
-    public int getUID() {
+    public int getUID () {
       return this.uid;
     }
 
-    public int getID() {
+    public int getID () {
       return id;
     }
 
-    public Topic getTopic() {
+    public Topic getTopic () {
       return this.topic;
     }
   }
@@ -79,10 +79,10 @@ public class MindmupExporter extends AbstractMindMapExporter {
     private final Map<String, TopicData> topicsWithId = new HashMap<String, TopicData>();
     private final List<TopicData> topicsContainsJump = new ArrayList<TopicData>();
 
-    public State() {
+    public State () {
     }
 
-    public void processTopic(final int uid, final int id, final Topic topic) {
+    public void processTopic (final int uid, final int id, final Topic topic) {
       final String topicUID = getTopicUid(topic);
       if (topicUID != null) {
         topicsWithId.put(topicUID, new TopicData(uid, id, topic));
@@ -94,55 +94,55 @@ public class MindmupExporter extends AbstractMindMapExporter {
       }
     }
 
-    public List<TopicData> getTopicsContainingJump() {
+    public List<TopicData> getTopicsContainingJump () {
       return this.topicsContainsJump;
     }
 
-    public TopicData findTopic(final ExtraTopic link) {
+    public TopicData findTopic (final ExtraTopic link) {
       return topicsWithId.get(link.getValue());
     }
 
-    public State startObj(final String key) {
+    public State startObj (final String key) {
       this.json = this.json.object(key);
       return this;
     }
 
-    public State startObj() {
+    public State startObj () {
       this.json = this.json.object();
       return this;
     }
 
-    public State startArray(final String key) {
+    public State startArray (final String key) {
       this.json = this.json.array(key);
       return this;
     }
 
-    public State set(final String key, final String value) {
-      this.json.value(key,value);
-      return this;
-    }
-
-    public State set(final String key, final int value) {
+    public State set (final String key, final String value) {
       this.json.value(key, value);
       return this;
     }
 
-    public State end() {
+    public State set (final String key, final int value) {
+      this.json.value(key, value);
+      return this;
+    }
+
+    public State end () {
       this.json = json.end();
       return this;
     }
 
     @Override
-    public String toString() {
+    public String toString () {
       return json.done();
     }
   }
 
-  private static String getTopicUid(final Topic topic) {
+  private static String getTopicUid (final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private int writeTopic(final State state, int id, final MindMapPanelConfig cfg, final Topic topic) {
+  private int writeTopic (final State state, int id, final MindMapPanelConfig cfg, final Topic topic) {
     state.startObj(Integer.toString(idCounter));
 
     state.processTopic(idCounter, id, topic);
@@ -161,7 +161,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     state.end();
 
     state.startObj("attr"); //NOI18N
-    state.startObj("style").set("background", Utils.color2html(getBackgroundColor(cfg, topic),false)).set("color", Utils.color2html(getTextColor(cfg, topic), false)).end(); //NOI18N
+    state.startObj("style").set("background", Utils.color2html(getBackgroundColor(cfg, topic), false)).set("color", Utils.color2html(getTextColor(cfg, topic), false)).end(); //NOI18N
 
     final String attachment = makeHtmlFromExtras(topic);
     if (attachment != null) {
@@ -177,7 +177,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     return id;
   }
 
-  private static String makeHtmlFromExtras(final Topic topic) {
+  private static String makeHtmlFromExtras (final Topic topic) {
     final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
     final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
@@ -205,9 +205,9 @@ public class MindmupExporter extends AbstractMindMapExporter {
     return result.toString();
   }
 
-  private void writeRoot(final State state, final MindMapPanelConfig cfg, final Topic root) {
+  private void writeRoot (final State state, final MindMapPanelConfig cfg, final Topic root) {
     state.startObj();
-    
+
     if (root == null) {
       state.set("title", ""); //NOI18N
     }
@@ -232,34 +232,34 @@ public class MindmupExporter extends AbstractMindMapExporter {
     }
     state.startObj("ideas"); //NOI18N
 
-      if (root != null) {
-        state.processTopic(0, 1, root);
-      }
+    if (root != null) {
+      state.processTopic(0, 1, root);
+    }
 
-      int id = 2;
-      for (final Topic right : rightChildren) {
-        id = writeTopic(state, id + 1, cfg, right);
-      }
+    int id = 2;
+    for (final Topic right : rightChildren) {
+      id = writeTopic(state, id + 1, cfg, right);
+    }
 
-      for (final Topic left : leftChildren) {
-        id = writeTopic(state, -(id + 1), cfg, left);
-      }
+    for (final Topic left : leftChildren) {
+      id = writeTopic(state, -(id + 1), cfg, left);
+    }
 
     state.end();
 
     state.startObj("attr"); //NOI18N
-      state.startObj("style")
-              .set("background", Utils.color2html(getBackgroundColor(cfg, root), false))
-              .set("color", Utils.color2html(getTextColor(cfg, root), false))
-            .end(); //NOI18N
+    state.startObj("style")
+        .set("background", Utils.color2html(getBackgroundColor(cfg, root), false))//NOI18N
+        .set("color", Utils.color2html(getTextColor(cfg, root), false))//NOI18N
+        .end(); //NOI18N
 
-      final String attachment = root == null ? null : makeHtmlFromExtras(root);
-      if (attachment != null) {
+    final String attachment = root == null ? null : makeHtmlFromExtras(root);
+    if (attachment != null) {
       state.startObj("attachment"); //NOI18N
-        state.set("contentType", "text/html"); //NOI18N
-        state.set("content", attachment); //NOI18N
+      state.set("contentType", "text/html"); //NOI18N
+      state.set("content", attachment); //NOI18N
       state.end();
-      }
+    }
     state.end();
 
     final List<TopicData> topicsWithJumps = state.getTopicsContainingJump();
@@ -269,14 +269,14 @@ public class MindmupExporter extends AbstractMindMapExporter {
         final TopicData dest = state.findTopic((ExtraTopic) src.getTopic().getExtras().get(Extra.ExtraType.TOPIC));
         if (dest != null) {
           state.startObj(); //NOI18N
-            state.set("ideaIdFrom", src.getID()); //NOI18N
-            state.set("ideaIdTo", dest.getID()); //NOI18N
-            state.startObj("attr")
-                    .startObj("style")
-                      .set("color", "#FF0000")
-                      .set("lineStyle", "dashed")
-                    .end()
-                  .end(); //NOI18N
+          state.set("ideaIdFrom", src.getID()); //NOI18N
+          state.set("ideaIdTo", dest.getID()); //NOI18N
+          state.startObj("attr")
+              .startObj("style")
+              .set("color", "#FF0000")
+              .set("lineStyle", "dashed")
+              .end()
+              .end(); //NOI18N
           state.end();
         }
       }
@@ -286,7 +286,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
   }
 
   @Override
-  public void doExport(final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
+  public void doExport (final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
     final State state = new State();
     writeRoot(state, panel.getConfiguration(), panel.getModel().getRoot());
 
@@ -312,17 +312,17 @@ public class MindmupExporter extends AbstractMindMapExporter {
   }
 
   @Override
-  public String getName() {
+  public String getName () {
     return BUNDLE.getString("MindmupExporter.exporterName");
   }
 
   @Override
-  public String getReference() {
+  public String getReference () {
     return BUNDLE.getString("MindmupExporter.exporterReference");
   }
 
   @Override
-  public ImageIcon getIcon() {
+  public ImageIcon getIcon () {
     return Icons.ICO_MINDMUP.getIcon();
   }
 

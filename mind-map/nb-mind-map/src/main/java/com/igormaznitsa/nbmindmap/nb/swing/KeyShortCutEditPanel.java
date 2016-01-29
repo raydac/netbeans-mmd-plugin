@@ -51,7 +51,8 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
     });
 
     this.tableKeyShortcuts.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter"); //NOI18N
-    this.tableKeyShortcuts.getActionMap().put("Enter", new AbstractAction(){ //NOI18N
+    this.tableKeyShortcuts.getActionMap().put("Enter", new AbstractAction(){//NOI18N 
+      private static final long serialVersionUID = -5644390861803492172L;
       @Override
       public void actionPerformed (final ActionEvent e) {
         buttonEditKeyCode.requestFocus();

@@ -47,7 +47,7 @@ import org.openide.windows.TopComponent;
 @NavigatorPanel.Registration(displayName = "Mind map", mimeType = MMDDataObject.MIME)
 public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupListener, FileChangeListener, Comparator<Object> {
 
-  private static final Logger logger = LoggerFactory.getLogger(MMDNavigator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMDNavigator.class);
   
   private static final Lookup.Template<MMDEditorSupport> MY_DATA = new Lookup.Template<MMDEditorSupport>(MMDEditorSupport.class);
   private static final long serialVersionUID = -4344090966601180253L;
@@ -152,7 +152,7 @@ public class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupL
         this.mindMapTree.setModel(this.treeModel);
       }
       catch (IOException ex) {
-        logger.error("Can't parse mind map text", ex); //NOI18N
+        LOGGER.error("Can't parse mind map text", ex); //NOI18N
         this.mindMapTree.setModel(null);
       }
     }

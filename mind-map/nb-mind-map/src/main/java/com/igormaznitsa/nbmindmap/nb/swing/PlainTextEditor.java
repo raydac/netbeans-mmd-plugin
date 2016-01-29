@@ -98,7 +98,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
   }
 
   private static final long serialVersionUID = 5847351391577028903L;
-  private static final Logger logger = LoggerFactory.getLogger(PlainTextEditor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PlainTextEditor.class);
 
   private final BaseDocument document;
   private Component lastComponent;
@@ -178,7 +178,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       return this.document.getText(0, this.document.getLength());
     }
     catch (BadLocationException e) {
-      logger.error("Can't get text", e); //NOI18N
+      LOGGER.error("Can't get text", e); //NOI18N
       return null;
     }
   }
@@ -192,7 +192,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       this.document.replace(0, 0, text, null);
     }
     catch (BadLocationException ex) {
-      logger.error("Can't set text", ex); //NOI18N
+      LOGGER.error("Can't set text", ex); //NOI18N
       throw new RuntimeException(ex);
     }
   }
@@ -327,7 +327,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
         setText(text);
       }
       catch (Exception ex) {
-        logger.error("Error during text file loading", ex); //NOI18N
+        LOGGER.error("Error during text file loading", ex); //NOI18N
         NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
@@ -347,7 +347,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
         FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
       }
       catch (Exception ex) {
-        logger.error("Error during text file saving", ex); //NOI18N
+        LOGGER.error("Error during text file saving", ex); //NOI18N
         NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
@@ -367,7 +367,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       // no text data in clipboard
     }
     catch (IOException ex) {
-      logger.error("Error during paste from clipboard", ex); //NOI18N
+      LOGGER.error("Error during paste from clipboard", ex); //NOI18N
     }
 
   }//GEN-LAST:event_buttonPasteActionPerformed
@@ -408,7 +408,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       docPreferences.flush();
     }
     catch (BackingStoreException ex) {
-      logger.error("Can't write wrapping code", ex);
+      LOGGER.error("Can't write wrapping code", ex);
     }
   }
 
@@ -418,7 +418,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
     }
 
     writeWrappingCode(this.oldWrapping); // restore old wrapping for mime type
-    logger.info("PlainTextEditor has been disposed");
+    LOGGER.info("PlainTextEditor has been disposed");
   }
 
   private static int getRow (final int pos, final JTextComponent editor) {
@@ -431,7 +431,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       }
     }
     catch (BadLocationException e) {
-      e.printStackTrace();
+      LOGGER.error("Bad location", e);
     }
     return rn;
   }
@@ -441,7 +441,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       return pos - Utilities.getRowStart(editor, pos) + 1;
     }
     catch (BadLocationException e) {
-      e.printStackTrace();
+      LOGGER.error("Bad location", e);
     }
     return -1;
   }

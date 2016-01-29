@@ -58,7 +58,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -6683682013891751388L;
 
-  private static final Logger logger = LoggerFactory.getLogger(FileEditPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileEditPanel.class);
 
   private final File projectFolder;
 

@@ -93,13 +93,8 @@ public final class NbUtils {
               }
             }
             break;
+            case FILES:
             case PROJECTS: {
-              final Action contextAction = ((ContextAwareAction) action).createContextAwareInstance(Lookups.singleton(object));
-              contextAction.actionPerformed(new ActionEvent(source, ActionEvent.ACTION_PERFORMED, null));
-              result = true;
-            }
-            break;
-            case FILES: {
               final Action contextAction = ((ContextAwareAction) action).createContextAwareInstance(Lookups.singleton(object));
               contextAction.actionPerformed(new ActionEvent(source, ActionEvent.ACTION_PERFORMED, null));
               result = true;
@@ -339,11 +334,9 @@ public final class NbUtils {
     FileEditPanel.DataContainer result = null;
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
       result = filePathEditor.getData();
-      if (result != null) {
-        if (!result.isValid()) {
-          NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
-          result = null;
-        }
+      if (!result.isValid()) {
+        NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
+        result = null;
       }
     }
     return result;
@@ -423,11 +416,11 @@ public final class NbUtils {
     return result;
   }
 
-  public static boolean isInProjectKnowledgeFolder(final Project project, final FileObject file){
+  public static boolean isInProjectKnowledgeFolder (final Project project, final FileObject file) {
     final FileObject projectKnowledgeFolder = MMKnowledgeSources.findProjectKnowledgeFolder(project);
     return projectKnowledgeFolder != null && FileUtil.isParentOf(projectKnowledgeFolder, file);
   }
-  
+
   public static boolean isFileInProjectScope (final Project project, final FileObject file) {
     if (file == null || project == null) {
       return false;

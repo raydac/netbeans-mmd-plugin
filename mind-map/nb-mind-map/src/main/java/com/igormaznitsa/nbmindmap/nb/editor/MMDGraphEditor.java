@@ -128,7 +128,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   private final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
 
-  private static final WeakSet<MMDGraphEditor> allEditors = new WeakSet<MMDGraphEditor>();
+  private static final WeakSet<MMDGraphEditor> ALL_EDITORS = new WeakSet<MMDGraphEditor>();
 
   public MMDGraphEditor () {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
@@ -160,8 +160,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     });
     updateName();
 
-    synchronized (allEditors) {
-      allEditors.add(this);
+    synchronized (ALL_EDITORS) {
+      ALL_EDITORS.add(this);
     }
   }
 
@@ -1268,8 +1268,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   public static void notifyReloadConfig () {
-    synchronized (allEditors) {
-      for (final MMDGraphEditor e : allEditors) {
+    synchronized (ALL_EDITORS) {
+      for (final MMDGraphEditor e : ALL_EDITORS) {
         e.updateConfigFromPreferences();
       }
     }

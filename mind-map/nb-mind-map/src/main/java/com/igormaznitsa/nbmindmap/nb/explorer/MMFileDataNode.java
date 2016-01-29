@@ -28,8 +28,8 @@ public class MMFileDataNode extends DataNode {
 
   protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
-  private static final Image NODE_ICON_16x16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N
-  private static final Image NODE_ICON_32x32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo32.png"); //NOI18N
+  private static final Image NODE_ICON16 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo16.png"); //NOI18N
+  private static final Image NODE_ICON32 = ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/logo/logo32.png"); //NOI18N
 
   public MMFileDataNode(final MMDDataObject obj, final Lookup lookup) {
     super(obj, Children.LEAF, lookup);
@@ -41,9 +41,9 @@ public class MMFileDataNode extends DataNode {
     switch (type) {
       case BeanInfo.ICON_COLOR_32x32:
       case BeanInfo.ICON_MONO_32x32:
-        return NODE_ICON_32x32;
+        return NODE_ICON32;
       default:
-        return NODE_ICON_16x16;
+        return NODE_ICON16;
     }
   }
 

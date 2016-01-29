@@ -4,7 +4,6 @@ import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import java.awt.Image;
 import java.util.concurrent.Callable;
 import org.netbeans.api.project.Project;
-import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFilter;
 import org.openide.loaders.DataFolder;
 import org.openide.nodes.FilterNode;
@@ -12,7 +11,6 @@ import org.openide.util.lookup.ProxyLookup;
 
 class SourceNode extends AbstractMMFilter {
 
-  private final FileObject fo;
   private volatile Image icon;
   private volatile Image iconOpen;
   
@@ -28,8 +26,6 @@ class SourceNode extends AbstractMMFilter {
       }
     }), new ProxyLookup(folder.getNodeDelegate().getLookup()));
 
-    fo = folder.getPrimaryFile();
-    
     disableDelegation(DELEGATE_GET_DISPLAY_NAME | DELEGATE_SET_DISPLAY_NAME | DELEGATE_GET_SHORT_DESCRIPTION | DELEGATE_GET_ACTIONS);
     setDisplayName(name);
   }

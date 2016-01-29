@@ -41,7 +41,7 @@ public class DeleteElement extends AbstractElement {
         this.mindMapFile.writeMindMap();
       }
     }catch(Exception ex){
-      logger.error("Error during mind map refactoring",ex); //NOI18N
+      LOGGER.error("Error during mind map refactoring",ex); //NOI18N
       ErrorManager.getDefault().log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
     }
   }

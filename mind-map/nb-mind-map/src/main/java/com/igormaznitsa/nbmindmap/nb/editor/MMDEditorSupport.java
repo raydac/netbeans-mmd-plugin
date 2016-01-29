@@ -19,6 +19,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -40,11 +41,13 @@ import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
 import org.openide.windows.CloneableTopComponent;
 
-public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, EditorCookie.Observable, ChangeListener {
+public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, EditorCookie.Observable, ChangeListener, Serializable {
+
+  private static final long serialVersionUID = 3419821892803816299L;
 
   private final List<WeakReference<MMDGraphEditor>> listeners = new ArrayList<WeakReference<MMDGraphEditor>>();
 
-  private static final Logger logger = LoggerFactory.getLogger(MMDEditorSupport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMDEditorSupport.class);
 
   public MMDEditorSupport(final MMDDataObject obj) {
     super(obj, new MMDDataEnv(obj));
@@ -81,12 +84,12 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
         return doc.getText(0, doc.getLength());
       }
       catch (Exception ex) {
-        logger.error("Can't get document text", ex); //NOI18N
+        LOGGER.error("Can't get document text", ex); //NOI18N
         return null;
       }
     }
     else {
-      logger.warn("DataObject " + this.getDataObject() + " is not valid");
+      LOGGER.warn("DataObject " + this.getDataObject() + " is not valid");
       return null;
     }
   }
@@ -136,13 +139,13 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
             doc.insertString(0, text, null);
           }
           catch (Exception ex) {
-            logger.error("Can't replace text", ex); //NOI18N
+            LOGGER.error("Can't replace text", ex); //NOI18N
           }
         }
       });
     }
     catch (Exception ex) {
-      logger.error("Can't open document to replace text", ex); //NOI18N
+      LOGGER.error("Can't open document to replace text", ex); //NOI18N
     }
 
   }

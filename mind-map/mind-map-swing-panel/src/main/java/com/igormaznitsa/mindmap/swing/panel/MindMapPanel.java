@@ -443,7 +443,7 @@ public class MindMapPanel extends JPanel {
               }
             }
             else if (controller.isElementDragAllowed(theInstance)) {
-              if (elementUnderMouse != null && elementUnderMouse.isMoveable()) {
+              if (elementUnderMouse.isMoveable()) {
                 selectedTopics.clear();
 
                 final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
@@ -545,7 +545,7 @@ public class MindMapPanel extends JPanel {
               fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
             }
           }
-          else if (element != null) {
+          else {
             if (!e.isControlDown()) {
               // only
               removeAllSelection();

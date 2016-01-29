@@ -31,11 +31,9 @@ public class WhereUsedRefactoringUI extends AbstractMMDRefactoringUI {
   private WhereUsedPanel panel;
   private final String name;
   private final String nameWithExt;
-  private final FileObject fileObj;
   private final Lookup lookup;
   
   public WhereUsedRefactoringUI(final Lookup lookup, final FileObject mmd){
-    this.fileObj = mmd;
     this.lookup = lookup;
     
     this.name = mmd.getName();

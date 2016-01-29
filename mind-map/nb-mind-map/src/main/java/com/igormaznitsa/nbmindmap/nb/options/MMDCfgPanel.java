@@ -28,13 +28,11 @@ import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.swing.JOptionPane;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 
@@ -42,15 +40,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -1090601330630026253L;
 
-  private static final Logger logger = LoggerFactory.getLogger(MMDCfgPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMDCfgPanel.class);
 
   private final transient MMDCfgOptionsPanelController controller;
   private volatile boolean changeNotificationAllowed = true;
 
-  private static final URI DONATION_URI = URI.create("http://goo.gl/l7nDk2");
-  
   private final MindMapPanelConfig config = new MindMapPanelConfig();
-  private Map<String,KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
+  private final Map<String,KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
     @Override
     public int compare (final String o1, final String o2) {
       return o1.compareTo(o2);
@@ -976,7 +972,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private void buttonFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontActionPerformed
     final PropertyEditor editor = PropertyEditorManager.findEditor(Font.class);
     if (editor == null) {
-      logger.error("Can't find any font editor");
+      LOGGER.error("Can't find any font editor");
       NbUtils.msgError("Can't find editor! Unexpected state! Contact developer!");
       return;
     }

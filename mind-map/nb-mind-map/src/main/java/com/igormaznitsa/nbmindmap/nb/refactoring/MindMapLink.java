@@ -34,7 +34,7 @@ import org.openide.loaders.DataObjectNotFoundException;
 
 public class MindMapLink {
 
-  private static final Logger logger = LoggerFactory.getLogger(MindMapLink.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapLink.class);
 
   private final DataObject dataObject;
   private volatile FileObject theFile;
@@ -53,7 +53,7 @@ public class MindMapLink {
         doj = DataObject.find(fileObj);
       }
       catch (DataObjectNotFoundException ex) {
-        logger.warn("Can't find data object for file " + fileObj);
+        LOGGER.warn("Can't find data object for file " + fileObj);
       }
     }
     return doj;
@@ -70,7 +70,7 @@ public class MindMapLink {
     if (fo != null){
       result = FileUtil.toFile(fo);
     }else{
-      logger.warn("Can't find file object ["+this.dataObject+"; "+this.theFile+']');
+      LOGGER.warn("Can't find file object ["+this.dataObject+"; "+this.theFile+']');
     }
     return result;
   }
@@ -79,7 +79,7 @@ public class MindMapLink {
     try{
       Thread.sleep(time);
     }catch(InterruptedException ex){
-      logger.warn("Delay has been interrupted");
+      LOGGER.warn("Delay has been interrupted");
     }
   }
   
@@ -116,7 +116,7 @@ public class MindMapLink {
     
     final DataObject doj = DataObject.find(foj);
     if (doj!=null && doj instanceof MMDDataObject){
-      logger.info("Notify about change primary file");
+      LOGGER.info("Notify about change primary file");
       ((MMDDataObject)doj).firePrimaryFileChanged();
     }
   }

@@ -57,7 +57,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
   private final ChangeListener changeListener;
   private final ChangeSupport changeSupport = new ChangeSupport(this);
 
-  private static final Logger logger = LoggerFactory.getLogger(MMKnowledgeSources.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMKnowledgeSources.class);
 
   public MMKnowledgeSources(final Project project) {
     this.project = project;
@@ -77,7 +77,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
 
   private static SourceGroup[] getSourceGroups(final Project project) {
     final String klazz = project.getClass().getName();
-    logger.info("Request sources for project type " + klazz);
+    LOGGER.info("Request sources for project type " + klazz);
 
     SourceGroup knowledgeSrc = null;
     try {
@@ -90,11 +90,11 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
         knowledgeSrc = GenericSources.group(project, knowledgeFolder, KNOWLEDGE_FOLDER_NAME, rootKnowledgeFolderName, new ImageIcon(BadgeIcons.BADGED_FOLDER), new ImageIcon(BadgeIcons.BADGED_FOLDER_OPEN));
       }
       else {
-        logger.info("Knowledge folder is not presented in " + project);
+        LOGGER.info("Knowledge folder is not presented in " + project);
       }
     }
     catch (IOException ex) {
-      logger.error("Can't make source group for knowledge folder", ex);
+      LOGGER.error("Can't make source group for knowledge folder", ex);
     }
 
     final SourceGroup[] result;
@@ -167,7 +167,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
         return dataFolder;
       }
       catch (Exception ex) {
-        logger.error("Can't find data folder for file : " + fileObject, ex);
+        LOGGER.error("Can't find data folder for file : " + fileObject, ex);
       }
     }
     return null;
