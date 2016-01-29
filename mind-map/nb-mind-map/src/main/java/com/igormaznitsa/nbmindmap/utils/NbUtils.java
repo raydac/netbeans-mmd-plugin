@@ -270,7 +270,7 @@ public final class NbUtils {
   }
 
   public static boolean msgComponentOkCancel (final String title, final JComponent component) {
-    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(component, title, NotifyDescriptor.OK_CANCEL_OPTION);
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(component, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
 

@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
@@ -70,6 +71,8 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
     panel.add(checkBoxExpandAll);
     panel.add(checkSaveBackground);
     
+    panel.setBorder(BorderFactory.createEmptyBorder(16, 32, 16, 32));
+
     return panel;
   }
 
