@@ -50,6 +50,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
+import com.intellij.openapi.ui.MessageType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -345,10 +346,11 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
               }
             }
             exp.doExport(editor.getMindMapPanel(), options, null);
+            IdeaUtils.showPopup(String.format(BUNDLE.getString("MMDGraphEditor.makePopUp.msgExportedSuccessfuly"),exp.getName()), MessageType.INFO);
           }
           catch (Exception ex) {
             LOGGER.error("Error during map export", ex); //NOI18N
-            getDialogProvider().msgError(BUNDLE.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
+            IdeaUtils.showPopup(BUNDLE.getString("MMDGraphEditor.makePopUp.errMsgCantExport"), MessageType.ERROR);
           }
         }
       });

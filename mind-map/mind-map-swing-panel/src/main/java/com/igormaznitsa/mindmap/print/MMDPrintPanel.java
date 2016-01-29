@@ -98,7 +98,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
-    printerJob.setJobName("MMD file");
+    printerJob.setJobName("Mind map print job");
 
     final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
     toolBar.setOrientation(JToolBar.HORIZONTAL);
@@ -112,8 +112,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     buttonPrint.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed (final ActionEvent e) {
-        pageFormat = printerJob.getPageFormat(null);
-        splitToPagesForFormat();
+        splitToPagesForCurrentFormat();
         final PageFormat format = pageFormat;
         final int numOfPages = countPages();
         final boolean drawBorder = checkBoxDrawBorder.isSelected();
@@ -189,7 +188,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
       @Override
       public void actionPerformed (final ActionEvent e) {
         pageFormat = printerJob.pageDialog(pageFormat);
-        splitToPagesForFormat();
+        splitToPagesForCurrentFormat();
         scrollPane.revalidate();
         scrollPane.repaint();
       }
@@ -213,7 +212,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
       public void actionPerformed (ActionEvent e) {
         final int percent = Integer.parseInt(comboBoxScale.getSelectedItem().toString().split("\\s")[0]);
         pageZoomFactor = (double) percent / 100d;
-        splitToPagesForFormat();
+        splitToPagesForCurrentFormat();
         scrollPane.revalidate();
         scrollPane.repaint();
       }
@@ -223,21 +222,21 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.add(comboBoxScale);
 
     toolBar.addSeparator();
-    checkBoxDrawBorder = UI_COMPO_FACTORY.makeCheckBox();
-    checkBoxDrawBorder.setSelected(true);
-    checkBoxDrawBorder.setText(BUNDLE.getString("MMDPrintPanel.DrawBorder"));
-    checkBoxDrawBorder.addActionListener(new ActionListener() {
+    this.checkBoxDrawBorder = UI_COMPO_FACTORY.makeCheckBox();
+    this.checkBoxDrawBorder.setSelected(true);
+    this.checkBoxDrawBorder.setText(BUNDLE.getString("MMDPrintPanel.DrawBorder"));
+    this.checkBoxDrawBorder.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed (ActionEvent e) {
         scrollPane.repaint();
       }
     });
-    toolBar.add(checkBoxDrawBorder);
+    toolBar.add(this.checkBoxDrawBorder);
 
     this.add(toolBar, BorderLayout.NORTH);
 
     this.pageFormat = printerJob.defaultPage();
-    this.splitToPagesForFormat();
+    this.splitToPagesForCurrentFormat();
     this.previewContainer = new Pages(this);
     scrollPane.getViewport().setView(this.previewContainer);
 
@@ -285,7 +284,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     return this.pageZoomFactor;
   }
 
-  private void splitToPagesForFormat () {
+  private void splitToPagesForCurrentFormat () {
     final MMDPrint printer = new MMDPrint(this.mmdPanel, (int) this.pageFormat.getImageableWidth(),
         (int) this.pageFormat.getImageableHeight(), 1.0d);
     this.pages = printer.getPages();

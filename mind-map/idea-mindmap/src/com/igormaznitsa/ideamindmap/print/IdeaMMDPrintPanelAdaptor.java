@@ -9,19 +9,10 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.ComboBox;
-import com.intellij.ui.components.JBCheckBox;
-import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.JBScrollPane;
+import com.intellij.openapi.ui.MessageType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import java.awt.Dimension;
 import java.awt.Window;
@@ -42,8 +33,10 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
         try{
           indicator.setIndeterminate(true);
           task.run();
+          IdeaUtils.showPopup(String.format("%s has been sent to the printer",taskName), MessageType.INFO);
         }catch(Exception ex){
           LOGGER.error("Print error",ex);
+          IdeaUtils.showPopup("Print error! See the log!", MessageType.ERROR);
         }finally{
           indicator.stop();
         }
@@ -74,7 +67,6 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
         if (wnd!=null) wnd.dispose();
       }
     });
-    return;
   }
 
   @Override public Dimension getPreferredSizeOfPanel(final MMDPrintPanel mmdPrintPanel) {

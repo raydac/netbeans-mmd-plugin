@@ -100,9 +100,7 @@ public enum IdeaUtils {
   }
 
   public static boolean isMMDFile(@Nullable final VirtualFile file) {
-    if (file == null || file.isDirectory())
-      return false;
-    return file.getFileType() == MindMapFileType.INSTANCE;
+    return !(file == null || file.isDirectory()) && file.getFileType() == MindMapFileType.INSTANCE;
   }
 
   @Nullable
@@ -382,7 +380,7 @@ public enum IdeaUtils {
         final JBPopupFactory factory = JBPopupFactory.getInstance();
         final BalloonBuilder builder = factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml(text), type, null);
         final Balloon balloon = builder.createBalloon();
-
+        balloon.setAnimationEnabled(true);
         final Component frame = WindowManager.getInstance().findVisibleFrame();
         if (frame != null)
           balloon.show(new RelativePoint(frame, new Point(frame.getWidth(),frame.getHeight())), Balloon.Position.below);

@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 
@@ -71,7 +72,7 @@ public class IdeaUIComponentFactory implements UIComponentFactory{
     return new JBMenuItem(s, icon);
   }
 
-  @Override public JCheckBoxMenuItem makeCheckboxMenuItem(String s, Icon icon, boolean b) {
+  @Override public JCheckBoxMenuItem makeCheckboxMenuItem(final String s, final Icon icon, final boolean b) {
     return new JBCheckboxMenuItem(s, icon, b);
   }
 
@@ -79,7 +80,11 @@ public class IdeaUIComponentFactory implements UIComponentFactory{
     return new JSeparator();
   }
 
-  @Override public JMenu makeMenu(String s) {
-    return null;
+  @Override public JMenu makeMenu(final String s) {
+    return new JMenu(s);
+  }
+
+  @Override public JSlider makeSlider() {
+    return new JSlider();
   }
 }

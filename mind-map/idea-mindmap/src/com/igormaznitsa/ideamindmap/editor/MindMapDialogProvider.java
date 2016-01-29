@@ -17,15 +17,13 @@ package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.intellij.openapi.fileChooser.FileChooserFactory;
-import com.intellij.openapi.fileChooser.FileSaverDescriptor;
-import com.intellij.openapi.fileChooser.FileSaverDialog;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileWrapper;
+import com.intellij.openapi.wm.WindowManager;
 
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
@@ -75,19 +73,18 @@ public class MindMapDialogProvider implements DialogProvider {
   @Override
   public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter,
     final String approveButtonText) {
-    final FileSaverDescriptor descriptor = new FileSaverDescriptor(title, fileFilter.getDescription());
 
-    final FileSaverDialog dialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this.project);
+    final JFileChooser fileChooser = new JFileChooser(defaultFolder);
+    fileChooser.setDialogTitle(title);
+    fileChooser.setFileFilter(fileFilter);
+    fileChooser.setAcceptAllFileFilterUsed(true);
+    fileChooser.setMultiSelectionEnabled(false);
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-    final VirtualFileWrapper wrapper = dialog.save(this.base, null);
-
-    if (wrapper != null) {
-      final File folder = wrapper.getFile().getParentFile();
-      if (folder != null) {
-        base = new VirtualFileWrapper(folder).getVirtualFile();
-      }
+    if (fileChooser.showSaveDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION){
+      return fileChooser.getSelectedFile();
+    }else{
+      return null;
     }
-
-    return wrapper == null ? null : wrapper.getFile();
   }
 }

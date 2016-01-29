@@ -33,6 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -107,7 +109,7 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
     
     final ByteArrayOutputStream buff = new ByteArrayOutputStream(128000);
     ImageIO.write(image, "png", buff);//NOI18N
-
+    
     final byte[] imageData = buff.toByteArray();
 
     File fileToSaveMap = null;

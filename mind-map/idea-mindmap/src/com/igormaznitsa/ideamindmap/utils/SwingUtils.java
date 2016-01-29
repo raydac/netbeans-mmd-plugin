@@ -17,10 +17,11 @@ package com.igormaznitsa.ideamindmap.utils;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 
-public enum SwingUtils {
-  ;
+public final class SwingUtils {
+  private SwingUtils() {
+  }
 
   public static void assertSwingThread() {
     if (!SwingUtilities.isEventDispatchThread())

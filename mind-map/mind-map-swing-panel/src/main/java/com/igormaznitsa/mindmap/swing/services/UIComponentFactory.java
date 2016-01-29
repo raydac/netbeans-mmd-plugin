@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 
@@ -46,4 +47,5 @@ public interface UIComponentFactory {
   JCheckBoxMenuItem makeCheckboxMenuItem (String text, Icon icon, boolean selected);
   JSeparator makeMenuSeparator (); 
   JMenu makeMenu (String text); 
+  JSlider makeSlider (); 
 }

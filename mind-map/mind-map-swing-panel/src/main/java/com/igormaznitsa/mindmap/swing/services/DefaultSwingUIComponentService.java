@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 
@@ -101,5 +102,10 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
   @Override
   public JEditorPane makeEditorPane () {
     return new JEditorPane();
+  }
+
+  @Override
+  public JSlider makeSlider () {
+    return new JSlider();
   }
 }
