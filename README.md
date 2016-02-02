@@ -1,4 +1,9 @@
+[![License Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/6cec4cb9ac42419aa003a27597c3c357)](https://www.codacy.com/app/rrg4400/netbeans-mmd-plugin)   
+[![Java 7.0+](https://img.shields.io/badge/java-5.0%2b-green.svg)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+[![NetBeans](https://img.shields.io/badge/netbeans-7.4%2b-green.svg)](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
+[![Intellij IDEA](https://img.shields.io/badge/idea-13.0%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)
+[![PayPal donation](https://img.shields.io/badge/donation-PayPal-red.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2)
 
 ![Banner](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png)  
 
@@ -97,7 +102,3 @@ Mainly you can keep short texts in your mind maps as topic names but sometime it
 -  **Transition** - link to another topic in the same mind map, it allows to make some navigation in very big mind maps
 
 You can add and edit new toipic content through the maind map pop-up menu and if you want remove some content then just open editor for the content and remove all text information.
-
-# Donation   
-If you like the software you can make some donation to the author   
-[![https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2)
