@@ -263,7 +263,7 @@ public final class Topic implements Serializable, Constants {
                 topic.setExtra(extraType.parseLoaded(groupPre));
               }
               else {
-                logger.error("Detected invalid extra data " + extraType + " : " + groupPre);
+                logger.error("Detected invalid extra data " + extraType);
               }
             }
             catch (Exception ex) {
@@ -687,11 +687,7 @@ public final class Topic implements Serializable, Constants {
         final int indexThis = current.children.indexOf(this);
         if (indexThis >= 0) {
           for (int i = indexThis - 1; i >= 0; i--) {
-            if (checker == null) {
-              result = current.children.get(i);
-              break;
-            }
-            else if (checker.check(current.children.get(i))) {
+            if (checker.check(current.children.get(i))) {
               result = current.children.get(i);
               break;
             }

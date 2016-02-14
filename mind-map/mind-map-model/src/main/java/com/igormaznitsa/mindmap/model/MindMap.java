@@ -71,7 +71,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   public MindMap(@Nonnull final MindMap map, @Nullable final MindMapController nullableController) {
     this.attributes.putAll(map.attributes);
     final Topic rootTopic = map.getRoot();
-    this.root = rootTopic == null ? rootTopic : rootTopic.makeCopy(this, null);
+    this.root = rootTopic == null ? null : rootTopic.makeCopy(this, null);
     this.controller = nullableController;
   }
 

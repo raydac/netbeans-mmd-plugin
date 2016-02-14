@@ -134,8 +134,6 @@ public class MMapURI implements Serializable {
       resultPath.add(s);
     }
 
-    final int firstResourceIndex = resultPath.size();
-
     currentNumberOfResourceItemsTheLasIsZero = currentNumberOfResourceItemsTheLasIsZero + 1;
   
     int oldPathIndex = splittedOldPath.length - currentNumberOfResourceItemsTheLasIsZero; 
