@@ -15,31 +15,37 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import javax.annotation.Nonnull;
+
 public class ExtraNote extends Extra<String> {
   private static final long serialVersionUID = 8612886872756838947L;
 
   private final String text;
   
-  public ExtraNote(final String text){
+  public ExtraNote(@Nonnull final String text) {
     this.text = text;
   }
   
   @Override
+  @Nonnull
   public String getValue() {
     return this.text;
   }
 
   @Override
+  @Nonnull
   public ExtraType getType() {
     return ExtraType.NOTE;
   }
 
   @Override
+  @Nonnull
   public String getAsString() {
     return this.text;
   }
 
   @Override
+  @Nonnull
   public String provideAsStringForSave() {
     return this.text;
   }

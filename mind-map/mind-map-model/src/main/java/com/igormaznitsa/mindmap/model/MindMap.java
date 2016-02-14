@@ -1,4 +1,4 @@
-  /*
+/*
  * Copyright 2015 Igor Maznitsa.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.model;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -31,10 +32,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+
 import org.apache.commons.io.IOUtils;
 
 public final class MindMap implements Serializable, Constants, TreeModel {
@@ -43,7 +48,9 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMap.class);
 
+  @Nullable
   private final Topic root;
+
   private final Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new HashMap<String, String>();
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s(.+)$"); //NOI18N
@@ -55,19 +62,20 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   private final transient List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
 
   private final MindMapController controller;
-  
-  public MindMap(final MindMapController nullableController) {
+
+  public MindMap(@Nullable final MindMapController nullableController) {
     this.root = new Topic(this, null, ""); //NOI18N
     this.controller = nullableController;
   }
 
-  public MindMap(final MindMap map,final MindMapController nullableController) {
+  public MindMap(@Nonnull final MindMap map, @Nullable final MindMapController nullableController) {
     this.attributes.putAll(map.attributes);
-    this.root = map.getRoot() == null ? null : map.getRoot().makeCopy(this, null);
+    final Topic rootTopic = map.getRoot();
+    this.root = rootTopic == null ? rootTopic : rootTopic.makeCopy(this, null);
     this.controller = nullableController;
   }
 
-  public MindMap(final MindMapController nullableController, final Reader reader) throws IOException {
+  public MindMap(@Nullable final MindMapController nullableController, @Nonnull final Reader reader) throws IOException {
     this.controller = nullableController;
     final StringBuilder lineBuffer = new StringBuilder();
     while (true) {
@@ -97,29 +105,32 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     this.attributes.put(GENERATOR_VERSION_NAME, GENERATOR_VERSION);
   }
 
-  public MindMapController getController(){
+  @Nullable
+  public MindMapController getController() {
     return this.controller;
   }
-  
+
   private void fireModelChanged() {
-    final TreeModelEvent evt = new TreeModelEvent(this, this.root == null ? null : this.root.getPath());
+    final Topic rootTopic = this.root;
+    final TreeModelEvent evt = new TreeModelEvent(this, rootTopic == null ? (Topic[]) null : rootTopic.getPath());
     for (final TreeModelListener l : this.treeListeners) {
       l.treeStructureChanged(evt);
     }
   }
 
-  private void fireTopicChanged(final Topic topic) {
+  private void fireTopicChanged(@Nullable final Topic topic) {
     final TreeModelEvent evt = new TreeModelEvent(this, topic == null ? null : topic.getPath());
     for (final TreeModelListener l : this.treeListeners) {
       l.treeNodesChanged(evt);
     }
   }
 
-  public String getAttribute(final String name) {
+  @Nullable
+  public String getAttribute(@Nonnull final String name) {
     return this.attributes.get(name);
   }
 
-  public void setAttribute(final String name, final String value) {
+  public void setAttribute(@Nonnull final String name, @Nullable final String value) {
     this.locker.lock();
     try {
       if (value == null) {
@@ -146,14 +157,17 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     }
   }
 
-  private void resetPayload(final Topic t) {
-    t.setPayload(null);
-    for (final Topic m : t.getChildren()) {
-      resetPayload(m);
+  private void resetPayload(@Nullable final Topic t) {
+    if (t != null) {
+      t.setPayload(null);
+      for (final Topic m : t.getChildren()) {
+        resetPayload(m);
+      }
     }
   }
 
-  public Topic findForPositionPath(final int[] positions) {
+  @Nullable
+  public Topic findForPositionPath(@Nullable final int[] positions) {
     if (positions == null || positions.length == 0) {
       return null;
     }
@@ -174,25 +188,28 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     return result;
   }
 
-  public List<Topic> removeNonExistingTopics(final List<Topic> origList) {
+  @Nonnull
+  public List<Topic> removeNonExistingTopics(@Nonnull final List<Topic> origList) {
     final List<Topic> result = new ArrayList<Topic>();
-    this.locker.lock();
-    try {
-      if (this.root != null) {
+    final Topic rootTopic = this.root;
+    if (rootTopic != null) {
+      this.locker.lock();
+      try {
         for (final Topic t : origList) {
-          if (this.root.containTopic(t)) {
+          if (rootTopic.containTopic(t)) {
             result.add(t);
           }
         }
       }
-    }
-    finally {
-      this.locker.unlock();
+      finally {
+        this.locker.unlock();
+      }
     }
     return result;
   }
 
   @Override
+  @Nullable
   public Topic getRoot() {
     this.locker.lock();
     try {
@@ -203,7 +220,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     }
   }
 
-  static boolean fillMapByAttributes(final String line, final Map<String, String> map) {
+  static boolean fillMapByAttributes(@Nonnull final String line, @Nonnull final Map<String, String> map) {
     final Matcher attrmatcher = PATTERN_ATTRIBUTES.matcher(line);
     if (attrmatcher.find()) {
       final Matcher attrParser = PATTERN_ATTRIBUTE.matcher(attrmatcher.group(1));
@@ -215,7 +232,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     return false;
   }
 
-  static String allAttributesAsString(final Map<String, String> map) throws IOException {
+  static String allAttributesAsString(@Nonnull final Map<String, String> map) throws IOException {
     final StringBuilder buffer = new StringBuilder();
 
     boolean nonfirst = false;
@@ -232,6 +249,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     return buffer.toString();
   }
 
+  @Nonnull
   public String packToString() {
     final StringWriter writer = new StringWriter(16384);
     try {
@@ -243,7 +261,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     return writer.toString();
   }
 
-  public void write(final Writer out) throws IOException {
+  public void write(@Nonnull final Writer out) throws IOException {
     this.locker.lock();
     try {
       out.append("Mind Map generated by NB MindMap plugin").append(NEXT_PARAGRAPH); //NOI18N
@@ -252,7 +270,10 @@ public final class MindMap implements Serializable, Constants, TreeModel {
         out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE); //NOI18N
       }
       out.append("---").append(NEXT_LINE); //NOI18N
-      this.root.write(out);
+      final Topic rootTopic = this.root;
+      if (rootTopic != null) {
+        rootTopic.write(out);
+      }
     }
     finally {
       this.locker.unlock();
@@ -267,7 +288,8 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     this.locker.unlock();
   }
 
-  public Topic cloneTopic(final Topic topic, final boolean cloneFullTree) {
+  @Nullable
+  public Topic cloneTopic(@Nullable final Topic topic, final boolean cloneFullTree) {
     this.locker.lock();
     try {
       if (topic == null || topic == this.root) {
@@ -290,22 +312,25 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     }
   }
 
-  public boolean removeTopic(final Topic topic) {
+  public boolean removeTopic(@Nullable final Topic topic) {
     this.locker.lock();
     try {
       final boolean result;
-      if (this.root == topic) {
-        this.root.setText(""); //NOI18N
-        this.root.removeExtras();
-        this.root.setPayload(null);
-        this.root.removeAllChildren();
+      final Topic rootTopic = this.root;
+      if (rootTopic == null) {
+        result = false;
+      }
+      else if (this.root == topic) {
+        rootTopic.setText(""); //NOI18N
+        rootTopic.removeExtras();
+        rootTopic.setPayload(null);
+        rootTopic.removeAllChildren();
         result = true;
       }
       else {
-        this.root.removeTopic(topic);
-        result = this.root.removeAllLinksTo(topic);
+        rootTopic.removeTopic(topic);
+        result = rootTopic.removeAllLinksTo(topic);
       }
-
       if (result) {
         fireModelChanged();
       }
@@ -317,34 +342,41 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     }
   }
 
-  public Topic findTopicForLink(final ExtraTopic link) {
-    if (link == null) {
-      return null;
-    }
-    this.locker.lock();
-    try {
-      return this.root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
-    }
-    finally {
-      this.locker.unlock();
-    }
-  }
-
-  public List<Topic> findAllTopicsForExtraType(final Extra.ExtraType type) {
-    final List<Topic> result = new ArrayList<Topic>();
-    this.locker.lock();
-    try {
-      if (this.root != null) {
-        _findAllTopicsForExtraType(this.root, type, result);
+  @Nullable
+  public Topic findTopicForLink(@Nullable final ExtraTopic link) {
+    Topic result = null;
+    if (link != null) {
+      final Topic rootTopic = this.root;
+      if (rootTopic != null) {
+        this.locker.lock();
+        try {
+          result = rootTopic.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
+        }
+        finally {
+          this.locker.unlock();
+        }
       }
-    }
-    finally {
-      this.locker.unlock();
     }
     return result;
   }
 
-  private void _findAllTopicsForExtraType(final Topic topic, final Extra.ExtraType type, final List<Topic> result) {
+  @Nonnull
+  public List<Topic> findAllTopicsForExtraType(@Nonnull final Extra.ExtraType type) {
+    final List<Topic> result = new ArrayList<Topic>();
+    final Topic rootTopic = this.root;
+    if (rootTopic != null) {
+      this.locker.lock();
+      try {
+        _findAllTopicsForExtraType(rootTopic, type, result);
+      }
+      finally {
+        this.locker.unlock();
+      }
+    }
+    return result;
+  }
+
+  private void _findAllTopicsForExtraType(@Nonnull final Topic topic, @Nonnull final Extra.ExtraType type, @Nonnull final List<Topic> result) {
     if (topic.getExtras().containsKey(type)) {
       result.add(topic);
     }
@@ -354,22 +386,22 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   }
 
   @Override
-  public Object getChild(final Object parent, final int index) {
+  public Object getChild(@Nonnull final Object parent, final int index) {
     return ((Topic) parent).getChildren().get(index);
   }
 
   @Override
-  public int getChildCount(Object parent) {
+  public int getChildCount(@Nonnull Object parent) {
     return ((Topic) parent).getChildren().size();
   }
 
   @Override
-  public boolean isLeaf(final Object node) {
+  public boolean isLeaf(@Nonnull final Object node) {
     return !((Topic) node).hasChildren();
   }
 
   @Override
-  public void valueForPathChanged(final TreePath path, final Object newValue) {
+  public void valueForPathChanged(@Nonnull final TreePath path, @Nullable final Object newValue) {
     if (newValue instanceof String) {
       ((Topic) path.getLastPathComponent()).setText((String) newValue);
       fireTopicChanged((Topic) path.getLastPathComponent());
@@ -380,65 +412,67 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   }
 
   @Override
-  public int getIndexOfChild(Object parent, Object child) {
+  public int getIndexOfChild(@Nonnull final Object parent, @Nullable final Object child) {
     return ((Topic) parent).getChildren().indexOf(child);
   }
 
   @Override
-  public void addTreeModelListener(final TreeModelListener l) {
+  public void addTreeModelListener(@Nonnull final TreeModelListener l) {
     this.treeListeners.add(l);
   }
 
   @Override
-  public void removeTreeModelListener(final TreeModelListener l) {
+  public void removeTreeModelListener(@Nonnull final TreeModelListener l) {
     this.treeListeners.remove(l);
   }
 
-  public boolean doesContainFileLink(final File baseFolder, final MMapURI file) {
-    this.locker.lock();
-    try {
-      if (this.root == null) {
-        return false;
+  public boolean doesContainFileLink(@Nonnull final File baseFolder, @Nonnull final MMapURI file) {
+    boolean result = false;
+    final Topic rootTopic = this.root;
+    if (rootTopic != null) {
+      this.locker.lock();
+      try {
+        return rootTopic.doesContainFileLink(baseFolder, file);
       }
-      else {
-        return this.root.doesContainFileLink(baseFolder, file);
+      finally {
+        this.locker.unlock();
       }
     }
-    finally {
-      this.locker.unlock();
-    }
+    return result;
   }
 
-  public boolean deleteAllLinksToFile(final File baseFolder, final MMapURI file) {
+  public boolean deleteAllLinksToFile(@Nonnull final File baseFolder, @Nonnull final MMapURI file) {
     boolean changed = false;
-    this.locker.lock();
-    try {
-      if (this.root != null) {
-        changed = this.root.deleteLinkToFileIfPresented(baseFolder, file);
+    final Topic rootTopic = this.root;
+    if (rootTopic != null) {
+      this.locker.lock();
+      try {
+        changed = rootTopic.deleteLinkToFileIfPresented(baseFolder, file);
       }
-    }
-    finally {
-      this.locker.unlock();
-    }
-    if (changed) {
-      fireModelChanged();
+      finally {
+        this.locker.unlock();
+      }
+      if (changed) {
+        fireModelChanged();
+      }
     }
     return changed;
   }
 
-  public boolean replaceAllLinksToFile(final File baseFolder, final MMapURI oldFile, final MMapURI newFile) {
+  public boolean replaceAllLinksToFile(@Nonnull final File baseFolder, @Nonnull final MMapURI oldFile, @Nonnull final MMapURI newFile) {
     boolean changed = false;
-    this.locker.lock();
-    try {
-      if (this.root != null) {
-        changed = this.root.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
+    final Topic rootTopic = this.root;
+    if (rootTopic != null) {
+      this.locker.lock();
+      try {
+        changed = rootTopic.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
       }
-    }
-    finally {
-      this.locker.unlock();
-    }
-    if (changed) {
-      fireModelChanged();
+      finally {
+        this.locker.unlock();
+      }
+      if (changed) {
+        fireModelChanged();
+      }
     }
     return changed;
   }

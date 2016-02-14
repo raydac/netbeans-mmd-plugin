@@ -59,12 +59,13 @@ public class MouseSelectedArea {
     }
 
     final AbstractElement payload = (AbstractElement) root.getPayload();
-
-    if (rect.contains(payload.getBounds())) {
-      list.add(root);
-    }
-    if (payload instanceof AbstractCollapsableElement && ((AbstractCollapsableElement) payload).isCollapsed()) {
-      return;
+    if (payload != null) {
+      if (rect.contains(payload.getBounds())) {
+        list.add(root);
+      }
+      if (payload instanceof AbstractCollapsableElement && ((AbstractCollapsableElement) payload).isCollapsed()) {
+        return;
+      }
     }
     for (final Topic t : root.getChildren()) {
       addCoveredToList(list, t, rect);

@@ -18,25 +18,31 @@ package com.igormaznitsa.mindmap.model.nio.impl;
 import com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer;
 import com.igormaznitsa.mindmap.model.nio.AbstractPath;
 import com.igormaznitsa.mindmap.model.nio.Path;
+
 import java.io.File;
 import java.util.Iterator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 @IgnoreInAnimalSniffer
 public class J7Path extends AbstractPath {
 
   private final java.nio.file.Path nioPath;
   
-  private J7Path(final java.nio.file.Path path){
+  private J7Path(@Nonnull final java.nio.file.Path path) {
     super();
     this.nioPath = path;
   }
   
-  public J7Path (final File file) {
+  public J7Path(@Nonnull final File file) {
     super(file);
     this.nioPath = file.toPath();
   }
 
-  public J7Path (final String first, final String... items) {
+  public J7Path(@Nonnull final String first, @MustNotContainNull final String... items) {
     super(first, items);
     this.nioPath = java.nio.file.Paths.get(first, items);
   }
@@ -46,7 +52,7 @@ public class J7Path extends AbstractPath {
   }
   
   @Override
-  public boolean startsWith (final Path basePath) {
+  public boolean startsWith(@Nonnull final Path basePath) {
     final J7Path thatPath = (J7Path)basePath;
     return this.nioPath.startsWith(thatPath.nioPath);
   }
@@ -57,22 +63,25 @@ public class J7Path extends AbstractPath {
   }
 
   @Override
-  public Path relativize (final Path filePath) {
+  public Path relativize(@Nonnull final Path filePath) {
     final J7Path thatPath = (J7Path) filePath;
     return  makePathIfNotNull(this.nioPath.relativize(thatPath.nioPath));
   }
 
   @Override
+  @Nullable
   public Path getRoot () {
     return makePathIfNotNull(this.nioPath.getRoot());
   }
 
   @Override
+  @Nonnull
   public File toFile () {
     return this.nioPath.toFile();
   }
 
   @Override
+  @Nonnull
   public Iterator<Path> iterator () {
     return new Iterator<Path>(){
       private final Iterator<java.nio.file.Path> wrappedIterator = nioPath.iterator();

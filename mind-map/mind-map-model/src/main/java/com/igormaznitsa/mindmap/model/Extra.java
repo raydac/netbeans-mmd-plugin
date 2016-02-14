@@ -20,6 +20,10 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class Extra<T> implements Serializable, Constants, Cloneable {
@@ -33,7 +37,8 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
     NOTE,
     TOPIC;
 
-    public String preprocessString(final String str) {
+    @Nullable
+    public String preprocessString(@Nullable final String str) {
       String result = null;
       if (str != null) {
         switch (this) {
@@ -60,7 +65,8 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
       return result;
     }
 
-    public Extra<?> parseLoaded(final String text) throws URISyntaxException {
+    @Nonnull
+    public Extra<?> parseLoaded(@Nonnull final String text) throws URISyntaxException {
       final String preprocessed = StringEscapeUtils.unescapeHtml(text);
       switch (this) {
         case FILE:

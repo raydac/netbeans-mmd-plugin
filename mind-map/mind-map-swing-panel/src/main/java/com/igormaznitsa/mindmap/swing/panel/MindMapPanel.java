@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -44,6 +45,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.Nonnull;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -53,7 +56,10 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+
 import org.apache.commons.lang.StringEscapeUtils;
+
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class MindMapPanel extends JPanel {
 
@@ -1093,15 +1099,12 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void addMindMapListener (final MindMapListener l) {
-    ModelUtils.assertNotNull("Listener must not be null", l); //NOI18N
-    this.mindMapListeners.add(l);
+  public void addMindMapListener(@Nonnull final MindMapListener l) {
+    this.mindMapListeners.add(Assertions.assertNotNull(l));
   }
 
-  public void removeMindMapListener (final MindMapListener l) {
-    if (l != null) {
-      this.mindMapListeners.remove(l);
-    }
+  public void removeMindMapListener(@Nonnull final MindMapListener l) {
+    this.mindMapListeners.remove(Assertions.assertNotNull(l));
   }
 
   public void setModel (final MindMap model) {

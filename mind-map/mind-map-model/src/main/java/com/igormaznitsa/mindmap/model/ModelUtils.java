@@ -160,12 +160,6 @@ public enum ModelUtils {
     return result;
   }
 
-  public static void assertNotNull(final String message, final Object obj) {
-    if (obj == null) {
-      throw new NullPointerException(message);
-    }
-  }
-
   public static String[] breakToLines(final String text) {
     final int lineNum = countLines(text);
     final String[] result = new String[lineNum];

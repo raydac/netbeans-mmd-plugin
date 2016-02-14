@@ -18,18 +18,24 @@ package com.igormaznitsa.mindmap.model.nio.impl;
 import com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.PathService;
+
 import java.io.File;
+
+import javax.annotation.Nonnull;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 @IgnoreInAnimalSniffer
 public class J7PathService implements PathService {
 
   @Override
-  public Path getForFile (final File file) {
+  @Nonnull
+  public Path getForFile(@Nonnull final File file) {
     return new J7Path(file);
   }
 
   @Override
-  public Path getForPathItems (final String first, final String ... items) {
+  public Path getForPathItems(@Nonnull final String first, @MustNotContainNull final String... items) {
     return new J7Path(first, items);
   }
   

@@ -16,13 +16,17 @@
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import static com.igormaznitsa.mindmap.model.ModelUtils.assertNotNull;
+
 import static com.igormaznitsa.mindmap.model.ModelUtils.breakToLines;
+
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+
 import javax.swing.text.JTextComponent;
+
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public final class TextBlock implements Cloneable {
 
@@ -56,8 +60,7 @@ public final class TextBlock implements Cloneable {
   }
   
   public TextBlock(final String text, final TextAlign justify) {
-    assertNotNull("Text must not be null", text); //NOI18N
-    updateText(text);
+    updateText(Assertions.assertNotNull(text));
     this.textAlign = justify;
   }
 

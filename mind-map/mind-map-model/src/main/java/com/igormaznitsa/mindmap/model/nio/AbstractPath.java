@@ -17,15 +17,19 @@ package com.igormaznitsa.mindmap.model.nio;
 
 import java.io.File;
 
+import javax.annotation.Nonnull;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+
 public abstract class AbstractPath implements Path {
 
   protected AbstractPath(){
   }
   
-  public AbstractPath(final File file){
+  public AbstractPath(@Nonnull final File file) {
   }
   
-  public AbstractPath(final String first, final String... items){
+  public AbstractPath(@Nonnull final String first, @MustNotContainNull final String... items) {
   }
   
 }

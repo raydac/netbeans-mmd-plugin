@@ -17,10 +17,20 @@ package com.igormaznitsa.mindmap.model.nio;
 
 import java.io.File;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public interface Path extends Iterable<Path> {
-  boolean startsWith (Path basePath);
-  boolean isAbsolute ();
-  Path relativize (Path filePath);
-  Path getRoot ();
-  File toFile ();
+
+  boolean startsWith(@Nonnull Path basePath);
+
+  boolean isAbsolute();
+
+  Path relativize(@Nonnull Path filePath);
+
+  @Nullable
+  Path getRoot();
+
+  @Nonnull
+  File toFile();
 }

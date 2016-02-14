@@ -20,7 +20,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 public class JavaLogger extends Logger {
 
   private final java.util.logging.Logger wrappedLogger;
-  
+
   public JavaLogger (final Class<?> klazz) {
     super(klazz);
     this.wrappedLogger = java.util.logging.Logger.getLogger(klazz.getName());
@@ -43,7 +43,7 @@ public class JavaLogger extends Logger {
 
   @Override
   public void error (final String message) {
-    this.wrappedLogger.log(java.util.logging.Level.WARNING,message);
+    this.wrappedLogger.log(java.util.logging.Level.WARNING, message);
   }
 
   @Override

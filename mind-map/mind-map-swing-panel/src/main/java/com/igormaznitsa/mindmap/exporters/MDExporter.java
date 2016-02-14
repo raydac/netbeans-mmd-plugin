@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.exporters;
 
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
+
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -28,21 +29,24 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Timestamp;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
 public class MDExporter extends AbstractMindMapExporter {
 
   private static final int STARTING_INDEX_FOR_NUMERATION = 5;
-  
+
   private static class State {
 
     private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
@@ -53,11 +57,11 @@ public class MDExporter extends AbstractMindMapExporter {
       return this;
     }
 
-    public State nextStringMarker(){
+    public State nextStringMarker() {
       this.buffer.append("  ");//NOI18N
       return this;
     }
-    
+
     public State append(final String str) {
       this.buffer.append(str);
       return this;
@@ -98,25 +102,26 @@ public class MDExporter extends AbstractMindMapExporter {
     return result.toString();
   }
 
-  private static String getTopicUid(final Topic topic){
+  private static String getTopicUid(final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
-  
+
   private static void writeTopic(final Topic topic, final String listPosition, final State state) throws IOException {
     final int level = topic.getTopicLevel();
-    
+
     String prefix = "";//NOI18N
-    
+
     final String topicUid = getTopicUid(topic);
-    if (topicUid!=null){
+    if (topicUid != null) {
       state.append("<a name=\"").append(topicUid).append("\">").nextLine();//NOI18N
     }
-    
-    if (level<STARTING_INDEX_FOR_NUMERATION){
+
+    if (level < STARTING_INDEX_FOR_NUMERATION) {
       final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);//NOI18N
       state.append(headerPrefix).append(' ').append(ModelUtils.escapeMarkdownStr(topic.getText())).nextLine();
-    }else{
-      final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION+1);//NOI18N
+    }
+    else {
+      final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION + 1);//NOI18N
       state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ').append(ModelUtils.escapeMarkdownStr(topic.getText())).nextLine();
     }
 
@@ -129,18 +134,17 @@ public class MDExporter extends AbstractMindMapExporter {
 
     if (transition != null) {
       final Topic linkedTopic = topic.getMap().findTopicForLink(transition);
-      state.append(prefix)
-              .append("*Related to: ")//NOI18N
-              .append('[')//NOI18N
-              .append(ModelUtils.escapeMarkdownStr(makeLineFromString(linkedTopic.getText())))
-              .append("](")//NOI18N
-              .append("#")//NOI18N
-              .append(getTopicUid(linkedTopic))
-              .append(")*")//NOI18N
-              .nextStringMarker()
-              .nextLine();
+      state.append(prefix).append("*Related to: ")//NOI18N
+          .append('[')//NOI18N
+          .append(ModelUtils.escapeMarkdownStr(makeLineFromString(linkedTopic == null ? "<DEAD LINK>" : linkedTopic.getText())))
+          .append("](")//NOI18N
+          .append("#")//NOI18N
+          .append(getTopicUid(linkedTopic))
+          .append(")*")//NOI18N
+          .nextStringMarker()
+          .nextLine();
       extrasPrinted = true;
-      if (file != null || link != null || note != null){
+      if (file != null || link != null || note != null) {
         state.nextStringMarker().nextLine();
       }
     }
@@ -148,23 +152,23 @@ public class MDExporter extends AbstractMindMapExporter {
     if (file != null) {
       final MMapURI fileURI = file.getValue();
       state.append(prefix)
-              .append("> File: ")//NOI18N
-              .append(ModelUtils.escapeMarkdownStr(fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString())).nextStringMarker().nextLine();
+          .append("> File: ")//NOI18N
+          .append(ModelUtils.escapeMarkdownStr(fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString())).nextStringMarker().nextLine();
       extrasPrinted = true;
     }
 
     if (link != null) {
       final String url = link.getValue().toString();
-      final String ascurl = link.getValue().asString(true,true);
+      final String ascurl = link.getValue().asString(true, true);
       state.append(prefix)
-              .append("> Url: ")//NOI18N
-              .append('[')//NOI18N
-              .append(ModelUtils.escapeMarkdownStr(url))
-              .append("](")//NOI18N
-              .append(ascurl)
-              .append(')')//NOI18N
-              .nextStringMarker()
-              .nextLine();
+          .append("> Url: ")//NOI18N
+          .append('[')//NOI18N
+          .append(ModelUtils.escapeMarkdownStr(url))
+          .append("](")//NOI18N
+          .append(ascurl)
+          .append(')')//NOI18N
+          .nextStringMarker()
+          .nextLine();
       extrasPrinted = true;
     }
 
@@ -173,10 +177,10 @@ public class MDExporter extends AbstractMindMapExporter {
         state.nextLine();
       }
       state.append(prefix)
-              .append("<pre>")//NOI18N
-              .append(StringEscapeUtils.escapeHtml(note.getValue()))
-              .append("</pre>")//NOI18N
-              .nextLine();
+          .append("<pre>")//NOI18N
+          .append(StringEscapeUtils.escapeHtml(note.getValue()))
+          .append("</pre>")//NOI18N
+          .nextLine();
     }
   }
 
@@ -187,9 +191,10 @@ public class MDExporter extends AbstractMindMapExporter {
   private void writeOtherTopicRecursively(final Topic t, final String topicListNumStr, final int topicIndex, final State state) throws IOException {
     writeInterTopicLine(state);
     final String prefix;
-    if (t.getTopicLevel()>=STARTING_INDEX_FOR_NUMERATION){
-      prefix = topicListNumStr + Integer.toString(topicIndex+1) + '.';//NOI18N
-    }else{
+    if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
+      prefix = topicListNumStr + Integer.toString(topicIndex + 1) + '.';//NOI18N
+    }
+    else {
       prefix = "";//NOI18N
     }
     writeTopic(t, prefix, state);
@@ -204,9 +209,9 @@ public class MDExporter extends AbstractMindMapExporter {
     final State state = new State();
 
     state.append("<!--")//NOI18N
-            .nextLine()//NOI18N
-            .append("Generated by NB Mind Map Plugin (https://github.com/raydac/netbeans-mmd-plugin)")//NOI18N
-            .nextLine();//NOI18N
+        .nextLine()//NOI18N
+        .append("Generated by NB Mind Map Plugin (https://github.com/raydac/netbeans-mmd-plugin)")//NOI18N
+        .nextLine();//NOI18N
     state.append(new Timestamp(new java.util.Date().getTime()).toString()).nextLine().append("-->").nextLine();//NOI18N
 
     final Topic root = panel.getModel().getRoot();

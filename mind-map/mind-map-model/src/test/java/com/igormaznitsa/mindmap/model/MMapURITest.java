@@ -59,7 +59,7 @@ public class MMapURITest {
     new MMapURI((String) null);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = AssertionError.class)
   public void testCreate_URINull() throws Exception {
     new MMapURI((URI) null);
   }

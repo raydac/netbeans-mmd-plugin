@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.model;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -31,6 +32,13 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 
 public final class Topic implements Serializable, Constants {
 
@@ -65,16 +73,16 @@ public final class Topic implements Serializable, Constants {
 
   private final MindMap map;
 
-  private Topic(final Topic base) {
+  private Topic(@Nonnull final Topic base) {
     this(base.map, base.parent, base.text);
     this.attributes.putAll(base.attributes);
     this.extras.putAll(base.extras);
   }
 
-  public Topic(final MindMap map, final Topic parent, final String text, final Extra<?>... extras) {
-    this.map = map;
+  public Topic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final String text, @Nonnull final Extra<?>... extras) {
+    this.map = Assertions.assertNotNull(map);
+    this.text = Assertions.assertNotNull(text);
     this.parent = parent;
-    this.text = text;
 
     for (final Extra<?> e : extras) {
       if (e != null) {
@@ -87,7 +95,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public boolean containTopic(final Topic topic) {
+  public boolean containTopic(@Nonnull final Topic topic) {
     boolean result = false;
 
     if (this == topic) {
@@ -108,18 +116,21 @@ public final class Topic implements Serializable, Constants {
     return this.parent == null;
   }
 
+  @Nullable
   public Object getPayload() {
     return this.payload;
   }
 
-  public void setPayload(final Object value) {
+  public void setPayload(@Nullable final Object value) {
     this.payload = value;
   }
 
+  @Nonnull
   private Object readResolve() {
     return new Topic(this);
   }
 
+  @Nonnull
   public MindMap getMap() {
     return this.map;
   }
@@ -149,6 +160,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  @Nonnull
   public Topic getRoot() {
     this.map.lock();
     try {
@@ -190,7 +202,8 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public static Topic parse(final MindMap map, final String text) throws IOException {
+  @Nullable
+  public static Topic parse(@Nonnull final MindMap map, @Nonnull final String text) throws IOException {
     map.lock();
     try {
       final Matcher matcher = PATTERN_MARKDOWN_FORMAT.matcher(text);
@@ -275,14 +288,17 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  @Nullable
   public Topic getFirst() {
     return this.children.isEmpty() ? null : this.children.get(0);
   }
 
+  @Nullable
   public Topic getLast() {
     return this.children.isEmpty() ? null : this.children.get(this.children.size() - 1);
   }
 
+  @Nonnull
   public List<Topic> getChildren() {
     return this.unmodifableChildren;
   }
@@ -291,15 +307,17 @@ public final class Topic implements Serializable, Constants {
     return this.extras.size();
   }
 
+  @Nonnull
   public Map<Extra.ExtraType, Extra<?>> getExtras() {
     return this.unmodifableExtras;
   }
 
+  @Nonnull
   public Map<String, String> getAttributes() {
     return this.unmodifableAttributes;
   }
 
-  public boolean setAttribute(final String name, final String value) {
+  public boolean setAttribute(@Nonnull final String name, @Nullable final String value) {
     this.map.lock();
     try {
       if (value == null) {
@@ -314,7 +332,8 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public String getAttribute(final String name) {
+  @Nullable
+  public String getAttribute(@Nonnull final String name) {
     return this.attributes.get(name);
   }
 
@@ -330,40 +349,40 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  @Nullable
   public Topic getParent() {
     return this.parent;
   }
 
+  @Nonnull
   public String getText() {
     return this.text;
   }
 
-  public boolean isFirstChild(final Topic t) {
+  public boolean isFirstChild(@Nonnull final Topic t) {
     return !this.children.isEmpty() && this.children.get(0) == t;
   }
 
-  public boolean isLastChild(final Topic t) {
+  public boolean isLastChild(@Nonnull final Topic t) {
     return !this.children.isEmpty() && this.children.get(this.children.size() - 1) == t;
   }
 
-  public void setText(final String text) {
+  public void setText(@Nonnull final String text) {
     this.map.lock();
     try {
-      this.text = text;
+      this.text = Assertions.assertNotNull(text);
     }
     finally {
       this.map.unlock();
     }
   }
 
-  public boolean removeExtra(final Extra.ExtraType... types) {
+  public boolean removeExtra(@MustNotContainNull final Extra.ExtraType... types) {
     this.map.lock();
     try {
       boolean result = false;
-      for (final Extra.ExtraType e : types) {
-        if (e != null) {
-          result |= this.extras.remove(e) != null;
-        }
+      for (final Extra.ExtraType e : Assertions.assertDoesntContainNull(types)) {
+        result |= this.extras.remove(e) != null;
       }
       return result;
     }
@@ -372,13 +391,11 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public void setExtra(final Extra<?>... extras) {
+  public void setExtra(@MustNotContainNull final Extra<?>... extras) {
     this.map.lock();
     try {
-      for (final Extra<?> e : extras) {
-        if (e != null) {
-          this.extras.put(e.getType(), e);
-        }
+      for (final Extra<?> e : Assertions.assertDoesntContainNull(extras)) {
+        this.extras.put(e.getType(), e);
       }
     }
     finally {
@@ -404,7 +421,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public boolean hasAncestor(final Topic topic) {
+  public boolean hasAncestor(@Nonnull final Topic topic) {
     Topic parent = this.parent;
     while (parent != null) {
       if (parent == topic) {
@@ -433,7 +450,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public void moveBefore(final Topic topic) {
+  public void moveBefore(@Nonnull final Topic topic) {
     this.map.lock();
     try {
       if (this.parent != null) {
@@ -455,7 +472,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public String findAttributeInAncestors(final String attrName) {
+  public String findAttributeInAncestors(@Nonnull final String attrName) {
     this.map.lock();
     try {
       String result = null;
@@ -471,7 +488,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public void moveAfter(final Topic topic) {
+  public void moveAfter(@Nonnull final Topic topic) {
     this.map.lock();
     try {
       if (this.parent != null) {
@@ -493,7 +510,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public void write(final Writer out) throws IOException {
+  public void write(@Nonnull final Writer out) throws IOException {
     this.map.lock();
     try {
       write(1, out);
@@ -503,7 +520,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  private void write(final int level, final Writer out) throws IOException {
+  private void write(final int level, @Nonnull final Writer out) throws IOException {
     out.append(NEXT_LINE);
     ModelUtils.writeChar(out, '#', level);
     out.append(' ').append(ModelUtils.escapeMarkdownStr(this.text)).append(NEXT_LINE);
@@ -557,26 +574,30 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  boolean removeAllLinksTo(final Topic topic) {
+  boolean removeAllLinksTo(@Nullable final Topic topic) {
     boolean result = false;
-
-    final String uid = topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
-    if (uid != null) {
-      final ExtraTopic link = (ExtraTopic) this.getExtras().get(Extra.ExtraType.TOPIC);
-      if (link != null && uid.equals(link.getValue())) {
-        this.removeExtra(Extra.ExtraType.TOPIC);
-        result = true;
+    if (topic != null) {
+      final String uid = topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
+      if (uid != null) {
+        final ExtraTopic link = (ExtraTopic) this.getExtras().get(Extra.ExtraType.TOPIC);
+        if (link != null && uid.equals(link.getValue())) {
+          this.removeExtra(Extra.ExtraType.TOPIC);
+          result = true;
+        }
       }
-    }
 
-    for (final Topic ch : this.children) {
-      result |= ch.removeAllLinksTo(topic);
+      for (final Topic ch : this.children) {
+        result |= ch.removeAllLinksTo(topic);
+      }
     }
 
     return result;
   }
 
-  boolean removeTopic(final Topic topic) {
+  boolean removeTopic(@Nullable final Topic topic) {
+    if (topic == null) {
+      return false;
+    }
     final Iterator<Topic> iterator = this.children.iterator();
     while (iterator.hasNext()) {
       final Topic t = iterator.next();
@@ -584,10 +605,8 @@ public final class Topic implements Serializable, Constants {
         iterator.remove();
         return true;
       }
-      else {
-        if (t.removeTopic(topic)) {
-          return true;
-        }
+      else if (t.removeTopic(topic)) {
+        return true;
       }
     }
     return false;
@@ -597,7 +616,7 @@ public final class Topic implements Serializable, Constants {
     this.children.clear();
   }
 
-  public boolean moveToNewParent(final Topic newParent) {
+  public boolean moveToNewParent(@Nullable final Topic newParent) {
     this.map.lock();
     try {
       if (newParent == null || this == newParent || this.getParent() == newParent || this.children.contains(newParent)) {
@@ -615,12 +634,11 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public Topic makeChild(final String text, final Topic afterTheTopic) {
+  public Topic makeChild(@Nullable final String text, @Nullable final Topic afterTheTopic) {
     this.map.lock();
     try {
-      final int index = afterTheTopic == null ? -1 : this.children.indexOf(afterTheTopic);
-      Topic result = new Topic(this.map, this, text == null ? "" : text); //NOI18N
-      if (index >= 0) {
+      final Topic result = new Topic(this.map, this, GetUtils.ensureNonNull(text, "")); //NOI18N
+      if (afterTheTopic != null && this.children.indexOf(afterTheTopic) >= 0) {
         result.moveAfter(afterTheTopic);
       }
       return result;
@@ -630,7 +648,8 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public Topic findNext(final TopicChecker checker) {
+  @Nullable
+  public Topic findNext(@Nullable final TopicChecker checker) {
     this.map.lock();
     try {
       Topic result = null;
@@ -658,7 +677,8 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public Topic findPrev(final TopicChecker checker) {
+  @Nullable
+  public Topic findPrev(@Nonnull final TopicChecker checker) {
     this.map.lock();
     try {
       Topic result = null;
@@ -686,7 +706,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public void removeExtras(final Extra<?>... extras) {
+  public void removeExtras(@Nullable final Extra<?>... extras) {
     this.map.lock();
     try {
       if (extras == null || extras.length == 0) {
@@ -705,7 +725,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public Topic findForAttribute(final String attrName, String value) {
+  public Topic findForAttribute(@Nonnull final String attrName, @Nonnull String value) {
     if (value.equals(this.getAttribute(attrName))) {
       return this;
     }
@@ -719,6 +739,7 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
+  @Nonnull
   public int[] getPositionPath() {
     final Topic[] path = getPath();
     final int[] result = new int[path.length];
@@ -738,6 +759,7 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
+  @Nonnull
   public Topic[] getPath() {
     final List<Topic> list = new ArrayList<Topic>();
     Topic current = this;
@@ -749,7 +771,8 @@ public final class Topic implements Serializable, Constants {
     return list.toArray(new Topic[list.size()]);
   }
 
-  Topic makeCopy(final MindMap newMindMap, final Topic parent) {
+  @Nonnull
+  Topic makeCopy(@Nonnull final MindMap newMindMap, @Nullable final Topic parent) {
     this.map.lock();
     try {
       final Topic result = new Topic(newMindMap, parent, this.text, this.extras.values().toArray(new Extra<?>[this.extras.values().size()]));
@@ -765,7 +788,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public boolean removeExtraFromSubtree(final Extra.ExtraType... type) {
+  public boolean removeExtraFromSubtree(@Nonnull @MustNotContainNull final Extra.ExtraType... type) {
     boolean result = false;
 
     this.map.lock();
@@ -783,7 +806,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public boolean removeAttributeFromSubtree(final String... names) {
+  public boolean removeAttributeFromSubtree(@Nonnull @MustNotContainNull final String... names) {
     boolean result = false;
 
     this.map.lock();
@@ -801,7 +824,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public boolean deleteLinkToFileIfPresented(final File baseFolder, final MMapURI file) {
+  public boolean deleteLinkToFileIfPresented(@Nonnull final File baseFolder, @Nonnull final MMapURI file) {
     boolean result = false;
     if (this.extras.containsKey(Extra.ExtraType.FILE)) {
       final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
@@ -815,7 +838,7 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
-  public boolean replaceLinkToFileIfPresented(final File baseFolder, final MMapURI oldFile, final MMapURI newFile) {
+  public boolean replaceLinkToFileIfPresented(@Nonnull final File baseFolder, @Nonnull final MMapURI oldFile, @Nonnull final MMapURI newFile) {
     boolean result = false;
     if (this.extras.containsKey(Extra.ExtraType.FILE)) {
       final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
@@ -831,7 +854,7 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
-  public boolean doesContainFileLink(final File baseFolder, final MMapURI file) {
+  public boolean doesContainFileLink(@Nonnull final File baseFolder, @Nonnull final MMapURI file) {
     if (this.extras.containsKey(Extra.ExtraType.FILE)) {
       final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
       if (fileLink.isSame(baseFolder, file)) {

@@ -17,6 +17,9 @@ package com.igormaznitsa.mindmap.model;
 
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class ExtraTopic extends Extra<String> {
   private static final long serialVersionUID = -8556885025460722094L;
 
@@ -24,7 +27,7 @@ public class ExtraTopic extends Extra<String> {
   
   public static final String TOPIC_UID_ATTR = "topicLinkUID"; //NOI18N
   
-  public static ExtraTopic makeLinkTo(final MindMap map,final Topic topic){
+  public static ExtraTopic makeLinkTo(@Nonnull final MindMap map, @Nullable final Topic topic) {
     ExtraTopic result = null;
     if (topic!=null){
       String uid = topic.getAttribute(TOPIC_UID_ATTR);
@@ -50,26 +53,30 @@ public class ExtraTopic extends Extra<String> {
     return result;
   }
   
-  public ExtraTopic(final String topicUID){
+  public ExtraTopic(@Nonnull final String topicUID) {
     this.topicUID = topicUID;
   }
   
   @Override
+  @Nonnull
   public String getValue() {
     return this.topicUID;
   }
 
   @Override
+  @Nonnull
   public ExtraType getType() {
     return ExtraType.TOPIC;
   }
 
   @Override
+  @Nonnull
   public String getAsString() {
     return this.topicUID;
   }
 
   @Override
+  @Nonnull
   public String provideAsStringForSave() {
     return this.getAsString();
   }
