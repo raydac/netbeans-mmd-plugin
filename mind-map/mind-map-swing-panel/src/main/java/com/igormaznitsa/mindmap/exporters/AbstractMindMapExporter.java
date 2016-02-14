@@ -18,14 +18,20 @@ package com.igormaznitsa.mindmap.exporters;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
+
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
@@ -40,7 +46,7 @@ public abstract class AbstractMindMapExporter {
   public JComponent makeOptions() {
     return null;
   }
-  
+
   public abstract void doExport(MindMapPanel panel, JComponent options, OutputStream out) throws IOException;
 
   public abstract String getName();
@@ -49,7 +55,8 @@ public abstract class AbstractMindMapExporter {
 
   public abstract ImageIcon getIcon();
 
-  public static Color getBackgroundColor(final MindMapPanelConfig cfg, final Topic topic) {
+  @Nonnull
+  public static Color getBackgroundColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
     final Color extracted = Utils.html2color(topic.getAttribute(ATTR_FILL_COLOR.getText()), false);
     final Color result;
     if (extracted == null) {
@@ -74,7 +81,8 @@ public abstract class AbstractMindMapExporter {
     return result;
   }
 
-  public static Color getTextColor(final MindMapPanelConfig cfg, final Topic topic) {
+  @Nonnull
+  public static Color getTextColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
     final Color extracted = Utils.html2color(topic.getAttribute(ATTR_TEXT_COLOR.getText()), false);
     final Color result;
     if (extracted == null) {
@@ -99,12 +107,14 @@ public abstract class AbstractMindMapExporter {
     return result;
   }
 
-  public static Color getBorderColor(final MindMapPanelConfig cfg, final Topic topic) {
+  @Nonnull
+  public static Color getBorderColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
     final Color extracted = Utils.html2color(topic.getAttribute(ATTR_BORDER_COLOR.getText()), false);
     return extracted == null ? cfg.getElementBorderColor() : extracted;
   }
-  
-  public static File selectFileForFileFilter(final MindMapPanel panel, final String title, final String dottedFileExtension, final String filterDescription, final String approveButtonText) {
+
+  @Nullable
+  public static File selectFileForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String title, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
     final File home = new File(System.getProperty("user.home"));//NOI18N
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
@@ -122,7 +132,8 @@ public abstract class AbstractMindMapExporter {
     }, approveButtonText);
   }
 
-  public static File checkFileAndExtension(final MindMapPanel panel, final File file, final String dottedExtension) {
+  @Nullable
+  public static File checkFileAndExtension(@Nonnull final MindMapPanel panel, @Nullable final File file, @Nonnull final String dottedExtension) {
     if (file == null) {
       return null;
     }
@@ -135,11 +146,9 @@ public abstract class AbstractMindMapExporter {
         return null;
       }
     }
-    else {
-      if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
-        if (panel.getController().getDialogProvider(panel).msgConfirmYesNo(BUNDLE.getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(BUNDLE.getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
-          return new File(file.getParent(), file.getName() + dottedExtension);
-        }
+    else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
+      if (panel.getController().getDialogProvider(panel).msgConfirmYesNo(BUNDLE.getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(BUNDLE.getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
+        return new File(file.getParent(), file.getName() + dottedExtension);
       }
     }
     return file;

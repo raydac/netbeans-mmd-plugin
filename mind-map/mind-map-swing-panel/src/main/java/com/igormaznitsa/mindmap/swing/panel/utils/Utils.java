@@ -21,6 +21,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -33,12 +34,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-public class Utils {
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
-  ;
+public final class Utils {
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
   private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
@@ -52,7 +56,10 @@ public class Utils {
     RENDERING_HINTS.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
   }
 
-  public static int calculateColorBrightness (final Color color) {
+  private Utils() {
+  }
+
+  public static int calculateColorBrightness(@Nonnull final Color color) {
     return (int) Math.sqrt(color.getRed() * color.getRed() * .241d + color.getGreen() * color.getGreen() * .691d + color.getBlue() * color.getBlue() * .068d);
   }
 
@@ -66,11 +73,12 @@ public class Utils {
     }
   }
 
-  public static void prepareGraphicsForQuality (final Graphics2D gfx) {
+  public static void prepareGraphicsForQuality(@Nonnull final Graphics2D gfx) {
     gfx.setRenderingHints(RENDERING_HINTS);
   }
 
-  public static String convertCamelCasedToHumanForm (final String camelCasedString, final boolean capitalizeFirstChar) {
+  @Nonnull
+  public static String convertCamelCasedToHumanForm(@Nonnull final String camelCasedString, final boolean capitalizeFirstChar) {
     final StringBuilder result = new StringBuilder();
 
     boolean notFirst = false;
@@ -98,7 +106,8 @@ public class Utils {
     return result.toString();
   }
 
-  public static Topic[] getLeftToRightOrderedChildrens (final Topic topic) {
+  @Nonnull
+  public static Topic[] getLeftToRightOrderedChildrens(@Nonnull final Topic topic) {
     final List<Topic> result = new ArrayList<Topic>();
     if (topic.getTopicLevel() == 0) {
       for (final Topic t : topic.getChildren()) {
@@ -118,13 +127,14 @@ public class Utils {
     return result.toArray(new Topic[result.size()]);
   }
 
-  public static void setAttribute (final String name, final String value, final Topic[] topics) {
+  public static void setAttribute(@Nonnull final String name, @Nullable final String value, @Nonnull @MustNotContainNull final Topic[] topics) {
     for (final Topic t : topics) {
       t.setAttribute(name, value);
     }
   }
 
-  public static Color html2color (final String str, final boolean hasAlpha) {
+  @Nullable
+  public static Color html2color(@Nullable final String str, final boolean hasAlpha) {
     Color result = null;
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
@@ -137,7 +147,8 @@ public class Utils {
     return result;
   }
 
-  public static String color2html (final Color color, final boolean hasAlpha) {
+  @Nullable
+  public static String color2html(@Nullable final Color color, final boolean hasAlpha) {
     if (color == null) {
       return null;
     }
@@ -166,18 +177,20 @@ public class Utils {
     return buffer.toString();
   }
 
-  public static String getFirstLine (final String text) {
+  @Nonnull
+  public static String getFirstLine(@Nonnull final String text) {
     return text.replace("\r", "").split("\\n")[0]; //NOI18N
   }
 
-  public static String makeShortTextVersion (String text, final int maxLength) {
+  @Nonnull
+  public static String makeShortTextVersion(@Nonnull String text, final int maxLength) {
     if (text.length() > maxLength) {
       text = text.substring(0, maxLength) + "..."; //NOI18N
     }
     return text;
   }
 
-  public static void safeSwingCall (final Runnable runnable) {
+  public static void safeSwingCall(@Nonnull final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
     }
@@ -186,7 +199,7 @@ public class Utils {
     }
   }
 
-  public static void safeSwingBlockingCall (final Runnable runnable) {
+  public static void safeSwingBlockingCall(@Nonnull final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
     }
@@ -200,7 +213,8 @@ public class Utils {
     }
   }
 
-  public static String[] breakToLines (final String text) {
+  @Nonnull
+  public static String[] breakToLines(@Nonnull final String text) {
     final int lineNum = numberOfLines(text);
     final String[] result = new String[lineNum];
     final StringBuilder line = new StringBuilder();
@@ -220,7 +234,7 @@ public class Utils {
     return result;
   }
 
-  public static int numberOfLines (final String text) {
+  public static int numberOfLines(@Nonnull final String text) {
     int result = 1;
     for (int i = 0; i < text.length(); i++) {
       if (text.charAt(i) == '\n') {
@@ -230,7 +244,8 @@ public class Utils {
     return result;
   }
 
-  public static Point2D findRectEdgeIntersection (final Rectangle2D rect, final double outboundX, final double outboundY) {
+  @Nullable
+  public static Point2D findRectEdgeIntersection(@Nonnull final Rectangle2D rect, final double outboundX, final double outboundY) {
     final int detectedSide = rect.outcode(outboundX, outboundY);
 
     if ((detectedSide & (Rectangle2D.OUT_TOP | Rectangle2D.OUT_BOTTOM)) != 0) {
@@ -270,7 +285,8 @@ public class Utils {
     return null;
   }
 
-  public static Image renderWithTransparency (final float opacity, final AbstractElement element, final MindMapPanelConfig config) {
+  @Nonnull
+  public static Image renderWithTransparency(final float opacity, @Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig config) {
     final AbstractElement cloned = element.makeCopy();
     final Rectangle2D bounds = cloned.getBounds();
 

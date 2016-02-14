@@ -134,18 +134,20 @@ public class MDExporter extends AbstractMindMapExporter {
 
     if (transition != null) {
       final Topic linkedTopic = topic.getMap().findTopicForLink(transition);
-      state.append(prefix).append("*Related to: ")//NOI18N
-          .append('[')//NOI18N
-          .append(ModelUtils.escapeMarkdownStr(makeLineFromString(linkedTopic == null ? "<DEAD LINK>" : linkedTopic.getText())))
-          .append("](")//NOI18N
-          .append("#")//NOI18N
-          .append(getTopicUid(linkedTopic))
-          .append(")*")//NOI18N
-          .nextStringMarker()
-          .nextLine();
-      extrasPrinted = true;
-      if (file != null || link != null || note != null) {
-        state.nextStringMarker().nextLine();
+      if (linkedTopic != null) {
+        state.append(prefix).append("*Related to: ")//NOI18N
+            .append('[')//NOI18N
+            .append(ModelUtils.escapeMarkdownStr(makeLineFromString(linkedTopic.getText())))
+            .append("](")//NOI18N
+            .append("#")//NOI18N
+            .append(getTopicUid(linkedTopic))
+            .append(")*")//NOI18N
+            .nextStringMarker()
+            .nextLine();
+        extrasPrinted = true;
+        if (file != null || link != null || note != null) {
+          state.nextStringMarker().nextLine();
+        }
       }
     }
 

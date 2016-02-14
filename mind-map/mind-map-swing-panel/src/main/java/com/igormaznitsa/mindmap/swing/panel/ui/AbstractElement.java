@@ -17,8 +17,11 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
+
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
+
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -26,13 +29,17 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
+
+import javax.annotation.Nonnull;
 import javax.swing.text.JTextComponent;
 
 public abstract class AbstractElement {
 
+  @Nonnull
   protected final Topic model;
-
+  @Nonnull
   protected final TextBlock textBlock;
+  @Nonnull
   protected final IconBlock extrasIconBlock;
 
   protected final Rectangle2D bounds = new Rectangle2D.Double();
@@ -62,7 +69,7 @@ public abstract class AbstractElement {
     this.borderColor = orig.borderColor;
   }
 
-  public AbstractElement(final Topic model) {
+  public AbstractElement(@Nonnull final Topic model) {
     this.model = model;
     this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
     this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align"))); //NOI18N
@@ -94,7 +101,7 @@ public abstract class AbstractElement {
     this.model.setAttribute("align", this.textBlock.getTextAlign().name()); //NOI18N
   }
 
-  public void updateElementBounds(final Graphics2D gfx, final MindMapPanelConfig cfg) {
+  public void updateElementBounds(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
     this.textBlock.updateSize(gfx, cfg);
     this.extrasIconBlock.updateSize(gfx, cfg);
 
@@ -109,7 +116,7 @@ public abstract class AbstractElement {
     this.bounds.setRect(0d, 0d, width, Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()));
   }
 
-  public void updateBlockSize(final MindMapPanelConfig cfg) {
+  public void updateBlockSize(@Nonnull final MindMapPanelConfig cfg) {
     this.calcBlockSize(cfg, this.blockSize, false);
   }
 
@@ -135,7 +142,7 @@ public abstract class AbstractElement {
     return this.bounds;
   }
 
-  public final void doPaint(final Graphics2D g, final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+  public final void doPaint(@Nonnull final Graphics2D g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
     final Graphics2D gfx = (Graphics2D) g.create();
     try {
       if (this.hasChildren() && !isCollapsed()) {
@@ -160,7 +167,7 @@ public abstract class AbstractElement {
     }
   }
 
-  public void doPaintConnectors(final Graphics2D g, final boolean leftDirection, final MindMapPanelConfig cfg) {
+  public void doPaintConnectors(@Nonnull final Graphics2D g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
     final Rectangle2D source = this.bounds;
     for (final Topic t : this.model.getChildren()) {
       drawConnector(g, source, ((AbstractElement) t.getPayload()).getBounds(), leftDirection, cfg);
