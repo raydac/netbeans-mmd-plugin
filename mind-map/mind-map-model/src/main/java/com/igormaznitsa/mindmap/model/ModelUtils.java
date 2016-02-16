@@ -19,6 +19,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -33,7 +34,13 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringEscapeUtils;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 public enum ModelUtils {
 
@@ -46,7 +53,7 @@ public enum ModelUtils {
   private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
   private static final Pattern URI_QUERY_PARAMETERS = Pattern.compile("\\&?([^=]+)=([^&]*)"); //NOI18N
 
-  public static boolean onlyFromChar(final String line, final char chr) {
+  public static boolean onlyFromChar(@Nonnull final String line, final char chr) {
     if (line.isEmpty()) {
       return false;
     }
@@ -58,7 +65,9 @@ public enum ModelUtils {
     return true;
   }
 
-  public static Object[] joinArrays(final Object[]... arrs) {
+  @Nonnull
+  @MustNotContainNull
+  public static Object[] joinArrays(@Nonnull @MustNotContainNull final Object[]... arrs) {
     int totalLen = 0;
     for (final Object[] a : arrs) {
       totalLen += a.length;
@@ -74,11 +83,13 @@ public enum ModelUtils {
     return result;
   }
 
-  public static String makePreBlock(final String text) {
+  @Nonnull
+  public static String makePreBlock(@Nonnull final String text) {
     return "<pre>" + StringEscapeUtils.escapeHtml(text) + "</pre>"; //NOI18N
   }
 
-  public static String makeMDCodeBlock(final String text) throws IOException {
+  @Nonnull
+  public static String makeMDCodeBlock(@Nonnull final String text) throws IOException {
     final int maxQuotes = calcMaxLengthOfBacktickQuotesSubstr(text) + 1;
     final StringBuilder result = new StringBuilder(text.length() + 16);
     writeChar(result, '`', maxQuotes);
@@ -87,7 +98,8 @@ public enum ModelUtils {
     return result.toString();
   }
 
-  public static String escapeMarkdownStr(final String text) {
+  @Nonnull
+  public static String escapeMarkdownStr(@Nonnull final String text) {
     final StringBuilder buffer = new StringBuilder(text.length() * 2);
     for (final char c : text.toCharArray()) {
       if (c == '\n') {
@@ -106,7 +118,7 @@ public enum ModelUtils {
     return buffer.toString();
   }
 
-  public static int calcMaxLengthOfBacktickQuotesSubstr(final String text) {
+  public static int calcMaxLengthOfBacktickQuotesSubstr(@Nullable final String text) {
     int result = 0;
     if (text != null) {
       int pos = 0;
@@ -125,13 +137,14 @@ public enum ModelUtils {
     return result;
   }
 
-  public static void writeChar(final Appendable out, final char chr, final int times) throws IOException {
+  public static void writeChar(@Nonnull final Appendable out, final char chr, final int times) throws IOException {
     for (int i = 0; i < times; i++) {
       out.append(chr);
     }
   }
 
-  public static String unescapeMarkdownStr(final String text) {
+  @Nonnull
+  public static String unescapeMarkdownStr(@Nonnull final String text) {
     String unescaped = UNESCAPE_BR.matcher(text).replaceAll("\n"); //NOI18N
     final StringBuffer result = new StringBuffer(text.length());
     final Matcher escaped = MD_ESCAPED_PATTERN.matcher(unescaped);
@@ -143,14 +156,15 @@ public enum ModelUtils {
     return result.toString();
   }
 
-  public static String makeShortTextVersion(String text, final int maxLength) {
+  @Nonnull
+  public static String makeShortTextVersion(@Nonnull String text, final int maxLength) {
     if (text.length() > maxLength) {
       text = text.substring(0, maxLength) + "..."; //NOI18N
     }
     return text;
   }
 
-  public static int countLines(final String text) {
+  public static int countLines(@Nonnull final String text) {
     int result = 1;
     for (int i = 0; i < text.length(); i++) {
       if (text.charAt(i) == '\n') {
@@ -160,7 +174,9 @@ public enum ModelUtils {
     return result;
   }
 
-  public static String[] breakToLines(final String text) {
+  @Nonnull
+  @MustNotContainNull
+  public static String[] breakToLines(@Nonnull final String text) {
     final int lineNum = countLines(text);
     final String[] result = new String[lineNum];
     final StringBuilder line = new StringBuilder();
@@ -180,7 +196,8 @@ public enum ModelUtils {
     return result;
   }
 
-  public static String makeQueryStringForURI(final Properties properties) {
+  @Nonnull
+  public static String makeQueryStringForURI(@Nullable final Properties properties) {
     if (properties == null || properties.isEmpty()) {
       return ""; //NOI18N
     }
@@ -204,7 +221,8 @@ public enum ModelUtils {
     return buffer.toString();
   }
 
-  public static Properties extractQueryPropertiesFromURI(final URI uri) {
+  @Nonnull
+  public static Properties extractQueryPropertiesFromURI(@Nonnull final URI uri) {
     final Properties result = new Properties();
 
     final String rawQuery = uri.getRawQuery();
@@ -227,12 +245,14 @@ public enum ModelUtils {
     return result;
   }
 
+  @Nonnull
   private static String char2UriHexByte(final char ch) {
     final String s = Integer.toHexString(ch).toUpperCase(Locale.ENGLISH);
     return '%' + (s.length() < 2 ? "0" : "") + s; //NOI18N //NOI18N
   }
 
-  public static String encodeForURI(final String s) {
+  @Nonnull
+  public static String encodeForURI(@Nonnull final String s) {
     final StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
@@ -253,7 +273,8 @@ public enum ModelUtils {
     return result.toString();
   }
 
-  public static File makeFileForPath(final String path) {
+  @Nullable
+  public static File makeFileForPath(@Nullable final String path) {
     if (path == null || path.isEmpty()) {
       return null;
     }
@@ -271,7 +292,8 @@ public enum ModelUtils {
     }
   }
 
-  public static String escapeURIPath(final String text) {
+  @Nonnull
+  public static String escapeURIPath(@Nonnull final String text) {
     final String chars = "% :<>?"; //NOI18N
     String result = text;
     for (final char ch : chars.toCharArray()) {
@@ -281,7 +303,8 @@ public enum ModelUtils {
     return result;
   }
 
-  private static String normalizeFileURI(final String fileUri) {
+  @Nonnull
+  private static String normalizeFileURI(@Nonnull final String fileUri) {
     final int schemePosition = fileUri.indexOf(':');
     final String scheme = schemePosition < 0 ? "" : fileUri.substring(0, schemePosition + 1); //NOI18N
     final String chars = " :<>?"; //NOI18N
@@ -292,7 +315,8 @@ public enum ModelUtils {
     return scheme + result;
   }
 
-  public static URI toURI(final Path path) {
+  @Nullable
+  public static URI toURI(@Nullable final Path path) {
     if (path == null) {
       return null;
     }
@@ -322,7 +346,8 @@ public enum ModelUtils {
     }
   }
 
-  public static File toFile(final URI uri) {
+  @Nonnull
+  public static File toFile(@Nonnull final URI uri) {
     final List<String> pathItems = new ArrayList<String>();
 
     final String authority = uri.getAuthority();

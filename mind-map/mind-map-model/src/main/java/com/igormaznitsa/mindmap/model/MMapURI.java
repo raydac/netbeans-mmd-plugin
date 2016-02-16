@@ -119,11 +119,13 @@ public class MMapURI implements Serializable {
     }
   }
 
+  @Nonnull
   public static MMapURI makeFromFilePath(@Nullable final File base, @Nonnull final String filePath, @Nullable final Properties properties) {
     return new MMapURI(base, ModelUtils.makeFileForPath(filePath), properties);
   }
 
-  public MMapURI replaceBaseInPath(final boolean replaceHost, final URI newBase, int currentNumberOfResourceItemsTheLasIsZero) throws URISyntaxException {
+  @Nonnull
+  public MMapURI replaceBaseInPath(final boolean replaceHost, @Nonnull final URI newBase, int currentNumberOfResourceItemsTheLasIsZero) throws URISyntaxException {
     final String newURIPath = newBase.getPath();
     final String[] splittedNewPath = newURIPath.split("\\/");
     final String[] splittedOldPath = this.uri.getPath().split("\\/");

@@ -267,7 +267,7 @@ public final class MindMapPanelConfig implements Serializable {
       try {
         for (final String k : prefs.keys()) {
           if (k.startsWith("mapShortCut.")) {
-            final int dotIndex = k.indexOf('.');
+//            final int dotIndex = k.indexOf('.');
 //            final String id = k.substring(dotIndex + 1);
             final String packedValue = prefs.get(k, null);
             if (packedValue == null) {
