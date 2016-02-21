@@ -1,4 +1,4 @@
-1.1.4 (under development)
+1.1.4 (21-feb-2015)
 - improved PNG exporter to save images without background and with all unfolded topics
 - added graphical print support into the IDEA plugin
 - added tuning of key modifiers to activate scaling with mouse wheel
