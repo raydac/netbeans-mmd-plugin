@@ -11,6 +11,29 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
+__1.1.4 (21-feb-2015)__
+- improved PNG exporter to save images without background and with all unfolded topics
+- added graphical print support into the IDEA plugin
+- added tuning of key modifiers to activate scaling with mouse wheel
+- fixed icons in color choosing buttons in IDEA version under Retina
+- improved panel, now clicking on '+' of a topic with pressed CTRL will open only 1th level children
+- improvements of stability in work with DnD operations
+- refactoring of both plug-ins, improved stability of work
+
+__1.1.3 (maintenance) (29-nov-2015)__
+- the IDEA plugin enabled for all products based on the IDEA platform (but not all of them allow to tune facets) (IDEA, 1.0.3)
+- enabled folder actions for folders within .projectKnowledge folder (NetBeans, 1.1.3)
+- improved DnD processing to avoid potential NPE for objects without file references (IDEA, 1.0.3)
+- added "Knowledge" view into Project pane to show separately .projectKnowledge folder content (IDEA, 1.0.3)
+- fixed incompatibility of the Settings panel with OpenJDK (IDEA, 1.0.3)
+
+__1.1.2 (maintenance) (22-nov-2015)__
+- refactoring to increase compatibility with different IDEs
+- removed logging with slf4j, added services to provide different logging for each IDE
+- improved logic of opening file link in both IDEs
+- changed byte-code version to Java 6 (but it still uses java.nio.file.Path from Java 7+)
+- bug fixing in the IDEA version (1.0.2), changed minimal IDEA version to IDEA 13 (133 build), but it should be started under Java 7+
+
 __1.1.1 (maintenance) (15-oct-2015)__
 - [Intellij IDEA plugin published in the IDEA repository](https://plugins.jetbrains.com/plugin/8045)
 - very small refactoring
