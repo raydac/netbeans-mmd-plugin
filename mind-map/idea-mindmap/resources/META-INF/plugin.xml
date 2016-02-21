@@ -18,13 +18,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.0.4 (...)</p>
+        <p>1.0.4 (21-feb-2016)</p>
         <ul>
-            <li>improvements in file DnD support</li>
-            <li>Code refactoring and cleaning</li>
-            <li>provided support to tune key modifiers to activate scaling with mouse wheel (not all modifiers work under Intellij platform)</li>
-            <li>fixed size of generated icons in color choosing buttons under Retina </li>
-            <li>improved panel, now clicking on '+' of a topic with pressed CTRL will open only 1th level children</li>
+            <li>improved PNG exporter to save images without background and with all unfolded topics</li>
+            <li>added graphical print support into the IDEA plugin</li>
+            <li>added tuning of key modifiers to activate scaling with mouse wheel</li>
+            <li>fixed icons in color choosing buttons in IDEA version under Retina</li>
+            <li>improved mind map panel, now clicking on '+' of a topic with pressed CTRL will open only 1th level children</li>
+            <li>improvements of stability in work with DnD operations</li>
         </ul>
         <p>1.0.3 (29-nov-2015)</p>
         <ul>

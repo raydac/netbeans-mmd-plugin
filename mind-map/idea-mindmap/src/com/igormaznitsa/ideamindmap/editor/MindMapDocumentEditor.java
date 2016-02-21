@@ -300,7 +300,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   @Override
-  public boolean canBeDeletedSilently(MindMap mindMap, Topic topic) {
+  public boolean canBeDeletedSilently(@NotNull MindMap mindMap, @NotNull Topic topic) {
     return topic.getText().isEmpty() && topic.getExtras().isEmpty() && doesContainOnlyStandardAttributes(topic);
   }
 
