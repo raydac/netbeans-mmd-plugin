@@ -21,6 +21,15 @@ time, mark, audio, video {
   font-size: 100%;
   vertical-align: baseline;
   border: 0;
+  text-shadow: -1px 0 #666, 0 1px #666, 1px 0 #666, 0 -1px #666;
+}
+
+a span {
+  text-shadow: none;
+}
+
+footer {
+  text-shadow: none;
 }
 
 .iframe-wrapper {
@@ -60,6 +69,12 @@ table {
 p {
   text-align: justify;
 }
+
+strong {
+  color: white;
+  text-shadow: -1px 0 #666, 0 1px #666, 1px 0 #666, 0 -1px #666;
+}
+
 /* LAYOUT STYLES */
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, serif;
