@@ -42,9 +42,10 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
-public enum ModelUtils {
+public final class ModelUtils {
 
-  ;
+  private ModelUtils() {
+  }
 
   private static final Logger logger = LoggerFactory.getLogger(ModelUtils.class);
 
@@ -52,6 +53,28 @@ public enum ModelUtils {
   private static final Pattern MD_ESCAPED_PATTERN = Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])"); //NOI18N
   private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
   private static final Pattern URI_QUERY_PARAMETERS = Pattern.compile("\\&?([^=]+)=([^&]*)"); //NOI18N
+
+  public static String removeISOControlChars(@Nonnull final String text) {
+    final StringBuilder result = new StringBuilder(text.length());
+    for (int i = 0; i < text.length(); i++) {
+      final char chr = text.charAt(i);
+      if (Character.isISOControl(chr)) {
+        continue;
+      }
+      result.append(chr);
+    }
+    return result.toString();
+  }
+
+  public static int howManyCharsOnStart(final char chr, @Nonnull final String text) {
+    int result = 0;
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == chr) {
+        result++;
+      }
+    }
+    return result;
+  }
 
   public static boolean onlyFromChar(@Nonnull final String line, final char chr) {
     if (line.isEmpty()) {

@@ -8,7 +8,7 @@
     </parent>
     
     <artifactId>mind-map-swing-panel</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <description>Swing based panel to show and interact with mind map</description>
@@ -17,7 +17,7 @@
       <dependency>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map-model</artifactId>
-        <version>1.0.3</version>
+        <version>1.1.0-SNAPSHOT</version>
         <optional>true</optional>
       </dependency>
       <dependency>

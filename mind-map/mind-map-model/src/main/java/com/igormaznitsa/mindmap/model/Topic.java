@@ -15,10 +15,11 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.io.File;
+
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
@@ -30,8 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,6 +38,7 @@ import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.GetUtils;
+import com.igormaznitsa.mindmap.model.parser.Lexer;
 
 public final class Topic implements Serializable, Constants {
 
@@ -61,15 +61,6 @@ public final class Topic implements Serializable, Constants {
   private transient Object payload;
 
   private final transient long localUID = LOCALUID_GENERATOR.getAndIncrement();
-
-  private static final Pattern PATTERN_TOPIC_HEADER = Pattern.compile("^\\s*(\\#+)\\s*(.*)$"); //NOI18N
-  private static final Pattern PATTERN_EXTRA = Pattern.compile("^\\s*\\-\\s*([^\\s]+)\\s*$"); //NOI18N
-  private static final Pattern PATTERN_MARKDOWN_FORMAT = Pattern.compile("(?ms)^\\s*(#+\\s.*?)$|^\\s*(-\\s.*?)$|^\\s*(\\>.*?)$|\\<\\s*?pre\\s*?\\>(.*?)\\<\\s*?\\/\\s*?pre\\s*\\>|^(.*?)$"); //NOI18N
-  private static final int MD_GROUP_HEAD = 1;
-  private static final int MD_GROUP_ITEM = 2;
-  private static final int MD_GROUP_BLOCKQUOTE = 3;
-  private static final int MD_GROUP_PRE = 4;
-  private static final int MD_GROUP_OTHER_LINE = 5;
 
   private final MindMap map;
 
@@ -203,24 +194,25 @@ public final class Topic implements Serializable, Constants {
   }
 
   @Nullable
-  public static Topic parse(@Nonnull final MindMap map, @Nonnull final String text) throws IOException {
+  public static Topic parse(@Nonnull final MindMap map, @Nonnull final Lexer lexer) throws IOException {
     map.lock();
     try {
-      final Matcher matcher = PATTERN_MARKDOWN_FORMAT.matcher(text);
-
       Topic topic = null;
       int depth = 0;
 
       Extra.ExtraType extraType = null;
 
-      while (matcher.find()) {
-        if (matcher.group(MD_GROUP_HEAD) != null) {
-          extraType = null;
-
-          final Matcher topicMatcher = PATTERN_TOPIC_HEADER.matcher(matcher.group(MD_GROUP_HEAD));
-          if (topicMatcher.find()) {
-            final int newDepth = topicMatcher.group(1).length();
-            final String newTopicText = ModelUtils.unescapeMarkdownStr(topicMatcher.group(2));
+      while (true) {
+        lexer.advance();
+        final Lexer.TokenType token = lexer.getTokenType();
+        if (token == null) {
+          break;
+        }
+        switch (token) {
+          case TOPIC: {
+            final String tokenText = lexer.getTokenText();
+            final int newDepth = ModelUtils.howManyCharsOnStart('#', tokenText);
+            final String newTopicText = ModelUtils.unescapeMarkdownStr(tokenText.substring(newDepth).trim());
 
             if (newDepth == depth + 1) {
               depth = newDepth;
@@ -236,51 +228,56 @@ public final class Topic implements Serializable, Constants {
                 depth = newDepth;
               }
             }
+
           }
-        }
-        else if (matcher.group(MD_GROUP_ITEM) != null) {
-          final Matcher extraName = PATTERN_EXTRA.matcher(matcher.group(MD_GROUP_ITEM));
-          if (extraName.find()) {
+          break;
+          case EXTRA_TYPE: {
+            final String extraName = lexer.getTokenText().substring(1).trim();
             try {
-              extraType = Extra.ExtraType.valueOf(extraName.group(1));
+              extraType = Extra.ExtraType.valueOf(extraName);
             }
             catch (IllegalArgumentException ex) {
               extraType = null;
             }
           }
-        }
-        else if (matcher.group(MD_GROUP_BLOCKQUOTE) != null) {
-          if (topic != null) {
-            MindMap.fillMapByAttributes(matcher.group(MD_GROUP_BLOCKQUOTE), topic.attributes);
+          break;
+          case ATTRIBUTE: {
+            if (topic != null) {
+              final String text = lexer.getTokenText().trim();
+              MindMap.fillMapByAttributes(text, topic.attributes);
+            }
+            extraType = null;
           }
-          extraType = null;
-        }
-        else if (matcher.group(MD_GROUP_PRE) != null) {
-          if (topic != null && extraType != null) {
-            try {
-              final String groupPre = extraType.preprocessString(matcher.group(MD_GROUP_PRE));
-              if (groupPre != null) {
-                topic.setExtra(extraType.parseLoaded(groupPre));
+          break;
+          case EXTRA_TEXT: {
+            if (topic != null && extraType != null) {
+              try {
+                final String text = lexer.getTokenText();
+                final String groupPre = extraType.preprocessString(text.substring(5, text.length() - 6));
+                if (groupPre != null) {
+                  topic.setExtra(extraType.parseLoaded(groupPre));
+                }
+                else {
+                  logger.error("Detected invalid extra data " + extraType);
+                }
               }
-              else {
-                logger.error("Detected invalid extra data " + extraType);
+              catch (Exception ex) {
+                logger.error("Unexpected exception #23241", ex); //NOI18N
+              }
+              finally {
+                extraType = null;
               }
             }
-            catch (Exception ex) {
-              logger.error("Unexpected exception #23241", ex); //NOI18N
-            }
-            finally {
+          }
+          break;
+          case UNKNOWN_LINE: {
+            if (topic != null && extraType != null) {
               extraType = null;
             }
           }
-        }
-        else if (matcher.group(MD_GROUP_OTHER_LINE) != null) {
-          if (topic != null && extraType != null) {
-            extraType = null;
-          }
+          break;
         }
       }
-
       return topic == null ? null : topic.getRoot();
     }
     finally {

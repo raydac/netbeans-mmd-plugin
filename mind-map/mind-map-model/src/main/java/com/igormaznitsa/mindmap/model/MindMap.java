@@ -42,6 +42,9 @@ import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.IOUtils;
 
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.parser.Lexer;
+
 public final class MindMap implements Serializable, Constants, TreeModel {
 
   private static final long serialVersionUID = 5929181596778047354L;
@@ -77,31 +80,37 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
   public MindMap(@Nullable final MindMapController nullableController, @Nonnull final Reader reader) throws IOException {
     this.controller = nullableController;
-    final StringBuilder lineBuffer = new StringBuilder();
-    while (true) {
-      final int chr = reader.read();
-      if (chr < 0) {
-        throw new IllegalArgumentException("It is not Mind Map"); //NOI18N
+    final String text = IOUtils.toString(Assertions.assertNotNull(reader));
+
+    final Lexer lexer = new Lexer();
+    lexer.start(text, 0, text.length(), Lexer.TokenType.HEAD_LINE);
+
+    Topic rootTopic = null;
+
+    boolean process = true;
+
+    while (process) {
+      lexer.advance();
+      final Lexer.TokenType token = lexer.getTokenType();
+      if (token == null) {
+        throw new IllegalArgumentException("Wrong format of mind map, end of header is not found");
       }
-      if (chr == '\n') {
-        final String line = lineBuffer.toString().trim();
-        if (ModelUtils.onlyFromChar(line, '-')) {
-          break;
+      switch (token) {
+        case HEAD_LINE:
+          continue;
+        case ATTRIBUTE: {
+          fillMapByAttributes(lexer.getTokenText(), this.attributes);
         }
-        if (line.startsWith(">")) { //NOI18N
-          fillMapByAttributes(line, this.attributes);
+        break;
+        case HEAD_DELIMITER: {
+          process = false;
+          rootTopic = Topic.parse(this, lexer);
         }
-        lineBuffer.setLength(0);
-      }
-      else {
-        lineBuffer.append((char) chr);
+        break;
       }
     }
-    lineBuffer.trimToSize();
 
-    final String str = IOUtils.toString(reader);
-    this.root = Topic.parse(this, str);
-
+    this.root = rootTopic;
     this.attributes.put(GENERATOR_VERSION_NAME, GENERATOR_VERSION);
   }
 

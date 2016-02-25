@@ -9,7 +9,7 @@
   </parent>
     
   <artifactId>mind-map-model</artifactId>
-  <version>1.0.3</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
     
   <description>Abstract mind map model</description>

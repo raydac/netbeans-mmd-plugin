@@ -18,15 +18,25 @@ package com.igormaznitsa.mindmap.model;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
+import com.igormaznitsa.mindmap.model.parser.Lexer;
+
 public class TopicTest {
+
+  private final Lexer makeLexer(final String text) {
+    final Lexer lexer = new Lexer();
+    lexer.start(text, 0, text.length(), Lexer.TokenType.WHITESPACE);
+    return lexer;
+  }
 
   @Test
   public void testParse_OnlyTopic() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic topic = Topic.parse(mm,"# Topic");
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic"));
     assertEquals("Topic",topic.getText());
     assertTrue(topic.getChildren().isEmpty());
   }
@@ -34,7 +44,7 @@ public class TopicTest {
   @Test
   public void testParse_OnlyTopicWithExtras() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n< pre  >Some\ntext</  pre  >\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2");
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"));
     assertEquals("Topic",topic.getText());
     assertEquals(1,topic.getChildren().size());
     assertEquals(2,topic.getExtras().size());
@@ -45,7 +55,7 @@ public class TopicTest {
   @Test
   public void testParse_PairTopicsFirstContainsMultilineTextNoteAndMiscEOL() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic topic = Topic.parse(mm,"# Topic\r\n- NOTE\r\n<pre>   Some   \r\n    text     \n    line  \r\n  end \r\n   </pre>\r\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2");
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic\r\n- NOTE\r\n<pre>   Some   \r\n    text     \n    line  \r\n  end \r\n   </pre>\r\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"));
     assertEquals("Topic",topic.getText());
     assertEquals(1,topic.getChildren().size());
     assertEquals(2,topic.getExtras().size());
@@ -58,7 +68,7 @@ public class TopicTest {
   @Test
   public void testParse_TopicWithURLContainingSpaces() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n< pre  >Some\ntext</  pre  >\n- LINK\n<pre>  http://www.google.com </pre>\n## Topic2");
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>  http://www.google.com </pre>\n## Topic2"));
     assertEquals("Topic",topic.getText());
     assertEquals(1,topic.getChildren().size());
     assertEquals(2,topic.getExtras().size());
@@ -69,7 +79,7 @@ public class TopicTest {
   @Test
   public void testParse_OnlyTopicWithExtrasAndAttributes() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic topic = Topic.parse(mm,"# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n> attr1=`hello`,attr2=``wor`ld``");
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n> attr1=`hello`,attr2=``wor`ld``"));
     assertEquals("Topic",topic.getText());
     assertTrue(topic.getChildren().isEmpty());
     assertEquals(2,topic.getExtras().size());
@@ -83,7 +93,7 @@ public class TopicTest {
   @Test
   public void testParse_TopicAndChild() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic topic = Topic.parse(mm,"# Topic<br>Root\n ## Child<br/>Topic");
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic<br>Root\n ## Child<br/>Topic"));
     assertEquals("Topic\nRoot",topic.getText());
     assertEquals(1,topic.getChildren().size());
     
@@ -95,7 +105,7 @@ public class TopicTest {
   @Test
   public void testParse_TopicAndTwoChildren() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic topic = Topic.parse(mm,"# Topic\n ## Child1\n ## Child2\n");
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n ## Child1\n ## Child2\n"));
     assertEquals("Topic",topic.getText());
     assertEquals(2,topic.getChildren().size());
     
@@ -111,7 +121,7 @@ public class TopicTest {
   @Test
   public void testParse_MultiLevels() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic root = Topic.parse(mm,"# Level1\n## Level2.1\n### Level3.1\n## Level2.2\n### Level3.2\n#### Level4.2\n## Level2.3");
+    final Topic root = Topic.parse(mm, makeLexer("# Level1\n## Level2.1\n### Level3.1\n## Level2.2\n### Level3.2\n#### Level4.2\n## Level2.3"));
     assertEquals("Level1",root.getText());
     assertEquals(3, root.getChildren().size());
     assertEquals("Level2.1", root.getChildren().get(0).getText());
@@ -188,7 +198,7 @@ public class TopicTest {
   @Test
   public void testParse_EmptyTextAtMiddleLevel() throws Exception {
     final MindMap mm = new MindMap(null);
-    final Topic topic = Topic.parse(mm, "# \n## Child\n");
+    final Topic topic = Topic.parse(mm, makeLexer("# \n## Child\n"));
     assertEquals("", topic.getText());
     assertEquals(1, topic.getChildren().size());
 
