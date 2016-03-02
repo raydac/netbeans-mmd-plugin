@@ -22,15 +22,16 @@ import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.Assertions;
 
 /**
- * Allows to extract lexemes from mind map file.
+ * Allows to extract lexeme from mind map file.
  */
-public final class Lexer {
-
+public final class MindMapLexer {
+  /**
+   * Type of allowed lexeme.
+   */
   public enum TokenType {
     HEAD_LINE,
-    HEAD_END,
-    ATTRIBUTE,
     HEAD_DELIMITER,
+    ATTRIBUTE,
     TOPIC,
     EXTRA_TYPE,
     EXTRA_TEXT,
@@ -38,6 +39,9 @@ public final class Lexer {
     UNKNOWN_LINE
   }
 
+  /**
+   * Class contains information about current lexer state.
+   */
   public static final class LexerPosition {
 
     private int offset;
@@ -89,7 +93,15 @@ public final class Lexer {
   private TokenType tokenType = TokenType.UNKNOWN_LINE;
   private final LexerPosition position = new LexerPosition(0, TokenType.UNKNOWN_LINE);
 
-  public void start(@Nonnull final CharSequence buffer, final int startOffset, final int endOffset, @Nonnull final Lexer.TokenType initialState) {
+  public int getTokenStartOffset() {
+    return this.tokenStart;
+  }
+
+  public int getTokenEndOffset() {
+    return this.tokenEnd;
+  }
+
+  public void start(@Nonnull final CharSequence buffer, final int startOffset, final int endOffset, @Nonnull final MindMapLexer.TokenType initialState) {
     this.buffer = buffer;
     this.tokenType = initialState;
     this.position.offset = startOffset;
@@ -104,7 +116,7 @@ public final class Lexer {
 
   @Nonnull
   public CharSequence getTokenSequence() {
-    return getBufferSequence().subSequence(getTokenStart(), getTokenEnd());
+    return getBufferSequence().subSequence(this.tokenStart, this.tokenEnd);
   }
 
   @Nonnull
@@ -117,12 +129,9 @@ public final class Lexer {
     return this.tokenStart == this.tokenEnd ? null : this.tokenType;
   }
 
-  public int getTokenStart() {
-    return this.tokenStart;
-  }
-
-  public int getTokenEnd() {
-    return this.tokenEnd;
+  @Nonnull
+  public TokenPosition makeTokenPosition() {
+    return new TokenPosition(this.tokenStart, this.tokenEnd);
   }
 
   public void advance() {
@@ -208,16 +217,14 @@ public final class Lexer {
           }
         }
         break;
-        case TOPIC: {
-          tokenHasBeenCompleted = skipToNextLine();
-          inAction = false;
-        }
-        break;
+        case TOPIC:
         case UNKNOWN_LINE: {
           tokenHasBeenCompleted = skipToNextLine();
           inAction = false;
         }
         break;
+        default:
+          throw Assertions.fail("Detected unexpected lexer state " + this.position.state);
       }
     }
 
@@ -288,7 +295,6 @@ public final class Lexer {
 
   private boolean isAllLineFromChars(final char c) {
     boolean detected = false;
-    final int limit = this.position.offset;
     final int prelimit = this.position.offset - 1;
 
     for (int i = this.tokenStart; i < this.position.offset; i++) {

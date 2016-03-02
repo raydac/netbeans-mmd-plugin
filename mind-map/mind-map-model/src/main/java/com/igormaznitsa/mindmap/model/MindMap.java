@@ -43,7 +43,7 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.io.IOUtils;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.model.parser.Lexer;
+import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
 public final class MindMap implements Serializable, Constants, TreeModel {
 
@@ -82,8 +82,8 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     this.controller = nullableController;
     final String text = IOUtils.toString(Assertions.assertNotNull(reader));
 
-    final Lexer lexer = new Lexer();
-    lexer.start(text, 0, text.length(), Lexer.TokenType.HEAD_LINE);
+    final MindMapLexer lexer = new MindMapLexer();
+    lexer.start(text, 0, text.length(), MindMapLexer.TokenType.HEAD_LINE);
 
     Topic rootTopic = null;
 
@@ -91,7 +91,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
 
     while (process) {
       lexer.advance();
-      final Lexer.TokenType token = lexer.getTokenType();
+      final MindMapLexer.TokenType token = lexer.getTokenType();
       if (token == null) {
         throw new IllegalArgumentException("Wrong format of mind map, end of header is not found");
       }
@@ -107,6 +107,8 @@ public final class MindMap implements Serializable, Constants, TreeModel {
           rootTopic = Topic.parse(this, lexer);
         }
         break;
+        default:
+          break;
       }
     }
 

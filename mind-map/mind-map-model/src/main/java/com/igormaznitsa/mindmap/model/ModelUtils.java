@@ -47,26 +47,14 @@ public final class ModelUtils {
   private ModelUtils() {
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(ModelUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ModelUtils.class);
 
   private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>"); //NOI18N
   private static final Pattern MD_ESCAPED_PATTERN = Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])"); //NOI18N
   private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
   private static final Pattern URI_QUERY_PARAMETERS = Pattern.compile("\\&?([^=]+)=([^&]*)"); //NOI18N
 
-  public static String removeISOControlChars(@Nonnull final String text) {
-    final StringBuilder result = new StringBuilder(text.length());
-    for (int i = 0; i < text.length(); i++) {
-      final char chr = text.charAt(i);
-      if (Character.isISOControl(chr)) {
-        continue;
-      }
-      result.append(chr);
-    }
-    return result.toString();
-  }
-
-  public static int howManyCharsOnStart(final char chr, @Nonnull final String text) {
+  public static int calcCharsOnStart(final char chr, @Nonnull final String text) {
     int result = 0;
     for (int i = 0; i < text.length(); i++) {
       if (text.charAt(i) == chr) {
@@ -237,7 +225,7 @@ public final class ModelUtils {
         buffer.append(encodedKey).append('=').append(encodedValue);
       }
       catch (UnsupportedEncodingException ex) {
-        logger.error("Can't encode URI query", ex); //NOI18N
+        LOGGER.error("Can't encode URI query", ex); //NOI18N
         throw new Error("Unexpected exception, can't find UTF-8 charset!"); //NOI18N
       }
     }
@@ -260,7 +248,7 @@ public final class ModelUtils {
         }
       }
       catch (UnsupportedEncodingException ex) {
-        logger.error("Can't decode URI query", ex); //NOI18N
+        LOGGER.error("Can't decode URI query", ex); //NOI18N
         throw new Error("Unexpected exception, can't find UTF-8 charset!"); //NOI18N
       }
     }
@@ -306,7 +294,7 @@ public final class ModelUtils {
         return new File(new URI(normalizeFileURI(path)));
       }
       catch (URISyntaxException ex) {
-        logger.error("URISyntaxException for " + path, ex); //NOI18N
+        LOGGER.error("URISyntaxException for " + path, ex); //NOI18N
         return null;
       }
     }

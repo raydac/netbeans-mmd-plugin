@@ -17,11 +17,11 @@ package com.igormaznitsa.ideamindmap.lang;
 
 import com.intellij.lang.Language;
 
-public class MindMapLanguage extends Language {
+public class MMLanguage extends Language {
 
-  public static final MindMapLanguage INSTANCE = new MindMapLanguage();
+  public static final MMLanguage INSTANCE = new MMLanguage();
 
-  public MindMapLanguage() {
+  public MMLanguage() {
     super("NBMindMap", "text/x-nbmmd+plain");
   }
 

@@ -17,6 +17,8 @@ package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.filetype.MindMapFileType;
+import com.igormaznitsa.ideamindmap.lang.MMDFile;
+import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
@@ -33,6 +35,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
+import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -45,7 +48,13 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.search.FileTypeIndex;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.awt.RelativePoint;
+import com.intellij.util.indexing.FileBasedIndex;
 import com.intellij.util.ui.UIUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
@@ -67,6 +76,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -270,14 +283,14 @@ public enum IdeaUtils {
 
   public static void plainMessageClose(final Project project, final String title, final JComponent centerComponent) {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
-      centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true){
+      centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true) {
       @NotNull @Override protected Action[] createActions() {
-        return new Action[]{new DialogWrapperAction(CommonBundle.getCloseButtonText()) {
+        return new Action[] { new DialogWrapperAction(CommonBundle.getCloseButtonText()) {
 
           @Override protected void doAction(ActionEvent e) {
             doCancelAction();
           }
-        }};
+        } };
       }
     };
     dialog.show();
@@ -383,9 +396,49 @@ public enum IdeaUtils {
         balloon.setAnimationEnabled(true);
         final Component frame = WindowManager.getInstance().findVisibleFrame();
         if (frame != null)
-          balloon.show(new RelativePoint(frame, new Point(frame.getWidth(),frame.getHeight())), Balloon.Position.below);
+          balloon.show(new RelativePoint(frame, new Point(frame.getWidth(), frame.getHeight())), Balloon.Position.below);
       }
     });
   }
 
+  @Nullable
+  public static File findProjectFolder(@Nullable final PsiElement element) {
+    if (element == null)
+      return null;
+    final Project proj = element.getProject();
+    if (proj == null)
+      return null;
+    return IdeaUtils.vfile2iofile(proj.getBaseDir());
+  }
+
+  public static List<PsiExtraFile> findPsiFileLinksForProjectScope(final Project project) {
+    List<PsiExtraFile> result = new ArrayList<PsiExtraFile>();
+    Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MindMapFileType.INSTANCE,
+      GlobalSearchScope.allScope(project));
+    for (VirtualFile virtualFile : virtualFiles) {
+      final MMDFile simpleFile = (MMDFile) PsiManager.getInstance(project).findFile(virtualFile);
+      if (simpleFile != null) {
+        final PsiExtraFile[] fileLinks = PsiTreeUtil.getChildrenOfType(simpleFile, PsiExtraFile.class);
+        if (fileLinks != null) {
+          Collections.addAll(result, fileLinks);
+        }
+      }
+    }
+    return result;
+  }
+
+  @NotNull
+  public static GlobalSearchScope moduleScope(@NotNull Project project, @Nullable Module module) {
+    return module != null ? moduleScope(module) : GlobalSearchScope.projectScope(project);
+  }
+
+  @NotNull
+  public static GlobalSearchScope moduleScope(@NotNull PsiElement element) {
+    return moduleScope(element.getProject(), ModuleUtilCore.findModuleForPsiElement(element));
+  }
+
+  @NotNull
+  public static GlobalSearchScope moduleScope(@NotNull Module module) {
+    return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module).uniteWith(module.getModuleContentWithDependenciesScope());
+  }
 }

@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.GetUtils;
-import com.igormaznitsa.mindmap.model.parser.Lexer;
+import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
 public final class Topic implements Serializable, Constants {
 
@@ -48,20 +48,29 @@ public final class Topic implements Serializable, Constants {
 
   private static final AtomicLong LOCALUID_GENERATOR = new AtomicLong();
 
+  @Nullable
   private Topic parent;
+
   private final EnumMap<Extra.ExtraType, Extra<?>> extras = new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
   private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras = Collections.unmodifiableMap(this.extras);
   private final Map<String, String> attributes = new HashMap<String, String>();
   private final Map<String, String> unmodifableAttributes = Collections.unmodifiableMap(this.attributes);
 
+  @Nonnull
   private volatile String text;
+
+  @Nonnull
   private final List<Topic> children = new ArrayList<Topic>();
+
+  @Nonnull
   private final List<Topic> unmodifableChildren = Collections.unmodifiableList(this.children);
 
+  @Nullable
   private transient Object payload;
 
   private final transient long localUID = LOCALUID_GENERATOR.getAndIncrement();
 
+  @Nonnull
   private final MindMap map;
 
   private Topic(@Nonnull final Topic base) {
@@ -136,6 +145,7 @@ public final class Topic implements Serializable, Constants {
     return result;
   }
 
+  @Nullable
   public Topic findParentForDepth(int depth) {
     this.map.lock();
     try {
@@ -156,8 +166,12 @@ public final class Topic implements Serializable, Constants {
     this.map.lock();
     try {
       Topic result = this;
-      while (result.getParent() != null) {
-        result = result.parent;
+      while (true) {
+        final Topic prev = result.parent;
+        if (prev == null) {
+          break;
+        }
+        result = prev;
       }
       return result;
     }
@@ -194,7 +208,7 @@ public final class Topic implements Serializable, Constants {
   }
 
   @Nullable
-  public static Topic parse(@Nonnull final MindMap map, @Nonnull final Lexer lexer) throws IOException {
+  public static Topic parse(@Nonnull final MindMap map, @Nonnull final MindMapLexer lexer) throws IOException {
     map.lock();
     try {
       Topic topic = null;
@@ -204,28 +218,28 @@ public final class Topic implements Serializable, Constants {
 
       while (true) {
         lexer.advance();
-        final Lexer.TokenType token = lexer.getTokenType();
+        final MindMapLexer.TokenType token = lexer.getTokenType();
         if (token == null) {
           break;
         }
         switch (token) {
           case TOPIC: {
             final String tokenText = lexer.getTokenText();
-            final int newDepth = ModelUtils.howManyCharsOnStart('#', tokenText);
-            final String newTopicText = ModelUtils.unescapeMarkdownStr(tokenText.substring(newDepth).trim());
+            final int topicDepth = ModelUtils.calcCharsOnStart('#', tokenText);
+            final String newTopicText = ModelUtils.unescapeMarkdownStr(tokenText.substring(topicDepth).trim());
 
-            if (newDepth == depth + 1) {
-              depth = newDepth;
+            if (topicDepth == depth + 1) {
+              depth = topicDepth;
               topic = new Topic(map, topic, newTopicText);
             }
-            else if (newDepth == depth) {
+            else if (topicDepth == depth) {
               topic = new Topic(map, topic == null ? null : topic.getParent(), newTopicText);
             }
-            else if (newDepth < depth) {
+            else if (topicDepth < depth) {
               if (topic != null) {
-                topic = topic.findParentForDepth(depth - newDepth);
+                topic = topic.findParentForDepth(depth - topicDepth);
                 topic = new Topic(map, topic, newTopicText);
-                depth = newDepth;
+                depth = topicDepth;
               }
             }
 
@@ -276,6 +290,8 @@ public final class Topic implements Serializable, Constants {
             }
           }
           break;
+          default:
+            break;
         }
       }
       return topic == null ? null : topic.getRoot();
@@ -337,8 +353,9 @@ public final class Topic implements Serializable, Constants {
   public void delete() {
     this.map.lock();
     try {
-      if (this.parent != null) {
-        this.parent.children.remove(this);
+      final Topic theParent = this.parent;
+      if (theParent != null) {
+        theParent.children.remove(this);
       }
     }
     finally {
@@ -403,11 +420,12 @@ public final class Topic implements Serializable, Constants {
   public boolean makeFirst() {
     this.map.lock();
     try {
-      if (this.parent != null) {
-        int thatIndex = this.parent.children.indexOf(this);
+      final Topic theParent = this.parent;
+      if (theParent != null) {
+        int thatIndex = theParent.children.indexOf(this);
         if (thatIndex > 0) {
-          this.parent.children.remove(thatIndex);
-          this.parent.children.add(0, this);
+          theParent.children.remove(thatIndex);
+          theParent.children.add(0, this);
           return true;
         }
       }
@@ -432,11 +450,12 @@ public final class Topic implements Serializable, Constants {
   public boolean makeLast() {
     this.map.lock();
     try {
-      if (this.parent != null) {
-        int thatIndex = this.parent.children.indexOf(this);
-        if (thatIndex >= 0 && thatIndex != this.parent.children.size() - 1) {
-          this.parent.children.remove(thatIndex);
-          this.parent.children.add(this);
+      final Topic theParent = this.parent;
+      if (theParent != null) {
+        int thatIndex = theParent.children.indexOf(this);
+        if (thatIndex >= 0 && thatIndex != theParent.children.size() - 1) {
+          theParent.children.remove(thatIndex);
+          theParent.children.add(this);
           return true;
         }
       }
@@ -450,17 +469,18 @@ public final class Topic implements Serializable, Constants {
   public void moveBefore(@Nonnull final Topic topic) {
     this.map.lock();
     try {
-      if (this.parent != null) {
-        int thatIndex = this.parent.children.indexOf(topic);
-        final int thisIndex = this.parent.children.indexOf(this);
+      final Topic theParent = this.parent;
+      if (theParent != null) {
+        int thatIndex = theParent.children.indexOf(topic);
+        final int thisIndex = theParent.children.indexOf(this);
 
         if (thatIndex > thisIndex) {
           thatIndex--;
         }
 
         if (thatIndex >= 0 && thisIndex >= 0) {
-          this.parent.children.remove(this);
-          this.parent.children.add(thatIndex, this);
+          theParent.children.remove(this);
+          theParent.children.add(thatIndex, this);
         }
       }
     }
@@ -488,17 +508,18 @@ public final class Topic implements Serializable, Constants {
   public void moveAfter(@Nonnull final Topic topic) {
     this.map.lock();
     try {
-      if (this.parent != null) {
-        int thatIndex = this.parent.children.indexOf(topic);
-        int thisIndex = this.parent.children.indexOf(this);
+      final Topic theParent = this.parent;
+      if (theParent != null) {
+        int thatIndex = theParent.children.indexOf(topic);
+        int thisIndex = theParent.children.indexOf(this);
 
         if (thatIndex > thisIndex) {
           thatIndex--;
         }
 
         if (thatIndex >= 0 && thisIndex >= 0) {
-          this.parent.children.remove(this);
-          this.parent.children.add(thatIndex + 1, this);
+          theParent.children.remove(this);
+          theParent.children.add(thatIndex + 1, this);
         }
       }
     }
@@ -620,7 +641,10 @@ public final class Topic implements Serializable, Constants {
         return false;
       }
 
-      this.parent.children.remove(this);
+      final Topic theParent = this.parent;
+      if (theParent != null) {
+        theParent.children.remove(this);
+      }
       newParent.children.add(this);
       this.parent = newParent;
 

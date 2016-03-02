@@ -23,13 +23,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import com.igormaznitsa.mindmap.model.parser.Lexer;
+import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
 public class TopicTest {
 
-  private final Lexer makeLexer(final String text) {
-    final Lexer lexer = new Lexer();
-    lexer.start(text, 0, text.length(), Lexer.TokenType.WHITESPACE);
+  private final MindMapLexer makeLexer(final String text) {
+    final MindMapLexer lexer = new MindMapLexer();
+    lexer.start(text, 0, text.length(), MindMapLexer.TokenType.WHITESPACE);
     return lexer;
   }
 

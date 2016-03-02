@@ -16,7 +16,7 @@
 package com.igormaznitsa.ideamindmap.filetype;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
-import com.igormaznitsa.ideamindmap.lang.MindMapLanguage;
+import com.igormaznitsa.ideamindmap.lang.MMLanguage;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NonNls;
@@ -31,7 +31,7 @@ public class MindMapFileType extends LanguageFileType {
   @NonNls public static final String DEFAULT_EXTENSION = "mmd";
 
   private MindMapFileType() {
-    super(MindMapLanguage.INSTANCE);
+    super(MMLanguage.INSTANCE);
   }
 
   @Override
