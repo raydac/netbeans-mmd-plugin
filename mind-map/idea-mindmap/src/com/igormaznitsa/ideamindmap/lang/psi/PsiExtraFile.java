@@ -27,7 +27,7 @@ public class PsiExtraFile extends AbstractExtraData {
 
   private static final Charset UTF8 = Charset.forName("UTF-8");
 
-  private final MMapURI uri;
+  private volatile MMapURI uri;
 
   public PsiExtraFile(@NotNull final ASTNode node) {
     super(node);
@@ -43,14 +43,19 @@ public class PsiExtraFile extends AbstractExtraData {
     this.uri = theUri;
   }
 
+  @Nullable
+  public MMapURI getMMapURI(){
+    return this.uri;
+  }
+
+  public void setMMapURI(@Nullable final MMapURI uri){
+    this.uri = uri;
+  }
+
   @NotNull
   @Override
   public PsiReference[] getReferences() {
     return ReferenceProvidersRegistry.getReferencesFromProviders(this);
-  }
-
-  @Override public void delete() throws IncorrectOperationException {
-    super.delete();
   }
 
   @Nullable

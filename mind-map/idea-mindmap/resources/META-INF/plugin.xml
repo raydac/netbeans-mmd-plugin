@@ -71,8 +71,9 @@
         <annotator language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMAnnotator"/>
         <lang.syntaxHighlighterFactory language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMSyntaxHighlighterFactory"/>
         <lang.parserDefinition language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.MMParserDefinition"/>
-        <psi.referenceContributor implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
+        <psi.referenceContributor language="NBMindMap" implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
         <lang.elementManipulator forClass="com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile" implementationClass="com.igormaznitsa.ideamindmap.lang.refactoring.references.manipulators.PsiExtraFileManipulator"/>
+        <moveFileHandler implementation="com.igormaznitsa.ideamindmap.lang.refactoring.move.FileMoveHandler"/>
     </extensions>
 
     <application-components>

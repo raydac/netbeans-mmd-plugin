@@ -402,13 +402,16 @@ public enum IdeaUtils {
   }
 
   @Nullable
+  public static File findProjectFolder(@Nullable final Project project) {
+    if (project == null) return null;
+    return IdeaUtils.vfile2iofile(project.getBaseDir());
+  }
+
+  @Nullable
   public static File findProjectFolder(@Nullable final PsiElement element) {
     if (element == null)
       return null;
-    final Project proj = element.getProject();
-    if (proj == null)
-      return null;
-    return IdeaUtils.vfile2iofile(proj.getBaseDir());
+    return findProjectFolder(element.getProject());
   }
 
   public static List<PsiExtraFile> findPsiFileLinksForProjectScope(final Project project) {
