@@ -10,15 +10,15 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.tree.IElementType;
 import gnu.trove.THashMap;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class MMHighlighter extends SyntaxHighlighterBase {
   private static final Map<IElementType, TextAttributesKey> keys1;
   private static final Map<IElementType, TextAttributesKey> keys2;
 
-  @NotNull
+  @Nonnull
   public Lexer getHighlightingLexer() {
     return new MMLexer();
   }
@@ -77,7 +77,7 @@ public class MMHighlighter extends SyntaxHighlighterBase {
     keys1.put(MMTokens.FILE, MMD_FILE);
   }
 
-  @NotNull
+  @Nonnull
   public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
     return SyntaxHighlighterBase.pack(keys1.get(tokenType), keys2.get(tokenType));
   }

@@ -2,11 +2,12 @@ package com.igormaznitsa.ideamindmap.lang.psi;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.intellij.lang.ASTNode;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class PsiExtraText extends AbstractExtraData {
 
-  public PsiExtraText(@NotNull final ASTNode node) {
+  public PsiExtraText(@Nonnull final ASTNode node) {
     super(node);
   }
 

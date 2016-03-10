@@ -18,6 +18,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.0.5 (in development)</p>
+        <ul>
+            <li>fixed bug #9, popup menu could not open options in WebStorm 9</li>
+            <li>improved parser to extract PSI tree in IDEA</li>
+            <li>refactoring</li>
+        </ul>
         <p>1.0.4 (21-feb-2016)</p>
         <ul>
             <li>improved PNG exporter to save images without background and with all unfolded topics</li>

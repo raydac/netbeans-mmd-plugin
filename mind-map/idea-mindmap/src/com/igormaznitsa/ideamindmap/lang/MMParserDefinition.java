@@ -25,14 +25,15 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class MMParserDefinition implements ParserDefinition {
   public static final IFileElementType FILE = new IFileElementType(MMLanguage.INSTANCE);
   private static final TokenSet WHITESPACES = TokenSet.create(MMTokens.WHITE_SPACE);
   private static final TokenSet STRING_LITERALS = TokenSet.create(MMTokens.TOPIC, MMTokens.EXTRA_BODY);
 
-  @NotNull
+  @Nonnull
   @Override
   public Lexer createLexer(final Project project) {
     return new MMLexer();
@@ -48,25 +49,25 @@ public class MMParserDefinition implements ParserDefinition {
     return FILE;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getWhitespaceTokens() {
     return WHITESPACES;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getCommentTokens() {
     return TokenSet.EMPTY;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getStringLiteralElements() {
     return STRING_LITERALS;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public PsiElement createElement(final ASTNode node) {
     final IElementType type = node.getElementType();

@@ -43,6 +43,7 @@ import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
@@ -65,7 +66,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
   @NonNls public static final String ID = "NBKnowledgePane";
   private JScrollPane myComponent;
 
-  public KnowledgeViewPane(@NotNull Project project) {
+  public KnowledgeViewPane(@Nonnull Project project) {
     super(project);
   }
 
@@ -77,7 +78,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
     return AllIcons.Logo.MINDMAP;
   }
 
-  @NotNull @Override public String getId() {
+  @Nonnull @Override public String getId() {
     return ID;
   }
 
@@ -199,7 +200,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
     return new AbstractTreeUpdater(builder);
   }
 
-  @NotNull
+  @Nonnull
   protected BaseProjectTreeBuilder createBuilder(DefaultTreeModel treeModel) {
     return new KnowledgeViewTreeBuilder(myProject, myTree, treeModel, null, (KnowledgeViewPanelTreeStructure) myTreeStructure) {
       @Override
@@ -209,7 +210,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
     };
   }
 
-  @NotNull @Override public ActionCallback updateFromRoot(boolean restoreExpandedPaths) {
+  @Nonnull @Override public ActionCallback updateFromRoot(boolean restoreExpandedPaths) {
     return ActionCallback.DONE;
   }
 

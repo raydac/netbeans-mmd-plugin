@@ -2,11 +2,12 @@ package com.igormaznitsa.ideamindmap.lang.psi;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class PsiAttributes extends ASTWrapperPsiElement implements MMPsiElement {
 
-  public PsiAttributes(@NotNull final ASTNode node) {
+  public PsiAttributes(@Nonnull final ASTNode node) {
     super(node);
   }
 }

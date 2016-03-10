@@ -28,9 +28,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class KnowledgeViewProjectNode extends AbstractProjectNode {
     return null;
   }
 
-  @NotNull @Override public Collection<? extends AbstractTreeNode> getChildren() {
+  @Nonnull @Override public Collection<? extends AbstractTreeNode> getChildren() {
     final ArrayList<AbstractTreeNode> result = new ArrayList<AbstractTreeNode>();
     final PsiManager psiManager = PsiManager.getInstance(getProject());
 

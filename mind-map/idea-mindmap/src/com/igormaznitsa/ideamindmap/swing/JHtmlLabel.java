@@ -21,6 +21,7 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +48,7 @@ public class JHtmlLabel extends JBLabel {
   /**
    * Listener to get notification about activation of a link.
    */
-  public interface LinkListener {
+  public interface LinkListener extends Serializable {
     /**
      * Called if detected activation of a link placed on the label.
      * @param source the label, must not be null

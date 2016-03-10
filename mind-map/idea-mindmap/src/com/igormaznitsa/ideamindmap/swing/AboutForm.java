@@ -22,8 +22,9 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -48,7 +49,7 @@ public class AboutForm {
       setTitle(title);
     }
 
-    @NotNull protected Action[] createActions(){
+    @Nonnull protected Action[] createActions(){
         return new Action[]{getOKAction()};
     }
 

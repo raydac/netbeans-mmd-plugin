@@ -10,8 +10,8 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 import java.awt.Dimension;
@@ -23,13 +23,13 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
 
   private final Project project;
 
-  public IdeaMMDPrintPanelAdaptor(@NotNull final Project project){
+  public IdeaMMDPrintPanelAdaptor(@Nonnull final Project project){
     this.project = project;
   }
 
-  @Override public void startBackgroundTask(@NotNull final MMDPrintPanel source,@NotNull final String taskName, @NotNull final Runnable task) {
+  @Override public void startBackgroundTask(@Nonnull final MMDPrintPanel source,@Nonnull final String taskName, @Nonnull final Runnable task) {
     final Task.Backgroundable backgroundTask= new Task.Backgroundable(this.project, taskName) {
-      @Override public void run(@NotNull final ProgressIndicator indicator) {
+      @Override public void run(@Nonnull final ProgressIndicator indicator) {
         try{
           indicator.setIndeterminate(true);
           task.run();

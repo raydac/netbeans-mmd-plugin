@@ -18,8 +18,7 @@ package com.igormaznitsa.ideamindmap.utils.logger;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerService;
 import com.intellij.util.containers.HashMap;
-import org.jetbrains.annotations.NotNull;
-
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class IdeaLoggerService implements LoggerService {
@@ -27,7 +26,7 @@ public class IdeaLoggerService implements LoggerService {
   private final Map<Class<?>, Logger> cacheForClass = new HashMap<Class<?>,Logger>();
   private final Map<String, Logger> cacheForCategory = new HashMap<String,Logger>();
 
-  @Override public Logger getLogger(@NotNull final Class<?> aClass) {
+  @Override public Logger getLogger(@Nonnull final Class<?> aClass) {
     synchronized (this.cacheForClass){
       Logger result = this.cacheForClass.get(aClass);
       if (result == null){
@@ -38,7 +37,7 @@ public class IdeaLoggerService implements LoggerService {
     }
   }
 
-  @Override public Logger getLogger(@NotNull final String category) {
+  @Override public Logger getLogger(@Nonnull final String category) {
     synchronized (this.cacheForCategory){
       Logger result = this.cacheForCategory.get(category);
       if (result == null){

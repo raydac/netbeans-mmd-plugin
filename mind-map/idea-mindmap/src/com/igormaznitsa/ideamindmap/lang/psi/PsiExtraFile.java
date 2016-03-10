@@ -1,7 +1,6 @@
 package com.igormaznitsa.ideamindmap.lang.psi;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
-import com.igormaznitsa.meta.annotation.LazyInited;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -10,14 +9,11 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
-import com.intellij.psi.util.PsiUtil;
-import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
@@ -29,7 +25,7 @@ public class PsiExtraFile extends AbstractExtraData {
 
   private volatile MMapURI uri;
 
-  public PsiExtraFile(@NotNull final ASTNode node) {
+  public PsiExtraFile(@Nonnull final ASTNode node) {
     super(node);
 
     MMapURI theUri;
@@ -52,7 +48,7 @@ public class PsiExtraFile extends AbstractExtraData {
     this.uri = uri;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public PsiReference[] getReferences() {
     return ReferenceProvidersRegistry.getReferencesFromProviders(this);

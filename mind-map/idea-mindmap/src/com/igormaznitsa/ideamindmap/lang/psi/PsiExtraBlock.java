@@ -4,11 +4,12 @@ import com.igormaznitsa.ideamindmap.lang.tokens.MMTokens;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PsiExtraBlock extends ASTWrapperPsiElement implements MMPsiElement {
-  public PsiExtraBlock(@NotNull final ASTNode node) {
+  public PsiExtraBlock(@Nonnull final ASTNode node) {
     super(node);
   }
 

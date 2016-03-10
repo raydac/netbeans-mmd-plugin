@@ -15,9 +15,9 @@ import com.intellij.psi.PsiFileSystemItem;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 public class PsiExtraFileReference extends PsiReferenceBase<PsiExtraFile> {
@@ -83,11 +83,11 @@ public class PsiExtraFileReference extends PsiReferenceBase<PsiExtraFile> {
 
 
 
-  @Override public PsiElement bindToElement(@NotNull final PsiElement element) throws IncorrectOperationException {
+  @Override public PsiElement bindToElement(@Nonnull final PsiElement element) throws IncorrectOperationException {
     return this.extraFile;
   }
 
-  @NotNull @Override public Object[] getVariants() {
+  @Nonnull @Override public Object[] getVariants() {
     return new Object[0];
   }
 }

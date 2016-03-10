@@ -22,14 +22,15 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurableProvider;
 import com.intellij.openapi.options.ConfigurationException;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 
 public class MindMapSettingsComponent extends ConfigurableProvider implements Configurable,ApplicationComponent{
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsComponent.class);
+  public static final String ID = "NBMindMapSettingsComponent";
 
   private static MindMapSettingsComponent instance;
 
@@ -63,8 +64,8 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
     return getInstance();
   }
 
-  @NotNull @Override public String getComponentName() {
-    return "NBMindMapSettingsComponent";
+  @Nonnull @Override public String getComponentName() {
+    return ID;
   }
 
   @Nullable @Override public JComponent createComponent() {

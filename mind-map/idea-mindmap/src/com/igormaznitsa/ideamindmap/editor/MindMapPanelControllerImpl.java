@@ -48,11 +48,12 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.MessageType;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -89,19 +90,19 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   @Override
-  public boolean isUnfoldCollapsedTopicDropTarget(@NotNull final MindMapPanel mindMapPanel) {
+  public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel mindMapPanel) {
     final MindMapFacet facet = this.editor.findFacet();
     return facet == null || facet.getConfiguration().isUnfoldTopicWhenItIsDropTarget();
   }
 
   @Override
-  public boolean isCopyColorInfoFromParentToNewChildAllowed(@NotNull final MindMapPanel mindMapPanel) {
+  public boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull final MindMapPanel mindMapPanel) {
     final MindMapFacet facet = this.editor.findFacet();
     return facet == null || facet.getConfiguration().isCopyColorInformationFromParent();
   }
 
   @Override
-  public boolean isSelectionAllowed(@NotNull final MindMapPanel mindMapPanel) {
+  public boolean isSelectionAllowed(@Nonnull final MindMapPanel mindMapPanel) {
     return true;
   }
 
@@ -399,7 +400,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   private void startOptionsEdit() {
-    ShowSettingsUtil.getInstance().showSettingsDialog(this.editor.getProject(),MindMapSettingsComponent.class);
+    ShowSettingsUtil.getInstance().showSettingsDialog(this.editor.getProject(),MindMapSettingsComponent.ID);
   }
 
   private void editLinkForTopic(final Topic topic) {
@@ -497,18 +498,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
 
       final FileEditPanel.DataContainer origPath;
-      if (uri.isAbsolute()) {
-        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
-      }
-      else {
-        if (projectFolder == null) {
-          dialogProvider.msgWarn(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
-          origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getPath(), flagOpenInSystem);
-        }
-        else {
-          origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
-        }
-      }
+      origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
       path = IdeaUtils.editFilePath(this.editor, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
     }
 

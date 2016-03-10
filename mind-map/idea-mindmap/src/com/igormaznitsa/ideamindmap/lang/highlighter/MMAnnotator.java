@@ -15,11 +15,12 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class MMAnnotator implements Annotator {
 
-  public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
+  public void annotate(@Nonnull PsiElement element, @Nonnull AnnotationHolder holder) {
     if (!(element instanceof MMPsiElement)) return;
     ASTNode keyNode = ((ASTWrapperPsiElement)element).getNode();
     highlightTokens(keyNode, holder, new MMHighlighter());

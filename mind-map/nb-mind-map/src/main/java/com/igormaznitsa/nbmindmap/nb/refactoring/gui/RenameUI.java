@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import javax.swing.event.ChangeListener;
+
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.RenameRefactoring;
@@ -24,6 +25,8 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
+
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class RenameUI extends AbstractMMDRefactoringUI {
 
@@ -65,13 +68,13 @@ public class RenameUI extends AbstractMMDRefactoringUI {
 
   @Override
   public Problem setParameters() {
-    this.refactoring.setNewName(this.panel.getNewName());
+    this.refactoring.setNewName(Assertions.assertNotNull(this.panel).getNewName());
     return this.refactoring.checkParameters();
   }
 
   @Override
   public Problem checkParameters() {
-    this.refactoring.setNewName(this.panel.getNewName());
+    this.refactoring.setNewName(Assertions.assertNotNull(this.panel).getNewName());
     return this.refactoring.checkParameters();
   }
 

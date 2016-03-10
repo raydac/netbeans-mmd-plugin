@@ -21,43 +21,43 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Element;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware {
   @Override
-  public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
+  public boolean accept(@Nonnull Project project, @Nonnull VirtualFile virtualFile) {
     return virtualFile.getFileType() instanceof MindMapFileType;
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
+  public FileEditor createEditor(@Nonnull Project project, @Nonnull VirtualFile virtualFile) {
     return new MindMapDocumentEditor(project, virtualFile);
   }
 
   @Override
-  public void disposeEditor(@NotNull FileEditor fileEditor) {
+  public void disposeEditor(@Nonnull FileEditor fileEditor) {
 
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public FileEditorState readState(@NotNull Element element, @NotNull Project project, @NotNull VirtualFile virtualFile) {
+  public FileEditorState readState(@Nonnull Element element, @Nonnull Project project, @Nonnull VirtualFile virtualFile) {
     return MindMapFileEditorState.DUMMY;
   }
 
   @Override
-  public void writeState(@NotNull FileEditorState fileEditorState, @NotNull Project project, @NotNull Element element) {
+  public void writeState(@Nonnull FileEditorState fileEditorState, @Nonnull Project project, @Nonnull Element element) {
 
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getEditorTypeId() {
     return "com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public FileEditorPolicy getPolicy() {
     return FileEditorPolicy.HIDE_DEFAULT_EDITOR;

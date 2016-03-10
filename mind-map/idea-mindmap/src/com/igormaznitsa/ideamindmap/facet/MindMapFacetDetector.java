@@ -23,7 +23,8 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.util.indexing.FileContent;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class MindMapFacetDetector extends FacetBasedFrameworkDetector<MindMapFacet,MindMapFacetConfiguration> {
 
@@ -35,11 +36,11 @@ public class MindMapFacetDetector extends FacetBasedFrameworkDetector<MindMapFac
     return MindMapFacetType.INSTANCE;
   }
 
-  @NotNull @Override public FileType getFileType() {
+  @Nonnull @Override public FileType getFileType() {
     return MindMapFileType.INSTANCE;
   }
 
-  @NotNull @Override public ElementPattern<FileContent> createSuitableFilePattern() {
+  @Nonnull @Override public ElementPattern<FileContent> createSuitableFilePattern() {
     return FileContentPattern.fileContent().withName(StandardPatterns.string().endsWith(".mmd"));
   }
 }

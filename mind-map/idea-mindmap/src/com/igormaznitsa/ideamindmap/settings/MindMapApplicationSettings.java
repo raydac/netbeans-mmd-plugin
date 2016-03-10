@@ -23,9 +23,9 @@ import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.awt.Font;
 import java.lang.reflect.Field;
@@ -50,7 +50,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
 
   }
 
-  @NotNull @Override public String getComponentName() {
+  @Nonnull @Override public String getComponentName() {
     return "NBMindMapApplicationSettings";
   }
 
@@ -62,7 +62,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
     state.fill(editorConfig,this);
   }
 
-  public void fillBy(@NotNull final MindMapPanelConfig mindMapPanelConfig) {
+  public void fillBy(@Nonnull final MindMapPanelConfig mindMapPanelConfig) {
     editorConfig.makeFullCopyOf(mindMapPanelConfig, false, true);
   }
 
@@ -70,7 +70,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
     return ApplicationManager.getApplication().getComponent(MindMapApplicationSettings.class);
   }
 
-  @Nullable @Override public Object fromString(@NotNull Class<?> fieldType, @NotNull String value) {
+  @Nullable @Override public Object fromString(@Nonnull Class<?> fieldType, @Nonnull String value) {
     if (fieldType == Color.class) {
       return new Color(Integer.parseInt(value), true);
     }
@@ -82,7 +82,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
       throw new Error("Unexpected field type" + fieldType);
   }
 
-  @NotNull @Override public String asString(@NotNull Class<?> fieldType, @NotNull Object value) {
+  @Nonnull @Override public String asString(@Nonnull Class<?> fieldType, @Nonnull Object value) {
     if (fieldType == Color.class) {
       return Integer.toString(((Color) value).getRGB());
     }
@@ -94,7 +94,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
       throw new Error("Unexpected field type" + fieldType);
   }
 
-  @Nullable @Override public Object provideDefaultValue(@NotNull final String fieldName, @NotNull final Class<?> fieldType) {
+  @Nullable @Override public Object provideDefaultValue(@Nonnull final String fieldName, @Nonnull final Class<?> fieldType) {
     try{
       final Field field = MindMapPanelConfig.class.getDeclaredField(fieldName);
       field.setAccessible(true);

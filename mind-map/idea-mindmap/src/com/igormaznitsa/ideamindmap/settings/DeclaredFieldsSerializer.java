@@ -18,9 +18,9 @@ package com.igormaznitsa.ideamindmap.settings;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.util.xmlb.annotations.Property;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -42,21 +42,21 @@ public class DeclaredFieldsSerializer implements Serializable {
   });
 
   public interface Converter {
-    @Nullable Object fromString(@NotNull Class<?> fieldType, @NotNull String value);
+    @Nullable Object fromString(@Nonnull Class<?> fieldType, @Nonnull String value);
 
-    @NotNull String asString(@NotNull Class<?> fieldType, @NotNull Object value);
+    @Nonnull String asString(@Nonnull Class<?> fieldType, @Nonnull Object value);
 
-    @Nullable Object provideDefaultValue(@NotNull String fieldName, @NotNull Class<?> fieldType);
+    @Nullable Object provideDefaultValue(@Nonnull String fieldName, @Nonnull Class<?> fieldType);
   }
 
   private interface FieldVisitor {
-    void visitField(@NotNull Object instance, @NotNull Field field, @NotNull String fieldName, @NotNull Class<?> fieldType);
+    void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType);
   }
 
   public DeclaredFieldsSerializer() {
   }
 
-  private static void visitFields(@NotNull final Object object, @NotNull final FieldVisitor visitor) {
+  private static void visitFields(@Nonnull final Object object, @Nonnull final FieldVisitor visitor) {
     for (final Field f : object.getClass().getDeclaredFields()) {
       if ((f.getModifiers() & (Modifier.FINAL | Modifier.NATIVE | Modifier.STATIC | Modifier.TRANSIENT)) == 0) {
         f.setAccessible(true);
@@ -75,9 +75,9 @@ public class DeclaredFieldsSerializer implements Serializable {
     return result.toString();
   }
 
-  public DeclaredFieldsSerializer(@NotNull final Object object, @Nullable final Converter converter) {
+  public DeclaredFieldsSerializer(@Nonnull final Object object, @Nullable final Converter converter) {
     visitFields(object, new FieldVisitor() {
-      @Override public void visitField(@NotNull Object instance, @NotNull Field field, @NotNull String fieldName, @NotNull Class<?> fieldType) {
+      @Override public void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType) {
         try {
           final Object value = field.get(instance);
 
@@ -117,13 +117,13 @@ public class DeclaredFieldsSerializer implements Serializable {
   }
 
   @Nullable
-  public String get(@NotNull final String fieldName) {
+  public String get(@Nonnull final String fieldName) {
     final String storageFieldName = findStorageFieldName(fieldName);
     return storageFieldName == null ? null : this.storage.get(storageFieldName);
   }
 
   @Nullable
-  public String findStorageFieldName(@NotNull final String fieldName) {
+  public String findStorageFieldName(@Nonnull final String fieldName) {
     for (final String k : this.storage.keySet()) {
       if (k.equals(fieldName)) {
         return k;
@@ -152,9 +152,9 @@ public class DeclaredFieldsSerializer implements Serializable {
     return fieldName.indexOf('@') >= 0;
   }
 
-  public void fill(@NotNull final Object instance, @Nullable final Converter converter) {
+  public void fill(@Nonnull final Object instance, @Nullable final Converter converter) {
     visitFields(instance, new FieldVisitor() {
-      @Override public void visitField(@NotNull Object instance, @NotNull Field field, @NotNull String fieldName, @NotNull Class<?> fieldType) {
+      @Override public void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType) {
         try {
           final String storageFieldName = findStorageFieldName(fieldName);
           if (storageFieldName == null) {

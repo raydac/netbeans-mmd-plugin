@@ -33,6 +33,8 @@ import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+
 public enum SelectIn {
   IDE,
   SYSTEM,;
@@ -69,7 +71,7 @@ public enum SelectIn {
       });
   }
 
-  public void open(@NotNull final MindMapDocumentEditor source, @NotNull final VirtualFile file) {
+  public void open(@Nonnull final MindMapDocumentEditor source, @Nonnull final VirtualFile file) {
     final ProjectManager manager = ProjectManager.getInstance();
     switch (this) {
     case IDE: {

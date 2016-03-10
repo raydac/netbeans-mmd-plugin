@@ -5,8 +5,9 @@ import com.igormaznitsa.meta.common.utils.Assertions;
 import com.intellij.lexer.Lexer;
 import com.intellij.lexer.LexerPosition;
 import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class MMLexer extends Lexer {
 
@@ -16,7 +17,7 @@ public class MMLexer extends Lexer {
 
     private com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition pos;
 
-    public void load(@NotNull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
+    public void load(@Nonnull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
       if (this.pos == null) {
         this.pos = position.makeCopy();
       }
@@ -25,7 +26,7 @@ public class MMLexer extends Lexer {
       }
     }
 
-    public void save(@NotNull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
+    public void save(@Nonnull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
       position.set(this.pos);
     }
 
@@ -40,7 +41,7 @@ public class MMLexer extends Lexer {
 
   private final Position pos = new Position();
 
-  @Override public void start(@NotNull final CharSequence buffer, final int startOffset, final int endOffset, final int initialState) {
+  @Override public void start(@Nonnull final CharSequence buffer, final int startOffset, final int endOffset, final int initialState) {
     this.delegate.start(buffer, startOffset, endOffset, com.igormaznitsa.mindmap.model.parser.MindMapLexer.TokenType.values()[initialState]);
     this.delegate.advance();
   }
@@ -99,16 +100,16 @@ public class MMLexer extends Lexer {
     this.delegate.advance();
   }
 
-  @NotNull @Override public LexerPosition getCurrentPosition() {
+  @Nonnull @Override public LexerPosition getCurrentPosition() {
     this.pos.load(this.delegate.getCurrentPosition());
     return this.pos;
   }
 
-  @Override public void restore(@NotNull LexerPosition position) {
+  @Override public void restore(@Nonnull LexerPosition position) {
     this.pos.save(this.delegate.getCurrentPosition());
   }
 
-  @NotNull @Override public CharSequence getBufferSequence() {
+  @Nonnull @Override public CharSequence getBufferSequence() {
     return this.delegate.getBufferSequence();
   }
 

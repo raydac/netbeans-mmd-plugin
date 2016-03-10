@@ -62,9 +62,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.xml.ui.Committable;
 import com.intellij.util.xml.ui.UndoHelper;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
@@ -144,8 +144,8 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     return this.documents[0];
   }
 
-  @NotNull
-  private static String normalizeEOL(@NotNull final String text) {
+  @Nonnull
+  private static String normalizeEOL(@Nonnull final String text) {
     return text.replace('\r', '\n').replace("\n\n", "\n");
   }
 
@@ -207,7 +207,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     return this.documents;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public JComponent getComponent() {
     return this.mainScrollPane;
@@ -219,20 +219,20 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     return this.mainScrollPane;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getName() {
     return "nb-mm-editor";
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public FileEditorState getState(@NotNull FileEditorStateLevel fileEditorStateLevel) {
+  public FileEditorState getState(@Nonnull FileEditorStateLevel fileEditorStateLevel) {
     return MindMapFileEditorState.DUMMY;
   }
 
   @Override
-  public void setState(@NotNull FileEditorState fileEditorState) {
+  public void setState(@Nonnull FileEditorState fileEditorState) {
   }
 
   @Override
@@ -256,12 +256,12 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   @Override
-  public void addPropertyChangeListener(@NotNull PropertyChangeListener propertyChangeListener) {
+  public void addPropertyChangeListener(@Nonnull PropertyChangeListener propertyChangeListener) {
 
   }
 
   @Override
-  public void removePropertyChangeListener(@NotNull PropertyChangeListener propertyChangeListener) {
+  public void removePropertyChangeListener(@Nonnull PropertyChangeListener propertyChangeListener) {
 
   }
 
@@ -290,17 +290,17 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   @Nullable
   @Override
-  public <T> T getUserData(@NotNull Key<T> key) {
+  public <T> T getUserData(@Nonnull Key<T> key) {
     return null;
   }
 
   @Override
-  public <T> void putUserData(@NotNull Key<T> key, @Nullable T t) {
+  public <T> void putUserData(@Nonnull Key<T> key, @Nullable T t) {
 
   }
 
   @Override
-  public boolean canBeDeletedSilently(@NotNull MindMap mindMap, @NotNull Topic topic) {
+  public boolean canBeDeletedSilently(@Nonnull MindMap mindMap, @Nonnull Topic topic) {
     return topic.getText().isEmpty() && topic.getExtras().isEmpty() && doesContainOnlyStandardAttributes(topic);
   }
 

@@ -16,6 +16,7 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import javax.swing.event.ChangeListener;
+
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.WhereUsedQuery;
@@ -24,6 +25,8 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
+
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class WhereUsedRefactoringUI extends AbstractMMDRefactoringUI {
 
@@ -66,7 +69,7 @@ public class WhereUsedRefactoringUI extends AbstractMMDRefactoringUI {
 
   @Override
   public Problem setParameters() {
-    this.query.putValue(WhereUsedQuery.SEARCH_IN_COMMENTS, this.panel.isSearchInComments());
+    this.query.putValue(WhereUsedQuery.SEARCH_IN_COMMENTS, Assertions.assertNotNull(this.panel).isSearchInComments());
     return this.query.checkParameters();
   }
 

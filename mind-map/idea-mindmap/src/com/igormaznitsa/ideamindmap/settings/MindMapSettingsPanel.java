@@ -24,8 +24,8 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.intellij.openapi.ui.DialogWrapper;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -109,8 +109,8 @@ public class MindMapSettingsPanel {
       pack();
     }
 
-    @Nullable
     @Override
+    @Nullable
     protected JComponent createCenterPanel() {
       return this.component;
     }

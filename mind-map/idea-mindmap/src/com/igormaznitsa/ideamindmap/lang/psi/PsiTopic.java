@@ -4,14 +4,15 @@ import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class PsiTopic extends ASTWrapperPsiElement implements MMPsiElement {
 
   private final String unescapedText;
   private final int level;
 
-  public PsiTopic(@NotNull final ASTNode node) {
+  public PsiTopic(@Nonnull final ASTNode node) {
     super(node);
     final String text = node.getText();
     this.level = ModelUtils.calcCharsOnStart('#', text);

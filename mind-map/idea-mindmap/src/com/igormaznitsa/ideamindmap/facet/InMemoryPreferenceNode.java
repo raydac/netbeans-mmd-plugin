@@ -17,9 +17,9 @@ package com.igormaznitsa.ideamindmap.facet;
 
 import com.intellij.util.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -46,16 +46,16 @@ public class InMemoryPreferenceNode extends Preferences {
     }
   }
 
-  @Override public void put(@NotNull final String key, @NotNull final String value) {
+  @Override public void put(@Nonnull final String key, @Nonnull final String value) {
     this.storage.put(key,value);
     firePreferenceListeners(key,value);
   }
 
-  @Override public String get(@NotNull final String key, @Nullable String def) {
+  @Override public String get(@Nonnull final String key, @Nullable String def) {
     return this.storage.get(key);
   }
 
-  @Override public void remove(@NotNull final String key) {
+  @Override public void remove(@Nonnull final String key) {
     if (this.storage.remove(key)!=null){
       firePreferenceListeners(key,null);
     }
@@ -69,11 +69,11 @@ public class InMemoryPreferenceNode extends Preferences {
     }
   }
 
-  @Override public void putInt(@NotNull final String key, final int value) {
+  @Override public void putInt(@Nonnull final String key, final int value) {
     this.put(key,Integer.toString(value));
   }
 
-  @Override public int getInt(@NotNull String key, final int def) {
+  @Override public int getInt(@Nonnull String key, final int def) {
     final String value = this.get(key,Integer.toString(def));
     try{
       return Integer.parseInt(value);
@@ -82,7 +82,7 @@ public class InMemoryPreferenceNode extends Preferences {
     }
   }
 
-  @Override public void putLong(@NotNull final String key, final long value) {
+  @Override public void putLong(@Nonnull final String key, final long value) {
     this.put(key,Long.toString(value));
   }
 
@@ -209,9 +209,8 @@ public class InMemoryPreferenceNode extends Preferences {
 
   @Override public void exportNode(OutputStream os) throws IOException, BackingStoreException {
     final StringBuilder builder = new StringBuilder();
-    for(final String key : this.storage.keySet()){
-      final String value = this.storage.get(key);
-      builder.append(StringEscapeUtils.escapeCsv(key)).append(',').append(StringEscapeUtils.escapeCsv(value)).append('\n');
+    for(final Map.Entry<String, String> entry : this.storage.entrySet()){
+      builder.append(StringEscapeUtils.escapeCsv(entry.getKey())).append(',').append(StringEscapeUtils.escapeCsv(entry.getValue())).append('\n');
     }
     os.write(builder.toString().getBytes("UTF-8"));
   }

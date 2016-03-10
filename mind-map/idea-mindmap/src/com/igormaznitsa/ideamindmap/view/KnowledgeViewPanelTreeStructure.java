@@ -23,9 +23,9 @@ import com.intellij.ide.util.treeView.AbstractTreeStructureBase;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -99,7 +99,7 @@ public class KnowledgeViewPanelTreeStructure extends AbstractTreeStructureBase i
     return false;
   }
 
-  @NotNull @Override public Collection<AbstractTreeNode> modify(@NotNull final AbstractTreeNode parent, @NotNull final Collection<AbstractTreeNode> children, final ViewSettings settings) {
+  @Nonnull @Override public Collection<AbstractTreeNode> modify(@Nonnull final AbstractTreeNode parent, @Nonnull final Collection<AbstractTreeNode> children, final ViewSettings settings) {
     return children;
   }
 

@@ -7,14 +7,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PsiExtraType extends ASTWrapperPsiElement implements PsiNamedElement, MMPsiElement {
 
   private final Extra.ExtraType type;
 
-  public PsiExtraType(@NotNull final ASTNode node) {
+  public PsiExtraType(@Nonnull final ASTNode node) {
     super(node);
     final String text = node.getText();
     Extra.ExtraType result = null;
@@ -35,7 +36,7 @@ public class PsiExtraType extends ASTWrapperPsiElement implements PsiNamedElemen
     return type;
   }
 
-  @Override public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
+  @Override public PsiElement setName(@NonNls @Nonnull String name) throws IncorrectOperationException {
     throw new IncorrectOperationException("Can't rename");
   }
 }

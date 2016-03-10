@@ -18,8 +18,8 @@ package com.igormaznitsa.ideamindmap.facet;
 import com.intellij.facet.ui.FacetEditorTab;
 import com.intellij.openapi.options.ConfigurationException;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 
 public class MindMapFacetEditorTab extends FacetEditorTab {
@@ -32,7 +32,7 @@ public class MindMapFacetEditorTab extends FacetEditorTab {
     this.config = config;
   }
 
-  @NotNull @Override public JComponent createComponent() {
+  @Nonnull @Override public JComponent createComponent() {
     if (this.panel == null){
       this.panel = new MindMapFacetPanel(this);
     }

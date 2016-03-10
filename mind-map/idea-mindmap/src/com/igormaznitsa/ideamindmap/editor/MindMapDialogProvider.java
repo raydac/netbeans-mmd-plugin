@@ -29,7 +29,6 @@ import java.io.File;
 
 public class MindMapDialogProvider implements DialogProvider {
   private final Project project;
-  private VirtualFile base;
 
   public MindMapDialogProvider(final Project project) {
     this.project = project;

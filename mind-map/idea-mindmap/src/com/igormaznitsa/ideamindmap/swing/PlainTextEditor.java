@@ -17,6 +17,7 @@ package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.openapi.application.ApplicationManager;
@@ -30,8 +31,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.ui.EditorTextField;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -85,20 +86,20 @@ public class PlainTextEditor extends JPanel {
     }
 
     public String getSelectedText(){
-      final SelectionModel model = this.getEditor().getSelectionModel();
+      final SelectionModel model = Assertions.assertNotNull(this.getEditor()).getSelectionModel();
       final int start = model.getSelectionStart();
       final int end = model.getSelectionEnd();
       return getDocument().getText(new TextRange(start,end));
     }
 
-    public void replaceSelection(@NotNull final String clipboardText) {
+    public void replaceSelection(@Nonnull final String clipboardText) {
       ApplicationManager.getApplication().runWriteAction(new Runnable() {
         @Override
         public void run() {
           CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
             @Override
             public void run() {
-              final SelectionModel model = getEditor().getSelectionModel();
+              final SelectionModel model = Assertions.assertNotNull(getEditor()).getSelectionModel();
               final int start = model.getSelectionStart();
               final int end = model.getSelectionEnd();
               getDocument().replaceString(start, end, "");

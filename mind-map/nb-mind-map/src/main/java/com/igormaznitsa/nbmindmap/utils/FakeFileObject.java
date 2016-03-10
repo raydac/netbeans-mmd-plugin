@@ -50,6 +50,7 @@ public final class FakeFileObject extends FileObject {
       if (isValid()){
         releaseLock();
       }
+      super.finalize();
     }
 
     @Override

@@ -41,9 +41,9 @@ import com.intellij.util.Alarm;
 import com.intellij.util.SmartList;
 import com.intellij.util.messages.MessageBusConnection;
 import gnu.trove.THashSet;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -54,11 +54,11 @@ import java.util.Set;
 
 public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
 
-  public KnowledgeViewTreeBuilder(@NotNull Project project,
-    @NotNull JTree tree,
-    @NotNull DefaultTreeModel treeModel,
+  public KnowledgeViewTreeBuilder(@Nonnull Project project,
+    @Nonnull JTree tree,
+    @Nonnull DefaultTreeModel treeModel,
     @Nullable Comparator<NodeDescriptor> comparator,
-    @NotNull KnowledgeViewPanelTreeStructure treeStructure) {
+    @Nonnull KnowledgeViewPanelTreeStructure treeStructure) {
     super(project, tree, treeModel, treeStructure, comparator);
 
     final MessageBusConnection connection = project.getMessageBus().connect(this);
@@ -111,17 +111,17 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
 
   private final class MyBookmarksListener implements BookmarksListener {
     @Override
-    public void bookmarkAdded(@NotNull Bookmark b) {
+    public void bookmarkAdded(@Nonnull Bookmark b) {
       updateForFile(b.getFile());
     }
 
     @Override
-    public void bookmarkRemoved(@NotNull Bookmark b) {
+    public void bookmarkRemoved(@Nonnull Bookmark b) {
       updateForFile(b.getFile());
     }
 
     @Override
-    public void bookmarkChanged(@NotNull Bookmark b) {
+    public void bookmarkChanged(@Nonnull Bookmark b) {
       updateForFile(b.getFile());
     }
 
@@ -130,7 +130,7 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
       //do nothing
     }
 
-    private void updateForFile(@NotNull VirtualFile file) {
+    private void updateForFile(@Nonnull VirtualFile file) {
       PsiElement element = findPsi(file);
       if (element != null) {
         queueUpdateFrom(element, false);
@@ -145,12 +145,12 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
     }
 
     @Override
-    public void fileStatusChanged(@NotNull VirtualFile vFile) {
+    public void fileStatusChanged(@Nonnull VirtualFile vFile) {
       queueUpdate(false);
     }
   }
 
-  private PsiElement findPsi(@NotNull VirtualFile vFile) {
+  private PsiElement findPsi(@Nonnull VirtualFile vFile) {
     if (!vFile.isValid())
       return null;
     PsiManager psiManager = PsiManager.getInstance(myProject);
@@ -162,16 +162,16 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
     private final Collection<VirtualFile> myFilesToRefresh = new THashSet<VirtualFile>();
 
     @Override
-    public void problemsAppeared(@NotNull VirtualFile file) {
+    public void problemsAppeared(@Nonnull VirtualFile file) {
       queueUpdate(file);
     }
 
     @Override
-    public void problemsDisappeared(@NotNull VirtualFile file) {
+    public void problemsDisappeared(@Nonnull VirtualFile file) {
       queueUpdate(file);
     }
 
-    private void queueUpdate(@NotNull VirtualFile fileToRefresh) {
+    private void queueUpdate(@Nonnull VirtualFile fileToRefresh) {
       synchronized (myFilesToRefresh) {
         if (myFilesToRefresh.add(fileToRefresh)) {
           myUpdateProblemAlarm.cancelAllRequests();
@@ -198,7 +198,7 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
     }
   }
 
-  private void updateNodesContaining(@NotNull Collection<VirtualFile> filesToRefresh, @NotNull DefaultMutableTreeNode rootNode) {
+  private void updateNodesContaining(@Nonnull Collection<VirtualFile> filesToRefresh, @Nonnull DefaultMutableTreeNode rootNode) {
     if (!(rootNode.getUserObject() instanceof ProjectViewNode))
       return;
     ProjectViewNode node = (ProjectViewNode) rootNode.getUserObject();

@@ -20,9 +20,9 @@ import com.intellij.facet.Facet;
 import com.intellij.facet.FacetType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 public class MindMapFacetType extends FacetType<MindMapFacet,MindMapFacetConfiguration> {
@@ -37,7 +37,7 @@ public class MindMapFacetType extends FacetType<MindMapFacet,MindMapFacetConfigu
     return new MindMapFacetConfiguration();
   }
 
-  @Override public MindMapFacet createFacet(@NotNull final Module module, final String name, @NotNull final MindMapFacetConfiguration configuration, @Nullable final Facet underlyingFacet) {
+  @Override public MindMapFacet createFacet(@Nonnull final Module module, final String name, @Nonnull final MindMapFacetConfiguration configuration, @Nullable final Facet underlyingFacet) {
     return new MindMapFacet(this,module,name,configuration,underlyingFacet);
   }
 

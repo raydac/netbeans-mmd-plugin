@@ -17,7 +17,7 @@ package com.igormaznitsa.nbmindmap.nb.swing;
 
 import java.awt.Color;
 
-public class ColorAttributePanel extends javax.swing.JPanel {
+public final class ColorAttributePanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -7468734011400244324L;
 

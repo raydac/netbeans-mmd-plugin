@@ -20,9 +20,9 @@ import com.igormaznitsa.ideamindmap.lang.MMLanguage;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 
 public class MindMapFileType extends LanguageFileType {
@@ -35,23 +35,23 @@ public class MindMapFileType extends LanguageFileType {
   }
 
   @Override
-  public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
+  public String getCharset(@Nonnull VirtualFile file, @Nonnull byte[] content) {
     return "UTF-8";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getName() {
     return "NB Mind Map";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getDescription() {
     return "NB Mind Map files";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getDefaultExtension() {
     return DEFAULT_EXTENSION;

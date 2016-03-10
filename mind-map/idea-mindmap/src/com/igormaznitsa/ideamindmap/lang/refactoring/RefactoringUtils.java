@@ -5,18 +5,11 @@ import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.impl.file.PsiFileImplUtil;
-import com.intellij.usageView.UsageInfo;
 import com.intellij.util.FileContentUtil;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -25,13 +18,12 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.util.Collections;
-import java.util.List;
 
 public final class RefactoringUtils {
   private RefactoringUtils(){
   }
 
-  public static MMapURI makeNewMMapUri(@Nonnull final Project project, @NotNull final MMapURI oldFile, @NotNull VirtualFile newFile){
+  public static MMapURI makeNewMMapUri(@Nonnull final Project project, @Nonnull final MMapURI oldFile, @Nonnull VirtualFile newFile){
     final File projectFolder = IdeaUtils.findProjectFolder(project);
     if (projectFolder == null) throw new NullPointerException("Project folder is not found for "+project);
 
@@ -44,8 +36,8 @@ public final class RefactoringUtils {
     return MMapURI.makeFromFilePath(projectFolder, baseURI.toString(), oldFile.getParameters());
   }
 
-  @NotNull
-  public static String replaceMMUriToNewFile(@NotNull final PsiExtraFile mindMapFile, @NotNull final MMapURI oldFile, @NotNull final MMapURI newFile) throws IOException {
+  @Nonnull
+  public static String replaceMMUriToNewFile(@Nonnull final PsiExtraFile mindMapFile, @Nonnull final MMapURI oldFile, @Nonnull final MMapURI newFile) throws IOException {
     final File projectFolder = IdeaUtils.findProjectFolder(mindMapFile);
     if (projectFolder == null) throw new NullPointerException("Project folder is not found for "+mindMapFile);
 

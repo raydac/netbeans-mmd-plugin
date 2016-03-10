@@ -23,6 +23,7 @@ import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -57,9 +58,9 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.indexing.FileBasedIndex;
 import com.intellij.util.ui.UIUtil;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -164,7 +165,7 @@ public enum IdeaUtils {
     return true;
   }
 
-  public static void openInSystemViewer(@NotNull final DialogProvider dialogProvider, @NotNull final VirtualFile theFile) {
+  public static void openInSystemViewer(@Nonnull final DialogProvider dialogProvider, @Nullable final VirtualFile theFile) {
     final File file = vfile2iofile(theFile);
 
     if (file == null) {
@@ -284,7 +285,7 @@ public enum IdeaUtils {
   public static void plainMessageClose(final Project project, final String title, final JComponent centerComponent) {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
       centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true) {
-      @NotNull @Override protected Action[] createActions() {
+      @Nonnull @Override protected Action[] createActions() {
         return new Action[] { new DialogWrapperAction(CommonBundle.getCloseButtonText()) {
 
           @Override protected void doAction(ActionEvent e) {
@@ -378,7 +379,7 @@ public enum IdeaUtils {
     }
   }
 
-  public static boolean isInProjectContentRoot(@NotNull final Project project, @NotNull final VirtualFile file) {
+  public static boolean isInProjectContentRoot(@Nonnull final Project project, @Nonnull final VirtualFile file) {
     for (final VirtualFile root : ProjectRootManager.getInstance(project).getContentRoots()) {
       if (VfsUtil.isAncestor(root, file, false)) {
         return true;
@@ -387,7 +388,7 @@ public enum IdeaUtils {
     return false;
   }
 
-  public static void showPopup(@NotNull final String text, @NotNull final MessageType type) {
+  public static void showPopup(@Nonnull final String text, @Nonnull final MessageType type) {
     SwingUtils.safeSwing(new Runnable() {
       @Override public void run() {
         final JBPopupFactory factory = JBPopupFactory.getInstance();
@@ -430,18 +431,18 @@ public enum IdeaUtils {
     return result;
   }
 
-  @NotNull
-  public static GlobalSearchScope moduleScope(@NotNull Project project, @Nullable Module module) {
+  @Nonnull
+  public static GlobalSearchScope moduleScope(@Nonnull Project project, @Nullable Module module) {
     return module != null ? moduleScope(module) : GlobalSearchScope.projectScope(project);
   }
 
-  @NotNull
-  public static GlobalSearchScope moduleScope(@NotNull PsiElement element) {
+  @Nonnull
+  public static GlobalSearchScope moduleScope(@Nonnull PsiElement element) {
     return moduleScope(element.getProject(), ModuleUtilCore.findModuleForPsiElement(element));
   }
 
-  @NotNull
-  public static GlobalSearchScope moduleScope(@NotNull Module module) {
+  @Nonnull
+  public static GlobalSearchScope moduleScope(@Nonnull Module module) {
     return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module).uniteWith(module.getModuleContentWithDependenciesScope());
   }
 }

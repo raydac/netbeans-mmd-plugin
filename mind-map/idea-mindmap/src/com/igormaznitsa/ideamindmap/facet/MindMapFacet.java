@@ -23,16 +23,17 @@ import com.intellij.facet.FacetManager;
 import com.intellij.facet.FacetType;
 import com.intellij.facet.FacetTypeId;
 import com.intellij.openapi.module.Module;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapFacet.class);
 
   public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<MindMapFacet>("NBMindMap");
 
-  public MindMapFacet(@NotNull FacetType facetType, @NotNull Module module,
-    @NotNull String name, @NotNull MindMapFacetConfiguration configuration, Facet underlyingFacet) {
+  public MindMapFacet(@Nonnull FacetType facetType, @Nonnull Module module,
+    @Nonnull String name, @Nonnull MindMapFacetConfiguration configuration, Facet underlyingFacet) {
     super(facetType, module, name, configuration, underlyingFacet);
     IdeaUtils.findKnowledgeFolderForModule(module,!this.getConfiguration().isDisableAutoCreateProjectKnowledgeFolder());
   }

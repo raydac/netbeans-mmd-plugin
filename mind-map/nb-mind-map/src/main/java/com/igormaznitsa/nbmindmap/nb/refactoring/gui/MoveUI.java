@@ -16,7 +16,9 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import com.igormaznitsa.mindmap.model.ModelUtils;
+
 import javax.swing.event.ChangeListener;
+
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.MoveRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
@@ -25,6 +27,8 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
+
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class MoveUI extends AbstractMMDRefactoringUI {
 
@@ -73,7 +77,7 @@ public class MoveUI extends AbstractMMDRefactoringUI {
 
   @Override
   public Problem setParameters() {
-    final FileObject fo = this.panel.getTarget();
+    final FileObject fo = Assertions.assertNotNull(this.panel).getTarget();
     if (fo != null) {
       this.refactoring.setTarget(Lookups.fixed(fo.toURL()));
     }
@@ -85,7 +89,7 @@ public class MoveUI extends AbstractMMDRefactoringUI {
 
   @Override
   public Problem checkParameters() {
-    final FileObject fo = this.panel.getTarget();
+    final FileObject fo = Assertions.assertNotNull(this.panel).getTarget();
     if (fo!=null){
       this.refactoring.setTarget(Lookups.fixed(fo.toURL()));
     }else{

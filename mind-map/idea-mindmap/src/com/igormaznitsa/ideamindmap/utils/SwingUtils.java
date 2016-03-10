@@ -15,8 +15,7 @@
  */
 package com.igormaznitsa.ideamindmap.utils;
 
-import org.jetbrains.annotations.NotNull;
-
+import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
 
 public final class SwingUtils {
@@ -28,7 +27,7 @@ public final class SwingUtils {
       throw new Error("Must be Swing event dispatching thread, but detected '" + Thread.currentThread().getName() + '\'');
   }
 
-  public static void safeSwing(@NotNull final Runnable runnable) {
+  public static void safeSwing(@Nonnull final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
     }

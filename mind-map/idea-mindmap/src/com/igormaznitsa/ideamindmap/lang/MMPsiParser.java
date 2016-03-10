@@ -9,10 +9,11 @@ import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiParser;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class MMPsiParser implements PsiParser, LightPsiParser {
-  @NotNull @Override public ASTNode parse(@NotNull final IElementType root, @NotNull final PsiBuilder builder) {
+  @Nonnull @Override public ASTNode parse(@Nonnull final IElementType root, @Nonnull final PsiBuilder builder) {
     parseLight(root, builder);
     return builder.getTreeBuilt();
   }
@@ -27,7 +28,7 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
     marker.done(root);
   }
 
-  private void parseHeader(@NotNull final PsiBuilder builder) {
+  private void parseHeader(@Nonnull final PsiBuilder builder) {
     boolean working = true;
     while (working && !builder.eof()) {
       final PsiBuilder.Marker marker = builder.mark();
@@ -54,7 +55,7 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
     }
   }
 
-  private boolean parseExtraBlock(@NotNull final PsiBuilder builder) {
+  private boolean parseExtraBlock(@Nonnull final PsiBuilder builder) {
     // read type
     final PsiBuilder.Marker type = builder.mark();
     if (builder.getTokenType()!= MMTokens.EXTRA_TYPE) throw Assertions.fail("Unexpected token "+builder.getTokenType());
@@ -96,16 +97,16 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
     return false;
   }
 
-  private int recursiveParseTopic(@NotNull final PsiBuilder builder, final int level) {
+  private int recursiveParseTopic(@Nonnull final PsiBuilder builder, final int level) {
     while (!builder.eof()) {
       final PsiBuilder.Marker marker = builder.mark();
-      if (builder.getTokenType() == null) {
+      final IElementType token = builder.getTokenType();
+      if (token == null) {
         marker.drop();
       }
       else {
-        final IElementType token = builder.getTokenType();
         if (token == MMTokens.TOPIC) {
-          final int theTopicLevel = ModelUtils.calcCharsOnStart('#', builder.getTokenText());
+          final int theTopicLevel = ModelUtils.calcCharsOnStart('#', Assertions.assertNotNull(builder.getTokenText()));
           if (theTopicLevel <= 1) {
             marker.done(MMTokens.UNKNOWN);
           }
@@ -147,16 +148,16 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
     return level;
   }
 
-  private void parseTopics(@NotNull final PsiBuilder builder) {
+  private void parseTopics(@Nonnull final PsiBuilder builder) {
     while (!builder.eof()) {
       final PsiBuilder.Marker marker = builder.mark();
-      if (builder.getTokenType() == null) {
+      final IElementType token = builder.getTokenType();
+      if (token == null) {
         marker.drop();
       }
       else {
-        final IElementType token = builder.getTokenType();
         if (token == MMTokens.TOPIC) {
-          final int level = ModelUtils.calcCharsOnStart('#', builder.getTokenText());
+          final int level = ModelUtils.calcCharsOnStart('#', Assertions.assertNotNull(builder.getTokenText()));
           if (level != 1) {
             marker.done(MMTokens.UNKNOWN);
           }
