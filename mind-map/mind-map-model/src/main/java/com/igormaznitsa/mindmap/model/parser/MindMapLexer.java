@@ -81,6 +81,7 @@ public final class MindMapLexer {
       }
     }
 
+    @Nonnull
     public LexerPosition makeCopy() {
       return new LexerPosition(this);
     }
@@ -248,7 +249,7 @@ public final class MindMapLexer {
     return this.position.offset - this.tokenStart;
   }
 
-  private boolean prevTextInBufferIs(final String text) {
+  private boolean prevTextInBufferIs(@Nonnull final String text) {
     final int len = text.length();
     int startPos = this.position.offset - len;
     if (startPos < 0) {
@@ -262,7 +263,7 @@ public final class MindMapLexer {
     return true;
   }
 
-  private boolean hasTextAt(final String text, int position) {
+  private boolean hasTextAt(@Nonnull final String text, int position) {
     boolean result = false;
     if (position >= 0 && position + text.length() <= this.buffer.length()) {
       boolean ok = true;
@@ -281,7 +282,7 @@ public final class MindMapLexer {
     return this.position.offset >= this.endOffset;
   }
 
-  private boolean isTokenMayStartWith(final String text) {
+  private boolean isTokenMayStartWith(@Nonnull final String text) {
     boolean result = true;
     int index = 0;
     for (int i = this.tokenStart; i <= this.position.offset && index < text.length(); i++) {
@@ -349,7 +350,7 @@ public final class MindMapLexer {
     return this.position;
   }
 
-  public void restore(@Nonnull LexerPosition position) {
+  public void restore(@Nonnull final LexerPosition position) {
     if (position != this.position) {
       this.position.set(position);
     }

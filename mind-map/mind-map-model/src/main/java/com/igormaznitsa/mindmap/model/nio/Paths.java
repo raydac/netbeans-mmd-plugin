@@ -48,7 +48,7 @@ public final class Paths {
   }
 
   @Nonnull
-  public static Path get(@Nonnull final String string, @MustNotContainNull final String[] next) {
+  public static Path get(@Nonnull final String string, @Nonnull @MustNotContainNull final String[] next) {
     return PATH_SERVICE.getForPathItems(string, next);
   }
 

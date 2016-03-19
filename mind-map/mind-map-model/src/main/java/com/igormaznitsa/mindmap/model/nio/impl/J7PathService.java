@@ -35,7 +35,8 @@ public class J7PathService implements PathService {
   }
 
   @Override
-  public Path getForPathItems(@Nonnull final String first, @MustNotContainNull final String... items) {
+  @Nonnull
+  public Path getForPathItems(@Nonnull final String first, @Nonnull @MustNotContainNull final String... items) {
     return new J7Path(first, items);
   }
   

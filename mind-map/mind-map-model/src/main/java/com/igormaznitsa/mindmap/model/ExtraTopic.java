@@ -27,6 +27,7 @@ public class ExtraTopic extends Extra<String> {
   
   public static final String TOPIC_UID_ATTR = "topicLinkUID"; //NOI18N
   
+  @Nullable
   public static ExtraTopic makeLinkTo(@Nonnull final MindMap map, @Nullable final Topic topic) {
     ExtraTopic result = null;
     if (topic!=null){

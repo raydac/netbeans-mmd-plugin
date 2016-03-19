@@ -26,6 +26,7 @@ public interface Path extends Iterable<Path> {
 
   boolean isAbsolute();
 
+  @Nullable
   Path relativize(@Nonnull Path filePath);
 
   @Nullable

@@ -42,12 +42,13 @@ public class J7Path extends AbstractPath {
     this.nioPath = file.toPath();
   }
 
-  public J7Path(@Nonnull final String first, @MustNotContainNull final String... items) {
+  public J7Path(@Nonnull final String first, @Nonnull @MustNotContainNull final String... items) {
     super(first, items);
     this.nioPath = java.nio.file.Paths.get(first, items);
   }
 
-  private static J7Path makePathIfNotNull(final java.nio.file.Path basePath){
+  @Nullable
+  private static J7Path makePathIfNotNull(@Nullable final java.nio.file.Path basePath){
     return basePath == null ? null : new J7Path(basePath);
   }
   
@@ -63,6 +64,7 @@ public class J7Path extends AbstractPath {
   }
 
   @Override
+  @Nullable
   public Path relativize(@Nonnull final Path filePath) {
     final J7Path thatPath = (J7Path) filePath;
     return  makePathIfNotNull(this.nioPath.relativize(thatPath.nioPath));
@@ -92,6 +94,7 @@ public class J7Path extends AbstractPath {
       }
 
       @Override
+      @Nullable
       public Path next () {
         return makePathIfNotNull(this.wrappedIterator.next());
       }
@@ -104,7 +107,7 @@ public class J7Path extends AbstractPath {
   }
   
   @Override
-  public boolean equals(final Object obj){
+  public boolean equals(@Nullable final Object obj){
     if (obj == null) return false;
     if (this == obj) return true;
     if (obj instanceof J7Path){
@@ -115,6 +118,7 @@ public class J7Path extends AbstractPath {
   }
   
   @Override
+  @Nonnull
   public String toString(){
     return this.nioPath.toString();
   }

@@ -19,10 +19,12 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+
 public interface PathService {
   @Nonnull
   public Path getForFile(@Nonnull File file);
 
   @Nonnull
-  public Path getForPathItems(@Nonnull String first, @Nonnull String... items);
+  public Path getForPathItems(@Nonnull String first, @MustNotContainNull @Nonnull String... items);
 }

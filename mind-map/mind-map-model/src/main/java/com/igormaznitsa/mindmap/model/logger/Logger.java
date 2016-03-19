@@ -15,16 +15,19 @@
  */
 package com.igormaznitsa.mindmap.model.logger;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public abstract class Logger {
   
-  public Logger(final Class<?> klazz) {
+  public Logger(@Nonnull final Class<?> klazz) {
   }
   
-  public Logger(final String name) {
+  public Logger(@Nonnull final String name) {
   }
   
-  public abstract void info(String message);
-  public abstract void warn(String message);
-  public abstract void error(String message);
-  public abstract void error(String message,Throwable error);
+  public abstract void info(@Nullable String message);
+  public abstract void warn(@Nullable String message);
+  public abstract void error(@Nullable String message);
+  public abstract void error(@Nullable String message,@Nullable Throwable error);
 }

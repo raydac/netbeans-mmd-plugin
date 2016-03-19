@@ -247,7 +247,7 @@ public class MMapURI implements Serializable {
   }
 
   @Nonnull
-  public File asFile(final File base) {
+  public File asFile(@Nullable final File base) {
     final File result;
     if (this.uri.isAbsolute()) {
       result = ModelUtils.toFile(this.uri);

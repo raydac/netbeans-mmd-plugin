@@ -206,6 +206,21 @@ public class TopicTest {
     assertEquals("Child", child2.getText());
     assertTrue(child2.getChildren().isEmpty());
   }
+
+  @Test
+  public void testParse_topicWithTextStartsWithHash() throws Exception {
+    final MindMap mm = new MindMap(null);
+    final Topic root = mm.getRoot();
+    final Topic newTopic = new Topic(mm, root, "#NewTopic");
+    final String packedMap = mm.packToString();
+    final MindMap parsed = new MindMap(null,new StringReader(packedMap));
+    final Topic rootParsed = parsed.getRoot();
+    
+    assertEquals(1,rootParsed.getChildren().size());
+    final Topic theTopic = rootParsed.getFirst();
+    assertEquals("#NewTopic",theTopic);
+    assertTrue(theTopic.getExtras().isEmpty());
+  }
   
   @Test
   public void testParse_noteContainsTicks() throws Exception {

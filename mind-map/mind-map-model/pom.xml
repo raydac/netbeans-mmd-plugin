@@ -45,6 +45,11 @@
     
   <dependencies>
     <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-annotations</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
@@ -55,5 +60,29 @@
       <version>2.6</version>
     </dependency>
   </dependencies>
-    
+  
+  <build>
+    <plugins>
+    <plugin>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-checker</artifactId>
+      <version>1.1.0</version>
+      <configuration>
+        <restrictClassFormat>6</restrictClassFormat>
+        <checkMayContainNull>true</checkMayContainNull>
+        <checkNullable>true</checkNullable>
+        <ignoreClasses>
+          <class>com.igormaznitsa.mindmap.model.nio.impl.J7Path$1</class>
+        </ignoreClasses>
+      </configuration>
+      <executions>
+        <execution>
+          <goals>
+            <goal>check</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    </plugins>
+  </build>
 </project>

@@ -15,10 +15,15 @@
  */
 package com.igormaznitsa.mindmap.model.logger.impl;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerService;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 public class JavaLoggerServiceImpl implements LoggerService {
 
@@ -26,9 +31,10 @@ public class JavaLoggerServiceImpl implements LoggerService {
   private final Map<String,Logger> cacheForNames = new HashMap<String, Logger>();
   
   @Override
-  public Logger getLogger (final Class<?> klazz) {
+  @Nonnull
+  public Logger getLogger (@Nonnull final Class<?> klazz) {
     synchronized(this.cacheForClasses){
-      Logger result = this.cacheForClasses.get(klazz);
+      Logger result = this.cacheForClasses.get(assertNotNull(klazz));
       if(result == null){
         result = new JavaLogger(klazz);
         this.cacheForClasses.put(klazz, result);
@@ -38,9 +44,10 @@ public class JavaLoggerServiceImpl implements LoggerService {
   }
 
   @Override
-  public Logger getLogger (final String name) {
+  @Nonnull
+  public Logger getLogger (@Nonnull final String name) {
     synchronized (this.cacheForNames) {
-      Logger result = this.cacheForNames.get(name);
+      Logger result = this.cacheForNames.get(assertNotNull(name));
       if (result == null) {
         result = new JavaLogger(name);
         this.cacheForNames.put(name, result);

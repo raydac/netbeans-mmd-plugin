@@ -42,6 +42,7 @@ import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.IOUtils;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
@@ -200,7 +201,8 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   }
 
   @Nonnull
-  public List<Topic> removeNonExistingTopics(@Nonnull final List<Topic> origList) {
+  @MustNotContainNull
+  public List<Topic> removeNonExistingTopics(@Nonnull @MustNotContainNull final List<Topic> origList) {
     final List<Topic> result = new ArrayList<Topic>();
     final Topic rootTopic = this.root;
     if (rootTopic != null) {
@@ -243,6 +245,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     return false;
   }
 
+  @Nonnull
   static String allAttributesAsString(@Nonnull final Map<String, String> map) throws IOException {
     final StringBuilder buffer = new StringBuilder();
 
@@ -272,6 +275,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     return writer.toString();
   }
 
+  @Nonnull
   public <T extends Writer> T write(@Nonnull final T out) throws IOException {
     this.locker.lock();
     try {
@@ -373,6 +377,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   }
 
   @Nonnull
+  @MustNotContainNull
   public List<Topic> findAllTopicsForExtraType(@Nonnull final Extra.ExtraType type) {
     final List<Topic> result = new ArrayList<Topic>();
     final Topic rootTopic = this.root;
@@ -388,7 +393,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
     return result;
   }
 
-  private void _findAllTopicsForExtraType(@Nonnull final Topic topic, @Nonnull final Extra.ExtraType type, @Nonnull final List<Topic> result) {
+  private void _findAllTopicsForExtraType(@Nonnull final Topic topic, @Nonnull final Extra.ExtraType type, @Nonnull @MustNotContainNull final List<Topic> result) {
     if (topic.getExtras().containsKey(type)) {
       result.add(topic);
     }
@@ -398,6 +403,7 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   }
 
   @Override
+  @Nonnull
   public Object getChild(@Nonnull final Object parent, final int index) {
     return ((Topic) parent).getChildren().get(index);
   }

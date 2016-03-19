@@ -59,6 +59,8 @@ public final class ModelUtils {
     for (int i = 0; i < text.length(); i++) {
       if (text.charAt(i) == chr) {
         result++;
+      } else {
+        break;
       }
     }
     return result;

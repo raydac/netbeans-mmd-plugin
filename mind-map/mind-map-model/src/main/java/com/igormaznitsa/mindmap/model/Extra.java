@@ -83,15 +83,19 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
     }
   }
 
+  @Nonnull
   public abstract T getValue();
 
+  @Nonnull
   public abstract ExtraType getType();
 
+  @Nonnull
   public abstract String getAsString();
 
+  @Nonnull
   public abstract String provideAsStringForSave();
 
-  public final void write(final Writer out) throws IOException {
+  public final void write(@Nonnull final Writer out) throws IOException {
     out.append("- ").append(getType().name()).append(NEXT_LINE); //NOI18N
     out.append(ModelUtils.makePreBlock(provideAsStringForSave()));
   }

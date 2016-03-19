@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.GetUtils;
@@ -79,7 +80,7 @@ public final class Topic implements Serializable, Constants {
     this.extras.putAll(base.extras);
   }
 
-  public Topic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final String text, @Nonnull final Extra<?>... extras) {
+  public Topic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final String text, @Nonnull @MayContainNull final Extra<?>... extras) {
     this.map = Assertions.assertNotNull(map);
     this.text = Assertions.assertNotNull(text);
     this.parent = parent;
@@ -312,6 +313,7 @@ public final class Topic implements Serializable, Constants {
   }
 
   @Nonnull
+  @MustNotContainNull
   public List<Topic> getChildren() {
     return this.unmodifableChildren;
   }
@@ -391,7 +393,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public boolean removeExtra(@MustNotContainNull final Extra.ExtraType... types) {
+  public boolean removeExtra(@Nonnull @MustNotContainNull final Extra.ExtraType... types) {
     this.map.lock();
     try {
       boolean result = false;
@@ -405,7 +407,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public void setExtra(@MustNotContainNull final Extra<?>... extras) {
+  public void setExtra(@MustNotContainNull @Nonnull final Extra<?>... extras) {
     this.map.lock();
     try {
       for (final Extra<?> e : Assertions.assertDoesntContainNull(extras)) {
@@ -489,6 +491,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  @Nullable
   public String findAttributeInAncestors(@Nonnull final String attrName) {
     this.map.lock();
     try {
@@ -560,7 +563,7 @@ public final class Topic implements Serializable, Constants {
   }
 
   @Override
-  public boolean equals(final Object topic) {
+  public boolean equals(@Nullable final Object topic) {
     if (topic == null) {
       return false;
     }
@@ -574,6 +577,7 @@ public final class Topic implements Serializable, Constants {
   }
 
   @Override
+  @Nonnull
   public String toString() {
     return "MindMapTopic('" + this.text + "')"; //NOI18N
   }
@@ -655,6 +659,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  @Nonnull
   public Topic makeChild(@Nullable final String text, @Nullable final Topic afterTheTopic) {
     this.map.lock();
     try {
@@ -723,7 +728,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
-  public void removeExtras(@Nullable final Extra<?>... extras) {
+  public void removeExtras(@Nullable @MayContainNull final Extra<?>... extras) {
     this.map.lock();
     try {
       if (extras == null || extras.length == 0) {
@@ -742,6 +747,7 @@ public final class Topic implements Serializable, Constants {
     }
   }
 
+  @Nullable
   public Topic findForAttribute(@Nonnull final String attrName, @Nonnull String value) {
     if (value.equals(this.getAttribute(attrName))) {
       return this;
@@ -777,6 +783,7 @@ public final class Topic implements Serializable, Constants {
   }
 
   @Nonnull
+  @MustNotContainNull
   public Topic[] getPath() {
     final List<Topic> list = new ArrayList<Topic>();
     Topic current = this;

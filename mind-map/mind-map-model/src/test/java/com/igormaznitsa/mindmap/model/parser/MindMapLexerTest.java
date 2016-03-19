@@ -259,6 +259,22 @@ public class MindMapLexerTest {
   }
 
   @Test
+  public void testParseTopic_StartsWithHash() {
+    final MindMapLexer lexer = new MindMapLexer();
+    final String testString = "Header\n--\n# \\#Topic name";
+    lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.HEAD_LINE);
+    lexer.advance();
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_LINE, "Header\n", 0, 7);
+    lexer.advance();
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
+    lexer.advance();
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC, "# \\#Topic name", 10, 24);    
+  }
+  
+  @Test
   public void testTwoPhaseReading_ExtraText() {
     final MindMapLexer lexer = new MindMapLexer();
     final String testString = "Header\n--\n<pre>Hello world</pre>";
