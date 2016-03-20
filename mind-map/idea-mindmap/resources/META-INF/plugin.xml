@@ -20,8 +20,11 @@
     <change-notes><![CDATA[
         <p>1.0.5 (in development)</p>
         <ul>
-            <li>fixed bug #9, popup menu could not open options in WebStorm 9</li>
-            <li>improved parser to extract PSI tree in IDEA</li>
+            <li>fixed issue #10 "In Select topic dialog; Fold All only closes the root node"</li>
+            <li>fixed issue #9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"</li>
+            <li>the IDEA project adapted to be compatible with IDEA 16 platform</li>
+            <li>fixed issue with hash char in topic text</li>
+            <li>reworked mind map format parser to make it compatible with PSI tree parser in IDEA</li>
             <li>refactoring</li>
         </ul>
         <p>1.0.4 (21-feb-2016)</p>
@@ -78,7 +81,8 @@
         <lang.syntaxHighlighterFactory language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMSyntaxHighlighterFactory"/>
         <lang.parserDefinition language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.MMParserDefinition"/>
         <psi.referenceContributor language="NBMindMap" implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
-        <lang.elementManipulator forClass="com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile" implementationClass="com.igormaznitsa.ideamindmap.lang.refactoring.references.manipulators.PsiExtraFileManipulator"/>
+        <lang.elementManipulator forClass="com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile"
+                                 implementationClass="com.igormaznitsa.ideamindmap.lang.refactoring.references.manipulators.PsiExtraFileManipulator"/>
         <!--<moveFileHandler implementation="com.igormaznitsa.ideamindmap.lang.refactoring.move.FileMoveHandler"/>-->
     </extensions>
 

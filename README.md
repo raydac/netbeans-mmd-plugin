@@ -11,6 +11,14 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
+___1.1.5 (Under development)___
+- fixed issue #10 "In Select topic dialog; Fold All only closes the root node"
+- fixed issue #9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"
+- the IDEA project adapted to be compatible with IDEA 16 platform
+- fixed issue with hash char in topic text
+- reworked mind map format parser to make it compatible with PSI tree parser in IDEA
+- refactoring
+
 __1.1.4 (21-feb-2015)__
 - improved PNG exporter to save images without background and with all unfolded topics
 - added graphical print support into the IDEA plugin
