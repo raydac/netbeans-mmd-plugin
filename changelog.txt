@@ -1,4 +1,10 @@
 1.1.5 (in development)
+- fixed issue #11 "Can't create topic with hash char"
+- fixed issue #10 "In Select topic dialog; Fold All only closes the root node"
+- fixed issue #9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"
+- the IDEA project adapted to be compatible with IDEA 16 platform
+- reworked mind map format parser to make it compatible with PSI tree parser in IDEA
+- refactoring
 - fixed bug #9, popup menu could not open options in WebStorm 9
 - improved mind map file parsing to support PSI tree in IDEA
 - refactoring

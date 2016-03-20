@@ -15,7 +15,7 @@ ___1.1.5 (Under development)___
 - fixed issue [#10 "In Select topic dialog; Fold All only closes the root node"](https://github.com/raydac/netbeans-mmd-plugin/issues/10)
 - fixed issue [#9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"](https://github.com/raydac/netbeans-mmd-plugin/issues/9)
 - the IDEA project adapted to be compatible with IDEA 16 platform
-- fixed issue with hash char in topic text
+- fixed issue [#11 "Can't create topic with hash char"](https://github.com/raydac/netbeans-mmd-plugin/issues/11)
 - reworked mind map format parser to make it compatible with PSI tree parser in IDEA
 - refactoring
 
