@@ -17,12 +17,13 @@ package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import java.awt.Component;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import org.netbeans.modules.refactoring.spi.ui.CustomRefactoringPanel;
-import org.openide.filesystems.FileObject;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
@@ -33,14 +34,12 @@ public class RenamePanel extends javax.swing.JPanel implements CustomRefactoring
   private final AtomicBoolean initialized = new AtomicBoolean();
 
   private final Lookup lookup;
-  private final FileObject file;
   private final ChangeListener parent;
   private final String name;
 
-  public RenamePanel(final String name, final Lookup lookup, final FileObject file, final ChangeListener parent) {
+  public RenamePanel(final String name, final Lookup lookup, final ChangeListener parent) {
     initComponents();
     this.lookup = lookup;
-    this.file = file;
     this.parent = parent;
     this.name = name;
   }

@@ -61,7 +61,7 @@ public class RenameUI extends AbstractMMDRefactoringUI {
   @Override
   public CustomRefactoringPanel getPanel(final ChangeListener parent) {
     if (this.panel == null){
-      this.panel = new RenamePanel(this.file.getName(), this.lookup, this.file, parent);
+      this.panel = new RenamePanel(this.file.getName(), this.lookup, parent);
     }
     return this.panel;
   }

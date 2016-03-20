@@ -30,6 +30,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -37,12 +38,18 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
+import com.igormaznitsa.meta.annotation.ImplementationNote;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 public final class Utils {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
   private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
@@ -63,12 +70,11 @@ public final class Utils {
     return (int) Math.sqrt(color.getRed() * color.getRed() * .241d + color.getGreen() * color.getGreen() * .691d + color.getBlue() * color.getBlue() * .068d);
   }
 
-  public static boolean isDarkTheme () {
+  public static boolean isDarkTheme() {
     final Color panelBack = UIManager.getColor("Panel.background");
     if (panelBack == null) {
       return false;
-    }
-    else {
+    } else {
       return calculateColorBrightness(panelBack) < 150;
     }
   }
@@ -88,17 +94,14 @@ public final class Utils {
         if (Character.isUpperCase(c)) {
           result.append(' ');
           result.append(Character.toLowerCase(c));
-        }
-        else {
+        } else {
           result.append(c);
         }
-      }
-      else {
+      } else {
         notFirst = true;
         if (capitalizeFirstChar) {
           result.append(Character.toUpperCase(c));
-        }
-        else {
+        } else {
           result.append(c);
         }
       }
@@ -120,8 +123,7 @@ public final class Utils {
           result.add(t);
         }
       }
-    }
-    else {
+    } else {
       result.addAll(topic.getChildren());
     }
     return result.toArray(new Topic[result.size()]);
@@ -139,8 +141,7 @@ public final class Utils {
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
         result = new Color(Integer.parseInt(str.substring(1), 16), hasAlpha);
-      }
-      catch (NumberFormatException ex) {
+      } catch (NumberFormatException ex) {
         LOGGER.warn(String.format("Can't convert %s to color", str));
       }
     }
@@ -161,8 +162,7 @@ public final class Utils {
 
     if (hasAlpha) {
       components = new int[]{color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
-    }
-    else {
+    } else {
       components = new int[]{color.getRed(), color.getGreen(), color.getBlue()};
     }
 
@@ -193,8 +193,7 @@ public final class Utils {
   public static void safeSwingCall(@Nonnull final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
-    }
-    else {
+    } else {
       SwingUtilities.invokeLater(runnable);
     }
   }
@@ -202,12 +201,10 @@ public final class Utils {
   public static void safeSwingBlockingCall(@Nonnull final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
-    }
-    else {
+    } else {
       try {
         SwingUtilities.invokeAndWait(runnable);
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         throw new RuntimeException("Detected exception during SwingUtilities.invokeAndWait", ex);
       }
     }
@@ -225,8 +222,7 @@ public final class Utils {
       if (text.charAt(i) == '\n') {
         result[index++] = line.toString();
         line.setLength(0);
-      }
-      else {
+      } else {
         line.append(text.charAt(i));
       }
     }
@@ -244,6 +240,37 @@ public final class Utils {
     return result;
   }
 
+  @ImplementationNote("Must be called from Swing UI thread")
+  public static void foldUnfoldTree(@Nonnull final JTree tree, final boolean unfold) {
+    final TreeModel model = tree.getModel();
+    if (model != null) {
+      final Object root = model.getRoot();
+      if (root != null) {
+        final TreePath thePath = new TreePath(root);
+        setTreeState(tree, thePath, true, unfold);
+        if (!unfold) {
+          setTreeState(tree, thePath, false, true);
+        }
+      }
+    }
+  }
+
+  private static void setTreeState(@Nonnull final JTree tree, @Nonnull final TreePath path, final boolean recursively, final boolean unfold) {
+    final Object lastNode = path.getLastPathComponent();
+    for (int i = 0; i < tree.getModel().getChildCount(lastNode); i++) {
+      final Object child = tree.getModel().getChild(lastNode, i);
+      final TreePath pathToChild = path.pathByAddingChild(child);
+      if (recursively) {
+        setTreeState(tree, pathToChild, recursively, unfold);
+      }
+    }
+    if (unfold) {
+      tree.expandPath(path);
+    } else {
+      tree.collapsePath(path);
+    }
+  }
+
   @Nullable
   public static Point2D findRectEdgeIntersection(@Nonnull final Rectangle2D rect, final double outboundX, final double outboundY) {
     final int detectedSide = rect.outcode(outboundX, outboundY);
@@ -254,8 +281,7 @@ public final class Utils {
       final double dx = outboundX - rect.getCenterX();
       if (dx == 0.0d) {
         return new Point2D.Double(rect.getCenterX(), top ? rect.getMinY() : rect.getMaxY());
-      }
-      else {
+      } else {
         final double halfy = top ? rect.getHeight() / 2 : -rect.getHeight() / 2;
         final double coeff = (outboundY - rect.getCenterY()) / dx;
         final double calculatedX = rect.getCenterX() - (halfy / coeff);
@@ -271,8 +297,7 @@ public final class Utils {
       final double dy = outboundY - rect.getCenterY();
       if (dy == 0.0d) {
         return new Point2D.Double(left ? rect.getMinX() : rect.getMaxX(), rect.getCenterY());
-      }
-      else {
+      } else {
         final double halfx = left ? rect.getWidth() / 2 : -rect.getWidth() / 2;
         final double coeff = (outboundX - rect.getCenterX()) / dy;
         final double calculatedY = rect.getCenterY() - (halfx / coeff);
@@ -308,19 +333,16 @@ public final class Utils {
     try {
       prepareGraphicsForQuality(gfx);
       cloned.doPaint(gfx, config, false);
-    }
-    finally {
+    } finally {
       gfx.dispose();
     }
 
     int alpha;
     if (opacity <= 0.0f) {
       alpha = 0x00;
-    }
-    else if (opacity >= 1.0f) {
+    } else if (opacity >= 1.0f) {
       alpha = 0xFF;
-    }
-    else {
+    } else {
       alpha = Math.round(0xFF * opacity);
     }
 
@@ -331,8 +353,7 @@ public final class Utils {
         final int curAlpha = result.getRGB(x, y) >>> 24;
         if (curAlpha == 0xFF) {
           result.setRGB(x, y, (result.getRGB(x, y) & 0xFFFFFF) | alpha);
-        }
-        else if (curAlpha != 0x00) {
+        } else if (curAlpha != 0x00) {
           final int calculated = Math.round(curAlpha * opacity) << 24;
           result.setRGB(x, y, (result.getRGB(x, y) & 0xFFFFFF) | calculated);
         }

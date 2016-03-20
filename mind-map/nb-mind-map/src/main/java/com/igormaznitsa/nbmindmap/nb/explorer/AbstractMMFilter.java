@@ -30,10 +30,10 @@ public abstract class AbstractMMFilter extends FilterNode {
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractMMFilter.class);
 
-  protected static final Action [] EMPTY_ACTION = new Action[0];
-  
-  protected Action [] actions;
-  
+  protected static final Action[] EMPTY_ACTION = new Action[0];
+
+  protected Action[] actions;
+
   public AbstractMMFilter(Node original) {
     super(original);
   }
@@ -47,7 +47,7 @@ public abstract class AbstractMMFilter extends FilterNode {
   }
 
   @Override
-  public Action[] getActions (final boolean context) {
+  public Action[] getActions(final boolean context) {
     if (!context) {
       if (actions == null) {
         // Copy actions and leave out the PropertiesAction and FileSystemAction.                
@@ -55,8 +55,7 @@ public abstract class AbstractMMFilter extends FilterNode {
         List<Action> actionList = new ArrayList<Action>(superActions.length);
 
         for (int i = 0; i < superActions.length; i++) {
-
-          if ((i <= superActions.length - 2) && superActions[i] == null && superActions[i + 1] instanceof PropertiesAction) {
+          if ((i <= superActions.length - 2) && superActions[i] == null && (superActions[i + 1] instanceof PropertiesAction)) {
             i++;
             continue;
           }

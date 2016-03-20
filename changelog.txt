@@ -1,3 +1,8 @@
+1.1.5 (in development)
+- fixed bug #9, popup menu could not open options in WebStorm 9
+- improved mind map file parsing to support PSI tree in IDEA
+- refactoring
+
 1.1.4 (21-feb-2015)
 - improved PNG exporter to save images without background and with all unfolded topics
 - added graphical print support into the IDEA plugin

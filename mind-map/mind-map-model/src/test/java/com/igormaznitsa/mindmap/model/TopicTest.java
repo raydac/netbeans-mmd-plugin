@@ -211,14 +211,14 @@ public class TopicTest {
   public void testParse_topicWithTextStartsWithHash() throws Exception {
     final MindMap mm = new MindMap(null);
     final Topic root = mm.getRoot();
-    final Topic newTopic = new Topic(mm, root, "#NewTopic");
+    new Topic(mm, root, "#NewTopic");
     final String packedMap = mm.packToString();
     final MindMap parsed = new MindMap(null,new StringReader(packedMap));
     final Topic rootParsed = parsed.getRoot();
     
     assertEquals(1,rootParsed.getChildren().size());
     final Topic theTopic = rootParsed.getFirst();
-    assertEquals("#NewTopic",theTopic);
+    assertEquals("#NewTopic",theTopic.getText());
     assertTrue(theTopic.getExtras().isEmpty());
   }
   

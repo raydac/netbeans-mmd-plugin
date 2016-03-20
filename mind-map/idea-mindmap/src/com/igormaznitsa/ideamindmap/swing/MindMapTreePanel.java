@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 
@@ -89,15 +90,11 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
   }
 
   public void expandAll() {
-    for (int i = 0; i < this.treeMindMap.getRowCount(); i++) {
-      this.treeMindMap.expandRow(i);
-    }
+    Utils.foldUnfoldTree(this.treeMindMap,true);
   }
 
   public void collapseAll() {
-    for (int i = 0; i < this.treeMindMap.getRowCount(); i++) {
-      this.treeMindMap.collapseRow(i);
-    }
+    Utils.foldUnfoldTree(this.treeMindMap,false);
   }
 
   public JTree getTree() {

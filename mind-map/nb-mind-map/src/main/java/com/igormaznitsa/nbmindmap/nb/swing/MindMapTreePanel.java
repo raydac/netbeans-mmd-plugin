@@ -28,6 +28,8 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
 public final class MindMapTreePanel extends javax.swing.JPanel implements Comparator<Object>{
 
   private static final long serialVersionUID = 2652308291444091807L;
@@ -69,19 +71,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
     this.setPreferredSize(new Dimension(450, 400));
     
     if (expandAll){
-      expandAll();
-    }
-  }
-
-  public void expandAll(){
-    for (int i = 0; i < this.treeMindMap.getRowCount(); i++) {
-      this.treeMindMap.expandRow(i);
-    }
-  }
-  
-  public void collapseAll(){
-    for (int i = 0; i < this.treeMindMap.getRowCount(); i++) {
-      this.treeMindMap.collapseRow(i);
+      Utils.foldUnfoldTree(this.treeMindMap,true);
     }
   }
   
@@ -164,11 +154,11 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
   }//GEN-LAST:event_buttonUnselectActionPerformed
 
   private void buttonExpandAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExpandAllActionPerformed
-    expandAll();
+    Utils.foldUnfoldTree(this.treeMindMap, true);
   }//GEN-LAST:event_buttonExpandAllActionPerformed
 
   private void buttonCollapseAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCollapseAllActionPerformed
-    collapseAll();
+    Utils.foldUnfoldTree(this.treeMindMap, false);
   }//GEN-LAST:event_buttonCollapseAllActionPerformed
 
   public void dispose(){

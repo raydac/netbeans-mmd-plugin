@@ -19,7 +19,6 @@ import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 
 import javax.swing.JComponent;

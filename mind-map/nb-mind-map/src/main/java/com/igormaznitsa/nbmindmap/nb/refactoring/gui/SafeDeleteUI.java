@@ -64,7 +64,7 @@ public class SafeDeleteUI extends AbstractMMDRefactoringUI {
   @Override
   public CustomRefactoringPanel getPanel (final ChangeListener parent) {
     if (this.panel == null) {
-      this.panel = new SafeDeletePanel(this.lookup, files, parent);
+      this.panel = new SafeDeletePanel(this.lookup, files);
     }
     return this.panel;
   }

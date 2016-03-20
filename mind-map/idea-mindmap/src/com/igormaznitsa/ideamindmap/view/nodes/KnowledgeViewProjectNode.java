@@ -64,7 +64,7 @@ public class KnowledgeViewProjectNode extends AbstractProjectNode {
         final PsiDirectory dir = psiManager.findDirectory(knowledgeFolder);
         final PsiDirectoryNode node = new PsiDirectoryNode(myProject, dir, getSettings()) {
 
-          @Override protected Icon patchIcon(Icon original, VirtualFile file) {
+          protected Icon patchIcon(final Icon original, final VirtualFile file) {
             return AllIcons.File.FOLDER;
           }
 

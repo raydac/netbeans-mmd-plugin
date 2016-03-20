@@ -5,8 +5,6 @@ import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import java.awt.Image;
 import java.util.concurrent.Callable;
 
-import javax.annotation.Nullable;
-
 import org.netbeans.api.project.Project;
 import org.openide.loaders.DataFilter;
 import org.openide.loaders.DataFolder;

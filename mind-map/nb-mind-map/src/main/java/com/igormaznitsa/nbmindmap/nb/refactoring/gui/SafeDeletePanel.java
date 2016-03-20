@@ -34,7 +34,7 @@ public class SafeDeletePanel extends javax.swing.JPanel implements CustomRefacto
   private final Lookup lookup;
   private final FileObject [] files;
   
-  public SafeDeletePanel(final Lookup lookup, final FileObject [] files, final ChangeListener parent) {
+  public SafeDeletePanel(final Lookup lookup, final FileObject [] files) {
     initComponents();
     this.files = files;
     this.lookup = lookup;
