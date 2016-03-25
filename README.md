@@ -132,4 +132,4 @@ Mainly you can keep short texts in your mind maps as topic names but sometime it
 -  **File link** - link to a file, youc can add them through special dialog or just drag and drop file from NetBeans project tree to a topic, **the file will be opened within IDE as a document**
 -  **Transition** - link to another topic in the same mind map, it allows to make some navigation in very big mind maps
 
-You can add and edit new toipic content through the maind map pop-up menu and if you want remove some content then just open editor for the content and remove all text information.
+You can add and edit new topic content through the maind map pop-up menu and if you want remove some content then just open editor for the content and remove all text information.
