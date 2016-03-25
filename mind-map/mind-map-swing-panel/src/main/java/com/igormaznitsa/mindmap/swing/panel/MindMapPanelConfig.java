@@ -373,8 +373,8 @@ public final class MindMapPanelConfig implements Serializable {
     this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT, new KeyShortcut(KEY_FOCUS_MOVE_LEFT, KeyEvent.VK_LEFT, 0));
     this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT, KeyEvent.VK_RIGHT, 0));
     this.mapShortCut.put(KEY_DELETE_TOPIC, new KeyShortcut(KEY_DELETE_TOPIC, KeyEvent.VK_DELETE, 0));
-    this.mapShortCut.put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, '+', KeyEvent.CTRL_MASK));
-    this.mapShortCut.put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, '-', KeyEvent.CTRL_MASK));
+    this.mapShortCut.put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, KeyEvent.VK_PLUS, KeyEvent.CTRL_MASK));
+    this.mapShortCut.put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, KeyEvent.VK_MINUS, KeyEvent.CTRL_MASK));
     this.mapShortCut.put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, '0', KeyEvent.CTRL_MASK));
   }
 
