@@ -297,6 +297,15 @@ public class MindMapPanel extends JPanel {
           else if (hasOnlyTopicSelected()) {
             startEdit((AbstractElement) selectedTopics.get(0).getPayload());
           }
+        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
+          setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)));
+          updateView(false);
+        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
+          setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)));
+          updateView(false);
+        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
+          setScale(1.0);
+          updateView(false);
         }
       }
 
