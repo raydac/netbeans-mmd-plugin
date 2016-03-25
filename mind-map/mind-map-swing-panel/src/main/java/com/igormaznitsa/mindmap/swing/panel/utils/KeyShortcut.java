@@ -82,10 +82,25 @@ public final class KeyShortcut {
   }
   
   public boolean isEvent(final KeyEvent event){
-    final int code = event.getKeyCode() == 0 ? event.getKeyChar() : event.getKeyCode();
+    final int code = event.getKeyCode() == 0 ? getKeyCode(event.getKeyChar()) : event.getKeyCode();
     return code == this.keyCode && (event.getModifiers() & ALL_MASKS) == this.modifiers;
   }
   
+  private int getKeyCode(char keyChar){
+    final int result;
+    switch (keyChar) {
+      // Character '+' is 0x2b but VK_PLUS is 0x0209
+      case '+': {
+        result = KeyEvent.VK_PLUS;
+      }
+      break;
+      default: {
+        result = keyChar;
+      }
+    }
+    return result;
+  }
+
   @Override
   public int hashCode(){
     return this.modifiers ^ this.keyCode;

@@ -145,6 +145,8 @@ public class MindMapPanel extends JPanel {
   private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
 
   private static final double SCALE_STEP = 0.2d;
+  private static final double SCALE_MINIMUM = 0.3d;
+  private static final double SCALE_MAXIMUM = 10.0d;
 
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
 
@@ -295,6 +297,15 @@ public class MindMapPanel extends JPanel {
           else if (hasOnlyTopicSelected()) {
             startEdit((AbstractElement) selectedTopics.get(0).getPayload());
           }
+        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
+          setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)));
+          updateView(false);
+        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
+          setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)));
+          updateView(false);
+        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
+          setScale(1.0);
+          updateView(false);
         }
       }
 
@@ -499,7 +510,7 @@ public class MindMapPanel extends JPanel {
           if (!e.isConsumed() && (theConfig != null && ((e.getModifiers() & theConfig.getScaleModifiers()) == theConfig.getScaleModifiers()))) {
             endEdit(elementUnderEdit != null);
 
-            setScale(Math.max(0.3d, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), 10.0d)));
+            setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), SCALE_MAXIMUM)));
 
             updateView(false);
             e.consume();
