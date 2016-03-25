@@ -27,7 +27,9 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
+
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
+
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -41,6 +43,7 @@ import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
 import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
 import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -67,8 +70,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.FileOwnerQuery;
@@ -93,7 +98,10 @@ import org.openide.util.WeakSet;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
+
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
+
+import java.awt.dnd.InvalidDnDOperationException;
 
 @MultiViewElement.Registration (
     displayName = "#MMDGraphEditor.displayName",
@@ -675,7 +683,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
     else {
       LOGGER.error("There is not any DataObject in the dragged element");
-      dtde.rejectDrop();
+      try{
+        dtde.rejectDrop();
+      }catch(InvalidDnDOperationException ex){
+        LOGGER.error("Detected InvalidDnDOperationException during DnD reject");
+      }
     }
   }
 
