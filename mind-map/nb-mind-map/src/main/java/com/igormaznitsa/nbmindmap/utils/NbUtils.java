@@ -316,7 +316,7 @@ public final class NbUtils {
   }
 
   @Nullable
-  public static MMapURI editURI (@Nonnull final String title, @Nonnull final MMapURI uri) {
+  public static MMapURI editURI (@Nonnull final String title, @Nullable final MMapURI uri) {
     final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
 
     textEditor.doLayout();
@@ -342,7 +342,7 @@ public final class NbUtils {
   }
 
   @Nullable
-  public static FileEditPanel.DataContainer editFilePath (@Nonnull final String title, @Nonnull final File projectFolder, @Nonnull final FileEditPanel.DataContainer data) {
+  public static FileEditPanel.DataContainer editFilePath (@Nonnull final String title, @Nullable final File projectFolder, @Nullable final FileEditPanel.DataContainer data) {
     final FileEditPanel filePathEditor = new FileEditPanel(projectFolder, data);
 
     filePathEditor.doLayout();
@@ -442,10 +442,6 @@ public final class NbUtils {
   }
 
   public static boolean isFileInProjectScope (@Nonnull final Project project, @Nonnull final FileObject file) {
-    if (file == null || project == null) {
-      return false;
-    }
-
     final FileObject projectFolder = project.getProjectDirectory();
 
     if (FileUtil.isParentOf(projectFolder, file)) {

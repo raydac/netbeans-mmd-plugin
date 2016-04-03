@@ -1094,7 +1094,7 @@ public class MindMapPanel extends JPanel {
 
     this.selectedTopics.clear();
 
-    this.model = model;
+    this.model = assertNotNull("Model must not be null",model);
 
     updateView(false);
 

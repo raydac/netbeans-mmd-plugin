@@ -41,7 +41,7 @@ import org.openide.util.Lookup;
 
 public final class MovePanel extends javax.swing.JPanel implements CustomRefactoringPanel {
 
-  protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+  public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   private static final long serialVersionUID = -5276978458284047575L;
 
   private final AtomicBoolean initialized = new AtomicBoolean();

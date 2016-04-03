@@ -23,6 +23,8 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.openide.filesystems.FileChangeListener;
 import org.openide.filesystems.FileLock;
@@ -30,6 +32,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileStateInvalidException;
 import org.openide.filesystems.FileSystem;
 import org.openide.util.Lookup;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 public final class FakeFileObject extends FileObject {
 
@@ -38,178 +41,197 @@ public final class FakeFileObject extends FileObject {
   private final File wrappedFile;
   private final boolean folder;
   private final Date lastModified = new Date();
-  
+
   private final static class FakeFileLock extends FileLock {
+
     private boolean locked = true;
-    
-    public FakeFileLock () {
+
+    public FakeFileLock() {
     }
 
     @Override
-    public void finalize () {
-      if (isValid()){
-        releaseLock();
+    public void finalize() {
+      try {
+        if (isValid()) {
+          releaseLock();
+        }
+      } finally {
+        super.finalize();
       }
-      super.finalize();
     }
 
     @Override
-    public boolean isValid () {
+    public boolean isValid() {
       return this.locked;
     }
 
     @Override
-    public void releaseLock () {
+    public void releaseLock() {
       this.locked = false;
     }
   }
-  
+
   private static final Enumeration<String> EMPTY_ENUMERATION = new Enumeration<String>() {
     @Override
-    public boolean hasMoreElements () {
+    public boolean hasMoreElements() {
       return false;
     }
 
     @Override
-    public String nextElement () {
+    public String nextElement() {
       throw new NoSuchElementException();
     }
   };
-  
-  public FakeFileObject(final File file, final boolean folder){
+
+  public FakeFileObject(final File file, final boolean folder) {
     super();
     this.wrappedFile = file;
     this.folder = folder;
   }
 
   @Override
-  public String getPath () {
+  @Nonnull
+  public String getPath() {
     return this.wrappedFile.getAbsolutePath().replace('\\', '/');
   }
 
   @Override
-  public String getName () {
+  @Nonnull
+  public String getName() {
     return FilenameUtils.getBaseName(this.wrappedFile.getName());
   }
 
   @Override
-  public String getExt () {
+  @Nonnull
+  public String getExt() {
     return FilenameUtils.getExtension(this.wrappedFile.getName());
   }
 
   @Override
-  public void rename (FileLock lock, String name, String ext) throws IOException {
+  public void rename(@Nonnull FileLock lock, @Nonnull String name, @Nonnull String ext) throws IOException {
   }
 
   @Override
-  public FileSystem getFileSystem () throws FileStateInvalidException {
+  public FileSystem getFileSystem() throws FileStateInvalidException {
     return Lookup.getDefault().lookup(FileSystem.class);
   }
 
   @Override
-  public FileObject getParent () {
+  @Nullable
+  public FileObject getParent() {
     final File parent = this.wrappedFile.getParentFile();
-    return parent == null ? null : new FakeFileObject(parent,true);
+    return parent == null ? null : new FakeFileObject(parent, true);
   }
 
   @Override
-  public boolean isFolder () {
+  public boolean isFolder() {
     return this.folder;
   }
 
   @Override
+  @Nonnull
   public Date lastModified () {
     return this.lastModified;
   }
 
   @Override
-  public boolean isRoot () {
+  public boolean isRoot() {
     return this.folder && getParent() == null;
   }
 
   @Override
-  public boolean isData () {
+  public boolean isData() {
     return !this.folder;
   }
 
   @Override
-  public boolean isValid () {
+  public boolean isValid() {
     return false;
   }
 
   @Override
-  public void delete (final FileLock lock) throws IOException {
+  public void delete(@Nonnull final FileLock lock) throws IOException {
   }
 
   @Override
-  public Object getAttribute (String attrName) {
+  @Nullable
+  public Object getAttribute(@Nonnull String attrName) {
     return null;
   }
 
   @Override
-  public void setAttribute (String attrName, Object value) throws IOException {
+  public void setAttribute(@Nonnull String attrName, @Nonnull Object value) throws IOException {
   }
 
   @Override
-  public Enumeration<String> getAttributes () {
+  @Nonnull
+  public Enumeration<String> getAttributes() {
     return EMPTY_ENUMERATION;
   }
 
   @Override
-  public void addFileChangeListener (FileChangeListener fcl) {
+  public void addFileChangeListener(@Nonnull final FileChangeListener fcl) {
   }
 
   @Override
-  public void removeFileChangeListener (FileChangeListener fcl) {
+  public void removeFileChangeListener(@Nonnull final FileChangeListener fcl) {
   }
 
   @Override
-  public long getSize () {
+  public long getSize() {
     return 0;
   }
 
   @Override
-  public InputStream getInputStream () throws FileNotFoundException {
+  @Nonnull
+  public InputStream getInputStream() throws FileNotFoundException {
     throw new FileNotFoundException("It's a fake file object");
   }
 
   @Override
-  public OutputStream getOutputStream (FileLock lock) throws IOException {
+  @Nonnull
+  public OutputStream getOutputStream(@Nonnull final FileLock lock) throws IOException {
     throw new IOException("It's a fake file object");
- }
+  }
 
   @Override
-  public FileLock lock () throws IOException {
+  @Nonnull
+  public FileLock lock() throws IOException {
     return new FakeFileLock();
   }
 
   @Override
-  public void setImportant (boolean b) {
+  public void setImportant(boolean b) {
   }
 
   @Override
-  public FileObject[] getChildren () {
+  @Nonnull
+  @MustNotContainNull
+  public FileObject[] getChildren() {
     return new FileObject[0];
   }
 
   @Override
-  public FileObject getFileObject (String name, String ext) {
+  @Nullable
+  public FileObject getFileObject(@Nonnull final String name, @Nonnull final String ext) {
     return null;
   }
 
   @Override
-  public FileObject createFolder (String name) throws IOException {
+  @Nonnull
+  public FileObject createFolder(@Nonnull final String name) throws IOException {
     throw new IOException("It's a fake file object");
   }
 
   @Override
-  public FileObject createData (String name, String ext) throws IOException {
+  @Nonnull
+  public FileObject createData(@Nonnull final String name, @Nonnull final String ext) throws IOException {
     throw new IOException("It's a fake file object");
   }
 
   @Override
-  public boolean isReadOnly () {
+  public boolean isReadOnly() {
     return true;
   }
-  
+
 }

@@ -42,7 +42,6 @@ class SourceNode extends AbstractMMFilter {
 
   @Override
   public boolean equals(@Nullable final Object obj) {
-    if (obj == null) return false;
     if (this == obj) return true;
     if (obj instanceof SourceNode){
       return super.equals(obj);

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.nb.editor;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
 import com.igormaznitsa.mindmap.exporters.Exporters;
 import com.igormaznitsa.mindmap.model.*;
@@ -102,6 +103,8 @@ import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 import java.awt.dnd.InvalidDnDOperationException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @MultiViewElement.Registration (
     displayName = "#MMDGraphEditor.displayName",
@@ -188,7 +191,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run () {
-          final Topic root = mindMapPanel.getModel() == null ? null : mindMapPanel.getModel().getRoot();
+          final Topic root = mindMapPanel.getModel().getRoot();
           if (mindMapPanel.hasSelectedTopics()) {
             topicToCentre(mindMapPanel.getFirstSelected());
           }
@@ -353,10 +356,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         }
 
         final Rectangle2D orig = element.getBounds();
-        if (orig == null) {
-          return;
-        }
-
         final int GAP = 30;
 
         final Rectangle bounds = orig.getBounds();
@@ -958,7 +957,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public JPopupMenu makePopUpForMindMapPanel (final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
+  public JPopupMenu makePopUpForMindMapPanel (@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
 
     if (element != null) {
@@ -966,19 +965,20 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       editText.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed (ActionEvent e) {
+        public void actionPerformed (@Nonnull final ActionEvent e) {
           mindMapPanel.startEdit(element);
         }
       });
 
       result.add(editText);
 
+      
       final JMenuItem addChild = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miAddChild"), Icons.ADD.getIcon());
       addChild.addActionListener(new ActionListener() {
 
         @Override
-        public void actionPerformed (ActionEvent e) {
-          mindMapPanel.makeNewChildAndStartEdit(element.getModel(), null);
+        public void actionPerformed (@Nonnull final ActionEvent e) {
+          mindMapPanel.makeNewChildAndStartEdit(assertNotNull(element).getModel(), null);
         }
       });
 
@@ -995,7 +995,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             mindMapPanel.deleteSelectedTopics();
           }
           else {
-            mindMapPanel.deleteTopics(element.getModel());
+            mindMapPanel.deleteTopics(assertNotNull(element).getModel());
           }
         }
       });
@@ -1086,7 +1086,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         name = String.format(BUNDLE.getString("MMDGraphEditor.makePopUp.miColorsForSelected"), topics.length);
       }
       else {
-        topics = new Topic[]{element.getModel()};
+        topics = new Topic[]{assertNotNull(element).getModel()};
         name = BUNDLE.getString("MMDGraphEditor.makePopUp.miColorsForTopic");
       }
 

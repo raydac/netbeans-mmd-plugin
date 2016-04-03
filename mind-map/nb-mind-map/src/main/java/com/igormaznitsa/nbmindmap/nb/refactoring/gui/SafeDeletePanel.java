@@ -19,14 +19,13 @@ import java.awt.Component;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeListener;
 import org.netbeans.modules.refactoring.spi.ui.CustomRefactoringPanel;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
-public class SafeDeletePanel extends javax.swing.JPanel implements CustomRefactoringPanel {
-  protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+public final class SafeDeletePanel extends javax.swing.JPanel implements CustomRefactoringPanel {
+  public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   private static final long serialVersionUID = 8032492831487495590L;
 
   private final AtomicBoolean initialized = new AtomicBoolean();

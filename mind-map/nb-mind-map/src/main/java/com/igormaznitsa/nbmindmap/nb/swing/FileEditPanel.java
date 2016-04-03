@@ -15,10 +15,12 @@
  */
 package com.igormaznitsa.nbmindmap.nb.swing;
 
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
+
 import java.io.File;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JFileChooser;
 
 public final class FileEditPanel extends javax.swing.JPanel {
@@ -28,11 +30,12 @@ public final class FileEditPanel extends javax.swing.JPanel {
     private final String path;
     private final boolean showWithSystemTool;
 
-    public DataContainer(final String path, final boolean showWithSystemTool) {
+    public DataContainer(@Nullable final String path, final boolean showWithSystemTool) {
       this.path = path == null ? "" : path;
       this.showWithSystemTool = showWithSystemTool;
     }
 
+    @Nonnull
     public String getPath() {
       return this.path;
     }
@@ -59,13 +62,14 @@ public final class FileEditPanel extends javax.swing.JPanel {
   private static final long serialVersionUID = -6683682013891751388L;
   private final File projectFolder;
 
-  public FileEditPanel(final File projectFolder, final DataContainer initialData) {
+  public FileEditPanel(@Nullable final File projectFolder, @Nullable final DataContainer initialData) {
     initComponents();
     this.projectFolder = projectFolder;
     this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath());
     this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
   }
 
+  @Nonnull
   public DataContainer getData() {
     return new DataContainer(this.textFieldFilePath.getText().trim(), this.checkBoxShowFileInSystem.isSelected());
   }

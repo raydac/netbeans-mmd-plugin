@@ -23,7 +23,7 @@ import org.netbeans.modules.refactoring.spi.ui.CustomRefactoringPanel;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
-public class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactoringPanel {
+public final class WhereUsedPanel extends javax.swing.JPanel implements CustomRefactoringPanel {
 
   private static final long serialVersionUID = -8079025593983130439L;
   
