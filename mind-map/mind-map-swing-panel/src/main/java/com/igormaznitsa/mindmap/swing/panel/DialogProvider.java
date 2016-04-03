@@ -16,16 +16,21 @@
 package com.igormaznitsa.mindmap.swing.panel;
 
 import java.io.File;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 
 public interface DialogProvider {
-  void msgError(String text);
-  void msgInfo(String text);
-  void msgWarn(String text);
-  boolean msgConfirmOkCancel(String title, String question);
-  boolean msgOkCancel(String title, JComponent component);
-  boolean msgConfirmYesNo(String title, String question);
-  Boolean msgConfirmYesNoCancel(String title, final String question);
-  File msgSaveFileDialog(String id, String title, File defaultFolder, boolean filesnly, FileFilter fileFilter, String approveButtonText);
+  void msgError(@Nonnull String text);
+  void msgInfo(@Nonnull String text);
+  void msgWarn(@Nonnull String text);
+  boolean msgConfirmOkCancel(@Nonnull String title, @Nonnull String question);
+  boolean msgOkCancel(@Nonnull String title, @Nonnull JComponent component);
+  boolean msgConfirmYesNo(@Nonnull String title, @Nonnull String question);
+  @Nullable
+  Boolean msgConfirmYesNoCancel(@Nonnull String title, @Nonnull final String question);
+  @Nullable
+  File msgSaveFileDialog(@Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText);
 }

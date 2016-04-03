@@ -17,8 +17,11 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+
 import org.apache.commons.io.IOUtils;
 
 public enum Icons {
@@ -32,11 +35,12 @@ public enum Icons {
 
   private final ImageIcon icon;
 
+  @Nonnull
   public ImageIcon getIcon() {
     return this.icon;
   }
 
-  private Icons(final String name) {
+  private Icons(@Nonnull final String name) {
     final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
     try {
       this.icon = new ImageIcon(ImageIO.read(in));

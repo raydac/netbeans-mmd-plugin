@@ -4,12 +4,12 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.5-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
     
   <artifactId>mind-map-model</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>${main.version}</version>
   <packaging>jar</packaging>
     
   <description>Abstract mind map model</description>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>meta-annotations</artifactId>
-      <version>1.1.0</version>
+      <version>${meta.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -61,28 +61,4 @@
     </dependency>
   </dependencies>
   
-  <build>
-    <plugins>
-    <plugin>
-      <groupId>com.igormaznitsa</groupId>
-      <artifactId>meta-checker</artifactId>
-      <version>1.1.0</version>
-      <configuration>
-        <restrictClassFormat>6</restrictClassFormat>
-        <checkMayContainNull>true</checkMayContainNull>
-        <checkNullable>true</checkNullable>
-        <ignoreClasses>
-          <class>com.igormaznitsa.mindmap.model.nio.impl.J7Path$1</class>
-        </ignoreClasses>
-      </configuration>
-      <executions>
-        <execution>
-          <goals>
-            <goal>check</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
-    </plugins>
-  </build>
 </project>

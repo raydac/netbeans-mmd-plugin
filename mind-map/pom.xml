@@ -3,13 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.igormaznitsa</groupId>
   <artifactId>mind-map</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   
   <inceptionYear>2015</inceptionYear>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <main.version>1.1.5-SNAPSHOT</main.version>
+    <meta.version>1.1.2</meta.version>
   </properties>
 
   <modules>
@@ -73,8 +75,13 @@
   <dependencies>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
-      <artifactId>meta-common</artifactId>
-      <version>1.0.2</version>
+      <artifactId>meta-annotations</artifactId>
+      <version>${meta.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-utils</artifactId>
+      <version>${meta.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -139,6 +146,24 @@
         <configuration>
           <useDefaultManifestFile>true</useDefaultManifestFile>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>meta-checker</artifactId>
+        <version>${meta.version}</version>
+        <configuration>
+          <restrictClassFormat>6</restrictClassFormat>
+          <checkMayContainNull>true</checkMayContainNull>
+          <checkNullable>true</checkNullable>
+        </configuration>
+        <executions>
+          <execution>
+            <id>meta-check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

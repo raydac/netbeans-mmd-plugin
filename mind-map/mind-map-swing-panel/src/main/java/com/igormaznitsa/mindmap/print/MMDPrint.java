@@ -15,16 +15,24 @@
  */
 package com.igormaznitsa.mindmap.print;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+
+import javax.annotation.Nonnull;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 
 public class MMDPrint {
 
@@ -35,10 +43,12 @@ public class MMDPrint {
   private static final double SMALL_SCALING_THRESHOLD = 0.20d;
   private static final double SCALE_RATIO_THRESHOLD = 0.20d;
 
-  public MMDPrint (final MindMapPanel panel, final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
+  private static final BufferedImage EMPTY_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+  
+  public MMDPrint (@Nonnull final MindMapPanel panel, final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
     LOGGER.info(String.format("Request to prepare print pages for %dx%d with scale %f", paperWidthInPixels, paperHeightInPixels, pageZoomFactor));
 
-    if (panel == null || paperWidthInPixels <= 0 || paperHeightInPixels <= 0) {
+    if (paperWidthInPixels <= 0 || paperHeightInPixels <= 0) {
       this.pages = new PrintPage[0][0];
     }
     else {
@@ -65,7 +75,7 @@ public class MMDPrint {
 
       final MindMap theModel = new MindMap(panel.getModel(), null);
 
-      BufferedImage renderedMap = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
+      BufferedImage renderedMap = GetUtils.ensureNonNull(MindMapPanel.renderMindMapAsImage(theModel, cfg, false),EMPTY_IMAGE);
 
       if (renderedMap.getWidth() > paperWidthInPixels || renderedMap.getHeight() > paperHeightInPixels) {
         // split to pages
@@ -112,7 +122,7 @@ public class MMDPrint {
 
             this.pages[pageY][pageX] = new PrintPage() {
               @Override
-              public void print (final Graphics g) {
+              public void print (@Nonnull final Graphics g) {
                 final Graphics2D gfx = (Graphics2D) g.create();
                 Utils.prepareGraphicsForQuality(gfx);
                 try {
@@ -148,7 +158,7 @@ public class MMDPrint {
         this.pages = new PrintPage[][]{{
           new PrintPage() {
             @Override
-            public void print (final Graphics g) {
+            public void print (@Nonnull final Graphics g) {
               final Graphics2D gfx = (Graphics2D) g.create();
               Utils.prepareGraphicsForQuality(gfx);
               try {
@@ -167,7 +177,9 @@ public class MMDPrint {
     }
   }
 
+  @Nonnull
+  @MustNotContainNull
   public PrintPage[][] getPages () {
-    return this.pages;
+    return this.pages.clone();
   }
 }

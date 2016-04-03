@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.exporters;
 
+import javax.annotation.Nonnull;
+
 public enum Exporters {
   FREEMIND(new FreeMindExporter()),
   MUNDMAP(new MindmupExporter()),
@@ -25,10 +27,11 @@ public enum Exporters {
 
   private final AbstractMindMapExporter exporter;
   
-  private Exporters(final AbstractMindMapExporter exporter) {
+  private Exporters(@Nonnull final AbstractMindMapExporter exporter) {
     this.exporter = exporter;
   }
 
+  @Nonnull
   public AbstractMindMapExporter getExporter(){
     return this.exporter;
   }

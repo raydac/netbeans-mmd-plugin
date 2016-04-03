@@ -20,7 +20,10 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
+
 import org.apache.commons.io.IOUtils;
 
 public enum ScalableIcon {
@@ -43,7 +46,7 @@ public enum ScalableIcon {
   private final float baseScaleX;
   private final float baseScaleY;
   
-  private ScalableIcon(final String name) {
+  private ScalableIcon(@Nonnull final String name) {
     final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/"+name); //NOI18N
     try{
       this.baseImage = ImageIO.read(in);
@@ -62,6 +65,7 @@ public enum ScalableIcon {
     return this.currentScaleFactor;
   }
   
+  @Nonnull
   public synchronized Image getImage(final double scale){
     if (Double.compare(this.currentScaleFactor, scale)!=0){
       this.scaledCachedImage = null;

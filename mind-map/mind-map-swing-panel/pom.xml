@@ -4,11 +4,12 @@
     <parent>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
-        <version>1.0.1</version>
+        <version>1.1.5-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     
     <artifactId>mind-map-swing-panel</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>${main.version}</version>
     <packaging>jar</packaging>
     
     <description>Swing based panel to show and interact with mind map</description>
@@ -17,7 +18,7 @@
       <dependency>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map-model</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>${main.version}</version>
         <optional>true</optional>
       </dependency>
       <dependency>
@@ -25,5 +26,29 @@
         <artifactId>nanojson</artifactId>
         <version>1.0</version>
       </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <scope>test</scope>
+            <version>2.44.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opera</groupId>
+            <artifactId>operadriver</artifactId>
+            <scope>test</scope>
+            <version>1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-remote-driver</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+            <version>4.11</version>
+        </dependency>
     </dependencies>
 </project>

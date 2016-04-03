@@ -18,14 +18,20 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 import com.igormaznitsa.mindmap.model.Extra;
+
 import static com.igormaznitsa.mindmap.model.Extra.ExtraType.FILE;
 import static com.igormaznitsa.mindmap.model.Extra.ExtraType.LINK;
 import static com.igormaznitsa.mindmap.model.Extra.ExtraType.NOTE;
 import static com.igormaznitsa.mindmap.model.Extra.ExtraType.TOPIC;
+
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.Topic;
+
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class IconBlock {
   private final Rectangle2D bounds = new Rectangle2D.Double();
@@ -35,7 +41,7 @@ public class IconBlock {
   
   private Extra<?> [] currentExtras = null;
 
-  public IconBlock(final IconBlock orig){
+  public IconBlock(@Nonnull final IconBlock orig){
     this.bounds.setRect(orig.bounds);
     this.model = orig.model;
     this.scale = orig.scale;
@@ -43,7 +49,7 @@ public class IconBlock {
     this.currentExtras = orig.currentExtras == null ? null : orig.currentExtras.clone();
   }
   
-  public IconBlock(final Topic model){
+  public IconBlock(@Nonnull final Topic model){
     this.model = model;
   }
   
@@ -51,7 +57,7 @@ public class IconBlock {
     this.bounds.setRect(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
-  public void updateSize(final Graphics2D gfx, final MindMapPanelConfig cfg) {
+  public void updateSize(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
     final int numberOfIcons = this.model.getNumberOfExtras();
     this.scale = cfg.getScale();
     if (numberOfIcons == 0) {
@@ -74,7 +80,7 @@ public class IconBlock {
     return this.currentExtras!=null && this.contentPresented;
   }
   
-  public void paint(final Graphics2D gfx) {
+  public void paint(@Nonnull final Graphics2D gfx) {
     final int numberOfIcons = this.model.getNumberOfExtras();
     if (numberOfIcons!=0){
       double offsetX = this.bounds.getX();
@@ -109,6 +115,7 @@ public class IconBlock {
     }
   }
 
+  @Nullable
   public Extra<?> findExtraForPoint(final double x, final double y){
     Extra<?> result = null;
     if (this.hasContent()  && this.bounds.contains(x,y)){
@@ -119,6 +126,7 @@ public class IconBlock {
     return result;
   }
   
+  @Nonnull
   public Rectangle2D getBounds() {
     return this.bounds;
   }

@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -24,20 +25,26 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+
 public class MouseSelectedArea {
 
   private final Point startPoint;
   private final Point currentPoint;
 
-  public MouseSelectedArea(final Point point) {
+  public MouseSelectedArea(@Nonnull final Point point) {
     this.startPoint = new Point(point);
     this.currentPoint = new Point(point);
   }
 
-  public void update(final MouseEvent e) {
+  public void update(@Nonnull final MouseEvent e) {
     this.currentPoint.setLocation(e.getPoint());
   }
 
+  @Nonnull
   public Rectangle asRectangle() {
     final int minX = Math.min(this.startPoint.x, this.currentPoint.x);
     final int minY = Math.min(this.startPoint.y, this.currentPoint.y);
@@ -46,14 +53,16 @@ public class MouseSelectedArea {
     return new Rectangle(minX, minY, maxX - minX, maxY - minY);
   }
 
-  public List<Topic> getAllSelectedElements(final MindMap map) {
+  @Nonnull
+  @MustNotContainNull
+  public List<Topic> getAllSelectedElements(@Nonnull final MindMap map) {
     final List<Topic> result = new ArrayList<Topic>();
     final Rectangle rect = asRectangle();
     addCoveredToList(result, map.getRoot(), rect.getBounds2D());
     return result;
   }
 
-  private void addCoveredToList(final List<Topic> list, final Topic root, final Rectangle2D rect) {
+  private void addCoveredToList(@Nonnull @MustNotContainNull final List<Topic> list, @Nullable final Topic root, @Nonnull final Rectangle2D rect) {
     if (root == null || root.getPayload() == null) {
       return;
     }

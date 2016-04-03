@@ -18,19 +18,37 @@ package com.igormaznitsa.mindmap.swing.panel;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+
 import java.awt.Point;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JPopupMenu;
 
 public interface MindMapPanelController {
-  boolean isUnfoldCollapsedTopicDropTarget(MindMapPanel source);
-  boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source);
-  boolean isSelectionAllowed(MindMapPanel source);
-  boolean isElementDragAllowed(MindMapPanel source);
-  boolean isMouseMoveProcessingAllowed(MindMapPanel source);
-  boolean isMouseWheelProcessingAllowed(MindMapPanel source);
-  boolean isMouseClickProcessingAllowed(MindMapPanel source);
-  MindMapPanelConfig provideConfigForMindMapPanel(MindMapPanel source);
-  JPopupMenu makePopUpForMindMapPanel(MindMapPanel source,  Point point, AbstractElement elementUnderMouse,  ElementPart elementPartUnderMouse);
-  DialogProvider getDialogProvider(MindMapPanel source);
-  boolean processDropTopicToAnotherTopic(MindMapPanel source, Point dropPoint, Topic draggedTopic, Topic destinationTopic);
+
+  boolean isUnfoldCollapsedTopicDropTarget(@Nonnull MindMapPanel source);
+
+  boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull MindMapPanel source);
+
+  boolean isSelectionAllowed(@Nonnull MindMapPanel source);
+
+  boolean isElementDragAllowed(@Nonnull MindMapPanel source);
+
+  boolean isMouseMoveProcessingAllowed(@Nonnull MindMapPanel source);
+
+  boolean isMouseWheelProcessingAllowed(@Nonnull MindMapPanel source);
+
+  boolean isMouseClickProcessingAllowed(@Nonnull MindMapPanel source);
+
+  @Nonnull
+  MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull MindMapPanel source);
+
+  @Nullable
+  JPopupMenu makePopUpForMindMapPanel(@Nonnull MindMapPanel source, @Nonnull Point point, @Nullable AbstractElement elementUnderMouse, @Nullable ElementPart elementPartUnderMouse);
+
+  @Nonnull
+  DialogProvider getDialogProvider(@Nonnull MindMapPanel source);
+
+  boolean processDropTopicToAnotherTopic(@Nonnull MindMapPanel source, @Nonnull Point dropPoint, @Nonnull Topic draggedTopic, @Nullable Topic destinationTopic);
 }

@@ -19,7 +19,11 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
 import java.awt.Dimension;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
@@ -27,19 +31,20 @@ public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMMDPrintPanelAdaptor.class);
   
   @Override
-  public void startBackgroundTask (final MMDPrintPanel source, final String name, final Runnable task) {
+  public void startBackgroundTask (@Nonnull final MMDPrintPanel source, @Nonnull final String name, @Nonnull final Runnable task) {
     final Thread thread = new Thread(task,name);
     thread.setDaemon(true);
     thread.start();
   }
 
   @Override
-  public boolean isDarkTheme (final MMDPrintPanel source) {
+  public boolean isDarkTheme (@Nonnull final MMDPrintPanel source) {
     return Utils.isDarkTheme();
   }
 
   @Override
-  public Icon getIcon (final MMDPrintPanel source, final MMDPrintPanel.IconId iconId) {
+  @Nullable
+  public Icon getIcon (@Nonnull final MMDPrintPanel source, @Nonnull final MMDPrintPanel.IconId iconId) {
      switch(iconId){
        case PAGE : return Icons.ICO_PAGE.getIcon();
        case PRINTER : return Icons.ICO_PRINTER.getIcon();
@@ -48,11 +53,12 @@ public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
   }
 
   @Override
-  public void onPrintTaskStarted (final MMDPrintPanel source) {
+  public void onPrintTaskStarted (@Nonnull final MMDPrintPanel source) {
   }
 
   @Override
-  public Dimension getPreferredSizeOfPanel (final MMDPrintPanel source) {
+  @Nonnull
+  public Dimension getPreferredSizeOfPanel (@Nonnull final MMDPrintPanel source) {
     return new Dimension(600, 450);
   }
 }

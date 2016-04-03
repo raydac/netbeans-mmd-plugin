@@ -17,13 +17,18 @@ package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Topic;
+
 import java.awt.Dimension;
 
+import javax.annotation.Nonnull;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+
 public interface MindMapListener {
-  void onMindMapModelChanged(MindMapPanel source);
-  void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
-  void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic);
-  void onClickOnExtra(MindMapPanel source,int clicks, Topic topic, Extra<?> extra);
-  void onChangedSelection(MindMapPanel source, Topic [] currentSelectedTopics);
-  boolean allowedRemovingOfTopics(MindMapPanel source, Topic [] topics);
+  void onMindMapModelChanged(@Nonnull MindMapPanel source);
+  void onMindMapModelRealigned(@Nonnull MindMapPanel source, @Nonnull Dimension coveredAreaSize);
+  void onEnsureVisibilityOfTopic(@Nonnull MindMapPanel source, @Nonnull Topic topic);
+  void onClickOnExtra(@Nonnull MindMapPanel source,int clicks, @Nonnull Topic topic, @Nonnull Extra<?> extra);
+  void onChangedSelection(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] currentSelectedTopics);
+  boolean allowedRemovingOfTopics(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] topics);
 }

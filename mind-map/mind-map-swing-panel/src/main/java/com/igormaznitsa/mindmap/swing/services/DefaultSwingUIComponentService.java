@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.swing.services;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -35,76 +37,91 @@ import javax.swing.JToolBar;
 public class DefaultSwingUIComponentService implements UIComponentFactory {
 
   @Override
+  @Nonnull
   public JPanel makePanel () {
     return new JPanel();
   }
 
   @Override
+  @Nonnull
   public JComboBox makeComboBox () {
     return new JComboBox();
   }
 
   @Override
+  @Nonnull
   public JButton makeButton () {
     return new JButton();
   }
 
   @Override
+  @Nonnull
   public JToolBar makeToolBar () {
     return new JToolBar();
   }
 
   @Override
+  @Nonnull
   public JScrollPane makeScrollPane () {
     return new JScrollPane();
   }
 
   @Override
+  @Nonnull
   public JCheckBox makeCheckBox () {
     return new JCheckBox();
   }
 
   @Override
+  @Nonnull
   public JLabel makeLabel () {
     return new JLabel();
   }
 
   @Override
+  @Nonnull
   public JPopupMenu makePopupMenu () {
     return new JPopupMenu();
   }
 
   @Override
+  @Nonnull
   public JTextArea makeTextArea () {
     return new JTextArea();
   }
 
   @Override
-  public JMenuItem makeMenuItem (final String text, final Icon icon) {
+  @Nonnull
+  public JMenuItem makeMenuItem (@Nonnull final String text, @Nullable final Icon icon) {
     return new JMenuItem(text, icon);
   }
 
   @Override
-  public JCheckBoxMenuItem makeCheckboxMenuItem (final String text, final Icon icon, final boolean selected) {
+  @Nonnull
+  public JCheckBoxMenuItem makeCheckboxMenuItem (@Nonnull final String text, @Nonnull final Icon icon, final boolean selected) {
     return new JCheckBoxMenuItem(text, icon, selected);
   }
   
   @Override
+  @Nonnull
   public JSeparator makeMenuSeparator () {
     return new JSeparator();
   }
 
   @Override
-  public JMenu makeMenu (final String text) {
+  @Nonnull
+  public JMenu makeMenu (@Nonnull final String text) {
     return new JMenu(text);
   }
 
   @Override
+  @Nonnull
   public JEditorPane makeEditorPane () {
     return new JEditorPane();
   }
 
   @Override
+  @Nonnull
   public JSlider makeSlider () {
     return new JSlider();
   }

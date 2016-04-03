@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.exporters;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -27,6 +29,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
 import java.awt.Color;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,8 +39,12 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -49,33 +56,39 @@ public class FreeMindExporter extends AbstractMindMapExporter {
     private static final String NEXT_LINE = "\r\n";//NOI18N
     private final StringBuilder buffer = new StringBuilder(16384);
 
+    @Nonnull
     public State append(final char ch) {
       this.buffer.append(ch);
       return this;
     }
 
+    @Nonnull
     public State append(final long val) {
       this.buffer.append(val);
       return this;
     }
 
-    public State append(final String str) {
+    @Nonnull
+    public State append(final @Nonnull String str) {
       this.buffer.append(str);
       return this;
     }
 
+    @Nonnull
     public State nextLine() {
       this.buffer.append(NEXT_LINE);
       return this;
     }
 
     @Override
+    @Nonnull
     public String toString() {
       return this.buffer.toString();
     }
 
   }
 
+  @Nonnull
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
@@ -84,7 +97,8 @@ public class FreeMindExporter extends AbstractMindMapExporter {
     return buffer.toString();
   }
 
-  private static String makeUID(final Topic t) {
+  @Nonnull
+  private static String makeUID(@Nonnull final Topic t) {
     final int[] path = t.getPositionPath();
     final StringBuilder buffer = new StringBuilder("mmlink");//NOI18N
     for (final int i : path) {
@@ -93,12 +107,10 @@ public class FreeMindExporter extends AbstractMindMapExporter {
     return buffer.toString();
   }
 
-  private static void writeTopicRecursively(final Topic topic, final MindMapPanelConfig cfg, int shift, final State state) {
+  private static void writeTopicRecursively(@Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg, int shift, @Nonnull final State state) {
     final String mainShiftStr = generateString(' ', shift);
 
     final Color edge = cfg.getConnectorColor();
-    final Color color;
-    final Color backcolor;
     String position = topic.getTopicLevel() == 1 ? (AbstractCollapsableElement.isLeftSidedTopic(topic) ? "left" : "right") : ""; //NOI18N
 
     state.append(mainShiftStr)
@@ -129,7 +141,7 @@ public class FreeMindExporter extends AbstractMindMapExporter {
 
     // make some prioritization for only attribute
     if (transition != null) {
-      thelink = '#' + makeUID(topic.getMap().findTopicForLink(transition));//NOI18N
+      thelink = '#' + makeUID(assertNotNull(topic.getMap().findTopicForLink(transition)));//NOI18N
       if (file != null) {
         extrasToSaveInText.add(file);
       }
@@ -195,7 +207,7 @@ public class FreeMindExporter extends AbstractMindMapExporter {
   }
 
   @Override
-  public void doExport(final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
+  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
     final State state = new State();
 
     state.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>").nextLine();//NOI18N
@@ -235,21 +247,25 @@ public class FreeMindExporter extends AbstractMindMapExporter {
     }
   }
 
-  private static String escapeXML(final String text) {
+  @Nonnull
+  private static String escapeXML(@Nonnull final String text) {
     return StringEscapeUtils.escapeXml(text).replace("\n", "&#10;"); //NOI18N
   }
 
   @Override
+  @Nonnull
   public String getName() {
     return BUNDLE.getString("FreeMindExporter.exporterName");
   }
 
   @Override
+  @Nonnull
   public String getReference() {
     return BUNDLE.getString("FreeMindExporter.exporterReference");
   }
 
   @Override
+  @Nonnull
   public ImageIcon getIcon() {
     return Icons.ICO_FREEMIND.getIcon();
   }

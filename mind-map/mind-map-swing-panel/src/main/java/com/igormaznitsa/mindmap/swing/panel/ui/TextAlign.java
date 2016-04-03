@@ -15,10 +15,14 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public enum TextAlign {
   LEFT, RIGHT, CENTER;
 
-  public static TextAlign findForName(final String text) {
+  @Nonnull
+  public static TextAlign findForName(@Nullable final String text) {
     if (text == null) {
       return CENTER;
     }

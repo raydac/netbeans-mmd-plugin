@@ -17,33 +17,38 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
+import javax.annotation.Nonnull;
+
 public class ElementLevelFirst extends AbstractCollapsableElement {
 
-  public ElementLevelFirst(final Topic model) {
+  public ElementLevelFirst(@Nonnull final Topic model) {
     super(model);
   }
 
-  protected ElementLevelFirst(final  ElementLevelFirst element) {
+  protected ElementLevelFirst(@Nonnull final  ElementLevelFirst element) {
     super(element);
   }
 
   @Override
+  @Nonnull
   public AbstractElement makeCopy() {
     return new ElementLevelFirst(this);
   }
 
-  protected Shape makeShape(final MindMapPanelConfig cfg, final float x, final float y) {
+  @Nonnull
+  protected Shape makeShape(@Nonnull final MindMapPanelConfig cfg, final float x, final float y) {
     return new Rectangle2D.Float(x, y, (float) this.bounds.getWidth(), (float) this.bounds.getHeight());
   }
 
   @Override
-  public void drawComponent(final Graphics2D g, final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+  public void drawComponent(@Nonnull final Graphics2D g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
     g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f)));
 
     final Shape shape = makeShape(cfg, 0f, 0f);
@@ -78,13 +83,15 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
   }
 
   @Override
-  public Color getBackgroundColor(final MindMapPanelConfig config) {
+  @Nonnull
+  public Color getBackgroundColor(@Nonnull final MindMapPanelConfig config) {
     final Color dflt = this.fillColor == null ? config.getFirstLevelBackgroundColor() : this.fillColor;
     return dflt;
   }
 
   @Override
-  public Color getTextColor(final MindMapPanelConfig config) {
+  @Nonnull
+  public Color getTextColor(@Nonnull final MindMapPanelConfig config) {
     final Color dflt = this.textColor == null ? config.getFirstLevelTextColor() : this.textColor;
     return dflt;
   }

@@ -17,14 +17,20 @@ package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 import javax.swing.Action;
+
 import org.openide.actions.FileSystemAction;
 import org.openide.actions.PropertiesAction;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
+
+import com.igormaznitsa.meta.annotation.MayContainNull;
 
 public abstract class AbstractMMFilter extends FilterNode {
 
@@ -34,19 +40,21 @@ public abstract class AbstractMMFilter extends FilterNode {
 
   protected Action[] actions;
 
-  public AbstractMMFilter(Node original) {
+  public AbstractMMFilter(@Nonnull final Node original) {
     super(original);
   }
 
-  public AbstractMMFilter(final Node original, final org.openide.nodes.Children children) {
+  public AbstractMMFilter(@Nonnull final Node original, @Nonnull final org.openide.nodes.Children children) {
     super(original, children);
   }
 
-  public AbstractMMFilter(final Node original, final org.openide.nodes.Children children, final Lookup lookup) {
+  public AbstractMMFilter(@Nonnull final Node original, @Nonnull final org.openide.nodes.Children children, @Nonnull final Lookup lookup) {
     super(original, children, lookup);
   }
 
   @Override
+  @Nonnull
+  @MayContainNull
   public Action[] getActions(final boolean context) {
     if (!context) {
       if (actions == null) {

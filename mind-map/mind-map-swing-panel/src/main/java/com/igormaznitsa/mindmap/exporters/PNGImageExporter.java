@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.exporters;
 
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
+
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -24,6 +25,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
+
 import java.awt.Component;
 import java.awt.image.RenderedImage;
 import java.io.BufferedOutputStream;
@@ -32,6 +34,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -41,6 +46,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.apache.commons.io.IOUtils;
+
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public final class PNGImageExporter extends AbstractMindMapExporter {
 
@@ -55,6 +62,7 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
   }
 
   @Override
+  @Nullable
   public JComponent makeOptions () {
     final JPanel panel = UI_FACTORY.makePanel();
     final JCheckBox checkBoxExpandAll = UI_FACTORY.makeCheckBox();
@@ -78,8 +86,8 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
   }
 
   @Override
-  public void doExport(final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
-    for(final Component compo : ((JPanel)options).getComponents()){
+  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+    for(final Component compo : Assertions.assertNotNull((JPanel)options).getComponents()){
       if (compo instanceof JCheckBox){
         final JCheckBox cb = (JCheckBox)compo;
         if ("unfold".equalsIgnoreCase(cb.getActionCommand())){
@@ -131,16 +139,19 @@ public final class PNGImageExporter extends AbstractMindMapExporter {
   }
 
   @Override
+  @Nonnull
   public String getName() {
     return BUNDLE.getString("PNGImageExporter.exporterName");
   }
 
   @Override
+  @Nonnull
   public String getReference() {
     return BUNDLE.getString("PNGImageExporter.exporterReference");
   }
 
   @Override
+  @Nonnull
   public ImageIcon getIcon() {
     return Icons.ICO_PNG.getIcon();
   }

@@ -357,6 +357,10 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       });
       exportMenu.add(item);
     }
+
+    exportMenu.setEnabled(this.editor.getMindMapPanel().getModel().getRoot()!=null);
+
+
     result.add(exportMenu);
 
     result.add(new JSeparator());

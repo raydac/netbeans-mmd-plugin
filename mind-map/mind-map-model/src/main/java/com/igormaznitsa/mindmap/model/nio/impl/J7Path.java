@@ -31,12 +31,12 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 public class J7Path extends AbstractPath {
 
   private final java.nio.file.Path nioPath;
-  
+
   private J7Path(@Nonnull final java.nio.file.Path path) {
     super();
     this.nioPath = path;
   }
-  
+
   public J7Path(@Nonnull final File file) {
     super(file);
     this.nioPath = file.toPath();
@@ -48,18 +48,18 @@ public class J7Path extends AbstractPath {
   }
 
   @Nullable
-  private static J7Path makePathIfNotNull(@Nullable final java.nio.file.Path basePath){
+  private static J7Path makePathIfNotNull(@Nullable final java.nio.file.Path basePath) {
     return basePath == null ? null : new J7Path(basePath);
   }
-  
+
   @Override
   public boolean startsWith(@Nonnull final Path basePath) {
-    final J7Path thatPath = (J7Path)basePath;
+    final J7Path thatPath = (J7Path) basePath;
     return this.nioPath.startsWith(thatPath.nioPath);
   }
 
   @Override
-  public boolean isAbsolute () {
+  public boolean isAbsolute() {
     return this.nioPath.isAbsolute();
   }
 
@@ -67,60 +67,61 @@ public class J7Path extends AbstractPath {
   @Nullable
   public Path relativize(@Nonnull final Path filePath) {
     final J7Path thatPath = (J7Path) filePath;
-    return  makePathIfNotNull(this.nioPath.relativize(thatPath.nioPath));
+    return makePathIfNotNull(this.nioPath.relativize(thatPath.nioPath));
   }
 
   @Override
   @Nullable
-  public Path getRoot () {
+  public Path getRoot() {
     return makePathIfNotNull(this.nioPath.getRoot());
   }
 
   @Override
   @Nonnull
-  public File toFile () {
+  public File toFile() {
     return this.nioPath.toFile();
   }
 
   @Override
   @Nonnull
-  public Iterator<Path> iterator () {
-    return new Iterator<Path>(){
+  public Iterator<Path> iterator() {
+    return new Iterator<Path>() {
       private final Iterator<java.nio.file.Path> wrappedIterator = nioPath.iterator();
-      
+
       @Override
-      public boolean hasNext () {
+      public boolean hasNext() {
         return this.wrappedIterator.hasNext();
       }
 
       @Override
       @Nullable
-      public Path next () {
+      public Path next() {
         return makePathIfNotNull(this.wrappedIterator.next());
       }
     };
   }
 
   @Override
-  public int hashCode(){
+  public int hashCode() {
     return this.nioPath.hashCode();
   }
-  
+
   @Override
-  public boolean equals(@Nullable final Object obj){
-    if (obj == null) return false;
-    if (this == obj) return true;
-    if (obj instanceof J7Path){
-      final J7Path that = (J7Path)obj;
+  public boolean equals(@Nonnull final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof J7Path) {
+      final J7Path that = (J7Path) obj;
       return this.nioPath.equals(that.nioPath);
     }
     return false;
   }
-  
+
   @Override
   @Nonnull
-  public String toString(){
+  public String toString() {
     return this.nioPath.toString();
   }
-  
+
 }

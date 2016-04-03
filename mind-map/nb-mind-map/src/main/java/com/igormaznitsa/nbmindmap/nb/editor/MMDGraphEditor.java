@@ -1092,7 +1092,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
       final JMenuItem colors = UI_COMPO_FACTORY.makeMenuItem(name, Icons.COLORS.getIcon());
       colors.addActionListener(new ActionListener() {
-
+      
         @Override
         public void actionPerformed (ActionEvent e) {
           processColorDialogForTopics(source, topics);
@@ -1170,6 +1170,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
     result.add(exportMenu);
 
+    exportMenu.setEnabled(this.mindMapPanel.getModel().getRoot()!=null);
+    
     result.add(UI_COMPO_FACTORY.makeMenuSeparator());
 
     JMenuItem optionsMenu = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miOptions"), Icons.OPTIONS.getIcon());

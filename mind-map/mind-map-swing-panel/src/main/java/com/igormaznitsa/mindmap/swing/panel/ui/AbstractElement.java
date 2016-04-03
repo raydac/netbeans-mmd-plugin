@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
 
@@ -31,6 +33,7 @@ import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
 
 public abstract class AbstractElement {
@@ -49,16 +52,17 @@ public abstract class AbstractElement {
   protected Color textColor;
   protected Color borderColor;
 
+  @Nonnull
   public String getText() {
     return this.model.getText();
   }
 
-  public void setText(final String text) {
+  public void setText(@Nonnull final String text) {
     this.model.setText(text);
     this.textBlock.updateText(text);
   }
 
-  protected AbstractElement(final AbstractElement orig) {
+  protected AbstractElement(@Nonnull final AbstractElement orig) {
     this.model = orig.model;
     this.textBlock = new TextBlock(orig.textBlock);
     this.extrasIconBlock = new IconBlock(orig.extrasIconBlock);
@@ -83,20 +87,23 @@ public abstract class AbstractElement {
     this.fillColor = Utils.html2color(this.model.getAttribute(ATTR_FILL_COLOR.getText()), false);
   }
 
+  @Nullable
   public AbstractElement getParent() {
     final Topic parent = this.model.getParent();
     return parent == null ? null : (AbstractElement) parent.getPayload();
   }
 
+  @Nonnull
   public Topic getModel() {
     return this.model;
   }
 
+  @Nonnull
   public TextAlign getTextAlign() {
     return this.textBlock.getTextAlign();
   }
 
-  public void setTextAlign(final TextAlign textAlign) {
+  public void setTextAlign(@Nonnull final TextAlign textAlign) {
     this.textBlock.setTextAlign(textAlign);
     this.model.setAttribute("align", this.textBlock.getTextAlign().name()); //NOI18N
   }
@@ -120,6 +127,7 @@ public abstract class AbstractElement {
     this.calcBlockSize(cfg, this.blockSize, false);
   }
 
+  @Nonnull
   public Dimension2D getBlockSize() {
     return this.blockSize;
   }
@@ -138,6 +146,7 @@ public abstract class AbstractElement {
     }
   }
 
+  @Nonnull
   public Rectangle2D getBounds() {
     return this.bounds;
   }
@@ -170,7 +179,7 @@ public abstract class AbstractElement {
   public void doPaintConnectors(@Nonnull final Graphics2D g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
     final Rectangle2D source = this.bounds;
     for (final Topic t : this.model.getChildren()) {
-      drawConnector(g, source, ((AbstractElement) t.getPayload()).getBounds(), leftDirection, cfg);
+      drawConnector(g, source, (assertNotNull((AbstractElement) t.getPayload())).getBounds(), leftDirection, cfg);
     }
   }
 
@@ -178,26 +187,29 @@ public abstract class AbstractElement {
     return this.model.hasChildren();
   }
 
-  public JTextComponent fillByTextAndFont(final JTextComponent compo) {
+  @Nonnull
+  public JTextComponent fillByTextAndFont(@Nonnull final JTextComponent compo) {
     this.textBlock.fillByTextAndFont(compo);
     return compo;
   }
 
-  public abstract void drawComponent(Graphics2D g, MindMapPanelConfig cfg, boolean drawCollapsator);
+  public abstract void drawComponent(@Nonnull Graphics2D g, @Nonnull MindMapPanelConfig cfg, boolean drawCollapsator);
 
-  public abstract void drawConnector(Graphics2D g, Rectangle2D source, Rectangle2D destination, boolean leftDirection, MindMapPanelConfig cfg);
+  public abstract void drawConnector(@Nonnull Graphics2D g, @Nonnull Rectangle2D source, @Nonnull Rectangle2D destination, boolean leftDirection, @Nonnull MindMapPanelConfig cfg);
 
   public abstract boolean isMoveable();
 
   public abstract boolean isCollapsed();
 
-  public abstract void alignElementAndChildren(MindMapPanelConfig cfg, boolean leftSide, double centerX, double centerY);
+  public abstract void alignElementAndChildren(@Nonnull MindMapPanelConfig cfg, boolean leftSide, double centerX, double centerY);
 
-  public abstract Dimension2D calcBlockSize(MindMapPanelConfig cfg, Dimension2D size, boolean childrenOnly);
+  @Nonnull
+  public abstract Dimension2D calcBlockSize(@Nonnull MindMapPanelConfig cfg, @Nonnull Dimension2D size, boolean childrenOnly);
 
   public abstract boolean hasDirection();
 
-  public ElementPart findPartForPoint(final Point point) {
+  @Nonnull
+  public ElementPart findPartForPoint(@Nonnull final Point point) {
     ElementPart result = ElementPart.NONE;
     if (this.bounds.contains(point)) {
       final double offX = point.getX() - this.bounds.getX();
@@ -214,7 +226,8 @@ public abstract class AbstractElement {
     return result;
   }
 
-  public Topic findTopicBeforePoint(final MindMapPanelConfig cfg, final Point point) {
+  @Nullable
+  public Topic findTopicBeforePoint(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Point point) {
 
     Topic result = null;
     if (this.hasChildren()) {
@@ -228,7 +241,7 @@ public abstract class AbstractElement {
         Topic prev = null;
 
         for (final Topic t : this.model.getChildren()) {
-          final AbstractElement el = (AbstractElement) t.getPayload();
+          final AbstractElement el = assertNotNull((AbstractElement) t.getPayload());
 
           final double childStartBlockY = el.calcBlockY();
           final double childEndBlockY = childStartBlockY + el.getBlockSize().getHeight() + vertInset;
@@ -259,11 +272,13 @@ public abstract class AbstractElement {
     return this.bounds.getX() - (this.isLeftDirection() ? this.blockSize.getWidth() - this.bounds.getWidth() : 0.0d);
   }
 
-  public AbstractElement findNearestOpenedTopicToPoint(final AbstractElement elementToIgnore, final Point point) {
+  @Nullable
+  public AbstractElement findNearestOpenedTopicToPoint(@Nullable final AbstractElement elementToIgnore, @Nonnull final Point point) {
     return findNearestTopic(elementToIgnore, Double.MAX_VALUE, point);
   }
 
-  private AbstractElement findNearestTopic(final AbstractElement elementToIgnore, double maxDistance, final Point point) {
+  @Nullable
+  private AbstractElement findNearestTopic(@Nullable final AbstractElement elementToIgnore, double maxDistance, @Nonnull final Point point) {
     AbstractElement result = null;
     if (elementToIgnore != this) {
       final double dist = calcAverageDistanceToPoint(point);
@@ -288,7 +303,7 @@ public abstract class AbstractElement {
     return result;
   }
 
-  public double calcAverageDistanceToPoint(final Point point) {
+  public double calcAverageDistanceToPoint(@Nonnull final Point point) {
     final double d1 = point.distance(this.bounds.getX(), this.bounds.getY());
     final double d2 = point.distance(this.bounds.getMaxX(), this.bounds.getY());
     final double d3 = point.distance(this.bounds.getX(), this.bounds.getMaxY());
@@ -296,7 +311,8 @@ public abstract class AbstractElement {
     return (d1 + d2 + d3 + d4) / (this.bounds.contains(point) ? 8.0d : 4.0d);
   }
 
-  public AbstractElement findTopicBlockForPoint(final Point point) {
+  @Nullable
+  public AbstractElement findTopicBlockForPoint(@Nullable final Point point) {
     AbstractElement result = null;
     if (point != null) {
       final double px = point.getX();
@@ -309,9 +325,10 @@ public abstract class AbstractElement {
         else {
           AbstractElement foundChild = null;
           for (final Topic t : this.model.getChildren()) {
-            foundChild = t.getPayload() == null ? null : ((AbstractElement) t.getPayload()).findTopicBlockForPoint(point);
-            if (foundChild != null) {
-              break;
+            final AbstractElement theElement = (AbstractElement)t.getPayload();
+            if (theElement!=null){
+              foundChild = theElement.findTopicBlockForPoint(point);
+              if (foundChild!=null) break;
             }
           }
           result = foundChild == null ? this : foundChild;
@@ -321,7 +338,8 @@ public abstract class AbstractElement {
     return result;
   }
 
-  public AbstractElement findForPoint(final Point point) {
+  @Nullable
+  public AbstractElement findForPoint(@Nullable final Point point) {
     AbstractElement result = null;
     if (point != null) {
       if (this.bounds.contains(point)) {
@@ -344,10 +362,12 @@ public abstract class AbstractElement {
     return false;
   }
 
+  @Nonnull
   public TextBlock getTextBlock() {
     return this.textBlock;
   }
 
+  @Nonnull
   public IconBlock getIconBlock() {
     return this.extrasIconBlock;
   }
@@ -384,15 +404,19 @@ public abstract class AbstractElement {
     return result;
   }
 
-  public abstract Color getBackgroundColor(MindMapPanelConfig config);
+  @Nonnull
+  public abstract Color getBackgroundColor(@Nonnull MindMapPanelConfig config);
 
-  public abstract Color getTextColor(MindMapPanelConfig config);
+  @Nonnull
+  public abstract Color getTextColor(@Nonnull MindMapPanelConfig config);
 
-  public Color getBorderColor(final MindMapPanelConfig config) {
+  @Nonnull
+  public Color getBorderColor(@Nonnull final MindMapPanelConfig config) {
     final Color dflt = this.borderColor == null ? config.getElementBorderColor() : this.borderColor;
     return dflt;
   }
 
+  @Nonnull
   public abstract AbstractElement makeCopy();
 
 }

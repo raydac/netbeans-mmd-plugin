@@ -16,8 +16,11 @@
 package com.igormaznitsa.mindmap.swing.services;
 
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+
 import java.util.Iterator;
 import java.util.ServiceLoader;
+
+import javax.annotation.Nonnull;
 
 public final class UIComponentFactoryService {
     private static final UIComponentFactory UI_COMPONENT_FACTORY;
@@ -30,6 +33,7 @@ public final class UIComponentFactoryService {
       LoggerFactory.getLogger(UIComponentFactoryService.class).info("UI Component factory : "+UI_COMPONENT_FACTORY.getClass().getName());
     }
 
+    @Nonnull
     public static UIComponentFactory findInstance () {
       return UI_COMPONENT_FACTORY;
     }

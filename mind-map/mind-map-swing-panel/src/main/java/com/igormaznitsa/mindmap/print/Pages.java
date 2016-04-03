@@ -22,6 +22,8 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
+
+import javax.annotation.Nonnull;
 import javax.swing.JPanel;
 
 class Pages extends JPanel {
@@ -36,11 +38,12 @@ class Pages extends JPanel {
   private static final int SHADOW_X = 10;
   private static final int SHADOW_Y = 10;
 
-  public Pages (final MMDPrintPanel parent) {
+  public Pages (@Nonnull final MMDPrintPanel parent) {
     this.parent = parent;
   }
 
   @Override
+  @Nonnull
   public Dimension getPreferredSize () {
     final PrintPage[][] pages = this.parent.getPages();
     final PageFormat thePageFormat = this.parent.getPageFormat();
@@ -63,17 +66,19 @@ class Pages extends JPanel {
   }
 
   @Override
+  @Nonnull
   public Dimension getMinimumSize () {
     return this.getPreferredSize();
   }
 
   @Override
+  @Nonnull
   public Dimension getMaximumSize () {
     return this.getPreferredSize();
   }
 
   @Override
-  public void paint (final Graphics g) {
+  public void paint (@Nonnull final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
     gfx.setColor(parent.isDarkTheme() ? Color.DARK_GRAY : Color.LIGHT_GRAY);
     final Dimension size = getSize();

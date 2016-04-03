@@ -18,9 +18,16 @@ package com.igormaznitsa.mindmap.exporters;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+
 import java.io.ByteArrayOutputStream;
+
 import javax.swing.JComponent;
+
 import static org.mockito.Mockito.*;
+
+import java.io.StringReader;
+
+import org.junit.Test;
 
 public abstract class AbstractExporterTest <T extends AbstractMindMapExporter>{
   
@@ -45,4 +52,11 @@ public abstract class AbstractExporterTest <T extends AbstractMindMapExporter>{
   
   public abstract T generateExporterInstance();
   
+  @Test
+  public void testNoExceptionForExportOfEmptyMap() throws Exception {
+    final MindMap map = new MindMap(null, new StringReader("Empty Mind Map\n---"));
+    final String exported = new String(export(map, null),"UTF-8");
+    System.out.println(exported);
+  }
+
 }

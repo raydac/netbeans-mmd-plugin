@@ -17,8 +17,10 @@ package com.igormaznitsa.mindmap.exporters;
 
 import com.grack.nanojson.JsonStringWriter;
 import com.grack.nanojson.JsonWriter;
+
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
+
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -30,6 +32,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,10 +42,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 public class MindmupExporter extends AbstractMindMapExporter {
 
@@ -54,7 +63,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     private final int id;
     private final Topic topic;
 
-    public TopicData (final int uid, final int id, final Topic topic) {
+    public TopicData (final int uid, final int id, @Nonnull final Topic topic) {
       this.uid = uid;
       this.id = id;
       this.topic = topic;
@@ -68,6 +77,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
       return id;
     }
 
+    @Nonnull
     public Topic getTopic () {
       return this.topic;
     }
@@ -82,7 +92,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     public State () {
     }
 
-    public void processTopic (final int uid, final int id, final Topic topic) {
+    public void processTopic (final int uid, final int id, @Nonnull final Topic topic) {
       final String topicUID = getTopicUid(topic);
       if (topicUID != null) {
         topicsWithId.put(topicUID, new TopicData(uid, id, topic));
@@ -94,55 +104,66 @@ public class MindmupExporter extends AbstractMindMapExporter {
       }
     }
 
+    @Nonnull
+    @MustNotContainNull
     public List<TopicData> getTopicsContainingJump () {
       return this.topicsContainsJump;
     }
 
-    public TopicData findTopic (final ExtraTopic link) {
+    @Nullable
+    public TopicData findTopic (@Nonnull final ExtraTopic link) {
       return topicsWithId.get(link.getValue());
     }
 
-    public State startObj (final String key) {
+    @Nonnull
+    public State startObj (@Nonnull final String key) {
       this.json = this.json.object(key);
       return this;
     }
 
+    @Nonnull
     public State startObj () {
       this.json = this.json.object();
       return this;
     }
 
-    public State startArray (final String key) {
+    @Nonnull
+    public State startArray (@Nonnull final String key) {
       this.json = this.json.array(key);
       return this;
     }
 
-    public State set (final String key, final String value) {
+    @Nonnull
+    public State set (@Nonnull final String key, @Nonnull final String value) {
       this.json.value(key, value);
       return this;
     }
 
-    public State set (final String key, final int value) {
+    @Nonnull
+    public State set (@Nonnull final String key, final int value) {
       this.json.value(key, value);
       return this;
     }
 
+    @Nonnull
     public State end () {
       this.json = json.end();
       return this;
     }
 
     @Override
+    @Nonnull
     public String toString () {
       return json.done();
     }
   }
 
-  private static String getTopicUid (final Topic topic) {
+  @Nullable
+  private static String getTopicUid (@Nonnull final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private int writeTopic (final State state, int id, final MindMapPanelConfig cfg, final Topic topic) {
+  private int writeTopic (@Nonnull final State state, int id, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
     state.startObj(Integer.toString(idCounter));
 
     state.processTopic(idCounter, id, topic);
@@ -177,7 +198,8 @@ public class MindmupExporter extends AbstractMindMapExporter {
     return id;
   }
 
-  private static String makeHtmlFromExtras (final Topic topic) {
+  @Nullable
+  private static String makeHtmlFromExtras (@Nonnull final Topic topic) {
     final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
     final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
@@ -205,7 +227,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     return result.toString();
   }
 
-  private void writeRoot (final State state, final MindMapPanelConfig cfg, final Topic root) {
+  private void writeRoot (@Nonnull final State state, @Nonnull final MindMapPanelConfig cfg, @Nullable final Topic root) {
     state.startObj();
 
     if (root == null) {
@@ -284,12 +306,14 @@ public class MindmupExporter extends AbstractMindMapExporter {
       }
       state.end();
     }
-    state.end();
+    
+    if (root!=null) state.end();
   }
 
   @Override
-  public void doExport (final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
+  public void doExport (@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
     final State state = new State();
+    
     writeRoot(state, panel.getConfiguration(), panel.getModel().getRoot());
 
     final String text = state.toString();
@@ -314,16 +338,19 @@ public class MindmupExporter extends AbstractMindMapExporter {
   }
 
   @Override
+  @Nonnull
   public String getName () {
     return BUNDLE.getString("MindmupExporter.exporterName");
   }
 
   @Override
+  @Nonnull
   public String getReference () {
     return BUNDLE.getString("MindmupExporter.exporterReference");
   }
 
   @Override
+  @Nonnull
   public ImageIcon getIcon () {
     return Icons.ICO_MINDMUP.getIcon();
   }

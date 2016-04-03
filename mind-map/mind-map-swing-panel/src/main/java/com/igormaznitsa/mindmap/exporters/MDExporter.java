@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.exporters;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
 import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
 
@@ -37,6 +38,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
@@ -52,33 +55,39 @@ public class MDExporter extends AbstractMindMapExporter {
     private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
     private final StringBuilder buffer = new StringBuilder(16384);
 
+    @Nonnull
     public State append(final char ch) {
       this.buffer.append(ch);
       return this;
     }
 
+    @Nonnull
     public State nextStringMarker() {
       this.buffer.append("  ");//NOI18N
       return this;
     }
 
-    public State append(final String str) {
+    @Nonnull
+    public State append(@Nonnull final String str) {
       this.buffer.append(str);
       return this;
     }
 
+    @Nonnull
     public State nextLine() {
       this.buffer.append(NEXT_LINE);
       return this;
     }
 
     @Override
+    @Nonnull
     public String toString() {
       return this.buffer.toString();
     }
 
   }
 
+  @Nonnull
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
@@ -87,7 +96,8 @@ public class MDExporter extends AbstractMindMapExporter {
     return buffer.toString();
   }
 
-  private static String makeLineFromString(final String text) {
+  @Nonnull
+  private static String makeLineFromString(@Nonnull final String text) {
     final StringBuilder result = new StringBuilder(text.length());
 
     for (final char c : text.toCharArray()) {
@@ -102,11 +112,12 @@ public class MDExporter extends AbstractMindMapExporter {
     return result.toString();
   }
 
-  private static String getTopicUid(final Topic topic) {
+  @Nullable
+  private static String getTopicUid(@Nonnull final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private static void writeTopic(final Topic topic, final String listPosition, final State state) throws IOException {
+  private static void writeTopic(@Nonnull final Topic topic, @Nonnull final String listPosition, @Nonnull final State state) throws IOException {
     final int level = topic.getTopicLevel();
 
     String prefix = "";//NOI18N
@@ -140,7 +151,7 @@ public class MDExporter extends AbstractMindMapExporter {
             .append(ModelUtils.escapeMarkdownStr(makeLineFromString(linkedTopic.getText())))
             .append("](")//NOI18N
             .append("#")//NOI18N
-            .append(getTopicUid(linkedTopic))
+            .append(assertNotNull(getTopicUid(linkedTopic)))
             .append(")*")//NOI18N
             .nextStringMarker()
             .nextLine();
@@ -186,11 +197,11 @@ public class MDExporter extends AbstractMindMapExporter {
     }
   }
 
-  private void writeInterTopicLine(final State state) {
+  private void writeInterTopicLine(@Nonnull final State state) {
     state.nextLine();
   }
 
-  private void writeOtherTopicRecursively(final Topic t, final String topicListNumStr, final int topicIndex, final State state) throws IOException {
+  private void writeOtherTopicRecursively(@Nonnull final Topic t, @Nonnull final String topicListNumStr, final int topicIndex, @Nonnull final State state) throws IOException {
     writeInterTopicLine(state);
     final String prefix;
     if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
@@ -207,7 +218,7 @@ public class MDExporter extends AbstractMindMapExporter {
   }
 
   @Override
-  public void doExport(final MindMapPanel panel, final JComponent options, final OutputStream out) throws IOException {
+  public void doExport(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options, @Nullable final OutputStream out) throws IOException {
     final State state = new State();
 
     state.append("<!--")//NOI18N
@@ -253,16 +264,19 @@ public class MDExporter extends AbstractMindMapExporter {
   }
 
   @Override
+  @Nonnull
   public String getName() {
     return BUNDLE.getString("MDExporter.exporterName");
   }
 
   @Override
+  @Nonnull
   public String getReference() {
     return BUNDLE.getString("MDExporter.exporterReference");
   }
 
   @Override
+  @Nonnull
   public ImageIcon getIcon() {
     return Icons.ICO_MARKDOWN.getIcon();
   }

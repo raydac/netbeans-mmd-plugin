@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.swing.services;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -33,19 +35,34 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 
 public interface UIComponentFactory {
+  @Nonnull
   JPanel makePanel();
+  @Nonnull
   JComboBox makeComboBox();
+  @Nonnull
   JButton makeButton();
+  @Nonnull
   JToolBar makeToolBar();
+  @Nonnull
   JScrollPane makeScrollPane();
+  @Nonnull
   JCheckBox makeCheckBox();
+  @Nonnull
   JLabel makeLabel();
+  @Nonnull
   JPopupMenu makePopupMenu();
+  @Nonnull
   JTextArea makeTextArea ();
+  @Nonnull
   JEditorPane makeEditorPane ();
-  JMenuItem makeMenuItem (String text, Icon icon);
-  JCheckBoxMenuItem makeCheckboxMenuItem (String text, Icon icon, boolean selected);
+  @Nonnull
+  JMenuItem makeMenuItem (@Nonnull String text, @Nullable Icon icon);
+  @Nonnull
+  JCheckBoxMenuItem makeCheckboxMenuItem (@Nonnull String text, @Nullable Icon icon, boolean selected);
+  @Nonnull
   JSeparator makeMenuSeparator (); 
-  JMenu makeMenu (String text); 
+  @Nonnull
+  JMenu makeMenu (@Nonnull String text); 
+  @Nonnull
   JSlider makeSlider (); 
 }

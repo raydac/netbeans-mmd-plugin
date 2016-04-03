@@ -17,11 +17,16 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 
-public enum MindMapUtils {;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public enum MindMapUtils {
+  ;
   
-  public static boolean isHidden(final Topic topic) {
+  public static boolean isHidden(@Nullable final Topic topic) {
     if (topic == null) {
       return true;
     }
@@ -29,7 +34,8 @@ public enum MindMapUtils {;
     return collapsed != null && Boolean.parseBoolean(collapsed);
   }
 
-  public static Topic findFirstVisibleAncestor(final Topic topic) {
+  @Nullable
+  public static Topic findFirstVisibleAncestor(@Nullable final Topic topic) {
     if (topic == null) {
       return null;
     }
@@ -51,50 +57,51 @@ public enum MindMapUtils {;
     return lastVisible;
   }
 
-  public static boolean ensureVisibility(final Topic topic) {
+  public static boolean ensureVisibility(@Nonnull final Topic topic) {
     boolean result = false;
 
     Topic current = topic.getParent();
     while (current != null) {
-      if (isCollapsed(current)){
+      if (isCollapsed(current)) {
         result |= setCollapsed(current, false);
       }
       current = current.getParent();
     }
     return result;
   }
-  
-  public static boolean isCollapsed(final Topic topic) {
+
+  public static boolean isCollapsed(@Nonnull final Topic topic) {
     return "true".equalsIgnoreCase(topic.getAttribute(ATTR_COLLAPSED.getText()));//NOI18N
   }
-  
-  public static boolean setCollapsed(final Topic topic, final boolean flag) {
+
+  public static boolean setCollapsed(@Nonnull final Topic topic, final boolean flag) {
     return topic.setAttribute(ATTR_COLLAPSED.getText(), flag ? "true" : null);//NOI18N
   }
-  
-  public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map) {
+
+  public static void removeCollapseAttributeFromTopicsWithoutChildren(@Nullable final MindMap map) {
     removeCollapseAttrIfNoChildren(map == null ? null : map.getRoot());
   }
-  
-  public static void removeCollapseAttr(final MindMap map){
+
+  public static void removeCollapseAttr(@Nonnull final MindMap map) {
     _removeCollapseAttr(map.getRoot());
   }
-  
-  private static void _removeCollapseAttr(final Topic topic){
-    topic.setAttribute(ATTR_COLLAPSED.getText(), null);
-    if (topic.hasChildren()){
-      for(final Topic ch : topic.getChildren()){
-        _removeCollapseAttr(ch);
+
+  private static void _removeCollapseAttr(@Nullable final Topic topic) {
+    if (topic != null) {
+      topic.setAttribute(ATTR_COLLAPSED.getText(), null);
+      if (topic.hasChildren()) {
+        for (final Topic ch : topic.getChildren()) {
+          _removeCollapseAttr(ch);
+        }
       }
     }
   }
-  
-  public static void removeCollapseAttrIfNoChildren(final Topic topic) {
+
+  public static void removeCollapseAttrIfNoChildren(@Nullable final Topic topic) {
     if (topic != null) {
       if (!topic.hasChildren()) {
         topic.setAttribute(ATTR_COLLAPSED.getText(), null);
-      }
-      else {
+      } else {
         for (final Topic t : topic.getChildren()) {
           removeCollapseAttrIfNoChildren(t);
         }
@@ -102,10 +109,10 @@ public enum MindMapUtils {;
     }
   }
 
-  public static void copyColorAttributes(final Topic source, final Topic destination) {
+  public static void copyColorAttributes(@Nonnull final Topic source, @Nonnull final Topic destination) {
     destination.setAttribute(ATTR_FILL_COLOR.getText(), source.getAttribute(ATTR_FILL_COLOR.getText()));
     destination.setAttribute(ATTR_BORDER_COLOR.getText(), source.getAttribute(ATTR_BORDER_COLOR.getText()));
     destination.setAttribute(ATTR_TEXT_COLOR.getText(), source.getAttribute(ATTR_TEXT_COLOR.getText()));
   }
-  
+
 }

@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.ui;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -24,6 +26,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.text.SimpleAttributeSet;
@@ -54,7 +59,7 @@ public class JHtmlLabel extends JLabel {
      * @param source the label, must not be null
      * @param link the link to be processed, must not be null
      */
-    void onLinkActivated(JHtmlLabel source, String link);
+    void onLinkActivated(@Nonnull JHtmlLabel source, @Nonnull String link);
   }
 
   /**
@@ -66,12 +71,13 @@ public class JHtmlLabel extends JLabel {
     private final int start;
     private final int end;
 
-    HtmlLinkAddress(final String address, final int startOffset, final int endOffset) {
+    HtmlLinkAddress(@Nonnull final String address, final int startOffset, final int endOffset) {
       this.address = address;
       this.start = startOffset;
       this.end = endOffset;
     }
 
+    @Nonnull
     String getHREF() {
       return this.address;
     }
@@ -90,14 +96,14 @@ public class JHtmlLabel extends JLabel {
   private boolean showLinkAddressInToolTip = false;
   private int minClickCountToActivateLink = 1;
 
-  public JHtmlLabel(final String text, final Icon icon, final int horizontalAlignment) {
+  public JHtmlLabel(@Nullable final String text, @Nullable final Icon icon, final int horizontalAlignment) {
     super(text, icon, horizontalAlignment);
 
     final JHtmlLabel theInstance = this;
 
     final MouseAdapter mouseAdapter = new MouseAdapter() {
       @Override
-      public void mouseMoved(final MouseEvent e) {
+      public void mouseMoved(@Nonnull final MouseEvent e) {
         final String link = getLinkAtPosition(e.getPoint());
         if (link == null) {
           if (showLinkAddressInToolTip) {
@@ -114,7 +120,7 @@ public class JHtmlLabel extends JLabel {
       }
 
       @Override
-      public void mouseClicked(final MouseEvent e) {
+      public void mouseClicked(@Nonnull final MouseEvent e) {
         if (e.getClickCount() >= minClickCountToActivateLink) {
           final String link = getLinkAtPosition(e.getPoint());
           if (link != null) {
@@ -130,19 +136,19 @@ public class JHtmlLabel extends JLabel {
     this.addMouseMotionListener(mouseAdapter);
   }
 
-  public JHtmlLabel(final String text, final int horizontalAlignment) {
+  public JHtmlLabel(@Nullable final String text, final int horizontalAlignment) {
     this(text, null, horizontalAlignment);
   }
 
-  public JHtmlLabel(final String text) {
+  public JHtmlLabel(@Nullable final String text) {
     this(text, null, LEADING);
   }
 
-  public JHtmlLabel(final Icon image, final int horizontalAlignment) {
+  public JHtmlLabel(@Nullable final Icon image, final int horizontalAlignment) {
     this(null, image, horizontalAlignment);
   }
 
-  public JHtmlLabel(final Icon image) {
+  public JHtmlLabel(@Nullable final Icon image) {
     this(null, image, CENTER);
   }
 
@@ -171,15 +177,15 @@ public class JHtmlLabel extends JLabel {
     this.showLinkAddressInToolTip = flag;
   }
 
-  public void addLinkListener(final LinkListener l) {
-    this.linkListeners.add(l);
+  public void addLinkListener(@Nonnull final LinkListener l) {
+    this.linkListeners.add(assertNotNull(l));
   }
 
-  public void removeLinkListener(final LinkListener l) {
-    this.linkListeners.remove(l);
+  public void removeLinkListener(@Nonnull final LinkListener l) {
+    this.linkListeners.remove(assertNotNull(l));
   }
 
-  public void replaceMacroses(final Properties properties) {
+  public void replaceMacroses(@Nonnull final Properties properties) {
     String text = this.getText();
     for (final String k : properties.stringPropertyNames()) {
       text = text.replace("${" + k + "}", properties.getProperty(k));
@@ -188,7 +194,7 @@ public class JHtmlLabel extends JLabel {
   }
 
   @Override
-  public void setText(final String text) {
+  public void setText(@Nonnull final String text) {
     super.setText(text.toLowerCase(Locale.ENGLISH).trim().startsWith("<html>") ? text : "<html>" + text + "</html>");
     this.linkCache = null;
   }
@@ -210,7 +216,8 @@ public class JHtmlLabel extends JLabel {
     }
   }
 
-  private String getLinkAtPosition(final Point point) {
+  @Nullable
+  private String getLinkAtPosition(@Nonnull final Point point) {
     if (this.linkCache == null) {
       cacheLinkElements();
     }

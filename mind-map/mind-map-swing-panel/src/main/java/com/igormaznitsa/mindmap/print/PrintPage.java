@@ -17,7 +17,9 @@ package com.igormaznitsa.mindmap.print;
 
 import java.awt.Graphics;
 
+import javax.annotation.Nonnull;
+
 public interface PrintPage {
 
-  void print (Graphics g);
+  void print (@Nonnull Graphics g);
 }

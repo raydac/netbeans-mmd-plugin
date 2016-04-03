@@ -16,7 +16,11 @@
 package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.mindmap.model.Topic;
+
 import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public enum StandardTopicAttribute {
   ATTR_BORDER_COLOR("borderColor"),
@@ -27,22 +31,24 @@ public enum StandardTopicAttribute {
   
   private final String textName;
   
-  private StandardTopicAttribute(final String textName){
+  private StandardTopicAttribute(@Nonnull final String textName){
     this.textName = textName;
   }
   
+  @Nonnull
   public String getText(){
     return this.textName;
   }
   
-  public static StandardTopicAttribute findForText(final String text){
+  @Nullable
+  public static StandardTopicAttribute findForText(@Nullable final String text){
     for(final StandardTopicAttribute s : values()){
       if (s.getText().equals(text)) return s;
     }
     return null;
   }
   
-  public static boolean doesContainOnlyStandardAttributes(final Topic topic){
+  public static boolean doesContainOnlyStandardAttributes(@Nonnull final Topic topic){
     final Map<String,String> attrs = topic.getAttributes();
     for(final String k : attrs.keySet()){
       if (findForText(k) == null) return false;

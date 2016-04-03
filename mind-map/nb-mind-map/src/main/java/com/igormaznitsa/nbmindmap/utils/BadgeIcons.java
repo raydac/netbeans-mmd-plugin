@@ -19,8 +19,11 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+
+import javax.annotation.Nonnull;
 import javax.swing.Icon;
 import javax.swing.UIManager;
+
 import org.netbeans.api.annotations.common.StaticResource;
 import org.openide.util.ImageUtilities;
 
@@ -41,7 +44,8 @@ public final class BadgeIcons {
   private static final String ICON_KEY_UIMANAGER_NB = "Nb.Explorer.Folder.icon"; // NOI18N
   private static final String OPENED_ICON_KEY_UIMANAGER_NB = "Nb.Explorer.Folder.openedIcon"; // NOI18N
 
-  private static Image makeBadgedImage(final Image original){
+  @Nonnull
+  private static Image makeBadgedImage(@Nonnull final Image original){
     final BufferedImage result = new BufferedImage(original.getWidth(null), original.getHeight(null), BufferedImage.TYPE_INT_ARGB);
     final Graphics2D gfx = result.createGraphics();
     try{
@@ -59,6 +63,7 @@ public final class BadgeIcons {
     return result;
   }
 
+  @Nonnull
   public static Image getTreeFolderIcon(boolean opened) {
     Image base = (Image) UIManager.get(opened ? OPENED_ICON_KEY_UIMANAGER_NB : ICON_KEY_UIMANAGER_NB); // #70263;
     if (base == null) {

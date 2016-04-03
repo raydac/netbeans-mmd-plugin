@@ -43,16 +43,20 @@ public abstract class AbstractMindMapExporter {
   public AbstractMindMapExporter() {
   }
 
+  @Nullable
   public JComponent makeOptions() {
     return null;
   }
 
-  public abstract void doExport(MindMapPanel panel, JComponent options, OutputStream out) throws IOException;
+  public abstract void doExport(@Nonnull MindMapPanel panel, @Nullable JComponent options, @Nullable OutputStream out) throws IOException;
 
+  @Nonnull
   public abstract String getName();
 
+  @Nonnull
   public abstract String getReference();
 
+  @Nonnull
   public abstract ImageIcon getIcon();
 
   @Nonnull
@@ -121,11 +125,12 @@ public abstract class AbstractMindMapExporter {
 
     return panel.getController().getDialogProvider(panel).msgSaveFileDialog("user-dir", title, home, true, new FileFilter() { //NOI18N
       @Override
-      public boolean accept(File f) {
+      public boolean accept(@Nonnull final File f) {
         return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
       }
 
       @Override
+      @Nonnull
       public String getDescription() {
         return filterDescription;
       }

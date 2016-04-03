@@ -24,6 +24,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -35,7 +37,7 @@ public final class TextBlock implements Cloneable {
     private final Rectangle2D bounds;
     private final String line;
 
-    private Line(final String line, final Rectangle2D bounds) {
+    private Line(@Nonnull final String line, @Nonnull final Rectangle2D bounds) {
       this.bounds = bounds;
       this.line = line;
     }
@@ -50,7 +52,7 @@ public final class TextBlock implements Cloneable {
   
   private static final Rectangle2D ZERO = new Rectangle2D.Float();
 
-  public TextBlock(final TextBlock orig){
+  public TextBlock(@Nonnull final TextBlock orig){
     this.text = orig.text;
     this.lines = orig.lines.clone();
     this.font = orig.font;
@@ -59,30 +61,32 @@ public final class TextBlock implements Cloneable {
     this.textAlign = orig.textAlign;
   }
   
-  public TextBlock(final String text, final TextAlign justify) {
+  public TextBlock(@Nonnull final String text, @Nonnull final TextAlign justify) {
     updateText(Assertions.assertNotNull(text));
-    this.textAlign = justify;
+    this.textAlign = Assertions.assertNotNull(justify);
   }
 
-  public void updateText(final String text) {
+  public void updateText(@Nullable final String text) {
     this.text = text == null ? "" : text; //NOI18N
     invalidate();
   }
 
-  public void fillByTextAndFont(final JTextComponent compo) {
+  public void fillByTextAndFont(@Nonnull final JTextComponent compo) {
     compo.setFont(this.font);
     compo.setText(this.text);
   }
 
+  @Nonnull
   public Rectangle2D getBounds() {
     return this.bounds == null ? ZERO : this.bounds;
   }
 
+  @Nonnull
   public TextAlign getTextAlign(){
     return this.textAlign;
   }
   
-  public void setTextAlign(final TextAlign textAlign){
+  public void setTextAlign(@Nullable final TextAlign textAlign){
     this.textAlign = textAlign == null ? TextAlign.CENTER : textAlign;
     invalidate();
   }
@@ -95,7 +99,7 @@ public final class TextBlock implements Cloneable {
     this.bounds.setFrame(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
   
-  public void updateSize(final Graphics2D gfx, final MindMapPanelConfig cfg) {
+  public void updateSize(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
       this.font = cfg.getFont().deriveFont(cfg.safeScaleFloatValue(cfg.getFont().getSize2D(),2f));
       final FontMetrics metrics = gfx.getFontMetrics(this.font);
 
@@ -120,7 +124,7 @@ public final class TextBlock implements Cloneable {
       this.bounds.setRect(0f, 0f, maxWidth, maxHeight);
   }
 
-  public void paint(final Graphics2D gfx) {
+  public void paint(@Nonnull final Graphics2D gfx) {
     if (this.font != null && this.lines != null) {
       double posy = this.bounds.getY() + this.maxLineAscent;
       gfx.setFont(this.font);

@@ -23,9 +23,12 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
+
 import com.igormaznitsa.nbmindmap.nb.explorer.MMKnowledgeSources;
 import com.igormaznitsa.nbmindmap.nb.options.MMDCfgOptionsPanelController;
+
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -41,10 +44,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
@@ -62,6 +69,8 @@ import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 import org.openide.util.lookup.Lookups;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+
 public final class NbUtils {
 
   // List of all found types of source groups in NetBeans sources.
@@ -74,11 +83,11 @@ public final class NbUtils {
     FAVORITES("org-netbeans-modules-favorites-Select.instance");
     private final String actionName;
 
-    private SelectIn (final String actionInstance) {
+    private SelectIn (@Nonnull final String actionInstance) {
       this.actionName = actionInstance;
     }
 
-    public boolean select (final Object source, final Object object) {
+    public boolean select (@Nullable final Object source, @Nonnull final Object object) {
       boolean result = false;
       final Action action = FileUtil.getConfigObject("Actions/Window/SelectDocumentNode/" + actionName, ContextAwareAction.class); //NOI18N
       if (action != null) {
@@ -137,7 +146,8 @@ public final class NbUtils {
   private NbUtils () {
   }
 
-  public static DataObject extractDataObject (final Object object) {
+  @Nullable
+  public static DataObject extractDataObject (@Nullable final Object object) {
     if (object instanceof DataObject) {
       return (DataObject) object;
     }
@@ -158,7 +168,8 @@ public final class NbUtils {
     return null;
   }
 
-  public static FileObject extractFileObject (final Object object) {
+  @Nullable
+  public static FileObject extractFileObject (@Nullable final Object object) {
     if (object instanceof DataObject) {
       return ((DataObject) object).getPrimaryFile();
     }
@@ -175,7 +186,8 @@ public final class NbUtils {
     return null;
   }
 
-  public static Node extractNode (final Object object) {
+  @Nullable
+  public static Node extractNode (@Nullable final Object object) {
     if (object instanceof DataObject) {
       return ((DataObject) object).getNodeDelegate();
     }
@@ -206,14 +218,15 @@ public final class NbUtils {
     return null;
   }
 
-  public static int calculateBrightness (final Color color) {
+  public static int calculateBrightness (@Nonnull final Color color) {
     return (int) Math.sqrt(
         color.getRed() * color.getRed() * .241d
         + color.getGreen() * color.getGreen() * .691d
         + color.getBlue() * color.getBlue() * .068d);
   }
 
-  public static Color extractCommonColorForColorChooserButton (final String colorAttribute, final Topic[] topics) {
+  @Nullable
+  public static Color extractCommonColorForColorChooserButton (@Nonnull final String colorAttribute, @Nonnull @MustNotContainNull final Topic[] topics) {
     Color result = null;
     for (final Topic t : topics) {
       final Color color = html2color(t.getAttribute(colorAttribute), false);
@@ -227,35 +240,37 @@ public final class NbUtils {
     return result;
   }
 
+  @Nonnull
   public static Preferences getPreferences () {
     return NbPreferences.forModule(MMDCfgOptionsPanelController.class);
   }
 
-  public static void msgError (final String text) {
+  public static void msgError (@Nonnull final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.ERROR_MESSAGE));
   }
 
-  public static void msgInfo (final String text) {
+  public static void msgInfo (@Nonnull final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.INFORMATION_MESSAGE));
   }
 
-  public static void msgWarn (final String text) {
+  public static void msgWarn (@Nonnull final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.WARNING_MESSAGE));
   }
 
-  public static boolean msgConfirmOkCancel (final String title, final String query) {
+  public static boolean msgConfirmOkCancel (@Nonnull final String title, @Nonnull final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.OK_CANCEL_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     return NotifyDescriptor.OK_OPTION.equals(obj);
   }
 
-  public static boolean msgConfirmYesNo (final String title, final String query) {
+  public static boolean msgConfirmYesNo (@Nonnull final String title, @Nonnull final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
-  public static Boolean msgConfirmYesNoCancel (final String title, final String query) {
+  @Nullable
+  public static Boolean msgConfirmYesNoCancel (@Nonnull final String title, @Nonnull final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_CANCEL_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     if (NotifyDescriptor.CANCEL_OPTION.equals(obj)) {
@@ -264,27 +279,28 @@ public final class NbUtils {
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
-  public static boolean msgComponentOkCancel (final String title, final JComponent component) {
+  public static boolean msgComponentOkCancel (@Nonnull final String title, @Nonnull final JComponent component) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(component, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
 
-  public static void msgInfo (final JComponent component) {
+  public static void msgInfo (@Nonnull final JComponent component) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(component, NotifyDescriptor.INFORMATION_MESSAGE));
   }
 
-  public static boolean plainMessageOkCancel (final String title, final JComponent compo) {
+  public static boolean plainMessageOkCancel (@Nonnull final String title, @Nonnull final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(compo, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
 
-  public static void plainMessageOk (final String title, final JComponent compo) {
+  public static void plainMessageOk (@Nonnull final String title, @Nonnull final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Message(compo, NotifyDescriptor.PLAIN_MESSAGE);
     desc.setTitle(title);
     DialogDisplayer.getDefault().notify(desc);
   }
 
-  public static String editText (final String title, final String text) {
+  @Nullable
+  public static String editText (@Nonnull final String title, @Nonnull final String text) {
     final PlainTextEditor textEditor = new PlainTextEditor(text);
     try {
       if (plainMessageOkCancel(title, textEditor)) {
@@ -299,7 +315,8 @@ public final class NbUtils {
     }
   }
 
-  public static MMapURI editURI (final String title, final MMapURI uri) {
+  @Nullable
+  public static MMapURI editURI (@Nonnull final String title, @Nonnull final MMapURI uri) {
     final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
 
     textEditor.doLayout();
@@ -324,7 +341,8 @@ public final class NbUtils {
     }
   }
 
-  public static FileEditPanel.DataContainer editFilePath (final String title, final File projectFolder, final FileEditPanel.DataContainer data) {
+  @Nullable
+  public static FileEditPanel.DataContainer editFilePath (@Nonnull final String title, @Nonnull final File projectFolder, @Nonnull final FileEditPanel.DataContainer data) {
     final FileEditPanel filePathEditor = new FileEditPanel(projectFolder, data);
 
     filePathEditor.doLayout();
@@ -342,7 +360,7 @@ public final class NbUtils {
     return result;
   }
 
-  public static boolean browseURI (final URI uri, final boolean preferInsideBrowserIfPossible) {
+  public static boolean browseURI (@Nonnull final URI uri, final boolean preferInsideBrowserIfPossible) {
     try {
       if (preferInsideBrowserIfPossible) {
         HtmlBrowser.URLDisplayer.getDefault().showURL(uri.toURL());
@@ -358,7 +376,7 @@ public final class NbUtils {
     }
   }
 
-  public static void openInSystemViewer (final File file) {
+  public static void openInSystemViewer (@Nonnull final File file) {
     final Runnable startEdit = new Runnable() {
       @Override
       public void run () {
@@ -398,7 +416,9 @@ public final class NbUtils {
     thr.start();
   }
 
-  public static Collection<SourceGroup> findAllSourceGroups (final Project project) {
+  @Nonnull
+  @MustNotContainNull
+  public static Collection<SourceGroup> findAllSourceGroups (@Nonnull final Project project) {
     final Sources sources = ProjectUtils.getSources(project);
     final Set<SourceGroup> result = new HashSet<SourceGroup>();
     for (final String scopeType : ALL_KNOWN_SCOPE_TYPES) {
@@ -416,12 +436,12 @@ public final class NbUtils {
     return result;
   }
 
-  public static boolean isInProjectKnowledgeFolder (final Project project, final FileObject file) {
+  public static boolean isInProjectKnowledgeFolder (@Nonnull final Project project, @Nonnull final FileObject file) {
     final FileObject projectKnowledgeFolder = MMKnowledgeSources.findProjectKnowledgeFolder(project);
     return projectKnowledgeFolder != null && FileUtil.isParentOf(projectKnowledgeFolder, file);
   }
 
-  public static boolean isFileInProjectScope (final Project project, final FileObject file) {
+  public static boolean isFileInProjectScope (@Nonnull final Project project, @Nonnull final FileObject file) {
     if (file == null || project == null) {
       return false;
     }

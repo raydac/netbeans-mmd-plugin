@@ -30,7 +30,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +41,6 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.igormaznitsa.meta.annotation.ImplementationNote;
@@ -110,6 +108,7 @@ public final class Utils {
   }
 
   @Nonnull
+  @MustNotContainNull
   public static Topic[] getLeftToRightOrderedChildrens(@Nonnull final Topic topic) {
     final List<Topic> result = new ArrayList<Topic>();
     if (topic.getTopicLevel() == 0) {
@@ -148,12 +147,8 @@ public final class Utils {
     return result;
   }
 
-  @Nullable
-  public static String color2html(@Nullable final Color color, final boolean hasAlpha) {
-    if (color == null) {
-      return null;
-    }
-
+  @Nonnull
+  public static String color2html(@Nonnull final Color color, final boolean hasAlpha) {
     final StringBuilder buffer = new StringBuilder();
 
     buffer.append('#');
@@ -211,6 +206,7 @@ public final class Utils {
   }
 
   @Nonnull
+  @MustNotContainNull
   public static String[] breakToLines(@Nonnull final String text) {
     final int lineNum = numberOfLines(text);
     final String[] result = new String[lineNum];

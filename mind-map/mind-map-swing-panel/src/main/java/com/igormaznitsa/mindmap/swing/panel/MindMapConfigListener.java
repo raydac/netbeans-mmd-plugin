@@ -15,8 +15,10 @@
  */
 package com.igormaznitsa.mindmap.swing.panel;
 
+import javax.annotation.Nonnull;
+
 public interface MindMapConfigListener {
 
-  void onConfigurationPropertyChanged(MindMapPanelConfig changedConfig);
+  void onConfigurationPropertyChanged(@Nonnull MindMapPanelConfig changedConfig);
   
 }

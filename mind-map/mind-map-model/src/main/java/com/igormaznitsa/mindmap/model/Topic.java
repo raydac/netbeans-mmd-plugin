@@ -563,10 +563,7 @@ public final class Topic implements Serializable, Constants {
   }
 
   @Override
-  public boolean equals(@Nullable final Object topic) {
-    if (topic == null) {
-      return false;
-    }
+  public boolean equals(@Nonnull final Object topic) {
     if (this == topic) {
       return true;
     }

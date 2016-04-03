@@ -5,12 +5,12 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.5-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   
   <artifactId>nb-mind-map</artifactId>
-  <version>1.1.5-SNAPSHOT</version>
+  <version>${main.version}</version>
   <packaging>nbm</packaging>
 
   <name>NetBeans Mind Map Editor plugin</name>
@@ -96,6 +96,17 @@
           <keystorealias>iam</keystorealias>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>meta-checker</artifactId>
+        <version>${meta.version}</version>
+        <executions>
+          <execution>
+            <id>meta-check</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -115,12 +126,12 @@
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-model</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>${main.version}</version>
     </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-swing-panel</artifactId>
-      <version>1.0.5-SNAPSHOT</version>
+      <version>${main.version}</version>
     </dependency>
 
     <dependency>
@@ -189,10 +200,10 @@
       <version>${nb.platform}</version>
     </dependency>
     <dependency>
-        <groupId>org.netbeans.api</groupId>
-        <artifactId>org-netbeans-modules-editor-indent</artifactId>
-        <version>${nb.platform}</version>
-        <type>jar</type>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-editor-indent</artifactId>
+      <version>${nb.platform}</version>
+      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>

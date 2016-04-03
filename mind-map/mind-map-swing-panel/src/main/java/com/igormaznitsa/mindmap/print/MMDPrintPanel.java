@@ -21,10 +21,12 @@ import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
+
 import java.awt.BasicStroke;
 
 import javax.swing.JButton;
 import javax.swing.JToolBar;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -42,6 +44,9 @@ import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
@@ -49,6 +54,8 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent {
 
@@ -62,15 +69,17 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   public interface Adaptor {
 
-    void startBackgroundTask (MMDPrintPanel source, String name, Runnable task);
+    void startBackgroundTask (@Nonnull MMDPrintPanel source, @Nonnull String name, @Nonnull Runnable task);
 
-    boolean isDarkTheme (MMDPrintPanel source);
+    boolean isDarkTheme (@Nonnull MMDPrintPanel source);
 
-    Icon getIcon (MMDPrintPanel source, IconId iconId);
+    @Nonnull
+    Icon getIcon (@Nonnull MMDPrintPanel source, @Nonnull IconId iconId);
 
-    void onPrintTaskStarted (MMDPrintPanel source);
+    void onPrintTaskStarted (@Nonnull MMDPrintPanel source);
     
-    Dimension getPreferredSizeOfPanel(MMDPrintPanel source);
+    @Nonnull
+    Dimension getPreferredSizeOfPanel(@Nonnull MMDPrintPanel source);
   }
 
   private static final long serialVersionUID = -2588424836865316862L;
@@ -85,16 +94,16 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   private final JComponent preferredFocusedComponent;
   
   private final MindMapPanel mmdPanel;
-  private final Adaptor adaptor;
+  private final Adaptor theAdaptor;
   private final JCheckBox checkBoxDrawBorder;
   private PrintPage[][] pages;
 
-  public MMDPrintPanel (final Adaptor adaptor, final MindMapPanel mindMapPanel) {
+  public MMDPrintPanel (@Nullable final Adaptor adaptor, @Nonnull final MindMapPanel mindMapPanel) {
     super(new BorderLayout());
-    this.adaptor = adaptor == null ? new DefaultMMDPrintPanelAdaptor() : adaptor;
+    this.theAdaptor = adaptor == null ? new DefaultMMDPrintPanelAdaptor() : adaptor;
     this.mmdPanel = mindMapPanel;
 
-    super.setPreferredSize(this.adaptor.getPreferredSizeOfPanel(this));
+    super.setPreferredSize(this.theAdaptor.getPreferredSizeOfPanel(this));
 
     final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
@@ -105,13 +114,13 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.setFloatable(false);
     final JButton buttonPrint = UI_COMPO_FACTORY.makeButton();
     buttonPrint.setText(BUNDLE.getString("MMDPrintPanel.PrintPages"));
-    buttonPrint.setIcon(this.adaptor.getIcon(this, IconId.PRINTER));
+    buttonPrint.setIcon(this.theAdaptor.getIcon(this, IconId.PRINTER));
     
     final MMDPrintPanel theInstance = this;
 
     buttonPrint.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed (final ActionEvent e) {
+      public void actionPerformed (@Nonnull final ActionEvent e) {
         splitToPagesForCurrentFormat();
         final PageFormat format = pageFormat;
         final int numOfPages = countPages();
@@ -124,6 +133,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
           }
 
           @Override
+          @Nonnull
           public PageFormat getPageFormat (final int pageIndex) throws IndexOutOfBoundsException {
             final PrintPage thepage = findPageForIndex(pageIndex);
             if (thepage == null) throw new IndexOutOfBoundsException();
@@ -131,12 +141,13 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
           }
 
           @Override
+          @Nonnull
           public Printable getPrintable (final int pageIndex) throws IndexOutOfBoundsException {
             final PrintPage thePage = findPageForIndex(pageIndex);
             if (thePage == null) throw new IndexOutOfBoundsException();
             return new Printable() {
               @Override
-              public int print (final Graphics graphics, final PageFormat format, final int pageIndex) throws PrinterException {
+              public int print (@Nonnull final Graphics graphics, @Nonnull final PageFormat format, final int pageIndex) throws PrinterException {
                 final Graphics2D gfx = (Graphics2D) graphics;
 
                 if (thePage == null) {
@@ -161,8 +172,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
           }
         });
 
+        
         if (printerJob.printDialog()) {
-          adaptor.startBackgroundTask(theInstance, BUNDLE.getString("MMDPrintPanel.JobTitle"), new Runnable() {
+          theAdaptor.startBackgroundTask(theInstance, BUNDLE.getString("MMDPrintPanel.JobTitle"), new Runnable() {
             @Override
             public void run () {
               try {
@@ -175,7 +187,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
               }
             }
           });
-          adaptor.onPrintTaskStarted(theInstance);
+          theAdaptor.onPrintTaskStarted(theInstance);
         }
       }
     });
@@ -183,10 +195,10 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     final JButton buttonPrintOptions = UI_COMPO_FACTORY.makeButton();
     buttonPrintOptions.setText(BUNDLE.getString("MMDPrintPanel.PageSetup"));
-    buttonPrintOptions.setIcon(this.adaptor.getIcon(this, IconId.PAGE));
+    buttonPrintOptions.setIcon(this.theAdaptor.getIcon(this, IconId.PAGE));
     buttonPrintOptions.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed (final ActionEvent e) {
+      public void actionPerformed (@Nonnull final ActionEvent e) {
         pageFormat = printerJob.pageDialog(pageFormat);
         splitToPagesForCurrentFormat();
         scrollPane.revalidate();
@@ -209,7 +221,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     comboBoxScale.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed (ActionEvent e) {
+      public void actionPerformed (@Nonnull final ActionEvent e) {
         final int percent = Integer.parseInt(comboBoxScale.getSelectedItem().toString().split("\\s")[0]);
         pageZoomFactor = (double) percent / 100d;
         splitToPagesForCurrentFormat();
@@ -227,7 +239,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     this.checkBoxDrawBorder.setText(BUNDLE.getString("MMDPrintPanel.DrawBorder"));
     this.checkBoxDrawBorder.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed (ActionEvent e) {
+      public void actionPerformed (@Nonnull ActionEvent e) {
         scrollPane.repaint();
       }
     });
@@ -247,10 +259,12 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   }
 
   @Override
+  @Nonnull
   public JComponent getComponentPreferredForFocus () {
     return this.preferredFocusedComponent;
   }
   
+  @Nonnull
   PageFormat getPageFormat () {
     return this.pageFormat;
   }
@@ -263,10 +277,13 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     return result;
   }
 
+  @Nonnull
+  @MustNotContainNull
   PrintPage[][] getPages () {
     return this.pages;
   }
 
+  @Nullable
   PrintPage findPageForIndex (final int value) {
     int i = 0;
     for (final PrintPage[] row : this.pages) {
@@ -295,6 +312,6 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   }
 
   boolean isDarkTheme () {
-    return this.adaptor.isDarkTheme(this);
+    return this.theAdaptor.isDarkTheme(this);
   }
 }
