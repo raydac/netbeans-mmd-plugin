@@ -135,6 +135,8 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   public JPopupMenu makePopUpForMindMapPanel(final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
     final JBPopupMenu result = new JBPopupMenu();
 
+    final boolean isNonEmptyMap = this.editor.getMindMapPanel().getModel().getRoot() != null;
+    
     if (element != null) {
       final JBMenuItem editText = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miEditText"), AllIcons.PopUp.EDITTEXT);
       editText.addActionListener(new ActionListener() {
@@ -322,6 +324,9 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       }
     });
 
+    expandAll.setEnabled(isNonEmptyMap);
+    collapseAll.setEnabled(isNonEmptyMap);
+    
     result.add(showJumps);
     result.add(expandAll);
     result.add(collapseAll);
@@ -358,8 +363,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       exportMenu.add(item);
     }
 
-    exportMenu.setEnabled(this.editor.getMindMapPanel().getModel().getRoot()!=null);
-
+    exportMenu.setEnabled(isNonEmptyMap);
 
     result.add(exportMenu);
 

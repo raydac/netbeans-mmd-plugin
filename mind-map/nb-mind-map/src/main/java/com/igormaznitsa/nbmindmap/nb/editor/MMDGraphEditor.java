@@ -960,6 +960,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   public JPopupMenu makePopUpForMindMapPanel (@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
 
+    final boolean isModelNotEmpty = this.mindMapPanel.getModel().getRoot() != null;
+    
     if (element != null) {
       final JMenuItem editText = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miEditText"), Icons.EDITTEXT.getIcon());
       editText.addActionListener(new ActionListener() {
@@ -1135,6 +1137,9 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       }
     });
 
+    expandAll.setEnabled(isModelNotEmpty);
+    collapseAll.setEnabled(isModelNotEmpty);
+    
     result.add(showJumps);
     result.add(expandAll);
     result.add(collapseAll);
@@ -1170,7 +1175,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
     result.add(exportMenu);
 
-    exportMenu.setEnabled(this.mindMapPanel.getModel().getRoot()!=null);
+    exportMenu.setEnabled(isModelNotEmpty);
     
     result.add(UI_COMPO_FACTORY.makeMenuSeparator());
 
