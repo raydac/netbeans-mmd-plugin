@@ -385,7 +385,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         case FILE: {
           final FileObject fileObj;
           final MMapURI uri = (MMapURI) extra.getValue();
-          final File theFile = uri.asFile(this.editorSupport.getProjectDirectory());
+          final File theFile = FileUtil.normalizeFile(uri.asFile(this.editorSupport.getProjectDirectory()));
           try {
             fileObj = FileUtil.toFileObject(theFile);
             if (fileObj == null) {
@@ -421,11 +421,19 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                     if (manager.isProject(fileObj)) {
                       final Project project = manager.findProject(fileObj);
                       final OpenProjects openProjects = OpenProjects.getDefault();
+
+                      NbUtils.SelectIn browserType = NbUtils.SelectIn.PROJECTS;
+                      
                       if (!openProjects.isProjectOpen(project)) {
                         openProjects.open(new Project[]{project}, false);
+                      } else {
+                        final FileObject mapProjectFolder = getProjectFolderAsFileObject();
+                        if (mapProjectFolder!=null && mapProjectFolder.equals(fileObj)) {
+                          browserType = NbUtils.SelectIn.FAVORITES;
+                        }
                       }
 
-                      if (NbUtils.SelectIn.PROJECTS.select(this, project.getProjectDirectory())) {
+                      if (browserType.select(this, project.getProjectDirectory())) {
                         return;
                       }
                     }
@@ -579,7 +587,18 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   private void addFileToElement (final File theFile, final AbstractElement element){
     if (element!=null){
       final Topic topic = element.getModel();
-      final MMapURI theURI = NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? new MMapURI(getProjectFolder(), theFile, null) : new MMapURI(null, theFile, null); //NOI18N
+      final MMapURI theURI;
+
+      if (NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true)) { //NOI18N
+        final File projectFolder = getProjectFolder();
+        if (theFile.equals(projectFolder)){
+          theURI = new MMapURI(projectFolder, new File("."), null);
+        }else{
+          theURI = new MMapURI(projectFolder, theFile, null);
+        }
+      }else{
+        theURI = new MMapURI(null, theFile, null);
+      }
 
       if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
         if (!NbUtils.msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
@@ -690,13 +709,20 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
   }
 
-  public File getProjectFolder () {
-    File result = null;
+  @Nullable
+  public FileObject getProjectFolderAsFileObject() {
     final Project proj = this.editorSupport.getProject();
+    FileObject result = null;
     if (proj != null) {
-      result = FileUtil.toFile(proj.getProjectDirectory());
+      result = proj.getProjectDirectory();
     }
     return result;
+  }
+  
+  @Nullable
+  public File getProjectFolder () {
+    final FileObject projectFolder = getProjectFolderAsFileObject();
+    return projectFolder == null ? null : FileUtil.toFile(projectFolder);
   }
 
   protected boolean acceptOrRejectDragging (final DropTargetDragEvent dtde) {

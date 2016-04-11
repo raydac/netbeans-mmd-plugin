@@ -24,6 +24,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.StyledDocument;
@@ -54,6 +55,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     setMIMEType(MMDDataObject.MIME);
   }
 
+  @Nullable
   public Project getProject() {
     return FileOwnerQuery.getOwner(getDataObject().getPrimaryFile());
   }
