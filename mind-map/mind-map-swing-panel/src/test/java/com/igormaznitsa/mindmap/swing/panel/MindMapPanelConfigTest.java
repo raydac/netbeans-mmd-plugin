@@ -209,7 +209,6 @@ public class MindMapPanelConfigTest {
       });
     }
     catch (Exception ex) {
-      ex.printStackTrace();
       fail("Unexpected exception");
     }
 
