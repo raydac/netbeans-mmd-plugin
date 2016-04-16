@@ -1309,7 +1309,7 @@ public class MindMapPanel extends JPanel {
 
           if (dst != null) {
             final AbstractElement dstElement = (AbstractElement) dst.getPayload();
-            if (MindMapUtils.isHidden(dst) && dstElement!=null) {
+            if (!MindMapUtils.isHidden(dst) && dstElement!=null) {
               final AbstractElement srcElement = assertNotNull((AbstractElement) assertNotNull(src).getPayload());
               final Rectangle2D srcRect = srcElement.getBounds();
               final Rectangle2D dstRect = dstElement.getBounds();
