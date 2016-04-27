@@ -37,11 +37,11 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   protected final Rectangle2D collapsatorZone = new Rectangle2D.Double();
 
-  protected AbstractCollapsableElement(@Nonnull final AbstractCollapsableElement element){
+  protected AbstractCollapsableElement(@Nonnull final AbstractCollapsableElement element) {
     super(element);
     this.collapsatorZone.setRect(element.collapsatorZone);
   }
-  
+
   public AbstractCollapsableElement(@Nonnull final Topic model) {
     super(model);
   }
@@ -88,12 +88,12 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     MindMapUtils.setCollapsed(this.model, collapseElementFlag);
   }
 
-  public void collapseAllFirstLevelChildren(){
+  public void collapseAllFirstLevelChildren() {
     for (final Topic t : this.model.getChildren()) {
       MindMapUtils.setCollapsed(t, true);
     }
   }
-  
+
   @Override
   public boolean isLeftDirection() {
     return isLeftSidedTopic(this.model);
@@ -110,8 +110,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   public static void makeTopicLeftSided(@Nonnull final Topic topic, final boolean left) {
     if (left) {
       topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), "true");//NOI18N
-    }
-    else {
+    } else {
       topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), null);
     }
   }
@@ -139,8 +138,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
         for (final Topic t : this.model.getChildren()) {
           if (notFirstChiild) {
             childrenHeight += scaledVInset;
-          }
-          else {
+          } else {
             notFirstChiild = true;
           }
           ((AbstractElement) assertNotNull(t.getPayload())).calcBlockSize(cfg, result, false);
@@ -149,11 +147,8 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
         }
 
         height = Math.max(height, childrenHeight);
-      }
-      else {
-        if (!childrenOnly) {
-          width += cfg.getCollapsatorSize() * cfg.getScale();
-        }
+      } else if (!childrenOnly) {
+        width += cfg.getCollapsatorSize() * cfg.getScale();
       }
     }
     result.setSize(width, height);
@@ -163,7 +158,8 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public void alignElementAndChildren(@Nonnull final MindMapPanelConfig cfg, final boolean leftSide, final double leftX, final double topY) {
-
+    super.alignElementAndChildren(cfg, leftSide, leftX, topY);
+    
     final double horzInset = cfg.getOtherLevelHorizontalInset() * cfg.getScale();
 
     double childrenX;
@@ -178,20 +174,11 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
       this.moveTo(childrenX, topY + (this.blockSize.getHeight() - this.bounds.getHeight()) / 2);
       childrenX -= horzInset;
       collapsatorX = -COLLAPSATORSIZE - COLLAPSATORDISTANCE;
-    }
-    else {
+    } else {
       childrenX = leftX;
       this.moveTo(childrenX, topY + (this.blockSize.getHeight() - this.bounds.getHeight()) / 2);
       childrenX += this.bounds.getWidth() + horzInset;
       collapsatorX = this.bounds.getWidth() + COLLAPSATORDISTANCE;
-    }
-
-    final double textMargin = cfg.getScale() * cfg.getTextMargins();
-    final double centralBlockLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()) / 2;
-
-    this.textBlock.setCoordOffset(textMargin, centralBlockLineY - this.textBlock.getBounds().getHeight() / 2);
-    if (this.extrasIconBlock.hasContent()) {
-      this.extrasIconBlock.setCoordOffset(textMargin + this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap(), centralBlockLineY - this.extrasIconBlock.getBounds().getHeight() / 2);
     }
 
     this.collapsatorZone.setRect(collapsatorX, (this.bounds.getHeight() - COLLAPSATORSIZE) / 2, COLLAPSATORSIZE, COLLAPSATORSIZE);
@@ -207,8 +194,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
       for (final Topic t : this.model.getChildren()) {
         if (notFirstChild) {
           currentY += vertInset;
-        }
-        else {
+        } else {
           notFirstChild = true;
         }
         final AbstractElement w = (AbstractElement) assertNotNull(t.getPayload());
@@ -235,8 +221,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     final double dy = Math.abs(destination.getCenterY() - source.getCenterY());
     if (dy < (16.0d * cfg.getScale())) {
       g.drawLine((int) source.getCenterX(), (int) source.getCenterY(), (int) destination.getCenterX(), (int) source.getCenterY());
-    }
-    else {
+    } else {
       final Path2D path = new Path2D.Double();
       path.moveTo(source.getCenterX(), source.getCenterY());
 
@@ -245,8 +230,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
         path.lineTo((source.getCenterX() - dx / 2), source.getCenterY());
         path.lineTo((source.getCenterX() - dx / 2), destination.getCenterY());
         path.lineTo(destination.getCenterX(), destination.getCenterY());
-      }
-      else {
+      } else {
         final double dx = destination.getX() - source.getCenterX();
         path.lineTo((source.getCenterX() + dx / 2), source.getCenterY());
         path.lineTo((source.getCenterX() + dx / 2), destination.getCenterY());
@@ -264,19 +248,16 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     if (point != null) {
       if (this.bounds.contains(point.getX(), point.getY()) || this.collapsatorZone.contains(point.getX() - this.bounds.getX(), point.getY() - this.bounds.getY())) {
         result = this;
-      }
-      else {
-        if (!isCollapsed()) {
-          final double topZoneY = this.bounds.getY() - (this.blockSize.getHeight() - this.bounds.getHeight()) / 2;
-          final double topZoneX = isLeftDirection() ? this.bounds.getMaxX() - this.blockSize.getWidth() : this.bounds.getX();
+      } else if (!isCollapsed()) {
+        final double topZoneY = this.bounds.getY() - (this.blockSize.getHeight() - this.bounds.getHeight()) / 2;
+        final double topZoneX = isLeftDirection() ? this.bounds.getMaxX() - this.blockSize.getWidth() : this.bounds.getX();
 
-          if (point.getX() >= topZoneX && point.getY() >= topZoneY && point.getX() < (this.blockSize.getWidth() + topZoneX) && point.getY() < (this.blockSize.getHeight() + topZoneY)) {
-            for (final Topic t : this.model.getChildren()) {
-              final AbstractElement w = (AbstractElement) t.getPayload();
-              result = w == null ? null : w.findForPoint(point);
-              if (result != null) {
-                break;
-              }
+        if (point.getX() >= topZoneX && point.getY() >= topZoneY && point.getX() < (this.blockSize.getWidth() + topZoneX) && point.getY() < (this.blockSize.getHeight() + topZoneY)) {
+          for (final Topic t : this.model.getChildren()) {
+            final AbstractElement w = (AbstractElement) t.getPayload();
+            result = w == null ? null : w.findForPoint(point);
+            if (result != null) {
+              break;
             }
           }
         }
@@ -288,7 +269,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   @Override
   public void updateElementBounds(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
     super.updateElementBounds(gfx, cfg);
-    final double marginOffset = ((cfg.getTextMargins() + cfg.getElementBorderWidth())*2.0d) * cfg.getScale();
+    final double marginOffset = ((cfg.getTextMargins() + cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
   }
 

@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.Nonnull;
@@ -41,7 +42,7 @@ import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
-public final class Topic implements Serializable, Constants {
+public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   private static final long serialVersionUID = -4512887489914466613L;
 
@@ -888,6 +889,51 @@ public final class Topic implements Serializable, Constants {
       }
     }
     return false;
+  }
+
+  @Override
+  @Nonnull
+  public Iterator<Topic> iterator() {
+    final Iterator<Topic> iter = this.children.iterator();
+    
+    return new Iterator<Topic>(){
+      Topic childTopic;
+      Iterator<Topic> childIterator;
+      
+      @Nonnull
+      Iterator<Topic> init(){
+        if (iter.hasNext()){
+          this.childTopic = iter.next();
+        }
+        return this;
+      }
+      
+      @Override
+      public boolean hasNext() {
+        return iter.hasNext() || this.childTopic!=null || (this.childIterator!=null && this.childIterator.hasNext());
+      }
+
+      @Nonnull
+      @Override
+      public Topic next() {
+        final Topic result;
+        if (this.childTopic!=null){
+          result = this.childTopic;
+          this.childTopic = null;
+          this.childIterator = result.iterator();
+        } else if (this.childIterator!=null){
+          if (this.childIterator.hasNext()){
+            result = this.childIterator.next();
+          } else {
+            result = iter.next();
+            this.childIterator = result.iterator();
+          }
+        } else {
+          throw new NoSuchElementException();
+        }
+        return result;
+      }
+    }.init();
   }
 
 }

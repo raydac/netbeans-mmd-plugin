@@ -26,8 +26,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
@@ -46,7 +48,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
-public final class MindMap implements Serializable, Constants, TreeModel {
+public final class MindMap implements Serializable, Constants, TreeModel, Iterable<Topic> {
 
   private static final long serialVersionUID = 5929181596778047354L;
 
@@ -120,6 +122,38 @@ public final class MindMap implements Serializable, Constants, TreeModel {
   @Nullable
   public MindMapController getController() {
     return this.controller;
+  }
+
+  @Override
+  @Nonnull
+  public Iterator<Topic> iterator() {
+    final Topic theroot = this.root;
+    
+    return new Iterator<Topic>(){
+      Topic topicroot = theroot;
+      Iterator<Topic> children;
+      
+      @Override
+      public boolean hasNext() {
+        return this.topicroot!=null || (this.children!=null && this.children.hasNext());
+      }
+
+      @Override
+      @Nonnull
+      public Topic next() {
+        final Topic result;
+        if (this.topicroot!=null){
+          result = this.topicroot;
+          this.topicroot = null;
+          this.children = result.iterator();
+        } else if (this.children!=null){
+          result = this.children.next();
+        } else {
+          throw new NoSuchElementException();
+        }
+        return result;
+      }
+    };
   }
 
   private void fireModelChanged() {

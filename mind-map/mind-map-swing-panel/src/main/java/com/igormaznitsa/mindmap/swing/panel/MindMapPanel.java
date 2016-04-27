@@ -64,6 +64,9 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.plugins.AbstractPlugin;
+import com.igormaznitsa.mindmap.plugins.PluginRegistry;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MindMapPanel extends JPanel {
 
@@ -549,13 +552,11 @@ public class MindMapPanel extends JPanel {
             removeAllSelection();
             select(element.getModel(), false);
           } else // group
-          {
-            if (selectedTopics.isEmpty()) {
+           if (selectedTopics.isEmpty()) {
               select(element.getModel(), false);
             } else {
               select(element.getModel(), true);
             }
-          }
         }
       }
     };
@@ -1094,7 +1095,13 @@ public class MindMapPanel extends JPanel {
 
     this.selectedTopics.clear();
 
-    this.model = assertNotNull("Model must not be null",model);
+    this.model = assertNotNull("Model must not be null", model);
+
+    for (final Topic t : this.model) {
+      for (final AbstractPlugin p : PluginRegistry.getInstance()) {
+        p.onModelSet(this, t);
+      }
+    }
 
     updateView(false);
 
@@ -1167,12 +1174,12 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static boolean isModelValid (@Nullable final MindMap map) {
+  private static boolean isModelValid(@Nullable final MindMap map) {
     boolean result = true;
-    if (map != null){
+    if (map != null) {
       final Topic root = map.getRoot();
-      if (root!=null){
-        result = root.getPayload()!=null;
+      if (root != null) {
+        result = root.getPayload() != null;
       }
     }
     return result;
@@ -1309,7 +1316,7 @@ public class MindMapPanel extends JPanel {
 
           if (dst != null) {
             final AbstractElement dstElement = (AbstractElement) dst.getPayload();
-            if (!MindMapUtils.isHidden(dst) && dstElement!=null) {
+            if (!MindMapUtils.isHidden(dst) && dstElement != null) {
               final AbstractElement srcElement = assertNotNull((AbstractElement) assertNotNull(src).getPayload());
               final Rectangle2D srcRect = srcElement.getBounds();
               final Rectangle2D dstRect = dstElement.getBounds();
@@ -1430,11 +1437,11 @@ public class MindMapPanel extends JPanel {
   }
 
   protected static void moveDiagram(@Nullable final MindMap model, final double deltaX, final double deltaY) {
-    if (model != null){
+    if (model != null) {
       final Topic root = model.getRoot();
-      if (root!=null){
+      if (root != null) {
         final AbstractElement element = (AbstractElement) root.getPayload();
-        if (element!=null){
+        if (element != null) {
           element.moveWholeTreeBranchCoordinates(deltaX, deltaY);
         }
       }

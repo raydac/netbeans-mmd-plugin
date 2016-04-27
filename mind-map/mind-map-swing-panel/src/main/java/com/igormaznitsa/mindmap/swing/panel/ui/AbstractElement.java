@@ -44,6 +44,8 @@ public abstract class AbstractElement {
   protected final TextBlock textBlock;
   @Nonnull
   protected final IconBlock extrasIconBlock;
+  @Nonnull
+  protected final PluginImageBlock pluginImageBlock;
 
   protected final Rectangle2D bounds = new Rectangle2D.Double();
   protected final Dimension2D blockSize = new Dimension();
@@ -66,6 +68,7 @@ public abstract class AbstractElement {
     this.model = orig.model;
     this.textBlock = new TextBlock(orig.textBlock);
     this.extrasIconBlock = new IconBlock(orig.extrasIconBlock);
+    this.pluginImageBlock = new PluginImageBlock(orig.pluginImageBlock);
     this.bounds.setRect(orig.bounds);
     this.blockSize.setSize(orig.blockSize);
     this.fillColor = orig.fillColor;
@@ -78,6 +81,7 @@ public abstract class AbstractElement {
     this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
     this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align"))); //NOI18N
     this.extrasIconBlock = new IconBlock(model);
+    this.pluginImageBlock = new PluginImageBlock(model);
     updateColorAttributeFromModel();
   }
 
@@ -111,16 +115,22 @@ public abstract class AbstractElement {
   public void updateElementBounds(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
     this.textBlock.updateSize(gfx, cfg);
     this.extrasIconBlock.updateSize(gfx, cfg);
+    this.pluginImageBlock.updateSize(gfx, cfg);
 
-    final double width;
+    final double scaledHorzBlockGap = cfg.getScale() * cfg.getHorizontalBlockGap();
+
+    double width = 0.0d;
+    if (this.pluginImageBlock.hasContent()) {
+      width += this.extrasIconBlock.getBounds().getWidth() + scaledHorzBlockGap;
+    }
+
+    width += this.textBlock.getBounds().getWidth();
+
     if (this.extrasIconBlock.hasContent()) {
-      width = this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap() + this.extrasIconBlock.getBounds().getWidth();
-    }
-    else {
-      width = this.textBlock.getBounds().getWidth();
+      width += this.extrasIconBlock.getBounds().getWidth() + scaledHorzBlockGap;
     }
 
-    this.bounds.setRect(0d, 0d, width, Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()));
+    this.bounds.setRect(0d, 0d, width, Math.max(this.pluginImageBlock.getBounds().getHeight(),Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight())));
   }
 
   public void updateBlockSize(@Nonnull final MindMapPanelConfig cfg) {
@@ -163,15 +173,11 @@ public abstract class AbstractElement {
       if (clip == null) {
         gfx.translate(this.bounds.getX(), this.bounds.getY());
         drawComponent(gfx, cfg, drawCollapsator);
+      } else if (clip.intersects(this.bounds)) {
+        gfx.translate(this.bounds.getX(), this.bounds.getY());
+        drawComponent(gfx, cfg, drawCollapsator);
       }
-      else {
-        if (clip.intersects(this.bounds)) {
-          gfx.translate(this.bounds.getX(), this.bounds.getY());
-          drawComponent(gfx, cfg, drawCollapsator);
-        }
-      }
-    }
-    finally {
+    } finally {
       gfx.dispose();
     }
   }
@@ -201,7 +207,26 @@ public abstract class AbstractElement {
 
   public abstract boolean isCollapsed();
 
-  public abstract void alignElementAndChildren(@Nonnull MindMapPanelConfig cfg, boolean leftSide, double centerX, double centerY);
+  public void alignElementAndChildren(@Nonnull MindMapPanelConfig cfg, boolean leftSide, double centerX, double centerY){
+    final double textMargin = cfg.getScale() * cfg.getTextMargins();
+    final double centralBlockLineY = textMargin + Math.max(this.pluginImageBlock.getBounds().getHeight(), Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight())) / 2;
+
+    final double scaledHorzBlockGap = cfg.getScale() * cfg.getHorizontalBlockGap();
+
+    double offset = textMargin;
+
+    if (this.pluginImageBlock.hasContent()) {
+      this.pluginImageBlock.setCoordOffset(offset, centralBlockLineY - this.pluginImageBlock.getBounds().getHeight() / 2);
+      offset += this.pluginImageBlock.getBounds().getWidth() + scaledHorzBlockGap;
+    }
+
+    this.textBlock.setCoordOffset(offset, centralBlockLineY - this.textBlock.getBounds().getHeight() / 2);
+    offset += this.textBlock.getBounds().getWidth() + scaledHorzBlockGap;
+
+    if (this.extrasIconBlock.hasContent()) {
+      this.extrasIconBlock.setCoordOffset(offset, centralBlockLineY - this.extrasIconBlock.getBounds().getHeight() / 2);
+    }
+  }
 
   @Nonnull
   public abstract Dimension2D calcBlockSize(@Nonnull MindMapPanelConfig cfg, @Nonnull Dimension2D size, boolean childrenOnly);
@@ -216,11 +241,14 @@ public abstract class AbstractElement {
       final double offY = point.getY() - this.bounds.getY();
 
       result = ElementPart.AREA;
-      if (this.textBlock.getBounds().contains(offX, offY)) {
-        result = ElementPart.TEXT;
-      }
-      else if (this.extrasIconBlock.getBounds().contains(offX, offY)) {
-        result = ElementPart.ICONS;
+      if (this.pluginImageBlock.getBounds().contains(offX, offY)) {
+        result = ElementPart.PLUGINS;
+      } else {
+        if (this.textBlock.getBounds().contains(offX, offY)) {
+          result = ElementPart.TEXT;
+        } else if (this.extrasIconBlock.getBounds().contains(offX, offY)) {
+          result = ElementPart.ICONS;
+        }
       }
     }
     return result;
@@ -233,8 +261,7 @@ public abstract class AbstractElement {
     if (this.hasChildren()) {
       if (this.isCollapsed()) {
         return this.getModel().getLast();
-      }
-      else {
+      } else {
         double py = point.getY();
         final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
 
@@ -249,12 +276,9 @@ public abstract class AbstractElement {
           if (py < childEndBlockY) {
             result = py < el.getBounds().getCenterY() ? prev : t;
             break;
-          }
-          else {
-            if (this.model.isLastChild(t)) {
-              result = t;
-              break;
-            }
+          } else if (this.model.isLastChild(t)) {
+            result = t;
+            break;
           }
 
           prev = t;
@@ -321,14 +345,15 @@ public abstract class AbstractElement {
       if (px >= calcBlockX() && py >= calcBlockY() && px < this.bounds.getX() + this.blockSize.getWidth() && py < this.bounds.getY() + this.blockSize.getHeight()) {
         if (this.isCollapsed()) {
           result = this;
-        }
-        else {
+        } else {
           AbstractElement foundChild = null;
           for (final Topic t : this.model.getChildren()) {
-            final AbstractElement theElement = (AbstractElement)t.getPayload();
-            if (theElement!=null){
+            final AbstractElement theElement = (AbstractElement) t.getPayload();
+            if (theElement != null) {
               foundChild = theElement.findTopicBlockForPoint(point);
-              if (foundChild!=null) break;
+              if (foundChild != null) {
+                break;
+              }
             }
           }
           result = foundChild == null ? this : foundChild;
@@ -344,8 +369,7 @@ public abstract class AbstractElement {
     if (point != null) {
       if (this.bounds.contains(point)) {
         result = this;
-      }
-      else {
+      } else {
         for (final Topic t : this.model.getChildren()) {
           final AbstractElement w = (AbstractElement) t.getPayload();
           result = w == null ? null : w.findForPoint(point);
@@ -372,6 +396,11 @@ public abstract class AbstractElement {
     return this.extrasIconBlock;
   }
 
+  @Nonnull
+  public PluginImageBlock getPluginImageBlock() {
+    return this.pluginImageBlock;
+  }
+  
   public boolean collapseOrExpandAllChildren(final boolean collapse) {
     boolean result = false;
 
@@ -383,12 +412,9 @@ public abstract class AbstractElement {
           el.setCollapse(true);
           result = true;
         }
-      }
-      else {
-        if (el.isCollapsed()) {
-          el.setCollapse(false);
-          result = true;
-        }
+      } else if (el.isCollapsed()) {
+        el.setCollapse(false);
+        result = true;
       }
     }
 

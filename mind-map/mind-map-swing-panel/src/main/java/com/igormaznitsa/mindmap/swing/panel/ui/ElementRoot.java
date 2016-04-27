@@ -145,17 +145,11 @@ public final class ElementRoot extends AbstractElement {
 
   @Override
   public void alignElementAndChildren(@Nonnull final MindMapPanelConfig cfg, final boolean leftSide, final double cx, final double cy) {
+    super.alignElementAndChildren(cfg, leftSide, cx, cy);
+    
     final double dx = cx;
     final double dy = cy;
     this.moveTo(dx, dy);
-
-    final double textMargin = cfg.getScale() * cfg.getTextMargins();
-    final double centralLineY = textMargin + Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()) / 2;
-
-    this.textBlock.setCoordOffset(textMargin, centralLineY - this.textBlock.getBounds().getHeight() / 2);
-    if (this.extrasIconBlock.hasContent()) {
-      this.extrasIconBlock.setCoordOffset(textMargin + this.textBlock.getBounds().getWidth() + cfg.getScale() * cfg.getHorizontalBlockGap(), centralLineY - this.extrasIconBlock.getBounds().getHeight() / 2);
-    }
 
     final double insetVert = cfg.getFirstLevelVerticalInset() * cfg.getScale();
     final double insetHorz = cfg.getFirstLevelHorizontalInset() * cfg.getScale();
