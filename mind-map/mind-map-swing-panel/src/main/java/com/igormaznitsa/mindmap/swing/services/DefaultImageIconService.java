@@ -1,0 +1,79 @@
+/*
+ * Copyright 2016 Igor Maznitsa.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.igormaznitsa.mindmap.swing.services;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.EnumMap;
+import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import org.apache.commons.io.IOUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
+
+class DefaultImageIconService implements ImageIconService {
+
+  private static final Map<ImageIconID, ImageIcon> MAP = new EnumMap<ImageIconID, ImageIcon>(ImageIconID.class);
+  
+  static {
+    MAP.put(ImageIconID.POPUP_EXPORT_FREEMIND, loadIcon("mm16.png"));
+    MAP.put(ImageIconID.POPUP_EXPORT_MARKDOWN, loadIcon("md16.png"));
+    MAP.put(ImageIconID.POPUP_EXPORT_MINDMUP, loadIcon("mup16.png"));
+    MAP.put(ImageIconID.POPUP_EXPORT_PNG, loadIcon("png16.png"));
+    MAP.put(ImageIconID.POPUP_EXPORT_TEXT, loadIcon("txt16.png"));
+    MAP.put(ImageIconID.ICON_PRINTER, loadIcon("printer16.png"));
+    MAP.put(ImageIconID.ICON_PAGE, loadIcon("page16.png"));
+    MAP.put(ImageIconID.POPUP_EXTRAS_TEXT, loadIcon("note16.png"));
+    MAP.put(ImageIconID.POPUP_EXTRAS_FILE, loadIcon("disk16.png"));
+    MAP.put(ImageIconID.POPUP_EXTRAS_JUMP, loadIcon("brick16.png"));
+    MAP.put(ImageIconID.POPUP_EXTRAS_URI, loadIcon("url16.png"));
+    MAP.put(ImageIconID.POPUP_EDIT_TEXT, loadIcon("text16.png"));
+    MAP.put(ImageIconID.POPUP_ADD_CHILD, loadIcon("add16.png"));
+    MAP.put(ImageIconID.POPUP_CLONE_TOPIC, loadIcon("draw_clone16.png"));
+    MAP.put(ImageIconID.POPUP_REMOVE_TOPIC, loadIcon("delete16.png"));
+    MAP.put(ImageIconID.POPUP_ABOUT, loadIcon("info16.png"));
+    MAP.put(ImageIconID.POPUP_OPTIONS, loadIcon("settings16.png"));
+    MAP.put(ImageIconID.POPUP_SHOWJUMPS, loadIcon("settings16.png"));
+    MAP.put(ImageIconID.POPUP_UNFOLDALL, loadIcon("toggle_expand16.png"));
+    MAP.put(ImageIconID.POPUP_COLLAPSEALL, loadIcon("toggle16.png"));
+    MAP.put(ImageIconID.POPUP_CHANGECOLOR, loadIcon("color_swatches16.png"));
+  }
+  
+  DefaultImageIconService(){
+  }
+  
+  @Nonnull
+  private static ImageIcon loadIcon(@Nonnull final String name) {
+    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
+    try {
+      return new ImageIcon(ImageIO.read(in));
+    } catch (IOException ex) {
+      throw new Error("Can't load icon " + name, ex); //NOI18N
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
+  }
+  
+  
+  @Override
+  @Nullable
+  public ImageIcon getIconForId(@Nonnull final ImageIconID id) {
+    return MAP.get(id);
+  }
+  
+}

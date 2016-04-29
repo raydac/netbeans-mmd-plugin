@@ -22,19 +22,19 @@ import java.util.ServiceLoader;
 
 import javax.annotation.Nonnull;
 
-public final class UIComponentFactoryService {
-    private static final UIComponentFactory UI_COMPONENT_FACTORY;
+public final class ImageIconServiceProvider {
+    private static final ImageIconService IMAGEICON_SERVICE ;
 
     static {
-      final ServiceLoader<UIComponentFactory> service = ServiceLoader.load(UIComponentFactory.class, UIComponentFactoryService.class.getClassLoader());
+      final ServiceLoader<ImageIconService> service = ServiceLoader.load(ImageIconService.class, ImageIconService.class.getClassLoader());
       service.reload();
-      final Iterator<UIComponentFactory> iterator = service.iterator();
-      UI_COMPONENT_FACTORY = iterator.hasNext() ? iterator.next() : new DefaultSwingUIComponentService();
-      LoggerFactory.getLogger(UIComponentFactoryService.class).info("UI Component factory : "+UI_COMPONENT_FACTORY.getClass().getName());
+      final Iterator<ImageIconService> iterator = service.iterator();
+      IMAGEICON_SERVICE = iterator.hasNext() ? iterator.next() : new DefaultImageIconService();
+      LoggerFactory.getLogger(ImageIconServiceProvider.class).info("Image Icon Service factory : "+IMAGEICON_SERVICE.getClass().getName());
     }
 
     @Nonnull
-    public static UIComponentFactory findInstance () {
-      return UI_COMPONENT_FACTORY;
+    public static ImageIconService findInstance () {
+      return IMAGEICON_SERVICE;
     }
 }

@@ -17,14 +17,11 @@ package com.igormaznitsa.mindmap.print;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import java.awt.Dimension;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
 
 public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
 
@@ -40,16 +37,6 @@ public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
   @Override
   public boolean isDarkTheme (@Nonnull final MMDPrintPanel source) {
     return Utils.isDarkTheme();
-  }
-
-  @Override
-  @Nullable
-  public Icon getIcon (@Nonnull final MMDPrintPanel source, @Nonnull final MMDPrintPanel.IconId iconId) {
-     switch(iconId){
-       case PAGE : return Icons.ICO_PAGE.getIcon();
-       case PRINTER : return Icons.ICO_PRINTER.getIcon();
-       default: LOGGER.error("Request for unsupportred icon ["+iconId.name()+']'); return null;
-     }
   }
 
   @Override

@@ -15,45 +15,33 @@
  */
 package com.igormaznitsa.mindmap.plugins;
 
-import java.awt.Image;
+import java.awt.event.ActionListener;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.JPopupMenu;
 import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
-public abstract class AbstractPlugin implements Comparable<AbstractPlugin> {
+public abstract class AbstractPopupMenuItemPlugin implements MindMapPopUpItemPlugin {
 
-  public AbstractPlugin() {
-  }
-
-  @Weight(Weight.Unit.LIGHT)
-  public void doPrepareMenu(@Nonnull final MindMapPanel panel, @Nonnull final JPopupMenu menu, @Nullable final Topic topic) {
-  }
-
-  @Weight(Weight.Unit.NORMAL)
-  public void doActivate(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic) {
-  }
-
-  @Nullable
-  @Weight(Weight.Unit.LIGHT)
-  public Image doDraw(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic){
-    return null;
+  public static final int CUSTOM_PLUGIN_START = 1000;
+  
+  protected static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
+  
+  public AbstractPopupMenuItemPlugin() {
   }
 
   @Weight(Weight.Unit.NORMAL)
+  @Override
   public void onModelSet(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic){
   }
   
-  public int getOrder(){
-    return 0;
-  }
-
   @Override
-  public int compareTo(@Nonnull final AbstractPlugin that) {
+  public int compareTo(@Nonnull final MindMapPlugin that) {
     if (this.getOrder() == that.getOrder()) return 0;
     if (this.getOrder()<that.getOrder()) return -1;
     return 1;
   }
+
 }

@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.exporters;
-
-import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
-import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
+package com.igormaznitsa.mindmap.plugins.exporters;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -25,7 +22,6 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import java.io.BufferedOutputStream;
@@ -43,10 +39,15 @@ import javax.swing.JComponent;
 import org.apache.commons.io.IOUtils;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.services.ImageIconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
-public class TextExporter extends AbstractMindMapExporter {
+public class TextExporter extends AbstractExportingPlugin {
 
   private static final int SHIFT_STEP = 1;
+  private static final ImageIcon ICO = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.POPUP_EXPORT_TEXT);
 
   private static class State {
 
@@ -229,8 +230,8 @@ public class TextExporter extends AbstractMindMapExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = selectFileForFileFilter(panel, BUNDLE.getString("TextExporter.saveDialogTitle"), ".txt", BUNDLE.getString("TextExporter.filterDescription"), BUNDLE.getString("TextExporter.approveButtonText"));
-      fileToSaveMap = checkFileAndExtension(panel, fileToSaveMap, ".txt");//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileForFileFilter(panel, Texts.getString("TextExporter.saveDialogTitle"), ".txt", Texts.getString("TextExporter.filterDescription"), Texts.getString("TextExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".txt");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
@@ -247,20 +248,25 @@ public class TextExporter extends AbstractMindMapExporter {
 
   @Override
   @Nonnull
-  public String getName() {
-    return BUNDLE.getString("TextExporter.exporterName");
+  public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return Texts.getString("TextExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference() {
-    return BUNDLE.getString("TextExporter.exporterReference");
+  public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return Texts.getString("TextExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public ImageIcon getIcon() {
-    return Icons.ICO_TXT.getIcon();
+  public ImageIcon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return ICO;
+  }
+  
+  @Override
+  public int getOrder() {
+    return 5;
   }
 
 }

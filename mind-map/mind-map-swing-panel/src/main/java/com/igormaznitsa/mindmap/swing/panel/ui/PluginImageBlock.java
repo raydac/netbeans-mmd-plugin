@@ -20,7 +20,7 @@ import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.plugins.AbstractPlugin;
+import com.igormaznitsa.mindmap.plugins.AbstractPopupMenuItemPlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 
@@ -74,8 +74,8 @@ public class PluginImageBlock {
   }
 
   @Nullable
-  public AbstractPlugin findPluginForPoint(final double x, final double y) {
-    AbstractPlugin result = null;
+  public AbstractPopupMenuItemPlugin findPluginForPoint(final double x, final double y) {
+    AbstractPopupMenuItemPlugin result = null;
     if (this.hasContent() && this.bounds.contains(x, y)) {
       final double iconWidth = this.scale * ScalableIcon.BASE_WIDTH;
       final int index = (int) ((x - this.bounds.getX()) / iconWidth);

@@ -26,22 +26,10 @@ public enum Icons {
   EXPORT("export16.png"), //NOI18N
   EXPANDALL("toggle_expand16.png"), //NOI18N
   COLLAPSEALL("toggle16.png"), //NOI18N
-  EDITTEXT("text16.png"), //NOI18N
-  ADD("add16.png"), //NOI18N
   SOURCE("source16.png"), //NOI18N
-  TOPIC("brick16.png"), //NOI18N
-  INFO("info16.png"), //NOI18N
-  NOTE("note16.png"), //NOI18N
-  URL("url16.png"), //NOI18N
-  DELETE("delete16.png"), //NOI18N
-  OPTIONS("settings16.png"), //NOI18N
-  COLORS("color_swatches16.png"), //NOI18N
   BLUEBALL("blueball16.png"), //NOI18N
   GOLDBALL("goldball16.png"), //NOI18N
-  FILE("disk16.png"), //NOI18N
-  CLONE("draw_clone16.png"), //NOI18N
-  COINS("coins_in_hand16.png"), //NOI18N
-  SHOWJUMPS("showjumps16.png"); //NOI18N
+  COINS("coins_in_hand16.png"); //NOI18N
 
   private final ImageIcon icon;
   

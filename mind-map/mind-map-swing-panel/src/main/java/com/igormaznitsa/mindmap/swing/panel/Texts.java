@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Igor Maznitsa.
+ * Copyright 2016 Igor Maznitsa.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.exporters;
+package com.igormaznitsa.mindmap.swing.panel;
 
+import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 
-public enum Exporters {
-  FREEMIND(new FreeMindExporter()),
-  MUNDMAP(new MindmupExporter()),
-  TEXT(new TextExporter()),
-  MD(new MDExporter()),
-  PNGIMAGE(new PNGImageExporter());
-  
+public final class Texts {
+  public static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
-  private final AbstractMindMapExporter exporter;
-  
-  private Exporters(@Nonnull final AbstractMindMapExporter exporter) {
-    this.exporter = exporter;
+  private Texts(){
+    
   }
 
   @Nonnull
-  public AbstractMindMapExporter getExporter(){
-    return this.exporter;
+  public static String getString(@Nonnull final String key){
+    return BUNDLE.getString(key);
   }
+  
 }

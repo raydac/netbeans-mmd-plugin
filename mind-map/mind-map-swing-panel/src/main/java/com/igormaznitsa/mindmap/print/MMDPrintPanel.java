@@ -20,8 +20,8 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
 
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.BasicStroke;
 
 import javax.swing.JButton;
@@ -48,7 +48,7 @@ import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -56,12 +56,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.swing.services.ImageIconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
 public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent {
 
   static final Color BORDER_COLOR = Color.GRAY;
   static final Stroke BORDER_STYLE = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[]{1f, 3f}, 0f);
 
+  private static final ImageIcon ICO_PRINTER = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.ICON_PRINTER);
+  private static final ImageIcon ICO_PAGE = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.ICON_PAGE);
+
+  
   public enum IconId {
     PRINTER,
     PAGE
@@ -73,9 +79,6 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     boolean isDarkTheme (@Nonnull MMDPrintPanel source);
 
-    @Nonnull
-    Icon getIcon (@Nonnull MMDPrintPanel source, @Nonnull IconId iconId);
-
     void onPrintTaskStarted (@Nonnull MMDPrintPanel source);
     
     @Nonnull
@@ -86,7 +89,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDPrintPanel.class);
-  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryService.findInstance();
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   
   private PageFormat pageFormat;
   private final Pages previewContainer;
@@ -114,7 +117,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.setFloatable(false);
     final JButton buttonPrint = UI_COMPO_FACTORY.makeButton();
     buttonPrint.setText(BUNDLE.getString("MMDPrintPanel.PrintPages"));
-    buttonPrint.setIcon(this.theAdaptor.getIcon(this, IconId.PRINTER));
+    buttonPrint.setIcon(ICO_PRINTER);
     
     final MMDPrintPanel theInstance = this;
 
@@ -195,7 +198,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     final JButton buttonPrintOptions = UI_COMPO_FACTORY.makeButton();
     buttonPrintOptions.setText(BUNDLE.getString("MMDPrintPanel.PageSetup"));
-    buttonPrintOptions.setIcon(this.theAdaptor.getIcon(this, IconId.PAGE));
+    buttonPrintOptions.setIcon(ICO_PAGE);
     buttonPrintOptions.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed (@Nonnull final ActionEvent e) {

@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.exporters;
-
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
-import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
+package com.igormaznitsa.mindmap.plugins.exporters;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -28,7 +24,6 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import java.io.BufferedOutputStream;
@@ -45,8 +40,15 @@ import javax.swing.JComponent;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.services.ImageIconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
-public class MDExporter extends AbstractMindMapExporter {
+public class MDExporter extends AbstractExportingPlugin {
 
   private static final int STARTING_INDEX_FOR_NUMERATION = 5;
 
@@ -87,6 +89,9 @@ public class MDExporter extends AbstractMindMapExporter {
 
   }
 
+  private static final ImageIcon ICO = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.POPUP_EXPORT_MARKDOWN);
+
+  
   @Nonnull
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
@@ -247,8 +252,8 @@ public class MDExporter extends AbstractMindMapExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = selectFileForFileFilter(panel, BUNDLE.getString("MDExporter.saveDialogTitle"), ".MD", BUNDLE.getString("MDExporter.filterDescription"), BUNDLE.getString("MDExporter.approveButtonText"));
-      fileToSaveMap = checkFileAndExtension(panel, fileToSaveMap, ".MD");//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileForFileFilter(panel, Texts.getString("MDExporter.saveDialogTitle"), ".MD", Texts.getString("MDExporter.filterDescription"), Texts.getString("MDExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".MD");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
@@ -265,20 +270,25 @@ public class MDExporter extends AbstractMindMapExporter {
 
   @Override
   @Nonnull
-  public String getName() {
-    return BUNDLE.getString("MDExporter.exporterName");
+  public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return Texts.getString("MDExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference() {
-    return BUNDLE.getString("MDExporter.exporterReference");
+  public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return Texts.getString("MDExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public ImageIcon getIcon() {
-    return Icons.ICO_MARKDOWN.getIcon();
+  public ImageIcon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return ICO;
   }
 
+  @Override
+  public int getOrder() {
+    return 2;
+  }
+  
 }

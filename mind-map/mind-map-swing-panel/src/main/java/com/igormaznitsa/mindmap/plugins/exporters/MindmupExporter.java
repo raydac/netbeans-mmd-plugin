@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.exporters;
+package com.igormaznitsa.mindmap.plugins.exporters;
 
 import com.grack.nanojson.JsonStringWriter;
 import com.grack.nanojson.JsonWriter;
-
-import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.BUNDLE;
-import static com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter.selectFileForFileFilter;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -30,7 +27,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
-import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import java.io.BufferedOutputStream;
@@ -52,8 +48,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.services.ImageIconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
-public class MindmupExporter extends AbstractMindMapExporter {
+public class MindmupExporter extends AbstractExportingPlugin {
 
   private static int idCounter = 1;
 
@@ -158,6 +158,8 @@ public class MindmupExporter extends AbstractMindMapExporter {
     }
   }
 
+  private static final ImageIcon ICO = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.POPUP_EXPORT_MINDMUP);
+  
   @Nullable
   private static String getTopicUid (@Nonnull final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
@@ -182,7 +184,7 @@ public class MindmupExporter extends AbstractMindMapExporter {
     state.end();
 
     state.startObj("attr"); //NOI18N
-    state.startObj("style").set("background", Utils.color2html(getBackgroundColor(cfg, topic), false)).set("color", Utils.color2html(getTextColor(cfg, topic), false)).end(); //NOI18N
+    state.startObj("style").set("background", Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false)).set("color", Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false)).end(); //NOI18N
 
     final String attachment = makeHtmlFromExtras(topic);
     if (attachment != null) {
@@ -272,8 +274,8 @@ public class MindmupExporter extends AbstractMindMapExporter {
     if (root != null) {
     state.startObj("attr"); //NOI18N
     state.startObj("style")
-        .set("background", Utils.color2html(getBackgroundColor(cfg, root), false))//NOI18N
-        .set("color", Utils.color2html(getTextColor(cfg, root), false))//NOI18N
+        .set("background", Utils.color2html(MindMapUtils.getBackgroundColor(cfg, root), false))//NOI18N
+        .set("color", Utils.color2html(MindMapUtils.getTextColor(cfg, root), false))//NOI18N
         .end(); //NOI18N
     }
 
@@ -321,8 +323,8 @@ public class MindmupExporter extends AbstractMindMapExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = selectFileForFileFilter(panel, BUNDLE.getString("MindmupExporter.saveDialogTitle"), ".mup", BUNDLE.getString("MindmupExporter.filterDescription"), BUNDLE.getString("MindmupExporter.approveButtonText"));
-      fileToSaveMap = checkFileAndExtension(panel, fileToSaveMap, ".mup");//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileForFileFilter(panel, Texts.getString("MindmupExporter.saveDialogTitle"), ".mup", Texts.getString("MindmupExporter.filterDescription"), Texts.getString("MindmupExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".mup");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
@@ -339,20 +341,25 @@ public class MindmupExporter extends AbstractMindMapExporter {
 
   @Override
   @Nonnull
-  public String getName () {
-    return BUNDLE.getString("MindmupExporter.exporterName");
+  public String getName (@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return Texts.getString("MindmupExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference () {
-    return BUNDLE.getString("MindmupExporter.exporterReference");
+  public String getReference (@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return Texts.getString("MindmupExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public ImageIcon getIcon () {
-    return Icons.ICO_MINDMUP.getIcon();
+  public ImageIcon getIcon (@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return ICO;
+  }
+
+  @Override
+  public int getOrder() {
+    return 3;
   }
 
 }

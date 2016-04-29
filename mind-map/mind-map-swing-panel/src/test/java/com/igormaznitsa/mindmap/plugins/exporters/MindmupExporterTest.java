@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.exporters;
+package com.igormaznitsa.mindmap.plugins.exporters;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class MindmupExporterTest extends AbstractExporterTest<MindmupExporter>{
+public class MindmupExporterTest extends AbstractStandardExporterTest<MindmupExporter>{
 
   @Test
   public void testNoExceptionsAndResultPresented() throws Exception {

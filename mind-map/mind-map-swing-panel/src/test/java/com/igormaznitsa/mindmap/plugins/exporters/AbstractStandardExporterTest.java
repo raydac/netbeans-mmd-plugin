@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.exporters;
+package com.igormaznitsa.mindmap.plugins.exporters;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 
 import java.io.ByteArrayOutputStream;
-
 import javax.swing.JComponent;
-
 import static org.mockito.Mockito.*;
-
 import java.io.StringReader;
-
 import org.junit.Test;
 
-public abstract class AbstractExporterTest <T extends AbstractMindMapExporter>{
+public abstract class AbstractStandardExporterTest <T extends AbstractExportingPlugin>{
   
   public byte [] export(final MindMap map, final MindMapPanelConfig nullableConfig) throws Exception {
     final T exporter = generateExporterInstance();

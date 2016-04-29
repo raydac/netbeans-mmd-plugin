@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.exporters;
+package com.igormaznitsa.mindmap.plugins.exporters;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -27,7 +26,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
-import com.igormaznitsa.mindmap.swing.panel.utils.Icons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import java.awt.Color;
@@ -44,12 +42,18 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.services.ImageIconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
-public class FreeMindExporter extends AbstractMindMapExporter {
+public class FreeMindExporter extends AbstractExportingPlugin {
 
   private static class State {
 
@@ -88,6 +92,8 @@ public class FreeMindExporter extends AbstractMindMapExporter {
 
   }
 
+  private static final ImageIcon ICO = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.POPUP_EXPORT_FREEMIND);
+  
   @Nonnull
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
@@ -119,9 +125,9 @@ public class FreeMindExporter extends AbstractMindMapExporter {
             .append("\" MODIFIED=\"") //NOI18N
             .append(System.currentTimeMillis()) //NOI18N
             .append("\" COLOR=\"") //NOI18N
-            .append(assertNotNull(Utils.color2html(getTextColor(cfg, topic),false))) //NOI18N
+            .append(assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, topic),false))) //NOI18N
             .append("\" BACKGROUND_COLOR=\"") //NOI18N
-            .append(assertNotNull(Utils.color2html(getBackgroundColor(cfg, topic),false))) //NOI18N
+            .append(assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic),false))) //NOI18N
             .append("\" ") //NOI18N
             .append(position.isEmpty() ? " " : String.format("POSITION=\"%s\"", position)) //NOI18N
             .append(" ID=\"") //NOI18N
@@ -227,8 +233,8 @@ public class FreeMindExporter extends AbstractMindMapExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = selectFileForFileFilter(panel, BUNDLE.getString("FreeMindExporter.saveDialogTitle"), ".mm", BUNDLE.getString("FreeMindExporter.filterDescription"), BUNDLE.getString("FreeMindExporter.approveButtonText"));
-      fileToSaveMap = checkFileAndExtension(panel, fileToSaveMap, ".mm");//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileForFileFilter(panel, Texts.getString("FreeMindExporter.saveDialogTitle"), ".mm", Texts.getString("FreeMindExporter.filterDescription"), Texts.getString("FreeMindExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".mm");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
@@ -254,20 +260,24 @@ public class FreeMindExporter extends AbstractMindMapExporter {
 
   @Override
   @Nonnull
-  public String getName() {
-    return BUNDLE.getString("FreeMindExporter.exporterName");
+  public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return Texts.getString("FreeMindExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference() {
-    return BUNDLE.getString("FreeMindExporter.exporterReference");
+  public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return Texts.getString("FreeMindExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public ImageIcon getIcon() {
-    return Icons.ICO_FREEMIND.getIcon();
+  public ImageIcon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    return ICO;
   }
 
+  @Override
+  public int getOrder() {
+    return 1;
+  }
 }

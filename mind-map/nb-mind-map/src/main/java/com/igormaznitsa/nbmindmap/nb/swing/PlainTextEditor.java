@@ -18,7 +18,7 @@ package com.igormaznitsa.nbmindmap.nb.swing;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryService;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -53,7 +53,7 @@ import org.openide.text.NbDocument;
 
 public final class PlainTextEditor extends javax.swing.JPanel implements CaretListener {
 
-  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryService.findInstance();
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   
   private enum Wrapping {
 

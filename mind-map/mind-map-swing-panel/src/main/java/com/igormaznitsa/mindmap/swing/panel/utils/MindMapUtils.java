@@ -20,12 +20,21 @@ import com.igormaznitsa.mindmap.model.Topic;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 
+import java.awt.Color;
+import java.io.File;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.filechooser.FileFilter;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.Texts;
 
-public enum MindMapUtils {
-  ;
-  
+public final class MindMapUtils {
+
+  private MindMapUtils() {
+  }
+
   public static boolean isHidden(@Nullable final Topic topic) {
     if (topic == null) {
       return true;
@@ -115,4 +124,100 @@ public enum MindMapUtils {
     destination.setAttribute(ATTR_TEXT_COLOR.getText(), source.getAttribute(ATTR_TEXT_COLOR.getText()));
   }
 
+  @Nonnull
+  public static Color getBackgroundColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
+    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_FILL_COLOR.getText()), false);
+    final Color result;
+    if (extracted == null) {
+      switch (topic.getTopicLevel()) {
+        case 0: {
+          result = cfg.getRootBackgroundColor();
+        }
+        break;
+        case 1: {
+          result = cfg.getFirstLevelBackgroundColor();
+        }
+        break;
+        default: {
+          result = cfg.getOtherLevelBackgroundColor();
+        }
+        break;
+      }
+    } else {
+      result = extracted;
+    }
+    return result;
+  }
+
+  @Nonnull
+  public static Color getTextColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
+    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_TEXT_COLOR.getText()), false);
+    final Color result;
+    if (extracted == null) {
+      switch (topic.getTopicLevel()) {
+        case 0: {
+          result = cfg.getRootTextColor();
+        }
+        break;
+        case 1: {
+          result = cfg.getFirstLevelTextColor();
+        }
+        break;
+        default: {
+          result = cfg.getOtherLevelTextColor();
+        }
+        break;
+      }
+    } else {
+      result = extracted;
+    }
+    return result;
+  }
+
+  @Nonnull
+  public static Color getBorderColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
+    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_BORDER_COLOR.getText()), false);
+    return extracted == null ? cfg.getElementBorderColor() : extracted;
+  }
+
+  @Nullable
+  public static File selectFileForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String title, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
+    final File home = new File(System.getProperty("user.home"));//NOI18N
+
+    final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
+
+    return panel.getController().getDialogProvider(panel).msgSaveFileDialog("user-dir", title, home, true, new FileFilter() { //NOI18N
+      @Override
+      public boolean accept(@Nonnull final File f) {
+        return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
+      }
+
+      @Override
+      @Nonnull
+      public String getDescription() {
+        return filterDescription;
+      }
+    }, approveButtonText);
+  }
+
+  @Nullable
+  public static File checkFileAndExtension(@Nonnull final MindMapPanel panel, @Nullable final File file, @Nonnull final String dottedExtension) {
+    if (file == null) {
+      return null;
+    }
+    if (file.isDirectory()) {
+      panel.getController().getDialogProvider(panel).msgError(String.format(Texts.getString("AbstractMindMapExporter.msgErrorItIsDirectory"), file.getAbsolutePath()));
+      return null;
+    }
+    if (file.isFile()) {
+      if (!panel.getController().getDialogProvider(panel).msgConfirmOkCancel(Texts.getString("AbstractMindMapExporter.titleSaveAs"), String.format(Texts.getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"), file.getAbsolutePath()))) {
+        return null;
+      }
+    } else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
+      if (panel.getController().getDialogProvider(panel).msgConfirmYesNo(Texts.getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(Texts.getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
+        return new File(file.getParent(), file.getName() + dottedExtension);
+      }
+    }
+    return file;
+  }
 }
