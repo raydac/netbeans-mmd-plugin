@@ -27,10 +27,7 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class ExtraNotePlugin extends AbstractFocusedTopicActionPlugin {
@@ -58,10 +55,6 @@ public class ExtraNotePlugin extends AbstractFocusedTopicActionPlugin {
 
   @Override
   protected void doActionForTopic(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    if (actionTopic != null) {
-      panel.startEdit(assertNotNull((AbstractElement) assertNotNull(actionTopic.getPayload())));
-      panel.requestFocus();
-    }
   }
 
   @Override

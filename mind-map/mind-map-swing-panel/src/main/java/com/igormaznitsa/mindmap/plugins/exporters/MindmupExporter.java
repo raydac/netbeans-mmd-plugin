@@ -359,7 +359,7 @@ public class MindmupExporter extends AbstractExportingPlugin {
 
   @Override
   public int getOrder() {
-    return 3;
+    return 2;
   }
 
 }

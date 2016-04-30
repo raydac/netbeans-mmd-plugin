@@ -288,7 +288,7 @@ public class MDExporter extends AbstractExportingPlugin {
 
   @Override
   public int getOrder() {
-    return 2;
+    return 3;
   }
   
 }

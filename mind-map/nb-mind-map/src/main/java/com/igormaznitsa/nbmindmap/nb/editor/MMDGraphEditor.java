@@ -117,6 +117,7 @@ import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.plugins.focused.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 
 @MultiViewElement.Registration(
@@ -954,6 +955,18 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return config;
   }
 
+  private static final List<JMenuItem> putAllItemsAsSection(final JPopupMenu menu, final List<JMenuItem> items) {
+    if (!items.isEmpty()) {
+      if (menu.getComponentCount() > 0) {
+        menu.add(UI_COMPO_FACTORY.makeMenuSeparator());
+      }
+      for (final JMenuItem i : items) {
+        menu.add(i);
+      }
+    }
+    return items;
+  }
+
   @Override
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
     final List<JMenuItem> tmpList = new ArrayList<JMenuItem>();
@@ -965,13 +978,26 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     final boolean isModelNotEmpty = this.mindMapPanel.getModel().getRoot() != null;
 
-    for(final MindMapPopUpItemPlugin p : pluginMenuItems) {
+    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
       final JMenuItem menuItem = p.getPluginMenuItem(source, this, PopUpSection.MAIN, elementTopic, selectedTopics, null);
-      if (menuItem!=null) result.add(menuItem);
+      if (menuItem != null) {
+        tmpList.add(menuItem);
+      }
     }
+
+    putAllItemsAsSection(result, tmpList).clear();
 
     for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
       final JMenuItem menuItem;
+      if (p instanceof ExtraNotePlugin) {
+        menuItem = p.getPluginMenuItem(source, this, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
+          @Override
+          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+            editTextForTopic(topic);
+            panel.requestFocus();
+          }
+        });
+      } else
       if (p instanceof ExtraFilePlugin) {
         menuItem = p.getPluginMenuItem(source, this, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
           @Override
@@ -1004,44 +1030,28 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       }
     }
 
-    if (!tmpList.isEmpty()){
-      if (result.getComponentCount()>0) result.add(UI_COMPO_FACTORY.makeMenuSeparator());
-      for(final JMenuItem item : tmpList) result.add(item);
-      tmpList.clear();
-    }
-    
-    for(final MindMapPopUpItemPlugin p : pluginMenuItems) {
-      
+    putAllItemsAsSection(result, tmpList).clear();
+
+    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
+
       final JMenuItem item;
-      if (p instanceof ChangeColorPlugin){
+      if (p instanceof ChangeColorPlugin) {
         item = p.getPluginMenuItem(source, this, PopUpSection.TOOLS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
           @Override
           public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
-            processColorDialogForTopics(source, selectedTopics.length>0 ? selectedTopics : new Topic[]{topic});
+            processColorDialogForTopics(source, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
           }
-        }); 
-      }else{
-          item = p.getPluginMenuItem(source, this, PopUpSection.TOOLS, elementTopic, selectedTopics, null);
+        });
+      } else {
+        item = p.getPluginMenuItem(source, this, PopUpSection.TOOLS, elementTopic, selectedTopics, null);
       }
-      if (item!=null){
+      if (item != null) {
         tmpList.add(item);
       }
     }
-    
-    if (!tmpList.isEmpty()){
-      if (result.getComponentCount() > 0) {
-        result.add(UI_COMPO_FACTORY.makeMenuSeparator());
-      }
-      for(final JMenuItem i : tmpList) {
-        result.add(i);
-      }
-      tmpList.clear();
-    }
-        
-    
-    if (result.getComponentCount() > 0) {
-      result.add(UI_COMPO_FACTORY.makeMenuSeparator());
-    }
+
+    putAllItemsAsSection(result, tmpList).clear();
+
     final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
     exportMenu.setIcon(Icons.EXPORT.getIcon());
 
@@ -1051,14 +1061,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         exportMenu.add(exporterMenuItem);
       }
     }
-
-    result.add(exportMenu);
+    tmpList.add(exportMenu);
+    putAllItemsAsSection(result, tmpList).clear();
 
     exportMenu.setEnabled(isModelNotEmpty);
-
-    if (result.getComponentCount() > 0) {
-      result.add(UI_COMPO_FACTORY.makeMenuSeparator());
-    }
 
     for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
       final JMenuItem item;
@@ -1069,8 +1075,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             NbUtils.plainMessageOk(BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
           }
         });
-      } else 
-      if (p instanceof OptionsPlugin) {
+      } else if (p instanceof OptionsPlugin) {
         item = p.getPluginMenuItem(source, this, PopUpSection.MISC, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
           @Override
           public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
@@ -1080,11 +1085,13 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       } else {
         item = p.getPluginMenuItem(source, this, PopUpSection.MISC, elementTopic, selectedTopics, null);
       }
-      
+
       if (item != null) {
-        result.add(item);
+        tmpList.add(item);
       }
     }
+
+    putAllItemsAsSection(result, tmpList);
 
     return result;
   }

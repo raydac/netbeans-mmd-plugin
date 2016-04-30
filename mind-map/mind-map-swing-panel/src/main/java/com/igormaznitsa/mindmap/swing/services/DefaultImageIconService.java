@@ -48,7 +48,7 @@ class DefaultImageIconService implements ImageIconService {
     MAP.put(ImageIconID.POPUP_REMOVE_TOPIC, loadIcon("delete16.png"));
     MAP.put(ImageIconID.POPUP_ABOUT, loadIcon("info16.png"));
     MAP.put(ImageIconID.POPUP_OPTIONS, loadIcon("settings16.png"));
-    MAP.put(ImageIconID.POPUP_SHOWJUMPS, loadIcon("settings16.png"));
+    MAP.put(ImageIconID.POPUP_SHOWJUMPS, loadIcon("showjumps16.png"));
     MAP.put(ImageIconID.POPUP_UNFOLDALL, loadIcon("toggle_expand16.png"));
     MAP.put(ImageIconID.POPUP_COLLAPSEALL, loadIcon("toggle16.png"));
     MAP.put(ImageIconID.POPUP_CHANGECOLOR, loadIcon("color_swatches16.png"));
