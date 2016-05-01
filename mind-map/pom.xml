@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.igormaznitsa</groupId>
   <artifactId>mind-map</artifactId>
-  <version>1.1.5-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   
   <inceptionYear>2015</inceptionYear>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <main.version>1.1.5-SNAPSHOT</main.version>
+    <main.version>1.2.0-SNAPSHOT</main.version>
     <meta.version>1.1.2</meta.version>
   </properties>
 
