@@ -23,7 +23,7 @@ public class DefaultImageIconServiceTest {
   @Test
   public void testAllIcons() {
     final ImageIconService service = new DefaultImageIconService();
-    for(final ImageIconID i : ImageIconID.values()){
+    for(final IconID i : IconID.values()){
       assertNotNull(i.name(),service.getIconForId(i));
     }
   }

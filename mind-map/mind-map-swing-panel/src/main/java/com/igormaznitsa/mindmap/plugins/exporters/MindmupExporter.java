@@ -41,6 +41,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
@@ -50,7 +51,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
-import com.igormaznitsa.mindmap.swing.services.ImageIconID;
+import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
 public class MindmupExporter extends AbstractExportingPlugin {
@@ -158,7 +159,7 @@ public class MindmupExporter extends AbstractExportingPlugin {
     }
   }
 
-  private static final ImageIcon ICO = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.POPUP_EXPORT_MINDMUP);
+  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
   
   @Nullable
   private static String getTopicUid (@Nonnull final Topic topic) {
@@ -353,7 +354,7 @@ public class MindmupExporter extends AbstractExportingPlugin {
 
   @Override
   @Nonnull
-  public ImageIcon getIcon (@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public Icon getIcon (@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
     return ICO;
   }
 

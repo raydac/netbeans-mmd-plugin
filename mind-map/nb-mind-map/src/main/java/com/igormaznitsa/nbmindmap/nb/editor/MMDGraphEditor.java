@@ -55,8 +55,6 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Rectangle2D;
@@ -105,8 +103,6 @@ import javax.annotation.Nullable;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemPlugin;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.util.ArrayList;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
@@ -115,10 +111,11 @@ import com.igormaznitsa.mindmap.plugins.focused.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.focused.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.plugins.focused.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconService;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
 @MultiViewElement.Registration(
     displayName = "#MMDGraphEditor.displayName",
@@ -136,6 +133,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDGraphEditor.class);
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
+  private static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
@@ -1053,7 +1051,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     putAllItemsAsSection(result, tmpList).clear();
 
     final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
-    exportMenu.setIcon(Icons.EXPORT.getIcon());
+    exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
 
     for (final MindMapPopUpItemPlugin plugin : pluginMenuItems) {
       final JMenuItem exporterMenuItem = plugin.getPluginMenuItem(source, this, PopUpSection.EXPORT, elementTopic, selectedTopics, null);

@@ -48,7 +48,7 @@ import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -56,7 +56,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.swing.services.ImageIconID;
+import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
 public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent {
@@ -64,8 +64,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   static final Color BORDER_COLOR = Color.GRAY;
   static final Stroke BORDER_STYLE = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[]{1f, 3f}, 0f);
 
-  private static final ImageIcon ICO_PRINTER = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.ICON_PRINTER);
-  private static final ImageIcon ICO_PAGE = ImageIconServiceProvider.findInstance().getIconForId(ImageIconID.ICON_PAGE);
+  private static final Icon ICO_PRINTER = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PRINTER);
+  private static final Icon ICO_PAGE = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PAGE);
 
   
   public enum IconId {

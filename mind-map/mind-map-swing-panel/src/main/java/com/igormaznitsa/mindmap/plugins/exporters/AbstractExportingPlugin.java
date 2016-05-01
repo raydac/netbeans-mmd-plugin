@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import com.igormaznitsa.meta.annotation.MayContainNull;
@@ -93,6 +93,6 @@ public abstract class AbstractExportingPlugin extends AbstractPopupMenuItemPlugi
   public abstract String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
 
   @Nonnull
-  public abstract ImageIcon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
+  public abstract Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
 
 }

@@ -49,17 +49,6 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
     return IdeaUtils.isDarkTheme();
   }
 
-  @Override public Icon getIcon(final MMDPrintPanel source, final MMDPrintPanel.IconId iconId) {
-    switch (iconId) {
-    case PAGE:
-      return AllIcons.PopUp.PAGE;
-    case PRINTER:
-      return AllIcons.PopUp.PRINTER;
-    default:
-      return null;
-    }
-  }
-
   @Override public void onPrintTaskStarted(final MMDPrintPanel source) {
     SwingUtilities.invokeLater(new Runnable() {
       @Override public void run() {

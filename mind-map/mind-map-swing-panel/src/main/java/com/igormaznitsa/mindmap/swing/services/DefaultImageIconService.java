@@ -22,43 +22,45 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import org.apache.commons.io.IOUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 
-class DefaultImageIconService implements ImageIconService {
+public class DefaultImageIconService implements ImageIconService {
 
-  private static final Map<ImageIconID, ImageIcon> MAP = new EnumMap<ImageIconID, ImageIcon>(ImageIconID.class);
+  private static final Map<IconID, Icon> MAP = new EnumMap<IconID, Icon>(IconID.class);
   
   static {
-    MAP.put(ImageIconID.POPUP_EXPORT_FREEMIND, loadIcon("mm16.png"));
-    MAP.put(ImageIconID.POPUP_EXPORT_MARKDOWN, loadIcon("md16.png"));
-    MAP.put(ImageIconID.POPUP_EXPORT_MINDMUP, loadIcon("mup16.png"));
-    MAP.put(ImageIconID.POPUP_EXPORT_PNG, loadIcon("png16.png"));
-    MAP.put(ImageIconID.POPUP_EXPORT_TEXT, loadIcon("txt16.png"));
-    MAP.put(ImageIconID.ICON_PRINTER, loadIcon("printer16.png"));
-    MAP.put(ImageIconID.ICON_PAGE, loadIcon("page16.png"));
-    MAP.put(ImageIconID.POPUP_EXTRAS_TEXT, loadIcon("note16.png"));
-    MAP.put(ImageIconID.POPUP_EXTRAS_FILE, loadIcon("disk16.png"));
-    MAP.put(ImageIconID.POPUP_EXTRAS_JUMP, loadIcon("brick16.png"));
-    MAP.put(ImageIconID.POPUP_EXTRAS_URI, loadIcon("url16.png"));
-    MAP.put(ImageIconID.POPUP_EDIT_TEXT, loadIcon("text16.png"));
-    MAP.put(ImageIconID.POPUP_ADD_CHILD, loadIcon("add16.png"));
-    MAP.put(ImageIconID.POPUP_CLONE_TOPIC, loadIcon("draw_clone16.png"));
-    MAP.put(ImageIconID.POPUP_REMOVE_TOPIC, loadIcon("delete16.png"));
-    MAP.put(ImageIconID.POPUP_ABOUT, loadIcon("info16.png"));
-    MAP.put(ImageIconID.POPUP_OPTIONS, loadIcon("settings16.png"));
-    MAP.put(ImageIconID.POPUP_SHOWJUMPS, loadIcon("showjumps16.png"));
-    MAP.put(ImageIconID.POPUP_UNFOLDALL, loadIcon("toggle_expand16.png"));
-    MAP.put(ImageIconID.POPUP_COLLAPSEALL, loadIcon("toggle16.png"));
-    MAP.put(ImageIconID.POPUP_CHANGECOLOR, loadIcon("color_swatches16.png"));
+    MAP.put(IconID.POPUP_EXPORT, loadIcon("export16.png"));
+    MAP.put(IconID.POPUP_EXPORT_FREEMIND, loadIcon("mm16.png"));
+    MAP.put(IconID.POPUP_EXPORT_MARKDOWN, loadIcon("md16.png"));
+    MAP.put(IconID.POPUP_EXPORT_MINDMUP, loadIcon("mup16.png"));
+    MAP.put(IconID.POPUP_EXPORT_PNG, loadIcon("png16.png"));
+    MAP.put(IconID.POPUP_EXPORT_TEXT, loadIcon("txt16.png"));
+    MAP.put(IconID.ICON_PRINTER, loadIcon("printer16.png"));
+    MAP.put(IconID.ICON_PAGE, loadIcon("page16.png"));
+    MAP.put(IconID.POPUP_EXTRAS_TEXT, loadIcon("note16.png"));
+    MAP.put(IconID.POPUP_EXTRAS_FILE, loadIcon("disk16.png"));
+    MAP.put(IconID.POPUP_EXTRAS_JUMP, loadIcon("brick16.png"));
+    MAP.put(IconID.POPUP_EXTRAS_URI, loadIcon("url16.png"));
+    MAP.put(IconID.POPUP_EDIT_TEXT, loadIcon("text16.png"));
+    MAP.put(IconID.POPUP_ADD_CHILD, loadIcon("add16.png"));
+    MAP.put(IconID.POPUP_CLONE_TOPIC, loadIcon("draw_clone16.png"));
+    MAP.put(IconID.POPUP_REMOVE_TOPIC, loadIcon("delete16.png"));
+    MAP.put(IconID.POPUP_ABOUT, loadIcon("info16.png"));
+    MAP.put(IconID.POPUP_OPTIONS, loadIcon("settings16.png"));
+    MAP.put(IconID.POPUP_SHOWJUMPS, loadIcon("showjumps16.png"));
+    MAP.put(IconID.POPUP_UNFOLDALL, loadIcon("toggle_expand16.png"));
+    MAP.put(IconID.POPUP_COLLAPSEALL, loadIcon("toggle16.png"));
+    MAP.put(IconID.POPUP_CHANGECOLOR, loadIcon("color_swatches16.png"));
   }
   
-  DefaultImageIconService(){
+  public DefaultImageIconService(){
   }
   
   @Nonnull
-  private static ImageIcon loadIcon(@Nonnull final String name) {
+  private static Icon loadIcon(@Nonnull final String name) {
     final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
     try {
       return new ImageIcon(ImageIO.read(in));
@@ -72,7 +74,7 @@ class DefaultImageIconService implements ImageIconService {
   
   @Override
   @Nullable
-  public ImageIcon getIconForId(@Nonnull final ImageIconID id) {
+  public Icon getIconForId(@Nonnull final IconID id) {
     return MAP.get(id);
   }
   

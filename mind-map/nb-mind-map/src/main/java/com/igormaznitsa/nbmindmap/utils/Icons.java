@@ -23,7 +23,6 @@ import org.apache.commons.io.IOUtils;
 
 public enum Icons {
   DOCUMENT("document16.png"), //NOI18N
-  EXPORT("export16.png"), //NOI18N
   EXPANDALL("toggle_expand16.png"), //NOI18N
   COLLAPSEALL("toggle16.png"), //NOI18N
   SOURCE("source16.png"), //NOI18N

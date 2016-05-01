@@ -26,8 +26,7 @@ import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
-import com.igormaznitsa.mindmap.exporters.AbstractMindMapExporter;
-import com.igormaznitsa.mindmap.exporters.Exporters;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -37,6 +36,17 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
+import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemPlugin;
+import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.plugins.focused.ExtraFilePlugin;
+import com.igormaznitsa.mindmap.plugins.focused.ExtraJumpPlugin;
+import com.igormaznitsa.mindmap.plugins.focused.ExtraNotePlugin;
+import com.igormaznitsa.mindmap.plugins.focused.ExtraURIPlugin;
+import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
+import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
+import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapConfigListener;
@@ -47,23 +57,25 @@ import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconService;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.JBMenuItem;
-import com.intellij.openapi.ui.JBPopupMenu;
-import com.intellij.openapi.ui.MessageType;
 
 import javax.annotation.Nonnull;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
+import javax.annotation.Nullable;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -71,6 +83,8 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanelControllerImpl.class);
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
+  private static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
 
   private final MindMapDocumentEditor editor;
   private final MindMapDialogProvider dialogProvider;
@@ -131,278 +145,155 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     return MindMapApplicationSettings.findInstance().getConfig();
   }
 
+  private static final List<JMenuItem> putAllItemsAsSection(final JPopupMenu menu, final List<JMenuItem> items) {
+    if (!items.isEmpty()) {
+      if (menu.getComponentCount() > 0) {
+        menu.add(UI_COMPO_FACTORY.makeMenuSeparator());
+      }
+      for (final JMenuItem i : items) {
+        menu.add(i);
+      }
+    }
+    return items;
+  }
+
   @Override
   public JPopupMenu makePopUpForMindMapPanel(final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
-    final JBPopupMenu result = new JBPopupMenu();
+    final List<JMenuItem> tmpList = new ArrayList<JMenuItem>();
 
-    final boolean isNonEmptyMap = this.editor.getMindMapPanel().getModel().getRoot() != null;
-    
-    if (element != null) {
-      final JBMenuItem editText = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miEditText"), AllIcons.PopUp.EDITTEXT);
-      editText.addActionListener(new ActionListener() {
+    final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
+    final Topic elementTopic = element == null ? null : element.getModel();
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          editor.getMindMapPanel().startEdit(element);
-        }
-      });
+    final Topic[] selectedTopics = source.getSelectedTopics();
+    final List<MindMapPopUpItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(MindMapPopUpItemPlugin.class);
 
-      result.add(editText);
+    final boolean isModelNotEmpty = source.getModel().getRoot() != null;
 
-      final JBMenuItem addChild = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miAddChild"), AllIcons.PopUp.ADD);
-      addChild.addActionListener(new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          editor.getMindMapPanel().makeNewChildAndStartEdit(element.getModel(), null);
-        }
-      });
-
-      result.add(addChild);
+    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
+      final JMenuItem menuItem = p.getPluginMenuItem(source, dialogProvider, PopUpSection.MAIN, elementTopic, selectedTopics, null);
+      if (menuItem != null) {
+        tmpList.add(menuItem);
+      }
     }
 
-    if (element != null || this.editor.getMindMapPanel().hasSelectedTopics()) {
-      final JBMenuItem deleteItem = new JBMenuItem(this.editor.getMindMapPanel().hasSelectedTopics() ?
-        BUNDLE.getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") :
-        BUNDLE.getString("MMDGraphEditor.makePopUp.miRemoveTheTopic"), AllIcons.PopUp.DELETE);
-      deleteItem.addActionListener(new ActionListener() {
+    putAllItemsAsSection(result, tmpList).clear();
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          if (editor.getMindMapPanel().hasSelectedTopics()) {
-            editor.getMindMapPanel().deleteSelectedTopics();
-          }
-          else {
-            editor.getMindMapPanel().deleteTopics(element.getModel());
-          }
-        }
-      });
-
-      result.add(deleteItem);
-    }
-
-    if (element != null || this.editor.getMindMapPanel().hasOnlyTopicSelected()) {
-      final Topic theTopic =
-        this.editor.getMindMapPanel().getFirstSelected() == null ? (element != null ? element.getModel() : null) : this.editor.getMindMapPanel().getFirstSelected();
-      if (theTopic != null && theTopic.getParent() != null) {
-        final JBMenuItem cloneItem = new JBMenuItem(this.editor.getMindMapPanel().hasSelectedTopics() ?
-          BUNDLE.getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") :
-          BUNDLE.getString("MMDGraphEditor.makePopUp.miCloneTheTopic"), AllIcons.PopUp.CLONE);
-        cloneItem.addActionListener(new ActionListener() {
-
+    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
+      final JMenuItem menuItem;
+      if (p instanceof ExtraNotePlugin) {
+        menuItem = p.getPluginMenuItem(source, dialogProvider, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
           @Override
-          public void actionPerformed(ActionEvent e) {
-            editor.getMindMapPanel().cloneTopic(theTopic);
+          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+            editTextForTopic(topic);
+            panel.requestFocus();
           }
         });
-
-        result.add(cloneItem);
-      }
-    }
-
-    if (element != null) {
-      if (result.getComponentCount() > 0) {
-        result.add(new JSeparator());
-      }
-
-      final Topic topic = element.getModel();
-
-      final JBMenuItem editText = new JBMenuItem(
-        topic.getExtras().containsKey(Extra.ExtraType.NOTE) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditNote") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddNote"),
-        AllIcons.PopUp.NOTE);
-      editText.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-          editTextForTopic(topic);
-          editor.getMindMapPanel().requestFocus();
-        }
-      });
-
-      result.add(editText);
-
-      final JBMenuItem editLink = new JBMenuItem(
-        topic.getExtras().containsKey(Extra.ExtraType.LINK) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditURI") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddURI"),
-        AllIcons.PopUp.URL);
-      editLink.addActionListener(new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          editLinkForTopic(topic);
-          editor.getMindMapPanel().requestFocus();
-        }
-      });
-
-      result.add(editLink);
-
-      final JBMenuItem editTopicLink = new JBMenuItem(topic.getExtras().containsKey(Extra.ExtraType.TOPIC) ?
-        BUNDLE.getString("MMDGraphEditor.makePopUp.miEditTransition") :
-        BUNDLE.getString("MMDGraphEditor.makePopUp.miAddTransition"), AllIcons.PopUp.TOPIC);
-      editTopicLink.addActionListener(new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          editTopicLinkForTopic(topic);
-          editor.getMindMapPanel().requestFocus();
-        }
-      });
-
-      result.add(editTopicLink);
-
-      final JBMenuItem editFileLink = new JBMenuItem(
-        topic.getExtras().containsKey(Extra.ExtraType.FILE) ? BUNDLE.getString("MMDGraphEditor.makePopUp.miEditFile") : BUNDLE.getString("MMDGraphEditor.makePopUp.miAddFile"),
-        AllIcons.PopUp.FILE);
-      editFileLink.addActionListener(new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          editFileLinkForTopic(topic);
-          editor.getMindMapPanel().requestFocus();
-        }
-      });
-
-      result.add(editFileLink);
-    }
-
-    if (element != null || source.hasSelectedTopics()) {
-      if (result.getComponentCount() > 0) {
-        result.add(new JSeparator());
-      }
-
-      final Topic[] topics;
-      final String name;
-      if (source.hasSelectedTopics()) {
-        topics = source.getSelectedTopics();
-        name = String.format(BUNDLE.getString("MMDGraphEditor.makePopUp.miColorsForSelected"), topics.length);
-      }
-      else {
-        topics = new Topic[] { element.getModel() };
-        name = BUNDLE.getString("MMDGraphEditor.makePopUp.miColorsForTopic");
-      }
-
-      final JBMenuItem colors = new JBMenuItem(name, AllIcons.PopUp.COLORS);
-      colors.addActionListener(new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          processColorDialogForTopics(source, topics);
-        }
-      });
-
-      result.add(colors);
-    }
-
-    if (result.getComponentCount() > 0) {
-      result.add(new JSeparator());
-    }
-
-    final JBMenuItem expandAll = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miExpandAll"), AllIcons.PopUp.EXPANDALL);
-    expandAll.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        editor.getMindMapPanel().collapseOrExpandAll(false);
-      }
-
-    });
-
-    final JBMenuItem collapseAll = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miCollapseAll"), AllIcons.PopUp.COLLAPSEALL);
-    collapseAll.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        editor.getMindMapPanel().collapseOrExpandAll(true);
-      }
-
-    });
-
-    final JCheckBoxMenuItem showJumps = new JCheckBoxMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miShowJumps"), AllIcons.PopUp.SHOWJUMPS, source.isShowJumps());
-    showJumps.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        editor.getMindMapPanel().setShowJumps(showJumps.isSelected());
-      }
-    });
-
-    expandAll.setEnabled(isNonEmptyMap);
-    collapseAll.setEnabled(isNonEmptyMap);
-    
-    result.add(showJumps);
-    result.add(expandAll);
-    result.add(collapseAll);
-
-    if (result.getComponentCount() > 0) {
-      result.add(new JSeparator());
-    }
-    final JMenu exportMenu = new JMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
-    exportMenu.setIcon(AllIcons.PopUp.EXPORT);
-    for (final Exporters e : Exporters.values()) {
-      final AbstractMindMapExporter exp = e.getExporter();
-      final JBMenuItem item = new JBMenuItem(exp.getName());
-      item.setToolTipText(exp.getReference());
-      item.setIcon(exp.getIcon());
-      item.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-          try {
-            final JComponent options = exp.makeOptions();
-            if (options!=null){
-              if (!getDialogProvider().msgOkCancel(exp.getName(),options)){
-                return;
-              }
-            }
-            exp.doExport(editor.getMindMapPanel(), options, null);
-            IdeaUtils.showPopup(String.format(BUNDLE.getString("MMDGraphEditor.makePopUp.msgExportedSuccessfuly"),exp.getName()), MessageType.INFO);
+      } else
+      if (p instanceof ExtraFilePlugin) {
+        menuItem = p.getPluginMenuItem(source, dialogProvider, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
+          @Override
+          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+            editFileLinkForTopic(topic);
+            panel.requestFocus();
           }
-          catch (Exception ex) {
-            LOGGER.error("Error during map export", ex); //NOI18N
-            IdeaUtils.showPopup(BUNDLE.getString("MMDGraphEditor.makePopUp.errMsgCantExport"), MessageType.ERROR);
+        });
+      } else if (p instanceof ExtraURIPlugin) {
+        menuItem = p.getPluginMenuItem(source, dialogProvider, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
+          @Override
+          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+            editLinkForTopic(topic);
+            panel.requestFocus();
           }
-        }
-      });
-      exportMenu.add(item);
+        });
+      } else if (p instanceof ExtraJumpPlugin) {
+        menuItem = p.getPluginMenuItem(source, dialogProvider, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
+          @Override
+          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+            editTopicLinkForTopic(topic);
+            panel.requestFocus();
+          }
+        });
+      } else {
+        menuItem = p.getPluginMenuItem(source, dialogProvider, PopUpSection.EXTRAS, elementTopic, selectedTopics, null);
+      }
+      if (menuItem != null) {
+        tmpList.add(menuItem);
+      }
     }
 
-    exportMenu.setEnabled(isNonEmptyMap);
+    putAllItemsAsSection(result, tmpList).clear();
 
-    result.add(exportMenu);
+    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
 
-    result.add(new JSeparator());
+      final JMenuItem item;
+      if (p instanceof ChangeColorPlugin) {
+        item = p.getPluginMenuItem(source, dialogProvider, PopUpSection.TOOLS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
+          @Override
+          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+            processColorDialogForTopics(source, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
+          }
+        });
+      } else {
+        item = p.getPluginMenuItem(source, dialogProvider, PopUpSection.TOOLS, elementTopic, selectedTopics, null);
+      }
+      if (item != null) {
+        tmpList.add(item);
+      }
+    }
 
-    JBMenuItem printPreviewMenu = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), AllIcons.PopUp.PRINTER);
-    printPreviewMenu.addActionListener(new ActionListener() {
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    putAllItemsAsSection(result, tmpList).clear();
+
+    final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
+    exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
+
+    for (final MindMapPopUpItemPlugin plugin : pluginMenuItems) {
+      final JMenuItem exporterMenuItem = plugin.getPluginMenuItem(source, dialogProvider, PopUpSection.EXPORT, elementTopic, selectedTopics, null);
+      if (exporterMenuItem != null) {
+        exportMenu.add(exporterMenuItem);
+      }
+    }
+    tmpList.add(exportMenu);
+
+    final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), AllIcons.PopUp.PRINTER);
+    printAction.addActionListener(new ActionListener() {
+      @Override public void actionPerformed(ActionEvent e) {
         final MMDPrintPanel panel = new MMDPrintPanel(new IdeaMMDPrintPanelAdaptor(getEditor().getProject()), getEditor().getMindMapPanel());
         IdeaUtils.plainMessageClose(getEditor().getProject(),"Print mind map",panel);
       }
     });
+    tmpList.add(printAction);
 
-    result.add(printPreviewMenu);
+    putAllItemsAsSection(result, tmpList).clear();
 
+    exportMenu.setEnabled(isModelNotEmpty);
 
-    JBMenuItem optionsMenu = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miOptions"), AllIcons.PopUp.OPTIONS);
-    optionsMenu.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        startOptionsEdit();
+    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
+      final JMenuItem item;
+      if (p instanceof AboutPlugin) {
+        item = p.getPluginMenuItem(source, dialogProvider, PopUpSection.MISC, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
+          @Override
+          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+            showAbout();
+          }
+        });
+      } else if (p instanceof OptionsPlugin) {
+        item = p.getPluginMenuItem(source, dialogProvider, PopUpSection.MISC, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
+          @Override
+          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+            startOptionsEdit();
+          }
+        });
+      } else {
+        item = p.getPluginMenuItem(source, dialogProvider, PopUpSection.MISC, elementTopic, selectedTopics, null);
       }
-    });
 
-    result.add(optionsMenu);
-
-    JBMenuItem infoMenu = new JBMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miAbout"), AllIcons.PopUp.INFO);
-    infoMenu.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        showAbout();
+      if (item != null) {
+        tmpList.add(item);
       }
-    });
+    }
 
-    result.add(infoMenu);
+    putAllItemsAsSection(result, tmpList);
 
     return result;
   }
