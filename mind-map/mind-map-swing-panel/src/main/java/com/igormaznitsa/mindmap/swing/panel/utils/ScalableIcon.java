@@ -15,10 +15,8 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import java.awt.Graphics2D;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 
 import javax.annotation.Nonnull;
@@ -26,14 +24,14 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 
-public enum ScalableIcon {
-  FILE("extra_file.png"), //NOI18N
-  FILE_WARN("extra_file_warn.png"), //NOI18N
-  FILE_MMD("extra_mmd.png"), //NOI18N
-  FILE_MMD_WARN("extra_mmd_warn.png"), //NOI18N
-  TOPIC("extra_topic.png"), //NOI18N
-  TEXT("extra_note.png"), //NOI18N
-  LINK("extra_uri.png"); //NOI18N
+public final class ScalableIcon {
+  public static final ScalableIcon FILE = new ScalableIcon("extra_file.png"); //NOI18N
+  public static final ScalableIcon FILE_WARN = new ScalableIcon("extra_file_warn.png"); //NOI18N
+  public static final ScalableIcon FILE_MMD = new ScalableIcon("extra_mmd.png"); //NOI18N
+  public static final ScalableIcon FILE_MMD_WARN = new ScalableIcon("extra_mmd_warn.png"); //NOI18N
+  public static final ScalableIcon TOPIC = new ScalableIcon("extra_topic.png"); //NOI18N
+  public static final ScalableIcon TEXT = new ScalableIcon("extra_note.png"); //NOI18N
+  public static final ScalableIcon LINK = new ScalableIcon ("extra_uri.png"); //NOI18N
 
   public static final int BASE_WIDTH = 16;
   public static final int BASE_HEIGHT = 16;
@@ -46,21 +44,28 @@ public enum ScalableIcon {
   private final float baseScaleX;
   private final float baseScaleY;
   
+  public ScalableIcon(@Nonnull final Image image) {
+    this.baseImage = assertNotNull("Image must not be null",image);
+    this.baseScaleX = (float) BASE_WIDTH / (float) this.baseImage.getWidth(null);
+    this.baseScaleY = (float) BASE_HEIGHT / (float) this.baseImage.getHeight(null);
+  }
+  
   private ScalableIcon(@Nonnull final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/"+name); //NOI18N
-    try{
-      this.baseImage = ImageIO.read(in);
-      this.scaledCachedImage = null;
-      this.baseScaleX = (float) BASE_WIDTH / (float)this.baseImage.getWidth(null);
-      this.baseScaleY = (float) BASE_HEIGHT / (float)this.baseImage.getHeight(null);
-    }
-    catch (Exception ex) {
-      throw new Error("Can't load resource image "+name, ex); //NOI18N
-    }finally{
+    this(loadStandardImage(name));
+  }
+
+  @Nonnull
+  public static Image loadStandardImage(@Nonnull final String name) {
+    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
+    try {
+      return ImageIO.read(in);
+    } catch (Exception ex) {
+      throw new Error("Can't load resource image " + name, ex); //NOI18N
+    } finally {
       IOUtils.closeQuietly(in);
     }
   }
-
+  
   public synchronized double getScaleFactor(){
     return this.currentScaleFactor;
   }
@@ -72,25 +77,8 @@ public enum ScalableIcon {
     }
     
     if (this.scaledCachedImage == null){
+      this.scaledCachedImage = Utils.scaleImage(this.baseImage, this.baseScaleX, this.baseScaleY, scale);
       this.currentScaleFactor = scale;
-      
-      final int imgw = this.baseImage.getWidth(null);
-      final int imgh = this.baseImage.getHeight(null);
-      final int scaledW = (int)Math.round(imgw*this.baseScaleX*scale);
-      final int scaledH = (int)Math.round(imgh*this.baseScaleY*scale);
-    
-      final BufferedImage img = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
-      final Graphics2D g = (Graphics2D)img.getGraphics();
-
-      g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-      
-      g.drawImage(this.baseImage,0,0,scaledW, scaledH, null);
-      g.dispose();
-      
-      this.scaledCachedImage = img;
     }
     return this.scaledCachedImage;
   }

@@ -310,6 +310,28 @@ public final class Utils {
     return null;
   }
 
+  
+  @Nonnull
+  public static Image scaleImage(@Nonnull final Image src, final double baseScaleX, final double baseScaleY, final double scale) {
+    final int imgw = src.getWidth(null);
+    final int imgh = src.getHeight(null);
+    final int scaledW = (int) Math.round(imgw * baseScaleX * scale);
+    final int scaledH = (int) Math.round(imgh * baseScaleY * scale);
+
+    final BufferedImage result = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
+    final Graphics2D g = (Graphics2D) result.getGraphics();
+
+    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+
+    g.drawImage(src, 0, 0, scaledW, scaledH, null);
+    g.dispose();
+    
+    return result;
+  }
+  
   @Nonnull
   public static Image renderWithTransparency(final float opacity, @Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig config) {
     final AbstractElement cloned = element.makeCopy();

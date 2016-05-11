@@ -34,10 +34,13 @@ import com.igormaznitsa.mindmap.plugins.focused.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.focused.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.focused.ExtraURIPlugin;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import java.util.HashMap;
+import java.util.Map;
 import com.igormaznitsa.mindmap.plugins.focused.AddChildPlugin;
 import com.igormaznitsa.mindmap.plugins.focused.CloneTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.focused.EditTextPlugin;
 import com.igormaznitsa.mindmap.plugins.focused.RemoveTopicPlugin;
+import com.igormaznitsa.mindmap.plugins.importers.Text2MindMapImporter;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
@@ -52,67 +55,83 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
 
   private static final MindMapPluginRegistry INSTANCE = new MindMapPluginRegistry();
 
+  private final Map<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>> FIND_CACHE = new HashMap<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>>();
+
   private MindMapPluginRegistry() {
     registerPlugin(new FreeMindExporter());
     registerPlugin(new MDExporter());
     registerPlugin(new MindmupExporter());
     registerPlugin(new PNGImageExporter());
     registerPlugin(new TextExporter());
-    
+
     registerPlugin(new ExtraFilePlugin());
     registerPlugin(new ExtraNotePlugin());
     registerPlugin(new ExtraJumpPlugin());
     registerPlugin(new ExtraURIPlugin());
-    
+
     registerPlugin(new EditTextPlugin());
     registerPlugin(new AddChildPlugin());
     registerPlugin(new CloneTopicPlugin());
     registerPlugin(new RemoveTopicPlugin());
-    
+
     registerPlugin(new OptionsPlugin());
     registerPlugin(new AboutPlugin());
-    
+
     registerPlugin(new ShowJumpsPlugin());
     registerPlugin(new CollapseAllPlugin());
     registerPlugin(new UnfoldAllPlugin());
     registerPlugin(new ChangeColorPlugin());
+    
+    registerPlugin(new Text2MindMapImporter());
   }
 
   public void registerPlugin(@Nonnull final MindMapPlugin plugin) {
-    this.pluginList.add(assertNotNull(plugin));
-    Collections.sort(this.pluginList);
-  }
-  
-  public void unregisterPlugin(@Nonnull final MindMapPlugin plugin) {
-    if (this.pluginList.remove(assertNotNull(plugin))) {
+    synchronized (FIND_CACHE) {
+      this.pluginList.add(assertNotNull(plugin));
       Collections.sort(this.pluginList);
+      FIND_CACHE.clear();
     }
   }
 
-  public int size(){
+  public void unregisterPlugin(@Nonnull final MindMapPlugin plugin) {
+    synchronized (FIND_CACHE) {
+      if (this.pluginList.remove(assertNotNull(plugin))) {
+        Collections.sort(this.pluginList);
+      }
+      FIND_CACHE.clear();
+    }
+  }
+
+  public int size() {
     return this.pluginList.size();
   }
-  
-  public void clear(){
+
+  public void clear() {
     this.pluginList.clear();
   }
-  
+
   @Nonnull
   @MustNotContainNull
-  public <T> List<T> findFor(@Nullable final Class<T> klazz) {
-    final List<T> result = new ArrayList<T>();
-    
-    if (klazz!=null){
-      for(final MindMapPlugin p : this.pluginList) {
-        if (klazz.isInstance(p)) {
-          result.add(klazz.cast(p));
+  public <T extends MindMapPlugin> List<T> findFor(@Nullable final Class<T> klazz) {
+    synchronized (FIND_CACHE) {
+      List<T> result = (List<T>) FIND_CACHE.get(klazz);
+
+      if (result == null) {
+        result = new ArrayList<T>();
+        if (klazz != null) {
+          for (final MindMapPlugin p : this.pluginList) {
+            if (klazz.isInstance(p)) {
+              result.add(klazz.cast(p));
+            }
+          }
         }
+        result = Collections.unmodifiableList(result);
+        FIND_CACHE.put(klazz, result);
       }
+      return result;
     }
-    
-    return result;
   }
-  
+
   @Override
   @Nonnull
   public Iterator<MindMapPlugin> iterator() {

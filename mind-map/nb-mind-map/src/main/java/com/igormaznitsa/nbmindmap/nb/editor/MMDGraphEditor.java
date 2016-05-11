@@ -112,6 +112,7 @@ import com.igormaznitsa.mindmap.plugins.focused.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.focused.ExtraNotePlugin;
+import com.igormaznitsa.mindmap.plugins.importers.AbstractImportingPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconService;
@@ -973,6 +974,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     final Topic elementTopic = element == null ? null : element.getModel();
     final Topic[] selectedTopics = this.mindMapPanel.getSelectedTopics();
     final List<MindMapPopUpItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(MindMapPopUpItemPlugin.class);
+    final List<AbstractImportingPlugin> pluginImport = MindMapPluginRegistry.getInstance().findFor(AbstractImportingPlugin.class);
 
     final boolean isModelNotEmpty = this.mindMapPanel.getModel().getRoot() != null;
 
@@ -1064,6 +1066,20 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     exportMenu.setEnabled(isModelNotEmpty);
 
+    if (!pluginImport.isEmpty()){
+      final JMenu importMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miImportMapFrom"));
+      importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
+
+      for (final AbstractImportingPlugin plugin : pluginImport) {
+        final JMenuItem importerMenuItem = plugin.getPluginMenuItem(source, this, PopUpSection.IMPORT, elementTopic, selectedTopics, null);
+        if (importerMenuItem != null) {
+          importMenu.add(importerMenuItem);
+        }
+      }
+      tmpList.add(importMenu);
+      putAllItemsAsSection(result, tmpList).clear();
+    }
+    
     for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
       final JMenuItem item;
       if (p instanceof AboutPlugin) {
@@ -1162,6 +1178,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   @Override
   public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
     return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showSaveDialog();
+  }
+
+  @Override
+  public File msgOpenFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
+    return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showOpenDialog();
   }
 
   private void updateConfigFromPreferences() {

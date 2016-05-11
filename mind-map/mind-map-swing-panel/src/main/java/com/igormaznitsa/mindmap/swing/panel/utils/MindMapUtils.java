@@ -181,12 +181,32 @@ public final class MindMapUtils {
   }
 
   @Nullable
-  public static File selectFileForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String title, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
+  public static File selectFileToSaveForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String title, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
     final File home = new File(System.getProperty("user.home"));//NOI18N
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
     return panel.getController().getDialogProvider(panel).msgSaveFileDialog("user-dir", title, home, true, new FileFilter() { //NOI18N
+      @Override
+      public boolean accept(@Nonnull final File f) {
+        return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
+      }
+
+      @Override
+      @Nonnull
+      public String getDescription() {
+        return filterDescription;
+      }
+    }, approveButtonText);
+  }
+
+  @Nullable
+  public static File selectFileToOpenForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String title, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
+    final File home = new File(System.getProperty("user.home"));//NOI18N
+
+    final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
+
+    return panel.getController().getDialogProvider(panel).msgOpenFileDialog("user-dir", title, home, true, new FileFilter() { //NOI18N
       @Override
       public boolean accept(@Nonnull final File f) {
         return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N

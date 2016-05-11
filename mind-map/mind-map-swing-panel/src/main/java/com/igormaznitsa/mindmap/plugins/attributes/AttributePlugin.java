@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins;
+package com.igormaznitsa.mindmap.plugins.attributes;
 
 import javax.annotation.Nonnull;
-import com.igormaznitsa.meta.annotation.Weight;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.plugins.MindMapPlugin;
 
-public interface MindMapPlugin extends Comparable<MindMapPlugin> {
-  @Weight(Weight.Unit.NORMAL)
-  void onModelSet(@Nonnull MindMapPanel panel, @Nonnull Topic topic);
-
-  int getOrder();
+public interface AttributePlugin extends MindMapPlugin {
+  @Nonnull
+  String getAttributeKey();
 }

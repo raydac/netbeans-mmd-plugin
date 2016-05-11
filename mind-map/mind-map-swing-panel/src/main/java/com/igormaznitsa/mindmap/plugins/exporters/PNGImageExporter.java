@@ -127,7 +127,7 @@ public final class PNGImageExporter extends AbstractExportingPlugin {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileForFileFilter(panel, Texts.getString("PNGImageExporter.saveDialogTitle"), ".png", Texts.getString("PNGImageExporter.filterDescription"), Texts.getString("PNGImageExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(panel, Texts.getString("PNGImageExporter.saveDialogTitle"), ".png", Texts.getString("PNGImageExporter.filterDescription"), Texts.getString("PNGImageExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".png");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

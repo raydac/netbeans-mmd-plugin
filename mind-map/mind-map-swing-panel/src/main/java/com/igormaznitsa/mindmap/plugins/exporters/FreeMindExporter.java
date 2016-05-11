@@ -51,6 +51,7 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import javax.swing.Icon;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class FreeMindExporter extends AbstractExportingPlugin {
 
@@ -232,7 +233,7 @@ public class FreeMindExporter extends AbstractExportingPlugin {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileForFileFilter(panel, Texts.getString("FreeMindExporter.saveDialogTitle"), ".mm", Texts.getString("FreeMindExporter.filterDescription"), Texts.getString("FreeMindExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(panel, Texts.getString("FreeMindExporter.saveDialogTitle"), ".mm", Texts.getString("FreeMindExporter.filterDescription"), Texts.getString("FreeMindExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".mm");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

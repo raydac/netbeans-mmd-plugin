@@ -32,6 +32,7 @@ import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public abstract class AbstractCollapsableElement extends AbstractElement {
 

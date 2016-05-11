@@ -231,7 +231,7 @@ public class TextExporter extends AbstractExportingPlugin {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileForFileFilter(panel, Texts.getString("TextExporter.saveDialogTitle"), ".txt", Texts.getString("TextExporter.filterDescription"), Texts.getString("TextExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(panel, Texts.getString("TextExporter.saveDialogTitle"), ".txt", Texts.getString("TextExporter.filterDescription"), Texts.getString("TextExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".txt");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

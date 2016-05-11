@@ -33,4 +33,6 @@ public interface DialogProvider {
   Boolean msgConfirmYesNoCancel(@Nonnull String title, @Nonnull final String question);
   @Nullable
   File msgSaveFileDialog(@Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText);
+  @Nullable
+  File msgOpenFileDialog(@Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText);
 }
