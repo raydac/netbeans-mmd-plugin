@@ -55,7 +55,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMap.class);
 
   @Nullable
-  private final Topic root;
+  private Topic root;
 
   private final Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new HashMap<String, String>();
@@ -69,9 +69,11 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
 
   private final MindMapController controller;
 
-  public MindMap(@Nullable final MindMapController nullableController) {
-    this.root = new Topic(this, null, ""); //NOI18N
+  public MindMap(@Nullable final MindMapController nullableController, final boolean makeRoot) {
     this.controller = nullableController;
+    if (makeRoot){
+      this.root = new Topic(this, null, "");
+    }
   }
 
   public MindMap(@Nonnull final MindMap map, @Nullable final MindMapController nullableController) {
@@ -119,6 +121,27 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     this.attributes.put(GENERATOR_VERSION_NAME, GENERATOR_VERSION);
   }
 
+  public void clear(){
+    setRoot(null, true);
+  }
+  
+  public void setRoot(@Nullable final Topic newRoot, final boolean makeNotification) {
+    this.locker.lock();
+    try {
+      if (newRoot == null) {
+        this.root = newRoot;
+      } else {
+        if (newRoot.getMap() != this) {
+          throw new IllegalStateException("Base map must be the same");
+        }
+        this.root = newRoot;
+      }
+      if (makeNotification) fireModelChanged();
+    } finally {
+      this.locker.unlock();
+    }
+  }
+
   @Nullable
   public MindMapController getController() {
     return this.controller;
@@ -128,25 +151,25 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
   @Nonnull
   public Iterator<Topic> iterator() {
     final Topic theroot = this.root;
-    
-    return new Iterator<Topic>(){
+
+    return new Iterator<Topic>() {
       Topic topicroot = theroot;
       Iterator<Topic> children;
-      
+
       @Override
       public boolean hasNext() {
-        return this.topicroot!=null || (this.children!=null && this.children.hasNext());
+        return this.topicroot != null || (this.children != null && this.children.hasNext());
       }
 
       @Override
       @Nonnull
       public Topic next() {
         final Topic result;
-        if (this.topicroot!=null){
+        if (this.topicroot != null) {
           result = this.topicroot;
           this.topicroot = null;
           this.children = result.iterator();
-        } else if (this.children!=null){
+        } else if (this.children != null) {
           result = this.children.next();
         } else {
           throw new NoSuchElementException();
@@ -154,6 +177,15 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
         return result;
       }
     };
+  }
+
+  public boolean isEmpty() {
+    this.locker.lock();
+    try {
+      return this.root == null;
+    } finally {
+      this.locker.unlock();
+    }
   }
 
   private void fireModelChanged() {
@@ -181,12 +213,10 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     try {
       if (value == null) {
         this.attributes.remove(name);
-      }
-      else {
+      } else {
         this.attributes.put(name, value);
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -197,8 +227,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       if (this.root != null) {
         resetPayload(this.root);
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -247,8 +276,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
             result.add(t);
           }
         }
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
     }
@@ -261,8 +289,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     this.locker.lock();
     try {
       return this.root;
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -287,8 +314,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     for (final Map.Entry<String, String> e : map.entrySet()) {
       if (nonfirst) {
         buffer.append(',');
-      }
-      else {
+      } else {
         nonfirst = true;
       }
       buffer.append(e.getKey()).append('=').append(ModelUtils.makeMDCodeBlock(e.getValue()));
@@ -302,8 +328,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     final StringWriter writer = new StringWriter(16384);
     try {
       write(writer);
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       throw new Error("Unexpected exception", ex);
     }
     return writer.toString();
@@ -323,8 +348,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       if (rootTopic != null) {
         rootTopic.write(out);
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
     return out;
@@ -356,8 +380,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       fireModelChanged();
 
       return clonedtopic;
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -369,15 +392,13 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       final Topic rootTopic = this.root;
       if (rootTopic == null) {
         result = false;
-      }
-      else if (this.root == topic) {
+      } else if (this.root == topic) {
         rootTopic.setText(""); //NOI18N
         rootTopic.removeExtras();
         rootTopic.setPayload(null);
         rootTopic.removeAllChildren();
         result = true;
-      }
-      else {
+      } else {
         rootTopic.removeTopic(topic);
         result = rootTopic.removeAllLinksTo(topic);
       }
@@ -386,8 +407,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       }
 
       return result;
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -401,8 +421,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
         this.locker.lock();
         try {
           result = rootTopic.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
-        }
-        finally {
+        } finally {
           this.locker.unlock();
         }
       }
@@ -419,8 +438,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       this.locker.lock();
       try {
         _findAllTopicsForExtraType(rootTopic, type, result);
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
     }
@@ -457,8 +475,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     if (newValue instanceof String) {
       ((Topic) path.getLastPathComponent()).setText((String) newValue);
       fireTopicChanged((Topic) path.getLastPathComponent());
-    }
-    else {
+    } else {
       LOGGER.warn("Attempt to set non string value to path : " + path); //NOI18N
     }
   }
@@ -485,8 +502,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       this.locker.lock();
       try {
         return rootTopic.doesContainFileLink(baseFolder, file);
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
     }
@@ -500,8 +516,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       this.locker.lock();
       try {
         changed = rootTopic.deleteLinkToFileIfPresented(baseFolder, file);
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
       if (changed) {
@@ -518,8 +533,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       this.locker.lock();
       try {
         changed = rootTopic.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
       if (changed) {

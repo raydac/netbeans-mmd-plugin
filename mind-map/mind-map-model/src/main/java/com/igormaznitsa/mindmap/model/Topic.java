@@ -93,6 +93,9 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
 
     if (parent != null) {
+      if (parent.getMap() != map) {
+        throw new IllegalArgumentException("Parent must belong to the same mind map");
+      }
       parent.children.add(this);
     }
   }
