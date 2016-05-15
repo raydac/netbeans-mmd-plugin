@@ -36,6 +36,13 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public final class ElementRoot extends AbstractElement {
 
@@ -93,6 +100,10 @@ public final class ElementRoot extends AbstractElement {
     g.setColor(this.getBorderColor(cfg));
     g.draw(shape);
 
+    if (this.visualAttributeImageBlock.mayHaveContent()) {
+      this.visualAttributeImageBlock.paint(g, cfg);
+    }
+    
     g.setColor(this.getTextColor(cfg));
     this.textBlock.paint(g);
 

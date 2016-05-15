@@ -39,7 +39,6 @@ import com.igormaznitsa.nbmindmap.nb.swing.ColorAttributePanel;
 import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
 import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
-import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
 
 import java.awt.BorderLayout;

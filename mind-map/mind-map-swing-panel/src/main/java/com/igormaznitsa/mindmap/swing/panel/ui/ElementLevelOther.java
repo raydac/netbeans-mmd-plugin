@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -27,6 +26,8 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class ElementLevelOther extends ElementLevelFirst {
 
@@ -62,6 +63,10 @@ public class ElementLevelOther extends ElementLevelFirst {
     g.setColor(getBorderColor(cfg));
     g.draw(shape);
 
+    if (this.visualAttributeImageBlock.mayHaveContent()) {
+      this.visualAttributeImageBlock.paint(g, cfg);
+    }
+    
     g.setColor(getTextColor(cfg));
     this.textBlock.paint(g);
     

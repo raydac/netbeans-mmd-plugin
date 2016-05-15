@@ -18,7 +18,7 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 public enum ElementPart {
   NONE,
   AREA,
-  PLUGINS,
+  VISUAL_ATTRIBUTES,
   TEXT,
   ICONS,
   COLLAPSATOR

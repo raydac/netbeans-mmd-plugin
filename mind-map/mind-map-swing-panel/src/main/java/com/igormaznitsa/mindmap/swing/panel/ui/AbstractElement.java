@@ -15,8 +15,6 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
 
@@ -35,6 +33,10 @@ import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public abstract class AbstractElement {
 
@@ -45,7 +47,7 @@ public abstract class AbstractElement {
   @Nonnull
   protected final IconBlock extrasIconBlock;
   @Nonnull
-  protected final PluginImageBlock pluginImageBlock;
+  protected final VisualAttributeImageBlock visualAttributeImageBlock;
 
   protected final Rectangle2D bounds = new Rectangle2D.Double();
   protected final Dimension2D blockSize = new Dimension();
@@ -68,7 +70,7 @@ public abstract class AbstractElement {
     this.model = orig.model;
     this.textBlock = new TextBlock(orig.textBlock);
     this.extrasIconBlock = new IconBlock(orig.extrasIconBlock);
-    this.pluginImageBlock = new PluginImageBlock(orig.pluginImageBlock);
+    this.visualAttributeImageBlock = new VisualAttributeImageBlock(orig.visualAttributeImageBlock);
     this.bounds.setRect(orig.bounds);
     this.blockSize.setSize(orig.blockSize);
     this.fillColor = orig.fillColor;
@@ -81,7 +83,7 @@ public abstract class AbstractElement {
     this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
     this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align"))); //NOI18N
     this.extrasIconBlock = new IconBlock(model);
-    this.pluginImageBlock = new PluginImageBlock(model);
+    this.visualAttributeImageBlock = new VisualAttributeImageBlock(model);
     updateColorAttributeFromModel();
   }
 
@@ -113,14 +115,14 @@ public abstract class AbstractElement {
   }
 
   public void updateElementBounds(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
+    this.visualAttributeImageBlock.updateSize(gfx, cfg);
     this.textBlock.updateSize(gfx, cfg);
     this.extrasIconBlock.updateSize(gfx, cfg);
-    this.pluginImageBlock.updateSize(gfx, cfg);
 
     final double scaledHorzBlockGap = cfg.getScale() * cfg.getHorizontalBlockGap();
 
     double width = 0.0d;
-    if (this.pluginImageBlock.hasContent()) {
+    if (this.visualAttributeImageBlock.mayHaveContent()) {
       width += this.extrasIconBlock.getBounds().getWidth() + scaledHorzBlockGap;
     }
 
@@ -130,7 +132,7 @@ public abstract class AbstractElement {
       width += this.extrasIconBlock.getBounds().getWidth() + scaledHorzBlockGap;
     }
 
-    this.bounds.setRect(0d, 0d, width, Math.max(this.pluginImageBlock.getBounds().getHeight(),Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight())));
+    this.bounds.setRect(0d, 0d, width, Math.max(this.visualAttributeImageBlock.getBounds().getHeight(),Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight())));
   }
 
   public void updateBlockSize(@Nonnull final MindMapPanelConfig cfg) {
@@ -209,15 +211,15 @@ public abstract class AbstractElement {
 
   public void alignElementAndChildren(@Nonnull MindMapPanelConfig cfg, boolean leftSide, double centerX, double centerY){
     final double textMargin = cfg.getScale() * cfg.getTextMargins();
-    final double centralBlockLineY = textMargin + Math.max(this.pluginImageBlock.getBounds().getHeight(), Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight())) / 2;
+    final double centralBlockLineY = textMargin + Math.max(this.visualAttributeImageBlock.getBounds().getHeight(), Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight())) / 2;
 
     final double scaledHorzBlockGap = cfg.getScale() * cfg.getHorizontalBlockGap();
 
     double offset = textMargin;
 
-    if (this.pluginImageBlock.hasContent()) {
-      this.pluginImageBlock.setCoordOffset(offset, centralBlockLineY - this.pluginImageBlock.getBounds().getHeight() / 2);
-      offset += this.pluginImageBlock.getBounds().getWidth() + scaledHorzBlockGap;
+    if (this.visualAttributeImageBlock.mayHaveContent()) {
+      this.visualAttributeImageBlock.setCoordOffset(offset, centralBlockLineY - this.visualAttributeImageBlock.getBounds().getHeight() / 2);
+      offset += this.visualAttributeImageBlock.getBounds().getWidth() + scaledHorzBlockGap;
     }
 
     this.textBlock.setCoordOffset(offset, centralBlockLineY - this.textBlock.getBounds().getHeight() / 2);
@@ -241,8 +243,8 @@ public abstract class AbstractElement {
       final double offY = point.getY() - this.bounds.getY();
 
       result = ElementPart.AREA;
-      if (this.pluginImageBlock.getBounds().contains(offX, offY)) {
-        result = ElementPart.PLUGINS;
+      if (this.visualAttributeImageBlock.getBounds().contains(offX, offY)) {
+        result = ElementPart.VISUAL_ATTRIBUTES;
       } else {
         if (this.textBlock.getBounds().contains(offX, offY)) {
           result = ElementPart.TEXT;
@@ -397,8 +399,8 @@ public abstract class AbstractElement {
   }
 
   @Nonnull
-  public PluginImageBlock getPluginImageBlock() {
-    return this.pluginImageBlock;
+  public VisualAttributeImageBlock getVisualAttributeImageBlock() {
+    return this.visualAttributeImageBlock;
   }
   
   public boolean collapseOrExpandAllChildren(final boolean collapse) {

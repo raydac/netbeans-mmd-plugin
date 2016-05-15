@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.mindmap.swing.panel;
 
-
 import com.igormaznitsa.mindmap.swing.panel.ui.MouseSelectedArea;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementRoot;
@@ -65,6 +64,14 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.MindMapPlugin;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.plugins.attributes.VisualAttributePlugin;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MindMapPanel extends JPanel {
@@ -351,16 +358,43 @@ public class MindMapPanel extends JPanel {
           setToolTipText(null);
         } else {
           final ElementPart part = element.findPartForPoint(e.getPoint());
-          setCursor(part == ElementPart.ICONS || part == ElementPart.COLLAPSATOR ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
-          if (part == ElementPart.ICONS) {
-            final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-            if (extra != null) {
-              setToolTipText(makeHtmlTooltipForExtra(extra));
-            } else {
+          switch (part) {
+            case ICONS: {
+              final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+              if (extra != null) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                setToolTipText(makeHtmlTooltipForExtra(extra));
+              } else {
+                setCursor(null);
+                setToolTipText(null);
+              }
+            }
+            break;
+            case VISUAL_ATTRIBUTES: {
+              final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+              if (plugin!=null){
+                if (plugin.isClickable()){
+                  setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }else{
+                  setCursor(null);
+                }
+                setToolTipText(plugin.getToolTip());
+              }else{
+                setCursor(null);
+                setToolTipText(null);
+              }
+            }
+            break;
+            case COLLAPSATOR: {
+              setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
               setToolTipText(null);
             }
-          } else {
-            setToolTipText(null);
+            break;
+            default: {
+              setCursor(Cursor.getDefaultCursor());
+              setToolTipText(null);
+            }
+            break;
           }
         }
       }
@@ -539,8 +573,20 @@ public class MindMapPanel extends JPanel {
             invalidate();
             fireNotificationMindMapChanged();
             repaint();
-          } else if (part != ElementPart.ICONS && e.getClickCount() > 1) {
-            startEdit(element);
+          } else if (part == ElementPart.VISUAL_ATTRIBUTES) {
+            final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+            if (plugin != null && plugin.isClickable()) {
+              try {
+                if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
+                  invalidate();
+                  fireNotificationMindMapChanged();
+                  repaint();
+                }
+              } catch (Exception ex) {
+                LOGGER.error("Error during visual attribute processing", ex);
+                controller.getDialogProvider(theInstance).msgError("Detectd critical error! See log!");
+              }
+            }
           } else if (part == ElementPart.ICONS) {
             final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
             if (extra != null) {
@@ -550,12 +596,16 @@ public class MindMapPanel extends JPanel {
             // only
             removeAllSelection();
             select(element.getModel(), false);
+          } else if (e.getClickCount() > 1) {
+            startEdit(element);
           } else // group
-           if (selectedTopics.isEmpty()) {
+          {
+            if (selectedTopics.isEmpty()) {
               select(element.getModel(), false);
             } else {
               select(element.getModel(), true);
             }
+          }
         }
       }
     };

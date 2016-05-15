@@ -65,6 +65,10 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
     g.setColor(getBorderColor(cfg));
     g.draw(shape);
 
+    if (this.visualAttributeImageBlock.mayHaveContent()) {
+      this.visualAttributeImageBlock.paint(g, cfg);
+    }
+    
     g.setColor(getTextColor(cfg));
     this.textBlock.paint(g);
 

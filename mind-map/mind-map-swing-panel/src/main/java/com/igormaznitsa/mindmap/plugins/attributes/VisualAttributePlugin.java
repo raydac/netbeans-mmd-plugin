@@ -16,14 +16,17 @@
 package com.igormaznitsa.mindmap.plugins.attributes;
 
 import java.awt.Image;
-import java.awt.event.MouseEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 
 public interface VisualAttributePlugin extends AttributePlugin {
   @Nullable
-  Image getScaledImage(@Nonnull MindMapPanel panel, @Nonnull Topic topic, double scale);
-  void onMouseEvent(@Nonnull MindMapPanel panel, @Nonnull Topic topic, @Nonnull MouseEvent event);
+  Image getScaledImage(@Nonnull MindMapPanelConfig config, @Nonnull Topic topic);
+  boolean onClick(@Nonnull MindMapPanel panel, @Nonnull Topic topic, int clickCount);
+  @Nullable
+  String getToolTip();
+  boolean isClickable();
 }
