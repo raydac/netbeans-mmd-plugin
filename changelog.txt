@@ -1,4 +1,5 @@
 1.1.5 (in development)
+- Added importer from text files where level of topic defined by number of the TAB char
 - Added key board shortcuts for zooming in, out and resetting zoom.
 - fixed issue #11 "Can't create topic with hash char"
 - fixed issue #10 "In Select topic dialog; Fold All only closes the root node"

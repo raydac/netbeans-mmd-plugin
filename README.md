@@ -13,6 +13,8 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 ___1.2.0-SNAPSHOT (Under development)___
+- Added importer from text files where level of topic defined by number of the TAB char, like [https://www.text2mindmap.com/](https://www.text2mindmap.com/)
+- Pop-up menu reworked to support new insode plug-in mechanism
 - Added key board shortcuts for zooming in, out and resetting zoom.
 - fixed issue [#10 "In Select topic dialog; Fold All only closes the root node"](https://github.com/raydac/netbeans-mmd-plugin/issues/10)
 - fixed issue [#9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"](https://github.com/raydac/netbeans-mmd-plugin/issues/9)
