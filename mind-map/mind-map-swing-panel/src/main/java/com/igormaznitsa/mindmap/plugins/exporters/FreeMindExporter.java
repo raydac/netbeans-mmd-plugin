@@ -49,7 +49,6 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import javax.swing.Icon;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 

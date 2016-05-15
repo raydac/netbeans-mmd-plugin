@@ -97,8 +97,8 @@ public abstract class AbstractImportingPlugin extends AbstractPopupMenuItemPlugi
   }
   
   @Nullable
-  protected File selectFileForExtension(@Nonnull final MindMapPanel panel, @Nonnull final String fileExtension, @Nonnull final String fileFilterDescription, @Nonnull final String approveButtonText){
-    return  MindMapUtils.selectFileToOpenForFileFilter(panel, Texts.getString("MDExporter.saveDialogTitle"), normalizeExtension(fileExtension), fileFilterDescription, approveButtonText);
+  protected File selectFileForExtension(@Nonnull final MindMapPanel panel, @Nonnull final String dialogTitle, @Nonnull final String fileExtension, @Nonnull final String fileFilterDescription, @Nonnull final String approveButtonText){
+    return  MindMapUtils.selectFileToOpenForFileFilter(panel, dialogTitle, normalizeExtension(fileExtension), fileFilterDescription, approveButtonText);
   }
   
   @Nullable

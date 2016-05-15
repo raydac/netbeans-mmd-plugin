@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
@@ -39,7 +40,7 @@ public class Text2MindMapImporter extends AbstractImportingPlugin {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-    final File file = this.selectFileForExtension(panel, "txt", "text files (.TXT)", "Import");
+    final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), "txt", "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
     MindMap result = null;
     if (file != null) {
       final List<String> lines = FileUtils.readLines(file);
@@ -133,13 +134,13 @@ public class Text2MindMapImporter extends AbstractImportingPlugin {
   @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return "Text formatted for Text2MindMap.com";
+    return Texts.getString("MMDImporters.Text2MindMap.Name");
   }
 
   @Override
   @Nonnull
   public String getReference(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return "Import from text file formatted (by TABs) in style compatible with http://text2mindmap.com";
+    return Texts.getString("MMDImporters.Text2MindMap.Reference");
   }
 
   @Override
