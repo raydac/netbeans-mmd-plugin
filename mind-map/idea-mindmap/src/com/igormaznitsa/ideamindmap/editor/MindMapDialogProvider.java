@@ -21,6 +21,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.WindowManager;
 
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -68,8 +69,8 @@ public class MindMapDialogProvider implements DialogProvider {
     return result == Messages.CANCEL ? null : result == Messages.YES;
   }
 
-  @Override
-  public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter,
+  @Nullable @Override
+  public File msgOpenFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter,
     final String approveButtonText) {
 
     final JFileChooser fileChooser = new JFileChooser(defaultFolder);
@@ -79,10 +80,29 @@ public class MindMapDialogProvider implements DialogProvider {
     fileChooser.setMultiSelectionEnabled(false);
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-    if (fileChooser.showSaveDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION){
+    if (fileChooser.showOpenDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
       return fileChooser.getSelectedFile();
-    }else{
+    }
+    else {
       return null;
     }
   }
-}
+
+  @Override
+  public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter,
+    final String approveButtonText) {
+      final JFileChooser fileChooser = new JFileChooser(defaultFolder);
+      fileChooser.setDialogTitle(title);
+      fileChooser.setFileFilter(fileFilter);
+      fileChooser.setAcceptAllFileFilterUsed(true);
+      fileChooser.setMultiSelectionEnabled(false);
+      fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+      if (fileChooser.showSaveDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
+        return fileChooser.getSelectedFile();
+      }
+      else {
+        return null;
+      }
+    }
+  }
