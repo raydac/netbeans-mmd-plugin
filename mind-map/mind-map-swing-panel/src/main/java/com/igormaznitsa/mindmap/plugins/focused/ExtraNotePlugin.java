@@ -57,7 +57,7 @@ public class ExtraNotePlugin extends AbstractFocusedTopicActionPlugin {
 
   @Override
   @Nonnull
-  protected PopUpSection getPopUpSection() {
+  public PopUpSection getSection() {
     return PopUpSection.EXTRAS;
   }
 

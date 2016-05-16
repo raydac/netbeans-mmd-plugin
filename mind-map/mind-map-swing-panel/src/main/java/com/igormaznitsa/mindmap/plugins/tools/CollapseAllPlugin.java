@@ -36,22 +36,35 @@ public class CollapseAllPlugin extends AbstractPopupMenuItemPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_COLLAPSEALL);
 
-  
   @Override
   @Nullable
-  public JMenuItem getPluginMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
     JMenuItem result = null;
-    if (section == PopUpSection.TOOLS){
-      result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"), ICO);
-      result.setEnabled(panel.getModel().getRoot() != null);
-      result.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          panel.collapseOrExpandAll(true);
-        }
-      });
-    }
+    result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"), ICO);
+    result.setEnabled(panel.getModel().getRoot() != null);
+    result.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        panel.collapseOrExpandAll(true);
+      }
+    });
     return result;
+  }
+
+  @Override
+  @Nonnull
+  public PopUpSection getSection() {
+    return PopUpSection.TOOLS;
+  }
+  
+  @Override
+  public boolean needsTopicUnderMouse() {
+    return false;
+  }
+
+  @Override
+  public boolean needsSelectedTopics() {
+    return false;
   }
 
   @Override

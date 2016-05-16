@@ -36,26 +36,25 @@ public class VisualAttributeImageBlock {
 
   private VisualItem[] items = null;
 
-  private static class VisualItem {
+  private static final class VisualItem {
 
     private static final VisualItem[] EMPTY = new VisualItem[0];
 
     private final VisualAttributeImageBlock parent;
-    private final Image image;
+    private Image image;
     private final VisualAttributePlugin plugin;
     private final int relx;
     private int rely;
-    private final int width;
-    private final int height;
+    private int width;
+    private int height;
+    private double lastScale = -1.0d;
 
-    VisualItem(@Nonnull final VisualAttributeImageBlock parent, final int x, final int y, @Nonnull final VisualAttributePlugin plugin, @Nullable final Image image) {
+    VisualItem(@Nonnull final VisualAttributeImageBlock parent, @Nonnull final MindMapPanelConfig cfg, final int x, final int y, @Nonnull final VisualAttributePlugin plugin) {
       this.parent = parent;
-      this.image = image;
       this.relx = x;
       this.rely = y;
-      this.width = image == null ? 0 : image.getWidth(null);
-      this.height = image == null ? 0 : image.getHeight(null);
       this.plugin = plugin;
+      updateImage(cfg);
     }
 
     @Nonnull
@@ -75,7 +74,21 @@ public class VisualAttributeImageBlock {
       return this.height;
     }
 
-    boolean isShown() {
+    void updateImage(@Nonnull final MindMapPanelConfig cfg) {
+      if (this.image == null || Double.compare(this.lastScale, cfg.getScale()) != 0) {
+        this.image = this.plugin.getScaledImage(cfg, this.parent.model);
+        this.lastScale = cfg.getScale();
+        if (this.image == null) {
+          this.width = 0;
+          this.height = 0;
+        } else {
+          this.width = image.getWidth(null);
+          this.height = image.getHeight(null);
+        }
+      }
+    }
+
+    boolean isVisible() {
       return this.image != null;
     }
 
@@ -84,7 +97,9 @@ public class VisualAttributeImageBlock {
     }
 
     void draw(@Nonnull final Graphics2D gfx, final int basex, final int basey) {
-      gfx.drawImage(this.image, basex + this.relx, basey + this.rely, null);
+      if (this.isVisible()) {
+        gfx.drawImage(this.image, basex + this.relx, basey + this.rely, null);
+      }
     }
   }
 
@@ -117,12 +132,18 @@ public class VisualAttributeImageBlock {
         }
       }
       int index = 0;
-      this.items = new VisualItem[detected.size()];
-      for (final VisualAttributePlugin p : detected) {
-        final VisualItem item = new VisualItem(this, x, 0, p, p.getScaledImage(cfg, this.model));
-        this.items[index++] = item;
+      this.items = this.items == null || this.items.length != detected.size() ? new VisualItem[detected.size()] : this.items;
+      for (final VisualAttributePlugin plugin : detected) {
+        VisualItem item = this.items[index];
+        if (item == null || item.getPlugin() == plugin) {
+          item = new VisualItem(this, cfg, x, 0, plugin);
+          this.items[index] = item;
+        } else {
+          item.updateImage(cfg);
+        }
         x += item.getWidth();
         maxheight = Math.max(maxheight, item.getHeight());
+        index++;
       }
       for (final VisualItem i : this.items) {
         i.toHCenter(maxheight);
@@ -144,7 +165,9 @@ public class VisualAttributeImageBlock {
     int offsetX = (int) Math.round(this.bounds.getX());
     final int offsetY = (int) Math.round(this.bounds.getY());
     for (final VisualItem i : this.items) {
-      i.draw(gfx, offsetX, offsetY);
+      if (i.isVisible()) {
+        i.draw(gfx, offsetX, offsetY);
+      }
     }
   }
 
@@ -155,7 +178,7 @@ public class VisualAttributeImageBlock {
       final int px = (int) Math.round(x - this.bounds.getX());
       final int py = (int) Math.round(y - this.bounds.getY());
       for (final VisualItem i : this.items) {
-        if (i.containsPoint(px, py)) {
+        if (i.isVisible() && i.containsPoint(px, py)) {
           result = i.getPlugin();
           break;
         }

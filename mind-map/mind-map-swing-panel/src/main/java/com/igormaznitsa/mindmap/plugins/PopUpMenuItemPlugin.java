@@ -24,14 +24,17 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
-public interface MindMapPopUpItemPlugin extends MindMapPlugin {
+public interface PopUpMenuItemPlugin extends MindMapPlugin {
   @Weight(Weight.Unit.LIGHT)
   @Nullable
-  JMenuItem getPluginMenuItem(
+  JMenuItem makeMenuItem(
       @Nonnull MindMapPanel panel, 
       @Nonnull DialogProvider dialogProvider, 
-      @Nonnull PopUpSection section, 
       @Nullable Topic topic, 
       @Nullable @MustNotContainNull Topic[] selectedTopics, 
       @Nullable MindMapPopUpItemCustomProcessor customProcessor);
+  @Nonnull
+  PopUpSection getSection();
+  boolean needsTopicUnderMouse();
+  boolean needsSelectedTopics();
 }

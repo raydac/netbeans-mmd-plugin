@@ -27,6 +27,7 @@ import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import javax.swing.Icon;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class RemoveTopicPlugin extends AbstractFocusedTopicActionPlugin {
 
@@ -38,8 +39,8 @@ public class RemoveTopicPlugin extends AbstractFocusedTopicActionPlugin {
   }
 
   @Override
-  public boolean isAllowed(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return actionTopic != null || selectedTopics.length > 0;
+  public boolean needsSelectedTopics() {
+    return true;
   }
 
   @Override
@@ -65,7 +66,7 @@ public class RemoveTopicPlugin extends AbstractFocusedTopicActionPlugin {
 
   @Override
   @Nonnull
-  protected PopUpSection getPopUpSection() {
+  public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }
 }

@@ -45,15 +45,13 @@ public abstract class AbstractImportingPlugin extends AbstractPopupMenuItemPlugi
 
   @Override
   @Nullable
-  public JMenuItem getPluginMenuItem(
+  public JMenuItem makeMenuItem(
       @Nonnull final MindMapPanel panel,
       @Nonnull final DialogProvider dialogProvider,
-      @Nonnull final PopUpSection section,
       @Nullable final Topic actionTopic,
       @Nonnull @MayContainNull final Topic[] selectedTopics,
       @Nullable final MindMapPopUpItemCustomProcessor processor) {
     JMenuItem result = null;
-    if (section == PopUpSection.IMPORT) {
       result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
       result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
 
@@ -75,7 +73,7 @@ public abstract class AbstractImportingPlugin extends AbstractPopupMenuItemPlugi
                 });
               }
             } else {
-              processor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, section, actionTopic, selectedTopics);
+              processor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
             }
           } catch (Exception ex) {
             LOGGER.error("Error during map import", ex); //NOI18N
@@ -83,8 +81,23 @@ public abstract class AbstractImportingPlugin extends AbstractPopupMenuItemPlugi
           }
         }
       });
-    }
     return result;
+  }
+
+  @Override
+  @Nonnull
+  public PopUpSection getSection() {
+    return PopUpSection.IMPORT;
+  }
+
+  @Override
+  public boolean needsTopicUnderMouse() {
+    return false;
+  }
+
+  @Override
+  public boolean needsSelectedTopics() {
+    return false;
   }
 
   @Nonnull

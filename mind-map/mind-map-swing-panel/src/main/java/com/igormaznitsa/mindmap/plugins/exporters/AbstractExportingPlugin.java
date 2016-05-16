@@ -42,41 +42,53 @@ public abstract class AbstractExportingPlugin extends AbstractPopupMenuItemPlugi
 
   @Override
   @Nullable
-  public JMenuItem getPluginMenuItem(
-      @Nonnull final MindMapPanel panel, 
-      @Nonnull final DialogProvider dialogProvider, 
-      @Nonnull final PopUpSection section, 
-      @Nullable final Topic actionTopic, 
+  public JMenuItem makeMenuItem(
+      @Nonnull final MindMapPanel panel,
+      @Nonnull final DialogProvider dialogProvider,
+      @Nullable final Topic actionTopic,
       @Nonnull @MayContainNull final Topic[] selectedTopics,
       @Nullable final MindMapPopUpItemCustomProcessor processor) {
-    JMenuItem result = null;
-    if (section == PopUpSection.EXPORT) {
-      result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
-      result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
+    result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
 
-      final AbstractPopupMenuItemPlugin theInstance = this;
-      
-      result.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          try {
-            if (processor == null){
+    final AbstractPopupMenuItemPlugin theInstance = this;
+
+    result.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        try {
+          if (processor == null) {
             final JComponent options = makeOptions();
             if (options != null && !dialogProvider.msgOkCancel(getName(panel, actionTopic, selectedTopics), options)) {
               return;
             }
             doExport(panel, options, null);
-            }else{
-              processor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, section, actionTopic, selectedTopics);
-            }
-          } catch (Exception ex) {
-            LOGGER.error("Error during map export", ex); //NOI18N
-            dialogProvider.msgError(Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
+          } else {
+            processor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
           }
+        } catch (Exception ex) {
+          LOGGER.error("Error during map export", ex); //NOI18N
+          dialogProvider.msgError(Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
         }
-      });
-    }
+      }
+    });
     return result;
+  }
+
+  @Override
+  @Nonnull
+  public PopUpSection getSection() {
+    return PopUpSection.EXPORT;
+  }
+
+  @Override
+  public boolean needsTopicUnderMouse() {
+    return false;
+  }
+
+  @Override
+  public boolean needsSelectedTopics() {
+    return false;
   }
 
   @Nullable
@@ -87,7 +99,7 @@ public abstract class AbstractExportingPlugin extends AbstractPopupMenuItemPlugi
   public abstract void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException;
 
   @Nonnull
-  public abstract String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic [] selectedTopics);
+  public abstract String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
 
   @Nonnull
   public abstract String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);

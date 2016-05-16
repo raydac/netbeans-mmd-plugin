@@ -101,8 +101,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemPlugin;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
 import com.igormaznitsa.mindmap.plugins.focused.ExtraFilePlugin;
@@ -116,6 +118,7 @@ import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconService;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import com.igormaznitsa.mindmap.plugins.PopUpMenuItemPlugin;
 
 @MultiViewElement.Registration(
     displayName = "#MMDGraphEditor.displayName",
@@ -953,158 +956,138 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return config;
   }
 
-  private static final List<JMenuItem> putAllItemsAsSection(final JPopupMenu menu, final List<JMenuItem> items) {
+  private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu, @Nullable final JMenu subMenu, @Nonnull @MustNotContainNull final List<JMenuItem> items) {
     if (!items.isEmpty()) {
       if (menu.getComponentCount() > 0) {
         menu.add(UI_COMPO_FACTORY.makeMenuSeparator());
       }
       for (final JMenuItem i : items) {
-        menu.add(i);
+        if (subMenu == null) {
+          menu.add(i);
+        } else {
+          subMenu.add(i);
+        }
+      }
+
+      if (subMenu != null) {
+        menu.add(subMenu);
       }
     }
     return items;
   }
 
+  private Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> customProcessors = null;
+
+  private Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> getCustomProcessors() {
+    if (this.customProcessors == null) {
+      this.customProcessors = new HashMap<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor>();
+      this.customProcessors.put(ExtraNotePlugin.class, new MindMapPopUpItemCustomProcessor() {
+        @Override
+        public void doJobInsteadOfPlugin(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          editTextForTopic(topic);
+          panel.requestFocus();
+        }
+      });
+      this.customProcessors.put(ExtraFilePlugin.class, new MindMapPopUpItemCustomProcessor() {
+        @Override
+        public void doJobInsteadOfPlugin(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          editFileLinkForTopic(topic);
+          panel.requestFocus();
+        }
+      });
+      this.customProcessors.put(ExtraURIPlugin.class, new MindMapPopUpItemCustomProcessor() {
+        @Override
+        public void doJobInsteadOfPlugin(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          editLinkForTopic(topic);
+          panel.requestFocus();
+        }
+      });
+      this.customProcessors.put(ExtraJumpPlugin.class, new MindMapPopUpItemCustomProcessor() {
+        @Override
+        public void doJobInsteadOfPlugin(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          editTopicLinkForTopic(topic);
+          panel.requestFocus();
+        }
+      });
+      this.customProcessors.put(ChangeColorPlugin.class, new MindMapPopUpItemCustomProcessor() {
+        @Override
+        public void doJobInsteadOfPlugin(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
+        }
+      });
+      this.customProcessors.put(AboutPlugin.class, new MindMapPopUpItemCustomProcessor() {
+        @Override
+        public void doJobInsteadOfPlugin(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          NbUtils.plainMessageOk(BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
+        }
+      });
+      this.customProcessors.put(OptionsPlugin.class, new MindMapPopUpItemCustomProcessor() {
+        @Override
+        public void doJobInsteadOfPlugin(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          OptionsDisplayer.getDefault().open("nb-mmd-config-main"); //NOI18N
+        }
+      });
+    }
+    return this.customProcessors;
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  private List<JMenuItem> findPopupMenuItems(
+      @Nonnull final MindMapPanel panel,
+      @Nonnull final PopUpSection section,
+      @Nonnull @MayContainNull final List<JMenuItem> list,
+      @Nullable final Topic topicUnderMouse,
+      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
+      @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems
+  ) {
+    list.clear();
+
+    final Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> processors = getCustomProcessors();
+
+    for (final PopUpMenuItemPlugin p : pluginMenuItems) {
+      if (p.getSection() == section) {
+        if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
+            || (p.needsTopicUnderMouse() && topicUnderMouse != null)
+            || (p.needsSelectedTopics() && selectedTopics.length > 0)) {
+
+          final JMenuItem item = p.makeMenuItem(panel, this, topicUnderMouse, selectedTopics, processors.get(p.getClass()));
+          if (item != null) {
+            list.add(item);
+          }
+        }
+      }
+    }
+    return list;
+  }
+
   @Override
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
-    final List<JMenuItem> tmpList = new ArrayList<JMenuItem>();
 
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
     final Topic elementTopic = element == null ? null : element.getModel();
     final Topic[] selectedTopics = this.mindMapPanel.getSelectedTopics();
-    final List<MindMapPopUpItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(MindMapPopUpItemPlugin.class);
-    final List<AbstractImportingPlugin> pluginImport = MindMapPluginRegistry.getInstance().findFor(AbstractImportingPlugin.class);
+    final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
+    final List<JMenuItem> tmpList = new ArrayList<JMenuItem>();
 
     final boolean isModelNotEmpty = this.mindMapPanel.getModel().getRoot() != null;
 
-    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
-      final JMenuItem menuItem = p.getPluginMenuItem(source, this, PopUpSection.MAIN, elementTopic, selectedTopics, null);
-      if (menuItem != null) {
-        tmpList.add(menuItem);
-      }
-    }
-
-    putAllItemsAsSection(result, tmpList).clear();
-
-    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
-      final JMenuItem menuItem;
-      if (p instanceof ExtraNotePlugin) {
-        menuItem = p.getPluginMenuItem(source, this, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
-          @Override
-          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-            editTextForTopic(topic);
-            panel.requestFocus();
-          }
-        });
-      } else
-      if (p instanceof ExtraFilePlugin) {
-        menuItem = p.getPluginMenuItem(source, this, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
-          @Override
-          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-            editFileLinkForTopic(topic);
-            panel.requestFocus();
-          }
-        });
-      } else if (p instanceof ExtraURIPlugin) {
-        menuItem = p.getPluginMenuItem(source, this, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
-          @Override
-          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-            editLinkForTopic(topic);
-            panel.requestFocus();
-          }
-        });
-      } else if (p instanceof ExtraJumpPlugin) {
-        menuItem = p.getPluginMenuItem(source, this, PopUpSection.EXTRAS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
-          @Override
-          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-            editTopicLinkForTopic(topic);
-            panel.requestFocus();
-          }
-        });
-      } else {
-        menuItem = p.getPluginMenuItem(source, this, PopUpSection.EXTRAS, elementTopic, selectedTopics, null);
-      }
-      if (menuItem != null) {
-        tmpList.add(menuItem);
-      }
-    }
-
-    putAllItemsAsSection(result, tmpList).clear();
-
-    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
-
-      final JMenuItem item;
-      if (p instanceof ChangeColorPlugin) {
-        item = p.getPluginMenuItem(source, this, PopUpSection.TOOLS, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
-          @Override
-          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
-            processColorDialogForTopics(source, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
-          }
-        });
-      } else {
-        item = p.getPluginMenuItem(source, this, PopUpSection.TOOLS, elementTopic, selectedTopics, null);
-      }
-      if (item != null) {
-        tmpList.add(item);
-      }
-    }
-
-    putAllItemsAsSection(result, tmpList).clear();
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MAIN, tmpList, elementTopic, selectedTopics, pluginMenuItems));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.EXTRAS, tmpList, elementTopic, selectedTopics, pluginMenuItems));
 
     final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
     exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
 
-    for (final MindMapPopUpItemPlugin plugin : pluginMenuItems) {
-      final JMenuItem exporterMenuItem = plugin.getPluginMenuItem(source, this, PopUpSection.EXPORT, elementTopic, selectedTopics, null);
-      if (exporterMenuItem != null) {
-        exportMenu.add(exporterMenuItem);
-      }
-    }
-    tmpList.add(exportMenu);
-    putAllItemsAsSection(result, tmpList).clear();
+    final JMenu importMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miImportMapFrom"));
+    importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
 
-    exportMenu.setEnabled(isModelNotEmpty);
-
-    if (!pluginImport.isEmpty()){
-      final JMenu importMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miImportMapFrom"));
-      importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
-
-      for (final AbstractImportingPlugin plugin : pluginImport) {
-        final JMenuItem importerMenuItem = plugin.getPluginMenuItem(source, this, PopUpSection.IMPORT, elementTopic, selectedTopics, null);
-        if (importerMenuItem != null) {
-          importMenu.add(importerMenuItem);
-        }
-      }
-      tmpList.add(importMenu);
-      putAllItemsAsSection(result, tmpList).clear();
-    }
-    
-    for (final MindMapPopUpItemPlugin p : pluginMenuItems) {
-      final JMenuItem item;
-      if (p instanceof AboutPlugin) {
-        item = p.getPluginMenuItem(source, this, PopUpSection.MISC, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
-          @Override
-          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-            NbUtils.plainMessageOk(BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
-          }
-        });
-      } else if (p instanceof OptionsPlugin) {
-        item = p.getPluginMenuItem(source, this, PopUpSection.MISC, elementTopic, selectedTopics, new MindMapPopUpItemCustomProcessor() {
-          @Override
-          public void doJobInsteadOfPlugin(@Nonnull final MindMapPopUpItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-            OptionsDisplayer.getDefault().open("nb-mmd-config-main"); //NOI18N
-          }
-        });
-      } else {
-        item = p.getPluginMenuItem(source, this, PopUpSection.MISC, elementTopic, selectedTopics, null);
-      }
-
-      if (item != null) {
-        tmpList.add(item);
-      }
+    putAllItemsAsSection(result, importMenu, findPopupMenuItems(source, PopUpSection.IMPORT, tmpList, elementTopic, selectedTopics, pluginMenuItems));
+    if (isModelNotEmpty) {
+      putAllItemsAsSection(result, exportMenu, findPopupMenuItems(source, PopUpSection.EXPORT, tmpList, elementTopic, selectedTopics, pluginMenuItems));
     }
 
-    putAllItemsAsSection(result, tmpList);
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.TOOLS, tmpList, elementTopic, selectedTopics, pluginMenuItems));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MISC, tmpList, elementTopic, selectedTopics, pluginMenuItems));
 
     return result;
   }

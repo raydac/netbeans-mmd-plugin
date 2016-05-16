@@ -17,7 +17,6 @@ package com.igormaznitsa.mindmap.plugins.focused;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.ImageIcon;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
@@ -28,6 +27,7 @@ import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import javax.swing.Icon;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class AddChildPlugin extends AbstractFocusedTopicActionPlugin {
 
@@ -57,7 +57,7 @@ public class AddChildPlugin extends AbstractFocusedTopicActionPlugin {
 
   @Override
   @Nonnull
-  protected PopUpSection getPopUpSection() {
+  public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }
 }

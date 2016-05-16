@@ -37,11 +37,6 @@ public class CloneTopicPlugin extends AbstractFocusedTopicActionPlugin {
   }
 
   @Override
-  public boolean isAllowed(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return (selectedTopics.length == 0 && actionTopic != null && !actionTopic.isRoot()) || (selectedTopics.length == 1 && !selectedTopics[0].isRoot());
-  }
-
-  @Override
   @Nullable
   protected Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
     return ICO;
@@ -64,7 +59,7 @@ public class CloneTopicPlugin extends AbstractFocusedTopicActionPlugin {
 
   @Override
   @Nonnull
-  protected PopUpSection getPopUpSection() {
+  public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }
 }

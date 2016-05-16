@@ -28,6 +28,7 @@ import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import javax.swing.Icon;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class EditTextPlugin extends AbstractFocusedTopicActionPlugin {
 
@@ -57,7 +58,7 @@ public class EditTextPlugin extends AbstractFocusedTopicActionPlugin {
 
   @Override
   @Nonnull
-  protected PopUpSection getPopUpSection() {
+  public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }
 }

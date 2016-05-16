@@ -24,10 +24,9 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
 public interface MindMapPopUpItemCustomProcessor {
   void doJobInsteadOfPlugin(
-      @Nonnull MindMapPopUpItemPlugin plugin,
+      @Nonnull PopUpMenuItemPlugin plugin,
       @Nonnull MindMapPanel panel,
       @Nonnull DialogProvider dialogProvider,
-      @Nonnull PopUpSection section,
       @Nullable Topic topic,
       @Nullable @MustNotContainNull Topic[] selectedTopics);
 

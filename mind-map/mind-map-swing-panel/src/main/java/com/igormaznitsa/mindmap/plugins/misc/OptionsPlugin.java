@@ -37,21 +37,34 @@ public class OptionsPlugin extends AbstractPopupMenuItemPlugin {
 
   @Override
   @Nullable
-  public JMenuItem getPluginMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
-    JMenuItem result = null;
-    if (section == PopUpSection.MISC) {
-      result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miOptions"), ICO);
+  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miOptions"), ICO);
       final OptionsPlugin theInstance = this;  
       result.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
             if (customProcessor!=null){
-              customProcessor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, section, topic, selectedTopics);
+              customProcessor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, topic, selectedTopics);
             }
           }
         });
-    }
     return result;
+  }
+
+  @Override
+  @Nonnull
+  public PopUpSection getSection() {
+    return PopUpSection.MISC;
+  }
+
+  @Override
+  public boolean needsTopicUnderMouse() {
+    return false;
+  }
+
+  @Override
+  public boolean needsSelectedTopics() {
+    return false;
   }
 
   @Override

@@ -23,7 +23,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
-public abstract class AbstractPopupMenuItemPlugin implements MindMapPopUpItemPlugin {
+public abstract class AbstractPopupMenuItemPlugin implements PopUpMenuItemPlugin {
 
   public static final int CUSTOM_PLUGIN_START = 1000;
   

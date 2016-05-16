@@ -20,7 +20,6 @@ import java.awt.event.ActionListener;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -37,13 +36,16 @@ public class ChangeColorPlugin extends AbstractPopupMenuItemPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CHANGECOLOR);
 
-  
+  @Override
+  @Nonnull
+  public PopUpSection getSection() {
+    return PopUpSection.TOOLS;
+  }
+
   @Override
   @Nullable
-  public JMenuItem getPluginMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
-    JMenuItem result = null;
-    if (section == PopUpSection.TOOLS && (topic != null || selectedTopics.length>0)){
-      result = UI_COMPO_FACTORY.makeMenuItem(
+  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
+    JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(
           selectedTopics.length > 0 ? 
           Texts.getString("MMDGraphEditor.makePopUp.miColorsForSelected"):
           Texts.getString("MMDGraphEditor.makePopUp.miColorsForTopic"), ICO);
@@ -53,12 +55,21 @@ public class ChangeColorPlugin extends AbstractPopupMenuItemPlugin {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
           if (customProcessor!=null){
-            customProcessor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, section, topic, selectedTopics);
+            customProcessor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, topic, selectedTopics);
           }
         }
       });
-    }
     return result;
+  }
+
+  @Override
+  public boolean needsTopicUnderMouse() {
+    return true;
+  }
+
+  @Override
+  public boolean needsSelectedTopics() {
+    return true;
   }
 
   @Override

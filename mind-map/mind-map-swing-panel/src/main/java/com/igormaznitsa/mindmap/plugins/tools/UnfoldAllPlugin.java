@@ -40,10 +40,8 @@ public class UnfoldAllPlugin extends AbstractPopupMenuItemPlugin {
   
   @Override
   @Nullable
-  public JMenuItem getPluginMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final PopUpSection section, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
-    JMenuItem result = null;
-    if (section == PopUpSection.TOOLS){
-      result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miExpandAll"), ICO);
+  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miExpandAll"), ICO);
       result.setEnabled(panel.getModel().getRoot() != null);
       result.addActionListener(new ActionListener() {
         @Override
@@ -51,10 +49,25 @@ public class UnfoldAllPlugin extends AbstractPopupMenuItemPlugin {
           panel.collapseOrExpandAll(false);
         }
       });
-    }
     return result;
   }
 
+  @Override
+  @Nonnull
+  public PopUpSection getSection() {
+    return PopUpSection.TOOLS;
+  }
+
+  @Override
+  public boolean needsTopicUnderMouse() {
+    return false;
+  }
+
+  @Override
+  public boolean needsSelectedTopics() {
+    return false;
+  }
+  
   @Override
   public int getOrder() {
     return 2;

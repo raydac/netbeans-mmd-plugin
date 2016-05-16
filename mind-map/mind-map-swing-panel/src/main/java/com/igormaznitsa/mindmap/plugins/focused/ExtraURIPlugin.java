@@ -20,7 +20,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
-import javax.swing.ImageIcon;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -30,6 +29,7 @@ import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import javax.swing.Icon;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class ExtraURIPlugin extends AbstractFocusedTopicActionPlugin {
 
@@ -63,7 +63,7 @@ public class ExtraURIPlugin extends AbstractFocusedTopicActionPlugin {
 
   @Override
   @Nonnull
-  protected PopUpSection getPopUpSection() {
+  public PopUpSection getSection() {
     return PopUpSection.EXTRAS;
   }
 

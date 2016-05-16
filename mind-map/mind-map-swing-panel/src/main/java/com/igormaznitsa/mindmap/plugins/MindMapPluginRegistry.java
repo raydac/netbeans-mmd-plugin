@@ -47,6 +47,7 @@ import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.CollapseAllPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ShowJumpsPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.UnfoldAllPlugin;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {

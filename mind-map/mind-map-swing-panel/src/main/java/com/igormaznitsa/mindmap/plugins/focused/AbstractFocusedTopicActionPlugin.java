@@ -25,7 +25,6 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.AbstractPopupMenuItemPlugin;
 import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
-import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
@@ -33,16 +32,13 @@ abstract class AbstractFocusedTopicActionPlugin extends AbstractPopupMenuItemPlu
 
   @Override
   @Nullable
-  public JMenuItem getPluginMenuItem(
+  public JMenuItem makeMenuItem(
       @Nonnull final MindMapPanel panel,
       @Nonnull final DialogProvider dialogProvider,
-      @Nonnull final PopUpSection section,
       @Nullable final Topic actionTopic,
       @Nonnull @MustNotContainNull final Topic[] selectedTopics,
       @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
-    JMenuItem result = null;
-    if (section == getPopUpSection() && isAllowed(panel, actionTopic, selectedTopics)) {
-      result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
       result.setToolTipText(getReference());
 
       final AbstractFocusedTopicActionPlugin theInstance = this;
@@ -53,21 +49,23 @@ abstract class AbstractFocusedTopicActionPlugin extends AbstractPopupMenuItemPlu
           if (customProcessor == null) {
             doActionForTopic(panel, dialogProvider, actionTopic, selectedTopics);
           } else {
-            customProcessor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, section, actionTopic, selectedTopics);
+            customProcessor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
           }
         }
       });
-    }
     return result;
   }
 
-  public boolean isAllowed(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return actionTopic != null;
+  @Override
+  public boolean needsTopicUnderMouse() {
+    return true;
   }
 
-  @Nonnull
-  protected abstract PopUpSection getPopUpSection();
-  
+  @Override
+  public boolean needsSelectedTopics() {
+    return false;
+  }
+
   @Nonnull
   protected abstract Icon getIcon(@Nonnull MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
 
