@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;

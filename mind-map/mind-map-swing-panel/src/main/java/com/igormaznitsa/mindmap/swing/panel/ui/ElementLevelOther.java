@@ -27,7 +27,6 @@ import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class ElementLevelOther extends ElementLevelFirst {
 

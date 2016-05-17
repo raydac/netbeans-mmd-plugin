@@ -51,8 +51,7 @@ public abstract class AbstractImportingPlugin extends AbstractPopupMenuItemPlugi
       @Nullable final Topic actionTopic,
       @Nonnull @MayContainNull final Topic[] selectedTopics,
       @Nullable final MindMapPopUpItemCustomProcessor processor) {
-    JMenuItem result = null;
-      result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
+      final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
       result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
 
       final AbstractPopupMenuItemPlugin theInstance = this;

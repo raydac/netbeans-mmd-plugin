@@ -37,7 +37,6 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -92,7 +91,7 @@ public final class PNGImageExporter extends AbstractExportingPlugin {
 
   @Override
   public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
-    for(final Component compo : Assertions.assertNotNull((JPanel)options).getComponents()){
+    for(final Component compo : Assertions.assertNotNull(options).getComponents()){
       if (compo instanceof JCheckBox){
         final JCheckBox cb = (JCheckBox)compo;
         if ("unfold".equalsIgnoreCase(cb.getActionCommand())){

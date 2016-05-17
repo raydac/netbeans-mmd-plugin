@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins.focused;
+package com.igormaznitsa.mindmap.plugins.processors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,7 +26,6 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import javax.swing.Icon;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
@@ -53,7 +52,9 @@ public class EditTextPlugin extends AbstractFocusedTopicActionPlugin {
 
   @Override
   protected void doActionForTopic(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    panel.startEdit((AbstractElement)assertNotNull(actionTopic.getPayload()));
+    if (actionTopic != null) {
+      panel.startEdit((AbstractElement) assertNotNull(actionTopic.getPayload()));
+    }
   }
 
   @Override

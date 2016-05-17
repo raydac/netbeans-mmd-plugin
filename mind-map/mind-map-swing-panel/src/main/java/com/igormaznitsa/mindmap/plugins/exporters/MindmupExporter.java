@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.grack.nanojson.JsonStringWriter;
 import com.grack.nanojson.JsonWriter;
 
@@ -184,7 +185,8 @@ public class MindmupExporter extends AbstractExportingPlugin {
     state.end();
 
     state.startObj("attr"); //NOI18N
-    state.startObj("style").set("background", Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false)).set("color", Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false)).end(); //NOI18N
+    state.startObj("style").set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false)))
+        .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false))).end(); //NOI18N
 
     final String attachment = makeHtmlFromExtras(topic);
     if (attachment != null) {
@@ -274,8 +276,8 @@ public class MindmupExporter extends AbstractExportingPlugin {
     if (root != null) {
     state.startObj("attr"); //NOI18N
     state.startObj("style")
-        .set("background", Utils.color2html(MindMapUtils.getBackgroundColor(cfg, root), false))//NOI18N
-        .set("color", Utils.color2html(MindMapUtils.getTextColor(cfg, root), false))//NOI18N
+        .set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, root), false)))//NOI18N
+        .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, root), false)))//NOI18N
         .end(); //NOI18N
     }
 

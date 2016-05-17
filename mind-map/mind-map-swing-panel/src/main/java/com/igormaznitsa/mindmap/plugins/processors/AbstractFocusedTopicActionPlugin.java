@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins.focused;
+package com.igormaznitsa.mindmap.plugins.processors;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,7 +72,7 @@ abstract class AbstractFocusedTopicActionPlugin extends AbstractPopupMenuItemPlu
   @Nonnull
   protected abstract String getName(@Nonnull MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
 
-  @Nonnull
+  @Nullable
   protected String getReference() {
     return null;
   }

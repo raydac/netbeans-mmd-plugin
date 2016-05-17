@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.0.5</version>
+    <version>1.2.0</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -18,7 +18,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.0.5 (in development)</p>
+        <p>1.2.0 (in development)</p>
         <ul>
             <li>fixed issue #10 "In Select topic dialog; Fold All only closes the root node"</li>
             <li>fixed issue #9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"</li>

@@ -15,8 +15,6 @@
  */
 package com.igormaznitsa.mindmap.print;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;

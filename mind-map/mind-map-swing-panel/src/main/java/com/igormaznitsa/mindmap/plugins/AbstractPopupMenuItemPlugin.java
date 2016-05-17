@@ -15,8 +15,8 @@
  */
 package com.igormaznitsa.mindmap.plugins;
 
-import java.awt.event.ActionListener;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -38,10 +38,24 @@ public abstract class AbstractPopupMenuItemPlugin implements PopUpMenuItemPlugin
   }
   
   @Override
+  public boolean equals(@Nullable final Object obj) {
+    boolean result = false;
+    if (obj!=null && obj.getClass() == this.getClass()) {
+      result = this.getOrder() == ((AbstractPopupMenuItemPlugin)obj).getOrder();
+    }
+    return result;
+  }
+  
+  @Override
   public int compareTo(@Nonnull final MindMapPlugin that) {
     if (this.getOrder() == that.getOrder()) return 0;
     if (this.getOrder()<that.getOrder()) return -1;
     return 1;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.getClass().getName().hashCode()^(this.getOrder()<<7);
   }
 
 }

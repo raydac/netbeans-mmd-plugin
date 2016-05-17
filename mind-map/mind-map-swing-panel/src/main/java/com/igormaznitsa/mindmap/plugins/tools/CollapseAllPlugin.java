@@ -39,8 +39,7 @@ public class CollapseAllPlugin extends AbstractPopupMenuItemPlugin {
   @Override
   @Nullable
   public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
-    JMenuItem result = null;
-    result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"), ICO);
+    final JMenuItem result= UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"), ICO);
     result.setEnabled(panel.getModel().getRoot() != null);
     result.addActionListener(new ActionListener() {
       @Override
