@@ -108,6 +108,9 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     this.panelController = new MindMapPanelControllerImpl(this);
 
     this.mindMapPanel = new MindMapPanel(panelController);
+    this.mindMapPanel.putTmpObject("project",project);
+    this.mindMapPanel.putTmpObject("editor",this);
+
     this.mindMapPanel.addMindMapListener(this);
     this.mainScrollPane = new JBScrollPane();
     this.mainScrollPane.setViewportView(this.mindMapPanel);

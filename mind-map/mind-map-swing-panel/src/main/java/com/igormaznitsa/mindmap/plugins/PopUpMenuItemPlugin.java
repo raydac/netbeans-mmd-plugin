@@ -37,4 +37,8 @@ public interface PopUpMenuItemPlugin extends MindMapPlugin {
   PopUpSection getSection();
   boolean needsTopicUnderMouse();
   boolean needsSelectedTopics();
+  boolean isEnabled(
+      @Nonnull MindMapPanel panel,
+      @Nullable Topic topic,
+      @Nullable @MustNotContainNull Topic[] selectedTopics);
 }

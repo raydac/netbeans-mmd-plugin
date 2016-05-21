@@ -99,12 +99,8 @@ import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 import java.awt.dnd.InvalidDnDOperationException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
-import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
@@ -113,9 +109,7 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
-import com.igormaznitsa.mindmap.plugins.importers.AbstractImportingPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconService;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.mindmap.plugins.PopUpMenuItemPlugin;
@@ -956,26 +950,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return config;
   }
 
-  private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu, @Nullable final JMenu subMenu, @Nonnull @MustNotContainNull final List<JMenuItem> items) {
-    if (!items.isEmpty()) {
-      if (menu.getComponentCount() > 0) {
-        menu.add(UI_COMPO_FACTORY.makeMenuSeparator());
-      }
-      for (final JMenuItem i : items) {
-        if (subMenu == null) {
-          menu.add(i);
-        } else {
-          subMenu.add(i);
-        }
-      }
-
-      if (subMenu != null) {
-        menu.add(subMenu);
-      }
-    }
-    return items;
-  }
-
   private Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> customProcessors = null;
 
   private Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> getCustomProcessors() {
@@ -1031,65 +1005,9 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return this.customProcessors;
   }
 
-  @Nonnull
-  @MustNotContainNull
-  private List<JMenuItem> findPopupMenuItems(
-      @Nonnull final MindMapPanel panel,
-      @Nonnull final PopUpSection section,
-      @Nonnull @MayContainNull final List<JMenuItem> list,
-      @Nullable final Topic topicUnderMouse,
-      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
-      @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems
-  ) {
-    list.clear();
-
-    final Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> processors = getCustomProcessors();
-
-    for (final PopUpMenuItemPlugin p : pluginMenuItems) {
-      if (p.getSection() == section) {
-        if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
-            || (p.needsTopicUnderMouse() && topicUnderMouse != null)
-            || (p.needsSelectedTopics() && selectedTopics.length > 0)) {
-
-          final JMenuItem item = p.makeMenuItem(panel, this, topicUnderMouse, selectedTopics, processors.get(p.getClass()));
-          if (item != null) {
-            list.add(item);
-          }
-        }
-      }
-    }
-    return list;
-  }
-
   @Override
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
-
-    final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
-    final Topic elementTopic = element == null ? null : element.getModel();
-    final Topic[] selectedTopics = this.mindMapPanel.getSelectedTopics();
-    final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
-    final List<JMenuItem> tmpList = new ArrayList<JMenuItem>();
-
-    final boolean isModelNotEmpty = this.mindMapPanel.getModel().getRoot() != null;
-
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MAIN, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.EXTRAS, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-
-    final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
-    exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
-
-    final JMenu importMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miImportMapFrom"));
-    importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
-
-    putAllItemsAsSection(result, importMenu, findPopupMenuItems(source, PopUpSection.IMPORT, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-    if (isModelNotEmpty) {
-      putAllItemsAsSection(result, exportMenu, findPopupMenuItems(source, PopUpSection.EXPORT, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-    }
-
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.TOOLS, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MISC, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-
-    return result;
+    return Utils.makePopUp(source, this, element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
   }
 
   private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {

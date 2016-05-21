@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.plugins;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -58,4 +59,8 @@ public abstract class AbstractPopupMenuItemPlugin implements PopUpMenuItemPlugin
     return this.getClass().getName().hashCode()^(this.getOrder()<<7);
   }
 
+  @Override
+  public boolean isEnabled(@Nonnull final MindMapPanel panel, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+    return true;
+  }
 }

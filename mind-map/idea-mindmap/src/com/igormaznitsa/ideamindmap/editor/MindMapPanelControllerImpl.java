@@ -16,7 +16,6 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
-import com.igormaznitsa.ideamindmap.print.IdeaMMDPrintPanelAdaptor;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
@@ -24,9 +23,7 @@ import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
-import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
-import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -37,10 +34,8 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
 import com.igormaznitsa.mindmap.plugins.PopUpMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
@@ -48,7 +43,6 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapConfigListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -58,26 +52,16 @@ import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.mindmap.swing.services.IconID;
-import com.igormaznitsa.mindmap.swing.services.ImageIconService;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.openapi.options.ShowSettingsUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -86,8 +70,6 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanelControllerImpl.class);
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
-  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
-  private static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
 
   private final MindMapDocumentEditor editor;
   private final MindMapDialogProvider dialogProvider;
@@ -148,26 +130,6 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     return MindMapApplicationSettings.findInstance().getConfig();
   }
 
-  private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu, @Nullable final JMenu subMenu, @Nonnull @MustNotContainNull final List<JMenuItem> items) {
-    if (!items.isEmpty()) {
-      if (menu.getComponentCount() > 0) {
-        menu.add(UI_COMPO_FACTORY.makeMenuSeparator());
-      }
-      for (final JMenuItem i : items) {
-        if (subMenu == null) {
-          menu.add(i);
-        } else {
-          subMenu.add(i);
-        }
-      }
-
-      if (subMenu != null) {
-        menu.add(subMenu);
-      }
-    }
-    return items;
-  }
-
   private Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> customProcessors = null;
 
   private Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> getCustomProcessors() {
@@ -223,77 +185,9 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     return this.customProcessors;
   }
 
-  @Nonnull
-  @MustNotContainNull
-  private List<JMenuItem> findPopupMenuItems(
-    @Nonnull final MindMapPanel panel,
-    @Nonnull final PopUpSection section,
-    @Nonnull @MayContainNull final List<JMenuItem> list,
-    @Nullable final Topic topicUnderMouse,
-    @Nonnull @MustNotContainNull final Topic[] selectedTopics,
-    @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems
-  ) {
-    list.clear();
-
-    final Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> processors = getCustomProcessors();
-
-    for (final PopUpMenuItemPlugin p : pluginMenuItems) {
-      if (p.getSection() == section) {
-        if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
-          || (p.needsTopicUnderMouse() && topicUnderMouse != null)
-          || (p.needsSelectedTopics() && selectedTopics.length > 0)) {
-
-          final JMenuItem item = p.makeMenuItem(panel, this.dialogProvider, topicUnderMouse, selectedTopics, processors.get(p.getClass()));
-          if (item != null) {
-            list.add(item);
-          }
-        }
-      }
-    }
-    return list;
-  }
-
   @Override
   public JPopupMenu makePopUpForMindMapPanel(final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
-
-    final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
-    final Topic elementTopic = element == null ? null : element.getModel();
-    final Topic[] selectedTopics = source.getSelectedTopics();
-    final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
-    final List<JMenuItem> tmpList = new ArrayList<JMenuItem>();
-
-    final boolean isModelNotEmpty = source.getModel().getRoot() != null;
-
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MAIN, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.EXTRAS, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-
-    final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miExportMapAs"));
-    exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
-
-    final JMenu importMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDGraphEditor.makePopUp.miImportMapFrom"));
-    importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
-
-    putAllItemsAsSection(result, importMenu, findPopupMenuItems(source, PopUpSection.IMPORT, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-    if (isModelNotEmpty) {
-      putAllItemsAsSection(result, exportMenu, findPopupMenuItems(source, PopUpSection.EXPORT, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-    }
-
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.TOOLS, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-
-    final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), AllIcons.PopUp.PRINTER);
-    printAction.addActionListener(new ActionListener() {
-      @Override public void actionPerformed(ActionEvent e) {
-        final MMDPrintPanel panel = new MMDPrintPanel(new IdeaMMDPrintPanelAdaptor(getEditor().getProject()), getEditor().getMindMapPanel());
-        IdeaUtils.plainMessageClose(getEditor().getProject(),"Print mind map",panel);
-      }
-    });
-    tmpList.clear();
-    tmpList.add(printAction);
-    putAllItemsAsSection(result, null, tmpList);
-
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MISC, tmpList, elementTopic, selectedTopics, pluginMenuItems));
-
-    return result;
+    return Utils.makePopUp(source, this.dialogProvider, element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
   }
 
   private void startOptionsEdit() {

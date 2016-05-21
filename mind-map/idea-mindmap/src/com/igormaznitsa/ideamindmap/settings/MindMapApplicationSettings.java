@@ -15,8 +15,10 @@
  */
 package com.igormaznitsa.ideamindmap.settings;
 
+import com.igormaznitsa.ideamindmap.plugins.PrinterPlugin;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -43,7 +45,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
   }
 
   @Override public void initComponent() {
-
+    MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
   }
 
   @Override public void disposeComponent() {

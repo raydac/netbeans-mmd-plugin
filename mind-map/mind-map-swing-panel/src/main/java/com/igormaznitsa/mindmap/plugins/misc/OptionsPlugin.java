@@ -69,7 +69,7 @@ public class OptionsPlugin extends AbstractPopupMenuItemPlugin {
 
   @Override
   public int getOrder() {
-    return 800;
+    return Integer.MAX_VALUE-1;
   }
   
 }

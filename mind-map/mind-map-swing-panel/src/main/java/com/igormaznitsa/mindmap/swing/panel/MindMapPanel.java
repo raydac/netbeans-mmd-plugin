@@ -66,6 +66,12 @@ import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.VisualAttributePlugin;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.WeakHashMap;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MindMapPanel extends JPanel {
 
@@ -78,6 +84,8 @@ public class MindMapPanel extends JPanel {
 
   private static final int ALL_SUPPORTED_MODIFIERS = KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
 
+  private final Map<Object, WeakReference<?>> weakTable = new WeakHashMap<Object, WeakReference<?>>();
+  
   public static class DraggedElement {
 
     public enum Modifier {
@@ -612,6 +620,25 @@ public class MindMapPanel extends JPanel {
     this.add(this.textEditorPanel);
   }
 
+  @Nullable
+  public Object findTmpObject(@Nonnull final Object key){
+    synchronized(this.weakTable){
+      final WeakReference ref = this.weakTable.get(key);
+      return ref == null ? null : ref.get();
+    }
+  }
+
+  public void putTmpObject(@Nonnull final Object key, @Nullable final Object value){
+    synchronized (this.weakTable) {
+      if (value == null) {
+        this.weakTable.remove(key);
+      } else {
+        this.weakTable.put(key, new WeakReference<Object>(value));
+      }
+    }
+  }
+
+  
   @Nonnull
   private String makeHtmlTooltipForExtra(@Nonnull final Extra<?> extra) {
     final StringBuilder builder = new StringBuilder();

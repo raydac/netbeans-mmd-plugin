@@ -35,8 +35,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -44,11 +48,26 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import com.igormaznitsa.meta.annotation.ImplementationNote;
+import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
+import com.igormaznitsa.mindmap.plugins.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconService;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
 public final class Utils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
+  public static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
+  public static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
 
   private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
 
@@ -385,4 +404,92 @@ public final class Utils {
     return result;
   }
 
+  @Nonnull
+  @MustNotContainNull
+  private static List<JMenuItem> findPopupMenuItems(
+      @Nonnull final MindMapPanel panel,
+      @Nonnull final PopUpSection section,
+      @Nonnull @MayContainNull final List<JMenuItem> list,
+      @Nonnull DialogProvider dialogProvider,
+      @Nullable final Topic topicUnderMouse,
+      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
+      @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems,
+      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> customProcessors
+  ) {
+    list.clear();
+
+    for (final PopUpMenuItemPlugin p : pluginMenuItems) {
+      if (p.getSection() == section) {
+        if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
+            || (p.needsTopicUnderMouse() && topicUnderMouse != null)
+            || (p.needsSelectedTopics() && selectedTopics.length > 0)) {
+
+          final JMenuItem item = p.makeMenuItem(panel, dialogProvider, topicUnderMouse, selectedTopics, customProcessors.get(p.getClass()));
+          if (item != null) {
+            item.setEnabled(p.isEnabled(panel, topicUnderMouse, selectedTopics));
+            list.add(item);
+          }
+        }
+      }
+    }
+    return list;
+  }
+  
+  @Nonnull
+  @MustNotContainNull
+  private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu, @Nullable final JMenu subMenu, @Nonnull @MustNotContainNull final List<JMenuItem> items) {
+    if (!items.isEmpty()) {
+      if (menu.getComponentCount() > 0) {
+        menu.add(UI_COMPO_FACTORY.makeMenuSeparator());
+      }
+      for (final JMenuItem i : items) {
+        if (subMenu == null) {
+          menu.add(i);
+        } else {
+          subMenu.add(i);
+        }
+      }
+
+      if (subMenu != null) {
+        menu.add(subMenu);
+      }
+    }
+    return items;
+  }
+
+  @Nonnull
+  public static JPopupMenu makePopUp(
+      @Nonnull final MindMapPanel source, 
+      @Nonnull final DialogProvider dialogProvider,
+      @Nullable final Topic topicUnderMouse, 
+      @Nonnull @MustNotContainNull final Topic [] selectedTopics, 
+      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> customProcessors
+  ) {
+    final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
+    final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
+    final List<JMenuItem> tmpList = new ArrayList<JMenuItem>();
+
+    final boolean isModelNotEmpty = source.getModel().getRoot() != null;
+
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MAIN, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.EXTRAS, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+
+    final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDExporters.SubmenuName"));
+    exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
+
+    final JMenu importMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDImporters.SubmenuName"));
+    importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
+
+    putAllItemsAsSection(result, importMenu, findPopupMenuItems(source, PopUpSection.IMPORT, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    if (isModelNotEmpty) {
+      putAllItemsAsSection(result, exportMenu, findPopupMenuItems(source, PopUpSection.EXPORT, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    }
+
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.TOOLS, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MISC, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+
+    return result;
+  }
+  
+  
 }

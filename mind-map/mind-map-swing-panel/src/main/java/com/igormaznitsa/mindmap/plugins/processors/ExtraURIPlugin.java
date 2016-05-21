@@ -29,6 +29,9 @@ import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import javax.swing.Icon;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class ExtraURIPlugin extends AbstractFocusedTopicActionPlugin {
 
