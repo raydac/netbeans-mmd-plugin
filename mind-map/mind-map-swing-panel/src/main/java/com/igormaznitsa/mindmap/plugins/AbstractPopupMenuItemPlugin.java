@@ -33,11 +33,6 @@ public abstract class AbstractPopupMenuItemPlugin implements PopUpMenuItemPlugin
   public AbstractPopupMenuItemPlugin() {
   }
 
-  @Weight(Weight.Unit.NORMAL)
-  @Override
-  public void onModelSet(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic){
-  }
-  
   @Override
   public boolean equals(@Nullable final Object obj) {
     boolean result = false;

@@ -15,6 +15,13 @@
  */
 package com.igormaznitsa.mindmap.plugins;
 
-public interface MindMapPlugin extends Comparable<MindMapPlugin> {
-  int getOrder();
+import javax.annotation.Nonnull;
+import com.igormaznitsa.meta.annotation.Weight;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+
+public interface ModelAwarePlugin extends MindMapPlugin {
+  @Weight(Weight.Unit.NORMAL)
+  void onDeleteTopic(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic);
+  void onCreateTopic(@Nonnull final MindMapPanel panel, @Nonnull Topic parent, @Nonnull final Topic newTopic);
 }

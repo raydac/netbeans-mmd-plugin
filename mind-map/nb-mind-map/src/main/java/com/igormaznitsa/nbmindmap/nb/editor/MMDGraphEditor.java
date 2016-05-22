@@ -215,6 +215,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   @Override
   public void componentClosed() {
     super.componentClosed();
+    this.mindMapPanel.dispose();
   }
 
   @Override

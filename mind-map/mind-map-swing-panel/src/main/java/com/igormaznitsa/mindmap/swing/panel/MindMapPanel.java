@@ -63,12 +63,18 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
-import com.igormaznitsa.mindmap.plugins.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.VisualAttributePlugin;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import java.util.concurrent.atomic.AtomicBoolean;
+import com.igormaznitsa.mindmap.plugins.ModelAwarePlugin;
+import com.igormaznitsa.mindmap.plugins.PanelAwarePlugin;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
@@ -85,7 +91,8 @@ public class MindMapPanel extends JPanel {
   private static final int ALL_SUPPORTED_MODIFIERS = KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
 
   private final Map<Object, WeakReference<?>> weakTable = new WeakHashMap<Object, WeakReference<?>>();
-  
+  private final AtomicBoolean disposed = new AtomicBoolean();
+      
   public static class DraggedElement {
 
     public enum Modifier {
@@ -618,10 +625,21 @@ public class MindMapPanel extends JPanel {
 
     this.textEditorPanel.setVisible(false);
     this.add(this.textEditorPanel);
+    
+    
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(PanelAwarePlugin.class)) {
+          p.onPanelCreate(theInstance);
+        }
+      }
+    });
   }
 
   @Nullable
   public Object findTmpObject(@Nonnull final Object key){
+    assertNotDisposed();
     synchronized(this.weakTable){
       final WeakReference ref = this.weakTable.get(key);
       return ref == null ? null : ref.get();
@@ -629,6 +647,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void putTmpObject(@Nonnull final Object key, @Nullable final Object value){
+    assertNotDisposed();
     synchronized (this.weakTable) {
       if (value == null) {
         this.weakTable.remove(key);
@@ -675,6 +694,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void refreshConfiguration() {
+    assertNotDisposed();
     final MindMapPanel theInstance = this;
     final double scale = this.config.getScale();
     this.config.makeAtomicChange(new Runnable() {
@@ -886,23 +906,35 @@ public class MindMapPanel extends JPanel {
   }
 
   public boolean isShowJumps() {
+    assertNotDisposed();
     return Boolean.parseBoolean(this.model.getAttribute(ATTR_SHOW_JUMPS));
   }
 
   public void setShowJumps(final boolean flag) {
+    assertNotDisposed();
     this.model.setAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
     repaint();
     fireNotificationMindMapChanged();
   }
 
+  @Nonnull
+  private Topic makeNewTopic(@Nonnull final Topic parent, @Nullable final Topic afterTopic, @Nonnull final String text){
+    final Topic result = parent.makeChild(text, afterTopic);
+    for(final ModelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(ModelAwarePlugin.class)){
+      p.onCreateTopic(this, parent, result);
+    }
+    return result;
+  }
+  
   public void makeNewChildAndStartEdit(@Nullable final Topic parent, @Nullable final Topic baseTopic) {
+    assertNotDisposed();
     if (parent != null) {
       final Topic currentSelected = getFirstSelected();
       this.pathToPrevTopicBeforeEdit = currentSelected == null ? null : currentSelected.getPositionPath();
 
       removeAllSelection();
 
-      final Topic newTopic = parent.makeChild("", baseTopic); //NOI18N
+      final Topic newTopic = makeNewTopic(parent, baseTopic, ""); //NOI18N
 
       if (this.controller.isCopyColorInfoFromParentToNewChildAllowed(this) && !parent.isRoot()) {
         MindMapUtils.copyColorAttributes(parent, newTopic);
@@ -963,14 +995,21 @@ public class MindMapPanel extends JPanel {
   }
 
   public void deleteTopics(@Nonnull @MustNotContainNull final Topic... topics) {
+    assertNotDisposed();
     endEdit(false);
     removeAllSelection();
     boolean allowed = true;
+    
+    final List<ModelAwarePlugin> plugins = MindMapPluginRegistry.getInstance().findFor(ModelAwarePlugin.class);
+    
     for (final MindMapListener l : this.mindMapListeners) {
       allowed &= l.allowedRemovingOfTopics(this, topics);
     }
     if (allowed) {
       for (final Topic t : topics) {
+        for(final ModelAwarePlugin p : plugins){
+          p.onDeleteTopic(this, t);
+        }
         this.model.removeTopic(t);
       }
       updateView(true);
@@ -978,6 +1017,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void collapseOrExpandAll(final boolean collapse) {
+    assertNotDisposed();
     endEdit(false);
     removeAllSelection();
 
@@ -990,20 +1030,24 @@ public class MindMapPanel extends JPanel {
   }
 
   public void deleteSelectedTopics() {
+    assertNotDisposed();
     if (!this.selectedTopics.isEmpty()) {
       deleteTopics(this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
     }
   }
 
   public boolean hasSelectedTopics() {
+    assertNotDisposed();
     return !this.selectedTopics.isEmpty();
   }
 
   public boolean hasOnlyTopicSelected() {
+    assertNotDisposed();
     return this.selectedTopics.size() == 1;
   }
 
   public void removeFromSelection(@Nonnull final Topic t) {
+    assertNotDisposed();
     if (this.selectedTopics.contains(t)) {
       if (this.selectedTopics.remove(t)) {
         fireNotificationSelectionChanged();
@@ -1013,6 +1057,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void select(@Nullable final Topic t, final boolean removeIfPresented) {
+    assertNotDisposed();
     if (this.controller.isSelectionAllowed(this) && t != null) {
       if (!this.selectedTopics.contains(t)) {
         if (this.selectedTopics.add(t)) {
@@ -1033,6 +1078,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void updateEditorAfterResizing() {
+    assertNotDisposed();
     if (this.elementUnderEdit != null) {
       final AbstractElement element = this.elementUnderEdit;
       final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
@@ -1044,11 +1090,13 @@ public class MindMapPanel extends JPanel {
   }
 
   public void hideEditor() {
+    assertNotDisposed();
     this.textEditorPanel.setVisible(false);
     this.elementUnderEdit = null;
   }
 
   public void endEdit(final boolean commit) {
+    assertNotDisposed();
     try {
       if (commit && this.elementUnderEdit != null) {
         this.pathToPrevTopicBeforeEdit = null;
@@ -1072,6 +1120,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void startEdit(@Nullable final AbstractElement element) {
+    assertNotDisposed();
     if (element == null) {
       this.elementUnderEdit = null;
       this.textEditorPanel.setVisible(false);
@@ -1139,15 +1188,17 @@ public class MindMapPanel extends JPanel {
   }
 
   public void addMindMapListener(@Nonnull final MindMapListener l) {
+    assertNotDisposed();
     this.mindMapListeners.add(Assertions.assertNotNull(l));
   }
 
   public void removeMindMapListener(@Nonnull final MindMapListener l) {
+    assertNotDisposed();
     this.mindMapListeners.remove(Assertions.assertNotNull(l));
   }
 
   public void setModel(@Nonnull final MindMap model) {
-
+    assertNotDisposed();
     if (this.elementUnderEdit != null) {
       Utils.safeSwingBlockingCall(new Runnable() {
         @Override
@@ -1164,11 +1215,12 @@ public class MindMapPanel extends JPanel {
 
     this.selectedTopics.clear();
 
+    final MindMap oldModel = this.model;
     this.model = assertNotNull("Model must not be null", model);
 
     for (final Topic t : this.model) {
-      for (final MindMapPlugin p : MindMapPluginRegistry.getInstance()) {
-        p.onModelSet(this, t);
+      for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(PanelAwarePlugin.class)) {
+        p.onPanelModelChange(this, oldModel, this.model);
       }
     }
 
@@ -1196,14 +1248,17 @@ public class MindMapPanel extends JPanel {
 
   @Nonnull
   public MindMap getModel() {
+    assertNotDisposed();
     return this.model;
   }
 
   public void setScale(final double zoom) {
+    assertNotDisposed();
     this.config.setScale(zoom);
   }
 
   public double getScale() {
+    assertNotDisposed();
     return this.config.getScale();
   }
 
@@ -1552,6 +1607,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void updateView(final boolean structureWasChanged) {
+    assertNotDisposed();
     invalidate();
     revalidate();
     if (structureWasChanged) {
@@ -1581,17 +1637,20 @@ public class MindMapPanel extends JPanel {
   }
 
   public void setErrorText(@Nullable final String text) {
+    assertNotDisposed();
     this.errorText = text;
     repaint();
   }
 
   @Nullable
   public String getErrorText() {
+    assertNotDisposed();
     return this.errorText;
   }
 
   @Override
   public boolean isValid() {
+    assertNotDisposed();
     return isModelValid(this.model);
   }
 
@@ -1602,6 +1661,7 @@ public class MindMapPanel extends JPanel {
 
   @Override
   public void invalidate() {
+    assertNotDisposed();
     super.invalidate();
     if (this.model != null && this.model.getRoot() != null) {
       this.model.resetPayload();
@@ -1626,6 +1686,7 @@ public class MindMapPanel extends JPanel {
   @Override
   @SuppressWarnings("unchecked")
   public void paintComponent(@Nonnull final Graphics g) {
+    assertNotDisposed();
     final Graphics2D gfx = (Graphics2D) g.create();
     try {
       final String error = this.errorText;
@@ -1654,6 +1715,7 @@ public class MindMapPanel extends JPanel {
 
   @Nullable
   public AbstractElement findTopicUnderPoint(@Nonnull final Point point) {
+    assertNotDisposed();
     AbstractElement result = null;
     if (this.model != null) {
       final Topic root = this.model.getRoot();
@@ -1669,6 +1731,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void removeAllSelection() {
+    assertNotDisposed();
     if (!this.selectedTopics.isEmpty()) {
       try {
         this.selectedTopics.clear();
@@ -1680,6 +1743,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public void focusTo(@Nullable final Topic theTopic) {
+    assertNotDisposed();
     if (theTopic != null) {
       final AbstractElement element = (AbstractElement) theTopic.getPayload();
       if (element != null && element instanceof AbstractCollapsableElement) {
@@ -1697,6 +1761,7 @@ public class MindMapPanel extends JPanel {
   }
 
   public boolean cloneTopic(@Nullable final Topic topic) {
+    assertNotDisposed();
     if (topic == null || topic.getTopicLevel() == 0) {
       return false;
     }
@@ -1718,16 +1783,19 @@ public class MindMapPanel extends JPanel {
 
   @Nonnull
   public MindMapPanelConfig getConfiguration() {
+    assertNotDisposed();
     return this.config;
   }
 
   @Nonnull
   public MindMapPanelController getController() {
+    assertNotDisposed();
     return this.controller;
   }
 
   @Nullable
   public Topic getFirstSelected() {
+    assertNotDisposed();
     return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
   }
 
@@ -1782,5 +1850,29 @@ public class MindMapPanel extends JPanel {
       gfx.dispose();
     }
     return img;
+  }
+
+  private void assertNotDisposed(){
+    if (this.disposed!=null && this.disposed.get()){
+      throw new IllegalStateException("Panel is already disposed");
+    }
+  }
+
+  public boolean isDisposed(){
+    return this.disposed.get();
+  }
+  
+  public void dispose(){
+    if (this.disposed.compareAndSet(false, true)){
+      this.weakTable.clear();
+      this.selectedTopics.clear();
+      this.mindMapListeners.clear();
+
+      for (final Topic t : this.model) {
+        for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(PanelAwarePlugin.class)) {
+          p.onPanelDispose(this);
+        }
+      }
+    }
   }
 }

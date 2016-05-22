@@ -288,7 +288,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   @Override
   public void dispose() {
-
+    this.mindMapPanel.dispose();
   }
 
   @Nullable
