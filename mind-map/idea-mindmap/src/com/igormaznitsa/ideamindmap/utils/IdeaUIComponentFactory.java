@@ -8,8 +8,10 @@ import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 
+import javax.annotation.Nonnull;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -21,15 +23,25 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 public class IdeaUIComponentFactory implements UIComponentFactory{
   @Override public JPanel makePanel() {
     return new JBPanel();
+  }
+
+  @Nonnull @Override public JToggleButton makeToggleButton() {
+    return new JToggleButton();
+  }
+
+  @Nonnull @Override public JRadioButton makeRadioButton() {
+    return new JBRadioButton();
   }
 
   @Override public JComboBox makeComboBox() {

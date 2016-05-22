@@ -118,22 +118,22 @@ public class VisualAttributeImageBlock {
   }
 
   public void updateSize(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
-    final List<VisualAttributePlugin> plugins = MindMapPluginRegistry.getInstance().findFor(VisualAttributePlugin.class);
+    final List<VisualAttributePlugin> pluginsFromRegistry = MindMapPluginRegistry.getInstance().findFor(VisualAttributePlugin.class);
     int x = 0;
     int maxheight = 0;
-    if (plugins.isEmpty()) {
+    if (pluginsFromRegistry.isEmpty()) {
       this.items = VisualItem.EMPTY;
     } else {
-      final List<VisualAttributePlugin> detected = new ArrayList<VisualAttributePlugin>();
+      final List<VisualAttributePlugin> detectedPlugins = new ArrayList<VisualAttributePlugin>();
       final Map<String, String> attributes = this.model.getAttributes();
-      for (final VisualAttributePlugin p : detected) {
+      for (final VisualAttributePlugin p : pluginsFromRegistry) {
         if (attributes.containsKey(p.getAttributeKey())) {
-          detected.add(p);
+          detectedPlugins.add(p);
         }
       }
       int index = 0;
-      this.items = this.items == null || this.items.length != detected.size() ? new VisualItem[detected.size()] : this.items;
-      for (final VisualAttributePlugin plugin : detected) {
+      this.items = this.items == null || this.items.length != detectedPlugins.size() ? new VisualItem[detectedPlugins.size()] : this.items;
+      for (final VisualAttributePlugin plugin : detectedPlugins) {
         VisualItem item = this.items[index];
         if (item == null || item.getPlugin() == plugin) {
           item = new VisualItem(this, cfg, x, 0, plugin);

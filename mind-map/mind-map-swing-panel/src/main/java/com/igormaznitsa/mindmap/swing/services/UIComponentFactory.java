@@ -28,10 +28,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 public interface UIComponentFactory {
@@ -41,6 +43,10 @@ public interface UIComponentFactory {
   JComboBox makeComboBox();
   @Nonnull
   JButton makeButton();
+  @Nonnull
+  JToggleButton makeToggleButton();
+  @Nonnull
+  JRadioButton makeRadioButton();
   @Nonnull
   JToolBar makeToolBar();
   @Nonnull

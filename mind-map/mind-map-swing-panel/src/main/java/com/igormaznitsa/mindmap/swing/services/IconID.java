@@ -44,6 +44,8 @@ public enum IconID {
   POPUP_COLLAPSEALL,
   POPUP_CHANGECOLOR,
   //--
+  ICON_EMOTICONS,
+  //--
   ICON_PRINTER,
   ICON_PAGE;
 }

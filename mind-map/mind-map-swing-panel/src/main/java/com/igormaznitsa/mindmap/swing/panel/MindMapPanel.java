@@ -571,16 +571,14 @@ public class MindMapPanel extends JPanel {
             } else {
               ((AbstractCollapsableElement) element).setCollapse(true);
             }
-            invalidate();
-            fireNotificationMindMapChanged();
+            notifyModelChanged();
             repaint();
           } else if (part == ElementPart.VISUAL_ATTRIBUTES) {
             final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
             if (plugin != null && plugin.isClickable()) {
               try {
                 if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
-                  invalidate();
-                  fireNotificationMindMapChanged();
+                  notifyModelChanged();
                   repaint();
                 }
               } catch (Exception ex) {
@@ -593,14 +591,13 @@ public class MindMapPanel extends JPanel {
             if (extra != null) {
               fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
             }
-          } else if (!e.isControlDown()) {
+          } else if (e.isControlDown()) {
             // only
             removeAllSelection();
             select(element.getModel(), false);
           } else if (e.getClickCount() > 1) {
             startEdit(element);
-          } else // group
-          {
+          } else {// group
             if (selectedTopics.isEmpty()) {
               select(element.getModel(), false);
             } else {
@@ -884,12 +881,25 @@ public class MindMapPanel extends JPanel {
       }
 
       if (modelChanged) {
-        invalidate();
-        fireNotificationMindMapChanged();
+        notifyModelChanged();
       }
     }
   }
 
+  /**
+   * Send signal that the model has been changed.
+   * @since 1.2
+   */
+  public void notifyModelChanged(){
+    Utils.safeSwingCall(new Runnable() {
+      @Override
+      public void run() {
+        invalidate();
+        fireNotificationMindMapChanged();
+      }
+    });
+  }
+  
   private void ensureVisibility(@Nonnull final AbstractElement e) {
     fireNotificationEnsureTopicVisibility(e.getModel());
   }

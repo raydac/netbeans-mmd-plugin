@@ -1,4 +1,5 @@
-1.1.5 (in development)
+1.2.0 (in development)
+- Added plugin "Emoticons"
 - Added importer from text files written in style https://www.text2mindmap.com/
 - Added key board shortcuts for zooming in, out and resetting zoom.
 - fixed issue #11 "Can't create topic with hash char"

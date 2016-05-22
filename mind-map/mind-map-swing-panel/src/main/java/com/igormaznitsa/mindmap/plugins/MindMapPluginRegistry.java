@@ -48,6 +48,11 @@ import com.igormaznitsa.mindmap.plugins.tools.CollapseAllPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ShowJumpsPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.UnfoldAllPlugin;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonPopUpMenuPlugin;
+import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonVisualAttributePlugin;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
@@ -84,6 +89,9 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new ChangeColorPlugin());
     
     registerPlugin(new Text2MindMapImporter());
+    
+    registerPlugin(new EmoticonPopUpMenuPlugin());
+    registerPlugin(new EmoticonVisualAttributePlugin());
   }
 
   public void registerPlugin(@Nonnull final MindMapPlugin plugin) {

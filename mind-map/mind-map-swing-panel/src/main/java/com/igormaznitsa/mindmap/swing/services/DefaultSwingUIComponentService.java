@@ -28,10 +28,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 public class DefaultSwingUIComponentService implements UIComponentFactory {
@@ -52,6 +54,18 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
   @Nonnull
   public JButton makeButton () {
     return new JButton();
+  }
+
+  @Override
+  @Nonnull
+  public JToggleButton makeToggleButton () {
+    return new JToggleButton();
+  }
+
+  @Override
+  @Nonnull
+  public JRadioButton makeRadioButton() {
+    return new JRadioButton();
   }
 
   @Override

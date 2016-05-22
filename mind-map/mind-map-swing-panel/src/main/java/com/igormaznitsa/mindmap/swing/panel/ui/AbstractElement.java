@@ -120,7 +120,7 @@ public abstract class AbstractElement {
 
     double width = 0.0d;
     if (this.visualAttributeImageBlock.mayHaveContent()) {
-      width += this.extrasIconBlock.getBounds().getWidth() + scaledHorzBlockGap;
+      width += this.visualAttributeImageBlock.getBounds().getWidth() + scaledHorzBlockGap;
     }
 
     width += this.textBlock.getBounds().getWidth();
