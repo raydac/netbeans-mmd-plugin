@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins.attributes;
+package com.igormaznitsa.mindmap.plugins.api;
 
-import javax.annotation.Nonnull;
-import com.igormaznitsa.mindmap.plugins.MindMapPlugin;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 
-public interface AttributePlugin extends MindMapPlugin {
-  @Nonnull
-  String getAttributeKey();
+/**
+ * The Main interface for any plug-in to be provided for mind map panel.
+ * @since 1.2
+ * @see MindMapPluginRegistry
+ */
+public interface MindMapPlugin extends Comparable<MindMapPlugin> {
+  /**
+   * Recommended start order for custom user plug-ins.
+   */
+  public static final int CUSTOM_PLUGIN_START = 1000;
+
+  /**
+   * Order of the plug-in among another plug-ins.
+   * @return the order.
+   */
+  int getOrder();
 }

@@ -51,8 +51,7 @@ import com.igormaznitsa.meta.annotation.ImplementationNote;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
-import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
-import com.igormaznitsa.mindmap.plugins.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -61,6 +60,7 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconService;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 
 public final class Utils {
 
@@ -414,7 +414,7 @@ public final class Utils {
       @Nullable final Topic topicUnderMouse,
       @Nonnull @MustNotContainNull final Topic[] selectedTopics,
       @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems,
-      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> customProcessors
+      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
   ) {
     list.clear();
 
@@ -463,7 +463,7 @@ public final class Utils {
       @Nonnull final DialogProvider dialogProvider,
       @Nullable final Topic topicUnderMouse, 
       @Nonnull @MustNotContainNull final Topic [] selectedTopics, 
-      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, MindMapPopUpItemCustomProcessor> customProcessors
+      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
     final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);

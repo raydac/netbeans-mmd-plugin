@@ -143,6 +143,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
             return format;
           }
 
+          @SuppressWarnings("unchecked")
           @Override
           @Nonnull
           public Printable getPrintable (final int pageIndex) throws IndexOutOfBoundsException {
@@ -229,6 +230,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
         pageZoomFactor = (double) percent / 100d;
         splitToPagesForCurrentFormat();
         scrollPane.revalidate();
+        scrollPane.getViewport().revalidate();
         scrollPane.repaint();
       }
     });

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.processors;
 
+import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import javax.annotation.Nonnull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
@@ -28,7 +29,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 
-public class ExtraNotePlugin extends AbstractFocusedTopicActionPlugin {
+public class ExtraNotePlugin extends AbstractFocusedTopicPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_TEXT);
 

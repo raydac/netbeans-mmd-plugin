@@ -13,31 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins;
+package com.igormaznitsa.mindmap.plugins.api;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
-public abstract class AbstractPopupMenuItemPlugin implements PopUpMenuItemPlugin {
+/**
+ * Abstract auxiliary class to implement an abstract pop-up menu item.
+ * 
+ * @since 1.2
+ */
+public abstract class AbstractPopupMenuItem implements PopUpMenuItemPlugin {
 
-  public static final int CUSTOM_PLUGIN_START = 1000;
-  
   protected static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   
-  public AbstractPopupMenuItemPlugin() {
+  public AbstractPopupMenuItem() {
   }
 
   @Override
   public boolean equals(@Nullable final Object obj) {
     boolean result = false;
     if (obj!=null && obj.getClass() == this.getClass()) {
-      result = this.getOrder() == ((AbstractPopupMenuItemPlugin)obj).getOrder();
+      result = this.getOrder() == ((AbstractPopupMenuItem)obj).getOrder();
     }
     return result;
   }

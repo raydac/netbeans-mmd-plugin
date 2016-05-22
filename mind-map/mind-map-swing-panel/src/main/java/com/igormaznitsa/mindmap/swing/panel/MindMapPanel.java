@@ -63,20 +63,13 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
-import com.igormaznitsa.mindmap.plugins.attributes.VisualAttributePlugin;
+import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.util.concurrent.atomic.AtomicBoolean;
-import com.igormaznitsa.mindmap.plugins.ModelAwarePlugin;
-import com.igormaznitsa.mindmap.plugins.PanelAwarePlugin;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
+import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MindMapPanel extends JPanel {

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -46,11 +47,8 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import javax.swing.Icon;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
-public class MDExporter extends AbstractExportingPlugin {
+public class MDExporter extends AbstractExporter {
 
   private static final int STARTING_INDEX_FOR_NUMERATION = 5;
 

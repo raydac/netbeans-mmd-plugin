@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.processors;
 
+import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -27,7 +28,7 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
-public class CloneTopicPlugin extends AbstractFocusedTopicActionPlugin {
+public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CLONE_TOPIC);
 

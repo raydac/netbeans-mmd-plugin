@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.processors;
 
+import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import javax.annotation.Nonnull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
@@ -30,10 +31,8 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import javax.swing.Icon;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
-public class ExtraURIPlugin extends AbstractFocusedTopicActionPlugin {
+public class ExtraURIPlugin extends AbstractFocusedTopicPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_URI);
 

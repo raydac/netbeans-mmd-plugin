@@ -13,21 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins;
+package com.igormaznitsa.mindmap.plugins.api;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JMenuItem;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
-public interface MindMapPopUpItemCustomProcessor {
-  void doJobInsteadOfPlugin(
-      @Nonnull PopUpMenuItemPlugin plugin,
+/**
+ * Interface describing a plug-in to be shown in the mind map panel pop-up menu as an item.
+ * 
+ * @since 1.2
+ */
+public interface PopUpMenuItemPlugin extends MindMapPlugin {
+  @Weight(Weight.Unit.LIGHT)
+  @Nullable
+  JMenuItem makeMenuItem(
+      @Nonnull MindMapPanel panel, 
+      @Nonnull DialogProvider dialogProvider, 
+      @Nullable Topic topic, 
+      @Nullable @MustNotContainNull Topic[] selectedTopics, 
+      @Nullable CustomJob customProcessor);
+  @Nonnull
+  PopUpSection getSection();
+  boolean needsTopicUnderMouse();
+  boolean needsSelectedTopics();
+  boolean isEnabled(
       @Nonnull MindMapPanel panel,
-      @Nonnull DialogProvider dialogProvider,
       @Nullable Topic topic,
       @Nullable @MustNotContainNull Topic[] selectedTopics);
-
 }

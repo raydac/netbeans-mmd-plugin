@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -51,7 +52,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
-public final class PNGImageExporter extends AbstractExportingPlugin {
+public final class PNGImageExporter extends AbstractExporter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PNGImageExporter.class);
   private static final UIComponentFactory UI_FACTORY = UIComponentFactoryProvider.findInstance();

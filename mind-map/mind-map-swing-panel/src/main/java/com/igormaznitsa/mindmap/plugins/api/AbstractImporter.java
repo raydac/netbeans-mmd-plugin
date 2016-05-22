@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins.importers;
+package com.igormaznitsa.mindmap.plugins.api;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,18 +30,20 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.AbstractPopupMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import com.igormaznitsa.mindmap.plugins.exporters.AbstractExportingPlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 
-public abstract class AbstractImportingPlugin extends AbstractPopupMenuItemPlugin {
+/**
+ * Abstract auxiliary class automates way to implement an abstract importer.
+ *
+ * @since 1.2
+ */
+public abstract class AbstractImporter extends AbstractPopupMenuItem {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExportingPlugin.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractImporter.class);
 
   @Override
   @Nullable
@@ -50,11 +52,11 @@ public abstract class AbstractImportingPlugin extends AbstractPopupMenuItemPlugi
       @Nonnull final DialogProvider dialogProvider,
       @Nullable final Topic actionTopic,
       @Nonnull @MayContainNull final Topic[] selectedTopics,
-      @Nullable final MindMapPopUpItemCustomProcessor processor) {
+      @Nullable final CustomJob processor) {
       final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
       result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
 
-      final AbstractPopupMenuItemPlugin theInstance = this;
+      final AbstractPopupMenuItem theInstance = this;
 
       result.addActionListener(new ActionListener() {
         @Override
@@ -72,7 +74,7 @@ public abstract class AbstractImportingPlugin extends AbstractPopupMenuItemPlugi
                 });
               }
             } else {
-              processor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
+              processor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
             }
           } catch (Exception ex) {
             LOGGER.error("Error during map import", ex); //NOI18N

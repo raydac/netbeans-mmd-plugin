@@ -23,16 +23,16 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.plugins.AbstractPopupMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
+import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 
-public class ChangeColorPlugin extends AbstractPopupMenuItemPlugin {
+public class ChangeColorPlugin extends AbstractPopupMenuItem {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CHANGECOLOR);
 
@@ -44,7 +44,7 @@ public class ChangeColorPlugin extends AbstractPopupMenuItemPlugin {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
     JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(
           selectedTopics.length > 0 ? 
           Texts.getString("MMDGraphEditor.makePopUp.miColorsForSelected"):
@@ -55,7 +55,7 @@ public class ChangeColorPlugin extends AbstractPopupMenuItemPlugin {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
           if (customProcessor!=null){
-            customProcessor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, topic, selectedTopics);
+            customProcessor.doJob(theInstance, panel, dialogProvider, topic, selectedTopics);
           }
         }
       });

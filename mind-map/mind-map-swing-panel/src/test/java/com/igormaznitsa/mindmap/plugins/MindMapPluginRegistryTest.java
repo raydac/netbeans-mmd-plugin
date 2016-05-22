@@ -18,15 +18,15 @@ package com.igormaznitsa.mindmap.plugins;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.List;
-import com.igormaznitsa.mindmap.plugins.exporters.AbstractExportingPlugin;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 
 public class MindMapPluginRegistryTest {
   
   @Test
   public void testInitializationAndCaching() {
     final MindMapPluginRegistry registry = MindMapPluginRegistry.getInstance();
-    final List<AbstractExportingPlugin> exportPlugins1 = registry.findFor(AbstractExportingPlugin.class);
-    final List<AbstractExportingPlugin> exportPlugins2 = registry.findFor(AbstractExportingPlugin.class);
+    final List<AbstractExporter> exportPlugins1 = registry.findFor(AbstractExporter.class);
+    final List<AbstractExporter> exportPlugins2 = registry.findFor(AbstractExporter.class);
     assertFalse(exportPlugins1.isEmpty());
     assertFalse(exportPlugins2.isEmpty());
     assertSame(exportPlugins1,exportPlugins2);

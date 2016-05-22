@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins;
 
+import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

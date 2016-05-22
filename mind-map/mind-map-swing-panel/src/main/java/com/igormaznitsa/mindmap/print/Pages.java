@@ -77,6 +77,7 @@ class Pages extends JPanel {
     return this.getPreferredSize();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void paint (@Nonnull final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;

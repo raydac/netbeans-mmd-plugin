@@ -13,8 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins;
+package com.igormaznitsa.mindmap.plugins.api;
 
-public interface MindMapPlugin extends Comparable<MindMapPlugin> {
-  int getOrder();
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+
+/**
+ * Interface for plug-in to be aware for operations over panels.
+ * 
+ * @since 1.2
+ */
+public interface PanelAwarePlugin extends MindMapPlugin {
+  void onPanelCreate(@Nonnull MindMapPanel panel);
+  void onPanelModelChange(@Nonnull MindMapPanel panel, @Nullable MindMap oldModel, @Nonnull MindMap newModel);
+  void onPanelDispose(@Nonnull MindMapPanel panel);
 }

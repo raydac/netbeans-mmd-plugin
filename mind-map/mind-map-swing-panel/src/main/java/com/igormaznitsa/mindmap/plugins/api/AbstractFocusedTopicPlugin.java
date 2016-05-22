@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins.processors;
+package com.igormaznitsa.mindmap.plugins.api;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,12 +23,15 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.plugins.AbstractPopupMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
-abstract class AbstractFocusedTopicActionPlugin extends AbstractPopupMenuItemPlugin {
+/**
+ * Auxiliary class to create plug-ins working with selected topic.
+ * 
+ * @since 1.2
+ */
+public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
@@ -37,11 +40,11 @@ abstract class AbstractFocusedTopicActionPlugin extends AbstractPopupMenuItemPlu
       @Nonnull final DialogProvider dialogProvider,
       @Nullable final Topic actionTopic,
       @Nonnull @MustNotContainNull final Topic[] selectedTopics,
-      @Nullable final MindMapPopUpItemCustomProcessor customProcessor) {
+      @Nullable final CustomJob customProcessor) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
       result.setToolTipText(getReference());
 
-      final AbstractFocusedTopicActionPlugin theInstance = this;
+      final AbstractFocusedTopicPlugin theInstance = this;
 
       result.addActionListener(new ActionListener() {
         @Override
@@ -49,7 +52,7 @@ abstract class AbstractFocusedTopicActionPlugin extends AbstractPopupMenuItemPlu
           if (customProcessor == null) {
             doActionForTopic(panel, dialogProvider, actionTopic, selectedTopics);
           } else {
-            customProcessor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
+            customProcessor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
           }
         }
       });

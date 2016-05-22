@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins.exporters;
+package com.igormaznitsa.mindmap.plugins.api;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,16 +29,18 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.AbstractPopupMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.MindMapPopUpItemCustomProcessor;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 
-public abstract class AbstractExportingPlugin extends AbstractPopupMenuItemPlugin {
+/**
+ * Abstract auxiliary class automates way to implement an abstract exporter.
+ * @since 1.2
+ */
+public abstract class AbstractExporter extends AbstractPopupMenuItem {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExportingPlugin.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporter.class);
 
   @Override
   @Nullable
@@ -47,11 +49,11 @@ public abstract class AbstractExportingPlugin extends AbstractPopupMenuItemPlugi
       @Nonnull final DialogProvider dialogProvider,
       @Nullable final Topic actionTopic,
       @Nonnull @MayContainNull final Topic[] selectedTopics,
-      @Nullable final MindMapPopUpItemCustomProcessor processor) {
+      @Nullable final CustomJob processor) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
     result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
 
-    final AbstractPopupMenuItemPlugin theInstance = this;
+    final AbstractPopupMenuItem theInstance = this;
 
     result.addActionListener(new ActionListener() {
       @Override
@@ -64,7 +66,7 @@ public abstract class AbstractExportingPlugin extends AbstractPopupMenuItemPlugi
             }
             doExport(panel, options, null);
           } else {
-            processor.doJobInsteadOfPlugin(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
+            processor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
           }
         } catch (Exception ex) {
           LOGGER.error("Error during map export", ex); //NOI18N

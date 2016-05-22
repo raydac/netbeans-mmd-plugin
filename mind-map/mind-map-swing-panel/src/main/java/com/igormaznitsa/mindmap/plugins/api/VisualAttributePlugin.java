@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins.attributes;
+package com.igormaznitsa.mindmap.plugins.api;
 
 import java.awt.Image;
 import javax.annotation.Nonnull;
@@ -22,6 +22,11 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 
+/**
+ * Plug-in to provide visual representation of attributes.
+ * 
+ * @since 1.2
+ */
 public interface VisualAttributePlugin extends AttributePlugin {
   @Nullable
   Image getScaledImage(@Nonnull MindMapPanelConfig config, @Nonnull Topic topic);

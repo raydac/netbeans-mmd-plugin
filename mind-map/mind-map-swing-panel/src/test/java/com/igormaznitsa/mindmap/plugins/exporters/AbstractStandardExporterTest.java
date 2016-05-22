@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.*;
 import java.io.StringReader;
 import org.junit.Test;
 
-public abstract class AbstractStandardExporterTest <T extends AbstractExportingPlugin>{
+public abstract class AbstractStandardExporterTest <T extends AbstractExporter>{
   
   public byte [] export(final MindMap map, final MindMapPanelConfig nullableConfig) throws Exception {
     final T exporter = generateExporterInstance();

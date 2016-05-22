@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -44,7 +45,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
-public class TextExporter extends AbstractExportingPlugin {
+public class TextExporter extends AbstractExporter {
 
   private static final int SHIFT_STEP = 1;
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_TEXT);

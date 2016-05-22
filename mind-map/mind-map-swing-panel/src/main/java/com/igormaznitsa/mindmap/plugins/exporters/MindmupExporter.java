@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.grack.nanojson.JsonStringWriter;
 import com.grack.nanojson.JsonWriter;
 
@@ -54,10 +54,8 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
-public class MindmupExporter extends AbstractExportingPlugin {
+public class MindmupExporter extends AbstractExporter {
 
   private static int idCounter = 1;
 
@@ -119,18 +117,21 @@ public class MindmupExporter extends AbstractExportingPlugin {
       return topicsWithId.get(link.getValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     public State startObj (@Nonnull final String key) {
       this.json = this.json.object(key);
       return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     public State startObj () {
       this.json = this.json.object();
       return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     public State startArray (@Nonnull final String key) {
       this.json = this.json.array(key);
@@ -149,6 +150,7 @@ public class MindmupExporter extends AbstractExportingPlugin {
       return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     public State end () {
       this.json = json.end();

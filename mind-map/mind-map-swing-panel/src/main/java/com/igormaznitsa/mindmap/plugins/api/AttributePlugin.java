@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins;
+package com.igormaznitsa.mindmap.plugins.api;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
-public interface PanelAwarePlugin extends MindMapPlugin {
-  void onPanelCreate(@Nonnull MindMapPanel panel);
-  void onPanelModelChange(@Nonnull MindMapPanel panel, @Nullable MindMap oldModel, @Nonnull MindMap newModel);
-  void onPanelDispose(@Nonnull MindMapPanel panel);
+/**
+ * Interface for plug-ins processing attributes of model topics.
+ * 
+ * @since 1.2
+ */
+public interface AttributePlugin extends MindMapPlugin {
+  /**
+   * Get name of attribute key associated with the plug-in.
+   * @return the name of the attribute key.
+   */
+  @Nonnull
+  String getAttributeKey();
 }

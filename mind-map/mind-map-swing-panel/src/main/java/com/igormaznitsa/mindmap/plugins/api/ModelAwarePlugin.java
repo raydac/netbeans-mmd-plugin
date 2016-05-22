@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins;
+package com.igormaznitsa.mindmap.plugins.api;
 
 import javax.annotation.Nonnull;
 import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
+/**
+ * Interface to be implemented by plug-in to be aware for operations over topics. 
+ * 
+ * @since 1.2
+ */
 public interface ModelAwarePlugin extends MindMapPlugin {
   @Weight(Weight.Unit.NORMAL)
   void onDeleteTopic(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic);
