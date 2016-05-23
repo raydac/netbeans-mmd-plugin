@@ -34,7 +34,7 @@ public final class IconPanel extends JPanel {
   private final ButtonGroup group = new ButtonGroup();
 
   public IconPanel() {
-    super(new GridLayout(0, 8));
+    super(new GridLayout(0, 6));
     add(makeIconButton(group, "empty"));
     for (final String s : MiscIcons.getNames()) {
       add(makeIconButton(group, s));

@@ -49,8 +49,7 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
       public void actionPerformed(@Nonnull final ActionEvent e) {
         final IconPanel iconPanel = new IconPanel();
         final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
-        scrollPane.setPreferredSize(new Dimension(400,400));
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(512,400));
         scrollPane.setViewportView(iconPanel);
         if (dialogProvider.msgOkCancel(BUNDLE.getString("Emoticons.DialogTitle"), scrollPane)){
           final String emoticonName = iconPanel.getSelectedName();
