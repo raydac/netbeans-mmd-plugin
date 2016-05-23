@@ -69,7 +69,8 @@ public class AllIcons {
     public static final Icon OPTIONS = IconLoader.getIcon("/icons/settings.png");
     public static final Icon INFO = IconLoader.getIcon("/icons/info.png");
     public static final Icon COLORS = IconLoader.getIcon("/icons/color_swatches.png");
-    public static final Icon EXPORT = IconLoader.getIcon("/icons/export.png");
+    public static final Icon EXPORT = IconLoader.getIcon("/icons/document_export.png");
+    public static final Icon IMPORT = IconLoader.getIcon("/icons/document_import.png");
     public static final Icon PAGE = IconLoader.getIcon("/icons/page.png");
     public static final Icon PRINTER = IconLoader.getIcon("/icons/printer.png");
     public static final Icon EMOTICONS = IconLoader.getIcon("/icons/emoticons.png");

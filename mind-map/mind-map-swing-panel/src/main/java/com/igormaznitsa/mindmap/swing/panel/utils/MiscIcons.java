@@ -36,7 +36,7 @@ public class MiscIcons {
   private static final String[] ICON_NAMES;
 
   static {
-    final InputStream iconListReadStream = MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icons.lst");
+    final InputStream iconListReadStream = MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icon.lst");
     try {
       ICON_NAMES = IOUtils.readLines(iconListReadStream).toArray(new String[0]);
     } catch (Exception ex) {

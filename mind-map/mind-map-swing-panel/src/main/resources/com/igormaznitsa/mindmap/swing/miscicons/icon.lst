@@ -1,4 +1,13 @@
 asterisk
+battery
+bean
+bell
+bin
+bomb
+book
+box
+brain
+bug
 burro
 bus
 butterfly
@@ -53,6 +62,7 @@ error
 exclamation
 eye
 film
+find
 flamingo
 flashdisk
 flask
@@ -64,6 +74,7 @@ grass
 green
 green_wormhole
 green_yellow
+grenade
 group
 handbag
 hand
@@ -133,6 +144,7 @@ omelet
 organisation
 origami
 page
+parrot
 peacock
 peak_cap
 pearl
@@ -192,6 +204,11 @@ sport
 spring
 stairs
 star
+status_busy
+status_offline
+status_online
+steering_wheel
+stethoscope
 stop
 support
 sword
@@ -223,6 +240,7 @@ vase
 video
 vlc
 walk
+wall_breack
 wallet
 wall
 warning
