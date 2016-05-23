@@ -32,6 +32,6 @@ public interface VisualAttributePlugin extends AttributePlugin {
   Image getScaledImage(@Nonnull MindMapPanelConfig config, @Nonnull Topic topic);
   boolean onClick(@Nonnull MindMapPanel panel, @Nonnull Topic topic, int clickCount);
   @Nullable
-  String getToolTip();
-  boolean isClickable();
+  String getToolTip(@Nonnull MindMapPanel panel, @Nonnull Topic topic);
+  boolean isClickable(@Nonnull MindMapPanel panel, @Nonnull Topic topic);
 }

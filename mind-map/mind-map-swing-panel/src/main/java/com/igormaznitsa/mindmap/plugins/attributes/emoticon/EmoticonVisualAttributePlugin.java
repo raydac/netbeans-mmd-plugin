@@ -97,12 +97,12 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   @Nullable
-  public String getToolTip() {
-    return this.imageName;
+  public String getToolTip(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic) {
+    return topic.getAttribute(ATTR_KEY);
   }
 
   @Override
-  public boolean isClickable() {
+  public boolean isClickable(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic) {
     return false;
   }
 

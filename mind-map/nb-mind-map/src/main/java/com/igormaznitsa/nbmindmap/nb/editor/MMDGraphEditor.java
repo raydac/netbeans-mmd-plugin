@@ -218,11 +218,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  protected void closeNotify(){
+  protected void closeNotify() {
     this.mindMapPanel.dispose();
     super.closeNotify();
   }
-  
+
   @Override
   public void componentOpened() {
     super.componentOpened();
@@ -260,20 +260,22 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   private void updateModel() {
-    this.mindMapPanel.hideEditor();
+    if (!this.mindMapPanel.isDisposed()) {
+      this.mindMapPanel.hideEditor();
 
-    final String text = this.editorSupport.getDocumentText();
-    if (text == null) {
-      this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantLoadDocument"));
-    } else {
-      try {
-        this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)));
-      } catch (IllegalArgumentException ex) {
-        LOGGER.warn("Can't detect mind map"); //NOI18N
-        this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantDetectMMap"));
-      } catch (IOException ex) {
-        LOGGER.error("Can't parse mind map text", ex); //NOI18N
-        this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantParseDoc"));
+      final String text = this.editorSupport.getDocumentText();
+      if (text == null) {
+        this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantLoadDocument"));
+      } else {
+        try {
+          this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.warn("Can't detect mind map"); //NOI18N
+          this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantDetectMMap"));
+        } catch (IOException ex) {
+          LOGGER.error("Can't parse mind map text", ex); //NOI18N
+          this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantParseDoc"));
+        }
       }
     }
   }

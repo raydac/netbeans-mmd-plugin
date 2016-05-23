@@ -374,12 +374,13 @@ public class MindMapPanel extends JPanel {
             case VISUAL_ATTRIBUTES: {
               final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
               if (plugin!=null){
-                if (plugin.isClickable()){
+                final Topic theTopic = element.getModel();
+                if (plugin.isClickable(theInstance,theTopic)){
                   setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 }else{
                   setCursor(null);
                 }
-                setToolTipText(plugin.getToolTip());
+                setToolTipText(plugin.getToolTip(theInstance,theTopic));
               }else{
                 setCursor(null);
                 setToolTipText(null);
@@ -575,7 +576,7 @@ public class MindMapPanel extends JPanel {
             repaint();
           } else if (part == ElementPart.VISUAL_ATTRIBUTES) {
             final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-            if (plugin != null && plugin.isClickable()) {
+            if (plugin != null && plugin.isClickable(theInstance, element.getModel())) {
               try {
                 if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
                   notifyModelChanged();
