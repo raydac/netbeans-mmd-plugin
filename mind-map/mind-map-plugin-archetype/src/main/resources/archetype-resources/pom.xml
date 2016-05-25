@@ -1,0 +1,136 @@
+#set($dollar = '$')
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>${groupId}</groupId>
+  <artifactId>${artifactId}</artifactId>
+  <version>${version}</version>
+  <packaging>jar</packaging>
+  
+  <name>NB Mind Map Plugin</name>
+  <description>Plugin for NB Mind Map</description>
+
+  <properties>
+    <meta.version>1.1.2</meta.version>
+    <plugin.api>${pluginApi}</plugin.api>
+  </properties>
+
+  <contributors>
+    <contributor>
+      <name>${author}</name>
+    </contributor>
+  </contributors>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>mind-map-model</artifactId>
+      <version>${dollar}{plugin.api}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>mind-map-swing-panel</artifactId>
+      <version>${dollar}{plugin.api}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-annotations</artifactId>
+      <version>${dollar}{meta.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-utils</artifactId>
+      <version>${dollar}{meta.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.10.19</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.coderplus.maven.plugins</groupId>
+        <artifactId>copy-rename-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>copy-file</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <sourceFile>${dollar}{project.build.directory}${dollar}{file.separator}${dollar}{project.build.finalName}.jar</sourceFile>
+              <destinationFile>${dollar}{project.build.directory}${dollar}{file.separator}${dollar}{project.build.finalName}.mmdp</destinationFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>meta-checker</artifactId>
+        <version>${dollar}{meta.version}</version>
+        <configuration>
+          <restrictClassFormat>6</restrictClassFormat>
+          <checkMayContainNull>true</checkMayContainNull>
+          <checkNullable>true</checkNullable>
+        </configuration>
+        <executions>
+          <execution>
+            <id>meta-check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <archive>
+            <index>true</index>
+            <manifestSections>
+              <manifestSection>
+                <name>nb-mindmap-plugin</name>
+                <manifestEntries>
+                  <api>${dollar}{plugin.api}</api>
+                  <plugins>${package}.Plugin</plugins>
+                  <title>${dollar}{project.name}</title>
+                  <author>${author}</author>
+                  <reference>${dollar}{project.description}</reference>
+                  <version>${dollar}{project.version}</version>
+                  <compatible>*</compatible>
+                </manifestEntries>
+              </manifestSection>
+            </manifestSections>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>    
+  
+</project>

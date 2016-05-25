@@ -20,6 +20,9 @@
     <change-notes><![CDATA[
         <p>1.2.0 (in development)</p>
         <ul>
+            <li>added "emoticons"</li>
+            <li>Added importer from text files written in style text2mindmap</li>
+            <li>Added keyboard shortcuts for zooming in, out and resetting zoom.</li>
             <li>fixed issue #10 "In Select topic dialog; Fold All only closes the root node"</li>
             <li>fixed issue #9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"</li>
             <li>the IDEA project adapted to be compatible with IDEA 16 platform</li>

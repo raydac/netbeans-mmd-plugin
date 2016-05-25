@@ -35,6 +35,7 @@ public class IdeaImageIconService implements ImageIconService {
     MAP.put(IconID.POPUP_CHANGECOLOR, AllIcons.PopUp.COLORS);
     MAP.put(IconID.POPUP_EXPORT, AllIcons.PopUp.EXPORT);
     MAP.put(IconID.POPUP_IMPORT, AllIcons.PopUp.IMPORT);
+    MAP.put(IconID.POPUP_IMPORT_TXT2MM, AllIcons.ImportExport.TXT2MM);
   }
 
   @Nullable @Override public Icon getIconForId(@Nonnull final IconID imageIconID) {

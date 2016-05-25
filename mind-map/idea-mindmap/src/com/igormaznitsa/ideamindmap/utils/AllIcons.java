@@ -24,6 +24,10 @@ public class AllIcons {
     public static final Icon MINDMAP = IconLoader.getIcon("/icons/logo/logo.png");
   }
 
+  public static class ImportExport {
+    public static final Icon TXT2MM = IconLoader.getIcon("/icons/txt2mm.png");
+  }
+
   public static class File {
     public static final Icon MINDMAP = IconLoader.getIcon("/icons/mmdfile.png");
     public static final Icon FOLDER = IconLoader.getIcon("/icons/folder.png");
