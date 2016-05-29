@@ -19,6 +19,7 @@ import com.igormaznitsa.ideamindmap.plugins.PrinterPlugin;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -30,6 +31,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
 import java.lang.reflect.Field;
 
 @State(name = "NBMindMapPlugin", storages = { @Storage(id = "nbmindmap", file = "$APP_CONFIG$/nbmindmapsettings.xml") })
@@ -37,6 +39,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
 
   private static final MindMapPanelConfig etalon = new MindMapPanelConfig();
   private final MindMapPanelConfig editorConfig = new MindMapPanelConfig();
+  private static final String PROPERTY = "nbmmd.plugin.folder";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapApplicationSettings.class);
 
@@ -46,6 +49,19 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
 
   @Override public void initComponent() {
     MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
+    final String pluginFolder = System.getProperty(PROPERTY);
+    if (pluginFolder!=null) {
+      final File folder = new File(pluginFolder);
+      if (folder.isDirectory()) {
+        LOGGER.info("Loading plugins from folder : "+folder);
+        new ExternalPlugins(folder).init();
+      } else {
+        LOGGER.error("Can't find plugin folder : " + folder);
+      }
+    }else{
+      LOGGER.info("Property "+PROPERTY+" is not defined");
+    }
+
   }
 
   @Override public void disposeComponent() {
