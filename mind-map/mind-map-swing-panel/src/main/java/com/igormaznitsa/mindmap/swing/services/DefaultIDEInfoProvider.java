@@ -13,30 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.plugins.api;
+package com.igormaznitsa.mindmap.swing.services;
 
+import javax.annotation.Nonnull;
 import com.igormaznitsa.commons.version.Version;
-import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 
-/**
- * The Main interface for any plug-in to be provided for mind map panel.
- * @since 1.2
- * @see MindMapPluginRegistry
- */
-public interface MindMapPlugin extends Comparable<MindMapPlugin> {
-  /**
-   * Recommended start order for custom user plug-ins.
-   */
-  public static final int CUSTOM_PLUGIN_START = 1000;
+class DefaultIDEInfoProvider implements IDEInfoProvider {
 
-  /**
-   * Version of the API.
-   */
-  public static final Version API = new Version("1.2.0");
+  private static final Version IDE_VERSION = new Version("UNKNOWN");
   
-  /**
-   * Order of the plug-in among another plug-ins.
-   * @return the order.
-   */
-  int getOrder();
+  @Override
+  @Nonnull
+  public Version getIDEVersion() {
+    return IDE_VERSION;
+  }
+  
 }

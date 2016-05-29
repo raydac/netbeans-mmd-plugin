@@ -133,7 +133,17 @@
       <artifactId>mind-map-swing-panel</artifactId>
       <version>${main.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>commons-version</artifactId>
+      <version>${iam.commons.version}</version>
+    </dependency>
 
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-libs-javacapi</artifactId>
+      <version>${nb.platform}</version>
+    </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-api-annotations-common</artifactId>

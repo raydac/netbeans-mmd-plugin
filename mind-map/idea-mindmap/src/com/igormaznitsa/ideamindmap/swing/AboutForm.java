@@ -16,6 +16,7 @@
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.swing.services.IDEInfoProviderFactory;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
