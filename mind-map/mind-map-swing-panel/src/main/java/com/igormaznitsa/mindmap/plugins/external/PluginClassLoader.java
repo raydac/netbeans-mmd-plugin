@@ -47,7 +47,7 @@ public class PluginClassLoader extends URLClassLoader {
   private VersionValidator compatibilityValidator;
 
   public PluginClassLoader(@Nonnull final File pluginFile) throws IOException {
-    super(new URL[]{Assertions.assertNotNull(pluginFile).toURI().toURL()});
+    super(new URL[]{Assertions.assertNotNull(pluginFile).toURI().toURL()},PluginClassLoader.class.getClassLoader());
     this.pluginFile = pluginFile;
     this.connection = (JarURLConnection) new URL("jar", "", pluginFile.toURI() + "!/").openConnection();
 
