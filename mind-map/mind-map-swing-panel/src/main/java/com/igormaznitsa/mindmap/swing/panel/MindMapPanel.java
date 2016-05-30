@@ -559,6 +559,8 @@ public class MindMapPanel extends JPanel {
           element = findTopicUnderPoint(e.getPoint());
         }
 
+        final boolean isCtrlDown = e.isControlDown();
+        
         if (element != null) {
           final ElementPart part = element.findPartForPoint(e.getPoint());
           if (part == ElementPart.COLLAPSATOR) {
@@ -566,7 +568,7 @@ public class MindMapPanel extends JPanel {
 
             if (element.isCollapsed()) {
               ((AbstractCollapsableElement) element).setCollapse(false);
-              if ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+              if (isCtrlDown) {
                 ((AbstractCollapsableElement) element).collapseAllFirstLevelChildren();
               }
             } else {
@@ -574,31 +576,37 @@ public class MindMapPanel extends JPanel {
             }
             notifyModelChanged();
             repaint();
-          } else if (part == ElementPart.VISUAL_ATTRIBUTES) {
-            final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-            if (plugin != null && plugin.isClickable(theInstance, element.getModel())) {
-              try {
-                if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
-                  notifyModelChanged();
-                  repaint();
+          } else if (!isCtrlDown){
+            switch (part) {
+              case VISUAL_ATTRIBUTES:
+                final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+                if (plugin != null && plugin.isClickable(theInstance, element.getModel())) {
+                  try {
+                    if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
+                      notifyModelChanged();
+                      repaint();
+                    }
+                  } catch (Exception ex) {
+                    LOGGER.error("Error during visual attribute processing", ex);
+                    controller.getDialogProvider(theInstance).msgError("Detectd critical error! See log!");
+                  }
+                } break;
+              case ICONS:
+                final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+                if (extra != null) {
+                  fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
+                } break;
+              default:
+                // only
+                removeAllSelection();
+                select(element.getModel(), false);
+                if(e.getClickCount()>1){
+                  startEdit(element);
                 }
-              } catch (Exception ex) {
-                LOGGER.error("Error during visual attribute processing", ex);
-                controller.getDialogProvider(theInstance).msgError("Detectd critical error! See log!");
-              }
-            }
-          } else if (part == ElementPart.ICONS) {
-            final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-            if (extra != null) {
-              fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
-            }
-          } else if (e.isControlDown()) {
-            // only
-            removeAllSelection();
-            select(element.getModel(), false);
-          } else if (e.getClickCount() > 1) {
-            startEdit(element);
-          } else {// group
+                break;
+            }            
+          } else {
+            // group
             if (selectedTopics.isEmpty()) {
               select(element.getModel(), false);
             } else {

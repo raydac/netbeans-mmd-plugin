@@ -1,4 +1,5 @@
 1.2.0 (in development)
+- Added loading of custom plugins from folder defined through __nbmmd.plugin.folder__ property
 - Added plugin "Emoticons"
 - Added importer from text files written in style https://www.text2mindmap.com/
 - Added key board shortcuts for zooming in, out and resetting zoom.
