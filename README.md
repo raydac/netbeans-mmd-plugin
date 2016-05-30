@@ -12,7 +12,7 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
-___1.2.0-SNAPSHOT (Under development
+__1.2.0-SNAPSHOT (Under development)__
 - Added loading of custom plugins from folder defined through __nbmmd.plugin.folder__ property
 - Added plugin "Emoticons"
 - Added importer from text files written in style [text2mindmap](https://www.text2mindmap.com/)
