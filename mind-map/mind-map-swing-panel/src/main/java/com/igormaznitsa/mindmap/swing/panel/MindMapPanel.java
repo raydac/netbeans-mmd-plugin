@@ -580,17 +580,26 @@ public class MindMapPanel extends JPanel {
             switch (part) {
               case VISUAL_ATTRIBUTES:
                 final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-                if (plugin != null && plugin.isClickable(theInstance, element.getModel())) {
-                  try {
-                    if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
-                      notifyModelChanged();
-                      repaint();
+                boolean processedByPlugin = false;
+                if (plugin!=null){
+                  if (plugin.isClickable(theInstance, element.getModel())){
+                    processedByPlugin = true;
+                    try {
+                      if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
+                        notifyModelChanged();
+                        repaint();
+                      }
+                    } catch (Exception ex) {
+                      LOGGER.error("Error during visual attribute processing", ex);
+                      controller.getDialogProvider(theInstance).msgError("Detectd critical error! See log!");
                     }
-                  } catch (Exception ex) {
-                    LOGGER.error("Error during visual attribute processing", ex);
-                    controller.getDialogProvider(theInstance).msgError("Detectd critical error! See log!");
                   }
-                } break;
+                }
+                if (!processedByPlugin){
+                  removeAllSelection();
+                  select(element.getModel(), false);
+                }
+                break;
               case ICONS:
                 final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
                 if (extra != null) {
