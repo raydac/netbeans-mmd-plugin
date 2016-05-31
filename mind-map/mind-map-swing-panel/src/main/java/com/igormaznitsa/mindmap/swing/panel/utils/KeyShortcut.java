@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.KeyStroke;
 
 public final class KeyShortcut {
 
@@ -147,6 +148,14 @@ public final class KeyShortcut {
     return builder.toString();
   }
 
+  public boolean doesConflictWith(@Nullable final KeyStroke stroke) {
+    boolean result = false;
+    if (stroke != null) {
+      result = stroke.getKeyCode() == this.keyCode && (this.modifiers & stroke.getModifiers())==this.modifiers;
+    }
+    return result;
+  }
+  
   @Nonnull
   public String getKeyCodeName() {
     return KeyEvent.getKeyText(this.keyCode);

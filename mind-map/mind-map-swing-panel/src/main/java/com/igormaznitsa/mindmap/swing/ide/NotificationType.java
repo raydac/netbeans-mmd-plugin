@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.swing.services;
+package com.igormaznitsa.mindmap.swing.ide;
 
-import javax.annotation.Nonnull;
-import com.igormaznitsa.commons.version.Version;
-
-public interface IDEInfoProvider {
-  @Nonnull
-  Version getIDEVersion();
+public enum NotificationType {
+  INFO,WARNING,ERROR
 }

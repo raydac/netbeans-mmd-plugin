@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -42,6 +43,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.tree.TreeModel;
@@ -329,7 +331,6 @@ public final class Utils {
     return null;
   }
 
-  
   @Nonnull
   public static Image scaleImage(@Nonnull final Image src, final double baseScaleX, final double baseScaleY, final double scale) {
     final int imgw = src.getWidth(null);
@@ -347,10 +348,10 @@ public final class Utils {
 
     g.drawImage(src, 0, 0, scaledW, scaledH, null);
     g.dispose();
-    
+
     return result;
   }
-  
+
   @Nonnull
   public static Image renderWithTransparency(final float opacity, @Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig config) {
     final AbstractElement cloned = element.makeCopy();
@@ -434,7 +435,7 @@ public final class Utils {
     }
     return list;
   }
-  
+
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu, @Nullable final JMenu subMenu, @Nonnull @MustNotContainNull final List<JMenuItem> items) {
@@ -459,10 +460,10 @@ public final class Utils {
 
   @Nonnull
   public static JPopupMenu makePopUp(
-      @Nonnull final MindMapPanel source, 
+      @Nonnull final MindMapPanel source,
       @Nonnull final DialogProvider dialogProvider,
-      @Nullable final Topic topicUnderMouse, 
-      @Nonnull @MustNotContainNull final Topic [] selectedTopics, 
+      @Nullable final Topic topicUnderMouse,
+      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
       @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
@@ -490,6 +491,15 @@ public final class Utils {
 
     return result;
   }
-  
-  
+
+  public static boolean isKeyStrokeEvent(@Nullable final KeyStroke keyStroke, final int keyEventType, @Nullable final KeyEvent event) {
+    boolean result = false;
+    if (keyStroke != null && event != null) {
+      if (keyEventType == keyStroke.getKeyEventType()) {
+        result = ((keyStroke.getModifiers() & event.getModifiers()) == keyStroke.getModifiers()) && (keyStroke.getKeyCode() == event.getKeyCode());
+      }
+    }
+    return result;
+  }
+
 }

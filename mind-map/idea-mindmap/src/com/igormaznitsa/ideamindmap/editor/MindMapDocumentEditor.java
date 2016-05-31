@@ -147,11 +147,6 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     return this.documents[0];
   }
 
-  @Nonnull
-  private static String normalizeEOL(@Nonnull final String text) {
-    return text.replace('\r', '\n').replace("\n\n", "\n");
-  }
-
   private void saveMindMapToDocument() {
     final Document document = getDocument();
     final MindMap model = this.mindMapPanel.getModel();

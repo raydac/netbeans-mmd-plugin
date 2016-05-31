@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.mindmap.swing.panel;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 
@@ -38,6 +37,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import javax.swing.KeyStroke;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public final class MindMapPanelConfig implements Serializable {
 
@@ -96,6 +97,7 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_ZOOM_IN = "zoomIn";
   public static final String KEY_ZOOM_OUT = "zoomOut";
   public static final String KEY_ZOOM_RESET = "zoomReset";
+  public static final String KEY_SHOW_POPUP = "showPopupMenu";
 
   private Font font = new Font("Arial", Font.BOLD, 18); //NOI18N
   private double scale = 1.0d;
@@ -365,6 +367,19 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
+  public boolean isShortcutConflict(@Nullable final KeyStroke keyStroke) {
+    boolean result = false;
+    if (keyStroke!=null){
+      for(final KeyShortcut s : this.mapShortCut.values()){
+        if (s.doesConflictWith(keyStroke)) {
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
   private void notifyCfgListenersAboutChange () {
     if (this.notificationEnabled) {
       for (final WeakReference<MindMapConfigListener> l : this.listeners) {
@@ -389,6 +404,7 @@ public final class MindMapPanelConfig implements Serializable {
     this.mapShortCut.put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, KeyEvent.VK_PLUS, KeyEvent.CTRL_MASK));
     this.mapShortCut.put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, KeyEvent.VK_MINUS, KeyEvent.CTRL_MASK));
     this.mapShortCut.put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, KeyEvent.VK_0, KeyEvent.CTRL_MASK));
+    this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
   }
 
   public boolean isKeyEventDetected(@Nonnull final KeyEvent event, @Nonnull @MustNotContainNull final String ... shortCutIDs){
