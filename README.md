@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.2.0-SNAPSHOT (Under development)__
+- fixed issue [#16](https://github.com/raydac/netbeans-mmd-plugin/issues/16), Added default key board shortcut to open popup context menu, CTRL+ALT+SPACE
 - Added loading of custom plugins from folder defined through __nbmmd.plugin.folder__ property
 - Added plugin "Emoticons"
 - Added importer from text files written in style [text2mindmap](https://www.text2mindmap.com/)
