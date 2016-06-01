@@ -100,6 +100,7 @@ import java.awt.dnd.InvalidDnDOperationException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
@@ -185,6 +186,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
   }
 
+  public boolean isPanelDisposed() {
+    return this.mindMapPanel.isDisposed();
+  }
+
   @Override
   public JComponent getVisualRepresentation() {
     return this;
@@ -214,10 +219,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public void componentClosed() {
-    try{
+    try {
       this.mindMapPanel.dispose();
-      LOGGER.info("MMD Editor is disposed : "+this.getDisplayName());
-    }finally{
+      LOGGER.info("MMD Editor is disposed : " + this.mindMapPanel.toString());
+    } finally {
       super.componentClosed();
     }
   }
@@ -1106,8 +1111,14 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   public static void notifyReloadConfig() {
     synchronized (ALL_EDITORS) {
-      for (final MMDGraphEditor e : ALL_EDITORS) {
-        e.updateConfigFromPreferences();
+      final Iterator<MMDGraphEditor> iterator = ALL_EDITORS.iterator();
+      while (iterator.hasNext()) {
+        final MMDGraphEditor next = iterator.next();
+        if (next.isPanelDisposed()) {
+          iterator.remove();
+        } else {
+          next.updateConfigFromPreferences();
+        }
       }
     }
   }
