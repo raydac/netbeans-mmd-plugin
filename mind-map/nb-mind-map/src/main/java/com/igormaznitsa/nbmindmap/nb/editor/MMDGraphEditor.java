@@ -1117,6 +1117,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       while (iterator.hasNext()) {
         final MMDGraphEditor next = iterator.next();
         if (next.isPanelDisposed()) {
+          LOGGER.warn("Detected disposed mind map panel among active editors set : "+next);
           iterator.remove();
         } else {
           next.updateConfigFromPreferences();
