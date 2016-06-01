@@ -1101,10 +1101,12 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        mindMapPanel.refreshConfiguration();
-        mindMapPanel.invalidate();
-        mindMapPanel.revalidate();
-        mindMapPanel.repaint();
+        if (!mindMapPanel.isDisposed()) {
+          mindMapPanel.refreshConfiguration();
+          mindMapPanel.invalidate();
+          mindMapPanel.revalidate();
+          mindMapPanel.repaint();
+        }
       }
     });
   }
