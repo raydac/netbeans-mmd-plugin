@@ -1893,7 +1893,7 @@ public class MindMapPanel extends JPanel {
 
   private void assertNotDisposed() {
     if (this.disposed != null && this.disposed.get()) {
-      throw new IllegalStateException("Panel is already disposed");
+      throw new IllegalStateException("Panel is already disposed : "+this.toString());
     }
   }
 
