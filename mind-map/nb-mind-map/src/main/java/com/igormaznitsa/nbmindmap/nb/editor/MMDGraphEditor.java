@@ -214,13 +214,12 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public void componentClosed() {
-    super.componentClosed();
-  }
-
-  @Override
-  protected void closeNotify() {
-    this.mindMapPanel.dispose();
-    super.closeNotify();
+    try{
+      this.mindMapPanel.dispose();
+      LOGGER.info("MMD Editor is disposed : "+this.getDisplayName());
+    }finally{
+      super.componentClosed();
+    }
   }
 
   @Override
