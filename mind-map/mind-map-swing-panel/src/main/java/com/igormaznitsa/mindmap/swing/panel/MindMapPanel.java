@@ -265,7 +265,7 @@ public class MindMapPanel extends JPanel {
               final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
               endEdit(false);
               if (edited != null && edited.canBeLost()) {
-                deleteTopics(edited);
+                deleteTopics(false, edited);
                 if (pathToPrevTopicBeforeEdit != null) {
                   final int[] path = pathToPrevTopicBeforeEdit;
                   pathToPrevTopicBeforeEdit = null;
@@ -368,7 +368,7 @@ public class MindMapPanel extends JPanel {
               processPopUpForShortcut();
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
               e.consume();
-              deleteSelectedTopics();
+              deleteSelectedTopics(false);
             } else if (config.isKeyEventDetected(e, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_UP, MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN)) {
               e.consume();
               processMoveFocusByKey(e);
@@ -1129,19 +1129,22 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void deleteTopics(@Nonnull @MustNotContainNull final Topic... topics) {
+  public void deleteTopics(final boolean force, @Nonnull @MustNotContainNull final Topic... topics) {
     if (lockIfNotDisposed()) {
       try {
         endEdit(false);
-        removeAllSelection();
-        boolean allowed = true;
 
         final List<ModelAwarePlugin> plugins = MindMapPluginRegistry.getInstance().findFor(ModelAwarePlugin.class);
 
-        for (final MindMapListener l : this.mindMapListeners) {
-          allowed &= l.allowedRemovingOfTopics(this, topics);
+        boolean allowed = true;
+        if (!force){
+          for (final MindMapListener l : this.mindMapListeners) {
+            allowed &= l.allowedRemovingOfTopics(this, topics);
+          }
         }
+        
         if (allowed) {
+          removeAllSelection();
           for (final Topic t : topics) {
             for (final ModelAwarePlugin p : plugins) {
               p.onDeleteTopic(this, t);
@@ -1174,11 +1177,11 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void deleteSelectedTopics() {
+  public void deleteSelectedTopics(final boolean force) {
     if (this.lockIfNotDisposed()) {
       try {
         if (!this.selectedTopics.isEmpty()) {
-          deleteTopics(this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
+          deleteTopics(force, this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
         }
       } finally {
         this.unlock();
