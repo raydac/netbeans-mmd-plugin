@@ -38,7 +38,7 @@ public abstract class AbstractPopupMenuItem implements PopUpMenuItemPlugin {
   @Override
   public boolean equals(@Nullable final Object obj) {
     boolean result = false;
-    if (obj!=null && obj.getClass() == this.getClass()) {
+    if (obj instanceof AbstractPopupMenuItem) {
       result = this.getOrder() == ((AbstractPopupMenuItem)obj).getOrder();
     }
     return result;

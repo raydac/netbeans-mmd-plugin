@@ -33,7 +33,6 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   static final String ATTR_KEY = "mmd.emoticon";
 
   private final Map<String, ScaledImage> SCALED_IMAGE_CACHE = new HashMap<String, ScaledImage>();
-  private String imageName;
   
   private static final class ScaledImage {
 
@@ -77,7 +76,6 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   @Nullable
   public Image getScaledImage(@Nonnull final MindMapPanelConfig config, @Nonnull final Topic topic) {
     final String name = topic.getAttribute(ATTR_KEY);
-    this.imageName = name;
     if (name == null) {
       return null;
     } else {

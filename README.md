@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.2.0-SNAPSHOT (Under development)__
+- __IJ: Minimal supported API version changed to 143.2370.31 (15.0.6)__
 - fixed issue [#16](https://github.com/raydac/netbeans-mmd-plugin/issues/16), Added default key board shortcut to open popup context menu, CTRL+ALT+SPACE
 - Added loading of custom plugins from folder defined through __nbmmd.plugin.folder__ property
 - Added plugin "Emoticons"
@@ -20,7 +21,6 @@ __1.2.0-SNAPSHOT (Under development)__
 - Added key board shortcuts for zooming in, out and resetting zoom.
 - fixed issue [#10 "In Select topic dialog; Fold All only closes the root node"](https://github.com/raydac/netbeans-mmd-plugin/issues/10)
 - fixed issue [#9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"](https://github.com/raydac/netbeans-mmd-plugin/issues/9)
-- the IDEA project adapted to be compatible with IDEA 16 platform
 - fixed issue [#11 "Can't create topic with hash char"](https://github.com/raydac/netbeans-mmd-plugin/issues/11)
 - reworked mind map format parser to make it compatible with PSI tree parser in IDEA
 - refactoring
@@ -33,45 +33,6 @@ __1.1.4 (21-feb-2015)__
 - improved panel, now clicking on '+' of a topic with pressed CTRL will open only 1th level children
 - improvements of stability in work with DnD operations
 - refactoring of both plug-ins, improved stability of work
-
-__1.1.3 (maintenance) (29-nov-2015)__
-- the IDEA plugin enabled for all products based on the IDEA platform (but not all of them allow to tune facets) (IDEA, 1.0.3)
-- enabled folder actions for folders within .projectKnowledge folder (NetBeans, 1.1.3)
-- improved DnD processing to avoid potential NPE for objects without file references (IDEA, 1.0.3)
-- added "Knowledge" view into Project pane to show separately .projectKnowledge folder content (IDEA, 1.0.3)
-- fixed incompatibility of the Settings panel with OpenJDK (IDEA, 1.0.3)
-
-__1.1.2 (maintenance) (22-nov-2015)__
-- refactoring to increase compatibility with different IDEs
-- removed logging with slf4j, added services to provide different logging for each IDE
-- improved logic of opening file link in both IDEs
-- changed byte-code version to Java 6 (but it still uses java.nio.file.Path from Java 7+)
-- bug fixing in the IDEA version (1.0.2), changed minimal IDEA version to IDEA 13 (133 build), but it should be started under Java 7+
-
-__1.1.1 (maintenance) (15-oct-2015)__
-- [Intellij IDEA plugin published in the IDEA repository](https://plugins.jetbrains.com/plugin/8045)
-- very small refactoring
-- added support of word-wrap mode change into the plain text editor
-- improved focus loose processing for topic text editor, now the editing text saved if editor lost focus (issue #1)
-- "leftSide" attribute added into standard attribute list to support removing of topic contains only the attribute
-- added extra check for file existence in file link edit
-- fixed seldom NPE in refactoring module to avoid NPE if not found Project for FileObject or the Project doesn't have folder (issue #4)  
-
-__1.1.0 (09-oct-2015)__
-- minor bugfix and refactoring
-- minimal Java version updated to 1.7+
-- added "Knowledge" view to projects, it shows content of the .projectKnowledge project folder (the feature can be disabled through "Options")
-- added base support for refactoring actions "Move", "Delete", "Rename" and "Find usages" (works for Java projects)
-- added support of transitions show (which are renamed to "jumps") between topics on mind maps as arrowed lines
-- added support of folders in file links, also now it is possible to define special flag to open a file link in the default system viewer
-- added support of colorization for every topic
-- file links to another mind maps are shown as NB MindMap icons
-- file links to files with absolute path have special badge
-- improved drag and drop for topics, D&D of a topic with CTRL (pressed on start of operation) will make link to the dragged topic
-- improved print support  
-
-__1.0.0 (06-sep-2015)__
-- Initial version  
 
 # Implementation
 Because my main programming tool is [NetBeans IDE](https://netbeans.org/), I have developed plugin for the IDE. It is compatible with Java 1.7+ and NetBeans 7.4+.  

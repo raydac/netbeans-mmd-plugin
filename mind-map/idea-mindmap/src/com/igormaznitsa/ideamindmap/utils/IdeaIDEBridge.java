@@ -14,14 +14,17 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationManager;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.swing.Icon;
 
 public class IdeaIDEBridge implements IDEBridge {
 
   private final Version ideVersion;
   private static final Logger LOGGER = LoggerFactory.getLogger(IdeaIDEBridge.class);
-  private static final NotificationGroup MMD_GROUP = new NotificationGroup("IDEA MindMap",NotificationDisplayType.BALLOON,true,null,AllIcons.Logo.MINDMAP);
+  private static final NotificationGroup MMD_GROUP = new NotificationGroup("IDEA MindMap",NotificationDisplayType.BALLOON,true);
 
   public IdeaIDEBridge() {
     final ApplicationInfo info = ApplicationInfo.getInstance();
@@ -78,7 +81,16 @@ public class IdeaIDEBridge implements IDEBridge {
 
     ApplicationManager.getApplication().invokeLater(new Runnable() {
       @Override public void run() {
-        final Notification notification = MMD_GROUP.createNotification(StringEscapeUtils.escapeHtml(title), null, StringEscapeUtils.escapeHtml(text), ideType);
+        final long timestamp = System.currentTimeMillis();
+        final Notification notification = new Notification(MMD_GROUP.getDisplayId(),StringEscapeUtils.escapeHtml(title), StringEscapeUtils.escapeHtml(text), ideType){
+          @Nullable @Override public Icon getIcon() {
+            return AllIcons.Logo.MINDMAP;
+          }
+
+          @Override public long getTimestamp() {
+            return timestamp;
+          }
+        };
         Notifications.Bus.notify(notification);
       }
     });

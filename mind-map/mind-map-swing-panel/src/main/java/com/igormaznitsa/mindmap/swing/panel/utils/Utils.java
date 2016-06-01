@@ -473,6 +473,7 @@ public final class Utils {
     final boolean isModelNotEmpty = source.getModel().getRoot() != null;
 
     putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MAIN, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MANIPULATORS, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
     putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.EXTRAS, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
 
     final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDExporters.SubmenuName"));

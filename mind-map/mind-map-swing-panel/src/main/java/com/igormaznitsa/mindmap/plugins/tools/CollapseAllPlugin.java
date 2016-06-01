@@ -53,7 +53,7 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
   @Override
   @Nonnull
   public PopUpSection getSection() {
-    return PopUpSection.TOOLS;
+    return PopUpSection.MANIPULATORS;
   }
   
   @Override
@@ -68,7 +68,7 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
 
   @Override
   public int getOrder() {
-    return 3;
+    return 2;
   }
 
 }

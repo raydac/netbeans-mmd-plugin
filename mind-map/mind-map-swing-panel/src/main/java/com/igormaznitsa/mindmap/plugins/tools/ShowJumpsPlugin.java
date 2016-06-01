@@ -53,7 +53,7 @@ public class ShowJumpsPlugin extends AbstractPopupMenuItem {
   @Override
   @Nonnull
   public PopUpSection getSection() {
-    return PopUpSection.TOOLS;
+    return PopUpSection.MANIPULATORS;
   }
 
   @Override
@@ -68,7 +68,7 @@ public class ShowJumpsPlugin extends AbstractPopupMenuItem {
 
   @Override
   public int getOrder() {
-    return 1;
+    return 4;
   }
 
 }

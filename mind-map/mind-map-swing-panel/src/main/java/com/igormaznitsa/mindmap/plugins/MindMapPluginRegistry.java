@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -54,7 +53,7 @@ import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
 
-  private final List<MindMapPlugin> pluginList = new CopyOnWriteArrayList<MindMapPlugin>();
+  private final List<MindMapPlugin> pluginList = new ArrayList<MindMapPlugin>();
 
   private static final MindMapPluginRegistry INSTANCE = new MindMapPluginRegistry();
 
@@ -109,11 +108,16 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   }
 
   public int size() {
-    return this.pluginList.size();
+    synchronized(FIND_CACHE){
+      return this.pluginList.size();
+    }
   }
 
   public void clear() {
-    this.pluginList.clear();
+    synchronized(FIND_CACHE){
+      this.pluginList.clear();
+      FIND_CACHE.clear();
+    }
   }
 
   @Nonnull

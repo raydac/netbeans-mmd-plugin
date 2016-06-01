@@ -70,6 +70,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
 import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
+import java.util.concurrent.locks.ReentrantLock;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MindMapPanel extends JPanel {
@@ -85,6 +86,7 @@ public class MindMapPanel extends JPanel {
 
   private final Map<Object, WeakReference<?>> weakTable = new WeakHashMap<Object, WeakReference<?>>();
   private final AtomicBoolean disposed = new AtomicBoolean();
+  private final ReentrantLock panelLocker = new ReentrantLock();
 
   public static class DraggedElement {
 
@@ -201,68 +203,86 @@ public class MindMapPanel extends JPanel {
 
       @Override
       public void keyPressed(@Nonnull final KeyEvent e) {
-        switch (e.getKeyCode()) {
-          case KeyEvent.VK_ENTER: {
-            e.consume();
-          }
-          break;
-          case KeyEvent.VK_TAB: {
-            if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
-              e.consume();
-              final Topic edited = elementUnderEdit.getModel();
-              final int[] topicPosition = edited.getPositionPath();
-              endEdit(true);
-              SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                  final Topic theTopic = model.findForPositionPath(topicPosition);
-                  if (theTopic != null) {
-                    makeNewChildAndStartEdit(theTopic, null);
-                  }
+        if (lockIfNotDisposed()) {
+          try {
+            switch (e.getKeyCode()) {
+              case KeyEvent.VK_ENTER: {
+                e.consume();
+              }
+              break;
+              case KeyEvent.VK_TAB: {
+                if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
+                  e.consume();
+                  final Topic edited = elementUnderEdit.getModel();
+                  final int[] topicPosition = edited.getPositionPath();
+                  endEdit(true);
+                  SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                      final Topic theTopic = model.findForPositionPath(topicPosition);
+                      if (theTopic != null) {
+                        makeNewChildAndStartEdit(theTopic, null);
+                      }
+                    }
+                  });
                 }
-              });
+              }
+              break;
+              default:
+                break;
             }
+          } finally {
+            unlock();
           }
-          break;
-          default:
-            break;
         }
       }
 
       @Override
       public void keyTyped(@Nonnull final KeyEvent e) {
-        if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-          if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
-            e.consume();
-            endEdit(true);
-          } else {
-            e.consume();
-            textEditor.insert("\n", textEditor.getCaretPosition()); //NOI18N
+        if (lockIfNotDisposed()) {
+          try {
+            if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+              if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
+                e.consume();
+                endEdit(true);
+              } else {
+                e.consume();
+                textEditor.insert("\n", textEditor.getCaretPosition()); //NOI18N
+              }
+            }
+          } finally {
+            unlock();
           }
         }
       }
 
       @Override
       public void keyReleased(@Nonnull final KeyEvent e) {
-        if (config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
-          e.consume();
-          final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
-          endEdit(false);
-          if (edited != null && edited.canBeLost()) {
-            deleteTopics(edited);
-            if (pathToPrevTopicBeforeEdit != null) {
-              final int[] path = pathToPrevTopicBeforeEdit;
-              pathToPrevTopicBeforeEdit = null;
-              SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                  final Topic topic = model.findForPositionPath(path);
-                  if (topic != null) {
-                    select(topic, false);
-                  }
+        if (lockIfNotDisposed()) {
+          try {
+            if (config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
+              e.consume();
+              final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
+              endEdit(false);
+              if (edited != null && edited.canBeLost()) {
+                deleteTopics(edited);
+                if (pathToPrevTopicBeforeEdit != null) {
+                  final int[] path = pathToPrevTopicBeforeEdit;
+                  pathToPrevTopicBeforeEdit = null;
+                  SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                      final Topic topic = model.findForPositionPath(path);
+                      if (topic != null) {
+                        select(topic, false);
+                      }
+                    }
+                  });
                 }
-              });
+              }
             }
+          } finally {
+            unlock();
           }
         }
       }
@@ -271,10 +291,16 @@ public class MindMapPanel extends JPanel {
     this.textEditor.getDocument().addDocumentListener(new DocumentListener() {
 
       private void updateEditorPanelSize(@Nonnull final Dimension newSize) {
-        final Dimension editorPanelMinSize = textEditorPanel.getMinimumSize();
-        final Dimension newDimension = new Dimension(Math.max(editorPanelMinSize.width, newSize.width), Math.max(editorPanelMinSize.height, newSize.height));
-        textEditorPanel.setSize(newDimension);
-        textEditorPanel.repaint();
+        if (lockIfNotDisposed()) {
+          try {
+            final Dimension editorPanelMinSize = textEditorPanel.getMinimumSize();
+            final Dimension newDimension = new Dimension(Math.max(editorPanelMinSize.width, newSize.width), Math.max(editorPanelMinSize.height, newSize.height));
+            textEditorPanel.setSize(newDimension);
+            textEditorPanel.repaint();
+          } finally {
+            unlock();
+          }
+        }
       }
 
       @Override
@@ -300,44 +326,56 @@ public class MindMapPanel extends JPanel {
 
       @Override
       public void keyTyped(@Nonnull final KeyEvent e) {
-        if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT, e)) {
-          if (!selectedTopics.isEmpty()) {
-            makeNewChildAndStartEdit(selectedTopics.get(0), null);
+        if (lockIfNotDisposed()) {
+          try {
+            if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT, e)) {
+              if (!selectedTopics.isEmpty()) {
+                makeNewChildAndStartEdit(selectedTopics.get(0), null);
+              }
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_SIBLING_AND_START_EDIT, e)) {
+              if (!hasActiveEditor() && hasOnlyTopicSelected()) {
+                final Topic baseTopic = selectedTopics.get(0);
+                makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
+              }
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_ROOT_OR_START_EDIT, e)) {
+              if (!hasSelectedTopics()) {
+                select(getModel().getRoot(), false);
+              } else if (hasOnlyTopicSelected()) {
+                startEdit((AbstractElement) selectedTopics.get(0).getPayload());
+              }
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
+              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)));
+              updateView(false);
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
+              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)));
+              updateView(false);
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
+              setScale(1.0);
+              updateView(false);
+            }
+          } finally {
+            unlock();
           }
-        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_SIBLING_AND_START_EDIT, e)) {
-          if (!hasActiveEditor() && hasOnlyTopicSelected()) {
-            final Topic baseTopic = selectedTopics.get(0);
-            makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
-          }
-        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_ROOT_OR_START_EDIT, e)) {
-          if (!hasSelectedTopics()) {
-            select(getModel().getRoot(), false);
-          } else if (hasOnlyTopicSelected()) {
-            startEdit((AbstractElement) selectedTopics.get(0).getPayload());
-          }
-        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
-          setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)));
-          updateView(false);
-        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
-          setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)));
-          updateView(false);
-        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
-          setScale(1.0);
-          updateView(false);
         }
       }
 
       @Override
       public void keyReleased(@Nonnull final KeyEvent e) {
-        if (config.isKeyEvent(MindMapPanelConfig.KEY_SHOW_POPUP, e)) {
-          e.consume();
-          processPopUpForShortcut();
-        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
-          e.consume();
-          deleteSelectedTopics();
-        } else if (config.isKeyEventDetected(e, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_UP, MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN)) {
-          e.consume();
-          processMoveFocusByKey(e);
+        if (lockIfNotDisposed()) {
+          try {
+            if (config.isKeyEvent(MindMapPanelConfig.KEY_SHOW_POPUP, e)) {
+              e.consume();
+              processPopUpForShortcut();
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
+              e.consume();
+              deleteSelectedTopics();
+            } else if (config.isKeyEventDetected(e, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_UP, MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN)) {
+              e.consume();
+              processMoveFocusByKey(e);
+            }
+          } finally {
+            unlock();
+          }
         }
       }
     };
@@ -355,278 +393,312 @@ public class MindMapPanel extends JPanel {
 
       @Override
       public void mouseMoved(@Nonnull final MouseEvent e) {
-        if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
-          return;
-        }
-        final AbstractElement element = findTopicUnderPoint(e.getPoint());
-        if (element == null) {
-          setCursor(Cursor.getDefaultCursor());
-          setToolTipText(null);
-        } else {
-          final ElementPart part = element.findPartForPoint(e.getPoint());
-          switch (part) {
-            case ICONS: {
-              final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-              if (extra != null) {
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                setToolTipText(makeHtmlTooltipForExtra(extra));
-              } else {
-                setCursor(null);
-                setToolTipText(null);
-              }
+        if (lockIfNotDisposed()) {
+          try {
+            if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
+              return;
             }
-            break;
-            case VISUAL_ATTRIBUTES: {
-              final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-              if (plugin != null) {
-                final Topic theTopic = element.getModel();
-                if (plugin.isClickable(theInstance, theTopic)) {
-                  setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                } else {
-                  setCursor(null);
-                }
-                setToolTipText(plugin.getToolTip(theInstance, theTopic));
-              } else {
-                setCursor(null);
-                setToolTipText(null);
-              }
-            }
-            break;
-            case COLLAPSATOR: {
-              setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-              setToolTipText(null);
-            }
-            break;
-            default: {
+            final AbstractElement element = findTopicUnderPoint(e.getPoint());
+            if (element == null) {
               setCursor(Cursor.getDefaultCursor());
               setToolTipText(null);
+            } else {
+              final ElementPart part = element.findPartForPoint(e.getPoint());
+              switch (part) {
+                case ICONS: {
+                  final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+                  if (extra != null) {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    setToolTipText(makeHtmlTooltipForExtra(extra));
+                  } else {
+                    setCursor(null);
+                    setToolTipText(null);
+                  }
+                }
+                break;
+                case VISUAL_ATTRIBUTES: {
+                  final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+                  if (plugin != null) {
+                    final Topic theTopic = element.getModel();
+                    if (plugin.isClickable(theInstance, theTopic)) {
+                      setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    } else {
+                      setCursor(null);
+                    }
+                    setToolTipText(plugin.getToolTip(theInstance, theTopic));
+                  } else {
+                    setCursor(null);
+                    setToolTipText(null);
+                  }
+                }
+                break;
+                case COLLAPSATOR: {
+                  setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                  setToolTipText(null);
+                }
+                break;
+                default: {
+                  setCursor(Cursor.getDefaultCursor());
+                  setToolTipText(null);
+                }
+                break;
+              }
             }
-            break;
+          } finally {
+            unlock();
           }
         }
       }
 
       @Override
       public void mousePressed(@Nonnull final MouseEvent e) {
-        if (!controller.isMouseClickProcessingAllowed(theInstance)) {
-          return;
-        }
-        try {
-          if (e.isPopupTrigger()) {
-            mouseDragSelection = null;
-            MindMap theMap = model;
-            AbstractElement element = null;
-            if (theMap != null) {
-              element = findTopicUnderPoint(e.getPoint());
+        if (lockIfNotDisposed()) {
+          try {
+            if (!controller.isMouseClickProcessingAllowed(theInstance)) {
+              return;
             }
-            processPopUp(e.getPoint(), element);
-            e.consume();
-          } else {
-            endEdit(elementUnderEdit != null);
-            mouseDragSelection = null;
+            try {
+              if (e.isPopupTrigger()) {
+                mouseDragSelection = null;
+                MindMap theMap = model;
+                AbstractElement element = null;
+                if (theMap != null) {
+                  element = findTopicUnderPoint(e.getPoint());
+                }
+                processPopUp(e.getPoint(), element);
+                e.consume();
+              } else {
+                endEdit(elementUnderEdit != null);
+                mouseDragSelection = null;
+              }
+            } catch (Exception ex) {
+              LOGGER.error("Error during mousePressed()", ex);
+            }
+          } finally {
+            unlock();
           }
-        } catch (Exception ex) {
-          LOGGER.error("Error during mousePressed()", ex);
         }
       }
 
       @Override
       public void mouseReleased(@Nonnull final MouseEvent e) {
-        if (!controller.isMouseClickProcessingAllowed(theInstance)) {
-          return;
-        }
-        try {
-          if (draggedElement != null) {
-            draggedElement.updatePosition(e.getPoint());
-            if (endDragOfElement(draggedElement, destinationElement)) {
-              updateView(true);
+        if (lockIfNotDisposed()) {
+          try {
+            if (!controller.isMouseClickProcessingAllowed(theInstance)) {
+              return;
             }
-          } else if (mouseDragSelection != null) {
-            final List<Topic> covered = mouseDragSelection.getAllSelectedElements(model);
-            if (e.isShiftDown()) {
-              for (final Topic m : covered) {
-                select(m, false);
+            try {
+              if (draggedElement != null) {
+                draggedElement.updatePosition(e.getPoint());
+                if (endDragOfElement(draggedElement, destinationElement)) {
+                  updateView(true);
+                }
+              } else if (mouseDragSelection != null) {
+                final List<Topic> covered = mouseDragSelection.getAllSelectedElements(model);
+                if (e.isShiftDown()) {
+                  for (final Topic m : covered) {
+                    select(m, false);
+                  }
+                } else if (e.isControlDown()) {
+                  for (final Topic m : covered) {
+                    select(m, true);
+                  }
+                } else {
+                  removeAllSelection();
+                  for (final Topic m : covered) {
+                    select(m, false);
+                  }
+                }
+              } else if (e.isPopupTrigger()) {
+                mouseDragSelection = null;
+                MindMap theMap = model;
+                AbstractElement element = null;
+                if (theMap != null) {
+                  element = findTopicUnderPoint(e.getPoint());
+                }
+                processPopUp(e.getPoint(), element);
+                e.consume();
               }
-            } else if (e.isControlDown()) {
-              for (final Topic m : covered) {
-                select(m, true);
-              }
-            } else {
-              removeAllSelection();
-              for (final Topic m : covered) {
-                select(m, false);
-              }
+            } catch (Exception ex) {
+              LOGGER.error("Error during mouseReleased()", ex);
+            } finally {
+              mouseDragSelection = null;
+              draggedElement = null;
+              destinationElement = null;
+              repaint();
             }
-          } else if (e.isPopupTrigger()) {
-            mouseDragSelection = null;
-            MindMap theMap = model;
-            AbstractElement element = null;
-            if (theMap != null) {
-              element = findTopicUnderPoint(e.getPoint());
-            }
-            processPopUp(e.getPoint(), element);
-            e.consume();
+          } finally {
+            unlock();
           }
-        } catch (Exception ex) {
-          LOGGER.error("Error during mouseReleased()", ex);
-        } finally {
-          mouseDragSelection = null;
-          draggedElement = null;
-          destinationElement = null;
-          repaint();
         }
       }
 
       @Override
       public void mouseDragged(@Nonnull final MouseEvent e) {
-        if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
-          return;
-        }
-        scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
-
-        if (!popupMenuActive) {
-          if (draggedElement == null && mouseDragSelection == null) {
-            final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
-            if (elementUnderMouse == null) {
-              MindMap theMap = model;
-              if (theMap != null) {
-                final AbstractElement element = findTopicUnderPoint(e.getPoint());
-                if (controller.isSelectionAllowed(theInstance) && element == null) {
-                  mouseDragSelection = new MouseSelectedArea(e.getPoint());
-                }
-              }
-            } else if (controller.isElementDragAllowed(theInstance)) {
-              if (elementUnderMouse.isMoveable()) {
-                selectedTopics.clear();
-
-                final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
-                draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE);
-                draggedElement.updatePosition(e.getPoint());
-                findDestinationElementForDragged();
-              } else {
-                draggedElement = null;
-              }
-              repaint();
+        if (lockIfNotDisposed()) {
+          try {
+            if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
+              return;
             }
-          } else if (mouseDragSelection != null) {
-            if (controller.isSelectionAllowed(theInstance)) {
-              mouseDragSelection.update(e);
+            scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
+
+            if (!popupMenuActive) {
+              if (draggedElement == null && mouseDragSelection == null) {
+                final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
+                if (elementUnderMouse == null) {
+                  MindMap theMap = model;
+                  if (theMap != null) {
+                    final AbstractElement element = findTopicUnderPoint(e.getPoint());
+                    if (controller.isSelectionAllowed(theInstance) && element == null) {
+                      mouseDragSelection = new MouseSelectedArea(e.getPoint());
+                    }
+                  }
+                } else if (controller.isElementDragAllowed(theInstance)) {
+                  if (elementUnderMouse.isMoveable()) {
+                    selectedTopics.clear();
+
+                    final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
+                    draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE);
+                    draggedElement.updatePosition(e.getPoint());
+                    findDestinationElementForDragged();
+                  } else {
+                    draggedElement = null;
+                  }
+                  repaint();
+                }
+              } else if (mouseDragSelection != null) {
+                if (controller.isSelectionAllowed(theInstance)) {
+                  mouseDragSelection.update(e);
+                } else {
+                  mouseDragSelection = null;
+                }
+                repaint();
+              } else if (draggedElement != null) {
+                if (controller.isElementDragAllowed(theInstance)) {
+                  draggedElement.updatePosition(e.getPoint());
+                  findDestinationElementForDragged();
+                } else {
+                  draggedElement = null;
+                }
+                repaint();
+              }
             } else {
               mouseDragSelection = null;
             }
-            repaint();
-          } else if (draggedElement != null) {
-            if (controller.isElementDragAllowed(theInstance)) {
-              draggedElement.updatePosition(e.getPoint());
-              findDestinationElementForDragged();
-            } else {
-              draggedElement = null;
-            }
-            repaint();
+          } finally {
+            unlock();
           }
-        } else {
-          mouseDragSelection = null;
         }
       }
 
       @Override
       public void mouseWheelMoved(@Nonnull final MouseWheelEvent e) {
-        if (controller.isMouseWheelProcessingAllowed(theInstance)) {
-          mouseDragSelection = null;
-          draggedElement = null;
+        if (lockIfNotDisposed()) {
+          try {
+            if (controller.isMouseWheelProcessingAllowed(theInstance)) {
+              mouseDragSelection = null;
+              draggedElement = null;
 
-          final MindMapPanelConfig theConfig = config;
+              final MindMapPanelConfig theConfig = config;
 
-          if (!e.isConsumed() && (theConfig != null && ((e.getModifiers() & theConfig.getScaleModifiers()) == theConfig.getScaleModifiers()))) {
-            endEdit(elementUnderEdit != null);
+              if (!e.isConsumed() && (theConfig != null && ((e.getModifiers() & theConfig.getScaleModifiers()) == theConfig.getScaleModifiers()))) {
+                endEdit(elementUnderEdit != null);
 
-            setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), SCALE_MAXIMUM)));
+                setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), SCALE_MAXIMUM)));
 
-            updateView(false);
-            e.consume();
-          } else {
-            sendToParent(e);
+                updateView(false);
+                e.consume();
+              } else {
+                sendToParent(e);
+              }
+            }
+          } finally {
+            unlock();
           }
         }
       }
 
       @Override
       public void mouseClicked(@Nonnull final MouseEvent e) {
-        if (!controller.isMouseClickProcessingAllowed(theInstance)) {
-          return;
-        }
-        mouseDragSelection = null;
-        draggedElement = null;
-
-        MindMap theMap = model;
-        AbstractElement element = null;
-        if (theMap != null) {
-          element = findTopicUnderPoint(e.getPoint());
-        }
-
-        final boolean isCtrlDown = e.isControlDown();
-
-        if (element != null) {
-          final ElementPart part = element.findPartForPoint(e.getPoint());
-          if (part == ElementPart.COLLAPSATOR) {
-            removeAllSelection();
-
-            if (element.isCollapsed()) {
-              ((AbstractCollapsableElement) element).setCollapse(false);
-              if (isCtrlDown) {
-                ((AbstractCollapsableElement) element).collapseAllFirstLevelChildren();
-              }
-            } else {
-              ((AbstractCollapsableElement) element).setCollapse(true);
+        if (lockIfNotDisposed()) {
+          try {
+            if (!controller.isMouseClickProcessingAllowed(theInstance)) {
+              return;
             }
-            notifyModelChanged();
-            repaint();
-          } else if (!isCtrlDown) {
-            switch (part) {
-              case VISUAL_ATTRIBUTES:
-                final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-                boolean processedByPlugin = false;
-                if (plugin != null) {
-                  if (plugin.isClickable(theInstance, element.getModel())) {
-                    processedByPlugin = true;
-                    try {
-                      if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
-                        notifyModelChanged();
-                        repaint();
-                      }
-                    } catch (Exception ex) {
-                      LOGGER.error("Error during visual attribute processing", ex);
-                      controller.getDialogProvider(theInstance).msgError("Detectd critical error! See log!");
-                    }
-                  }
-                }
-                if (!processedByPlugin) {
-                  removeAllSelection();
-                  select(element.getModel(), false);
-                }
-                break;
-              case ICONS:
-                final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
-                if (extra != null) {
-                  fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
-                }
-                break;
-              default:
-                // only
+            mouseDragSelection = null;
+            draggedElement = null;
+
+            MindMap theMap = model;
+            AbstractElement element = null;
+            if (theMap != null) {
+              element = findTopicUnderPoint(e.getPoint());
+            }
+
+            final boolean isCtrlDown = e.isControlDown();
+
+            if (element != null) {
+              final ElementPart part = element.findPartForPoint(e.getPoint());
+              if (part == ElementPart.COLLAPSATOR) {
                 removeAllSelection();
-                select(element.getModel(), false);
-                if (e.getClickCount() > 1) {
-                  startEdit(element);
+
+                if (element.isCollapsed()) {
+                  ((AbstractCollapsableElement) element).setCollapse(false);
+                  if (isCtrlDown) {
+                    ((AbstractCollapsableElement) element).collapseAllFirstLevelChildren();
+                  }
+                } else {
+                  ((AbstractCollapsableElement) element).setCollapse(true);
                 }
-                break;
+                notifyModelChanged();
+                repaint();
+              } else if (!isCtrlDown) {
+                switch (part) {
+                  case VISUAL_ATTRIBUTES:
+                    final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+                    boolean processedByPlugin = false;
+                    if (plugin != null) {
+                      if (plugin.isClickable(theInstance, element.getModel())) {
+                        processedByPlugin = true;
+                        try {
+                          if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
+                            notifyModelChanged();
+                            repaint();
+                          }
+                        } catch (Exception ex) {
+                          LOGGER.error("Error during visual attribute processing", ex);
+                          controller.getDialogProvider(theInstance).msgError("Detectd critical error! See log!");
+                        }
+                      }
+                    }
+                    if (!processedByPlugin) {
+                      removeAllSelection();
+                      select(element.getModel(), false);
+                    }
+                    break;
+                  case ICONS:
+                    final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+                    if (extra != null) {
+                      fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
+                    }
+                    break;
+                  default:
+                    // only
+                    removeAllSelection();
+                    select(element.getModel(), false);
+                    if (e.getClickCount() > 1) {
+                      startEdit(element);
+                    }
+                    break;
+                }
+              } else // group
+               if (selectedTopics.isEmpty()) {
+                  select(element.getModel(), false);
+                } else {
+                  select(element.getModel(), true);
+                }
             }
-          } else // group
-          {
-            if (selectedTopics.isEmpty()) {
-              select(element.getModel(), false);
-            } else {
-              select(element.getModel(), true);
-            }
+          } finally {
+            unlock();
           }
         }
       }
@@ -643,8 +715,14 @@ public class MindMapPanel extends JPanel {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(PanelAwarePlugin.class)) {
-          p.onPanelCreate(theInstance);
+        if (lockIfNotDisposed()) {
+          try {
+            for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(PanelAwarePlugin.class)) {
+              p.onPanelCreate(theInstance);
+            }
+          } finally {
+            unlock();
+          }
         }
       }
     });
@@ -652,21 +730,25 @@ public class MindMapPanel extends JPanel {
 
   @Nullable
   public Object findTmpObject(@Nonnull final Object key) {
-    assertNotDisposed();
-    synchronized (this.weakTable) {
+    this.lock();
+    try {
       final WeakReference ref = this.weakTable.get(key);
       return ref == null ? null : ref.get();
+    } finally {
+      this.unlock();
     }
   }
 
   public void putTmpObject(@Nonnull final Object key, @Nullable final Object value) {
-    assertNotDisposed();
-    synchronized (this.weakTable) {
+    this.lock();
+    try {
       if (value == null) {
         this.weakTable.remove(key);
       } else {
         this.weakTable.put(key, new WeakReference<Object>(value));
       }
+    } finally {
+      this.unlock();
     }
   }
 
@@ -706,18 +788,23 @@ public class MindMapPanel extends JPanel {
   }
 
   public void refreshConfiguration() {
-    assertNotDisposed();
-    final MindMapPanel theInstance = this;
-    final double scale = this.config.getScale();
-    this.config.makeAtomicChange(new Runnable() {
-      @Override
-      public void run() {
-        config.makeFullCopyOf(controller.provideConfigForMindMapPanel(theInstance), false, false);
-        config.setScale(scale);
+    if (this.lockIfNotDisposed()) {
+      try {
+        final MindMapPanel theInstance = this;
+        final double scale = this.config.getScale();
+        this.config.makeAtomicChange(new Runnable() {
+          @Override
+          public void run() {
+            config.makeFullCopyOf(controller.provideConfigForMindMapPanel(theInstance), false, false);
+            config.setScale(scale);
+          }
+        });
+        invalidate();
+        repaint();
+      } finally {
+        this.unlock();
       }
-    });
-    invalidate();
-    repaint();
+    }
   }
 
   private static final int DRAG_POSITION_UNKNOWN = -1;
@@ -917,8 +1004,14 @@ public class MindMapPanel extends JPanel {
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
-        invalidate();
-        fireNotificationMindMapChanged();
+        if (lockIfNotDisposed()) {
+          try {
+            invalidate();
+            fireNotificationMindMapChanged();
+          } finally {
+            unlock();
+          }
+        }
       }
     });
   }
@@ -928,19 +1021,30 @@ public class MindMapPanel extends JPanel {
   }
 
   private boolean hasActiveEditor() {
-    return this.elementUnderEdit != null;
+    if (lockIfNotDisposed()) {
+      try {
+        return this.elementUnderEdit != null;
+      } finally {
+        unlock();
+      }
+    }
+    return false;
   }
 
   public boolean isShowJumps() {
-    assertNotDisposed();
     return Boolean.parseBoolean(this.model.getAttribute(ATTR_SHOW_JUMPS));
   }
 
   public void setShowJumps(final boolean flag) {
-    assertNotDisposed();
-    this.model.setAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
-    repaint();
-    fireNotificationMindMapChanged();
+    if (lockIfNotDisposed()) {
+      try {
+        this.model.setAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
+        repaint();
+        fireNotificationMindMapChanged();
+      } finally {
+        this.unlock();
+      }
+    }
   }
 
   @Nonnull
@@ -953,45 +1057,50 @@ public class MindMapPanel extends JPanel {
   }
 
   public void makeNewChildAndStartEdit(@Nullable final Topic parent, @Nullable final Topic baseTopic) {
-    assertNotDisposed();
-    if (parent != null) {
-      final Topic currentSelected = getFirstSelected();
-      this.pathToPrevTopicBeforeEdit = currentSelected == null ? null : currentSelected.getPositionPath();
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (parent != null) {
+          final Topic currentSelected = getFirstSelected();
+          this.pathToPrevTopicBeforeEdit = currentSelected == null ? null : currentSelected.getPositionPath();
 
-      removeAllSelection();
+          removeAllSelection();
 
-      final Topic newTopic = makeNewTopic(parent, baseTopic, ""); //NOI18N
+          final Topic newTopic = makeNewTopic(parent, baseTopic, ""); //NOI18N
 
-      if (this.controller.isCopyColorInfoFromParentToNewChildAllowed(this) && !parent.isRoot()) {
-        MindMapUtils.copyColorAttributes(parent, newTopic);
-      }
-
-      final AbstractElement parentElement = (AbstractElement) parent.getPayload();
-
-      if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
-        int numLeft = 0;
-        int numRight = 0;
-        for (final Topic t : parent.getChildren()) {
-          if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
-            numLeft++;
-          } else {
-            numRight++;
+          if (this.controller.isCopyColorInfoFromParentToNewChildAllowed(this) && !parent.isRoot()) {
+            MindMapUtils.copyColorAttributes(parent, newTopic);
           }
+
+          final AbstractElement parentElement = (AbstractElement) parent.getPayload();
+
+          if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
+            int numLeft = 0;
+            int numRight = 0;
+            for (final Topic t : parent.getChildren()) {
+              if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
+                numLeft++;
+              } else {
+                numRight++;
+              }
+            }
+
+            AbstractCollapsableElement.makeTopicLeftSided(newTopic, numLeft < numRight);
+          } else if (baseTopic != null && baseTopic.getPayload() != null) {
+            final AbstractElement element = assertNotNull((AbstractElement) baseTopic.getPayload());
+            AbstractCollapsableElement.makeTopicLeftSided(newTopic, element.isLeftDirection());
+          }
+
+          if (parentElement instanceof AbstractCollapsableElement && parentElement.isCollapsed()) {
+            ((AbstractCollapsableElement) parentElement).setCollapse(false);
+          }
+
+          select(newTopic, false);
+          updateView(false);
+          startEdit((AbstractElement) newTopic.getPayload());
         }
-
-        AbstractCollapsableElement.makeTopicLeftSided(newTopic, numLeft < numRight);
-      } else if (baseTopic != null && baseTopic.getPayload() != null) {
-        final AbstractElement element = assertNotNull((AbstractElement) baseTopic.getPayload());
-        AbstractCollapsableElement.makeTopicLeftSided(newTopic, element.isLeftDirection());
+      } finally {
+        this.unlock();
       }
-
-      if (parentElement instanceof AbstractCollapsableElement && parentElement.isCollapsed()) {
-        ((AbstractCollapsableElement) parentElement).setCollapse(false);
-      }
-
-      select(newTopic, false);
-      updateView(false);
-      startEdit((AbstractElement) newTopic.getPayload());
     }
   }
 
@@ -1021,78 +1130,117 @@ public class MindMapPanel extends JPanel {
   }
 
   public void deleteTopics(@Nonnull @MustNotContainNull final Topic... topics) {
-    assertNotDisposed();
-    endEdit(false);
-    removeAllSelection();
-    boolean allowed = true;
+    if (lockIfNotDisposed()) {
+      try {
+        endEdit(false);
+        removeAllSelection();
+        boolean allowed = true;
 
-    final List<ModelAwarePlugin> plugins = MindMapPluginRegistry.getInstance().findFor(ModelAwarePlugin.class);
+        final List<ModelAwarePlugin> plugins = MindMapPluginRegistry.getInstance().findFor(ModelAwarePlugin.class);
 
-    for (final MindMapListener l : this.mindMapListeners) {
-      allowed &= l.allowedRemovingOfTopics(this, topics);
-    }
-    if (allowed) {
-      for (final Topic t : topics) {
-        for (final ModelAwarePlugin p : plugins) {
-          p.onDeleteTopic(this, t);
+        for (final MindMapListener l : this.mindMapListeners) {
+          allowed &= l.allowedRemovingOfTopics(this, topics);
         }
-        this.model.removeTopic(t);
+        if (allowed) {
+          for (final Topic t : topics) {
+            for (final ModelAwarePlugin p : plugins) {
+              p.onDeleteTopic(this, t);
+            }
+            this.model.removeTopic(t);
+          }
+          updateView(true);
+        }
+      } finally {
+        unlock();
       }
-      updateView(true);
     }
   }
 
   public void collapseOrExpandAll(final boolean collapse) {
-    assertNotDisposed();
-    endEdit(false);
-    removeAllSelection();
+    if (this.lockIfNotDisposed()) {
+      try {
+        endEdit(false);
+        removeAllSelection();
 
-    if (this.model.getRoot() != null) {
-      final AbstractElement root = (AbstractElement) assertNotNull(this.model.getRoot()).getPayload();
-      if (root != null && root.collapseOrExpandAllChildren(collapse)) {
-        updateView(true);
+        if (this.model.getRoot() != null) {
+          final AbstractElement root = (AbstractElement) assertNotNull(this.model.getRoot()).getPayload();
+          if (root != null && root.collapseOrExpandAllChildren(collapse)) {
+            updateView(true);
+          }
+        }
+      } finally {
+        this.unlock();
       }
     }
   }
 
   public void deleteSelectedTopics() {
-    assertNotDisposed();
-    if (!this.selectedTopics.isEmpty()) {
-      deleteTopics(this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (!this.selectedTopics.isEmpty()) {
+          deleteTopics(this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
+        }
+      } finally {
+        this.unlock();
+      }
     }
   }
 
   public boolean hasSelectedTopics() {
-    assertNotDisposed();
-    return !this.selectedTopics.isEmpty();
+    if (this.lockIfNotDisposed()) {
+      try {
+        return !this.selectedTopics.isEmpty();
+      } finally {
+        this.unlock();
+      }
+    } else {
+      return false;
+    }
   }
 
   public boolean hasOnlyTopicSelected() {
-    assertNotDisposed();
-    return this.selectedTopics.size() == 1;
+    if (this.lockIfNotDisposed()) {
+      try {
+        return this.selectedTopics.size() == 1;
+      } finally {
+        this.unlock();
+      }
+    } else {
+      return false;
+    }
   }
 
   public void removeFromSelection(@Nonnull final Topic t) {
-    assertNotDisposed();
-    if (this.selectedTopics.contains(t)) {
-      if (this.selectedTopics.remove(t)) {
-        fireNotificationSelectionChanged();
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (this.selectedTopics.contains(t)) {
+          if (this.selectedTopics.remove(t)) {
+            fireNotificationSelectionChanged();
+          }
+          repaint();
+        }
+      } finally {
+        this.unlock();
       }
-      repaint();
     }
   }
 
   public void select(@Nullable final Topic t, final boolean removeIfPresented) {
-    assertNotDisposed();
-    if (this.controller.isSelectionAllowed(this) && t != null) {
-      if (!this.selectedTopics.contains(t)) {
-        if (this.selectedTopics.add(t)) {
-          fireNotificationSelectionChanged();
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (this.controller.isSelectionAllowed(this) && t != null) {
+          if (!this.selectedTopics.contains(t)) {
+            if (this.selectedTopics.add(t)) {
+              fireNotificationSelectionChanged();
+            }
+            fireNotificationEnsureTopicVisibility(t);
+            repaint();
+          } else if (removeIfPresented) {
+            removeFromSelection(t);
+          }
         }
-        fireNotificationEnsureTopicVisibility(t);
-        repaint();
-      } else if (removeIfPresented) {
-        removeFromSelection(t);
+      } finally {
+        this.unlock();
       }
     }
   }
@@ -1100,67 +1248,92 @@ public class MindMapPanel extends JPanel {
   @Nonnull
   @MustNotContainNull
   public Topic[] getSelectedTopics() {
-    return this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
+    this.lock();
+    try {
+      return this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
+    } finally {
+      this.unlock();
+    }
   }
 
   public void updateEditorAfterResizing() {
-    assertNotDisposed();
-    if (this.elementUnderEdit != null) {
-      final AbstractElement element = this.elementUnderEdit;
-      final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
-      this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
-      this.textEditor.setMinimumSize(textBlockSize);
-      this.textEditorPanel.setVisible(true);
-      this.textEditor.requestFocus();
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (this.elementUnderEdit != null) {
+          final AbstractElement element = this.elementUnderEdit;
+          final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
+          this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
+          this.textEditor.setMinimumSize(textBlockSize);
+          this.textEditorPanel.setVisible(true);
+          this.textEditor.requestFocus();
+        }
+      } finally {
+        this.unlock();
+      }
     }
   }
 
   public void hideEditor() {
-    assertNotDisposed();
-    this.textEditorPanel.setVisible(false);
-    this.elementUnderEdit = null;
+    if (this.lockIfNotDisposed()) {
+      try {
+        this.textEditorPanel.setVisible(false);
+        this.elementUnderEdit = null;
+      } finally {
+        this.unlock();
+      }
+    }
   }
 
   public void endEdit(final boolean commit) {
-    assertNotDisposed();
-    try {
-      if (commit && this.elementUnderEdit != null) {
-        this.pathToPrevTopicBeforeEdit = null;
-        final AbstractElement editedElement = this.elementUnderEdit;
-        final Topic editedTopic = this.elementUnderEdit.getModel();
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (commit && this.elementUnderEdit != null) {
+          this.pathToPrevTopicBeforeEdit = null;
+          final AbstractElement editedElement = this.elementUnderEdit;
+          final Topic editedTopic = this.elementUnderEdit.getModel();
 
-        final String oldText = editedElement.getText();
-        final String newText = this.textEditor.getText();
-        if (!oldText.equals(newText)) {
-          editedElement.setText(newText);
+          final String oldText = editedElement.getText();
+          final String newText = this.textEditor.getText();
+          if (!oldText.equals(newText)) {
+            editedElement.setText(newText);
+          }
+          this.textEditorPanel.setVisible(false);
+          updateView(true);
+          fireNotificationEnsureTopicVisibility(editedTopic);
         }
-        this.textEditorPanel.setVisible(false);
-        updateView(true);
-        fireNotificationEnsureTopicVisibility(editedTopic);
+      } finally {
+        try {
+          this.elementUnderEdit = null;
+          this.textEditorPanel.setVisible(false);
+          this.requestFocus();
+        } finally {
+          this.unlock();
+        }
       }
-    } finally {
-      this.elementUnderEdit = null;
-      this.textEditorPanel.setVisible(false);
-      this.requestFocus();
     }
   }
 
   public void startEdit(@Nullable final AbstractElement element) {
-    assertNotDisposed();
-    if (element == null) {
-      this.elementUnderEdit = null;
-      this.textEditorPanel.setVisible(false);
-    } else {
-      this.elementUnderEdit = element;
-      element.fillByTextAndFont(this.textEditor);
-      final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
-      this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
-      this.textEditor.setMinimumSize(textBlockSize);
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (element == null) {
+          this.elementUnderEdit = null;
+          this.textEditorPanel.setVisible(false);
+        } else {
+          this.elementUnderEdit = element;
+          element.fillByTextAndFont(this.textEditor);
+          final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
+          this.textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
+          this.textEditor.setMinimumSize(textBlockSize);
 
-      ensureVisibility(this.elementUnderEdit);
+          ensureVisibility(this.elementUnderEdit);
 
-      this.textEditorPanel.setVisible(true);
-      this.textEditor.requestFocus();
+          this.textEditorPanel.setVisible(true);
+          this.textEditor.requestFocus();
+        }
+      } finally {
+        this.unlock();
+      }
     }
   }
 
@@ -1175,109 +1348,133 @@ public class MindMapPanel extends JPanel {
   }
 
   protected void processPopUpForShortcut() {
-    final Topic topic = this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
-    if (topic == null) {
-      select(getModel().getRoot(), false);
-    } else {
-      final AbstractElement element = (AbstractElement) topic.getPayload();
-      if (element != null) {
-        final Rectangle2D bounds = element.getBounds();
-        processPopUp(new Point((int) Math.round(bounds.getCenterX()), (int) Math.round(bounds.getCenterY())), element);
+    if (this.lockIfNotDisposed()) {
+      try {
+        final Topic topic = this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
+        if (topic == null) {
+          select(getModel().getRoot(), false);
+        } else {
+          final AbstractElement element = (AbstractElement) topic.getPayload();
+          if (element != null) {
+            final Rectangle2D bounds = element.getBounds();
+            processPopUp(new Point((int) Math.round(bounds.getCenterX()), (int) Math.round(bounds.getCenterY())), element);
+          }
+        }
+      } finally {
+        unlock();
       }
     }
   }
 
   protected void processPopUp(@Nonnull final Point point, @Nullable final AbstractElement elementUnderMouse) {
-    if (this.controller != null) {
-      final ElementPart partUnderMouse = elementUnderMouse == null ? null : elementUnderMouse.findPartForPoint(point);
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (this.controller != null) {
+          final ElementPart partUnderMouse = elementUnderMouse == null ? null : elementUnderMouse.findPartForPoint(point);
 
-      if (elementUnderMouse != null && !this.selectedTopics.contains(elementUnderMouse.getModel())) {
-        this.selectedTopics.clear();
-        this.select(elementUnderMouse.getModel(), false);
-      }
-
-      final JPopupMenu menu = this.controller.makePopUpForMindMapPanel(this, point, elementUnderMouse, partUnderMouse);
-      if (menu != null) {
-
-        final MindMapPanel theInstance = this;
-
-        menu.addPopupMenuListener(new PopupMenuListener() {
-          @Override
-          public void popupMenuWillBecomeVisible(@Nonnull final PopupMenuEvent e) {
-            theInstance.mouseDragSelection = null;
-            theInstance.popupMenuActive = true;
+          if (elementUnderMouse != null && !this.selectedTopics.contains(elementUnderMouse.getModel())) {
+            this.selectedTopics.clear();
+            this.select(elementUnderMouse.getModel(), false);
           }
 
-          @Override
-          public void popupMenuWillBecomeInvisible(@Nonnull final PopupMenuEvent e) {
-            theInstance.mouseDragSelection = null;
-            theInstance.popupMenuActive = false;
-          }
+          final JPopupMenu menu = this.controller.makePopUpForMindMapPanel(this, point, elementUnderMouse, partUnderMouse);
+          if (menu != null) {
 
-          @Override
-          public void popupMenuCanceled(@Nonnull final PopupMenuEvent e) {
-            theInstance.mouseDragSelection = null;
-            theInstance.popupMenuActive = false;
-          }
-        });
+            final MindMapPanel theInstance = this;
 
-        menu.show(this, point.x, point.y);
+            menu.addPopupMenuListener(new PopupMenuListener() {
+              @Override
+              public void popupMenuWillBecomeVisible(@Nonnull final PopupMenuEvent e) {
+                theInstance.mouseDragSelection = null;
+                theInstance.popupMenuActive = true;
+              }
+
+              @Override
+              public void popupMenuWillBecomeInvisible(@Nonnull final PopupMenuEvent e) {
+                theInstance.mouseDragSelection = null;
+                theInstance.popupMenuActive = false;
+              }
+
+              @Override
+              public void popupMenuCanceled(@Nonnull final PopupMenuEvent e) {
+                theInstance.mouseDragSelection = null;
+                theInstance.popupMenuActive = false;
+              }
+            });
+
+            menu.show(this, point.x, point.y);
+          }
+        }
+      } finally {
+        unlock();
       }
     }
   }
 
   public void addMindMapListener(@Nonnull final MindMapListener l) {
-    assertNotDisposed();
-    this.mindMapListeners.add(Assertions.assertNotNull(l));
+    if (this.lockIfNotDisposed()) {
+      try {
+        this.mindMapListeners.add(Assertions.assertNotNull(l));
+      } finally {
+        this.unlock();
+      }
+    }
   }
 
   public void removeMindMapListener(@Nonnull final MindMapListener l) {
-    assertNotDisposed();
-    this.mindMapListeners.remove(Assertions.assertNotNull(l));
+    if (this.lockIfNotDisposed()) {
+      try {
+        this.mindMapListeners.remove(Assertions.assertNotNull(l));
+      } finally {
+        this.unlock();
+      }
+    }
   }
 
   public void setModel(@Nonnull final MindMap model) {
-    assertNotDisposed();
-    if (this.elementUnderEdit != null) {
-      Utils.safeSwingBlockingCall(new Runnable() {
-        @Override
-        public void run() {
-          endEdit(false);
-        }
-      });
-    }
+    this.lock();
+    try {
+      if (this.elementUnderEdit != null) {
+        Utils.safeSwingBlockingCall(new Runnable() {
+          @Override
+          public void run() {
+            endEdit(false);
+          }
+        });
+      }
 
-    final List<int[]> selectedPaths = new ArrayList<int[]>();
-    for (final Topic t : this.selectedTopics) {
-      selectedPaths.add(t.getPositionPath());
-    }
+      final List<int[]> selectedPaths = new ArrayList<int[]>();
+      for (final Topic t : this.selectedTopics) {
+        selectedPaths.add(t.getPositionPath());
+      }
 
-    this.selectedTopics.clear();
+      this.selectedTopics.clear();
 
-    final MindMap oldModel = this.model;
-    this.model = assertNotNull("Model must not be null", model);
+      final MindMap oldModel = this.model;
+      this.model = assertNotNull("Model must not be null", model);
 
-    for (final Topic t : this.model) {
       for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(PanelAwarePlugin.class)) {
         p.onPanelModelChange(this, oldModel, this.model);
       }
-    }
 
-    updateView(false);
+      updateView(false);
 
-    boolean selectionChanged = false;
-    for (final int[] posPath : selectedPaths) {
-      final Topic topic = this.model.findForPositionPath(posPath);
-      if (topic == null) {
-        selectionChanged = true;
-      } else if (!MindMapUtils.isHidden(topic)) {
-        this.selectedTopics.add(topic);
+      boolean selectionChanged = false;
+      for (final int[] posPath : selectedPaths) {
+        final Topic topic = this.model.findForPositionPath(posPath);
+        if (topic == null) {
+          selectionChanged = true;
+        } else if (!MindMapUtils.isHidden(topic)) {
+          this.selectedTopics.add(topic);
+        }
       }
+      if (selectionChanged) {
+        fireNotificationSelectionChanged();
+      }
+      repaint();
+    } finally {
+      this.unlock();
     }
-    if (selectionChanged) {
-      fireNotificationSelectionChanged();
-    }
-    repaint();
   }
 
   @Override
@@ -1287,18 +1484,31 @@ public class MindMapPanel extends JPanel {
 
   @Nonnull
   public MindMap getModel() {
-    assertNotDisposed();
-    return this.model;
+    this.lock();
+    try {
+      return this.model;
+    } finally {
+      this.unlock();
+    }
   }
 
   public void setScale(final double zoom) {
-    assertNotDisposed();
-    this.config.setScale(zoom);
+    if (this.lockIfNotDisposed()) {
+      try {
+        this.config.setScale(zoom);
+      } finally {
+        this.unlock();
+      }
+    }
   }
 
   public double getScale() {
-    assertNotDisposed();
-    return this.config.getScale();
+    this.lock();
+    try {
+      return this.config.getScale();
+    } finally {
+      this.unlock();
+    }
   }
 
   private static void drawBackground(@Nonnull final Graphics2D g, @Nonnull final MindMapPanelConfig cfg) {
@@ -1646,13 +1856,18 @@ public class MindMapPanel extends JPanel {
   }
 
   public void updateView(final boolean structureWasChanged) {
-    assertNotDisposed();
-    invalidate();
-    revalidate();
-    if (structureWasChanged) {
-      fireNotificationMindMapChanged();
+    if (this.lockIfNotDisposed()) {
+      try {
+        invalidate();
+        revalidate();
+        if (structureWasChanged) {
+          fireNotificationMindMapChanged();
+        }
+        repaint();
+      } finally {
+        this.unlock();
+      }
     }
-    repaint();
   }
 
   @Override
@@ -1661,9 +1876,15 @@ public class MindMapPanel extends JPanel {
       @Override
       public void run() {
         if (!isValid()) {
-          final Graphics2D gfx = (Graphics2D) getGraphics();
-          if (gfx != null && calculateElementSizes(gfx, model, config)) {
-            changeSizeOfComponentWithNotification(layoutFullDiagramWithCenteringToPaper(gfx, model, config, getSize()));
+          if (lockIfNotDisposed()) {
+            try {
+              final Graphics2D gfx = (Graphics2D) getGraphics();
+              if (gfx != null && calculateElementSizes(gfx, model, config)) {
+                changeSizeOfComponentWithNotification(layoutFullDiagramWithCenteringToPaper(gfx, model, config, getSize()));
+              }
+            } finally {
+              unlock();
+            }
           }
         }
       }
@@ -1676,21 +1897,31 @@ public class MindMapPanel extends JPanel {
   }
 
   public void setErrorText(@Nullable final String text) {
-    assertNotDisposed();
-    this.errorText = text;
-    repaint();
+    if (this.lockIfNotDisposed()) {
+      try {
+        this.errorText = text;
+        repaint();
+      } finally {
+        this.unlock();
+      }
+    }
   }
 
   @Nullable
   public String getErrorText() {
-    assertNotDisposed();
     return this.errorText;
   }
 
   @Override
   public boolean isValid() {
-    assertNotDisposed();
-    return isModelValid(this.model);
+    if (this.lockIfNotDisposed()) {
+      try {
+        return isModelValid(this.model);
+      } finally {
+        this.unlock();
+      }
+    }
+    return false;
   }
 
   @Override
@@ -1700,10 +1931,15 @@ public class MindMapPanel extends JPanel {
 
   @Override
   public void invalidate() {
-    assertNotDisposed();
-    super.invalidate();
-    if (this.model != null && this.model.getRoot() != null) {
-      this.model.resetPayload();
+    if (lockIfNotDisposed()) {
+      try {
+        super.invalidate();
+        if (this.model != null && this.model.getRoot() != null) {
+          this.model.resetPayload();
+        }
+      } finally {
+        this.unlock();
+      }
     }
   }
 
@@ -1725,117 +1961,157 @@ public class MindMapPanel extends JPanel {
   @Override
   @SuppressWarnings("unchecked")
   public void paintComponent(@Nonnull final Graphics g) {
-    assertNotDisposed();
-    final Graphics2D gfx = (Graphics2D) g.create();
-    try {
-      final String error = this.errorText;
+    if (this.lockIfNotDisposed()) {
+      try {
+        final Graphics2D gfx = (Graphics2D) g.create();
+        try {
+          final String error = this.errorText;
 
-      Utils.prepareGraphicsForQuality(gfx);
-      if (error != null) {
-        drawErrorText(gfx, this.getSize(), error);
-      } else {
-        revalidate();
-        drawOnGraphicsForConfiguration(gfx, this.config, this.model, true, this.selectedTopics);
-        drawDestinationElement(gfx, this.config);
+          Utils.prepareGraphicsForQuality(gfx);
+          if (error != null) {
+            drawErrorText(gfx, this.getSize(), error);
+          } else {
+            revalidate();
+            drawOnGraphicsForConfiguration(gfx, this.config, this.model, true, this.selectedTopics);
+            drawDestinationElement(gfx, this.config);
+          }
+
+          paintChildren(g);
+
+          if (this.draggedElement != null) {
+            this.draggedElement.draw(gfx);
+          } else if (this.mouseDragSelection != null) {
+            gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
+            gfx.fill(this.mouseDragSelection.asRectangle());
+          }
+        } finally {
+          gfx.dispose();
+        }
+      } finally {
+        this.unlock();
       }
-
-      paintChildren(g);
-
-      if (this.draggedElement != null) {
-        this.draggedElement.draw(gfx);
-      } else if (this.mouseDragSelection != null) {
-        gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
-        gfx.fill(this.mouseDragSelection.asRectangle());
-      }
-    } finally {
-      gfx.dispose();
     }
   }
 
   @Nullable
   public AbstractElement findTopicUnderPoint(@Nonnull final Point point) {
-    assertNotDisposed();
-    AbstractElement result = null;
-    if (this.model != null) {
-      final Topic root = this.model.getRoot();
-      if (root != null) {
-        final AbstractElement rootWidget = (AbstractElement) root.getPayload();
-        if (rootWidget != null) {
-          result = rootWidget.findForPoint(point);
+    if (this.lockIfNotDisposed()) {
+      try {
+        AbstractElement result = null;
+        if (this.model != null) {
+          final Topic root = this.model.getRoot();
+          if (root != null) {
+            final AbstractElement rootWidget = (AbstractElement) root.getPayload();
+            if (rootWidget != null) {
+              result = rootWidget.findForPoint(point);
+            }
+          }
         }
+
+        return result;
+      } finally {
+        this.unlock();
       }
     }
-
-    return result;
+    return null;
   }
 
   public void removeAllSelection() {
-    assertNotDisposed();
-    if (!this.selectedTopics.isEmpty()) {
+    if (this.lockIfNotDisposed()) {
       try {
-        this.selectedTopics.clear();
-        fireNotificationSelectionChanged();
+        if (!this.selectedTopics.isEmpty()) {
+          try {
+            this.selectedTopics.clear();
+            fireNotificationSelectionChanged();
+          } finally {
+            repaint();
+          }
+        }
       } finally {
-        repaint();
+        this.unlock();
       }
     }
   }
 
   public void focusTo(@Nullable final Topic theTopic) {
-    assertNotDisposed();
-    if (theTopic != null) {
-      final AbstractElement element = (AbstractElement) theTopic.getPayload();
-      if (element != null && element instanceof AbstractCollapsableElement) {
-        final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
-        if (MindMapUtils.ensureVisibility(cel.getModel())) {
-          updateView(true);
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (theTopic != null) {
+          final AbstractElement element = (AbstractElement) theTopic.getPayload();
+          if (element != null && element instanceof AbstractCollapsableElement) {
+            final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
+            if (MindMapUtils.ensureVisibility(cel.getModel())) {
+              updateView(true);
+            }
+          }
+
+          removeAllSelection();
+
+          final int[] path = theTopic.getPositionPath();
+          this.select(this.model.findForPositionPath(path), false);
         }
+      } finally {
+        this.unlock();
       }
-
-      removeAllSelection();
-
-      final int[] path = theTopic.getPositionPath();
-      this.select(this.model.findForPositionPath(path), false);
     }
   }
 
   public boolean cloneTopic(@Nullable final Topic topic) {
-    assertNotDisposed();
-    if (topic == null || topic.getTopicLevel() == 0) {
-      return false;
+    this.lock();
+    try {
+      if (topic == null || topic.getTopicLevel() == 0) {
+        return false;
+      }
+
+      final Boolean cloneFullTree = this.controller == null ? Boolean.TRUE : this.controller.getDialogProvider(this).msgConfirmYesNoCancel(BUNDLE.getString("MindMapPanel.titleCloneTopicRequest"), BUNDLE.getString("MindMapPanel.cloneTopicSubtreeRequestMsg"));
+      if (cloneFullTree == null) {
+        return false;
+      }
+
+      final Topic cloned = this.model.cloneTopic(topic, cloneFullTree);
+
+      if (cloned != null) {
+        cloned.moveAfter(topic);
+        updateView(true);
+      }
+
+      return true;
+    } finally {
+      this.unlock();
     }
-
-    final Boolean cloneFullTree = this.controller == null ? Boolean.TRUE : this.controller.getDialogProvider(this).msgConfirmYesNoCancel(BUNDLE.getString("MindMapPanel.titleCloneTopicRequest"), BUNDLE.getString("MindMapPanel.cloneTopicSubtreeRequestMsg"));
-    if (cloneFullTree == null) {
-      return false;
-    }
-
-    final Topic cloned = this.model.cloneTopic(topic, cloneFullTree);
-
-    if (cloned != null) {
-      cloned.moveAfter(topic);
-      updateView(true);
-    }
-
-    return true;
   }
 
   @Nonnull
   public MindMapPanelConfig getConfiguration() {
-    assertNotDisposed();
-    return this.config;
+    this.lock();
+    try {
+      return this.config;
+    } finally {
+      this.unlock();
+    }
   }
 
   @Nonnull
   public MindMapPanelController getController() {
-    assertNotDisposed();
-    return this.controller;
+    this.lock();
+    try {
+      return this.controller;
+    } finally {
+      this.unlock();
+    }
   }
 
   @Nullable
   public Topic getFirstSelected() {
-    assertNotDisposed();
-    return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
+    if (this.lockIfNotDisposed()) {
+      try {
+        return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
+      } finally {
+        this.unlock();
+      }
+    } else {
+      return null;
+    }
   }
 
   @Nullable
@@ -1891,9 +2167,55 @@ public class MindMapPanel extends JPanel {
     return img;
   }
 
-  private void assertNotDisposed() {
-    if (this.disposed != null && this.disposed.get()) {
-      throw new IllegalStateException("Panel is already disposed : "+this.toString());
+  public boolean isLocked() {
+    return this.panelLocker == null ? false : this.panelLocker.isLocked();
+  }
+
+  /**
+   * Try lock the panel if it is not disposed.
+   *
+   * @return true if the panel is locked successfully, false if the panel has been disposed.
+   */
+  public boolean lockIfNotDisposed() {
+    boolean result = false;
+    if (this.panelLocker != null) {
+      this.panelLocker.lock();
+      if (this.disposed.get()) {
+        this.panelLocker.unlock();
+      } else {
+        result = true;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Lock the panel.
+   *
+   * @return the panel
+   * @throws IllegalStateException it will be thrown if the panel is disposed
+   */
+  @Nonnull
+  public MindMapPanel lock() {
+    if (this.panelLocker != null) {
+      this.panelLocker.lock();
+      if (this.isDisposed()) {
+        this.panelLocker.unlock();
+        throw new IllegalStateException("Mind map has been already disposed!");
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Unlock the panel. it will not throw any exception if the panel is disposed.
+   *
+   * @throws AssertionError if the panel is locked by another thread
+   */
+  public void unlock() {
+    if (this.panelLocker != null) {
+      Assertions.assertTrue("Panel must be held by the current thread", this.panelLocker.isHeldByCurrentThread());
+      this.panelLocker.unlock();
     }
   }
 
@@ -1902,13 +2224,19 @@ public class MindMapPanel extends JPanel {
   }
 
   public void dispose() {
-    if (this.disposed.compareAndSet(false, true)) {
-      this.weakTable.clear();
-      this.selectedTopics.clear();
-      this.mindMapListeners.clear();
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (this.disposed.compareAndSet(false, true)) {
+          this.weakTable.clear();
+          this.selectedTopics.clear();
+          this.mindMapListeners.clear();
 
-      for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(PanelAwarePlugin.class)) {
-        p.onPanelDispose(this);
+          for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance().findFor(PanelAwarePlugin.class)) {
+            p.onPanelDispose(this);
+          }
+        }
+      } finally {
+        this.unlock();
       }
     }
   }

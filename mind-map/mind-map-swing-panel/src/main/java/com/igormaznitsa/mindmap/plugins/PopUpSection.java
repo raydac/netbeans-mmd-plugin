@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.plugins;
 
 public enum PopUpSection {
   MAIN,
+  MANIPULATORS,
   EXTRAS,
   EXPORT,
   IMPORT,

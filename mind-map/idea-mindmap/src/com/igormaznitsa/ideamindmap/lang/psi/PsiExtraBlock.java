@@ -15,7 +15,7 @@ public class PsiExtraBlock extends ASTWrapperPsiElement implements MMPsiElement 
 
   @Nullable
   public Extra.ExtraType getType(){
-    final PsiExtraType type = this.<PsiExtraType>findChildByType(MMTokens.EXTRA_TYPE);
+    final PsiExtraType type = (PsiExtraType)this.findChildByType(MMTokens.EXTRA_TYPE);
     if (type == null) return null;
     return type.getType();
   }

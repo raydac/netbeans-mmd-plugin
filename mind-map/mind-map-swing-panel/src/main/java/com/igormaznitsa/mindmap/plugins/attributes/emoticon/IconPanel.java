@@ -56,11 +56,9 @@ public final class IconPanel extends JPanel {
   @Nonnull
   private JToggleButton makeIconButton(@Nonnull final ButtonGroup group, @Nonnull final String name) {
     final JToggleButton result = Utils.UI_COMPO_FACTORY.makeToggleButton();
-    if (name != null) {
-      result.setIcon(new ImageIcon(MiscIcons.findForName(name)));
-      result.setName(name);
-      result.setToolTipText(name);
-    }
+    result.setIcon(new ImageIcon(MiscIcons.findForName(name)));
+    result.setName(name);
+    result.setToolTipText(name);
     group.add(result);
     return result;
   }

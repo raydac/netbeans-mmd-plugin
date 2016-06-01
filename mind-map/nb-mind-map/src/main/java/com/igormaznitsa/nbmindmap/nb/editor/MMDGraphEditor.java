@@ -1101,12 +1101,18 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        if (!mindMapPanel.isDisposed()) {
-          mindMapPanel.refreshConfiguration();
-          mindMapPanel.invalidate();
-          mindMapPanel.revalidate();
-          mindMapPanel.repaint();
-        }
+          if (mindMapPanel.lockIfNotDisposed()) {
+            try {
+              mindMapPanel.refreshConfiguration();
+              mindMapPanel.invalidate();
+              mindMapPanel.revalidate();
+              mindMapPanel.repaint();
+            } finally {
+              mindMapPanel.unlock();
+            }
+          } else {
+            LOGGER.warn("Attempt tp update disposed panel : "+mindMapPanel);
+          }
       }
     });
   }
@@ -1117,7 +1123,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       while (iterator.hasNext()) {
         final MMDGraphEditor next = iterator.next();
         if (next.isPanelDisposed()) {
-          LOGGER.warn("Detected disposed mind map panel among active editors set : "+next);
+          LOGGER.warn("Detected disposed mind map panel among active editors set : " + next);
           iterator.remove();
         } else {
           next.updateConfigFromPreferences();

@@ -16,7 +16,6 @@
 package com.igormaznitsa.mindmap.plugins.external;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
 import javax.annotation.Nonnull;

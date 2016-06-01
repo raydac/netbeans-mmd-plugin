@@ -39,7 +39,7 @@ public class ChangeColorPlugin extends AbstractPopupMenuItem {
   @Override
   @Nonnull
   public PopUpSection getSection() {
-    return PopUpSection.TOOLS;
+    return PopUpSection.MANIPULATORS;
   }
 
   @Override
@@ -74,7 +74,7 @@ public class ChangeColorPlugin extends AbstractPopupMenuItem {
 
   @Override
   public int getOrder() {
-    return 4;
+    return 3;
   }
 
 }

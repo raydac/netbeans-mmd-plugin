@@ -54,7 +54,7 @@ public class UnfoldAllPlugin extends AbstractPopupMenuItem {
   @Override
   @Nonnull
   public PopUpSection getSection() {
-    return PopUpSection.TOOLS;
+    return PopUpSection.MANIPULATORS;
   }
 
   @Override
@@ -69,7 +69,7 @@ public class UnfoldAllPlugin extends AbstractPopupMenuItem {
   
   @Override
   public int getOrder() {
-    return 2;
+    return 1;
   }
 
 }
