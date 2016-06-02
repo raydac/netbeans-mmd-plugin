@@ -32,11 +32,26 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import java.util.ArrayList;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 
 public class Text2MindMapImporter extends AbstractImporter {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_TXT2MM);
+
+  private static final int TAB_POSITIONS = 16;
+
+  private static final class TopicData {
+
+    private final int offset;
+    private final Topic topic;
+
+    public TopicData(final int offset, @Nonnull final Topic topic) {
+      this.offset = offset;
+      this.topic = topic;
+    }
+
+  }
 
   @Override
   @Nullable
@@ -54,15 +69,25 @@ public class Text2MindMapImporter extends AbstractImporter {
   MindMap makeFromLines(@Nonnull @MustNotContainNull final List<String> lines, @Nullable final MindMapController controller) {
     final MindMap result = new MindMap(controller, false);
     final Iterator<String> iterator = lines.iterator();
-    Topic topic = decodeLine(result, null, iterator);
-    if (topic != null) {
-      while (true) {
-        topic = decodeLine(result, topic, iterator);
-        if (topic == null) {
-          break;
-        }
+    final List<TopicData> topicStack = new ArrayList<TopicData>();
+    while (true) {
+      final Topic topic = decodeLine(result, iterator, topicStack);
+      if (topic == null) {
+        break;
       }
     }
+
+    final Topic root = result.getRoot();
+
+    final int size = root == null ? 0 : root.getChildren().size();
+    if (root != null && size != 0) {
+      final List<Topic> topics = root.getChildren();
+      final int left = (topics.size() + 1) / 2;
+      for (int i = 0; i < left; i++) {
+        AbstractCollapsableElement.makeTopicLeftSided(topics.get(i), true);
+      }
+    }
+
     return result;
   }
 
@@ -80,55 +105,62 @@ public class Text2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  private int calcLevel(@Nonnull final String text) {
+  private int calcDataOffset(@Nonnull final String text) {
     int result = 0;
     for (final char c : text.toCharArray()) {
       if (c == '\t') {
+        result += TAB_POSITIONS - (result % TAB_POSITIONS);
+      } else if (Character.isWhitespace(c)) {
         result++;
-      } else if (!Character.isWhitespace(c)) {
+      } else {
         break;
       }
     }
     return result;
   }
 
-  @Nonnull
-  private Topic findParentForLevel(@Nonnull final Topic start, final int neededLevel) {
-    if (neededLevel <= 0) {
-      return assertNotNull(start.getMap().getRoot());
-    } else {
-      Topic thetopic = start;
-      while (thetopic.getTopicLevel() >= neededLevel) {
-        thetopic = assertNotNull(thetopic.getParent());
+  @Nullable
+  private Topic findPrevTopicForOffset(@Nonnull @MustNotContainNull final List<TopicData> topicStack, final int detectedOffset) {
+    for (final TopicData d : topicStack) {
+      if (d.offset < detectedOffset) {
+        return d.topic;
       }
-      return thetopic;
     }
+
+    if (!topicStack.isEmpty()) {
+      TopicData min = null;
+      for (final TopicData d : topicStack) {
+        if (min == null) {
+          min = d;
+        } else if (min.offset > d.offset) {
+          min = d;
+        }
+      }
+      return min.topic;
+    }
+
+    return null;
   }
 
   @Nullable
-  private Topic decodeLine(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final Iterator<String> lines) {
+  private Topic decodeLine(@Nonnull final MindMap map, @Nonnull final Iterator<String> lines, @Nonnull @MustNotContainNull final List<TopicData> topicStack) {
     Topic result = null;
     final String line = nextNonEmptyString(lines);
     if (line != null) {
-      final int level = calcLevel(line);
+      final int currentOffset = calcDataOffset(line);
       final String trimmed = line.trim();
-      int parentLevel = 0;
-      if (parent != null) {
-        parentLevel = parent.getTopicLevel();
-      }
-      if (parent != null) {
-        if (parentLevel < level) {
-          result = new Topic(map, parent, trimmed);
-        } else if (level == parentLevel) {
-          result = new Topic(map, parent.getParent(), trimmed);
-        } else {
-          result = new Topic(map, findParentForLevel(parent, level), trimmed);
-        }
-      } else {
+      final Topic parentTopic = findPrevTopicForOffset(topicStack, currentOffset);
+
+      if (parentTopic == null) {
         result = new Topic(map, null, trimmed);
         map.setRoot(result, false);
+      } else {
+        result = new Topic(map, parentTopic, trimmed);
       }
+
+      topicStack.add(0, new TopicData(currentOffset, result));
     }
+
     return result;
   }
 

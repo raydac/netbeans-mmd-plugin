@@ -691,11 +691,13 @@ public class MindMapPanel extends JPanel {
                     break;
                 }
               } else // group
-               if (selectedTopics.isEmpty()) {
+              {
+                if (selectedTopics.isEmpty()) {
                   select(element.getModel(), false);
                 } else {
                   select(element.getModel(), true);
                 }
+              }
             }
           } finally {
             unlock();
@@ -1137,12 +1139,12 @@ public class MindMapPanel extends JPanel {
         final List<ModelAwarePlugin> plugins = MindMapPluginRegistry.getInstance().findFor(ModelAwarePlugin.class);
 
         boolean allowed = true;
-        if (!force){
+        if (!force) {
           for (final MindMapListener l : this.mindMapListeners) {
             allowed &= l.allowedRemovingOfTopics(this, topics);
           }
         }
-        
+
         if (allowed) {
           removeAllSelection();
           for (final Topic t : topics) {
@@ -1354,15 +1356,25 @@ public class MindMapPanel extends JPanel {
     if (this.lockIfNotDisposed()) {
       try {
         final Topic topic = this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
-        if (topic == null) {
-          select(getModel().getRoot(), false);
-        } else {
-          final AbstractElement element = (AbstractElement) topic.getPayload();
-          if (element != null) {
-            final Rectangle2D bounds = element.getBounds();
-            processPopUp(new Point((int) Math.round(bounds.getCenterX()), (int) Math.round(bounds.getCenterY())), element);
-          }
+
+        if (topic != null) {
+          fireNotificationEnsureTopicVisibility(topic);
         }
+
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            if (topic == null) {
+              select(getModel().getRoot(), false);
+            } else {
+              final AbstractElement element = (AbstractElement) topic.getPayload();
+              if (element != null) {
+                final Rectangle2D bounds = element.getBounds();
+                processPopUp(new Point((int) Math.round(bounds.getCenterX()), (int) Math.round(bounds.getCenterY())), element);
+              }
+            }
+          }
+        });
       } finally {
         unlock();
       }

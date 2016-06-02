@@ -18,6 +18,9 @@ package com.igormaznitsa.mindmap.plugins.importers;
 import static java.util.Arrays.asList;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.io.File;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 
@@ -63,6 +66,15 @@ public class Text2MindMapImporterTest {
     assertEquals(2,mars.getChildren().size());
     assertEquals("fobos", mars.getChildren().get(0).getText());
     assertEquals("deimos", mars.getChildren().get(1).getText());
+  }
+
+  @Test
+  public void testImportFromFile() throws Exception {
+    final File file = new File(Text2MindMapImporter.class.getResource("tabbedtext.txt").getFile());
+    assertTrue(file.isFile());
+    final List<String> lines = FileUtils.readLines(file);
+    final MindMap result = INSTANCE.makeFromLines(lines, null);
+    assertEquals(5,result.getRoot().getChildren().size());
   }
   
 }

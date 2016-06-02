@@ -1,0 +1,21 @@
+Root text
+  one
+    one one
+    one one one
+    one two
+      two some another
+  two
+    hello
+    world
+    universe
+  three
+    some
+    fourth
+    again
+  fifth
+    six
+    seven
+    uno
+  esperanto
+    arbo
+      arbaro
