@@ -63,6 +63,7 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem {
         public void actionPerformed(@Nonnull final ActionEvent e) {
           try {
             if (processor == null) {
+              panel.removeAllSelection();
               final MindMap map = doImport(panel, dialogProvider, actionTopic, selectedTopics);
               if (map != null) {
                 SwingUtilities.invokeLater(new Runnable() {
