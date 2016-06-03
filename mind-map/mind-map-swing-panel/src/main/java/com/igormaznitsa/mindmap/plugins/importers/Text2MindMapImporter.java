@@ -127,19 +127,18 @@ public class Text2MindMapImporter extends AbstractImporter {
       }
     }
 
+    TopicData result = null;
     if (!topicStack.isEmpty()) {
-      TopicData min = null;
       for (final TopicData d : topicStack) {
-        if (min == null) {
-          min = d;
-        } else if (min.offset > d.offset) {
-          min = d;
+        if (result == null) {
+          result = d;
+        } else if (result.offset > d.offset) {
+          result = d;
         }
       }
-      return min.topic;
     }
 
-    return null;
+    return result == null ? null : result.topic;
   }
 
   @Nullable
