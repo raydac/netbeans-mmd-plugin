@@ -15,11 +15,20 @@
  */
 package com.igormaznitsa.nbmindmap.nb.services;
 
+import java.awt.Image;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import org.openide.LifecycleManager;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.util.ImageUtilities;
 import com.igormaznitsa.commons.version.Version;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
@@ -31,6 +40,7 @@ public class NbIDEBridge implements IDEBridge {
   private final Version ideVersion;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NbIDEBridge.class);
+  private final Map<String, Image> IMAGE_CACHE = new HashMap<String, Image>();
 
   public NbIDEBridge() {
     final String versionInfo = System.getProperty("netbeans.productversion");
@@ -94,4 +104,44 @@ public class NbIDEBridge implements IDEBridge {
 
   }
 
+  @Override
+  public void notifyRestart() {
+    try{
+      LifecycleManager.getDefault().markForRestart();
+    }catch(Exception ex){
+      LOGGER.error("Can't restart IDE for error",ex);
+    }
+  }
+
+  @Nonnull
+  private static String removeStartSlash(@Nonnull final String path) {
+    String result = path;
+    if (path.startsWith("/") || path.startsWith("\\")) {
+      result = result.substring(1);
+    }
+    return result;
+  }
+
+  @Override
+  @Nonnull
+  public Icon loadIcon(@Nonnull final String path, @Nonnull final Class<?> klazz) {
+    Image image = null;
+    synchronized (IMAGE_CACHE) {
+      image = IMAGE_CACHE.get(path);
+      if (image == null) {
+        final InputStream in = klazz.getClassLoader().getResourceAsStream(Assertions.assertNotNull("Icon path must not be null", removeStartSlash(path)));
+        if (in == null) {
+          throw new IllegalArgumentException("Can't find icon resource : " + path);
+        }
+        try {
+          image = ImageIO.read(in);
+        } catch (IOException ex) {
+          throw new IllegalArgumentException("Can't load icon resource : " + path, ex);
+        }
+        IMAGE_CACHE.put(path, image);
+      }
+    }
+    return new ImageIcon(image);
+  }
+  
 }

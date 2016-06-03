@@ -11,10 +11,11 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.IconLoader;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -94,5 +95,15 @@ public class IdeaIDEBridge implements IDEBridge {
         Notifications.Bus.notify(notification);
       }
     });
+  }
+
+  @Override public void notifyRestart() {
+    LOGGER.info("Request to restart IDE");
+    final Application application = ApplicationManager.getApplication();
+    application.restart();
+  }
+
+  @Nonnull @Override public Icon loadIcon(@Nonnull final String path, @Nonnull final Class<?> klazz) {
+    return IconLoader.getIcon(path,klazz);
   }
 }

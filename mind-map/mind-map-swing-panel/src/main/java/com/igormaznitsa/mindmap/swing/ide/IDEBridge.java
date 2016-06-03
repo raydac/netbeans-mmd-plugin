@@ -16,7 +16,9 @@
 package com.igormaznitsa.mindmap.swing.ide;
 
 import javax.annotation.Nonnull;
+import javax.swing.Icon;
 import com.igormaznitsa.commons.version.Version;
+import com.igormaznitsa.meta.annotation.ThrowsRuntimeException;
 
 /**
  * It describes some bridge to internal features of IDEs.
@@ -39,4 +41,23 @@ public interface IDEBridge {
    * @since 1.2.0
    */
   void showIDENotification(@Nonnull String title, @Nonnull String message, @Nonnull NotificationType type);
+
+  /**
+   * Send request to restart IDE.
+   * 
+   * @since 1.2.0
+   */
+  void notifyRestart();
+  
+  /**
+   * Load icon resource through inside tools provided by IDE if it is possible, the class loader of the provided class will be used to find resource.
+   * @param path path to the icon, must not be null
+   * @param klazz class which class loader will be used for loading of resource, must not be null
+   * @return the icon, it must not be null, if it is not found then IDE will process the situation by its inside mechanisms and some runtime exception will be thrown
+   * 
+   * @since 1.2.0
+   */
+  @Nonnull
+  @ThrowsRuntimeException(value = RuntimeException.class,reference = "Some runtime exception will be thrown if it is impossible to load icon")
+  Icon loadIcon(@Nonnull String path, @Nonnull Class<?> klazz);
 }

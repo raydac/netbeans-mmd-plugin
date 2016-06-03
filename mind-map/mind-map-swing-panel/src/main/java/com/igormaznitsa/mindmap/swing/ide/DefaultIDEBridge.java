@@ -15,9 +15,18 @@
  */
 package com.igormaznitsa.mindmap.swing.ide;
 
+import java.awt.Image;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import com.igormaznitsa.commons.version.Version;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -26,6 +35,8 @@ class DefaultIDEBridge implements IDEBridge {
 
   private static final Version IDE_VERSION = new Version("UNKNOWN");
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultIDEBridge.class);
+  
+  private final Map<String,Image> IMAGE_CACHE = new HashMap<String, Image>();
   
   @Override
   @Nonnull
@@ -61,6 +72,41 @@ class DefaultIDEBridge implements IDEBridge {
         JOptionPane.showMessageDialog(null, message, title, msgtype);
       }
     });
+  }
+
+  @Override
+  public void notifyRestart() {
+    JOptionPane.showMessageDialog(null, "Work of application will be completed for request! You have to restart it!","Restart application",JOptionPane.WARNING_MESSAGE);
+    System.exit(0);
+  }
+
+  @Nonnull
+  private static String removeStartSlash(@Nonnull final String path) {
+    String result = path;
+    if (path.startsWith("/") || path.startsWith("\\")){
+      result = result.substring(1);
+    }
+    return result;
+  }
+  
+  @Override
+  @Nonnull
+  public Icon loadIcon(@Nonnull final String path,@Nonnull final Class<?> klazz) {
+    Image image = null;
+    synchronized(IMAGE_CACHE){
+      image = IMAGE_CACHE.get(path);
+      if (image == null){
+        final InputStream in = klazz.getClassLoader().getResourceAsStream(Assertions.assertNotNull("Icon path must not be null",removeStartSlash(path)));
+        if (in == null) throw new IllegalArgumentException("Can't find icon resource : "+path);
+        try{
+          image = ImageIO.read(in);
+        }catch(IOException ex){
+          throw new IllegalArgumentException("Can't load icon resource : "+path,ex);
+        }
+        IMAGE_CACHE.put(path, image);
+      }
+    }
+    return new ImageIcon(image);
   }
 
 }
