@@ -80,6 +80,11 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
     return null;
   }
 
+  @Override
+  public boolean isEnabled(@Nonnull final MindMapPanel panel, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+    return (selectedTopics.length == 1 && !selectedTopics[0].isRoot()) || (selectedTopics.length == 0 && topic != null && !topic.isRoot());
+  }
+
   protected abstract void doActionForTopic(@Nonnull MindMapPanel panel, @Nonnull DialogProvider dialogProvider, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
 
 }

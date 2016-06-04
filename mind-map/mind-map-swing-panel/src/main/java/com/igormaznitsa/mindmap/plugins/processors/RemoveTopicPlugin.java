@@ -65,6 +65,11 @@ public class RemoveTopicPlugin extends AbstractFocusedTopicPlugin {
   }
 
   @Override
+  public boolean isEnabled(@Nonnull final MindMapPanel panel, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+    return true;
+  }
+
+  @Override
   @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.MAIN;
