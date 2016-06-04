@@ -20,15 +20,18 @@
     <change-notes><![CDATA[
         <p>1.2.0 (in development)</p>
         <ul>
-            <li><b>minimal supported API version changed to 143.2370</b></li>
-            <li>added "emoticons"</li>
-            <li>Added importer from text files written in style text2mindmap</li>
-            <li>Added keyboard shortcuts for zooming in, out and resetting zoom.</li>
+            <li><b>Minimal supported API version changed to 143.2370</b></li>
+            <li>fixed issue #16, Added default key board shortcut to open popup context menu, CTRL+ALT+SPACE</li>
+            <li>Added loading of custom plugins from folder defined through <b>nbmmd.plugin.folder</b> property</li>
+            <li><b>Added plugin "Emoticons"</b></li>
+            <li>Added importer from text files written in style [text2mindmap](https://www.text2mindmap.com/)</li>
+            <li>Added key board shortcuts to add focused items during focus move</li>
+            <li>Added key board shortcuts for zooming in, out and resetting zoom.</li>
             <li>fixed issue #10 "In Select topic dialog; Fold All only closes the root node"</li>
             <li>fixed issue #9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"</li>
-            <li>fixed issue with hash char in topic text</li>
+            <li>fixed issue #11 "Can't create topic with hash char"</li>
             <li>reworked mind map format parser to make it compatible with PSI tree parser in IDEA</li>
-            <li>refactoring</li>
+            <li>code refactoring</li>
         </ul>
         <p>1.0.4 (21-feb-2016)</p>
         <ul>
