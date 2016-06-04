@@ -93,6 +93,10 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_FOCUS_MOVE_DOWN = "moveFocusDown";
   public static final String KEY_FOCUS_MOVE_LEFT = "moveFocusLeft";
   public static final String KEY_FOCUS_MOVE_RIGHT = "moveFocusRight";
+  public static final String KEY_FOCUS_MOVE_UP_ADD_FOCUSED = "moveFocusUpAddFocused";
+  public static final String KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED = "moveFocusDownAddFocused";
+  public static final String KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED = "moveFocusLeftAddFocused";
+  public static final String KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED = "moveFocusRightAddFocused";
   public static final String KEY_DELETE_TOPIC = "deleteSelectedTopic";
   public static final String KEY_ZOOM_IN = "zoomIn";
   public static final String KEY_ZOOM_OUT = "zoomOut";
@@ -112,9 +116,13 @@ public final class MindMapPanelConfig implements Serializable {
     this.makeFullCopyOf(cfg, copyListeners, false);
   }
 
-  public boolean isKeyEvent(@Nonnull final String id, @Nonnull final KeyEvent event){
+  public boolean isKeyEvent(@Nonnull final String id, @Nonnull final KeyEvent event, final int modifiersMask){
     final KeyShortcut shortCut = this.mapShortCut.get(id);
-    return shortCut == null ? false : shortCut.isEvent(event);
+    return shortCut == null ? false : shortCut.isEvent(event,modifiersMask);
+  }
+
+  public boolean isKeyEvent(@Nonnull final String id, @Nonnull final KeyEvent event){
+    return this.isKeyEvent(id, event, KeyShortcut.ALL_MODIFIERS_MASK);
   }
   
   @Nullable
@@ -400,6 +408,10 @@ public final class MindMapPanelConfig implements Serializable {
     this.mapShortCut.put(KEY_FOCUS_MOVE_UP, new KeyShortcut(KEY_FOCUS_MOVE_UP, KeyEvent.VK_UP, 0));
     this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT, new KeyShortcut(KEY_FOCUS_MOVE_LEFT, KeyEvent.VK_LEFT, 0));
     this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT, KeyEvent.VK_RIGHT, 0));
+    this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, KeyEvent.VK_DOWN, KeyEvent.SHIFT_MASK));
+    this.mapShortCut.put(KEY_FOCUS_MOVE_UP_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_UP_ADD_FOCUSED, KeyEvent.VK_UP, KeyEvent.SHIFT_MASK));
+    this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, KeyEvent.VK_LEFT, KeyEvent.SHIFT_MASK));
+    this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, KeyEvent.VK_RIGHT, KeyEvent.SHIFT_MASK));
     this.mapShortCut.put(KEY_DELETE_TOPIC, new KeyShortcut(KEY_DELETE_TOPIC, KeyEvent.VK_DELETE, 0));
     this.mapShortCut.put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, KeyEvent.VK_PLUS, KeyEvent.CTRL_MASK));
     this.mapShortCut.put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, KeyEvent.VK_MINUS, KeyEvent.CTRL_MASK));
@@ -407,10 +419,18 @@ public final class MindMapPanelConfig implements Serializable {
     this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
   }
 
+  public boolean isKeyEventDetected(@Nonnull final KeyEvent event, @Nonnull final int effectiveModifiers, @Nonnull @MustNotContainNull final String ... shortCutIDs){
+    for(final String k : shortCutIDs){
+      final KeyShortcut shortCut = this.mapShortCut.get(k);
+      if (shortCut!=null && shortCut.isEvent(event,effectiveModifiers)) return true;
+    }
+    return false;
+  }
+  
   public boolean isKeyEventDetected(@Nonnull final KeyEvent event, @Nonnull @MustNotContainNull final String ... shortCutIDs){
     for(final String k : shortCutIDs){
       final KeyShortcut shortCut = this.mapShortCut.get(k);
-      if (shortCut!=null && shortCut.isEvent(event)) return true;
+      if (shortCut!=null && shortCut.isEvent(event,KeyShortcut.ALL_MODIFIERS_MASK)) return true;
     }
     return false;
   }

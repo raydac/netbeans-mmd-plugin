@@ -28,7 +28,7 @@ public final class KeyShortcut {
   private final int modifiers;
   private final int keyCode;
 
-  private static final int ALL_MASKS = KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
+  public static final int ALL_MODIFIERS_MASK = KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
 
   public KeyShortcut(@Nonnull final String packed) {
     final String[] split = packed.split("\\*");
@@ -91,9 +91,13 @@ public final class KeyShortcut {
     return this.id;
   }
 
-  public boolean isEvent(@Nonnull final KeyEvent event) {
+  public boolean isEvent(@Nonnull final KeyEvent event){
+    return this.isEvent(event, ALL_MODIFIERS_MASK);
+  }
+  
+  public boolean isEvent(@Nonnull final KeyEvent event, final int modifiersPlayingRole) {
     final int code = event.getKeyCode() == 0 ? getKeyCode(event.getKeyChar()) : event.getKeyCode();
-    return code == this.keyCode && (event.getModifiers() & ALL_MASKS) == this.modifiers;
+    return code == this.keyCode && (event.getModifiers() & modifiersPlayingRole) == (this.modifiers & modifiersPlayingRole);
   }
 
   private int getKeyCode(char keyChar) {

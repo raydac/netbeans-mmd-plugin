@@ -30,7 +30,9 @@ import javax.swing.JComponent;
 public class MindMapSettingsComponent extends ConfigurableProvider implements Configurable,ApplicationComponent{
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsComponent.class);
-  public static final String ID = "NBMindMapSettingsComponent";
+  public static final String ID = "idea.mind.map.settings";
+  public static final String COMPONENT_NAME = "NBMindMapSettingsComponent";
+  public static final String DISPLAY_NAME = "NB Mind Map";
 
   private static MindMapSettingsComponent instance;
 
@@ -45,7 +47,7 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   }
 
   @Override public void initComponent() {
-
+    getInstance();
   }
 
   @Override public void disposeComponent() {
@@ -53,7 +55,7 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   }
 
   @Nls @Override public String getDisplayName() {
-    return "NB Mind Map";
+    return DISPLAY_NAME;
   }
 
   @Nullable @Override public String getHelpTopic() {
@@ -65,7 +67,7 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   }
 
   @Nonnull @Override public String getComponentName() {
-    return ID;
+    return COMPONENT_NAME;
   }
 
   @Nullable @Override public JComponent createComponent() {

@@ -20,7 +20,7 @@
     <change-notes><![CDATA[
         <p>1.2.0 (in development)</p>
         <ul>
-            <li><b>minimal supported API version changed to 143.2370.31</b></li>
+            <li><b>minimal supported API version changed to 143.2370</b></li>
             <li>added "emoticons"</li>
             <li>Added importer from text files written in style text2mindmap</li>
             <li>Added keyboard shortcuts for zooming in, out and resetting zoom.</li>
@@ -67,7 +67,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="143.2370.31"/>
+    <idea-version since-build="143.2370"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html on how to target different products -->
     <depends>com.intellij.modules.lang</depends>

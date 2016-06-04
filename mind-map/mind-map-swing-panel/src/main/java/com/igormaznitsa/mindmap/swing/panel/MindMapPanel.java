@@ -72,6 +72,7 @@ import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
 import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
 import java.util.concurrent.locks.ReentrantLock;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 
 public class MindMapPanel extends JPanel {
 
@@ -323,35 +324,28 @@ public class MindMapPanel extends JPanel {
     super.setOpaque(true);
 
     final KeyAdapter keyAdapter = new KeyAdapter() {
-
       @Override
       public void keyTyped(@Nonnull final KeyEvent e) {
         if (lockIfNotDisposed()) {
           try {
             if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT, e)) {
+              e.consume();
               if (!selectedTopics.isEmpty()) {
                 makeNewChildAndStartEdit(selectedTopics.get(0), null);
               }
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_SIBLING_AND_START_EDIT, e)) {
+              e.consume();
               if (!hasActiveEditor() && hasOnlyTopicSelected()) {
                 final Topic baseTopic = selectedTopics.get(0);
                 makeNewChildAndStartEdit(baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
               }
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_ROOT_OR_START_EDIT, e)) {
+              e.consume();
               if (!hasSelectedTopics()) {
                 select(getModel().getRoot(), false);
               } else if (hasOnlyTopicSelected()) {
                 startEdit((AbstractElement) selectedTopics.get(0).getPayload());
               }
-            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
-              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)));
-              updateView(false);
-            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
-              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)));
-              updateView(false);
-            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
-              setScale(1.0);
-              updateView(false);
             }
           } finally {
             unlock();
@@ -369,9 +363,29 @@ public class MindMapPanel extends JPanel {
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
               e.consume();
               deleteSelectedTopics(false);
-            } else if (config.isKeyEventDetected(e, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_UP, MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN)) {
+            } else if (config.isKeyEventDetected(e, 
+                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, 
+                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, 
+                MindMapPanelConfig.KEY_FOCUS_MOVE_UP, 
+                MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, 
+                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, 
+                MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED, 
+                MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED)) {
               e.consume();
               processMoveFocusByKey(e);
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
+              e.consume();
+              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)));
+              updateView(false);
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
+              e.consume();
+              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)));
+              updateView(false);
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
+              e.consume();
+              setScale(1.0);
+              updateView(false);
             }
           } finally {
             unlock();
@@ -691,13 +705,11 @@ public class MindMapPanel extends JPanel {
                     break;
                 }
               } else // group
-              {
-                if (selectedTopics.isEmpty()) {
+               if (selectedTopics.isEmpty()) {
                   select(element.getModel(), false);
                 } else {
                   select(element.getModel(), true);
                 }
-              }
             }
           } finally {
             unlock();
@@ -913,9 +925,8 @@ public class MindMapPanel extends JPanel {
   }
 
   private void processMoveFocusByKey(@Nonnull final KeyEvent key) {
-    if (hasOnlyTopicSelected()) {
-      final AbstractElement current = (AbstractElement) this.selectedTopics.get(0).getPayload();
-      if (current == null) {
+    final AbstractElement lastSelectedTopic = this.selectedTopics.isEmpty() ? null : (AbstractElement) this.selectedTopics.get(this.selectedTopics.size()-1).getPayload();
+      if (lastSelectedTopic == null) {
         return;
       }
 
@@ -923,24 +934,24 @@ public class MindMapPanel extends JPanel {
 
       boolean modelChanged = false;
 
-      if (current.isMoveable()) {
+      if (lastSelectedTopic.isMoveable()) {
         boolean processFirstChild = false;
-        if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, key)) {
-          if (current.isLeftDirection()) {
+        if (config.isKeyEventDetected(key,MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED)) {
+          if (lastSelectedTopic.isLeftDirection()) {
             processFirstChild = true;
           } else {
-            nextFocused = (AbstractElement) assertNotNull(current.getModel().getParent()).getPayload();
+            nextFocused = (AbstractElement) assertNotNull(lastSelectedTopic.getModel().getParent()).getPayload();
           }
-        } else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, key)) {
-          if (current.isLeftDirection()) {
-            nextFocused = (AbstractElement) assertNotNull(current.getModel().getParent()).getPayload();
+        } else if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED)) {
+          if (lastSelectedTopic.isLeftDirection()) {
+            nextFocused = (AbstractElement) assertNotNull(lastSelectedTopic.getModel().getParent()).getPayload();
           } else {
             processFirstChild = true;
           }
         } else {
-          final boolean buttonUp = config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_UP);
-          final boolean firstLevel = current.getClass() == ElementLevelFirst.class;
-          final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(current.getModel());
+          final boolean pressedButtonMoveUp = config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_UP, MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED);
+          final boolean firstLevel = lastSelectedTopic.getClass() == ElementLevelFirst.class;
+          final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(lastSelectedTopic.getModel());
 
           final TopicChecker checker = new TopicChecker() {
             @Override
@@ -954,30 +965,30 @@ public class MindMapPanel extends JPanel {
               }
             }
           };
-          final Topic topic = buttonUp ? current.getModel().findPrev(checker) : current.getModel().findNext(checker);
+          final Topic topic = pressedButtonMoveUp ? lastSelectedTopic.getModel().findPrev(checker) : lastSelectedTopic.getModel().findNext(checker);
           nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
         }
 
         if (processFirstChild) {
-          if (current.hasChildren()) {
-            if (current.isCollapsed()) {
-              ((AbstractCollapsableElement) current).setCollapse(false);
+          if (lastSelectedTopic.hasChildren()) {
+            if (lastSelectedTopic.isCollapsed()) {
+              ((AbstractCollapsableElement) lastSelectedTopic).setCollapse(false);
               modelChanged = true;
             }
 
-            nextFocused = (AbstractElement) (current.getModel().getChildren().get(0)).getPayload();
+            nextFocused = (AbstractElement) (lastSelectedTopic.getModel().getChildren().get(0)).getPayload();
           }
         }
-      } else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, key)) {
-        for (final Topic t : current.getModel().getChildren()) {
+      } else if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED)) {
+        for (final Topic t : lastSelectedTopic.getModel().getChildren()) {
           final AbstractElement e = (AbstractElement) t.getPayload();
           if (e != null && e.isLeftDirection()) {
             nextFocused = e;
             break;
           }
         }
-      } else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, key)) {
-        for (final Topic t : current.getModel().getChildren()) {
+      } else if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED)) {
+        for (final Topic t : lastSelectedTopic.getModel().getChildren()) {
           final AbstractElement e = (AbstractElement) t.getPayload();
           if (e != null && !e.isLeftDirection()) {
             nextFocused = e;
@@ -987,14 +998,20 @@ public class MindMapPanel extends JPanel {
       }
 
       if (nextFocused != null) {
-        removeAllSelection();
+        final boolean addFocused = config.isKeyEventDetected(key,
+            MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED, 
+            MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, 
+            MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, 
+            MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
+        if (!addFocused || this.selectedTopics.contains(nextFocused.getModel())) {
+          removeAllSelection();
+        }
         select(nextFocused.getModel(), false);
       }
 
       if (modelChanged) {
         notifyModelChanged();
       }
-    }
   }
 
   /**
