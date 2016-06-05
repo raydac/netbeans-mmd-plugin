@@ -18,7 +18,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.2.0 (in development)</p>
+        <p>1.2.0 (05-jun-2016)</p>
         <ul>
             <li><b>Minimal supported API version changed to 143.2370</b></li>
             <li>fixed issue #16, Added default key board shortcut to open popup context menu, CTRL+ALT+SPACE</li>
@@ -31,7 +31,7 @@
             <li>fixed issue #9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"</li>
             <li>fixed issue #11 "Can't create topic with hash char"</li>
             <li>reworked mind map format parser to make it compatible with PSI tree parser in IDEA</li>
-            <li>code refactoring</li>
+            <li>code refactoring, inside API reworked to plugin based one</li>
         </ul>
         <p>1.0.4 (21-feb-2016)</p>
         <ul>

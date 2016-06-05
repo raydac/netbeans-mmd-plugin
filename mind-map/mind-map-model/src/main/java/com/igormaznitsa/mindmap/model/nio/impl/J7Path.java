@@ -89,6 +89,11 @@ public class J7Path extends AbstractPath {
       private final Iterator<java.nio.file.Path> wrappedIterator = nioPath.iterator();
 
       @Override
+      public void remove() {
+        this.wrappedIterator.remove();
+      }
+
+      @Override
       public boolean hasNext() {
         return this.wrappedIterator.hasNext();
       }

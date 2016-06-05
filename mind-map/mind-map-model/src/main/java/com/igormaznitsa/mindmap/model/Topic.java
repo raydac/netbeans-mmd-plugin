@@ -902,6 +902,11 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return new Iterator<Topic>(){
       Topic childTopic;
       Iterator<Topic> childIterator;
+
+      @Override
+      public void remove() {
+        iter.remove();
+      }
       
       @Nonnull
       Iterator<Topic> init(){

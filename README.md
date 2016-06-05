@@ -12,7 +12,7 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
-__1.2.0-SNAPSHOT (Under development)__
+__1.2.0-SNAPSHOT (05-jun-2016)__
 - __IJ: Minimal supported API version changed to 143.2370__
 - fixed issue [#16](https://github.com/raydac/netbeans-mmd-plugin/issues/16), Added default key board shortcut to open popup context menu, CTRL+ALT+SPACE
 - Added loading of custom plugins from folder defined through __nbmmd.plugin.folder__ property
@@ -24,7 +24,7 @@ __1.2.0-SNAPSHOT (Under development)__
 - fixed issue [#9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"](https://github.com/raydac/netbeans-mmd-plugin/issues/9)
 - fixed issue [#11 "Can't create topic with hash char"](https://github.com/raydac/netbeans-mmd-plugin/issues/11)
 - reworked mind map format parser to make it compatible with PSI tree parser in IDEA
-- refactoring
+- code refactoring, inside API reworked to plugin based one
 
 __1.1.4 (21-feb-2015)__
 - improved PNG exporter to save images without background and with all unfolded topics

@@ -1,17 +1,18 @@
-1.2.0 (in development)
+1.2.0 (05-jun-2016)
+- IJ: Minimal supported API version changed to 143.2370
 - fixed issue #16, Added default key board shortcut to open popup context menu, CTRL+ALT+SPACE
 - Added loading of custom plugins from folder defined through "nbmmd.plugin.folder" property
 - Added plugin "Emoticons"
 - Added importer from text files written in style https://www.text2mindmap.com/
+- Added key board shortcuts to add focused items during focus move
 - Added key board shortcuts for zooming in, out and resetting zoom.
 - fixed issue #11 "Can't create topic with hash char"
 - fixed issue #10 "In Select topic dialog; Fold All only closes the root node"
 - fixed issue #9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"
-- the IDEA project adapted to be compatible with IDEA 16 platform
 - reworked mind map format parser to make it compatible with PSI tree parser in IDEA
 - fixed bug #9, popup menu could not open options in WebStorm 9
 - improved mind map file parsing to support PSI tree in IDEA
-- refactoring
+- code refactoring, inside API reworked to plugin based one
 
 1.1.4 (21-feb-2015)
 - improved PNG exporter to save images without background and with all unfolded topics

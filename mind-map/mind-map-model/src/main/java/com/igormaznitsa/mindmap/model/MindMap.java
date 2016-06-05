@@ -157,6 +157,11 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       Iterator<Topic> children;
 
       @Override
+      public void remove() {
+        this.children.remove();
+      }
+
+      @Override
       public boolean hasNext() {
         return this.topicroot != null || (this.children != null && this.children.hasNext());
       }

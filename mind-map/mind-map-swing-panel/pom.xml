@@ -4,14 +4,15 @@
     <parent>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
     <artifactId>mind-map-swing-panel</artifactId>
-    <version>${main.version}</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
     
+    <name>NB Mind Map swing panel</name>
     <description>Swing based panel to show and interact with mind map</description>
     
     <profiles>
