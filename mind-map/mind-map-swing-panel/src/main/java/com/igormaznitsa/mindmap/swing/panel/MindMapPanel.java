@@ -72,7 +72,6 @@ import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
 import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
 import java.util.concurrent.locks.ReentrantLock;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 
 public class MindMapPanel extends JPanel {
 

@@ -113,10 +113,6 @@ public enum IdeaUtils {
     return moduleRoot;
   }
 
-  public static boolean isMMDFile(@Nullable final VirtualFile file) {
-    return !(file == null || file.isDirectory()) && file.getFileType() == MindMapFileType.INSTANCE;
-  }
-
   @Nullable
   public static VirtualFile findKnowledgeFolderForModule(@Nullable final Module module, final boolean createIfMissing) {
     final VirtualFile rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
