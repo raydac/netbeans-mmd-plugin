@@ -21,12 +21,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.plaf.metal.MetalIconFactory;
-import javax.swing.tree.DefaultTreeModel;
 import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
@@ -34,9 +35,13 @@ public final class TabTitle extends JPanel {
   
   private static final long serialVersionUID = -6534083975320248288L;
   private final JLabel titleLabel;
-
-  public TabTitle() {
+  private volatile File associatedFile;
+  private volatile boolean changed;
+  
+  public TabTitle(@Nullable final File associatedFile) {
     super(new GridBagLayout());
+    this.associatedFile = associatedFile;
+    this.changed = this.associatedFile == null;
     this.setOpaque(false);
     final GridBagConstraints constraints = new GridBagConstraints();
     constraints.fill = GridBagConstraints.BOTH;
@@ -61,11 +66,27 @@ public final class TabTitle extends JPanel {
     this.add(closeButton, constraints);
   }
 
-  public void setTitle(@Nonnull final String text, final boolean bold) {
+  @Nullable
+  public File getAssociatedFile(){
+    return this.associatedFile;
+  }
+  
+  public void setAssociatedFile(@Nullable final File file) {
+    this.associatedFile = file;
+    updateTitle();
+  }
+  
+  public void setChanged(final boolean flag){
+    this.changed = flag;
+    updateTitle();
+  }
+  
+  private void updateTitle() {
+    final File file = this.associatedFile;
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
-        titleLabel.setText("<html>" + (bold ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml(text) + (bold ? "</u></b>" : "") + "</html>");
+        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml(associatedFile == null ? "Untitled" : associatedFile.getName()) + (changed ? "</u></b>" : "") + "</html>");
         revalidate();
       }
     });

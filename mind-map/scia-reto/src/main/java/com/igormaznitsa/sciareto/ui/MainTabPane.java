@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import java.io.File;
 import javax.annotation.Nonnull;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -37,6 +38,18 @@ public class MainTabPane extends JTabbedPane {
         panel.getMainComponent().requestFocus();
       }
     });
+    this.setSelectedIndex(count);
+  }
+  
+  public boolean focusToFile(final File file) {
+    for (int i=0;i<this.getTabCount();i++){
+      final TabTitle title = (TabTitle)this.getTabComponentAt(i);
+      if (file.equals(title.getAssociatedFile())){
+        this.setSelectedIndex(i);
+        return true;
+      }
+    }
+    return false;
   }
   
   private void clickToClose(@Nonnull final TabProvider provider){

@@ -24,6 +24,8 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import com.igormaznitsa.mindmap.model.nio.Path;
+import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 public class ProjectGroupTree extends FileTreeNode implements TreeModel {
@@ -76,9 +78,9 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
       Utils.safeSwingCall(new Runnable() {
         @Override
         public void run() {
-          final TreeModelEvent event = new TreeModelEvent(theInstance, new Object[]{theInstance, newNode});
+          final TreeModelEvent event = new TreeModelEvent(theInstance, new Object[]{theInstance});
           for (final TreeModelListener l : listeners) {
-            l.treeNodesInserted(event);
+            l.treeStructureChanged(event);
           }
         }
       });
@@ -128,4 +130,15 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
     this.listeners.remove(l);
   }
 
+  @Nullable
+  public ProjectTree findProjectForFile(@Nonnull final File file){
+    final Path filepath = Paths.toPath(file);
+    for(final FileTreeNode t : this.children){
+      if (t.getFile()!=null && filepath.startsWith(Paths.toPath(t.getFile()))){
+        return (ProjectTree)t;
+      }
+    }
+    return null;
+  }
+  
 }

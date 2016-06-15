@@ -170,7 +170,13 @@
           <checkNullable>true</checkNullable>
           <ignoreClasses>
             <ignore>*.NoteEditor</ignore>
-            <ignore>*.NoteEditor$*</ignore>
+            <ignore>*.ColorAttributePanel</ignore>
+            <ignore>*.UriEditPanel</ignore>
+            <ignore>*.FileEditPanel</ignore>
+            <ignore>*$*</ignore>
+            <ignore>*.MainFrame</ignore>
+            <ignore>*.MindMapTreePanel</ignore>
+            <ignore>*.AboutPanel</ignore>
           </ignoreClasses>
         </configuration>
         <executions>

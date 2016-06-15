@@ -53,6 +53,11 @@ public class FileTreeNode implements TreeNode {
     refresh(fillChildren);
   }
   
+  @Nullable
+  public File getFile(){
+    return this.file;
+  }
+  
   protected final void refresh(final boolean deepRefresh){
     if (this.file != null && this.folder){
       this.children.clear();

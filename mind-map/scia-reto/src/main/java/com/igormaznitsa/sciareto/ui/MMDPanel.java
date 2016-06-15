@@ -15,31 +15,46 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ToDo;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
@@ -57,26 +72,43 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
+import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.tree.ProjectTree;
 
 public class MMDPanel extends JScrollPane implements MindMapPanelController, MindMapController, TabProvider, MindMapListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMDPanel.class);
+  
   private final MindMapPanel mindMapPanel;
 
   private final TabTitle title;
   private volatile File file;
   private volatile boolean changed = false;
 
-  public MMDPanel(@Nullable File file, @Nonnull final MindMap map) {
+  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
+  private final Context context;
+  
+  public MMDPanel(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
+    this.context = context;
     this.file = file;
-    this.title = new TabTitle();
-    this.title.setTitle("Some mind map", true);
+    this.title = new TabTitle(file);
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
     this.setViewportView(this.mindMapPanel);
+    
+    final MindMap map;
+    if (file == null){
+      map = new MindMap(this, true);
+    }else{
+      map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
+    }
+    
     this.mindMapPanel.setModel(Assertions.assertNotNull(map));
     this.changed = file == null;
     this.updateTitle();
@@ -179,12 +211,14 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
   }
 
   private void updateTitle() {
-    final File f = this.file;
-    this.title.setTitle(f == null ? "unitled" : f.getName(), this.changed);
+    this.title.setAssociatedFile(this.file);
+    this.title.setChanged(this.changed);
   }
 
   @Override
   public void onMindMapModelChanged(@Nonnull final MindMapPanel source) {
+    this.changed = true;
+    updateTitle();
     this.getViewport().revalidate();
     this.repaint();
   }
@@ -238,11 +272,17 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {
-
+          final MMapURI uri = (MMapURI) extra.getValue();
+          final File theFile = uri.asFile(getProjectFolder());
+          if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
+            UiUtils.openInSystemViewer(theFile);
+          } else {
+            UiUtils.openInSystemViewer(theFile);
+          }
         }
         break;
         case LINK: {
-
+          editLinkForTopic(topic);
         }
         break;
         case NOTE: {
@@ -250,7 +290,14 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
         }
         break;
         case TOPIC: {
-
+          final Topic theTopic = source.getModel().findTopicForLink((ExtraTopic) extra);
+          if (theTopic == null) {
+            // not presented
+            DialogProviderManager.getInstance().getDialogProvider().msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+          } else {
+            // detected
+            this.mindMapPanel.focusTo(theTopic);
+          } 
         }
         break;
       }
@@ -358,26 +405,158 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
     }
   }
 
+  @Nullable
+  @ToDo
+  private File getProjectFolder(){
+    File result = null;
+    if (this.file!=null){
+      final ProjectTree project = context.findProjectForFile(this.file);
+      result = project == null ? null : project.getFile();
+    }
+    return result;
+  }
+  
   private void editFileLinkForTopic(@Nullable final Topic topic) {
+    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
+    final FileEditPanel.DataContainer path;
+
+    final File projectFolder = getProjectFolder();
+    if (file == null) {
+      path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
+    } else {
+      final MMapURI uri = file.getValue();
+      final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
+
+      final FileEditPanel.DataContainer origPath;
+      origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
+      path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
+    }
+
+    if (path != null) {
+      final boolean valueChanged;
+      if (path.isEmpty()) {
+        valueChanged = topic.removeExtra(Extra.ExtraType.FILE);
+      } else {
+        final Properties props = new Properties();
+        if (path.isShowWithSystemTool()) {
+          props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
+        }
+        final MMapURI fileUri = MMapURI.makeFromFilePath(PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props); //NOI18N
+        final File theFile = fileUri.asFile(projectFolder);
+        LOGGER.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
+
+        if (theFile.exists()) {
+          topic.setExtra(new ExtraFile(fileUri));
+          valueChanged = true;
+        } else {
+          DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
+          valueChanged = false;
+        }
+      }
+
+      if (valueChanged) {
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
+    }
   }
 
   private void editTopicLinkForTopic(@Nullable final Topic topic) {
+    final ExtraTopic link = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
 
+    ExtraTopic result = null;
+
+    final ExtraTopic remove = new ExtraTopic("_______"); //NOI18N
+
+    if (link == null) {
+      final MindMapTreePanel treePanel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
+      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
+        final Topic selected = treePanel.getSelectedTopic();
+        treePanel.dispose();
+        if (selected != null) {
+          result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
+        } else {
+          result = remove;
+        }
+      }
+    } else {
+      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
+      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+        final Topic selected = panel.getSelectedTopic();
+        if (selected != null) {
+          result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
+        } else {
+          result = remove;
+        }
+      }
+    }
+
+    if (result != null) {
+      if (result == remove) {
+        topic.removeExtra(Extra.ExtraType.TOPIC);
+      } else {
+        topic.setExtra(result);
+      }
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
   }
 
   private void editLinkForTopic(@Nullable final Topic topic) {
-
+    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
+    final MMapURI result;
+    if (link == null) {
+      // create new
+      result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
+    } else {
+      // edit
+      result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
+    }
+    if (result != null) {
+      if (result == UiUtils.EMPTY_URI) {
+        topic.removeExtra(Extra.ExtraType.LINK);
+      } else {
+        topic.setExtra(new ExtraLink(result));
+      }
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
   }
 
-  @ToDo
   private void processColorDialogForTopics(@Nonnull final MindMapPanel source, @Nonnull @MustNotContainNull final Topic[] topics) {
+    final Color borderColor = UiUtils.extractCommonColorForColorChooserButton(ATTR_BORDER_COLOR.getText(), topics);
+    final Color fillColor = UiUtils.extractCommonColorForColorChooserButton(ATTR_FILL_COLOR.getText(), topics);
+    final Color textColor = UiUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
 
+    final ColorAttributePanel panel = new ColorAttributePanel(borderColor, fillColor, textColor);
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
+      ColorAttributePanel.Result result = panel.getResult();
+
+      if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
+        Utils.setAttribute(ATTR_BORDER_COLOR.getText(), Utils.color2html(result.getBorderColor(), false), topics);
+      }
+
+      if (result.getTextColor() != ColorChooserButton.DIFF_COLORS) {
+        Utils.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(result.getTextColor(), false), topics);
+      }
+
+      if (result.getFillColor() != ColorChooserButton.DIFF_COLORS) {
+        Utils.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
+      }
+
+      onMindMapModelChanged(source);
+      
+      source.updateView(true);
+    }
   }
 
   @ToDo
   private void showAbout() {
-
+    JOptionPane.showMessageDialog(Main.getApplicationFrame(), new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
   }
 
   @ToDo

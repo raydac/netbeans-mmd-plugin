@@ -18,6 +18,8 @@ package com.igormaznitsa.sciareto;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
@@ -32,6 +34,17 @@ public class Main {
   }
   
   public static void main(@Nonnull @MustNotContainNull final String ... args){
+    try {
+      for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+        if ("nimbus".equalsIgnoreCase(info.getName())) {
+          UIManager.setLookAndFeel(info.getClassName());
+          break;
+        }
+      }
+    } catch (Exception e) {
+      System.out.println("Can't use NIMBUS");
+    }
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {

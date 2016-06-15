@@ -15,20 +15,68 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import org.apache.commons.lang.SystemUtils;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.ToDo;
 import com.igormaznitsa.meta.common.utils.IOUtils;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.sciareto.Main;
 
 public final class UiUtils {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(UiUtils.class);
   public static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-  
+
+  public static final MMapURI EMPTY_URI;
+  public static final boolean DARK_THEME;
+
+  static {
+    try {
+      EMPTY_URI = new MMapURI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
+    } catch (URISyntaxException ex) {
+      throw new Error("Unexpected exception", ex); //NOI18N
+    }
+    final Color color = UIManager.getColor("Panel.background");
+    if (color == null) {
+      DARK_THEME = false;
+    } else {
+      DARK_THEME = calculateBrightness(color) < 150;
+    }
+  }
+
   private UiUtils() {
+  }
+
+  public static int calculateBrightness(@Nonnull final Color color) {
+    return (int) Math.sqrt(
+        color.getRed() * color.getRed() * .241d
+        + color.getGreen() * color.getGreen() * .691d
+        + color.getBlue() * color.getBlue() * .068d);
   }
 
   @Nullable
@@ -46,7 +94,66 @@ public final class UiUtils {
     }
     return result;
   }
-  
+
+  @Nullable
+  public static MMapURI editURI(@Nonnull final String title, @Nullable final MMapURI uri) {
+    final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
+
+    textEditor.doLayout();
+    textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));
+
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(title, textEditor)) {
+      final String text = textEditor.getText();
+      if (text.isEmpty()) {
+        return EMPTY_URI;
+      }
+      try {
+        return new MMapURI(text.trim());
+      } catch (URISyntaxException ex) {
+        DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  public static boolean msgOkCancel(@Nonnull final String title, @Nonnull final Object component) {
+    return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), component, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION;
+  }
+
+  @Nullable
+  public static Color extractCommonColorForColorChooserButton(@Nonnull final String colorAttribute, @Nonnull @MustNotContainNull final Topic[] topics) {
+    Color result = null;
+    for (final Topic t : topics) {
+      final Color color = html2color(t.getAttribute(colorAttribute), false);
+      if (result == null) {
+        result = color;
+      } else if (!result.equals(color)) {
+        return ColorChooserButton.DIFF_COLORS;
+      }
+    }
+    return result;
+  }
+
+  @Nullable
+  public static FileEditPanel.DataContainer editFilePath(@Nonnull final String title, @Nullable final File projectFolder, @Nullable final FileEditPanel.DataContainer data) {
+    final FileEditPanel filePathEditor = new FileEditPanel(projectFolder, data);
+
+    filePathEditor.doLayout();
+    filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
+
+    FileEditPanel.DataContainer result = null;
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(title, filePathEditor)) {
+      result = filePathEditor.getData();
+      if (!result.isValid()) {
+        DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
+        result = null;
+      }
+    }
+    return result;
+  }
+
   @Nullable
   public static String editText(@Nonnull final String title, @Nonnull final String text) {
     final NoteEditor textEditor = new NoteEditor(text);
@@ -58,6 +165,92 @@ public final class UiUtils {
       }
     } finally {
       textEditor.dispose();
+    }
+  }
+
+  public static void openInSystemViewer(@Nonnull final File file) {
+    final Runnable startEdit = new Runnable() {
+      @Override
+      public void run() {
+        boolean ok = false;
+        if (Desktop.isDesktopSupported()) {
+          final Desktop dsk = Desktop.getDesktop();
+          if (dsk.isSupported(Desktop.Action.OPEN)) {
+            try {
+              dsk.open(file);
+              ok = true;
+            } catch (Throwable ex) {
+              LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
+            }
+          }
+        }
+        if (!ok) {
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              DialogProviderManager.getInstance().getDialogProvider().msgError("Can't open file in system viewer! See the log!");//NOI18N
+              Toolkit.getDefaultToolkit().beep();
+            }
+          });
+        }
+      }
+    };
+    final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
+    thr.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(final Thread t, final Throwable e) {
+        LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e);
+      }
+    });
+
+    thr.setDaemon(true);
+    thr.start();
+  }
+
+  private static void showURL(@Nonnull final URL url) {
+    showURLExternal(url);
+  }
+
+  @ToDo
+  private static void showURLExternal(@Nonnull final URL url) {
+    if (Desktop.isDesktopSupported()) {
+      final Desktop desktop = Desktop.getDesktop();
+      if (desktop.isSupported(Desktop.Action.BROWSE)) {
+        try {
+          desktop.browse(url.toURI());
+        } catch (Exception x) {
+          LOGGER.error("Can't browse URL in Desktop", x);
+        }
+      } else if (SystemUtils.IS_OS_LINUX){
+        final Runtime runtime = Runtime.getRuntime();
+        try {
+          runtime.exec("xdg-open \'" + url+"\'");
+        } catch (IOException e) {
+          LOGGER.error("Can't browse URL under Linux", e);
+        }
+      } else if (SystemUtils.IS_OS_MAC){
+        final Runtime runtime = Runtime.getRuntime();
+        try {
+          runtime.exec("open \'" + url+"\'");
+        } catch (IOException e) {
+          LOGGER.error("Can't browse URL on MAC", e);
+        }
+      }
+    }
+
+  }
+
+  public static boolean browseURI(@Nonnull final URI uri, final boolean preferInsideBrowserIfPossible) {
+    try {
+      if (preferInsideBrowserIfPossible) {
+        showURL(uri.toURL());
+      } else {
+        showURLExternal(uri.toURL());
+      }
+      return true;
+    } catch (MalformedURLException ex) {
+      LOGGER.error("MalformedURLException", ex); //NOI18N
+      return false;
     }
   }
 
