@@ -29,6 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.annotation.Nonnull;
@@ -224,14 +225,14 @@ public final class UiUtils {
       } else if (SystemUtils.IS_OS_LINUX){
         final Runtime runtime = Runtime.getRuntime();
         try {
-          runtime.exec("xdg-open \'" + url+"\'");
+          runtime.exec("xdg-open " + url);
         } catch (IOException e) {
           LOGGER.error("Can't browse URL under Linux", e);
         }
       } else if (SystemUtils.IS_OS_MAC){
         final Runtime runtime = Runtime.getRuntime();
         try {
-          runtime.exec("open \'" + url+"\'");
+          runtime.exec("open " + url);
         } catch (IOException e) {
           LOGGER.error("Can't browse URL on MAC", e);
         }

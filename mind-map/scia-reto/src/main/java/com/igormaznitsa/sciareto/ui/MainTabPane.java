@@ -51,6 +51,21 @@ public class MainTabPane extends JTabbedPane {
     }
     return false;
   }
+
+  public boolean removeTab(@Nonnull final TabTitle title) {
+    int index = -1;
+    for (int i = 0; i < this.getTabCount(); i++) {
+      if (this.getTabComponentAt(i) == title) {
+        index = i;
+        break;
+      }
+    }
+    if (index>=0){
+      this.removeTabAt(index);
+      return true;
+    }
+    return false;
+  }
   
   private void clickToClose(@Nonnull final TabProvider provider){
     int index = -1;

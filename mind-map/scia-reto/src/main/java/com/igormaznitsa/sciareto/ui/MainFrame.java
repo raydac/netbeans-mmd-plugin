@@ -20,20 +20,21 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import org.apache.commons.io.FilenameUtils;
-import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.tree.ProjectGroupTree;
 import com.igormaznitsa.sciareto.tree.ProjectTree;
 
 public final class MainFrame extends javax.swing.JFrame implements Context {
@@ -44,6 +45,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   
   private final MainTabPane mainPane;
   private final ExplorerTree explorerTree;
+  
+  private final Set<String> IMAGES_FILES = new HashSet<>(Arrays.asList("gif","png","jpg"));
   
   public MainFrame() {
     initComponents();
@@ -62,29 +65,51 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     
     final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     splitPane.setOneTouchExpandable(true);
+    splitPane.setDividerLocation(250);
     splitPane.setResizeWeight(0.0d);
     splitPane.setLeftComponent(this.explorerTree);
     splitPane.setRightComponent(this.mainPane);
     
     add(splitPane,BorderLayout.CENTER);
-    
-    final ProjectGroupTree tree = new ProjectGroupTree("Some group");
   }
 
   @Override
-  public void openFileAsTab(@Nonnull final File file) {
+  public boolean openFileAsTab(@Nonnull final File file) {
+    boolean result = false;
     if (file.isFile() && !this.mainPane.focusToFile(file)){
       final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
       if (ext.equals("mmd")){
         try{
           final MMDPanel panel = new MMDPanel(this, file);
           this.mainPane.createTab(panel);
+          result = true;
         }catch(IOException ex){
           LOGGER.error("Can't load mind map", ex);
-          DialogProviderManager.getInstance().getDialogProvider().msgError("Can't load mind map!");
+        }
+      } else if (IMAGES_FILES.contains(ext)) {
+        try {
+          final PicturePanel panel = new PicturePanel(this, file);
+          this.mainPane.createTab(panel);
+          result = true;
+        } catch (IOException ex) {
+          LOGGER.error("Can't load file as image", ex);
+        }
+      } else {
+        try {
+          final TextEditPanel panel = new TextEditPanel(this, file);
+          this.mainPane.createTab(panel);
+          result = true;
+        } catch (IOException ex) {
+          LOGGER.error("Can't load file as text", ex);
         }
       }
     }
+    return result;
+  }
+
+  @Override
+  public void closeTab(@Nonnull final TabTitle title) {
+    this.mainPane.removeTab(title);
   }
 
   @Override
@@ -122,6 +147,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuAbout = new javax.swing.JMenuItem();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+    setLocationByPlatform(true);
 
     menuFile.setText("File");
 

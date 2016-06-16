@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.sciareto;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
@@ -48,9 +50,15 @@ public class Main {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+        
+        final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        final int width = gd.getDisplayMode().getWidth();
+        final int height = gd.getDisplayMode().getHeight();
+        
         MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
         MAIN_FRAME = new MainFrame();
-        MAIN_FRAME.pack();
+        MAIN_FRAME.setSize(Math.round(width*0.75f), Math.round(height*0.75f));
+        
         MAIN_FRAME.setVisible(true);
       }
     });

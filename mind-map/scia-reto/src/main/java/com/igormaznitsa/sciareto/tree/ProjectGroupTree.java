@@ -73,8 +73,6 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
       this.children.add(newProject);
       final ProjectGroupTree theInstance = this;
 
-      final Object newNode = newProject;
-      
       Utils.safeSwingCall(new Runnable() {
         @Override
         public void run() {

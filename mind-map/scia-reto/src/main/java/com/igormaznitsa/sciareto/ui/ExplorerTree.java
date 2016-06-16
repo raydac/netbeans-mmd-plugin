@@ -21,6 +21,7 @@ import java.io.File;
 import javax.annotation.Nonnull;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.ToolTipManager;
 import javax.swing.tree.TreePath;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
@@ -35,7 +36,25 @@ public final class ExplorerTree extends JScrollPane {
 
   public ExplorerTree(@Nonnull final Context context) {
     super();
-    this.projectTree = new JTree();
+    this.projectTree = new JTree() {
+      @Override
+      public String getToolTipText(@Nonnull final MouseEvent evt) {
+        if (getRowForLocation(evt.getX(), evt.getY()) == -1) {
+          return null;
+        }
+        final TreePath curPath = getPathForLocation(evt.getX(), evt.getY());
+        final Object lastElement = curPath.getLastPathComponent();
+        if (lastElement instanceof FileTreeNode) {
+          final File file = ((FileTreeNode) lastElement).getFile();
+          return file == null ? null : file.getAbsolutePath();
+        } else {
+          return null;
+        }
+      }
+    };
+    
+    ToolTipManager.sharedInstance().registerComponent(this.projectTree);
+    
     this.projectTree.setCellRenderer(new TreeCellRenderer());
     this.projectTree.setModel(new ProjectGroupTree("."));
     this.projectTree.setRootVisible(false);
@@ -48,17 +67,18 @@ public final class ExplorerTree extends JScrollPane {
           final int selRow = projectTree.getRowForLocation(e.getX(), e.getY());
           final TreePath selPath = projectTree.getPathForLocation(e.getX(), e.getY());
           if (selRow >= 0) {
-            final FileTreeNode node = (FileTreeNode)selPath.getLastPathComponent();
-            if (node!=null){
+            final FileTreeNode node = (FileTreeNode) selPath.getLastPathComponent();
+            if (node != null) {
               final File file = node.getFile();
-              context.openFileAsTab(file);
+              if (!context.openFileAsTab(file)){
+                UiUtils.openInSystemViewer(file);
+              }
             }
           }
         }
       }
 
     });
-
   }
 
   @Nonnull

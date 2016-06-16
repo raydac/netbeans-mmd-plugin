@@ -87,8 +87,6 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
   private final MindMapPanel mindMapPanel;
 
   private final TabTitle title;
-  private volatile File file;
-  private volatile boolean changed = false;
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
   private final Context context;
@@ -96,8 +94,7 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
   public MMDPanel(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     this.context = context;
-    this.file = file;
-    this.title = new TabTitle(file);
+    this.title = new TabTitle(context, file);
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
     this.setViewportView(this.mindMapPanel);
@@ -110,22 +107,6 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
     }
     
     this.mindMapPanel.setModel(Assertions.assertNotNull(map));
-    this.changed = file == null;
-    this.updateTitle();
-  }
-
-  public void setFile(@Nullable final File file) {
-    this.file = file;
-    updateTitle();
-  }
-
-  @Nullable
-  public File getFile() {
-    return this.file;
-  }
-
-  public boolean isChanged() {
-    return this.changed;
   }
 
   @Override
@@ -210,15 +191,9 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
     }
   }
 
-  private void updateTitle() {
-    this.title.setAssociatedFile(this.file);
-    this.title.setChanged(this.changed);
-  }
-
   @Override
   public void onMindMapModelChanged(@Nonnull final MindMapPanel source) {
-    this.changed = true;
-    updateTitle();
+    this.title.setChanged(true);
     this.getViewport().revalidate();
     this.repaint();
   }
@@ -277,12 +252,17 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
           if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
             UiUtils.openInSystemViewer(theFile);
           } else {
-            UiUtils.openInSystemViewer(theFile);
+            if (!this.context.openFileAsTab(theFile)) {
+              UiUtils.openInSystemViewer(theFile);
+            }
           }
         }
         break;
         case LINK: {
-          editLinkForTopic(topic);
+          final MMapURI uri = ((ExtraLink) extra).getValue();
+          if (!UiUtils.browseURI(uri.asURI(), PreferencesManager.getInstance().getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
+            DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+          }
         }
         break;
         case NOTE: {
@@ -409,8 +389,9 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
   @ToDo
   private File getProjectFolder(){
     File result = null;
-    if (this.file!=null){
-      final ProjectTree project = context.findProjectForFile(this.file);
+    final File associatedFile = this.title.getAssociatedFile();
+    if (associatedFile!=null){
+      final ProjectTree project = context.findProjectForFile(associatedFile);
       result = project == null ? null : project.getFile();
     }
     return result;

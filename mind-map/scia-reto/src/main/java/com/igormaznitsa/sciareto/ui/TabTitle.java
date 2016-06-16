@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.plaf.metal.MetalIconFactory;
 import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.Context;
 
 public final class TabTitle extends JPanel {
   
@@ -37,9 +38,11 @@ public final class TabTitle extends JPanel {
   private final JLabel titleLabel;
   private volatile File associatedFile;
   private volatile boolean changed;
+  private final Context context;
   
-  public TabTitle(@Nullable final File associatedFile) {
+  public TabTitle(@Nonnull final Context context, @Nullable final File associatedFile) {
     super(new GridBagLayout());
+    this.context = context;
     this.associatedFile = associatedFile;
     this.changed = this.associatedFile == null;
     this.setOpaque(false);
@@ -58,14 +61,23 @@ public final class TabTitle extends JPanel {
     closeButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
+        processClose();
       }
     });
     constraints.fill = GridBagConstraints.BOTH;
     constraints.weightx = 0.0d;
     constraints.insets = new Insets(2, 8, 2, 0);
     this.add(closeButton, constraints);
+    updateView();
   }
 
+  private void processClose(){
+    final boolean close = !this.changed || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Non saved file", "Close unsaved document '"+makeName()+"\'?");
+    if (close) {
+      this.context.closeTab(this);
+    }
+  }
+  
   @Nullable
   public File getAssociatedFile(){
     return this.associatedFile;
@@ -73,20 +85,29 @@ public final class TabTitle extends JPanel {
   
   public void setAssociatedFile(@Nullable final File file) {
     this.associatedFile = file;
-    updateTitle();
+    updateView();
   }
   
   public void setChanged(final boolean flag){
     this.changed = flag;
-    updateTitle();
+    updateView();
+  }
+
+  public boolean isChanged() {
+    return this.changed;
   }
   
-  private void updateTitle() {
+  private String makeName(){
     final File file = this.associatedFile;
+    return file == null ? "Untitled" : file.getName();
+  }
+  
+  
+  private void updateView() {
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
-        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml(associatedFile == null ? "Untitled" : associatedFile.getName()) + (changed ? "</u></b>" : "") + "</html>");
+        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml(makeName()) + (changed ? "</u></b>" : "") + "</html>");
         revalidate();
       }
     });

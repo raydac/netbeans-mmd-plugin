@@ -23,5 +23,6 @@ import com.igormaznitsa.sciareto.tree.ProjectTree;
 public interface Context {
   @Nullable
   ProjectTree findProjectForFile(@Nonnull File file);
-  void openFileAsTab(@Nonnull File file);
+  boolean openFileAsTab(@Nonnull File file);
+  void closeTab(@Nonnull com.igormaznitsa.sciareto.ui.TabTitle title);
 }

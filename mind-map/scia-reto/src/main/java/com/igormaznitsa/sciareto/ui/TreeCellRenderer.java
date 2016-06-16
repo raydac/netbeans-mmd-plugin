@@ -16,9 +16,14 @@
 package com.igormaznitsa.sciareto.ui;
 
 import java.awt.Component;
+import java.io.File;
+import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import org.apache.commons.io.FilenameUtils;
+import com.igormaznitsa.sciareto.tree.FileTreeNode;
 
 public class TreeCellRenderer extends DefaultTreeCellRenderer {
 
@@ -26,8 +31,16 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   
   @Override
   @Nonnull
-  public Component getTreeCellRendererComponent(@Nonnull final JTree tree, @Nonnull final Object value, final boolean selected, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
+  public Component getTreeCellRendererComponent(@Nonnull final JTree tree, @Nullable final Object value, final boolean selected, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
     super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+    if (value!=null && value instanceof FileTreeNode){
+      final FileTreeNode node = (FileTreeNode)value;
+      final File file = node.getFile();
+      final String ext = file == null ? null : FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
+      if (ext != null && ext.equals("mmd")) {
+        this.setIcon(Icons.DOCUMENT.getIcon());
+      }
+    }
     return this;
   }
 }
