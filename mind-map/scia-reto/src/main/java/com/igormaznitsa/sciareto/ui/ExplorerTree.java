@@ -15,18 +15,24 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import java.awt.datatransfer.Transferable;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.annotation.Nonnull;
+import javax.swing.DropMode;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
+import javax.swing.TransferHandler;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.tree.FileTreeNode;
 import com.igormaznitsa.sciareto.tree.ProjectGroupTree;
+import com.igormaznitsa.sciareto.tree.ProjectTree;
 
 public final class ExplorerTree extends JScrollPane {
 
@@ -52,6 +58,8 @@ public final class ExplorerTree extends JScrollPane {
         }
       }
     };
+    
+    this.projectTree.setDragEnabled(true);
     
     ToolTipManager.sharedInstance().registerComponent(this.projectTree);
     

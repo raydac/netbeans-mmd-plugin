@@ -1,4 +1,4 @@
-package com.igormaznitsa.nbmindmap.nb.swing;
+package com.igormaznitsa.sciareto.ui;
 
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
@@ -6,7 +6,10 @@ import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ResourceBundle;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.Icons;
+import com.igormaznitsa.sciareto.ui.Icons;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class DonateButton extends JButton {

@@ -68,9 +68,9 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    colorChooserBorder = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
-    colorChooserFill = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
-    colorChooserText = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
+    colorChooserBorder = new com.igormaznitsa.sciareto.ui.ColorChooserButton();
+    colorChooserFill = new com.igormaznitsa.sciareto.ui.ColorChooserButton();
+    colorChooserText = new com.igormaznitsa.sciareto.ui.ColorChooserButton();
     buttonResetBorder = new javax.swing.JButton();
     buttonResetFill = new javax.swing.JButton();
     buttonResetText = new javax.swing.JButton();
@@ -158,8 +158,8 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
   private javax.swing.JButton buttonResetBorder;
   private javax.swing.JButton buttonResetFill;
   private javax.swing.JButton buttonResetText;
-  private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserBorder;
-  private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserFill;
-  private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserText;
+  private com.igormaznitsa.sciareto.ui.ColorChooserButton colorChooserBorder;
+  private com.igormaznitsa.sciareto.ui.ColorChooserButton colorChooserFill;
+  private com.igormaznitsa.sciareto.ui.ColorChooserButton colorChooserText;
   // End of variables declaration//GEN-END:variables
 }

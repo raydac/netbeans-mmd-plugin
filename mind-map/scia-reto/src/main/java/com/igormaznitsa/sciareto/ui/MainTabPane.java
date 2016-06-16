@@ -16,11 +16,14 @@
 package com.igormaznitsa.sciareto.ui;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-public class MainTabPane extends JTabbedPane {
+public class MainTabPane extends JTabbedPane implements Iterable<TabTitle>{
   
   private static final long serialVersionUID = -8971773653667281550L;
   
@@ -41,7 +44,7 @@ public class MainTabPane extends JTabbedPane {
     this.setSelectedIndex(count);
   }
   
-  public boolean focusToFile(final File file) {
+  public boolean focusToFile(@Nonnull final File file) {
     for (int i=0;i<this.getTabCount();i++){
       final TabTitle title = (TabTitle)this.getTabComponentAt(i);
       if (file.equals(title.getAssociatedFile())){
@@ -65,6 +68,15 @@ public class MainTabPane extends JTabbedPane {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public Iterator<TabTitle> iterator() {
+    final List<TabTitle> result = new ArrayList<>();
+    for(int i=0;i<this.getTabCount();i++){
+      result.add((TabTitle)this.getTabComponentAt(i));
+    }
+    return result.iterator();
   }
   
   private void clickToClose(@Nonnull final TabProvider provider){

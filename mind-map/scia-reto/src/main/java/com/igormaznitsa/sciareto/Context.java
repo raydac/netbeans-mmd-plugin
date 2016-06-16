@@ -21,8 +21,11 @@ import javax.annotation.Nullable;
 import com.igormaznitsa.sciareto.tree.ProjectTree;
 
 public interface Context {
+
+  public void notifyReloadConfig();
   @Nullable
   ProjectTree findProjectForFile(@Nonnull File file);
   boolean openFileAsTab(@Nonnull File file);
   void closeTab(@Nonnull com.igormaznitsa.sciareto.ui.TabTitle title);
+  void editPreferences();
 }

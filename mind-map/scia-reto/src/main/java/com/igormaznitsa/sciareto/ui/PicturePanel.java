@@ -34,19 +34,26 @@ public class PicturePanel extends JScrollPane implements TabProvider {
   
   public PicturePanel(@Nonnull final Context context, @Nonnull final File file) throws IOException {
     super();
-    this.title = new TabTitle(context, file);
+    this.title = new TabTitle(context, this, file);
     final Image image = file == null ? null : ImageIO.read(file);
     if (image != null){
       this.setViewportView(new JLabel(new ImageIcon(image)));
     }
   }
+
+  @Override
+  public boolean saveDocument() {
+    return true;
+  }
   
   @Override
+  @Nonnull
   public TabTitle getTabTitle() {
     return this.title;
   }
 
   @Override
+  @Nonnull
   public JComponent getMainComponent() {
     return this;
   }

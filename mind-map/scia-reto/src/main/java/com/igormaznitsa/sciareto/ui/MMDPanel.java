@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
-import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
@@ -29,6 +28,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -40,6 +40,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ToDo;
@@ -72,7 +73,6 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
@@ -90,11 +90,29 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
   private final Context context;
+
+  public void refreshConfig() {
+    this.mindMapPanel.refreshConfiguration();
+  }
+
+  public static class MMDFileFilter extends FileFilter{
+
+    @Override
+    public boolean accept(@Nonnull final File f) {
+      return f.isDirectory() || f.getName().endsWith(".mmd");
+    }
+
+    @Override
+    public String getDescription() {
+      return "Mind Map document (*.mmd)";
+    }
+    
+  }
   
   public MMDPanel(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     this.context = context;
-    this.title = new TabTitle(context, file);
+    this.title = new TabTitle(context, this, file);
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
     this.setViewportView(this.mindMapPanel);
@@ -109,6 +127,28 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
     this.mindMapPanel.setModel(Assertions.assertNotNull(map));
   }
 
+  @Override
+  public boolean saveDocument(){
+    boolean result = false;
+    if(this.title.isChanged()){
+      File file = this.title.getAssociatedFile();
+      if (file == null){
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("mmd-panel", "Save Mind Map", null, true, new MMDFileFilter(), "Save");
+        if (file == null) return result;
+      }
+      try{
+        FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(),"UTF-8",false);
+        this.title.setChanged(false);
+        result = true;
+      }catch(IOException ex){
+        LOGGER.error("Can't write file : "+file,ex);
+      }
+    } else {
+      result = true;
+    }
+    return result;
+  }
+  
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
     return PreferencesManager.getInstance().getPreferences().getBoolean("unfoldCollapsedTarget", true);
@@ -542,7 +582,7 @@ public class MMDPanel extends JScrollPane implements MindMapPanelController, Min
 
   @ToDo
   private void startOptionsEdit() {
-
+    this.context.editPreferences();
   }
 
   @Override

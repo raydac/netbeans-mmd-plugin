@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.nbmindmap.nb.swing;
+package com.igormaznitsa.sciareto.ui;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -36,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public final class ColorChooserButton extends JButton {
 

@@ -58,19 +58,19 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserBorder">
+    <Component class="com.igormaznitsa.sciareto.ui.ColorChooserButton" name="colorChooserBorder">
       <Properties>
         <Property name="text" type="java.lang.String" value="Border color" noResource="true"/>
         <Property name="horizontalAlignment" type="int" value="2"/>
       </Properties>
     </Component>
-    <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserFill">
+    <Component class="com.igormaznitsa.sciareto.ui.ColorChooserButton" name="colorChooserFill">
       <Properties>
         <Property name="text" type="java.lang.String" value="Fill color" noResource="true"/>
         <Property name="horizontalAlignment" type="int" value="2"/>
       </Properties>
     </Component>
-    <Component class="com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton" name="colorChooserText">
+    <Component class="com.igormaznitsa.sciareto.ui.ColorChooserButton" name="colorChooserText">
       <Properties>
         <Property name="text" type="java.lang.String" value="Text color" noResource="true"/>
         <Property name="horizontalAlignment" type="int" value="2"/>

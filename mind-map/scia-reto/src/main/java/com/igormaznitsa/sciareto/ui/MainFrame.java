@@ -26,13 +26,17 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
+import javax.swing.UIManager;
+import javax.swing.filechooser.FileView;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.tree.ProjectTree;
@@ -42,48 +46,59 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private static final long serialVersionUID = 3798040833406256900L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
-  
+
   private final MainTabPane mainPane;
   private final ExplorerTree explorerTree;
-  
-  private final Set<String> IMAGES_FILES = new HashSet<>(Arrays.asList("gif","png","jpg"));
-  
+
+  private final Set<String> IMAGES_FILES = new HashSet<>(Arrays.asList("gif", "png", "jpg"));
+
   public MainFrame() {
     initComponents();
     setIconImage(UiUtils.loadImage("logo256x256.png"));
-    
+
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
+        boolean hasUnsaved = false;
+        for(final TabTitle t : mainPane){
+          hasUnsaved |= t.isChanged();
+        }
+        
+        if (hasUnsaved){
+          if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected non-saved docuemtns", "Detected unsaved documents! Close application?")){
+            return;
+          }
+        }
+        
         dispose();
       }
     });
 
     this.mainPane = new MainTabPane();
-    
+
     this.explorerTree = new ExplorerTree(this);
-    
+
     final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     splitPane.setOneTouchExpandable(true);
     splitPane.setDividerLocation(250);
     splitPane.setResizeWeight(0.0d);
     splitPane.setLeftComponent(this.explorerTree);
     splitPane.setRightComponent(this.mainPane);
-    
-    add(splitPane,BorderLayout.CENTER);
+
+    add(splitPane, BorderLayout.CENTER);
   }
 
   @Override
   public boolean openFileAsTab(@Nonnull final File file) {
     boolean result = false;
-    if (file.isFile() && !this.mainPane.focusToFile(file)){
+    if (file.isFile() && !this.mainPane.focusToFile(file)) {
       final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
-      if (ext.equals("mmd")){
-        try{
+      if (ext.equals("mmd")) {
+        try {
           final MMDPanel panel = new MMDPanel(this, file);
           this.mainPane.createTab(panel);
           result = true;
-        }catch(IOException ex){
+        } catch (IOException ex) {
           LOGGER.error("Can't load mind map", ex);
         }
       } else if (IMAGES_FILES.contains(ext)) {
@@ -116,6 +131,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   @Nullable
   public ProjectTree findProjectForFile(@Nonnull final File file) {
     return this.explorerTree.getCurrentGroup().findProjectForFile(file);
+  }
+
+  @Override
+  public void notifyReloadConfig() {
+    for(final TabTitle t : this.mainPane){
+      final JComponent editor = t.getProvider().getMainComponent();
+      if (editor instanceof MMDPanel){
+        ((MMDPanel)editor).refreshConfig();
+      }
+    }
   }
 
   /**
@@ -183,6 +208,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(menuSaveAs);
 
     menuSaveAll.setText("Save All");
+    menuSaveAll.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuSaveAllActionPerformed(evt);
+      }
+    });
     menuFile.add(menuSaveAll);
     menuFile.add(jSeparator1);
 
@@ -194,6 +224,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuEdit.setText("Edit");
 
     menuPreferences.setText("Preferences");
+    menuPreferences.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuPreferencesActionPerformed(evt);
+      }
+    });
     menuEdit.add(menuPreferences);
 
     jMenuBar1.add(menuEdit);
@@ -216,27 +251,71 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   }// </editor-fold>//GEN-END:initComponents
 
   private void menuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAboutActionPerformed
-    JOptionPane.showMessageDialog(Main.getApplicationFrame(), new AboutPanel(),"About",JOptionPane.PLAIN_MESSAGE);
+    JOptionPane.showMessageDialog(Main.getApplicationFrame(), new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
   }//GEN-LAST:event_menuAboutActionPerformed
 
   private void menuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenProjectActionPerformed
     final JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setFileView(new FileView() {
+      private Icon KNOWLEDGE_FOLDER_ICO = null;
+
+      @Override
+      public Icon getIcon(final File f) {
+        if (f.isDirectory()) {
+          final File knowledge = new File(f, ".projectKnowledge");
+          if (knowledge.isDirectory()) {
+            if (KNOWLEDGE_FOLDER_ICO == null) {
+              final Icon icon = UIManager.getIcon("FileView.directoryIcon");
+              if (icon != null) {
+                KNOWLEDGE_FOLDER_ICO = new ImageIcon(UiUtils.makeBadged(UiUtils.iconToImage(fileChooser, icon), Icons.MMDBADGE.getIcon().getImage()));
+              }
+            }
+            return KNOWLEDGE_FOLDER_ICO;
+          } else {
+            return super.getIcon(f);
+          }
+        } else if (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mmd")) {
+          return Icons.DOCUMENT.getIcon();
+        } else {
+          return super.getIcon(f);
+        }
+      }
+    });
     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
     fileChooser.setDialogTitle("Open project folder");
-    if (fileChooser.showOpenDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION){
+    if (fileChooser.showOpenDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       final File folder = fileChooser.getSelectedFile();
-      if (folder.isDirectory()){
+      if (folder.isDirectory()) {
         final ProjectTree alreadyOpened = findProjectForFile(folder);
-        if (alreadyOpened == null){
+        if (alreadyOpened == null) {
           this.explorerTree.getCurrentGroup().addFolder(folder);
         }
-      }else{
-        LOGGER.error("Can't find folder : "+folder);
+      } else {
+        LOGGER.error("Can't find folder : " + folder);
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't find project folder!");
       }
     }
   }//GEN-LAST:event_menuOpenProjectActionPerformed
+
+  @Override
+  public void editPreferences() {
+    final MMDConfigPanel configPanel = new MMDConfigPanel(this);
+    configPanel.load();
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Preferences", configPanel)) {
+      configPanel.save();
+    }
+  }
+
+  private void menuSaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveAllActionPerformed
+    for(final TabTitle t : this.mainPane){
+      t.getProvider().saveDocument();
+    }
+  }//GEN-LAST:event_menuSaveAllActionPerformed
+
+  private void menuPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPreferencesActionPerformed
+    editPreferences();
+  }//GEN-LAST:event_menuPreferencesActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuBar jMenuBar1;

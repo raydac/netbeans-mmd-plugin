@@ -24,10 +24,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.plaf.metal.MetalIconFactory;
+import javax.swing.UIManager;
 import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
@@ -39,9 +42,13 @@ public final class TabTitle extends JPanel {
   private volatile File associatedFile;
   private volatile boolean changed;
   private final Context context;
+  private final TabProvider parent;
   
-  public TabTitle(@Nonnull final Context context, @Nullable final File associatedFile) {
+  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadImage("nimbusCloseFrame.png"));
+  
+  public TabTitle(@Nonnull final Context context, @Nonnull final TabProvider parent, @Nullable final File associatedFile) {
     super(new GridBagLayout());
+    this.parent = parent;
     this.context = context;
     this.associatedFile = associatedFile;
     this.changed = this.associatedFile == null;
@@ -51,7 +58,10 @@ public final class TabTitle extends JPanel {
     constraints.weightx = 1000.0d;
     this.titleLabel = new JLabel();
     this.add(this.titleLabel, constraints);
-    final JButton closeButton = new JButton(MetalIconFactory.getInternalFrameCloseIcon(16));
+    
+    final Icon uiCloseIcon = UIManager.getIcon("InternalFrameTitlePane.closeIcon");
+    
+    final JButton closeButton = new JButton(uiCloseIcon == null ? NIMBUS_CLOSE_ICON : uiCloseIcon);
     closeButton.setToolTipText("Close tab");
     closeButton.setBorder(null);
     closeButton.setContentAreaFilled(false);
@@ -71,6 +81,10 @@ public final class TabTitle extends JPanel {
     updateView();
   }
 
+  public TabProvider getProvider(){
+    return this.parent;
+  }
+  
   private void processClose(){
     final boolean close = !this.changed || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Non saved file", "Close unsaved document '"+makeName()+"\'?");
     if (close) {
@@ -97,6 +111,7 @@ public final class TabTitle extends JPanel {
     return this.changed;
   }
   
+  @Nonnull
   private String makeName(){
     final File file = this.associatedFile;
     return file == null ? "Untitled" : file.getName();

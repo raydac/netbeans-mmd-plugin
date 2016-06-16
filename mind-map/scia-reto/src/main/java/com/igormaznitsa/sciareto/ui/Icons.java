@@ -19,6 +19,7 @@ import javax.annotation.Nonnull;
 import javax.swing.ImageIcon;
 
 public enum Icons {
+  MMDBADGE("mmdbadge.png"), //NOI18N
   DOCUMENT("document16.png"), //NOI18N
   EXPANDALL("toggle_expand16.png"), //NOI18N
   COLLAPSEALL("toggle16.png"), //NOI18N

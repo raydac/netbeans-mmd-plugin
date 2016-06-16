@@ -27,4 +27,5 @@ public interface TabProvider {
   @Weight(Weight.Unit.LIGHT)
   @Nonnull
   JComponent getMainComponent();
+  boolean saveDocument();
 }
