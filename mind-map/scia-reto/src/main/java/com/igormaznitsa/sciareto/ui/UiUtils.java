@@ -15,6 +15,10 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.UriEditPanel;
+import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
 import java.awt.Color;
 import java.awt.Component;
@@ -37,7 +41,6 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -84,35 +87,39 @@ public final class UiUtils {
   }
 
   @Nonnull
-  public static Image iconToImage(@Nonnull Component context, @Nonnull final Icon icon) {
-    if (icon instanceof ImageIcon) return ((ImageIcon)icon).getImage();
-    final int width = icon.getIconWidth();
-    final int height = icon.getIconHeight();
+  public static Image iconToImage(@Nonnull Component context, @Nullable final Icon icon) {
+    if (icon instanceof ImageIcon) {
+      return ((ImageIcon) icon).getImage();
+    }
+    final int width = icon == null ? 16 : icon.getIconWidth();
+    final int height = icon == null ? 16 : icon.getIconHeight();
     final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-    final Graphics g = image.getGraphics();
-    try{
-      icon.paintIcon(context, g, 0, 0);
-    }finally{
-      g.dispose();
+    if (icon != null) {
+      final Graphics g = image.getGraphics();
+      try {
+        icon.paintIcon(context, g, 0, 0);
+      } finally {
+        g.dispose();
+      }
     }
     return image;
   }
-  
+
   @Nonnull
-  public static Image makeBadged(@Nonnull final Image base, @Nonnull final Image badge){
+  public static Image makeBadged(@Nonnull final Image base, @Nonnull final Image badge) {
     final int width = Math.max(base.getWidth(null), badge.getWidth(null));
     final int height = Math.max(base.getHeight(null), badge.getHeight(null));
     final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     final Graphics gfx = result.getGraphics();
-    try{
-      gfx.drawImage(base, (width-base.getWidth(null))/2, (height - base.getHeight(null)) / 2, null);
-      gfx.drawImage(badge, width-badge.getWidth(null)-1, height - badge.getHeight(null)-1, null);
-    }finally{
+    try {
+      gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
+      gfx.drawImage(badge, width - badge.getWidth(null) - 1, height - badge.getHeight(null) - 1, null);
+    } finally {
       gfx.dispose();
     }
     return result;
   }
-  
+
   @Nullable
   public static Image loadImage(@Nonnull final String name) {
     final InputStream inStream = UiUtils.class.getClassLoader().getResourceAsStream("icons/" + name);
@@ -255,14 +262,14 @@ public final class UiUtils {
         } catch (Exception x) {
           LOGGER.error("Can't browse URL in Desktop", x);
         }
-      } else if (SystemUtils.IS_OS_LINUX){
+      } else if (SystemUtils.IS_OS_LINUX) {
         final Runtime runtime = Runtime.getRuntime();
         try {
           runtime.exec("xdg-open " + url);
         } catch (IOException e) {
           LOGGER.error("Can't browse URL under Linux", e);
         }
-      } else if (SystemUtils.IS_OS_MAC){
+      } else if (SystemUtils.IS_OS_MAC) {
         final Runtime runtime = Runtime.getRuntime();
         try {
           runtime.exec("open " + url);

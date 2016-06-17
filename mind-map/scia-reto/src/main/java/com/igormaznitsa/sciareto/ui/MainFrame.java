@@ -15,6 +15,14 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import com.igormaznitsa.sciareto.ui.tabs.MainTabPane;
+import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import com.igormaznitsa.sciareto.prefs.MMDConfigPanel;
+import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
+import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
+import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
+import com.igormaznitsa.sciareto.ui.editors.TextEditor;
+import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -50,7 +58,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private final MainTabPane mainPane;
   private final ExplorerTree explorerTree;
 
-  private final Set<String> IMAGES_FILES = new HashSet<>(Arrays.asList("gif", "png", "jpg"));
+  public static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(Arrays.asList("gif", "png", "jpg"));
 
   public MainFrame() {
     initComponents();
@@ -60,16 +68,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
         boolean hasUnsaved = false;
-        for(final TabTitle t : mainPane){
+        for (final TabTitle t : mainPane) {
           hasUnsaved |= t.isChanged();
         }
-        
-        if (hasUnsaved){
-          if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected non-saved docuemtns", "Detected unsaved documents! Close application?")){
+
+        if (hasUnsaved) {
+          if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected non-saved docuemtns", "Detected unsaved documents! Close application?")) {
             return;
           }
         }
-        
+
         dispose();
       }
     });
@@ -91,31 +99,39 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   @Override
   public boolean openFileAsTab(@Nonnull final File file) {
     boolean result = false;
-    if (file.isFile() && !this.mainPane.focusToFile(file)) {
-      final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
-      if (ext.equals("mmd")) {
-        try {
-          final MMDPanel panel = new MMDPanel(this, file);
-          this.mainPane.createTab(panel);
-          result = true;
-        } catch (IOException ex) {
-          LOGGER.error("Can't load mind map", ex);
-        }
-      } else if (IMAGES_FILES.contains(ext)) {
-        try {
-          final PicturePanel panel = new PicturePanel(this, file);
-          this.mainPane.createTab(panel);
-          result = true;
-        } catch (IOException ex) {
-          LOGGER.error("Can't load file as image", ex);
-        }
+    if (file.isFile()) {
+      if (this.mainPane.focusToFile(file)) {
+        result = true;
       } else {
-        try {
-          final TextEditPanel panel = new TextEditPanel(this, file);
-          this.mainPane.createTab(panel);
-          result = true;
-        } catch (IOException ex) {
-          LOGGER.error("Can't load file as text", ex);
+        final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
+        if (ext.equals("mmd")) {
+          try {
+            final MMDEditor panel = new MMDEditor(this, file);
+            this.mainPane.createTab(panel);
+            result = true;
+          } catch (IOException ex) {
+            LOGGER.error("Can't load mind map", ex);
+          }
+        } else if (IMAGE_EXTENSIONS.contains(ext)) {
+          try {
+            final PictureViewer panel = new PictureViewer(this, file);
+            this.mainPane.createTab(panel);
+            result = true;
+          } catch (IOException ex) {
+            LOGGER.error("Can't load file as image", ex);
+          }
+        } else {
+          if (file.length() >= (1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Very big file", "It is very big file! Are you sure to open it?")) {
+            return true;
+          }
+
+          try {
+            final TextEditor panel = new TextEditor(this, file);
+            this.mainPane.createTab(panel);
+            result = true;
+          } catch (IOException ex) {
+            LOGGER.error("Can't load file as text", ex);
+          }
         }
       }
     }
@@ -135,10 +151,22 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   @Override
   public void notifyReloadConfig() {
-    for(final TabTitle t : this.mainPane){
+    for (final TabTitle t : this.mainPane) {
       final JComponent editor = t.getProvider().getMainComponent();
-      if (editor instanceof MMDPanel){
-        ((MMDPanel)editor).refreshConfig();
+      if (editor instanceof MMDEditor) {
+        ((MMDEditor) editor).refreshConfig();
+      }
+    }
+  }
+
+  @Override
+  public void onCloseProject(@Nonnull final ProjectTree project) {
+    final File projectFolder = project.getFile();
+    if (projectFolder != null) {
+      for (final TabTitle t : this.mainPane) {
+        if (t.belongFolder(projectFolder)) {
+          t.doSafeClose();
+        }
       }
     }
   }
@@ -195,6 +223,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(menuOpenRecentProject);
 
     menuOpenFile.setText("Open File");
+    menuOpenFile.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuOpenFileActionPerformed(evt);
+      }
+    });
     menuFile.add(menuOpenFile);
 
     menuOpenRecentFile.setText("Open Recent File");
@@ -289,7 +322,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       if (folder.isDirectory()) {
         final ProjectTree alreadyOpened = findProjectForFile(folder);
         if (alreadyOpened == null) {
-          this.explorerTree.getCurrentGroup().addFolder(folder);
+          this.explorerTree.getCurrentGroup().addProjectFolder(folder);
         }
       } else {
         LOGGER.error("Can't find folder : " + folder);
@@ -308,7 +341,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   }
 
   private void menuSaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveAllActionPerformed
-    for(final TabTitle t : this.mainPane){
+    for (final TabTitle t : this.mainPane) {
       t.getProvider().saveDocument();
     }
   }//GEN-LAST:event_menuSaveAllActionPerformed
@@ -316,6 +349,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private void menuPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPreferencesActionPerformed
     editPreferences();
   }//GEN-LAST:event_menuPreferencesActionPerformed
+
+  private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
+    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("open-file", "Open file", null, true, new MMDEditor.MMDFileFilter(), "Open");
+    if (file != null) {
+      openFileAsTab(file);
+    }
+  }//GEN-LAST:event_menuOpenFileActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuBar jMenuBar1;

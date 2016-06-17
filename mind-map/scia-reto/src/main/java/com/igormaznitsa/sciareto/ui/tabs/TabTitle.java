@@ -1,0 +1,197 @@
+/*
+ * Copyright 2016 Igor Maznitsa.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.igormaznitsa.sciareto.ui.tabs;
+
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.igormaznitsa.mindmap.model.nio.Paths;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.UiUtils;
+
+public final class TabTitle extends JPanel {
+
+  private static final long serialVersionUID = -6534083975320248288L;
+  private final JLabel titleLabel;
+  private final JButton closeButton;
+  private volatile File associatedFile;
+  private volatile boolean changed;
+  private final Context context;
+  private final TabProvider parent;
+
+  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadImage("nimbusCloseFrame.png"));
+
+  public TabTitle(@Nonnull final Context context, @Nonnull final TabProvider parent, @Nullable final File associatedFile) {
+    super(new GridBagLayout());
+    this.parent = parent;
+    this.context = context;
+    this.associatedFile = associatedFile;
+    this.changed = this.associatedFile == null;
+    this.setOpaque(false);
+    final GridBagConstraints constraints = new GridBagConstraints();
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.weightx = 1000.0d;
+
+    final TabTitle theInstance = this;
+
+    this.titleLabel = new JLabel() {
+      
+      @Override
+      protected void processKeyEvent(@Nonnull final KeyEvent e) {
+        theInstance.getParent().dispatchEvent(e);
+      }
+      
+      @Override
+      public String getToolTipText() {
+        return theInstance.getToolTipText();
+      }
+      
+      @Override
+      public boolean isFocusable(){
+        return false;
+      }
+    };
+    this.add(this.titleLabel, constraints);
+    
+    final Icon uiCloseIcon = UIManager.getIcon("InternalFrameTitlePane.closeIcon");
+
+    this.closeButton = new JButton(uiCloseIcon == null ? NIMBUS_CLOSE_ICON : uiCloseIcon) {
+      @Override
+      public String getToolTipText() {
+        return theInstance.getToolTipText();
+      }
+      @Override
+      public boolean isFocusable() {
+        return false;
+      }
+    };
+    this.closeButton.setToolTipText("Close tab");
+    this.closeButton.setBorder(null);
+    this.closeButton.setContentAreaFilled(false);
+    this.closeButton.setMargin(new Insets(0, 0, 0, 0));
+    this.closeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    this.closeButton.setOpaque(false);
+    this.closeButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        doSafeClose();
+      }
+    });
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.weightx = 0.0d;
+    constraints.insets = new Insets(2, 8, 2, 0);
+
+    this.add(this.closeButton, constraints);
+
+    updateView();
+
+    ToolTipManager.sharedInstance().registerComponent(closeButton);
+    ToolTipManager.sharedInstance().registerComponent(this.titleLabel);
+    ToolTipManager.sharedInstance().registerComponent(this);
+  }
+
+  @Override
+  public boolean contains(int x, int y) {
+    return this.closeButton.getBounds().contains(x, y);
+  }
+
+  
+  @Override
+  public boolean isFocusable() {
+    return false;
+  }
+
+  @Override
+  @Nullable
+  public String getToolTipText() {
+    return this.associatedFile == null ? null : this.associatedFile.getAbsolutePath();
+  }
+
+  public boolean belongFolder(@Nonnull final File folder) {
+    boolean result = false;
+    if (this.associatedFile != null) {
+      return Paths.toPath(this.associatedFile).startsWith(Paths.toPath(folder));
+    }
+    return result;
+  }
+
+  @Nonnull
+  public TabProvider getProvider() {
+    return this.parent;
+  }
+
+  public void doSafeClose() {
+    final boolean close = !this.changed || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Non saved file", "Close unsaved document '" + makeName() + "\'?");
+    if (close) {
+      this.context.closeTab(this);
+    }
+  }
+
+  @Nullable
+  public File getAssociatedFile() {
+    return this.associatedFile;
+  }
+
+  public void setAssociatedFile(@Nullable final File file) {
+    this.associatedFile = file;
+    updateView();
+  }
+
+  public void setChanged(final boolean flag) {
+    this.changed = flag;
+    updateView();
+  }
+
+  public boolean isChanged() {
+    return this.changed;
+  }
+
+  @Nonnull
+  private String makeName() {
+    final File file = this.associatedFile;
+    return file == null ? "Untitled" : file.getName();
+  }
+
+  private void updateView() {
+    Utils.safeSwingCall(new Runnable() {
+      @Override
+      public void run() {
+        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml(makeName()) + (changed ? "</u></b>" : "") + "</html>");
+        revalidate();
+      }
+    });
+  }
+
+}

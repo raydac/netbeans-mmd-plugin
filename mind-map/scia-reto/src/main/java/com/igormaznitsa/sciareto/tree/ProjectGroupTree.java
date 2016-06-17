@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import com.igormaznitsa.mindmap.model.nio.Path;
@@ -49,39 +50,29 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
     return result;
   }
 
-  public void remove(@Nonnull final ProjectTree project){
-    if (this.children.remove(project)){
-      final ProjectGroupTree theInstance = this;
-      Utils.safeSwingCall(new Runnable() {
-        @Override
-        public void run() {
-          final TreeModelEvent event = new TreeModelEvent(theInstance, new Object[]{theInstance, project});
+  public void removeProject(@Nonnull final ProjectTree project) {
+    int index = this.children.indexOf(project);
+    if (index>=0 && this.children.remove(project)) {
+        final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this},new int[]{index},new Object[]{project});
           for (final TreeModelListener l : listeners) {
             l.treeNodesRemoved(event);
           }
         }
-      });
-    }
   }
-  
+
   @Nonnull
-  public ProjectTree addFolder(@Nonnull final File folder) {
+  public ProjectTree addProjectFolder(@Nonnull final File folder) {
     ProjectTree newProject = findForFolder(folder);
     if (newProject == null) {
       newProject = new ProjectTree(this, folder);
-      
-      this.children.add(newProject);
-      final ProjectGroupTree theInstance = this;
 
-      Utils.safeSwingCall(new Runnable() {
-        @Override
-        public void run() {
-          final TreeModelEvent event = new TreeModelEvent(theInstance, new Object[]{theInstance});
-          for (final TreeModelListener l : listeners) {
-            l.treeStructureChanged(event);
-          }
-        }
-      });
+      final int index = this.children.size();
+      this.children.add(newProject);
+
+      final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this}, new int []{index}, new Object[]{newProject});
+      for (final TreeModelListener l : listeners) {
+        l.treeNodesInserted(event);
+      }
     }
     return newProject;
   }
@@ -100,7 +91,7 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
 
   @Override
   public int getChildCount(@Nonnull final Object parent) {
-    return ((FileTreeNode)parent).getChildCount();
+    return ((FileTreeNode) parent).getChildCount();
   }
 
   @Override
@@ -129,14 +120,14 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
   }
 
   @Nullable
-  public ProjectTree findProjectForFile(@Nonnull final File file){
+  public ProjectTree findProjectForFile(@Nonnull final File file) {
     final Path filepath = Paths.toPath(file);
-    for(final FileTreeNode t : this.children){
-      if (t.getFile()!=null && filepath.startsWith(Paths.toPath(t.getFile()))){
-        return (ProjectTree)t;
+    for (final FileTreeNode t : this.children) {
+      if (t.getFile() != null && filepath.startsWith(Paths.toPath(t.getFile()))) {
+        return (ProjectTree) t;
       }
     }
     return null;
   }
-  
+
 }

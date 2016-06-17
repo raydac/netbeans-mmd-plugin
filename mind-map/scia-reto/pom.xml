@@ -177,6 +177,9 @@
             <ignore>*.MainFrame</ignore>
             <ignore>*.MindMapTreePanel</ignore>
             <ignore>*.AboutPanel</ignore>
+            <ignore>*.FontSelector</ignore>
+            <ignore>*.KeyShortCutEditPanel</ignore>
+            <ignore>*.MMDConfigPanel</ignore>
           </ignoreClasses>
         </configuration>
         <executions>

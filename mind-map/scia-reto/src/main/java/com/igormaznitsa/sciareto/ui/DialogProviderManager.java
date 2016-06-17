@@ -16,6 +16,9 @@
 package com.igormaznitsa.sciareto.ui;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -26,6 +29,8 @@ import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.sciareto.Main;
 
 public final class DialogProviderManager {
+  
+  private static final Map<String,File> CACHE_ID_FILE = Collections.synchronizedMap(new HashMap<String, File>());
   
   private static final DialogProviderManager INSTANCE = new DialogProviderManager();
   private static final DialogProvider PROVIDER = new DialogProvider() {
@@ -73,7 +78,14 @@ public final class DialogProviderManager {
     @Override
     @Nullable
     public File msgSaveFileDialog(@Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
-      final JFileChooser fileChooser = new JFileChooser(defaultFolder);
+      final File folderToUse;
+      if (defaultFolder == null){
+        folderToUse = CACHE_ID_FILE.get(id);
+      } else {
+        folderToUse = defaultFolder;
+      }
+
+      final JFileChooser fileChooser = new JFileChooser(folderToUse);
       fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
       fileChooser.setDialogTitle(title);
       fileChooser.setApproveButtonText(approveButtonText);
@@ -84,6 +96,9 @@ public final class DialogProviderManager {
       File result = null;
       if (fileChooser.showDialog(Main.getApplicationFrame(), approveButtonText) == JFileChooser.APPROVE_OPTION){
         result = fileChooser.getSelectedFile();
+        if(result!=null){
+          CACHE_ID_FILE.put(id, result);
+        }
       }
       
       return result;
@@ -92,7 +107,14 @@ public final class DialogProviderManager {
     @Override
     @Nullable
     public File msgOpenFileDialog(@Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText) {
-      final JFileChooser fileChooser = new JFileChooser(defaultFolder);
+      final File folderToUse;
+      if (defaultFolder == null) {
+        folderToUse = CACHE_ID_FILE.get(id);
+      } else {
+        folderToUse = defaultFolder;
+      }
+
+      final JFileChooser fileChooser = new JFileChooser(folderToUse);
       fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
       fileChooser.setDialogTitle(title);
       fileChooser.setApproveButtonText(approveButtonText);
@@ -103,6 +125,9 @@ public final class DialogProviderManager {
       File result = null;
       if (fileChooser.showDialog(Main.getApplicationFrame(), approveButtonText) == JFileChooser.APPROVE_OPTION) {
         result = fileChooser.getSelectedFile();
+        if (result != null) {
+          CACHE_ID_FILE.put(id, result);
+        }
       }
 
       return result;

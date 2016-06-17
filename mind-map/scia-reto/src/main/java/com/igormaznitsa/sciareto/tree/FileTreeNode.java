@@ -16,10 +16,7 @@
 package com.igormaznitsa.sciareto.tree;
 
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -29,7 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.tree.TreeNode;
 
-public class FileTreeNode implements TreeNode, Transferable {
+public class FileTreeNode implements TreeNode {
 
   protected final FileTreeNode parent;
   protected final File file;
@@ -64,25 +61,6 @@ public class FileTreeNode implements TreeNode, Transferable {
     return this.file;
   }
 
-  @Override
-  public DataFlavor[] getTransferDataFlavors() {
-    return new DataFlavor[]{DataFlavor.javaFileListFlavor};
-  }
-
-  @Override
-  public boolean isDataFlavorSupported(final DataFlavor flavor) {
-    return DataFlavor.javaFileListFlavor.equals(flavor);
-  }
-
-  @Override
-  public Object getTransferData(final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-    if (isDataFlavorSupported(flavor)){
-      return this;
-    } else {
-      throw new UnsupportedFlavorException(flavor);
-    }
-  }
-  
   protected final void refresh(final boolean deepRefresh){
     if (this.file != null && this.folder){
       this.children.clear();
