@@ -252,7 +252,6 @@ public final class UiUtils {
     showURLExternal(url);
   }
 
-  @ToDo
   private static void showURLExternal(@Nonnull final URL url) {
     if (Desktop.isDesktopSupported()) {
       final Desktop desktop = Desktop.getDesktop();

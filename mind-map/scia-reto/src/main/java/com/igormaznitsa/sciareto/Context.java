@@ -24,17 +24,25 @@ import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
 public interface Context {
 
-  public void notifyReloadConfig();
-
-
   @Nullable
   NodeProject findProjectForFile(@Nonnull File file);
+
   boolean openFileAsTab(@Nonnull File file);
+
   boolean openProject(@Nonnull File folder, boolean enforceSeparatedItem);
-  void closeTab(@Nonnull @MustNotContainNull TabTitle ... title);
+
+  void closeTab(@Nonnull @MustNotContainNull TabTitle... title);
+
   void editPreferences();
+
   void onCloseProject(@Nonnull final NodeProject project);
+
   void focusInTree(@Nonnull TabTitle title);
+
   void focusInTree(@Nonnull File file);
+
+  @Nullable
   File createMindMapFile(@Nonnull File folder);
+
+  void notifyReloadConfig();
 }

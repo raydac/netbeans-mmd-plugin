@@ -296,7 +296,6 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     });
   }
 
-  @ToDo
   @Override
   public void onClickOnExtra(@Nonnull final MindMapPanel source, final int clicks, @Nonnull final Topic topic, @Nonnull final Extra<?> extra) {
     if (clicks > 1) {
@@ -441,7 +440,6 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
   }
 
   @Nullable
-  @ToDo
   private File getProjectFolder() {
     File result = null;
     final File associatedFile = this.title.getAssociatedFile();
@@ -590,12 +588,10 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     }
   }
 
-  @ToDo
   private void showAbout() {
     JOptionPane.showMessageDialog(Main.getApplicationFrame(), new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
   }
 
-  @ToDo
   private void startOptionsEdit() {
     this.context.editPreferences();
   }
