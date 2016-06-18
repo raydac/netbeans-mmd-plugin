@@ -660,7 +660,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
     final GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     if (currentComponent instanceof Container && device.isFullScreenSupported()) {
-      final JLabel label = new JLabel("In full screen");
+      final JLabel label = new JLabel("Opened in full screen");
       final int tabIndex = this.tabPane.getSelectedIndex();
       this.tabPane.setComponentAt(tabIndex,label);
       final JWindow window = new JWindow(Main.getApplicationFrame());
