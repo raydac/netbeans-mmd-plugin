@@ -81,7 +81,7 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
   }
 
   @Nullable
-  public Component getCurrentComponent() {
+  public Component getSelectedComponent() {
     final int index = this.getSelectedIndex();
     if (index<0) {
       return null;

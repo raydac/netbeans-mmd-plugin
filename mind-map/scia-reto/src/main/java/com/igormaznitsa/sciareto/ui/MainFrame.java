@@ -656,7 +656,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   }//GEN-LAST:event_menuNewFileActionPerformed
 
   private void menuFullScreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFullScreenActionPerformed
-    final Component currentComponent = this.tabPane.getCurrentComponent();
+    final Component currentComponent = this.tabPane.getSelectedComponent();
 
     final GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     if (currentComponent instanceof Container && device.isFullScreenSupported()) {
