@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -71,6 +72,12 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
     });
   }
 
+  @Nullable
+  public TabTitle getCurrentTitle(){
+    final int index = this.getSelectedIndex();
+    return index<0 ? null : (TabTitle)this.getTabComponentAt(index);
+  }
+  
   @Nonnull
   private JPopupMenu makePopupMenu() {
     final MainTabPane theInstance = this;

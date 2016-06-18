@@ -30,6 +30,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +47,9 @@ import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileView;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
@@ -337,12 +340,23 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.setText("File");
 
     menuNewProject.setText("New Project");
+    menuNewProject.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuNewProjectActionPerformed(evt);
+      }
+    });
     menuFile.add(menuNewProject);
 
     menuNewFile.setText("New File");
+    menuNewFile.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuNewFileActionPerformed(evt);
+      }
+    });
     menuFile.add(menuNewFile);
     menuFile.add(jSeparator2);
 
+    menuOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
     menuOpenProject.setText("Open Project");
     menuOpenProject.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -382,6 +396,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     });
     menuFile.add(menuSaveAs);
 
+    menuSaveAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
     menuSaveAll.setText("Save All");
     menuSaveAll.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -391,6 +406,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(menuSaveAll);
     menuFile.add(jSeparator1);
 
+    menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
     menuExit.setText("Exit");
     menuExit.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -544,6 +560,76 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       dispose();
     }
   }//GEN-LAST:event_menuExitActionPerformed
+
+  private void menuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewProjectActionPerformed
+    final JFileChooser folder = new JFileChooser();
+    folder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    folder.setDialogTitle("Create project folder");
+    folder.setApproveButtonText("Create");
+    folder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    if (folder.showOpenDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
+      final File file = folder.getSelectedFile();
+      if (file.exists()) {
+        DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file.getName() + "' already exists!");
+      } else if (file.mkdirs()) {
+        final File knowledgeFolder = new File(file,".projectKnowledge");
+        knowledgeFolder.mkdirs();
+        if (openProject(file, true)) {
+          this.focusInTree(file);
+        }
+      } else {
+        LOGGER.error("Can't create folder : " + file);
+        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create folder: " + file);
+      }
+    }
+  }//GEN-LAST:event_menuNewProjectActionPerformed
+
+  private void menuNewFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewFileActionPerformed
+    final TabTitle current = this.tabPane.getCurrentTitle();
+    if (current != null) {
+      final NodeProject project = findProjectForFile(current.getAssociatedFile());
+      final File folder = project == null ? null : project.getFile();
+      createMindMapFile(folder);
+    } else {
+      final File created = createMindMapFile(null);
+      if (created!=null && openFileAsTab(created)){
+        
+      }
+    }
+  }//GEN-LAST:event_menuNewFileActionPerformed
+
+  @Nullable
+  @Override
+  public File createMindMapFile(@Nullable final File folder) {
+    final JFileChooser chooser = new JFileChooser(folder);
+    chooser.setDialogTitle("Create new Mind Map");
+    chooser.setFileFilter(MMDEditor.MMD_FILE_FILTER);
+    chooser.setMultiSelectionEnabled(false);
+    chooser.setApproveButtonText("Create");
+    
+    File result = null;
+    
+    if (chooser.showSaveDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
+      File file = chooser.getSelectedFile();
+      if (!file.getName().endsWith(".mmd")) {
+        file = new File(file.getAbsolutePath()+".mmd");
+      }
+
+      if (file.exists()) {
+        DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file + "' already exists!");
+      } else {
+        try {
+          final MindMap mindMap = new MindMap(null, true);
+          final String text = mindMap.write(new StringWriter()).toString();
+          FileUtils.write(file, text, "UTF-8");
+          result = file;
+        } catch (IOException ex) {
+          DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save mind map into file '" + file.getName() + "'");
+        }
+      }
+    }
+    return result;
+  }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuBar jMenuBar1;

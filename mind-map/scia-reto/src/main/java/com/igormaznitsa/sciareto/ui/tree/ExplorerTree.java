@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
-import com.igormaznitsa.sciareto.ui.tree.TreeCellRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -154,9 +153,24 @@ public final class ExplorerTree extends JScrollPane {
         }
       });
       result.add(refresh);
-    } else {
-      
     }
+    
+    if (!node.isLeaf()){
+      final JMenuItem item  = new JMenuItem("New mind map");
+      item.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          final File newfile = context.createMindMapFile(node.getFile());
+          if (newfile!=null){
+            getCurrentGroup().refreshProjectFolder(context.findProjectForFile(node.getFile()));
+            context.openFileAsTab(newfile);
+            context.focusInTree(newfile);
+          }
+        }
+      });
+      result.add(item);
+    }
+    
     return result;
   }
 

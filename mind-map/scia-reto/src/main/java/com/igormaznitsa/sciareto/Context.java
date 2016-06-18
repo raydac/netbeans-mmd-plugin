@@ -36,4 +36,5 @@ public interface Context {
   void onCloseProject(@Nonnull final NodeProject project);
   void focusInTree(@Nonnull TabTitle title);
   void focusInTree(@Nonnull File file);
+  File createMindMapFile(@Nonnull File folder);
 }
