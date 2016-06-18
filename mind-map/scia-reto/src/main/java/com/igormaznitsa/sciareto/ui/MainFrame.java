@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import java.awt.AWTEvent;
 import com.igormaznitsa.sciareto.ui.tabs.MainTabPane;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
@@ -24,8 +25,19 @@ import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.editors.TextEditor;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -40,9 +52,12 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
+import javax.swing.JWindow;
 import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
@@ -58,6 +73,7 @@ import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import javafx.scene.layout.TilePane;
 
 public final class MainFrame extends javax.swing.JFrame implements Context {
 
@@ -69,13 +85,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private final ExplorerTree explorerTree;
 
   private final boolean stateless;
-  
-  public MainFrame(@Nonnull @MustNotContainNull final String ... args) {
+
+  public MainFrame(@Nonnull @MustNotContainNull final String... args) {
     initComponents();
     setIconImage(UiUtils.loadImage("logo256x256.png"));
 
     this.stateless = args.length > 0;
-    
+
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
@@ -156,16 +172,21 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     });
 
-    if (!this.stateless){
+    if (!this.stateless) {
       restoreState();
     } else {
-      for(final String filePath : args){
+      boolean openedProject = false;
+      for (final String filePath : args) {
         final File file = new File(filePath);
-        if (file.isDirectory()){
+        if (file.isDirectory()) {
+          openedProject = true;
           openProject(file, true);
-        } else if (file.isFile()){
+        } else if (file.isFile()) {
           openFileAsTab(file);
         }
+      }
+      if (!openedProject) {
+        //TODO try to hide project panel!
       }
     }
   }
@@ -182,7 +203,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     }
 
-    if (!this.stateless){
+    if (!this.stateless) {
       saveState();
     }
     return true;
@@ -350,6 +371,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuExit = new javax.swing.JMenuItem();
     menuEdit = new javax.swing.JMenu();
     menuPreferences = new javax.swing.JMenuItem();
+    menuView = new javax.swing.JMenu();
+    menuFullScreen = new javax.swing.JMenuItem();
     menuHelp = new javax.swing.JMenu();
     menuAbout = new javax.swing.JMenuItem();
 
@@ -447,6 +470,19 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuEdit.add(menuPreferences);
 
     jMenuBar1.add(menuEdit);
+
+    menuView.setText("View");
+
+    menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
+    menuFullScreen.setText("Full screen");
+    menuFullScreen.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuFullScreenActionPerformed(evt);
+      }
+    });
+    menuView.add(menuFullScreen);
+
+    jMenuBar1.add(menuView);
 
     menuHelp.setText("Help");
 
@@ -591,8 +627,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       if (file.exists()) {
         DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file.getName() + "' already exists!");
       } else if (file.mkdirs()) {
-        if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true)){
-          final File knowledgeFolder = new File(file,".projectKnowledge");
+        if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true)) {
+          final File knowledgeFolder = new File(file, ".projectKnowledge");
           knowledgeFolder.mkdirs();
         }
         if (openProject(file, true)) {
@@ -613,11 +649,44 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       createMindMapFile(folder);
     } else {
       final File created = createMindMapFile(null);
-      if (created!=null && openFileAsTab(created)){
-        
+      if (created != null && openFileAsTab(created)) {
+
       }
     }
   }//GEN-LAST:event_menuNewFileActionPerformed
+
+  private void menuFullScreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFullScreenActionPerformed
+    final Component currentComponent = this.tabPane.getCurrentComponent();
+
+    final GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    if (currentComponent instanceof Container && device.isFullScreenSupported()) {
+      final JLabel label = new JLabel("In full screen");
+      final int tabIndex = this.tabPane.getSelectedIndex();
+      this.tabPane.setComponentAt(tabIndex,label);
+      final JWindow window = new JWindow(Main.getApplicationFrame());
+      window.setAlwaysOnTop(true);
+      window.setContentPane((Container)currentComponent);
+      final KeyEventDispatcher fullScreenEscCatcher = new KeyEventDispatcher() {
+        @Override
+        public boolean dispatchKeyEvent(@Nonnull final KeyEvent e) {
+          if (e.getID() == KeyEvent.KEY_PRESSED && (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_F11)) {
+            try {
+              window.dispose();
+            } finally {
+              tabPane.setComponentAt(tabIndex, currentComponent);
+              device.setFullScreenWindow(null);
+              KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this);
+            }
+            return true;
+          }
+          return false;
+        }
+      };
+
+      KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(fullScreenEscCatcher);
+      device.setFullScreenWindow(window);
+    }
+  }//GEN-LAST:event_menuFullScreenActionPerformed
 
   @Nullable
   @Override
@@ -627,13 +696,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     chooser.setFileFilter(MMDEditor.MMD_FILE_FILTER);
     chooser.setMultiSelectionEnabled(false);
     chooser.setApproveButtonText("Create");
-    
+
     File result = null;
-    
+
     if (chooser.showSaveDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       File file = chooser.getSelectedFile();
       if (!file.getName().endsWith(".mmd")) {
-        file = new File(file.getAbsolutePath()+".mmd");
+        file = new File(file.getAbsolutePath() + ".mmd");
       }
 
       if (file.exists()) {
@@ -662,6 +731,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private javax.swing.JMenu menuEdit;
   private javax.swing.JMenuItem menuExit;
   private javax.swing.JMenu menuFile;
+  private javax.swing.JMenuItem menuFullScreen;
   private javax.swing.JMenu menuHelp;
   private javax.swing.JMenuItem menuNewFile;
   private javax.swing.JMenuItem menuNewProject;
@@ -672,5 +742,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private javax.swing.JMenuItem menuPreferences;
   private javax.swing.JMenuItem menuSaveAll;
   private javax.swing.JMenuItem menuSaveAs;
+  private javax.swing.JMenu menuView;
   // End of variables declaration//GEN-END:variables
 }

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tabs;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -25,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -76,6 +78,16 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
   public TabTitle getCurrentTitle(){
     final int index = this.getSelectedIndex();
     return index<0 ? null : (TabTitle)this.getTabComponentAt(index);
+  }
+
+  @Nullable
+  public Component getCurrentComponent() {
+    final int index = this.getSelectedIndex();
+    if (index<0) {
+      return null;
+    } else {
+      return this.getComponentAt(index);
+    }
   }
   
   @Nonnull
