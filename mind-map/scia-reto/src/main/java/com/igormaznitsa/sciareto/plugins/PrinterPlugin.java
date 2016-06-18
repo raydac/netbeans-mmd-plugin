@@ -90,7 +90,6 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
     return CUSTOM_PLUGIN_START + 100;
   }
 
-  @ToDo
   @Override
   public void startBackgroundTask(@Nonnull final MMDPrintPanel source, @Nonnull final String name, @Nonnull final Runnable task) {
     LOGGER.info("Starting print task : "+name);
