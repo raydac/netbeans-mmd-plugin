@@ -49,12 +49,14 @@ import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileView;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
 public final class MainFrame extends javax.swing.JFrame implements Context {
@@ -66,10 +68,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private final MainTabPane tabPane;
   private final ExplorerTree explorerTree;
 
-  public MainFrame() {
+  private final boolean stateless;
+  
+  public MainFrame(@Nonnull @MustNotContainNull final String ... args) {
     initComponents();
     setIconImage(UiUtils.loadImage("logo256x256.png"));
 
+    this.stateless = args.length > 0;
+    
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
@@ -150,7 +156,18 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     });
 
-    restoreState();
+    if (!this.stateless){
+      restoreState();
+    } else {
+      for(final String filePath : args){
+        final File file = new File(filePath);
+        if (file.isDirectory()){
+          openProject(file, true);
+        } else if (file.isFile()){
+          openFileAsTab(file);
+        }
+      }
+    }
   }
 
   private boolean doClosing() {
@@ -165,7 +182,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     }
 
-    saveState();
+    if (!this.stateless){
+      saveState();
+    }
     return true;
   }
 
@@ -572,8 +591,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       if (file.exists()) {
         DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file.getName() + "' already exists!");
       } else if (file.mkdirs()) {
-        final File knowledgeFolder = new File(file,".projectKnowledge");
-        knowledgeFolder.mkdirs();
+        if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true)){
+          final File knowledgeFolder = new File(file,".projectKnowledge");
+          knowledgeFolder.mkdirs();
+        }
         if (openProject(file, true)) {
           this.focusInTree(file);
         }

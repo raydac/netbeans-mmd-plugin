@@ -56,7 +56,7 @@ public class Main {
         final int height = gd.getDisplayMode().getHeight();
 
         MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
-        MAIN_FRAME = new MainFrame();
+        MAIN_FRAME = new MainFrame(args);
         MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
 
         MAIN_FRAME.setVisible(true);
