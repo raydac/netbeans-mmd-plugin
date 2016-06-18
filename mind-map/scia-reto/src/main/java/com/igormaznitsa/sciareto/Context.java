@@ -18,15 +18,18 @@ package com.igormaznitsa.sciareto;
 import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.sciareto.tree.ProjectTree;
+import com.igormaznitsa.sciareto.ui.tree.ProjectTree;
+import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
 public interface Context {
 
   public void notifyReloadConfig();
+
   @Nullable
   ProjectTree findProjectForFile(@Nonnull File file);
   boolean openFileAsTab(@Nonnull File file);
   void closeTab(@Nonnull com.igormaznitsa.sciareto.ui.tabs.TabTitle title);
   void editPreferences();
   void onCloseProject(@Nonnull final ProjectTree project);
+  void focusInTree(@Nonnull TabTitle title);
 }

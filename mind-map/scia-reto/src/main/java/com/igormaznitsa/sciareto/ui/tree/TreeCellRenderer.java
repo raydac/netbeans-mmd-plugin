@@ -27,8 +27,6 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.apache.commons.io.FilenameUtils;
-import com.igormaznitsa.sciareto.tree.FileTreeNode;
-import com.igormaznitsa.sciareto.tree.ProjectTree;
 import com.igormaznitsa.sciareto.ui.Icons;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;

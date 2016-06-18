@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.sciareto.tree;
+package com.igormaznitsa.sciareto.ui.tree;
 
 import java.io.File;
 import javax.annotation.Nonnull;

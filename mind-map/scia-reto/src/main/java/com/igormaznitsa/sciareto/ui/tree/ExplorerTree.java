@@ -31,9 +31,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.tree.TreePath;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.tree.FileTreeNode;
-import com.igormaznitsa.sciareto.tree.ProjectGroupTree;
-import com.igormaznitsa.sciareto.tree.ProjectTree;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public final class ExplorerTree extends JScrollPane {
@@ -127,6 +124,14 @@ public final class ExplorerTree extends JScrollPane {
   public void сloseProject(@Nonnull final ProjectTree tree){
     ((ProjectGroupTree)this.projectTree.getModel()).removeProject(tree);
     this.context.onCloseProject(tree);
+  }
+
+  public void focusToFileItem(@Nonnull final File file) {
+    final ProjectGroupTree group = getCurrentGroup();
+    final TreePath pathToFile = group.findPathToFile(file);
+    if (pathToFile!=null){
+      this.projectTree.setSelectionPath(pathToFile);
+    }
   }
   
   @Nullable

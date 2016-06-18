@@ -15,25 +15,86 @@
  */
 package com.igormaznitsa.sciareto.ui.tabs;
 
-import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
-import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import com.igormaznitsa.sciareto.Context;
 
-public class MainTabPane extends JTabbedPane implements Iterable<TabTitle>{
-  
+public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
+
   private static final long serialVersionUID = -8971773653667281550L;
+
+  private final Context context;
   
-  public MainTabPane(){
+  public MainTabPane(@Nonnull final Context context) {
     super(JTabbedPane.TOP);
+    this.context = context;
+    this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+    this.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        processPopup(e);
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+        processPopup(e);
+      }
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        processPopup(e);
+      }
+
+      private void processPopup(@Nonnull final MouseEvent e) {
+        if (e.isPopupTrigger()) {
+          final JPopupMenu menu = makePopupMenu();
+          if (menu != null) {
+            menu.show(e.getComponent(), e.getX(), e.getY());
+            e.consume();
+          }
+        }
+      }
+    });
   }
 
-  public void createTab(@Nonnull final TabProvider panel){
+  private JPopupMenu makePopupMenu() {
+    final int selected = this.getSelectedIndex();
+    JPopupMenu result = null;
+    if (selected >= 0) {
+      final TabTitle title = (TabTitle) this.getTabComponentAt(selected);
+      result = new JPopupMenu();
+      final JMenuItem closeItem = new JMenuItem("Close");
+      closeItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          title.doSafeClose();
+        }
+      });
+      result.add(closeItem);
+      final JMenuItem showInTree = new JMenuItem("Show in tree");
+      showInTree.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          context.focusInTree(title);
+        }
+      });
+      result.add(showInTree);
+    }
+    return result;
+  }
+
+  public void createTab(@Nonnull final TabProvider panel) {
     super.addTab("...", panel.getMainComponent());
     final int count = this.getTabCount() - 1;
     this.setTabComponentAt(count, panel.getTabTitle());
@@ -45,11 +106,11 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle>{
     });
     this.setSelectedIndex(count);
   }
-  
+
   public boolean focusToFile(@Nonnull final File file) {
-    for (int i=0;i<this.getTabCount();i++){
-      final TabTitle title = (TabTitle)this.getTabComponentAt(i);
-      if (file.equals(title.getAssociatedFile())){
+    for (int i = 0; i < this.getTabCount(); i++) {
+      final TabTitle title = (TabTitle) this.getTabComponentAt(i);
+      if (file.equals(title.getAssociatedFile())) {
         this.setSelectedIndex(i);
         return true;
       }
@@ -65,7 +126,7 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle>{
         break;
       }
     }
-    if (index>=0){
+    if (index >= 0) {
       this.removeTabAt(index);
       return true;
     }
@@ -76,24 +137,24 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle>{
   @Nonnull
   public Iterator<TabTitle> iterator() {
     final List<TabTitle> result = new ArrayList<>();
-    for(int i=0;i<this.getTabCount();i++){
-      result.add((TabTitle)this.getTabComponentAt(i));
+    for (int i = 0; i < this.getTabCount(); i++) {
+      result.add((TabTitle) this.getTabComponentAt(i));
     }
     return result.iterator();
   }
-  
-  private void clickToClose(@Nonnull final TabProvider provider){
+
+  private void clickToClose(@Nonnull final TabProvider provider) {
     int index = -1;
-    for(int i=0;i<this.getTabCount();i++){
+    for (int i = 0; i < this.getTabCount(); i++) {
       if (this.getTabComponentAt(i) == provider.getMainComponent()) {
         index = i;
         break;
       }
     }
-    
-    if (index >= 0){
+
+    if (index >= 0) {
       this.removeTabAt(index);
     }
   }
-  
+
 }

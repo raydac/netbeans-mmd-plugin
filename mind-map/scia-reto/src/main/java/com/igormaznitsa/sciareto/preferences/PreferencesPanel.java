@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.sciareto.prefs;
+package com.igormaznitsa.sciareto.preferences;
 
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.KeyShortCutEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FontSelector;
@@ -35,11 +35,11 @@ import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 
-public final class MMDConfigPanel extends javax.swing.JPanel {
+public final class PreferencesPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -1090601330630026253L;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MMDConfigPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesPanel.class);
 
   private volatile boolean changeNotificationAllowed = true;
 
@@ -58,7 +58,7 @@ public final class MMDConfigPanel extends javax.swing.JPanel {
     }
   });
 
-  public MMDConfigPanel(final Context context) {
+  public PreferencesPanel(final Context context) {
     this.context = context;
     initComponents();
   }

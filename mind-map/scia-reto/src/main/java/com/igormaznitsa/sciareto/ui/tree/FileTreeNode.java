@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.sciareto.tree;
+package com.igormaznitsa.sciareto.ui.tree;
 
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
@@ -25,6 +25,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import com.igormaznitsa.meta.common.utils.ArrayUtils;
 
 public class FileTreeNode implements TreeNode {
 
@@ -125,6 +127,23 @@ public class FileTreeNode implements TreeNode {
         return iterator.next();
       }
     };
+  }
+
+  @Nullable
+  public TreePath findPathToFile(@Nonnull final File file) {
+    if (file.equals(this.file)) {
+      return new TreePath(new Object[]{this});
+    }
+    if (!this.isLeaf()){
+      for(final FileTreeNode c : this.children){
+        final TreePath result = c.findPathToFile(file);
+        if (result!=null) {
+          return new TreePath(ArrayUtils.joinArrays(new Object[]{this},result.getPath()));
+        }
+      }
+      
+    }
+    return null;
   }
   
 }

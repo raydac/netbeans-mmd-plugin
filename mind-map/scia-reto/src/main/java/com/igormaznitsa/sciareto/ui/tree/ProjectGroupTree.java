@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.sciareto.tree;
+package com.igormaznitsa.sciareto.ui.tree;
 
 import java.io.File;
 import java.util.List;
@@ -22,12 +22,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 public class ProjectGroupTree extends FileTreeNode implements TreeModel {
 
@@ -128,6 +127,22 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
       }
     }
     return null;
+  }
+
+  @Override
+  @Nullable
+  public TreePath findPathToFile(@Nonnull final File file) {
+    TreePath path = null;
+    for(final FileTreeNode p : this.children){
+      path = p.findPathToFile(file);
+      if (path!=null){
+        break;
+      }
+    }
+    if (path!=null){
+      path = new TreePath(ArrayUtils.joinArrays(new Object[]{this},path.getPath()));
+    }
+    return path;
   }
 
 }

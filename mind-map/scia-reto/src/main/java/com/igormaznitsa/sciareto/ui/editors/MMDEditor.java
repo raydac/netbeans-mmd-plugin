@@ -76,7 +76,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.tree.ProjectTree;
+import com.igormaznitsa.sciareto.ui.tree.ProjectTree;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;

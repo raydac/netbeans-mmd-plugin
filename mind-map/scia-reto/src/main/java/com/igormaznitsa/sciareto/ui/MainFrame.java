@@ -17,7 +17,7 @@ package com.igormaznitsa.sciareto.ui;
 
 import com.igormaznitsa.sciareto.ui.tabs.MainTabPane;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import com.igormaznitsa.sciareto.prefs.MMDConfigPanel;
+import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
@@ -47,7 +47,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.tree.ProjectTree;
+import com.igormaznitsa.sciareto.ui.tree.ProjectTree;
 
 public final class MainFrame extends javax.swing.JFrame implements Context {
 
@@ -82,7 +82,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     });
 
-    this.mainPane = new MainTabPane();
+    this.mainPane = new MainTabPane(this);
 
     this.explorerTree = new ExplorerTree(this);
 
@@ -136,6 +136,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     }
     return result;
+  }
+
+  @Override
+  public void focusInTree(@Nonnull final TabTitle title) {
+    this.explorerTree.focusToFileItem(title.getAssociatedFile());
   }
 
   @Override
@@ -333,7 +338,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   @Override
   public void editPreferences() {
-    final MMDConfigPanel configPanel = new MMDConfigPanel(this);
+    final PreferencesPanel configPanel = new PreferencesPanel(this);
     configPanel.load();
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Preferences", configPanel)) {
       configPanel.save();
