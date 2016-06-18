@@ -70,19 +70,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
-        boolean hasUnsaved = false;
-        for (final TabTitle t : tabPane) {
-          hasUnsaved |= t.isChanged();
+        if (doClosing()) {
+          dispose();
         }
-
-        if (hasUnsaved) {
-          if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected non-saved docuemtns", "Detected unsaved documents! Close application?")) {
-            return;
-          }
-        }
-
-        saveState();
-        dispose();
       }
     });
 
@@ -158,6 +148,22 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     });
 
     restoreState();
+  }
+
+  private boolean doClosing() {
+    boolean hasUnsaved = false;
+    for (final TabTitle t : tabPane) {
+      hasUnsaved |= t.isChanged();
+    }
+
+    if (hasUnsaved) {
+      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected non-saved docuemtns", "Detected unsaved documents! Close application?")) {
+        return false;
+      }
+    }
+
+    saveState();
+    return true;
   }
 
   private void restoreState() {
@@ -263,8 +269,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   }
 
   @Override
-  public void closeTab(@Nonnull final TabTitle ... titles) {
-    for(final TabTitle t : titles){
+  public void closeTab(@Nonnull final TabTitle... titles) {
+    for (final TabTitle t : titles) {
       this.tabPane.removeTab(t);
     }
   }
@@ -386,6 +392,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(jSeparator1);
 
     menuExit.setText("Exit");
+    menuExit.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuExitActionPerformed(evt);
+      }
+    });
     menuFile.add(menuExit);
 
     jMenuBar1.add(menuFile);
@@ -527,6 +538,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       ((TabTitle) this.tabPane.getTabComponentAt(index)).saveAs();
     }
   }//GEN-LAST:event_menuSaveAsActionPerformed
+
+  private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
+    if (doClosing()) {
+      dispose();
+    }
+  }//GEN-LAST:event_menuExitActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuBar jMenuBar1;

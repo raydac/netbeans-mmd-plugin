@@ -126,9 +126,11 @@ public final class TabTitle extends JPanel {
     return this.closeButton.getBounds().contains(x, y);
   }
 
-  
-  public void save(){
-    this.parent.saveDocument();
+    public void save(){
+    if (this.parent.saveDocument()) {
+      this.changed = false;
+      updateView();
+    }
   }
   
   public void saveAs(){

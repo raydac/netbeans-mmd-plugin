@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,8 +28,11 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
@@ -37,14 +40,19 @@ public class PictureViewer extends AbstractScrollPane {
 
   private static final long serialVersionUID = 4262835444678960206L;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PictureViewer.class);
+  
   private final TabTitle title;
-  
-  public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png","jpg","gif")));
-  
+  private final JLabel label;
+  private final BufferedImage image;
+  public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif")));
+
   public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
     @Override
     public boolean accept(@Nonnull final File f) {
-      if (f.isDirectory()) return true;
+      if (f.isDirectory()) {
+        return true;
+      }
       final String ext = FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH);
       return SUPPORTED_FORMATS.contains(ext);
     }
@@ -61,21 +69,63 @@ public class PictureViewer extends AbstractScrollPane {
   public FileFilter getFileFilter() {
     return IMAGE_FILE_FILTER;
   }
-  
+
   public PictureViewer(@Nonnull final Context context, @Nonnull final File file) throws IOException {
     super();
     this.title = new TabTitle(context, this, file);
-    final Image image = file == null ? null : ImageIO.read(file);
-    if (image != null){
-      this.setViewportView(new JLabel(new ImageIcon(image)));
+    this.label = new JLabel();
+    
+    BufferedImage loaded = null;
+    try {
+      loaded = ImageIO.read(file);
+    } catch (Exception ex) {
+      LOGGER.error("Can't load image",ex);
+      loaded = null;
     }
+
+    this.image = loaded;
+    
+    this.label.setHorizontalTextPosition(JLabel.CENTER);
+    this.label.setVerticalTextPosition(JLabel.CENTER);
+    this.label.setHorizontalAlignment(SwingConstants.CENTER);
+    this.label.setVerticalAlignment(SwingConstants.CENTER);
+    
+    if (this.image == null){
+      this.label.setIcon(null);
+      this.label.setText("Can't load image");
+    } else {
+      this.label.setIcon(new ImageIcon(this.image));
+      this.label.setText("");
+    }
+    
+    this.setViewportView(this.label);
+    this.revalidate();
   }
 
   @Override
   public boolean saveDocument() {
-    return false;
+    boolean result = false;
+    final String ext = FilenameUtils.getExtension(this.title.getAssociatedFile().getName()).trim().toLowerCase(Locale.ENGLISH);
+    if (SUPPORTED_FORMATS.contains(ext)) {
+      try{
+        ImageIO.write(this.image, ext, this.title.getAssociatedFile());
+        result = true;
+      }catch(Exception ex){
+        LOGGER.error("Can't write image",ex);
+      }
+    } else {
+      try {
+        LOGGER.warn("unsupported image format, will be saved as png : "+ext);
+        ImageIO.write(this.image, "png", this.title.getAssociatedFile());
+        result = true;
+      } catch (Exception ex) {
+        LOGGER.error("Can't write image", ex);
+      }
+    }
+
+    return result;
   }
-  
+
   @Override
   @Nonnull
   public TabTitle getTabTitle() {
@@ -87,5 +137,5 @@ public class PictureViewer extends AbstractScrollPane {
   public JComponent getMainComponent() {
     return this;
   }
-  
+
 }

@@ -18,6 +18,7 @@ package com.igormaznitsa.sciareto;
 import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
@@ -30,7 +31,7 @@ public interface Context {
   NodeProject findProjectForFile(@Nonnull File file);
   boolean openFileAsTab(@Nonnull File file);
   boolean openProject(@Nonnull File folder, boolean enforceSeparatedItem);
-  void closeTab(@Nonnull com.igormaznitsa.sciareto.ui.tabs.TabTitle ... title);
+  void closeTab(@Nonnull @MustNotContainNull TabTitle ... title);
   void editPreferences();
   void onCloseProject(@Nonnull final NodeProject project);
   void focusInTree(@Nonnull TabTitle title);

@@ -26,8 +26,10 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 
@@ -77,6 +79,28 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
     if (selected >= 0) {
       final TabTitle title = (TabTitle) this.getTabComponentAt(selected);
       result = new JPopupMenu();
+      
+      if (title.isChanged()){
+        final JMenuItem saveItem = new JMenuItem("Save");
+        saveItem.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(@Nonnull final ActionEvent e) {
+            title.save();
+          }
+        });
+        result.add(saveItem);
+      }
+      final JMenuItem saveAsItem = new JMenuItem("Save As..");
+      saveAsItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          title.saveAs();
+        }
+      });
+      result.add(saveAsItem);
+      
+      result.add(new JSeparator());
+      
       final JMenuItem closeItem = new JMenuItem("Close");
       closeItem.addActionListener(new ActionListener() {
         @Override
@@ -112,6 +136,8 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
       });
       result.add(closeAll);
       
+      result.add(new JSeparator());
+      
       final JMenuItem showInTree = new JMenuItem("Focus in the tree");
       showInTree.addActionListener(new ActionListener() {
         @Override
@@ -124,7 +150,7 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
     return result;
   }
 
-  private void safeCloseTabs(final TabTitle ... titles){
+  private void safeCloseTabs(@Nonnull @MustNotContainNull final TabTitle ... titles){
     boolean foundUnsaved = false;
     for(final TabTitle t : titles){
       foundUnsaved  |= t.isChanged();
