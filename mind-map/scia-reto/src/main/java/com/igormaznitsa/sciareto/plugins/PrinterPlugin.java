@@ -30,6 +30,8 @@ import javax.swing.SwingUtilities;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ToDo;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
@@ -41,6 +43,8 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
 
   private static final Image ICON_PRINTER = UiUtils.loadImage("printer.png");
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(PrinterPlugin.class);
   
   @Nullable
   @Override
@@ -89,7 +93,10 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
   @ToDo
   @Override
   public void startBackgroundTask(@Nonnull final MMDPrintPanel source, @Nonnull final String name, @Nonnull final Runnable task) {
-    
+    LOGGER.info("Starting print task : "+name);
+    final Thread thread = new Thread(task,name);
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @Override
