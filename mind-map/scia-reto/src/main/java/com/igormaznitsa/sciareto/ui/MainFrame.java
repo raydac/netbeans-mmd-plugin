@@ -24,6 +24,8 @@ import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.editors.TextEditor;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -38,15 +40,19 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileView;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.preferences.OpeningHistoryManager;
 import com.igormaznitsa.sciareto.ui.tree.ProjectTree;
 
 public final class MainFrame extends javax.swing.JFrame implements Context {
@@ -94,6 +100,64 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     splitPane.setRightComponent(this.mainPane);
 
     add(splitPane, BorderLayout.CENTER);
+    
+    this.menuOpenRecentProject.addMenuListener(new MenuListener() {
+      @Override
+      public void menuSelected(MenuEvent e) {
+        final File [] lastOpenedProjects = OpeningHistoryManager.getInstance().getLastOpenedProjects();
+        if (lastOpenedProjects.length>0){
+          for(final File folder : lastOpenedProjects){
+            final JMenuItem item = new JMenuItem(folder.getName());
+            item.setToolTipText(folder.getAbsolutePath());
+            item.addActionListener(new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                openProject(folder);
+              }
+            });
+            menuOpenRecentProject.add(item);
+          }
+        }
+      }
+
+      @Override
+      public void menuDeselected(MenuEvent e) {
+        menuOpenRecentProject.removeAll();
+      }
+
+      @Override
+      public void menuCanceled(MenuEvent e) {
+      }
+    });
+    
+    this.menuOpenRecentFile.addMenuListener(new MenuListener() {
+      @Override
+      public void menuSelected(MenuEvent e) {
+        final File [] lastOpenedFiles = OpeningHistoryManager.getInstance().getLastOpenedFiles();
+        if (lastOpenedFiles.length>0){
+          for(final File file : lastOpenedFiles){
+            final JMenuItem item = new JMenuItem(file.getName());
+            item.setToolTipText(file.getAbsolutePath());
+            item.addActionListener(new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                openFileAsTab(file);
+              }
+            });
+            menuOpenRecentFile.add(item);
+          }
+        }
+      }
+
+      @Override
+      public void menuDeselected(MenuEvent e) {
+        menuOpenRecentFile.removeAll();
+      }
+
+      @Override
+      public void menuCanceled(MenuEvent e) {
+      }
+    });
   }
 
   @Override
@@ -121,7 +185,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
             LOGGER.error("Can't load file as image", ex);
           }
         } else {
-          if (file.length() >= (1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Very big file", "It is very big file! Are you sure to open it?")) {
+          if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Very big file", "It is a very big file! Are you sure to open it?")) {
             return true;
           }
 
@@ -134,6 +198,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
           }
         }
       }
+    }
+    if (result) {
+     try{
+      OpeningHistoryManager.getInstance().registerOpenedFile(file);
+     }catch(IOException x){
+       LOGGER.error("Can't register last opened file", x);
+     }
     }
     return result;
   }
@@ -322,20 +393,32 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
     fileChooser.setDialogTitle("Open project folder");
+    
     if (fileChooser.showOpenDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
-      final File folder = fileChooser.getSelectedFile();
-      if (folder.isDirectory()) {
-        final ProjectTree alreadyOpened = findProjectForFile(folder);
-        if (alreadyOpened == null) {
-          this.explorerTree.getCurrentGroup().addProjectFolder(folder);
-        }
-      } else {
-        LOGGER.error("Can't find folder : " + folder);
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't find project folder!");
-      }
+      openProject(fileChooser.getSelectedFile());
     }
   }//GEN-LAST:event_menuOpenProjectActionPerformed
 
+  private boolean openProject(@Nonnull final File folder){
+    boolean result = false;
+    if (folder.isDirectory()) {
+      final ProjectTree alreadyOpened = findProjectForFile(folder);
+      if (alreadyOpened == null) {
+        this.explorerTree.getCurrentGroup().addProjectFolder(folder);
+      }
+      try{
+      OpeningHistoryManager.getInstance().registerOpenedProject(folder);
+      }catch(IOException ex){
+        LOGGER.error("Can't register last opened project", ex);
+      }
+      result = true;
+    } else {
+      LOGGER.error("Can't find folder : " + folder);
+      DialogProviderManager.getInstance().getDialogProvider().msgError("Can't find project folder!");
+    }
+    return result;
+  }
+  
   @Override
   public void editPreferences() {
     final PreferencesPanel configPanel = new PreferencesPanel(this);
@@ -358,7 +441,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
     final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("open-file", "Open file", null, true, new MMDEditor.MMDFileFilter(), "Open");
     if (file != null) {
-      openFileAsTab(file);
+      if (openFileAsTab(file)){
+        try {
+          OpeningHistoryManager.getInstance().registerOpenedProject(file);
+        } catch (IOException ex) {
+          LOGGER.error("Can't register last opened file", ex);
+        }
+      }
     }
   }//GEN-LAST:event_menuOpenFileActionPerformed
 

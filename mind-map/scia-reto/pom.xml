@@ -30,6 +30,11 @@
       <artifactId>mind-map-model</artifactId>
       <version>${model.version}</version>
     </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.10</version>
+    </dependency>
   </dependencies>
     
   <profiles>

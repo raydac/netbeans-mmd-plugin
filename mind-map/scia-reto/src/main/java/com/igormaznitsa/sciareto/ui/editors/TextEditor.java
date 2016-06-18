@@ -61,6 +61,7 @@ public class TextEditor extends JScrollPane implements TabProvider {
     this.editor = new JTextArea();
     if (file!=null){
       this.editor.setText(FileUtils.readFileToString(file, "UTF-8"));
+      this.editor.setCaretPosition(0);
     }
     this.title = new TabTitle(context, this, file);
     this.editor.getDocument().addDocumentListener(new DocumentListener() {
