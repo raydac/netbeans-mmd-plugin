@@ -50,8 +50,8 @@ public final class ExplorerTree extends JScrollPane {
         }
         final TreePath curPath = getPathForLocation(evt.getX(), evt.getY());
         final Object lastElement = curPath.getLastPathComponent();
-        if (lastElement instanceof FileTreeNode) {
-          final File file = ((FileTreeNode) lastElement).getFile();
+        if (lastElement instanceof NodeFileOrFolder) {
+          final File file = ((NodeFileOrFolder) lastElement).getFile();
           return file == null ? null : file.getAbsolutePath();
         } else {
           return null;
@@ -64,7 +64,7 @@ public final class ExplorerTree extends JScrollPane {
     ToolTipManager.sharedInstance().registerComponent(this.projectTree);
 
     this.projectTree.setCellRenderer(new TreeCellRenderer());
-    this.projectTree.setModel(new ProjectGroupTree("."));
+    this.projectTree.setModel(new NodeProjectGroup("."));
     this.projectTree.setRootVisible(false);
     this.setViewportView(this.projectTree);
 
@@ -75,7 +75,7 @@ public final class ExplorerTree extends JScrollPane {
           final int selRow = projectTree.getRowForLocation(e.getX(), e.getY());
           final TreePath selPath = projectTree.getPathForLocation(e.getX(), e.getY());
           if (selRow >= 0) {
-            final FileTreeNode node = (FileTreeNode) selPath.getLastPathComponent();
+            final NodeFileOrFolder node = (NodeFileOrFolder) selPath.getLastPathComponent();
             if (node != null) {
               final File file = node.getFile();
               if (!context.openFileAsTab(file)) {
@@ -92,8 +92,8 @@ public final class ExplorerTree extends JScrollPane {
           final TreePath selPath = projectTree.getPathForLocation(e.getX(), e.getY());
           if (selPath != null) {
             final Object last = selPath.getLastPathComponent();
-            if (last instanceof FileTreeNode) {
-              final JPopupMenu popupMenu = makePopupMenu((FileTreeNode)last);
+            if (last instanceof NodeFileOrFolder) {
+              final JPopupMenu popupMenu = makePopupMenu((NodeFileOrFolder)last);
               if (popupMenu!=null){
                 popupMenu.show(e.getComponent(), e.getX(), e.getY());
               }
@@ -108,8 +108,8 @@ public final class ExplorerTree extends JScrollPane {
           final TreePath selPath = projectTree.getPathForLocation(e.getX(), e.getY());
           if (selPath != null) {
             final Object last = selPath.getLastPathComponent();
-            if (last instanceof FileTreeNode) {
-              final JPopupMenu popupMenu = makePopupMenu((FileTreeNode) last);
+            if (last instanceof NodeFileOrFolder) {
+              final JPopupMenu popupMenu = makePopupMenu((NodeFileOrFolder) last);
               if (popupMenu != null) {
                 popupMenu.show(e.getComponent(), e.getX(), e.getY());
               }
@@ -121,13 +121,13 @@ public final class ExplorerTree extends JScrollPane {
     });
   }
 
-  public void сloseProject(@Nonnull final ProjectTree tree){
-    ((ProjectGroupTree)this.projectTree.getModel()).removeProject(tree);
+  public void сloseProject(@Nonnull final NodeProject tree){
+    ((NodeProjectGroup)this.projectTree.getModel()).removeProject(tree);
     this.context.onCloseProject(tree);
   }
 
   public void focusToFileItem(@Nonnull final File file) {
-    final ProjectGroupTree group = getCurrentGroup();
+    final NodeProjectGroup group = getCurrentGroup();
     final TreePath pathToFile = group.findPathToFile(file);
     if (pathToFile!=null){
       this.projectTree.setSelectionPath(pathToFile);
@@ -135,17 +135,25 @@ public final class ExplorerTree extends JScrollPane {
   }
   
   @Nullable
-  private JPopupMenu makePopupMenu(@Nonnull final FileTreeNode node) {
+  private JPopupMenu makePopupMenu(@Nonnull final NodeFileOrFolder node) {
     final JPopupMenu result = new JPopupMenu();
-    if (node instanceof ProjectTree){
+    if (node instanceof NodeProject){
       final JMenuItem close = new JMenuItem("Close");
       close.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          сloseProject((ProjectTree)node);
+          сloseProject((NodeProject)node);
         }
       });
       result.add(close);
+      final JMenuItem refresh = new JMenuItem("Reload");
+      refresh.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          getCurrentGroup().refreshProjectFolder((NodeProject)node);
+        }
+      });
+      result.add(refresh);
     } else {
       
     }
@@ -153,11 +161,11 @@ public final class ExplorerTree extends JScrollPane {
   }
 
   @Nonnull
-  public ProjectGroupTree getCurrentGroup() {
-    return (ProjectGroupTree) this.projectTree.getModel();
+  public NodeProjectGroup getCurrentGroup() {
+    return (NodeProjectGroup) this.projectTree.getModel();
   }
 
-  public void setModel(@Nonnull final ProjectGroupTree model, final boolean expandFirst) {
+  public void setModel(@Nonnull final NodeProjectGroup model, final boolean expandFirst) {
     this.projectTree.setModel(Assertions.assertNotNull(model));
     if (expandFirst && model.getChildCount() > 0) {
       this.projectTree.expandPath(new TreePath(new Object[]{model, model.getChildAt(0)}));

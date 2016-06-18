@@ -18,21 +18,49 @@ package com.igormaznitsa.sciareto.ui.editors;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
-public class PictureViewer extends JScrollPane implements TabProvider {
+public class PictureViewer extends AbstractScrollPane {
 
   private static final long serialVersionUID = 4262835444678960206L;
 
   private final TabTitle title;
+  
+  public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png","jpg","gif")));
+  
+  public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
+    @Override
+    public boolean accept(@Nonnull final File f) {
+      if (f.isDirectory()) return true;
+      final String ext = FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH);
+      return SUPPORTED_FORMATS.contains(ext);
+    }
+
+    @Override
+    @Nonnull
+    public String getDescription() {
+      return "Image file (*.png,*.jpg,*.gif)";
+    }
+  };
+
+  @Override
+  @Nonnull
+  public FileFilter getFileFilter() {
+    return IMAGE_FILE_FILTER;
+  }
   
   public PictureViewer(@Nonnull final Context context, @Nonnull final File file) throws IOException {
     super();
@@ -45,7 +73,7 @@ public class PictureViewer extends JScrollPane implements TabProvider {
 
   @Override
   public boolean saveDocument() {
-    return true;
+    return false;
   }
   
   @Override

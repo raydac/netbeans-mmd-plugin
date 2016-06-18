@@ -30,6 +30,7 @@ import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.sciareto.ui.Icons;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 
 public class TreeCellRenderer extends DefaultTreeCellRenderer {
 
@@ -61,9 +62,9 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
     ensureIcons(tree);
     super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
     if (value != null) {
-      if (value instanceof FileTreeNode) {
-        final FileTreeNode node = (FileTreeNode) value;
-        if (node instanceof ProjectTree) {
+      if (value instanceof NodeFileOrFolder) {
+        final NodeFileOrFolder node = (NodeFileOrFolder) value;
+        if (node instanceof NodeProject) {
           this.setIcon(expanded ? PROJECT_OPENED : PROJECT_CLOSED);
         } else {
           final File file = node.getFile();
@@ -71,7 +72,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
           if (ext != null){
             if (ext.equals("mmd")){
             this.setIcon(Icons.DOCUMENT.getIcon());
-            }else if (MainFrame.IMAGE_EXTENSIONS.contains(ext)){
+            }else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)){
               this.setIcon(ICON_IMAGE);
             }
           }

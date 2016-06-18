@@ -37,7 +37,6 @@ import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
@@ -76,23 +75,22 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.ui.tree.ProjectTree;
+import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
-import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
-public class MMDEditor extends JScrollPane implements MindMapPanelController, MindMapController, TabProvider, MindMapListener {
+public class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDEditor.class);
-  
+
   private final MindMapPanel mindMapPanel;
 
   private final TabTitle title;
@@ -104,7 +102,7 @@ public class MMDEditor extends JScrollPane implements MindMapPanelController, Mi
     this.mindMapPanel.refreshConfiguration();
   }
 
-  public static class MMDFileFilter extends FileFilter{
+  public static final FileFilter MMD_FILE_FILTER = new FileFilter() {
 
     @Override
     public boolean accept(@Nonnull final File f) {
@@ -112,12 +110,18 @@ public class MMDEditor extends JScrollPane implements MindMapPanelController, Mi
     }
 
     @Override
+    @Nonnull
     public String getDescription() {
       return "Mind Map document (*.mmd)";
     }
-    
+  };
+
+  @Override
+  @Nonnull
+  public FileFilter getFileFilter() {
+    return MMD_FILE_FILTER;
   }
-  
+
   public MMDEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     this.context = context;
@@ -125,39 +129,41 @@ public class MMDEditor extends JScrollPane implements MindMapPanelController, Mi
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
     this.setViewportView(this.mindMapPanel);
-    
+
     final MindMap map;
-    if (file == null){
+    if (file == null) {
       map = new MindMap(this, true);
-    }else{
+    } else {
       map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
     }
-    
+
     this.mindMapPanel.setModel(Assertions.assertNotNull(map));
   }
 
   @Override
-  public boolean saveDocument(){
+  public boolean saveDocument() {
     boolean result = false;
-    if(this.title.isChanged()){
+    if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
-      if (file == null){
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("mmd-editor-document", "Save Mind Map", null, true, new MMDFileFilter(), "Save");
-        if (file == null) return result;
+      if (file == null) {
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("mmd-editor-document", "Save Mind Map", null, true, getFileFilter(), "Save");
+        if (file == null) {
+          return result;
+        }
       }
-      try{
-        FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(),"UTF-8",false);
+      try {
+        FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false);
         this.title.setChanged(false);
         result = true;
-      }catch(IOException ex){
-        LOGGER.error("Can't write file : "+file,ex);
+      } catch (IOException ex) {
+        LOGGER.error("Can't write file : " + file, ex);
       }
     } else {
       result = true;
     }
     return result;
   }
-  
+
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
     return PreferencesManager.getInstance().getPreferences().getBoolean("unfoldCollapsedTarget", true);
@@ -300,10 +306,10 @@ public class MMDEditor extends JScrollPane implements MindMapPanelController, Mi
           final File theFile = uri.asFile(getProjectFolder());
           if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
             UiUtils.openInSystemViewer(theFile);
-          } else {
-            if (!this.context.openFileAsTab(theFile)) {
-              UiUtils.openInSystemViewer(theFile);
-            }
+          } else if (theFile.isDirectory()) {
+            this.context.openProject(theFile,false);
+          } else if (!this.context.openFileAsTab(theFile)) {
+            UiUtils.openInSystemViewer(theFile);
           }
         }
         break;
@@ -326,7 +332,7 @@ public class MMDEditor extends JScrollPane implements MindMapPanelController, Mi
           } else {
             // detected
             this.mindMapPanel.focusTo(theTopic);
-          } 
+          }
         }
         break;
       }
@@ -436,16 +442,16 @@ public class MMDEditor extends JScrollPane implements MindMapPanelController, Mi
 
   @Nullable
   @ToDo
-  private File getProjectFolder(){
+  private File getProjectFolder() {
     File result = null;
     final File associatedFile = this.title.getAssociatedFile();
-    if (associatedFile!=null){
-      final ProjectTree project = context.findProjectForFile(associatedFile);
+    if (associatedFile != null) {
+      final NodeProject project = context.findProjectForFile(associatedFile);
       result = project == null ? null : project.getFile();
     }
     return result;
   }
-  
+
   private void editFileLinkForTopic(@Nullable final Topic topic) {
     final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
@@ -579,7 +585,7 @@ public class MMDEditor extends JScrollPane implements MindMapPanelController, Mi
       }
 
       onMindMapModelChanged(source);
-      
+
       source.updateView(true);
     }
   }

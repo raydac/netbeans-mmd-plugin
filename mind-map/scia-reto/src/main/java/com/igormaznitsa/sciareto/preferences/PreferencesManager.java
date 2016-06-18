@@ -15,13 +15,16 @@
  */
 package com.igormaznitsa.sciareto.preferences;
 
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 
 public class PreferencesManager {
   
   private static final PreferencesManager INSTANCE = new PreferencesManager();
-  
+  private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesManager.class);
   private final Preferences prefs;
   
   private PreferencesManager(){
@@ -34,8 +37,16 @@ public class PreferencesManager {
   }
   
   @Nonnull
-  public Preferences getPreferences(){
+  public synchronized  Preferences getPreferences(){
     return this.prefs;
+  }
+  
+  public synchronized void flush(){
+    try{
+      this.prefs.flush();
+    }catch(BackingStoreException ex){
+      LOGGER.error("Can't flush preferences", ex);
+    }
   }
   
 }

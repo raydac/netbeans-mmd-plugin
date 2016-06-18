@@ -22,7 +22,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +30,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -40,6 +38,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
 public final class TabTitle extends JPanel {
 
@@ -127,6 +126,21 @@ public final class TabTitle extends JPanel {
     return this.closeButton.getBounds().contains(x, y);
   }
 
+  
+  public void save(){
+    this.parent.saveDocument();
+  }
+  
+  public void saveAs(){
+    if (this.parent.saveDocumentAs()){
+      final NodeProject project = this.context.findProjectForFile(this.associatedFile);
+      if (project!=null){
+        project.getGroup().refreshProjectFolder(project);
+        this.context.focusInTree(this);
+      }
+    }
+  }
+  
   
   @Override
   public boolean isFocusable() {

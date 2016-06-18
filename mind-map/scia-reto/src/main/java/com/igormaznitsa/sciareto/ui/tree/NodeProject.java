@@ -18,10 +18,15 @@ package com.igormaznitsa.sciareto.ui.tree;
 import java.io.File;
 import javax.annotation.Nonnull;
 
-public class ProjectTree  extends FileTreeNode {
+public class NodeProject  extends NodeFileOrFolder {
   
-  public ProjectTree(@Nonnull final ProjectGroupTree group, @Nonnull final File folder) {
+  public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
     super(group, folder, true);
+  }
+
+  @Nonnull
+  public NodeProjectGroup getGroup(){
+    return (NodeProjectGroup)this.parent;
   }
   
 }

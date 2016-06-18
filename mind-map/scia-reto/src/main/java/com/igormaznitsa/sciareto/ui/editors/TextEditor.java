@@ -20,7 +20,6 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -30,10 +29,9 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
-public class TextEditor extends JScrollPane implements TabProvider {
+public class TextEditor extends AbstractScrollPane {
 
   private static final long serialVersionUID = -8551212562825517869L;
 
@@ -42,7 +40,7 @@ public class TextEditor extends JScrollPane implements TabProvider {
   private final JTextArea editor;
   private final TabTitle title;
   
-  public static class TextFileFilter extends FileFilter {
+  public static final FileFilter TXT_FILE_FILTER = new FileFilter() {
 
     @Override
     public boolean accept(@Nonnull final File f) {
@@ -50,11 +48,18 @@ public class TextEditor extends JScrollPane implements TabProvider {
     }
 
     @Override
+    @Nonnull
     public String getDescription() {
       return "Text document (*.txt)";
     }
+  };
 
+  @Override
+  @Nonnull
+  public FileFilter getFileFilter() {
+    return TXT_FILE_FILTER;
   }
+  
   
   public TextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
@@ -90,7 +95,7 @@ public class TextEditor extends JScrollPane implements TabProvider {
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("text-editor", "Save Text document", null, true, new TextFileFilter(), "Save");
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("text-editor", "Save Text document", null, true, getFileFilter(), "Save");
         if (file == null) {
           return result;
         }

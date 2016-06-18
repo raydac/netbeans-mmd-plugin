@@ -184,7 +184,7 @@
             <ignore>*.AboutPanel</ignore>
             <ignore>*.FontSelector</ignore>
             <ignore>*.KeyShortCutEditPanel</ignore>
-            <ignore>*.MMDConfigPanel</ignore>
+            <ignore>*.PreferencesPanel</ignore>
           </ignoreClasses>
         </configuration>
         <executions>

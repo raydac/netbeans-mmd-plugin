@@ -30,10 +30,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -52,8 +51,8 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.preferences.OpeningHistoryManager;
-import com.igormaznitsa.sciareto.ui.tree.ProjectTree;
+import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
+import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
 public final class MainFrame extends javax.swing.JFrame implements Context {
 
@@ -61,10 +60,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
 
-  private final MainTabPane mainPane;
+  private final MainTabPane tabPane;
   private final ExplorerTree explorerTree;
-
-  public static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(Arrays.asList("gif", "png", "jpg"));
 
   public MainFrame() {
     initComponents();
@@ -74,7 +71,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
         boolean hasUnsaved = false;
-        for (final TabTitle t : mainPane) {
+        for (final TabTitle t : tabPane) {
           hasUnsaved |= t.isChanged();
         }
 
@@ -84,11 +81,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
           }
         }
 
+        saveState();
         dispose();
       }
     });
 
-    this.mainPane = new MainTabPane(this);
+    this.tabPane = new MainTabPane(this);
 
     this.explorerTree = new ExplorerTree(this);
 
@@ -97,22 +95,22 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     splitPane.setDividerLocation(250);
     splitPane.setResizeWeight(0.0d);
     splitPane.setLeftComponent(this.explorerTree);
-    splitPane.setRightComponent(this.mainPane);
+    splitPane.setRightComponent(this.tabPane);
 
     add(splitPane, BorderLayout.CENTER);
-    
+
     this.menuOpenRecentProject.addMenuListener(new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
-        final File [] lastOpenedProjects = OpeningHistoryManager.getInstance().getLastOpenedProjects();
-        if (lastOpenedProjects.length>0){
-          for(final File folder : lastOpenedProjects){
+        final File[] lastOpenedProjects = FileHistoryManager.getInstance().getLastOpenedProjects();
+        if (lastOpenedProjects.length > 0) {
+          for (final File folder : lastOpenedProjects) {
             final JMenuItem item = new JMenuItem(folder.getName());
             item.setToolTipText(folder.getAbsolutePath());
             item.addActionListener(new ActionListener() {
               @Override
               public void actionPerformed(ActionEvent e) {
-                openProject(folder);
+                openProject(folder, false);
               }
             });
             menuOpenRecentProject.add(item);
@@ -129,13 +127,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       public void menuCanceled(MenuEvent e) {
       }
     });
-    
+
     this.menuOpenRecentFile.addMenuListener(new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
-        final File [] lastOpenedFiles = OpeningHistoryManager.getInstance().getLastOpenedFiles();
-        if (lastOpenedFiles.length>0){
-          for(final File file : lastOpenedFiles){
+        final File[] lastOpenedFiles = FileHistoryManager.getInstance().getLastOpenedFiles();
+        if (lastOpenedFiles.length > 0) {
+          for (final File file : lastOpenedFiles) {
             final JMenuItem item = new JMenuItem(file.getName());
             item.setToolTipText(file.getAbsolutePath());
             item.addActionListener(new ActionListener() {
@@ -158,28 +156,73 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       public void menuCanceled(MenuEvent e) {
       }
     });
+
+    restoreState();
+  }
+
+  private void restoreState() {
+    try {
+      final File[] activeProjects = FileHistoryManager.getInstance().getActiveProjects();
+      for (final File f : activeProjects) {
+        if (f.isDirectory()) {
+          openProject(f, true);
+        }
+      }
+      final File[] activeFiles = FileHistoryManager.getInstance().getActiveFiles();
+      for (final File f : activeFiles) {
+        if (f.isFile()) {
+          openFileAsTab(f);
+        }
+      }
+    } catch (IOException ex) {
+      LOGGER.error("Can't restore state", ex);
+    }
+  }
+
+  private void saveState() {
+    try {
+      final List<File> files = new ArrayList<File>();
+      for (final NodeProject p : this.explorerTree.getCurrentGroup()) {
+        final File f = p.getFile();
+        if (f.isDirectory()) {
+          files.add(f);
+        }
+      }
+      FileHistoryManager.getInstance().saveActiveProjects(files.toArray(new File[files.size()]));
+      files.clear();
+
+      for (final TabTitle p : this.tabPane) {
+        final File f = p.getAssociatedFile();
+        if (f.isFile()) {
+          files.add(f);
+        }
+      }
+      FileHistoryManager.getInstance().saveActiveFiles(files.toArray(new File[files.size()]));
+    } catch (IOException ex) {
+      LOGGER.error("Can't save state", ex);
+    }
   }
 
   @Override
   public boolean openFileAsTab(@Nonnull final File file) {
     boolean result = false;
     if (file.isFile()) {
-      if (this.mainPane.focusToFile(file)) {
+      if (this.tabPane.focusToFile(file)) {
         result = true;
       } else {
         final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
         if (ext.equals("mmd")) {
           try {
             final MMDEditor panel = new MMDEditor(this, file);
-            this.mainPane.createTab(panel);
+            this.tabPane.createTab(panel);
             result = true;
           } catch (IOException ex) {
             LOGGER.error("Can't load mind map", ex);
           }
-        } else if (IMAGE_EXTENSIONS.contains(ext)) {
+        } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
           try {
             final PictureViewer panel = new PictureViewer(this, file);
-            this.mainPane.createTab(panel);
+            this.tabPane.createTab(panel);
             result = true;
           } catch (IOException ex) {
             LOGGER.error("Can't load file as image", ex);
@@ -191,7 +234,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
           try {
             final TextEditor panel = new TextEditor(this, file);
-            this.mainPane.createTab(panel);
+            this.tabPane.createTab(panel);
             result = true;
           } catch (IOException ex) {
             LOGGER.error("Can't load file as text", ex);
@@ -200,11 +243,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     }
     if (result) {
-     try{
-      OpeningHistoryManager.getInstance().registerOpenedFile(file);
-     }catch(IOException x){
-       LOGGER.error("Can't register last opened file", x);
-     }
+      try {
+        FileHistoryManager.getInstance().registerOpenedFile(file);
+      } catch (IOException x) {
+        LOGGER.error("Can't register last opened file", x);
+      }
     }
     return result;
   }
@@ -215,19 +258,26 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   }
 
   @Override
-  public void closeTab(@Nonnull final TabTitle title) {
-    this.mainPane.removeTab(title);
+  public void focusInTree(@Nonnull final File file) {
+    this.explorerTree.focusToFileItem(file);
+  }
+
+  @Override
+  public void closeTab(@Nonnull final TabTitle ... titles) {
+    for(final TabTitle t : titles){
+      this.tabPane.removeTab(t);
+    }
   }
 
   @Override
   @Nullable
-  public ProjectTree findProjectForFile(@Nonnull final File file) {
+  public NodeProject findProjectForFile(@Nonnull final File file) {
     return this.explorerTree.getCurrentGroup().findProjectForFile(file);
   }
 
   @Override
   public void notifyReloadConfig() {
-    for (final TabTitle t : this.mainPane) {
+    for (final TabTitle t : this.tabPane) {
       final JComponent editor = t.getProvider().getMainComponent();
       if (editor instanceof MMDEditor) {
         ((MMDEditor) editor).refreshConfig();
@@ -236,10 +286,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   }
 
   @Override
-  public void onCloseProject(@Nonnull final ProjectTree project) {
+  public void onCloseProject(@Nonnull final NodeProject project) {
     final File projectFolder = project.getFile();
     if (projectFolder != null) {
-      for (final TabTitle t : this.mainPane) {
+      for (final TabTitle t : this.tabPane) {
         if (t.belongFolder(projectFolder)) {
           t.doSafeClose();
         }
@@ -311,9 +361,19 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(jSeparator3);
 
     menSave.setText("Save");
+    menSave.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menSaveActionPerformed(evt);
+      }
+    });
     menuFile.add(menSave);
 
     menuSaveAs.setText("Save As");
+    menuSaveAs.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuSaveAsActionPerformed(evt);
+      }
+    });
     menuFile.add(menuSaveAs);
 
     menuSaveAll.setText("Save All");
@@ -393,23 +453,26 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
     fileChooser.setDialogTitle("Open project folder");
-    
+
     if (fileChooser.showOpenDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
-      openProject(fileChooser.getSelectedFile());
+      openProject(fileChooser.getSelectedFile(), false);
     }
   }//GEN-LAST:event_menuOpenProjectActionPerformed
 
-  private boolean openProject(@Nonnull final File folder){
+  @Override
+  public boolean openProject(@Nonnull final File folder, final boolean enforceSeparatedProject) {
     boolean result = false;
     if (folder.isDirectory()) {
-      final ProjectTree alreadyOpened = findProjectForFile(folder);
-      if (alreadyOpened == null) {
+      final NodeProject alreadyOpened = findProjectForFile(folder);
+      if (alreadyOpened == null || enforceSeparatedProject) {
         this.explorerTree.getCurrentGroup().addProjectFolder(folder);
-      }
-      try{
-      OpeningHistoryManager.getInstance().registerOpenedProject(folder);
-      }catch(IOException ex){
-        LOGGER.error("Can't register last opened project", ex);
+        try {
+          FileHistoryManager.getInstance().registerOpenedProject(folder);
+        } catch (IOException ex) {
+          LOGGER.error("Can't register last opened project", ex);
+        }
+      } else {
+        this.focusInTree(folder);
       }
       result = true;
     } else {
@@ -418,7 +481,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     }
     return result;
   }
-  
+
   @Override
   public void editPreferences() {
     final PreferencesPanel configPanel = new PreferencesPanel(this);
@@ -429,8 +492,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   }
 
   private void menuSaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveAllActionPerformed
-    for (final TabTitle t : this.mainPane) {
-      t.getProvider().saveDocument();
+    for (final TabTitle t : this.tabPane) {
+      t.save();
     }
   }//GEN-LAST:event_menuSaveAllActionPerformed
 
@@ -439,17 +502,31 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   }//GEN-LAST:event_menuPreferencesActionPerformed
 
   private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
-    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("open-file", "Open file", null, true, new MMDEditor.MMDFileFilter(), "Open");
+    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("open-file", "Open file", null, true, MMDEditor.MMD_FILE_FILTER, "Open");
     if (file != null) {
-      if (openFileAsTab(file)){
+      if (openFileAsTab(file)) {
         try {
-          OpeningHistoryManager.getInstance().registerOpenedProject(file);
+          FileHistoryManager.getInstance().registerOpenedProject(file);
         } catch (IOException ex) {
           LOGGER.error("Can't register last opened file", ex);
         }
       }
     }
   }//GEN-LAST:event_menuOpenFileActionPerformed
+
+  private void menSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menSaveActionPerformed
+    final int index = this.tabPane.getSelectedIndex();
+    if (index >= 0) {
+      ((TabTitle) this.tabPane.getTabComponentAt(index)).save();
+    }
+  }//GEN-LAST:event_menSaveActionPerformed
+
+  private void menuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveAsActionPerformed
+    final int index = this.tabPane.getSelectedIndex();
+    if (index >= 0) {
+      ((TabTitle) this.tabPane.getTabComponentAt(index)).saveAs();
+    }
+  }//GEN-LAST:event_menuSaveAsActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuBar jMenuBar1;

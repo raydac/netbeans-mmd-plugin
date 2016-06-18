@@ -29,6 +29,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 
 public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
@@ -68,7 +69,9 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
     });
   }
 
+  @Nonnull
   private JPopupMenu makePopupMenu() {
+    final MainTabPane theInstance = this;
     final int selected = this.getSelectedIndex();
     JPopupMenu result = null;
     if (selected >= 0) {
@@ -82,7 +85,34 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
         }
       });
       result.add(closeItem);
-      final JMenuItem showInTree = new JMenuItem("Show in tree");
+
+      final JMenuItem closeOthers = new JMenuItem("Close Others");
+      closeOthers.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull ActionEvent e) {
+          final List<TabTitle> list = new ArrayList<>();
+          for (final TabTitle t : theInstance) {
+            if (title!=t) list.add(t);
+          }
+          safeCloseTabs(list.toArray(new TabTitle[list.size()]));
+        }
+      });
+      result.add(closeOthers);
+      
+      final JMenuItem closeAll = new JMenuItem("Close All");
+      closeAll.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull ActionEvent e) {
+          final List<TabTitle> list = new ArrayList<>();
+          for(final TabTitle t : theInstance){
+            list.add(t);
+          }
+          safeCloseTabs(list.toArray(new TabTitle[list.size()]));
+        }
+      });
+      result.add(closeAll);
+      
+      final JMenuItem showInTree = new JMenuItem("Focus in the tree");
       showInTree.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -94,6 +124,16 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
     return result;
   }
 
+  private void safeCloseTabs(final TabTitle ... titles){
+    boolean foundUnsaved = false;
+    for(final TabTitle t : titles){
+      foundUnsaved  |= t.isChanged();
+    }
+    if (!foundUnsaved || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected unsaved","Detected unsaved documents! Close anyway?")){
+      this.context.closeTab(titles);
+    }
+  }
+  
   public void createTab(@Nonnull final TabProvider panel) {
     super.addTab("...", panel.getMainComponent());
     final int count = this.getTabCount() - 1;

@@ -31,11 +31,11 @@ public class Main {
   private static MainFrame MAIN_FRAME;
 
   @Nonnull
-  public static MainFrame getApplicationFrame(){
+  public static MainFrame getApplicationFrame() {
     return MAIN_FRAME;
   }
-  
-  public static void main(@Nonnull @MustNotContainNull final String ... args){
+
+  public static void main(@Nonnull @MustNotContainNull final String... args) {
     try {
       for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
         if ("nimbus".equalsIgnoreCase(info.getName())) {
@@ -50,16 +50,23 @@ public class Main {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        
+
         final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         final int width = gd.getDisplayMode().getWidth();
         final int height = gd.getDisplayMode().getHeight();
-        
+
         MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
         MAIN_FRAME = new MainFrame();
-        MAIN_FRAME.setSize(Math.round(width*0.75f), Math.round(height*0.75f));
-        
+        MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
+
         MAIN_FRAME.setVisible(true);
+
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            MAIN_FRAME.setExtendedState(MAIN_FRAME.getExtendedState() | MAIN_FRAME.MAXIMIZED_BOTH);
+          }
+        });
       }
     });
   }

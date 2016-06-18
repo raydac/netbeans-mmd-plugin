@@ -16,6 +16,8 @@
 package com.igormaznitsa.sciareto.ui.tree;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
@@ -28,48 +30,48 @@ import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 
-public class ProjectGroupTree extends FileTreeNode implements TreeModel {
+public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Iterable<NodeProject> {
 
   protected final String groupName;
   protected final List<TreeModelListener> listeners = new CopyOnWriteArrayList<>();
 
-  public ProjectGroupTree(@Nonnull final String name) {
+  public NodeProjectGroup(@Nonnull final String name) {
     super(null, null, false);
     this.groupName = name;
   }
 
   @Nullable
-  public ProjectTree findForFolder(@Nonnull final File folder) {
-    ProjectTree result = null;
-    for (final FileTreeNode n : this.children) {
+  public NodeProject findForFolder(@Nonnull final File folder) {
+    NodeProject result = null;
+    for (final NodeFileOrFolder n : this.children) {
       if (folder.equals(n.file)) {
-        result = (ProjectTree) n;
+        result = (NodeProject) n;
       }
     }
     return result;
   }
 
-  public void removeProject(@Nonnull final ProjectTree project) {
+  public void removeProject(@Nonnull final NodeProject project) {
     int index = this.children.indexOf(project);
-    if (index>=0 && this.children.remove(project)) {
-        final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this},new int[]{index},new Object[]{project});
-          for (final TreeModelListener l : listeners) {
-            l.treeNodesRemoved(event);
-          }
-        }
+    if (index >= 0 && this.children.remove(project)) {
+      final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this}, new int[]{index}, new Object[]{project});
+      for (final TreeModelListener l : this.listeners) {
+        l.treeNodesRemoved(event);
+      }
+    }
   }
 
   @Nonnull
-  public ProjectTree addProjectFolder(@Nonnull final File folder) {
-    ProjectTree newProject = findForFolder(folder);
+  public NodeProject addProjectFolder(@Nonnull final File folder) {
+    NodeProject newProject = findForFolder(folder);
     if (newProject == null) {
-      newProject = new ProjectTree(this, folder);
+      newProject = new NodeProject(this, folder);
 
       final int index = this.children.size();
       this.children.add(newProject);
 
-      final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this}, new int []{index}, new Object[]{newProject});
-      for (final TreeModelListener l : listeners) {
+      final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this}, new int[]{index}, new Object[]{newProject});
+      for (final TreeModelListener l : this.listeners) {
         l.treeNodesInserted(event);
       }
     }
@@ -85,17 +87,17 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
   @Override
   @Nonnull
   public Object getChild(@Nonnull final Object parent, final int index) {
-    return ((FileTreeNode) parent).getChildAt(index);
+    return ((NodeFileOrFolder) parent).getChildAt(index);
   }
 
   @Override
   public int getChildCount(@Nonnull final Object parent) {
-    return ((FileTreeNode) parent).getChildCount();
+    return ((NodeFileOrFolder) parent).getChildCount();
   }
 
   @Override
   public boolean isLeaf(@Nonnull final Object node) {
-    return ((FileTreeNode) node).isLeaf();
+    return ((NodeFileOrFolder) node).isLeaf();
   }
 
   @Override
@@ -105,7 +107,7 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
 
   @Override
   public int getIndexOfChild(@Nonnull final Object parent, @Nonnull final Object child) {
-    return ((FileTreeNode) parent).getIndex((FileTreeNode) child);
+    return ((NodeFileOrFolder) parent).getIndex((NodeFileOrFolder) child);
   }
 
   @Override
@@ -119,11 +121,11 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
   }
 
   @Nullable
-  public ProjectTree findProjectForFile(@Nonnull final File file) {
+  public NodeProject findProjectForFile(@Nonnull final File file) {
     final Path filepath = Paths.toPath(file);
-    for (final FileTreeNode t : this.children) {
+    for (final NodeFileOrFolder t : this.children) {
       if (t.getFile() != null && filepath.startsWith(Paths.toPath(t.getFile()))) {
-        return (ProjectTree) t;
+        return (NodeProject) t;
       }
     }
     return null;
@@ -133,16 +135,46 @@ public class ProjectGroupTree extends FileTreeNode implements TreeModel {
   @Nullable
   public TreePath findPathToFile(@Nonnull final File file) {
     TreePath path = null;
-    for(final FileTreeNode p : this.children){
+    for (final NodeFileOrFolder p : this.children) {
       path = p.findPathToFile(file);
-      if (path!=null){
+      if (path != null) {
         break;
       }
     }
-    if (path!=null){
-      path = new TreePath(ArrayUtils.joinArrays(new Object[]{this},path.getPath()));
+    if (path != null) {
+      path = new TreePath(ArrayUtils.joinArrays(new Object[]{this}, path.getPath()));
     }
     return path;
+  }
+
+  public void refreshProjectFolder(@Nonnull final NodeProject nodeProject) {
+    final int index = this.getIndex(nodeProject);
+    if (index >= 0) {
+      nodeProject.refresh(true);
+      final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this}, new int[]{index}, new Object[]{nodeProject});
+      for (final TreeModelListener l : this.listeners) {
+        l.treeStructureChanged(event);
+      }
+    }
+  }
+
+  @Override
+  @Nonnull
+  public Iterator<NodeProject> iterator() {
+    final List<NodeFileOrFolder> projects = new ArrayList<>(this.children);
+    final Iterator<NodeFileOrFolder> result = projects.iterator();
+    return new Iterator<NodeProject>() {
+      @Override
+      public boolean hasNext() {
+        return result.hasNext();
+      }
+
+      @Override
+      @Nonnull
+      public NodeProject next() {
+        return (NodeProject)result.next();
+      }
+    };
   }
 
 }

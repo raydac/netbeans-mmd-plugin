@@ -18,9 +18,11 @@ package com.igormaznitsa.sciareto.ui.tabs;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
+import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.Weight;
 
 public interface TabProvider {
+
   @Weight(Weight.Unit.NORMAL)
   @Nonnull
   TabTitle getTabTitle();
@@ -29,4 +31,7 @@ public interface TabProvider {
   @Nonnull
   JComponent getMainComponent();
   boolean saveDocument();
+  boolean saveDocumentAs();
+  @Nonnull
+  FileFilter getFileFilter();
 }

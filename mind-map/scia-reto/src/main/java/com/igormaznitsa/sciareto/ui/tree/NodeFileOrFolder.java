@@ -28,19 +28,19 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 
-public class FileTreeNode implements TreeNode {
+public class NodeFileOrFolder implements TreeNode {
 
-  protected final FileTreeNode parent;
+  protected final NodeFileOrFolder parent;
   protected final File file;
   
-  protected final List<FileTreeNode> children;
+  protected final List<NodeFileOrFolder> children;
   protected final boolean folder;
   
   protected final String fileName;
   
   private static final DataFlavor [] DATA_FLAVOR = new DataFlavor[]{DataFlavor.javaFileListFlavor};
   
-  public FileTreeNode(@Nullable final FileTreeNode parent, @Nullable final File file, final boolean fillChildren){
+  public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, @Nullable final File file, final boolean fillChildren){
     this.parent = parent;
     this.file = file;
     this.fileName = file == null ? "." : file.getName();
@@ -67,7 +67,7 @@ public class FileTreeNode implements TreeNode {
     if (this.file != null && this.folder){
       this.children.clear();
       for (final File f : file.listFiles()) {
-        this.children.add(new FileTreeNode(this, f, deepRefresh));
+        this.children.add(new NodeFileOrFolder(this, f, deepRefresh));
       }
     }
   }
@@ -113,7 +113,7 @@ public class FileTreeNode implements TreeNode {
   @Override
   @Nonnull
   public Enumeration children() {
-    final Iterator<FileTreeNode> iterator = this.children.iterator();
+    final Iterator<NodeFileOrFolder> iterator = this.children.iterator();
     return new Enumeration() {
       
       @Override
@@ -135,7 +135,7 @@ public class FileTreeNode implements TreeNode {
       return new TreePath(new Object[]{this});
     }
     if (!this.isLeaf()){
-      for(final FileTreeNode c : this.children){
+      for(final NodeFileOrFolder c : this.children){
         final TreePath result = c.findPathToFile(file);
         if (result!=null) {
           return new TreePath(ArrayUtils.joinArrays(new Object[]{this},result.getPath()));
