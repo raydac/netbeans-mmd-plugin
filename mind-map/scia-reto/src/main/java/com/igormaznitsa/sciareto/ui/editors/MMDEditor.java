@@ -24,12 +24,21 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javax.annotation.Nonnull;
@@ -84,8 +93,9 @@ import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 
-public class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener {
+public class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener,DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
@@ -98,6 +108,8 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
   private final Context context;
 
+  private boolean dragAcceptableType;
+  
   public void refreshConfig() {
     this.mindMapPanel.refreshConfiguration();
   }
@@ -138,6 +150,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     }
 
     this.mindMapPanel.setModel(Assertions.assertNotNull(map));
+    this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
   }
 
   @Override
@@ -363,6 +376,116 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     return result;
   }
 
+  @Override
+  public void dragEnter(DropTargetDragEvent dtde) {
+    this.dragAcceptableType = checkDragType(dtde);
+    if (!this.dragAcceptableType) {
+      dtde.rejectDrag();
+    }
+  }
+
+  @Override
+  public void dragOver(final DropTargetDragEvent dtde) {
+    if (acceptOrRejectDragging(dtde)) {
+      dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+    } else {
+      dtde.rejectDrag();
+    }
+  }
+
+  @Override
+  public void dropActionChanged(@Nonnull final DropTargetDragEvent dtde) {
+  }
+
+  @Override
+  public void dragExit(@Nonnull final DropTargetEvent dte) {
+  }
+
+  @Override
+  public void drop(final DropTargetDropEvent dtde) {
+
+    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+    File detectedFileObject = null;
+
+    for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
+      final Class<?> representation = df.getRepresentationClass();
+      if (FileTransferable.class.isAssignableFrom(representation)) {
+        final FileTransferable t = (FileTransferable)dtde.getTransferable();
+        final List<File> listOfFiles = t.getFiles();
+        detectedFileObject = listOfFiles.isEmpty() ? null : listOfFiles.get(0);
+        break;
+      } else if (df.isFlavorJavaFileListType()) {
+        try {
+          final List list = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+          if (list != null && !list.isEmpty()) {
+            detectedFileObject = (File) list.get(0);
+          }
+          break;
+        } catch (Exception ex) {
+          LOGGER.error("Can't extract file from DnD", ex);
+        }
+      }
+    }
+
+    if (detectedFileObject!=null){
+      addFileToElement(detectedFileObject, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
+    }
+  }
+
+  private void addFileToElement(final File theFile, final AbstractElement element) {
+    if (element != null) {
+      final Topic topic = element.getModel();
+      final MMapURI theURI;
+
+      if (PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true)) { //NOI18N
+        final File projectFolder = getProjectFolder();
+        if (theFile.equals(projectFolder)) {
+          theURI = new MMapURI(projectFolder, new File("."), null);
+        } else {
+          theURI = new MMapURI(projectFolder, theFile, null);
+        }
+      } else {
+        theURI = new MMapURI(null, theFile, null);
+      }
+
+      if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+          return;
+        }
+      }
+
+      topic.setExtra(new ExtraFile(theURI));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+  
+  
+  protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
+    final int dropAction = dtde.getDropAction();
+
+    boolean result = false;
+
+    if (this.dragAcceptableType && (dropAction & DnDConstants.ACTION_COPY_OR_MOVE) != 0 && this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()) != null) {
+      result = true;
+    }
+
+    return result;
+  }
+  
+  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
+    boolean result = false;
+    for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
+      final Class dataClass = flavor.getRepresentationClass();
+      if (FileTransferable.class.isAssignableFrom(dataClass) || flavor.isFlavorJavaFileListType()) {
+        result = true;
+        break;
+      }
+    }
+    return result;
+  }
+  
   @Nonnull
   private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> getCustomProcessors() {
     if (this.customProcessors == null) {

@@ -15,19 +15,27 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.DropMode;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
+import javax.swing.TransferHandler;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -36,30 +44,16 @@ public final class ExplorerTree extends JScrollPane {
 
   private static final long serialVersionUID = 3894835807758698784L;
 
-  private final JTree projectTree;
+  private final DnDTree projectTree;
   private final Context context;
   
   public ExplorerTree(@Nonnull final Context context) {
     super();
-    this.projectTree = new JTree() {
-      @Override
-      public String getToolTipText(@Nonnull final MouseEvent evt) {
-        if (getRowForLocation(evt.getX(), evt.getY()) == -1) {
-          return null;
-        }
-        final TreePath curPath = getPathForLocation(evt.getX(), evt.getY());
-        final Object lastElement = curPath.getLastPathComponent();
-        if (lastElement instanceof NodeFileOrFolder) {
-          final File file = ((NodeFileOrFolder) lastElement).getFile();
-          return file == null ? null : file.getAbsolutePath();
-        } else {
-          return null;
-        }
-      }
-    };
+    this.projectTree = new DnDTree();
     this.context = context;
-    this.projectTree.setDragEnabled(true);
-
+    this.projectTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);    
+    this.projectTree.setDropMode(DropMode.ON);
+    
     ToolTipManager.sharedInstance().registerComponent(this.projectTree);
 
     this.projectTree.setCellRenderer(new TreeCellRenderer());
