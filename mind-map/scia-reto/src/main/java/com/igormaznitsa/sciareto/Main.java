@@ -30,23 +30,25 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 
 public class Main {
-  
+
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-  
+
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L,0L,0L}, null);
-  
+  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 0L, 0L}, null);
+
   private static final String PROPERTY = "nbmmd.plugin.folder";
-  
+  public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel";
+
   @Nonnull
   public static MainFrame getApplicationFrame() {
     return MAIN_FRAME;
   }
 
-  private static void loadPlugins(){
+  private static void loadPlugins() {
     final String pluginFolder = System.getProperty(PROPERTY);
     if (pluginFolder != null) {
       final File folder = new File(pluginFolder);
@@ -58,13 +60,20 @@ public class Main {
       }
     } else {
       LOGGER.info("Property " + PROPERTY + " is not defined");
-    }  
+    }
   }
-  
+
   public static void main(@Nonnull @MustNotContainNull final String... args) {
+    final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, null);
+
     try {
       for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("nimbus".equalsIgnoreCase(info.getName())) {
+        if (selectedLookAndFeel == null) {
+          if ("nimbus".equalsIgnoreCase(info.getName())) {
+            UIManager.setLookAndFeel(info.getClassName());
+            break;
+          }
+        } else if (selectedLookAndFeel.equals(info.getClassName())) {
           UIManager.setLookAndFeel(info.getClassName());
           break;
         }
@@ -74,7 +83,7 @@ public class Main {
     }
 
     loadPlugins();
-    
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {

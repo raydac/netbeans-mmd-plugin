@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
-import java.awt.AWTEvent;
 import com.igormaznitsa.sciareto.ui.tabs.MainTabPane;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
@@ -27,17 +26,12 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -49,16 +43,20 @@ import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JWindow;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
@@ -74,7 +72,6 @@ import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import javafx.scene.layout.TilePane;
 
 public final class MainFrame extends javax.swing.JFrame implements Context {
 
@@ -93,6 +90,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
     this.stateless = args.length > 0;
 
+    final MainFrame theInstance = this;
+    
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
@@ -189,6 +188,33 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       if (!openedProject) {
         //TODO try to hide project panel!
       }
+    }
+
+    this.menuView.add(new JSeparator());
+    
+    final LookAndFeel current = UIManager.getLookAndFeel();
+    final ButtonGroup lfGroup = new ButtonGroup();
+    final String currentLFClassName = current.getClass().getName();
+    for (final UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+      final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(info.getName());
+      lfGroup.add(menuItem);
+      if (currentLFClassName.equals(info.getClassName())){
+        menuItem.setSelected(true);
+      }
+      menuItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          try{
+            UIManager.setLookAndFeel(info.getClassName());
+            SwingUtilities.updateComponentTreeUI(theInstance);
+            PreferencesManager.getInstance().getPreferences().put(Main.PROPERTY_LOOKANDFEEL, info.getClassName());
+            PreferencesManager.getInstance().flush();
+          }catch(Exception ex){
+            LOGGER.error("Can't change LF",ex);
+          }
+        }
+      });
+      this.menuView.add(menuItem);
     }
   }
 
