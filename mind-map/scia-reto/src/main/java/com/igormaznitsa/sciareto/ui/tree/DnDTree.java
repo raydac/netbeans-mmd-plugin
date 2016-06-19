@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
+import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -45,6 +46,8 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
 
   private static final long serialVersionUID = -4915750239120689053L;
 
+  private boolean dragAcceptableType;
+  
   public DnDTree(){
     super();
     this.setDragEnabled(true);
@@ -98,7 +101,6 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
       return null;
     }
   }
-
   
   @Override
   public void dragEnter(@Nonnull final DragSourceDragEvent dsde) {
@@ -117,15 +119,24 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
   }
 
   @Override
-  public void dragDropEnd(@Nonnull final DragSourceDropEvent dsde) {
+  public void dragDropEnd(@Nonnull final DragSourceDropEvent dtde) {
   }
 
   @Override
-  public void dragEnter(@Nonnull final DropTargetDragEvent dtde) {
+  public void dragEnter(DropTargetDragEvent dtde) {
+    dtde.rejectDrag();
+//    
+//    this.dragAcceptableType = checkDragType(dtde);
+//    if (!this.dragAcceptableType) {
+//      dtde.rejectDrag();
+//    }
   }
 
   @Override
   public void dragOver(@Nonnull final DropTargetDragEvent dtde) {
+    if (!this.dragAcceptableType){
+      dtde.rejectDrag();
+    }
   }
 
   @Override
@@ -138,8 +149,41 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
 
   @Override
   public void drop(@Nonnull final DropTargetDropEvent dtde) {
+    if (this.dragAcceptableType) {
+
+      final Point dragPoint = dtde.getLocation();
+
+      final TreePath path = getPathForLocation(dragPoint.x, dragPoint.y);
+
+      if (path != null) {
+        final Object dropTargetNode = path.getLastPathComponent();
+        if (dropTargetNode instanceof NodeFileOrFolder) {
+          final NodeFileOrFolder node = (NodeFileOrFolder) dropTargetNode;
+          if (!node.isLeaf()) {
+           //TODO
+           System.out.println("Moved file");
+          } else {
+            dtde.rejectDrop();
+          }
+        }
+      }
+
+      repaint();
+    }
   }
 
+  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
+    boolean result = false;
+    for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
+      final Class dataClass = flavor.getRepresentationClass();
+      if (FileTransferable.class.isAssignableFrom(dataClass) || flavor.isFlavorJavaFileListType()) {
+        result = true;
+        break;
+      }
+    }
+    return result;
+  }
+  
   @Override
   public void dragGestureRecognized(@Nonnull final DragGestureEvent dragGestureEvent) {
     final JTree tree = (JTree) dragGestureEvent.getComponent();

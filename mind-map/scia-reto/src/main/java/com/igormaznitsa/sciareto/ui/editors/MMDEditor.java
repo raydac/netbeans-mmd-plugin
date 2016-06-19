@@ -31,7 +31,6 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +50,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.annotation.ToDo;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -381,16 +379,20 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     this.dragAcceptableType = checkDragType(dtde);
     if (!this.dragAcceptableType) {
       dtde.rejectDrag();
+    }else{
+      dtde.acceptDrag(DnDConstants.ACTION_MOVE);
     }
+    repaint();
   }
 
   @Override
   public void dragOver(final DropTargetDragEvent dtde) {
     if (acceptOrRejectDragging(dtde)) {
-      dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+      dtde.acceptDrag(DnDConstants.ACTION_MOVE);
     } else {
       dtde.rejectDrag();
     }
+    repaint();
   }
 
   @Override
@@ -460,7 +462,6 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
       onMindMapModelChanged(this.mindMapPanel);
     }
   }
-  
   
   protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
     final int dropAction = dtde.getDropAction();
