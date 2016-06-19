@@ -20,7 +20,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.net.URI;
 import java.util.Properties;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
-import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkListener {
@@ -36,6 +36,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
     final Properties props = new Properties();
     props.setProperty("version", version);
+    props.setProperty("ideversion", Main.IDE_VERSION.toString());
     this.textLabel.replaceMacroses(props);
     this.textLabel.addLinkListener(this);
     this.textLabel.setShowLinkAddressInTooltip(true);

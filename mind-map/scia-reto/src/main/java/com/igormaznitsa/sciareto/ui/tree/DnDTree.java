@@ -35,6 +35,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Arrays;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JTree;
@@ -88,6 +89,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
   }
   
   @Override
+  @Nullable
   public String getToolTipText(@Nonnull final MouseEvent evt) {
     if (getRowForLocation(evt.getX(), evt.getY()) == -1) {
       return null;
@@ -123,7 +125,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
   }
 
   @Override
-  public void dragEnter(DropTargetDragEvent dtde) {
+  public void dragEnter(@Nonnull final DropTargetDragEvent dtde) {
     dtde.rejectDrag();
 //    
 //    this.dragAcceptableType = checkDragType(dtde);
@@ -172,7 +174,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     }
   }
 
-  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
+  protected static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
     boolean result = false;
     for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
       final Class dataClass = flavor.getRepresentationClass();

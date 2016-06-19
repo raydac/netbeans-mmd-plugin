@@ -375,7 +375,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
   }
 
   @Override
-  public void dragEnter(DropTargetDragEvent dtde) {
+  public void dragEnter(@Nonnull final DropTargetDragEvent dtde) {
     this.dragAcceptableType = checkDragType(dtde);
     if (!this.dragAcceptableType) {
       dtde.rejectDrag();
@@ -386,7 +386,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
   }
 
   @Override
-  public void dragOver(final DropTargetDragEvent dtde) {
+  public void dragOver(@Nonnull final DropTargetDragEvent dtde) {
     if (acceptOrRejectDragging(dtde)) {
       dtde.acceptDrag(DnDConstants.ACTION_MOVE);
     } else {
@@ -404,9 +404,9 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
   }
 
   @Override
-  public void drop(final DropTargetDropEvent dtde) {
+  public void drop(@Nonnull final DropTargetDropEvent dtde) {
 
-    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+    dtde.acceptDrop(DnDConstants.ACTION_MOVE);
     File detectedFileObject = null;
 
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
@@ -434,7 +434,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     }
   }
 
-  private void addFileToElement(final File theFile, final AbstractElement element) {
+  private void addFileToElement(@Nonnull final File theFile, @Nullable final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();
       final MMapURI theURI;
@@ -463,7 +463,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     }
   }
   
-  protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
+  protected boolean acceptOrRejectDragging(@Nonnull final DropTargetDragEvent dtde) {
     final int dropAction = dtde.getDropAction();
 
     boolean result = false;
@@ -475,7 +475,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     return result;
   }
   
-  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
+  protected static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
     boolean result = false;
     for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
       final Class dataClass = flavor.getRepresentationClass();

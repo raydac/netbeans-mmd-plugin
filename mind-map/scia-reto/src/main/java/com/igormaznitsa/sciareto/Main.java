@@ -17,24 +17,50 @@ package com.igormaznitsa.sciareto;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
 
 public class Main {
-
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+  
   private static MainFrame MAIN_FRAME;
 
+  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L,0L,0L}, null);
+  
+  private static final String PROPERTY = "nbmmd.plugin.folder";
+  
   @Nonnull
   public static MainFrame getApplicationFrame() {
     return MAIN_FRAME;
   }
 
+  private static void loadPlugins(){
+    final String pluginFolder = System.getProperty(PROPERTY);
+    if (pluginFolder != null) {
+      final File folder = new File(pluginFolder);
+      if (folder.isDirectory()) {
+        LOGGER.info("Loading plugins from folder : " + folder);
+        new ExternalPlugins(folder).init();
+      } else {
+        LOGGER.error("Can't find plugin folder : " + folder);
+      }
+    } else {
+      LOGGER.info("Property " + PROPERTY + " is not defined");
+    }  
+  }
+  
   public static void main(@Nonnull @MustNotContainNull final String... args) {
     try {
       for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -47,6 +73,8 @@ public class Main {
       System.out.println("Can't use NIMBUS");
     }
 
+    loadPlugins();
+    
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
