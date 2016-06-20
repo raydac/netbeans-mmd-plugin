@@ -31,15 +31,17 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
-public class TextEditor extends AbstractScrollPane {
+public final class TextEditor extends AbstractScrollPane {
 
   private static final long serialVersionUID = -8551212562825517869L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TextEditor.class);
-  
+
   private final JTextArea editor;
   private final TabTitle title;
-  
+
+  private boolean ignoreChange;
+
   public static final FileFilter TXT_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -59,36 +61,54 @@ public class TextEditor extends AbstractScrollPane {
   public FileFilter getFileFilter() {
     return TXT_FILE_FILTER;
   }
-  
-  
+
   public TextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     this.editor = new JTextArea();
-    if (file!=null){
-      this.editor.setText(FileUtils.readFileToString(file, "UTF-8"));
-      this.editor.setCaretPosition(0);
-    }
     this.title = new TabTitle(context, this, file);
+    
     this.editor.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void insertUpdate(@Nonnull final DocumentEvent e) {
-        title.setChanged(true);
+        if (!ignoreChange) {
+          title.setChanged(true);
+        }
       }
 
       @Override
       public void removeUpdate(@Nonnull final DocumentEvent e) {
-        title.setChanged(true);
+        if (!ignoreChange) {
+          title.setChanged(true);
+        }
       }
 
       @Override
       public void changedUpdate(@Nonnull final DocumentEvent e) {
-        title.setChanged(true);
+        if (!ignoreChange) {
+          title.setChanged(true);
+        }
       }
     });
-    
+
     setViewportView(this.editor);
+    
+    loadContent(file);
   }
-  
+
+  @Override
+  public void loadContent(@Nullable final File file) throws IOException {
+    this.ignoreChange = true;
+    try {
+      if (file != null) {
+        this.editor.setText(FileUtils.readFileToString(file, "UTF-8"));
+        this.editor.setCaretPosition(0);
+      }
+    } finally {
+      this.ignoreChange = false;
+    }
+    this.revalidate();
+  }
+
   @Override
   public boolean saveDocument() {
     boolean result = false;
@@ -113,7 +133,6 @@ public class TextEditor extends AbstractScrollPane {
     return result;
   }
 
-  
   @Override
   @Nonnull
   public TabTitle getTabTitle() {
@@ -125,5 +144,5 @@ public class TextEditor extends AbstractScrollPane {
   public JComponent getMainComponent() {
     return this;
   }
-  
+
 }

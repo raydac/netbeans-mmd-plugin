@@ -28,11 +28,13 @@ import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import org.apache.commons.lang.StringEscapeUtils;
+import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
@@ -192,6 +194,13 @@ public final class TabTitle extends JPanel {
 
   public boolean isChanged() {
     return this.changed;
+  }
+
+  public void disposeEditor() {
+    final JComponent compo = this.parent.getMainComponent();
+    if (compo instanceof Disposable){
+      ((Disposable) compo).dispose();
+    }
   }
 
   @Nonnull

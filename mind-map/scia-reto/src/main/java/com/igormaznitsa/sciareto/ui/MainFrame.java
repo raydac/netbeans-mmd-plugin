@@ -26,8 +26,8 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
@@ -41,6 +41,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ButtonGroup;
@@ -52,7 +53,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JWindow;
 import javax.swing.LookAndFeel;
@@ -67,6 +67,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
@@ -84,6 +85,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private final boolean stateless;
 
+  private final AtomicReference<Runnable> taskToEndFullScreen = new AtomicReference<>();
+
   public MainFrame(@Nonnull @MustNotContainNull final String... args) {
     initComponents();
     setIconImage(UiUtils.loadImage("logo256x256.png"));
@@ -91,7 +94,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     this.stateless = args.length > 0;
 
     final MainFrame theInstance = this;
-    
+
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
@@ -190,35 +193,35 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     }
 
-    this.menuView.add(new JSeparator());
-    
     final LookAndFeel current = UIManager.getLookAndFeel();
     final ButtonGroup lfGroup = new ButtonGroup();
     final String currentLFClassName = current.getClass().getName();
     for (final UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
       final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(info.getName());
       lfGroup.add(menuItem);
-      if (currentLFClassName.equals(info.getClassName())){
+      if (currentLFClassName.equals(info.getClassName())) {
         menuItem.setSelected(true);
       }
       menuItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          try{
+          try {
             UIManager.setLookAndFeel(info.getClassName());
             SwingUtilities.updateComponentTreeUI(theInstance);
             PreferencesManager.getInstance().getPreferences().put(Main.PROPERTY_LOOKANDFEEL, info.getClassName());
             PreferencesManager.getInstance().flush();
-          }catch(Exception ex){
-            LOGGER.error("Can't change LF",ex);
+          } catch (Exception ex) {
+            LOGGER.error("Can't change LF", ex);
           }
         }
       });
-      this.menuView.add(menuItem);
+      this.menuLookAndFeel.add(menuItem);
     }
   }
 
   private boolean doClosing() {
+    endFullScreenIfActive();
+    
     boolean hasUnsaved = false;
     for (final TabTitle t : tabPane) {
       hasUnsaved |= t.isChanged();
@@ -400,6 +403,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuPreferences = new javax.swing.JMenuItem();
     menuView = new javax.swing.JMenu();
     menuFullScreen = new javax.swing.JMenuItem();
+    menuLookAndFeel = new javax.swing.JMenu();
     menuHelp = new javax.swing.JMenu();
     menuAbout = new javax.swing.JMenuItem();
 
@@ -509,6 +513,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     });
     menuView.add(menuFullScreen);
 
+    menuLookAndFeel.setText("Look and Feel");
+    menuView.add(menuLookAndFeel);
+
     jMenuBar1.add(menuView);
 
     menuHelp.setText("Help");
@@ -574,7 +581,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     if (folder.isDirectory()) {
       final NodeProject alreadyOpened = findProjectForFile(folder);
       if (alreadyOpened == null || enforceSeparatedProject) {
-        this.explorerTree.getCurrentGroup().addProjectFolder(folder);
+        final boolean firstProject = this.explorerTree.getCurrentGroup().getChildCount() == 0;
+        final NodeProject node = this.explorerTree.getCurrentGroup().addProjectFolder(folder);
+        if (firstProject) {
+          this.explorerTree.unfoldProject(node);
+        }
         try {
           FileHistoryManager.getInstance().registerOpenedProject(folder);
         } catch (IOException ex) {
@@ -684,36 +695,77 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private void menuFullScreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFullScreenActionPerformed
     final Component currentComponent = this.tabPane.getSelectedComponent();
+    if (!(currentComponent instanceof Container)) {
+      LOGGER.warn("Detected attempt to full screen not a container : " + currentComponent);
+      return;
+    }
 
-    final GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    if (currentComponent instanceof Container && device.isFullScreenSupported()) {
-      final JLabel label = new JLabel("Opened in full screen");
-      final int tabIndex = this.tabPane.getSelectedIndex();
-      this.tabPane.setComponentAt(tabIndex,label);
-      final JWindow window = new JWindow(Main.getApplicationFrame());
-      window.setAlwaysOnTop(true);
-      window.setContentPane((Container)currentComponent);
-      final KeyEventDispatcher fullScreenEscCatcher = new KeyEventDispatcher() {
-        @Override
-        public boolean dispatchKeyEvent(@Nonnull final KeyEvent e) {
-          if (e.getID() == KeyEvent.KEY_PRESSED && (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_F11)) {
-            try {
-              window.dispose();
-            } finally {
-              tabPane.setComponentAt(tabIndex, currentComponent);
-              device.setFullScreenWindow(null);
-              KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this);
+    final GraphicsConfiguration gconfig = this.getGraphicsConfiguration();
+    if (gconfig != null) {
+      final GraphicsDevice device = gconfig.getDevice();
+      if (device.isFullScreenSupported()) {
+        if (device.getFullScreenWindow() == null) {
+          final JLabel label = new JLabel("Opened in full screen");
+          final int tabIndex = this.tabPane.getSelectedIndex();
+          this.tabPane.setComponentAt(tabIndex, label);
+          final JWindow window = new JWindow(Main.getApplicationFrame());
+          window.setAlwaysOnTop(true);
+          window.setContentPane((Container) currentComponent);
+
+          endFullScreenIfActive();
+
+          final KeyEventDispatcher fullScreenEscCatcher = new KeyEventDispatcher() {
+            @Override
+            public boolean dispatchKeyEvent(@Nonnull final KeyEvent e) {
+              if (e.getID() == KeyEvent.KEY_PRESSED && (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_F11)) {
+                endFullScreenIfActive();
+                return true;
+              }
+              return false;
             }
-            return true;
-          }
-          return false;
-        }
-      };
+          };
 
-      KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(fullScreenEscCatcher);
-      device.setFullScreenWindow(window);
+          if (this.taskToEndFullScreen.compareAndSet(null, new Runnable() {
+            @Override
+            public void run() {
+              try {
+                window.dispose();
+              } finally {
+                tabPane.setComponentAt(tabIndex, currentComponent);
+                device.setFullScreenWindow(null);
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
+              }
+            }
+          })) {
+            try {
+              KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(fullScreenEscCatcher);
+              device.setFullScreenWindow(window);
+            } catch (Exception ex) {
+              LOGGER.error("Can't turn on full screen", ex);
+              endFullScreenIfActive();
+              KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
+            }
+          } else {
+            LOGGER.error("Unexpected state, processor is not null!");
+          }
+        } else {
+          LOGGER.warn("Attempt to full screen device which already in full screen!");
+        }
+      } else {
+        LOGGER.warn("Device doesn's support full screen");
+        DialogProviderManager.getInstance().getDialogProvider().msgWarn("The Device doesn't support full-screen mode!");
+      }
+    } else {
+      LOGGER.warn("Can't find graphics config for the frame");
     }
   }//GEN-LAST:event_menuFullScreenActionPerformed
+
+  public void endFullScreenIfActive() {
+    final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
+    if (runnable != null) {
+      Utils.safeSwingCall(runnable);
+    }
+  }
 
   @Nullable
   @Override
@@ -760,6 +812,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private javax.swing.JMenu menuFile;
   private javax.swing.JMenuItem menuFullScreen;
   private javax.swing.JMenu menuHelp;
+  private javax.swing.JMenu menuLookAndFeel;
   private javax.swing.JMenuItem menuNewFile;
   private javax.swing.JMenuItem menuNewProject;
   private javax.swing.JMenuItem menuOpenFile;

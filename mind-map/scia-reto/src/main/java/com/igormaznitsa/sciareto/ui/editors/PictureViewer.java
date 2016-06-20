@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -36,15 +37,15 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
-public class PictureViewer extends AbstractScrollPane {
+public final class PictureViewer extends AbstractScrollPane {
 
   private static final long serialVersionUID = 4262835444678960206L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PictureViewer.class);
-  
+
   private final TabTitle title;
   private final JLabel label;
-  private final BufferedImage image;
+  private BufferedImage image;
   public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif")));
 
   public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
@@ -74,30 +75,42 @@ public class PictureViewer extends AbstractScrollPane {
     super();
     this.title = new TabTitle(context, this, file);
     this.label = new JLabel();
-    
-    BufferedImage loaded = null;
-    try {
-      loaded = ImageIO.read(file);
-    } catch (Exception ex) {
-      LOGGER.error("Can't load image",ex);
-      loaded = null;
-    }
 
-    this.image = loaded;
-    
     this.label.setHorizontalTextPosition(JLabel.CENTER);
     this.label.setVerticalTextPosition(JLabel.CENTER);
     this.label.setHorizontalAlignment(SwingConstants.CENTER);
     this.label.setVerticalAlignment(SwingConstants.CENTER);
-    
-    if (this.image == null){
+
+    loadContent(file);
+  }
+
+  @Override
+  public void loadContent(@Nullable final File file) throws IOException {
+    BufferedImage loaded = null;
+    if (file != null) {
+      try {
+        loaded = ImageIO.read(file);
+      } catch (Exception ex) {
+        LOGGER.error("Can't load image", ex);
+        loaded = null;
+      }
+    }
+
+    this.image = loaded;
+
+    this.label.setHorizontalTextPosition(JLabel.CENTER);
+    this.label.setVerticalTextPosition(JLabel.CENTER);
+    this.label.setHorizontalAlignment(SwingConstants.CENTER);
+    this.label.setVerticalAlignment(SwingConstants.CENTER);
+
+    if (this.image == null) {
       this.label.setIcon(null);
       this.label.setText("Can't load image");
     } else {
       this.label.setIcon(new ImageIcon(this.image));
       this.label.setText("");
     }
-    
+
     this.setViewportView(this.label);
     this.revalidate();
   }
@@ -107,15 +120,15 @@ public class PictureViewer extends AbstractScrollPane {
     boolean result = false;
     final String ext = FilenameUtils.getExtension(this.title.getAssociatedFile().getName()).trim().toLowerCase(Locale.ENGLISH);
     if (SUPPORTED_FORMATS.contains(ext)) {
-      try{
+      try {
         ImageIO.write(this.image, ext, this.title.getAssociatedFile());
         result = true;
-      }catch(Exception ex){
-        LOGGER.error("Can't write image",ex);
+      } catch (Exception ex) {
+        LOGGER.error("Can't write image", ex);
       }
     } else {
       try {
-        LOGGER.warn("unsupported image format, will be saved as png : "+ext);
+        LOGGER.warn("unsupported image format, will be saved as png : " + ext);
         ImageIO.write(this.image, "png", this.title.getAssociatedFile());
         result = true;
       } catch (Exception ex) {

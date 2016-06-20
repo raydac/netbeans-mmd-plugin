@@ -93,7 +93,7 @@ import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 
-public class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener,DropTargetListener {
+public final class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener,DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
@@ -139,6 +139,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
     this.setViewportView(this.mindMapPanel);
+    this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
     final MindMap map;
     if (file == null) {
@@ -148,9 +149,23 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     }
 
     this.mindMapPanel.setModel(Assertions.assertNotNull(map));
-    this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
+    
+    loadContent(file);
   }
 
+  @Override
+  public void loadContent(@Nullable File file) throws IOException {
+    final MindMap map;
+    if (file == null) {
+      map = new MindMap(this, true);
+    } else {
+      map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
+    }
+    this.mindMapPanel.setModel(Assertions.assertNotNull(map));
+    
+    this.revalidate();
+  }
+  
   @Override
   public boolean saveDocument() {
     boolean result = false;
@@ -312,6 +327,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {
+          Main.getApplicationFrame().endFullScreenIfActive();
           final MMapURI uri = (MMapURI) extra.getValue();
           final File theFile = uri.asFile(getProjectFolder());
           if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
@@ -324,6 +340,7 @@ public class MMDEditor extends AbstractScrollPane implements MindMapPanelControl
         }
         break;
         case LINK: {
+          Main.getApplicationFrame().endFullScreenIfActive();
           final MMapURI uri = ((ExtraLink) extra).getValue();
           if (!UiUtils.browseURI(uri.asURI(), PreferencesManager.getInstance().getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
             DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));

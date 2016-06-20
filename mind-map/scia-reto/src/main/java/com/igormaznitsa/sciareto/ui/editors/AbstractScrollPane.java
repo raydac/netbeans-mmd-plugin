@@ -16,13 +16,20 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JScrollPane;
+import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 
-public abstract class AbstractScrollPane extends JScrollPane implements TabProvider {
+public abstract class AbstractScrollPane extends JScrollPane implements TabProvider,Disposable {
 
   private static final long serialVersionUID = -6865229547826910048L;
+  
+  private final AtomicBoolean disposeFlag = new AtomicBoolean();
   
   public AbstractScrollPane(){
     super();
@@ -41,4 +48,21 @@ public abstract class AbstractScrollPane extends JScrollPane implements TabProvi
     return false;
   }
 
+  @Override
+  public final void dispose() {
+    if (disposeFlag.compareAndSet(false, true)){
+      this.doDispose();
+    }
+  }
+
+  public abstract void loadContent(@Nullable final File file) throws IOException ;
+  
+  protected void doDispose(){
+    
+  }
+  
+  @Override
+  public boolean isDisposed() {
+    return this.disposeFlag.get();
+  }
 }

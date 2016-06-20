@@ -15,28 +15,22 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DropMode;
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.ToolTipManager;
-import javax.swing.TransferHandler;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
@@ -125,6 +119,15 @@ public final class ExplorerTree extends JScrollPane {
     if (pathToFile!=null){
       this.projectTree.setSelectionPath(pathToFile);
     }
+  }
+
+  public void unfoldProject(@Nonnull final NodeProject node) {
+    Utils.safeSwingCall(new Runnable() {
+      @Override
+      public void run() {
+        projectTree.expandPath(new TreePath(new Object[]{getCurrentGroup(), node}));
+      }
+    });
   }
   
   @Nullable

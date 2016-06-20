@@ -212,7 +212,11 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
     }
     if (index >= 0) {
-      this.removeTabAt(index);
+      try{
+        this.removeTabAt(index);
+      }finally{
+        title.disposeEditor();
+      }
       return true;
     }
     return false;

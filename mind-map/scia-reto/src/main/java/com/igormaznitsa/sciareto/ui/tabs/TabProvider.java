@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.sciareto.ui.tabs;
 
-import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
@@ -34,4 +33,5 @@ public interface TabProvider {
   boolean saveDocumentAs();
   @Nonnull
   FileFilter getFileFilter();
+  void dispose();
 }
