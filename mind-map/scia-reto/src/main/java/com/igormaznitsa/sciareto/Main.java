@@ -15,12 +15,17 @@
  */
 package com.igormaznitsa.sciareto;
 
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.SplashScreen;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import com.igormaznitsa.commons.version.Version;
@@ -33,6 +38,8 @@ import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 
 public class Main {
+
+  public static final long UPSTART = System.currentTimeMillis();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -66,6 +73,15 @@ public class Main {
   public static void main(@Nonnull @MustNotContainNull final String... args) {
     final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, null);
 
+    final SplashScreen splash = SplashScreen.getSplashScreen();
+    if (splash == null){
+      LOGGER.warn("There is no splash screen");
+    } else {
+      final Graphics2D gfx = splash.createGraphics();
+      gfx.dispose();
+      splash.update();
+    }
+    
     try {
       for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
         if (selectedLookAndFeel == null) {
@@ -79,7 +95,7 @@ public class Main {
         }
       }
     } catch (Exception e) {
-      System.out.println("Can't use NIMBUS");
+      LOGGER.error("Can't set L&F", e);
     }
 
     loadPlugins();
@@ -95,6 +111,18 @@ public class Main {
         MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
         MAIN_FRAME = new MainFrame(args);
         MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
+
+        if (args.length == 0 && splash!=null) {
+          splash.update();
+          final long delay = 2000L - (System.currentTimeMillis() - UPSTART);
+          if (delay > 0L) {
+            try {
+              Thread.sleep(delay);
+            } catch (InterruptedException ex) {
+              return;
+            }
+          }
+        }
 
         MAIN_FRAME.setVisible(true);
 

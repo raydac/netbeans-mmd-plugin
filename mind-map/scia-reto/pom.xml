@@ -81,7 +81,7 @@
                 </goals>
                 <configuration>
                   <headerType>gui</headerType>
-                  <jar>${project.build.directory}/${artifactId}-${version}.jar</jar>
+                  <jar>${project.build.directory}/${project.artifactId}-${project.version}.jar</jar>
                   <outfile>${project.build.directory}/sciareto_${project.version}.exe</outfile>
                   <downloadUrl>http://www.oracle.com/technetwork/java/javase/downloads</downloadUrl>
                   <classPath>
@@ -124,9 +124,11 @@
           <archive>
             <manifest>
               <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
+            <manifestEntries>
+              <SplashScreen-Image>icons/splash.png</SplashScreen-Image>
+            </manifestEntries>
           </archive>
         </configuration>
       </plugin>
