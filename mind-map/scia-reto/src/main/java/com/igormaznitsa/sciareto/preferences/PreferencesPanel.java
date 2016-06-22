@@ -32,7 +32,6 @@ import java.util.TreeMap;
 import javax.swing.JOptionPane;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 
 public final class PreferencesPanel extends javax.swing.JPanel {

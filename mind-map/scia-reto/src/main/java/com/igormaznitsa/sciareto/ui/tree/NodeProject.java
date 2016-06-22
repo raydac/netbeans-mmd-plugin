@@ -17,13 +17,41 @@ package com.igormaznitsa.sciareto.ui.tree;
 
 import java.io.File;
 import javax.annotation.Nonnull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class NodeProject  extends NodeFileOrFolder {
   
+  private volatile File folder;
+  
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
-    super(group, folder, true);
+    super(group, true, folder.getName());
+    this.folder = folder;
+    reloadSubtree();
   }
 
+  @Override
+  public void setName(@Nonnull final String name){
+    this.name = name;
+    this.folder = new File(folder.getParentFile(),name);
+    reloadSubtree();
+  }
+  
+  @Override
+  public File makeFileForNode() {
+    return this.folder;
+  }
+
+  @Nonnull
+  public File getFolder(){
+    return this.folder;
+  }
+  
+  public void setFolder(@Nonnull final File folder){
+    Assertions.assertTrue("Must be directory", folder.isDirectory());
+    this.folder = folder;
+    reloadSubtree();
+  }
+  
   @Nonnull
   public NodeProjectGroup getGroup(){
     return (NodeProjectGroup)this.parent;

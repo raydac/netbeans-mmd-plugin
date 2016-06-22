@@ -60,6 +60,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.filechooser.FileView;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -72,6 +73,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
 public final class MainFrame extends javax.swing.JFrame implements Context {
@@ -89,6 +91,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   public MainFrame(@Nonnull @MustNotContainNull final String... args) {
     initComponents();
+
+    this.setTitle("Scia Reto");
+
     setIconImage(UiUtils.loadImage("logo256x256.png"));
 
     this.stateless = args.length > 0;
@@ -221,7 +226,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private boolean doClosing() {
     endFullScreenIfActive();
-    
+
     boolean hasUnsaved = false;
     for (final TabTitle t : tabPane) {
       hasUnsaved |= t.isChanged();
@@ -236,6 +241,32 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     if (!this.stateless) {
       saveState();
     }
+    return true;
+  }
+
+  @Override
+  public void notifyFileRenamed(@Nonnull final File oldFile, @Nonnull final File newFile) {
+    this.tabPane.replaceFileLink(oldFile, newFile);
+  }
+
+  @Override
+  public boolean safeCloseEditorsForFile(@Nonnull final File file) {
+    boolean changed = false;
+
+    final List<TabTitle> list = new ArrayList<>();
+    for (final TabTitle t : this.tabPane) {
+      if (t.belongFolderOrSame(file)) {
+        list.add(t);
+        changed |= t.isChanged();
+      }
+    }
+
+    if (changed && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Confirmation", "Some changed file will be affected! To close them?")) {
+      return false;
+    }
+
+    closeTab(list.toArray(new TabTitle[list.size()]));
+
     return true;
   }
 
@@ -260,9 +291,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private void saveState() {
     try {
-      final List<File> files = new ArrayList<File>();
+      final List<File> files = new ArrayList<>();
       for (final NodeProject p : this.explorerTree.getCurrentGroup()) {
-        final File f = p.getFile();
+        final File f = p.getFolder();
         if (f.isDirectory()) {
           files.add(f);
         }
@@ -366,14 +397,55 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   @Override
   public void onCloseProject(@Nonnull final NodeProject project) {
-    final File projectFolder = project.getFile();
+    final File projectFolder = project.getFolder();
     if (projectFolder != null) {
       for (final TabTitle t : this.tabPane) {
-        if (t.belongFolder(projectFolder)) {
+        if (t.belongFolderOrSame(projectFolder)) {
           t.doSafeClose();
         }
       }
     }
+  }
+
+  @Override
+  public boolean deleteTreeNode(@Nonnull final NodeFileOrFolder node) {
+    final File file = node.makeFileForNode();
+    if (file != null && file.exists()) {
+      final List<TabTitle> tabsToClose = this.tabPane.findListOfRelatedTabs(file);
+      boolean hasUnsaved = false;
+      
+      for (final TabTitle t : tabsToClose) {
+        hasUnsaved |= t.isChanged();
+      }
+      
+      if (hasUnsaved && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Confirmation", "Are you sure to delete changed unsaved file?")) {
+        return false;
+      }
+      
+      closeTab(tabsToClose.toArray(new TabTitle[tabsToClose.size()]));
+      boolean ok = false;
+      if (file.isDirectory()) {
+        try {
+          FileUtils.deleteDirectory(file);
+          ok = true;
+        } catch (IOException ex) {
+          DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete directory, see the log!");
+          LOGGER.error("Can't delete directory", ex);
+        }
+      } else {
+        ok = file.delete();
+        if (!ok) {
+          DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete file!");
+        }
+      }
+      
+      if (ok){
+        explorerTree.deleteNode(node);
+      }
+      
+      return ok;
+    }
+    return false;
   }
 
   /**
@@ -683,7 +755,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     final TabTitle current = this.tabPane.getCurrentTitle();
     if (current != null) {
       final NodeProject project = findProjectForFile(current.getAssociatedFile());
-      final File folder = project == null ? null : project.getFile();
+      final File folder = project == null ? null : project.getFolder();
       createMindMapFile(folder);
     } else {
       final File created = createMindMapFile(null);

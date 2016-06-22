@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -80,14 +79,27 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
     return index<0 ? null : (TabTitle)this.getTabComponentAt(index);
   }
 
-  @Nullable
-  public Component getSelectedComponent() {
-    final int index = this.getSelectedIndex();
-    if (index<0) {
-      return null;
-    } else {
-      return this.getComponentAt(index);
+  @Nonnull
+  @MustNotContainNull
+  public List<TabTitle> findListOfRelatedTabs(@Nonnull final File file){
+    final List<TabTitle> result = new ArrayList<>();
+    for(final TabTitle t : this){
+      if (t.belongFolderOrSame(file)){
+        result.add(t);
+      }
     }
+    return result;
+  }
+
+  public boolean replaceFileLink(@Nonnull final File oldFile, @Nonnull final File newFile) {
+    boolean replaced = false;
+    for(final TabTitle title : this){
+      if (oldFile.equals(title.getAssociatedFile())){
+        title.setAssociatedFile(newFile);
+        replaced |= true;
+      }
+    }
+    return replaced;
   }
   
   @Nonnull

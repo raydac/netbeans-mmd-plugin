@@ -23,6 +23,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.WatchService;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -157,10 +160,10 @@ public final class TabTitle extends JPanel {
     return this.associatedFile == null ? null : this.associatedFile.getAbsolutePath();
   }
 
-  public boolean belongFolder(@Nonnull final File folder) {
+  public boolean belongFolderOrSame(@Nonnull final File folder) {
     boolean result = false;
     if (this.associatedFile != null) {
-      return Paths.toPath(this.associatedFile).startsWith(Paths.toPath(folder));
+      return folder.equals(this.associatedFile) || Paths.toPath(this.associatedFile).startsWith(Paths.toPath(folder));
     }
     return result;
   }

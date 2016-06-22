@@ -24,60 +24,123 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class NodeFileOrFolder implements TreeNode {
 
   protected final NodeFileOrFolder parent;
-  protected final File file;
-  
+
   protected final List<NodeFileOrFolder> children;
-  protected final boolean folder;
-  
-  protected final String fileName;
-  
-  private static final DataFlavor [] DATA_FLAVOR = new DataFlavor[]{DataFlavor.javaFileListFlavor};
-  
-  public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, @Nullable final File file, final boolean fillChildren){
+  protected final boolean folderFlag;
+
+  protected volatile String name;
+
+  private static final DataFlavor[] DATA_FLAVOR = new DataFlavor[]{DataFlavor.javaFileListFlavor};
+
+  public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name) {
     this.parent = parent;
-    this.file = file;
-    this.fileName = file == null ? "." : file.getName();
-    if (this.file == null){
+    this.name = name;
+
+    if (folder) {
       this.children = new ArrayList<>();
-      this.folder = true;
-    }else
-    if (this.file.isDirectory()) {
-      this.folder = true;
-      this.children = new ArrayList<>();
+      this.folderFlag = true;
+      reloadSubtree();
     } else {
       this.children = Collections.EMPTY_LIST;
-      this.folder = false;
+      this.folderFlag = false;
     }
-    refresh(fillChildren);
-  }
-  
-  @Nullable
-  public File getFile(){
-    return this.file;
   }
 
-  protected final void refresh(final boolean deepRefresh){
-    if (this.file != null && this.folder){
+  @Nonnull
+  public NodeFileOrFolder addFile(@Nonnull final File file){
+    Assertions.assertTrue("Unexpected state!",this.folderFlag && file.getParentFile().equals(this.makeFileForNode()));
+    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName());
+    this.children.add(0,result);
+    return result;
+  }
+  
+  public void setName(@Nonnull final String name) {
+    this.name = name;
+    reloadSubtree();
+  }
+
+  public void reloadSubtree() {
+    if (this.folderFlag) {
       this.children.clear();
-      for (final File f : file.listFiles()) {
-        this.children.add(new NodeFileOrFolder(this, f, deepRefresh));
+      final File generatedFile = makeFileForNode();
+      if (generatedFile != null && generatedFile.isDirectory()) {
+        for (final File f : generatedFile.listFiles()) {
+          this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName()));
+        }
       }
     }
   }
-  
+
+  @Nullable
+  public File makeFileForNode() {
+    if (this.parent == null) {
+      return null;
+    } else {
+      return new File(this.parent.makeFileForNode(), this.name);
+    }
+  }
+
+  void fireNotifySubtreeChanged(@Nonnull TreeModel model, @Nonnull final List<TreeModelListener> listeners) {
+    if (this.parent != null && this.folderFlag) {
+      final Object[] childrenObject = new Object[children.size()];
+      final int[] indexes = new int[children.size()];
+      for (int i = 0; i < this.children.size(); i++) {
+        final NodeFileOrFolder c = this.children.get(i);
+        childrenObject[i] = c;
+        indexes[i] = i;
+        c.fireNotifySubtreeChanged(model, listeners);
+      }
+      final TreeModelEvent event = new TreeModelEvent(model, this.parent.makeTreePath(), indexes, childrenObject);
+      for (final TreeModelListener l : listeners) {
+        l.treeStructureChanged(event);
+      }
+    }
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  @ReturnsOriginal
+  public List<NodeFileOrFolder> findRelatedNodes(@Nonnull final File file, final List<NodeFileOrFolder> list) {
+    final File theFile = makeFileForNode();
+    if (theFile != null) {
+      if (file.equals(theFile) || theFile.toPath().startsWith(file.toPath())) {
+        list.add(this);
+        for (final NodeFileOrFolder f : this.children) {
+          findRelatedNodes(file, list);
+        }
+      }
+    }
+    return list;
+  }
+
+  public boolean replaceChild(@Nonnull final NodeFileOrFolder oldOne, @Nonnull final NodeFileOrFolder newOne) {
+    final int index = this.children.indexOf(oldOne);
+    if (index >= 0) {
+      this.children.set(index, newOne);
+      return true;
+    }
+    return false;
+  }
+
   @Override
   @Nonnull
-  public String toString(){
-    return this.fileName;
+  public String toString() {
+    return this.name;
   }
-  
+
   @Override
   @Nonnull
   public TreeNode getChildAt(final int childIndex) {
@@ -87,6 +150,11 @@ public class NodeFileOrFolder implements TreeNode {
   @Override
   public int getChildCount() {
     return this.children.size();
+  }
+
+  @Nullable
+  public NodeFileOrFolder getNodeParent() {
+    return this.parent;
   }
 
   @Override
@@ -102,12 +170,12 @@ public class NodeFileOrFolder implements TreeNode {
 
   @Override
   public boolean getAllowsChildren() {
-    return this.folder;
+    return this.folderFlag;
   }
 
   @Override
   public boolean isLeaf() {
-    return !this.folder;
+    return !this.folderFlag;
   }
 
   @Override
@@ -115,7 +183,7 @@ public class NodeFileOrFolder implements TreeNode {
   public Enumeration children() {
     final Iterator<NodeFileOrFolder> iterator = this.children.iterator();
     return new Enumeration() {
-      
+
       @Override
       public boolean hasMoreElements() {
         return iterator.hasNext();
@@ -129,21 +197,45 @@ public class NodeFileOrFolder implements TreeNode {
     };
   }
 
+  @Nonnull
+  public TreePath makeTreePath() {
+    final List<Object> path = new ArrayList<>();
+    TreeNode node = this;
+    while (node != null) {
+      path.add(0, node);
+      node = node.getParent();
+    }
+    return new TreePath(path.toArray());
+  }
+
+  public int getIndexAtParent() {
+    int result = -1;
+    if (this.parent != null) {
+      result = this.parent.getIndex(this);
+    }
+    return result;
+  }
+
   @Nullable
   public TreePath findPathToFile(@Nonnull final File file) {
-    if (file.equals(this.file)) {
+    final File generatedFile = makeFileForNode();
+    if (file.equals(generatedFile)) {
       return new TreePath(new Object[]{this});
     }
-    if (!this.isLeaf()){
-      for(final NodeFileOrFolder c : this.children){
+    if (!this.isLeaf()) {
+      for (final NodeFileOrFolder c : this.children) {
         final TreePath result = c.findPathToFile(file);
-        if (result!=null) {
-          return new TreePath(ArrayUtils.joinArrays(new Object[]{this},result.getPath()));
+        if (result != null) {
+          return new TreePath(ArrayUtils.joinArrays(new Object[]{this}, result.getPath()));
         }
       }
-      
+
     }
     return null;
   }
-  
+
+  boolean deleteChild(@Nonnull final NodeFileOrFolder child) {
+    return this.children.remove(child);
+  }
+
 }

@@ -63,7 +63,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     labelIcon = new javax.swing.JLabel();
     textLabel = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
 
-    labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo.png"))); // NOI18N
+    labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo64x64.png"))); // NOI18N
 
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     textLabel.setText(bundle.getString("AboutText")); // NOI18N

@@ -40,6 +40,8 @@ import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -75,15 +77,12 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
         final JTree tree = (JTree) c;
         final TreePath selected = tree.getSelectionPath();
         final NodeFileOrFolder item = (NodeFileOrFolder) selected.getLastPathComponent();
-        return new FileTransferable(Arrays.asList(item.getFile()));
+        return new FileTransferable(Arrays.asList(item.makeFileForNode()));
       }
 
       @Override
       public boolean importData(@Nonnull final TransferHandler.TransferSupport support) {
-        if (!canImport(support)) {
-          return false;
-        }
-        return true;
+        return canImport(support);
       }
     });
   }
@@ -97,7 +96,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     final TreePath curPath = getPathForLocation(evt.getX(), evt.getY());
     final Object lastElement = curPath.getLastPathComponent();
     if (lastElement instanceof NodeFileOrFolder) {
-      final File file = ((NodeFileOrFolder) lastElement).getFile();
+      final File file = ((NodeFileOrFolder) lastElement).makeFileForNode();
       return file == null ? null : file.getAbsolutePath();
     } else {
       return null;
@@ -193,7 +192,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     if (path != null) {
       final Object selection = path.getLastPathComponent();
       if (selection instanceof NodeFileOrFolder){
-        FileTransferable node = new FileTransferable(Arrays.asList(((NodeFileOrFolder)selection).getFile()));
+        FileTransferable node = new FileTransferable(Arrays.asList(((NodeFileOrFolder)selection).makeFileForNode()));
         dragGestureEvent.startDrag(DragSource.DefaultCopyDrop, node, this);
       } 
     }

@@ -21,8 +21,10 @@ import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 
 public interface Context {
+
 
   @Nullable
   NodeProject findProjectForFile(@Nonnull File file);
@@ -40,9 +42,15 @@ public interface Context {
   void focusInTree(@Nonnull TabTitle title);
 
   void focusInTree(@Nonnull File file);
+  
+  boolean safeCloseEditorsForFile(@Nonnull File file);
 
   @Nullable
   File createMindMapFile(@Nonnull File folder);
 
   void notifyReloadConfig();
+
+  boolean deleteTreeNode(@Nonnull NodeFileOrFolder node);
+  
+  void notifyFileRenamed(@Nonnull File oldFile, @Nonnull File newFile);
 }

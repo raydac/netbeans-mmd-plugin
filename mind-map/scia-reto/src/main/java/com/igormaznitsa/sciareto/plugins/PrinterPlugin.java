@@ -28,7 +28,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.annotation.ToDo;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -58,7 +57,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         final MMDPrintPanel panel = new MMDPrintPanel(adaptor, mindMapPanel);
-        JOptionPane.showMessageDialog(printAction, panel, "Print mind map",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(mindMapPanel), panel, "Print mind map",JOptionPane.PLAIN_MESSAGE);
       }
     });
     return printAction;

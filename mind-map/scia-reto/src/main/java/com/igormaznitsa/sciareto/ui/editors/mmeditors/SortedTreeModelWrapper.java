@@ -29,10 +29,10 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
-public class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
+public final class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
   private final MindMap model;
   
-  private final Map<Object,List<Object>> sortedCache = new HashMap<Object, List<Object>>();
+  private final Map<Object,List<Object>> sortedCache = new HashMap<>();
   private final Comparator<Object> comparator;
   
   public SortedTreeModelWrapper(@Nonnull final MindMap model, @Nonnull final Comparator<Object> comparator){

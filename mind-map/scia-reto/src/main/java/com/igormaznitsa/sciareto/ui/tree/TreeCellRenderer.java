@@ -28,7 +28,6 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.sciareto.ui.Icons;
-import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 
@@ -67,8 +66,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
         if (node instanceof NodeProject) {
           this.setIcon(expanded ? PROJECT_OPENED : PROJECT_CLOSED);
         } else {
-          final File file = node.getFile();
-          final String ext = file == null ? null : FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
+          final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
           if (ext != null){
             if (ext.equals("mmd")){
             this.setIcon(Icons.DOCUMENT.getIcon());

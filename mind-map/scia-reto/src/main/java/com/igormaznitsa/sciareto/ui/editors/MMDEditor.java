@@ -586,7 +586,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     final File associatedFile = this.title.getAssociatedFile();
     if (associatedFile != null) {
       final NodeProject project = context.findProjectForFile(associatedFile);
-      result = project == null ? null : project.getFile();
+      result = project == null ? null : project.getFolder();
     }
     return result;
   }
