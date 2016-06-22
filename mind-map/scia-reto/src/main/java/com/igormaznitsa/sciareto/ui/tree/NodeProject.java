@@ -18,6 +18,7 @@ package com.igormaznitsa.sciareto.ui.tree;
 import java.io.File;
 import javax.annotation.Nonnull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import javax.annotation.Nullable;
 
 public class NodeProject  extends NodeFileOrFolder {
   
@@ -37,6 +38,7 @@ public class NodeProject  extends NodeFileOrFolder {
   }
   
   @Override
+  @Nullable
   public File makeFileForNode() {
     return this.folder;
   }

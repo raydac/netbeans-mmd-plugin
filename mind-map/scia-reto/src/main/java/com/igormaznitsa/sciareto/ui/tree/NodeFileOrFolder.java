@@ -93,7 +93,7 @@ public class NodeFileOrFolder implements TreeNode {
     }
   }
 
-  void fireNotifySubtreeChanged(@Nonnull TreeModel model, @Nonnull final List<TreeModelListener> listeners) {
+  void fireNotifySubtreeChanged(@Nonnull TreeModel model, @Nonnull @MustNotContainNull final List<TreeModelListener> listeners) {
     if (this.parent != null && this.folderFlag) {
       final Object[] childrenObject = new Object[children.size()];
       final int[] indexes = new int[children.size()];
@@ -113,7 +113,7 @@ public class NodeFileOrFolder implements TreeNode {
   @Nonnull
   @MustNotContainNull
   @ReturnsOriginal
-  public List<NodeFileOrFolder> findRelatedNodes(@Nonnull final File file, final List<NodeFileOrFolder> list) {
+  public List<NodeFileOrFolder> findRelatedNodes(@Nonnull final File file, @Nonnull @MustNotContainNull final List<NodeFileOrFolder> list) {
     final File theFile = makeFileForNode();
     if (theFile != null) {
       if (file.equals(theFile) || theFile.toPath().startsWith(file.toPath())) {
