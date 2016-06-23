@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ResourceBundle;
+import javax.annotation.Nonnull;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.Icons;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -17,7 +18,7 @@ public class DonateButton extends JButton {
 
   private static final ActionListener LISTENER = new ActionListener() {
     @Override
-    public void actionPerformed (ActionEvent e) {
+    public void actionPerformed (@Nonnull final ActionEvent e) {
       try {
         UiUtils.browseURI(LINK, false);
       }

@@ -459,7 +459,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     jMenuBar1 = new javax.swing.JMenuBar();
     menuFile = new javax.swing.JMenu();
     menuNewProject = new javax.swing.JMenuItem();
-    menuNewFile = new javax.swing.JMenuItem();
     jSeparator2 = new javax.swing.JPopupMenu.Separator();
     menuOpenProject = new javax.swing.JMenuItem();
     menuOpenRecentProject = new javax.swing.JMenu();
@@ -491,14 +490,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     });
     menuFile.add(menuNewProject);
-
-    menuNewFile.setText("New File");
-    menuNewFile.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        menuNewFileActionPerformed(evt);
-      }
-    });
-    menuFile.add(menuNewFile);
     menuFile.add(jSeparator2);
 
     menuOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
@@ -751,20 +742,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     }
   }//GEN-LAST:event_menuNewProjectActionPerformed
 
-  private void menuNewFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewFileActionPerformed
-    final TabTitle current = this.tabPane.getCurrentTitle();
-    if (current != null) {
-      final NodeProject project = findProjectForFile(current.getAssociatedFile());
-      final File folder = project == null ? null : project.getFolder();
-      createMindMapFile(folder);
-    } else {
-      final File created = createMindMapFile(null);
-      if (created != null && openFileAsTab(created)) {
-
-      }
-    }
-  }//GEN-LAST:event_menuNewFileActionPerformed
-
   private void menuFullScreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFullScreenActionPerformed
     final Component currentComponent = this.tabPane.getSelectedComponent();
     if (!(currentComponent instanceof Container)) {
@@ -885,7 +862,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private javax.swing.JMenuItem menuFullScreen;
   private javax.swing.JMenu menuHelp;
   private javax.swing.JMenu menuLookAndFeel;
-  private javax.swing.JMenuItem menuNewFile;
   private javax.swing.JMenuItem menuNewProject;
   private javax.swing.JMenuItem menuOpenFile;
   private javax.swing.JMenuItem menuOpenProject;

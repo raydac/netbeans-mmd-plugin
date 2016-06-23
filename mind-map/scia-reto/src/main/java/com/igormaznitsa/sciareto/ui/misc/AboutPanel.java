@@ -59,43 +59,44 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
+    java.awt.GridBagConstraints gridBagConstraints;
 
     labelIcon = new javax.swing.JLabel();
     textLabel = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
+    donateButton1 = new com.igormaznitsa.sciareto.ui.misc.DonateButton();
+
+    setLayout(new java.awt.GridBagLayout());
 
     labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo64x64.png"))); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
+    add(labelIcon, gridBagConstraints);
 
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     textLabel.setText(bundle.getString("AboutText")); // NOI18N
     textLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
     textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
-
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-    this.setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(labelIcon)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
-        .addContainerGap())
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(labelIcon)
-            .addGap(0, 0, Short.MAX_VALUE)))
-        .addContainerGap())
-    );
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridheight = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new java.awt.Insets(0, 16, 16, 16);
+    add(textLabel, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    add(donateButton1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private com.igormaznitsa.sciareto.ui.misc.DonateButton donateButton1;
   private javax.swing.JLabel labelIcon;
   private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel textLabel;
   // End of variables declaration//GEN-END:variables
