@@ -20,6 +20,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.SplashScreen;
 import java.io.File;
+import java.util.prefs.Preferences;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
@@ -46,6 +47,7 @@ public class Main {
 
   private static final String PROPERTY = "nbmmd.plugin.folder";
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel";
+  public static final String PROPERTY_TOTAL_UPSTART = "time.total.upstart";
 
   @Nonnull
   public static MainFrame getApplicationFrame() {
@@ -78,6 +80,15 @@ public class Main {
       gfx.dispose();
       splash.update();
     }
+
+    Runtime.getRuntime().addShutdownHook(new Thread(){
+      @Override
+      public void run() {
+        final Preferences prefs = PreferencesManager.getInstance().getPreferences();
+        prefs.putLong(PROPERTY_TOTAL_UPSTART, prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (System.currentTimeMillis() - UPSTART));
+        PreferencesManager.getInstance().flush();
+      }
+    });
     
     try {
       for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -131,5 +142,6 @@ public class Main {
         });
       }
     });
+    final long uptime = System.currentTimeMillis()-UPSTART;
   }
 }

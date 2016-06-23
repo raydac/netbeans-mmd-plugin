@@ -60,7 +60,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import javax.swing.event.TreeModelEvent;
 import javax.swing.filechooser.FileView;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -233,7 +232,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     }
 
     if (hasUnsaved) {
-      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected non-saved docuemtns", "Detected unsaved documents! Close application?")) {
+      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected non-saved documents", "Detected unsaved documents! Close application?")) {
         return false;
       }
     }

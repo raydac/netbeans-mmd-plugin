@@ -35,6 +35,11 @@
       <artifactId>commons-codec</artifactId>
       <version>1.10</version>
     </dependency>
+    <dependency>
+      <groupId>com.mixpanel</groupId>
+      <artifactId>mixpanel-java</artifactId>
+      <version>1.4.4</version>
+    </dependency>
   </dependencies>
     
   <profiles>
