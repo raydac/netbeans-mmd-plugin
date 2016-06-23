@@ -58,6 +58,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menSave">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/diskette.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Save"/>
               </Properties>
               <Events>
@@ -79,6 +82,9 @@
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+S"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/disk_multiple.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Save All"/>
               </Properties>

@@ -56,6 +56,8 @@ public class Main {
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel";
   public static final String PROPERTY_TOTAL_UPSTART = "time.total.upstart";
 
+  private static final long STATISTICS_DELAY = 7L * 24L * 3600L * 1000L; 
+  
   @Nonnull
   public static MainFrame getApplicationFrame() {
     return MAIN_FRAME;
@@ -88,7 +90,7 @@ public class Main {
       splash.update();
     }
 
-    if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences().getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME, 0L)) >= (7L * 24L * 3600L * 1000L)) {
+    if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences().getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis()+STATISTICS_DELAY)) >= STATISTICS_DELAY) {
       LOGGER.info("Statistics scheduled");
       
       final Timer timer = new Timer(45000, new ActionListener() {

@@ -47,6 +47,22 @@ public class MetricsService {
     return INSTANCE;
   }
 
+  public void onFirstStart() {
+      LOGGER.info("Starting statistics send");
+      final Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            doFirstStartAction();
+          } catch (Exception ex) {
+            LOGGER.error("Can't send statistics", ex);
+          }
+        }
+      }, "SCIARETO_STATISTIC_SEND");
+      thread.setDaemon(true);
+      thread.start();
+  }
+  
   public void sendStatistics() {
     if (this.enabled.get()) {
       LOGGER.info("Starting statistics send");
@@ -67,6 +83,33 @@ public class MetricsService {
     }
   }
 
+  private void doFirstStartAction() throws Exception {
+    try {
+      final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
+
+      final MessageBuilder messageBuilder = new MessageBuilder(PROJECT_TOKEN);
+      final MixpanelAPI mixpanel = new MixpanelAPI();
+
+      final JSONObject statistics = new JSONObject();
+      
+      statistics.put("os.name", System.getProperty("os.name","unknown"));
+      statistics.put("os.arch", System.getProperty("os.arch","unknown"));
+      statistics.put("os.version", System.getProperty("os.version","unknown"));
+      statistics.put("java.vendor", System.getProperty("java.vendor","unknown"));
+      statistics.put("java.version", System.getProperty("java.version","unknown"));
+      
+      final JSONObject event = messageBuilder.event(installationUUID, "FirstStart", statistics);
+
+      final ClientDelivery delivery = new ClientDelivery();
+      delivery.addMessage(event);
+
+      mixpanel.deliver(delivery);
+    } finally {
+      PreferencesManager.getInstance().getPreferences().putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
+      PreferencesManager.getInstance().flush();
+    }
+  }
+  
   private void doAction() throws Exception {
     try {
       final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();

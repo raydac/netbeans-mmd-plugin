@@ -520,6 +520,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(menuOpenRecentFile);
     menuFile.add(jSeparator3);
 
+    menSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/diskette.png"))); // NOI18N
     menSave.setText("Save");
     menSave.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -538,6 +539,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(menuSaveAs);
 
     menuSaveAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+    menuSaveAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/disk_multiple.png"))); // NOI18N
     menuSaveAll.setText("Save All");
     menuSaveAll.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {

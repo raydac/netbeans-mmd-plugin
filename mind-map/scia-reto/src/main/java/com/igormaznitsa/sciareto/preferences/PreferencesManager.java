@@ -24,6 +24,7 @@ import org.apache.commons.codec.binary.Base64;
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.sun.javafx.font.Metrics;
 
 public class PreferencesManager {
   
@@ -46,6 +47,17 @@ public class PreferencesManager {
         this.prefs.put(PROPERTY_UUID, packedUuid);
         this.prefs.flush();
         LOGGER.info("Generated new installation UUID : "+newUUID.toString());
+        
+        final Thread thread = new Thread(new Runnable() {
+          @Override
+          public void run() {
+            LOGGER.info("Send first start metrics");
+            com.igormaznitsa.sciareto.metrics.MetricsService.getInstance().onFirstStart();
+          }
+        },"SCIARETO_FIRST_START_METRICS");
+        thread.setDaemon(true);
+        thread.start();
+        
       }catch(Exception ex){
         LOGGER.error("Can't generate UUID",ex);
       }
