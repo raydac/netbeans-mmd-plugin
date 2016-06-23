@@ -72,6 +72,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
@@ -476,12 +477,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuLookAndFeel = new javax.swing.JMenu();
     menuHelp = new javax.swing.JMenu();
     menuAbout = new javax.swing.JMenuItem();
+    jSeparator4 = new javax.swing.JPopupMenu.Separator();
+    menuMakeDonation = new javax.swing.JMenuItem();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     setLocationByPlatform(true);
 
     menuFile.setText("File");
 
+    menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
     menuNewProject.setText("New Project");
     menuNewProject.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -492,6 +496,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(jSeparator2);
 
     menuOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+    menuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/open_folder.png"))); // NOI18N
     menuOpenProject.setText("Open Project");
     menuOpenProject.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -523,6 +528,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     });
     menuFile.add(menSave);
 
+    menuSaveAs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/file_save_as.png"))); // NOI18N
     menuSaveAs.setText("Save As");
     menuSaveAs.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -542,6 +548,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(jSeparator1);
 
     menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
+    menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/door_in.png"))); // NOI18N
     menuExit.setText("Exit");
     menuExit.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -554,6 +561,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
     menuEdit.setText("Edit");
 
+    menuPreferences.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/setting_tools.png"))); // NOI18N
     menuPreferences.setText("Preferences");
     menuPreferences.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -567,6 +575,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuView.setText("View");
 
     menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
+    menuFullScreen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/monitor.png"))); // NOI18N
     menuFullScreen.setText("Full screen");
     menuFullScreen.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -575,6 +584,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     });
     menuView.add(menuFullScreen);
 
+    menuLookAndFeel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/application.png"))); // NOI18N
     menuLookAndFeel.setText("Look and Feel");
     menuView.add(menuLookAndFeel);
 
@@ -582,6 +592,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
     menuHelp.setText("Help");
 
+    menuAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/information.png"))); // NOI18N
     menuAbout.setText("About");
     menuAbout.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -589,6 +600,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     });
     menuHelp.add(menuAbout);
+    menuHelp.add(jSeparator4);
+
+    menuMakeDonation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/coins_in_hand16.png"))); // NOI18N
+    menuMakeDonation.setText("Make donation");
+    menuMakeDonation.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuMakeDonationActionPerformed(evt);
+      }
+    });
+    menuHelp.add(menuMakeDonation);
 
     jMenuBar1.add(menuHelp);
 
@@ -808,6 +829,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     }
   }//GEN-LAST:event_menuFullScreenActionPerformed
 
+  private void menuMakeDonationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuMakeDonationActionPerformed
+    new DonateButton().doClick();
+  }//GEN-LAST:event_menuMakeDonationActionPerformed
+
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {
@@ -853,6 +878,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private javax.swing.JPopupMenu.Separator jSeparator1;
   private javax.swing.JPopupMenu.Separator jSeparator2;
   private javax.swing.JPopupMenu.Separator jSeparator3;
+  private javax.swing.JPopupMenu.Separator jSeparator4;
   private javax.swing.JMenuItem menSave;
   private javax.swing.JMenuItem menuAbout;
   private javax.swing.JMenu menuEdit;
@@ -861,6 +887,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private javax.swing.JMenuItem menuFullScreen;
   private javax.swing.JMenu menuHelp;
   private javax.swing.JMenu menuLookAndFeel;
+  private javax.swing.JMenuItem menuMakeDonation;
   private javax.swing.JMenuItem menuNewProject;
   private javax.swing.JMenuItem menuOpenFile;
   private javax.swing.JMenuItem menuOpenProject;

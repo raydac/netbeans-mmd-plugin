@@ -11,6 +11,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="menuNewProject">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/box_closed.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="New Project"/>
               </Properties>
               <Events>
@@ -23,6 +26,9 @@
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Shift+Ctrl+O"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/open_folder.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Open Project"/>
               </Properties>
@@ -60,6 +66,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuSaveAs">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/file_save_as.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Save As"/>
               </Properties>
               <Events>
@@ -84,6 +93,9 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Alt+F4"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/door_in.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Exit"/>
               </Properties>
               <Events>
@@ -99,6 +111,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="menuPreferences">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/setting_tools.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Preferences"/>
               </Properties>
               <Events>
@@ -117,6 +132,9 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="F11"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/monitor.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Full screen"/>
               </Properties>
               <Events>
@@ -125,6 +143,9 @@
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="menuLookAndFeel">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/application.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Look and Feel"/>
               </Properties>
             </Menu>
@@ -137,10 +158,26 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="menuAbout">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/information.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="About"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuAboutActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="menuMakeDonation">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/coins_in_hand16.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Make donation"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuMakeDonationActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
