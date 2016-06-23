@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import org.json.JSONObject;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.mixpanel.mixpanelapi.ClientDelivery;
 import com.mixpanel.mixpanelapi.MessageBuilder;
@@ -71,19 +72,15 @@ public class MetricsService {
     final MessageBuilder messageBuilder = new MessageBuilder(PROJECT_TOKEN);
     final MixpanelAPI mixpanel = new MixpanelAPI();
     
-    final JSONObject sentEvent = messageBuilder.event(installationUUID, "Sent Message", null);
+    final JSONObject statistics = new JSONObject();
+    statistics.put(Main.PROPERTY_TOTAL_UPSTART, PreferencesManager.getInstance().getPreferences().getLong(Main.PROPERTY_TOTAL_UPSTART, 0L));
     
-    JSONObject props = new JSONObject();
-    props.put("Gender", "Female");
-    props.put("Plan", "Premium");
-
-    final JSONObject planEvent = messageBuilder.event(installationUUID, "Plan Selected", props);
-    
+    final JSONObject event = messageBuilder.event(installationUUID, "Statistics", statistics);
+ 
     final ClientDelivery delivery = new ClientDelivery();
-    delivery.addMessage(sentEvent);
-    delivery.addMessage(planEvent);
+    delivery.addMessage(event);
     
-//    mixpanel.deliver(delivery);
+    mixpanel.deliver(delivery);
   }
   
   public boolean isEnabled() {

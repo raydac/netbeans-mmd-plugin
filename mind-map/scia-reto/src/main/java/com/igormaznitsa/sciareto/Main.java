@@ -19,11 +19,15 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.SplashScreen;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Random;
 import java.util.prefs.Preferences;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import com.igormaznitsa.commons.version.Version;
@@ -32,6 +36,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
+import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 
@@ -44,6 +49,8 @@ public class Main {
   private static MainFrame MAIN_FRAME;
 
   public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 0L, 0L}, null);
+
+  public static final Random RND = new Random();
 
   private static final String PROPERTY = "nbmmd.plugin.folder";
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel";
@@ -73,7 +80,7 @@ public class Main {
     final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, null);
 
     final SplashScreen splash = SplashScreen.getSplashScreen();
-    if (splash == null){
+    if (splash == null) {
       LOGGER.warn("There is no splash screen");
     } else {
       final Graphics2D gfx = splash.createGraphics();
@@ -81,7 +88,20 @@ public class Main {
       splash.update();
     }
 
-    Runtime.getRuntime().addShutdownHook(new Thread(){
+    if (RND.nextInt(100) >= 60) {
+      final Timer timer = new Timer(45000, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          MetricsService.getInstance().sendStatistics();
+        }
+      });
+      timer.setRepeats(false);
+      timer.start();
+    } else {
+      LOGGER.info("Statistics ignored for the session");
+    }
+
+    Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
         final Preferences prefs = PreferencesManager.getInstance().getPreferences();
@@ -89,7 +109,7 @@ public class Main {
         PreferencesManager.getInstance().flush();
       }
     });
-    
+
     try {
       for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
         if (selectedLookAndFeel == null) {
@@ -120,7 +140,7 @@ public class Main {
         MAIN_FRAME = new MainFrame(args);
         MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
 
-        if (args.length == 0 && splash!=null) {
+        if (args.length == 0 && splash != null) {
           splash.update();
           final long delay = 2000L - (System.currentTimeMillis() - UPSTART);
           if (delay > 0L) {
@@ -142,6 +162,6 @@ public class Main {
         });
       }
     });
-    final long uptime = System.currentTimeMillis()-UPSTART;
+    final long uptime = System.currentTimeMillis() - UPSTART;
   }
 }
