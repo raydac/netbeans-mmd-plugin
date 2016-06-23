@@ -29,12 +29,13 @@ import com.mixpanel.mixpanelapi.MixpanelAPI;
 public class MetricsService {
 
   public static final String PROPERTY_METRICS_SENDING_FLAG = "metrics.sending";
+  public static final String PROPERTY_METRICS_SENDING_LAST_TIME = "metrics.sending.last.time";
 
   private static final MetricsService INSTANCE = new MetricsService();
   private static final String PROJECT_TOKEN = "3b0f869a336fd27dc5c2fbd73c7bd3ee";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MetricsService.class);
-  
+
   private final AtomicBoolean enabled = new AtomicBoolean();
 
   private MetricsService() {
@@ -48,13 +49,13 @@ public class MetricsService {
 
   public void sendStatistics() {
     if (this.enabled.get()) {
-     LOGGER.info("Starting statistics send");
-     final Thread thread = new Thread(new Runnable() {
+      LOGGER.info("Starting statistics send");
+      final Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
-          try{
+          try {
             doAction();
-          }catch(Exception ex){
+          } catch (Exception ex) {
             LOGGER.error("Can't send statistics", ex);
           }
         }
@@ -67,22 +68,27 @@ public class MetricsService {
   }
 
   private void doAction() throws Exception {
-    final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
+    try {
+      final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
 
-    final MessageBuilder messageBuilder = new MessageBuilder(PROJECT_TOKEN);
-    final MixpanelAPI mixpanel = new MixpanelAPI();
-    
-    final JSONObject statistics = new JSONObject();
-    statistics.put(Main.PROPERTY_TOTAL_UPSTART, PreferencesManager.getInstance().getPreferences().getLong(Main.PROPERTY_TOTAL_UPSTART, 0L));
-    
-    final JSONObject event = messageBuilder.event(installationUUID, "Statistics", statistics);
- 
-    final ClientDelivery delivery = new ClientDelivery();
-    delivery.addMessage(event);
-    
-    mixpanel.deliver(delivery);
+      final MessageBuilder messageBuilder = new MessageBuilder(PROJECT_TOKEN);
+      final MixpanelAPI mixpanel = new MixpanelAPI();
+
+      final JSONObject statistics = new JSONObject();
+      statistics.put(Main.PROPERTY_TOTAL_UPSTART, PreferencesManager.getInstance().getPreferences().getLong(Main.PROPERTY_TOTAL_UPSTART, 0L));
+
+      final JSONObject event = messageBuilder.event(installationUUID, "Statistics", statistics);
+
+      final ClientDelivery delivery = new ClientDelivery();
+      delivery.addMessage(event);
+
+      mixpanel.deliver(delivery);
+    } finally {
+      PreferencesManager.getInstance().getPreferences().putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
+      PreferencesManager.getInstance().flush();
+    }
   }
-  
+
   public boolean isEnabled() {
     return this.enabled.get();
   }

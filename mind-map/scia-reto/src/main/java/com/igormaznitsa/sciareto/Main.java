@@ -88,7 +88,9 @@ public class Main {
       splash.update();
     }
 
-    if (RND.nextInt(100) >= 60) {
+    if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences().getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME, 0L)) >= (7L * 24L * 3600L * 1000L)) {
+      LOGGER.info("Statistics scheduled");
+      
       final Timer timer = new Timer(45000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -97,8 +99,6 @@ public class Main {
       });
       timer.setRepeats(false);
       timer.start();
-    } else {
-      LOGGER.info("Statistics ignored for the session");
     }
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
