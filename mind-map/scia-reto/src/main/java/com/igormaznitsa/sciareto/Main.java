@@ -22,10 +22,13 @@ import java.awt.SplashScreen;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.prefs.Preferences;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import javax.annotation.Nonnull;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
@@ -37,8 +40,12 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
+import com.igormaznitsa.sciareto.notifications.MessagesService;
+import com.igormaznitsa.sciareto.notifications.NotificationManager;
 import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
 
 public class Main {
 
@@ -160,10 +167,23 @@ public class Main {
           @Override
           public void run() {
             MAIN_FRAME.setExtendedState(MAIN_FRAME.getExtendedState() | MAIN_FRAME.MAXIMIZED_BOTH);
+            final JHtmlLabel label = new JHtmlLabel("<html>You use the application already for some time. If you like it then you could support its author and <a href=\"http://www.google.com\"><b>make some donation</b></a>.</html>");
+            label.addLinkListener(new JHtmlLabel.LinkListener() {
+              @Override
+              public void onLinkActivated(@Nonnull final JHtmlLabel source, @Nonnull final String link) {
+                try{
+                  UiUtils.browseURI(new URI(link), false);
+                }catch(URISyntaxException ex){
+                  LOGGER.error("Can't make URI",ex);
+                }
+              }
+            });
+ 
           }
         });
       }
     });
-    final long uptime = System.currentTimeMillis() - UPSTART;
+    
+    new MessagesService().execute();
   }
 }

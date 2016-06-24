@@ -71,6 +71,7 @@ public class PreferencesManager {
     }
   }
   
+  @Nonnull
   public UUID getInstallationUUID(){
     return this.installationUUID;
   }

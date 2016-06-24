@@ -24,7 +24,9 @@ import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -33,6 +35,7 @@ import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.notifications.NotificationManager;
 
 public class SciaRetoBridge implements IDEBridge {
 
@@ -48,32 +51,27 @@ public class SciaRetoBridge implements IDEBridge {
 
   @Override
   public void showIDENotification(@Nonnull final String title, @Nonnull final String message, @Nonnull final NotificationType type) {
-    final int msgtype;
+    final NotificationManager.Type msgtype;
     switch (type) {
       case INFO:
         LOGGER.info("IDENotification : (" + title + ") " + message);
-        msgtype = JOptionPane.INFORMATION_MESSAGE;
+        msgtype = NotificationManager.Type.INFO;
         break;
       case WARNING:
         LOGGER.warn("IDENotification : (" + title + ") " + message);
-        msgtype = JOptionPane.WARNING_MESSAGE;
+        msgtype = NotificationManager.Type.WARN;
         break;
       case ERROR:
         LOGGER.error("IDENotification : (" + title + ") " + message);
-        msgtype = JOptionPane.ERROR_MESSAGE;
+        msgtype = NotificationManager.Type.ERROR;
         break;
       default: {
         LOGGER.warn("*IDENotification : (" + title + ") " + message);
-        msgtype = JOptionPane.WARNING_MESSAGE;
+        msgtype = NotificationManager.Type.WARN;
       }
     }
 
-    Utils.safeSwingCall(new Runnable() {
-      @Override
-      public void run() {
-        JOptionPane.showMessageDialog(null, message, title, msgtype);
-      }
-    });
+    NotificationManager.getInstance().showNotification(null, title, msgtype, message);
   }
 
   @Override

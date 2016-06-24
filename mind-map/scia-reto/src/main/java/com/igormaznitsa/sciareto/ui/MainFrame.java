@@ -26,6 +26,7 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.KeyEventDispatcher;
@@ -44,6 +45,9 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -52,6 +56,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.JWindow;
@@ -89,9 +94,34 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private final AtomicReference<Runnable> taskToEndFullScreen = new AtomicReference<>();
 
+  private final JPanel stackPanel;
+  
   public MainFrame(@Nonnull @MustNotContainNull final String... args) {
+    super();
     initComponents();
 
+    this.stackPanel = new JPanel();
+    this.stackPanel.setFocusable(false);
+    this.stackPanel.setOpaque(false);
+    this.stackPanel.setBorder(BorderFactory.createEmptyBorder(32, 32, 16, 32));
+    this.stackPanel.setLayout(new BoxLayout(this.stackPanel, BoxLayout.Y_AXIS));
+    
+    final JPanel glassPanel = (JPanel)this.getGlassPane();
+    glassPanel.setLayout(new BorderLayout(8, 8));
+    glassPanel.add(Box.createGlue(),BorderLayout.CENTER);
+    
+    final JPanel ppanel = new JPanel(new BorderLayout(0,0));
+    ppanel.setFocusable(false);
+    ppanel.setOpaque(false);
+    ppanel.add(this.stackPanel,BorderLayout.SOUTH);
+    
+    glassPanel.add(ppanel,BorderLayout.EAST);
+    
+    this.stackPanel.add(Box.createGlue());
+
+    
+    glassPanel.setVisible(true);
+    
     this.setTitle("Scia Reto");
 
     setIconImage(UiUtils.loadImage("logo256x256.png"));
@@ -224,6 +254,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     }
   }
 
+  public JPanel getStackPanel(){
+    return this.stackPanel;
+  }
+  
   private boolean doClosing() {
     endFullScreenIfActive();
 
