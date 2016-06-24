@@ -105,6 +105,7 @@ final class MessagePanel extends JPanel implements ActionListener {
   }
 
   @Override
+  @Nonnull
   public Dimension getMaximumSize() {
     return new Dimension(super.getPreferredSize().width, Integer.MAX_VALUE);
   }

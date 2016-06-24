@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.sciareto.ui.tabs;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -35,13 +34,13 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 
-public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
+public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
   private static final long serialVersionUID = -8971773653667281550L;
 
   private final Context context;
   
-  public MainTabPane(@Nonnull final Context context) {
+  public EditorTabPane(@Nonnull final Context context) {
     super(JTabbedPane.TOP);
     this.context = context;
     this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -93,18 +92,21 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
   public boolean replaceFileLink(@Nonnull final File oldFile, @Nonnull final File newFile) {
     boolean replaced = false;
+    int index = 0;
     for(final TabTitle title : this){
       if (oldFile.equals(title.getAssociatedFile())){
         title.setAssociatedFile(newFile);
+        this.setToolTipTextAt(index, title.getToolTipText());
         replaced |= true;
       }
+      index++;
     }
     return replaced;
   }
   
   @Nonnull
   private JPopupMenu makePopupMenu() {
-    final MainTabPane theInstance = this;
+    final EditorTabPane theInstance = this;
     final int selected = this.getSelectedIndex();
     JPopupMenu result = null;
     if (selected >= 0) {
@@ -169,7 +171,7 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
       
       result.add(new JSeparator());
       
-      final JMenuItem showInTree = new JMenuItem("Focus in the tree");
+      final JMenuItem showInTree = new JMenuItem("Select in Tree");
       showInTree.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -194,7 +196,8 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
   public void createTab(@Nonnull final TabProvider panel) {
     super.addTab("...", panel.getMainComponent());
     final int count = this.getTabCount() - 1;
-    this.setTabComponentAt(count, panel.getTabTitle());
+    final TabTitle tabTitle = panel.getTabTitle();
+    this.setTabComponentAt(count, tabTitle);
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -202,6 +205,7 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
     });
     this.setSelectedIndex(count);
+    this.setToolTipTextAt(count,tabTitle.getToolTipText());
   }
 
   public boolean focusToFile(@Nonnull final File file) {
@@ -242,20 +246,6 @@ public class MainTabPane extends JTabbedPane implements Iterable<TabTitle> {
       result.add((TabTitle) this.getTabComponentAt(i));
     }
     return result.iterator();
-  }
-
-  private void clickToClose(@Nonnull final TabProvider provider) {
-    int index = -1;
-    for (int i = 0; i < this.getTabCount(); i++) {
-      if (this.getTabComponentAt(i) == provider.getMainComponent()) {
-        index = i;
-        break;
-      }
-    }
-
-    if (index >= 0) {
-      this.removeTabAt(index);
-    }
   }
 
 }

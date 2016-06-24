@@ -15,7 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
-import com.igormaznitsa.sciareto.ui.tabs.MainTabPane;
+import com.igormaznitsa.sciareto.ui.tabs.EditorTabPane;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
@@ -87,7 +87,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
 
-  private final MainTabPane tabPane;
+  private final EditorTabPane tabPane;
   private final ExplorerTree explorerTree;
 
   private final boolean stateless;
@@ -139,7 +139,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     });
 
-    this.tabPane = new MainTabPane(this);
+    this.tabPane = new EditorTabPane(this);
 
     this.explorerTree = new ExplorerTree(this);
 

@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -45,9 +44,9 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
   private final Context context;
 
   public static final Pattern FILE_NAME = Pattern.compile("^[^\\+\\*\\?\\{\\}\\&\\|\\;\\:\\\\\\/]+$");
-  
+
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProjectGroup.class);
-  
+
   public NodeProjectGroup(@Nonnull final Context context, @Nonnull final String name) {
     super(null, true, ".");
     this.groupName = name;
@@ -123,15 +122,19 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
   @Override
   public void valueForPathChanged(@Nonnull final TreePath path, @Nonnull final Object newValue) {
     final String newFileName = String.valueOf(newValue);
-    if (FILE_NAME.matcher(newFileName).matches()){
-    final Object last = path.getLastPathComponent();
-    if (last instanceof NodeFileOrFolder) {
-      final NodeFileOrFolder editedNode = (NodeFileOrFolder)last;
-      
-      final File origFile = ((NodeFileOrFolder) last).makeFileForNode();
-      if (origFile != null) {
-        final File newFile = new File(origFile.getParentFile(), newFileName);
-        if (context.safeCloseEditorsForFile(origFile)) {
+    if (FILE_NAME.matcher(newFileName).matches()) {
+      final Object last = path.getLastPathComponent();
+      if (last instanceof NodeFileOrFolder) {
+        final NodeFileOrFolder editedNode = (NodeFileOrFolder) last;
+
+        final File origFile = ((NodeFileOrFolder) last).makeFileForNode();
+        if (origFile != null) {
+          final File newFile = new File(origFile.getParentFile(), newFileName);
+
+          if (!editedNode.isLeaf() && !context.safeCloseEditorsForFile(origFile)) {
+            return;
+          }
+          
           try {
             Files.move(origFile.toPath(), newFile.toPath());
             editedNode.setName(newFile.getName());
@@ -145,9 +148,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
           }
         }
       }
-    }
-    }else{
-      DialogProviderManager.getInstance().getDialogProvider().msgError("Inapropriate file name '"+newFileName+"'!");
+    } else {
+      DialogProviderManager.getInstance().getDialogProvider().msgError("Inapropriate file name '" + newFileName + "'!");
     }
   }
 
@@ -170,7 +172,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
   public NodeProject findProjectForFile(@Nonnull final File file) {
     final Path filepath = Paths.toPath(file);
     for (final NodeFileOrFolder t : this.children) {
-      final File projectFolder = ((NodeProject)t).getFolder();
+      final File projectFolder = ((NodeProject) t).getFolder();
       if (filepath.startsWith(Paths.toPath(projectFolder))) {
         return (NodeProject) t;
       }
@@ -204,8 +206,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
 
   public boolean deleteNode(@Nonnull final NodeFileOrFolder node) {
     final TreeModelEvent event = new TreeModelEvent(this, node.getNodeParent().makeTreePath(), new int[]{node.getIndexAtParent()}, new Object[]{node});
-    if (node.getNodeParent().deleteChild(node)){
-      for (final TreeModelListener l  : this.listeners) {
+    if (node.getNodeParent().deleteChild(node)) {
+      for (final TreeModelListener l : this.listeners) {
         l.treeNodesRemoved(event);
       }
       return true;
@@ -213,8 +215,6 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
     return false;
   }
 
-
-  
   @Override
   @Nonnull
   public Iterator<NodeProject> iterator() {
@@ -236,8 +236,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
 
   public void addChild(@Nonnull final NodeFileOrFolder folder, @Nonnull final File childFile) {
     final NodeFileOrFolder newNode = folder.addFile(childFile);
-    final TreeModelEvent event = new TreeModelEvent(this, folder.makeTreePath(), new int []{newNode.getIndexAtParent()}, new Object[]{newNode});
-    for(final TreeModelListener l : this.listeners){
+    final TreeModelEvent event = new TreeModelEvent(this, folder.makeTreePath(), new int[]{newNode.getIndexAtParent()}, new Object[]{newNode});
+    for (final TreeModelListener l : this.listeners) {
       l.treeNodesInserted(event);
     }
   }
