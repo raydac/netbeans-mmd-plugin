@@ -87,6 +87,12 @@ public class Main {
   public static void main(@Nonnull @MustNotContainNull final String... args) {
     final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, null);
 
+    LOGGER.info("java.vendor = "+System.getProperty("java.vendor","unknown"));
+    LOGGER.info("java.version = "+System.getProperty("java.version","unknown"));
+    LOGGER.info("os.name = "+System.getProperty("os.name","unknown"));
+    LOGGER.info("os.arch = "+System.getProperty("os.arch","unknown"));
+    LOGGER.info("os.version = "+System.getProperty("os.version","unknown"));
+    
     final SplashScreen splash = SplashScreen.getSplashScreen();
     if (splash == null) {
       LOGGER.warn("There is no splash screen");
