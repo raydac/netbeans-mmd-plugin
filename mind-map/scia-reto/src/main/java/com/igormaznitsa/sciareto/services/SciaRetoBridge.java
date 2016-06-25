@@ -24,16 +24,13 @@ import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.notifications.NotificationManager;
 
@@ -92,7 +89,7 @@ public class SciaRetoBridge implements IDEBridge {
   @Override
   @Nonnull
   public Icon loadIcon(@Nonnull final String path, @Nonnull final Class<?> klazz) {
-    Image image = null;
+    Image image;
     synchronized (IMAGE_CACHE) {
       image = IMAGE_CACHE.get(path);
       if (image == null) {

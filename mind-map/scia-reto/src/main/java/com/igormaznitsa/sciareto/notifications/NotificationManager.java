@@ -51,7 +51,7 @@ public class NotificationManager {
     });
   }
 
-  public void showNotification(@Nonnull final Image icon, @Nullable final String title, @Nonnull final Type type, @Nonnull final String message) {
+  public void showNotification(@Nullable final Image icon, @Nullable final String title, @Nonnull final Type type, @Nonnull final String message) {
     final JLabel label = new JLabel(String.format("<html>%s</html>", StringEscapeUtils.escapeHtml(message)));
     label.setForeground(Color.black);
     this.showNotification(icon, title, type, label);

@@ -118,24 +118,26 @@ public final class PictureViewer extends AbstractScrollPane {
   @Override
   public boolean saveDocument() {
     boolean result = false;
-    final String ext = FilenameUtils.getExtension(this.title.getAssociatedFile().getName()).trim().toLowerCase(Locale.ENGLISH);
-    if (SUPPORTED_FORMATS.contains(ext)) {
-      try {
-        ImageIO.write(this.image, ext, this.title.getAssociatedFile());
-        result = true;
-      } catch (Exception ex) {
-        LOGGER.error("Can't write image", ex);
-      }
-    } else {
-      try {
-        LOGGER.warn("unsupported image format, will be saved as png : " + ext);
-        ImageIO.write(this.image, "png", this.title.getAssociatedFile());
-        result = true;
-      } catch (Exception ex) {
-        LOGGER.error("Can't write image", ex);
+    final File docFile = this.title.getAssociatedFile();
+    if (docFile != null) {
+      final String ext = FilenameUtils.getExtension(docFile.getName()).trim().toLowerCase(Locale.ENGLISH);
+      if (SUPPORTED_FORMATS.contains(ext)) {
+        try {
+          ImageIO.write(this.image, ext, docFile);
+          result = true;
+        } catch (Exception ex) {
+          LOGGER.error("Can't write image", ex);
+        }
+      } else {
+        try {
+          LOGGER.warn("unsupported image format, will be saved as png : " + ext);
+          ImageIO.write(this.image, "png", docFile);
+          result = true;
+        } catch (Exception ex) {
+          LOGGER.error("Can't write image", ex);
+        }
       }
     }
-
     return result;
   }
 

@@ -83,7 +83,7 @@ public final class ExplorerTree extends JScrollPane {
             final NodeFileOrFolder node = (NodeFileOrFolder) selPath.getLastPathComponent();
             if (node != null) {
               final File file = node.makeFileForNode();
-              if (!context.openFileAsTab(file)) {
+              if (file!=null && !context.openFileAsTab(file)) {
                 UiUtils.openInSystemViewer(file);
               }
             }
@@ -111,10 +111,7 @@ public final class ExplorerTree extends JScrollPane {
           projectTree.setSelectionPath(selPath);
           final Object last = selPath.getLastPathComponent();
           if (last instanceof NodeFileOrFolder) {
-            final JPopupMenu popupMenu = makePopupMenu((NodeFileOrFolder) last);
-            if (popupMenu != null) {
-              popupMenu.show(e.getComponent(), e.getX(), e.getY());
-            }
+            makePopupMenu((NodeFileOrFolder) last).show(e.getComponent(), e.getX(), e.getY());
           }
         }
       }
@@ -150,7 +147,7 @@ public final class ExplorerTree extends JScrollPane {
     });
   }
 
-  @Nullable
+  @Nonnull
   private JPopupMenu makePopupMenu(@Nonnull final NodeFileOrFolder node) {
     final JPopupMenu result = new JPopupMenu();
 
@@ -236,8 +233,8 @@ public final class ExplorerTree extends JScrollPane {
       if (NodeProjectGroup.FILE_NAME.matcher(fileName).matches()) {
         if (extension != null) {
           final String providedExtension = FilenameUtils.getExtension(fileName);
-          if (!extension.equalsIgnoreCase(providedExtension)){
-            fileName += '.'+extension;
+          if (!extension.equalsIgnoreCase(providedExtension)) {
+            fileName += '.' + extension;
           }
         }
         final File file = new File(folder.makeFileForNode(), fileName);
@@ -278,7 +275,8 @@ public final class ExplorerTree extends JScrollPane {
               }
             }
             break;
-            default: throw new Error("Unexpected extension : "+extension);
+            default:
+              throw new Error("Unexpected extension : " + extension);
           }
         }
 

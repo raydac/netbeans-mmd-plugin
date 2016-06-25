@@ -93,7 +93,7 @@ import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 
-public final class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener,DropTargetListener {
+public final class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
@@ -107,7 +107,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   private final Context context;
 
   private boolean dragAcceptableType;
-  
+
   public void refreshConfig() {
     this.mindMapPanel.refreshConfiguration();
   }
@@ -149,7 +149,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     }
 
     this.mindMapPanel.setModel(Assertions.assertNotNull(map));
-    
+
     loadContent(file);
   }
 
@@ -162,10 +162,10 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
     }
     this.mindMapPanel.setModel(Assertions.assertNotNull(map));
-    
+
     this.revalidate();
   }
-  
+
   @Override
   public boolean saveDocument() {
     boolean result = false;
@@ -257,7 +257,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          final AbstractElement element = (AbstractElement) topic.getPayload();
+          final AbstractElement element = (AbstractElement) Assertions.assertNotNull(topic).getPayload();
           if (element != null) {
             final Rectangle2D bounds = element.getBounds();
             final Dimension viewPortSize = getViewport().getExtentSize();
@@ -333,7 +333,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
           if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
             UiUtils.openInSystemViewer(theFile);
           } else if (theFile.isDirectory()) {
-            this.context.openProject(theFile,false);
+            this.context.openProject(theFile, false);
           } else if (!this.context.openFileAsTab(theFile)) {
             UiUtils.openInSystemViewer(theFile);
           }
@@ -396,7 +396,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     this.dragAcceptableType = checkDragType(dtde);
     if (!this.dragAcceptableType) {
       dtde.rejectDrag();
-    }else{
+    } else {
       dtde.acceptDrag(DnDConstants.ACTION_MOVE);
     }
     repaint();
@@ -429,7 +429,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
       final Class<?> representation = df.getRepresentationClass();
       if (FileTransferable.class.isAssignableFrom(representation)) {
-        final FileTransferable t = (FileTransferable)dtde.getTransferable();
+        final FileTransferable t = (FileTransferable) dtde.getTransferable();
         final List<File> listOfFiles = t.getFiles();
         detectedFileObject = listOfFiles.isEmpty() ? null : listOfFiles.get(0);
         break;
@@ -446,7 +446,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       }
     }
 
-    if (detectedFileObject!=null){
+    if (detectedFileObject != null) {
       addFileToElement(detectedFileObject, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
     }
   }
@@ -479,7 +479,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       onMindMapModelChanged(this.mindMapPanel);
     }
   }
-  
+
   protected boolean acceptOrRejectDragging(@Nonnull final DropTargetDragEvent dtde) {
     final int dropAction = dtde.getDropAction();
 
@@ -491,7 +491,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
     return result;
   }
-  
+
   protected static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
     boolean result = false;
     for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
@@ -503,7 +503,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     }
     return result;
   }
-  
+
   @Nonnull
   private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> getCustomProcessors() {
     if (this.customProcessors == null) {
@@ -511,8 +511,10 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       this.customProcessors.put(ExtraNotePlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          editTextForTopic(topic);
-          panel.requestFocus();
+          if (topic != null) {
+            editTextForTopic(topic);
+            panel.requestFocus();
+          }
         }
       });
       this.customProcessors.put(ExtraFilePlugin.class, new CustomJob() {
@@ -592,45 +594,91 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   private void editFileLinkForTopic(@Nullable final Topic topic) {
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+    if (topic != null) {
+      final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
-    final FileEditPanel.DataContainer path;
+      final FileEditPanel.DataContainer path;
 
-    final File projectFolder = getProjectFolder();
-    if (file == null) {
-      path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
-    } else {
-      final MMapURI uri = file.getValue();
-      final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
-
-      final FileEditPanel.DataContainer origPath;
-      origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
-      path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
-    }
-
-    if (path != null) {
-      final boolean valueChanged;
-      if (path.isEmpty()) {
-        valueChanged = topic.removeExtra(Extra.ExtraType.FILE);
+      final File projectFolder = getProjectFolder();
+      if (file == null) {
+        path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
       } else {
-        final Properties props = new Properties();
-        if (path.isShowWithSystemTool()) {
-          props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
-        }
-        final MMapURI fileUri = MMapURI.makeFromFilePath(PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props); //NOI18N
-        final File theFile = fileUri.asFile(projectFolder);
-        LOGGER.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
+        final MMapURI uri = file.getValue();
+        final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
 
-        if (theFile.exists()) {
-          topic.setExtra(new ExtraFile(fileUri));
-          valueChanged = true;
+        final FileEditPanel.DataContainer origPath;
+        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
+        path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
+      }
+
+      if (path != null) {
+        final boolean valueChanged;
+        if (path.isEmpty()) {
+          valueChanged = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
-          DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
-          valueChanged = false;
+          final Properties props = new Properties();
+          if (path.isShowWithSystemTool()) {
+            props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
+          }
+          final MMapURI fileUri = MMapURI.makeFromFilePath(PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props); //NOI18N
+          final File theFile = fileUri.asFile(projectFolder);
+          LOGGER.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
+
+          if (theFile.exists()) {
+            topic.setExtra(new ExtraFile(fileUri));
+            valueChanged = true;
+          } else {
+            DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
+            valueChanged = false;
+          }
+        }
+
+        if (valueChanged) {
+          this.mindMapPanel.invalidate();
+          this.mindMapPanel.repaint();
+          onMindMapModelChanged(this.mindMapPanel);
+        }
+      }
+    }
+  }
+
+  private void editTopicLinkForTopic(@Nullable final Topic topic) {
+    if (topic != null) {
+      final ExtraTopic link = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+
+      ExtraTopic result = null;
+
+      final ExtraTopic remove = new ExtraTopic("_______"); //NOI18N
+
+      if (link == null) {
+        final MindMapTreePanel treePanel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
+        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
+          final Topic selected = treePanel.getSelectedTopic();
+          treePanel.dispose();
+          if (selected != null) {
+            result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
+          } else {
+            result = remove;
+          }
+        }
+      } else {
+        final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
+        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+          final Topic selected = panel.getSelectedTopic();
+          if (selected != null) {
+            result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
+          } else {
+            result = remove;
+          }
         }
       }
 
-      if (valueChanged) {
+      if (result != null) {
+        if (result == remove) {
+          topic.removeExtra(Extra.ExtraType.TOPIC);
+        } else {
+          topic.setExtra(result);
+        }
         this.mindMapPanel.invalidate();
         this.mindMapPanel.repaint();
         onMindMapModelChanged(this.mindMapPanel);
@@ -638,67 +686,27 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     }
   }
 
-  private void editTopicLinkForTopic(@Nullable final Topic topic) {
-    final ExtraTopic link = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
-
-    ExtraTopic result = null;
-
-    final ExtraTopic remove = new ExtraTopic("_______"); //NOI18N
-
-    if (link == null) {
-      final MindMapTreePanel treePanel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
-      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
-        final Topic selected = treePanel.getSelectedTopic();
-        treePanel.dispose();
-        if (selected != null) {
-          result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
-        } else {
-          result = remove;
-        }
-      }
-    } else {
-      final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
-      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
-        final Topic selected = panel.getSelectedTopic();
-        if (selected != null) {
-          result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
-        } else {
-          result = remove;
-        }
-      }
-    }
-
-    if (result != null) {
-      if (result == remove) {
-        topic.removeExtra(Extra.ExtraType.TOPIC);
-      } else {
-        topic.setExtra(result);
-      }
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
-    }
-  }
-
   private void editLinkForTopic(@Nullable final Topic topic) {
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-    final MMapURI result;
-    if (link == null) {
-      // create new
-      result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
-    } else {
-      // edit
-      result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
-    }
-    if (result != null) {
-      if (result == UiUtils.EMPTY_URI) {
-        topic.removeExtra(Extra.ExtraType.LINK);
+    if (topic != null) {
+      final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
+      final MMapURI result;
+      if (link == null) {
+        // create new
+        result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
       } else {
-        topic.setExtra(new ExtraLink(result));
+        // edit
+        result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
       }
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      if (result != null) {
+        if (result == UiUtils.EMPTY_URI) {
+          topic.removeExtra(Extra.ExtraType.LINK);
+        } else {
+          topic.setExtra(new ExtraLink(result));
+        }
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
     }
   }
 

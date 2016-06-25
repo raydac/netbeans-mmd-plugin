@@ -17,7 +17,6 @@ package com.igormaznitsa.sciareto.ui.tree;
 
 import java.awt.Component;
 import java.awt.Image;
-import java.io.File;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,12 +66,10 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
           this.setIcon(expanded ? PROJECT_OPENED : PROJECT_CLOSED);
         } else {
           final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
-          if (ext != null){
-            if (ext.equals("mmd")){
+          if (ext.equals("mmd")) {
             this.setIcon(Icons.DOCUMENT.getIcon());
-            }else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)){
-              this.setIcon(ICON_IMAGE);
-            }
+          } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
+            this.setIcon(ICON_IMAGE);
           }
         }
       }

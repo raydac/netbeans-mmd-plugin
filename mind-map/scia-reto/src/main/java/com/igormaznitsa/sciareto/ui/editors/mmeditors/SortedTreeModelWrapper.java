@@ -28,6 +28,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public final class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
   private final MindMap model;
@@ -44,7 +45,7 @@ public final class SortedTreeModelWrapper implements TreeModel, TreeModelListene
   @Override
   @Nonnull
   public Object getRoot() {
-    return this.model.getRoot();
+    return Assertions.assertNotNull(this.model.getRoot());
   }
 
   @Override

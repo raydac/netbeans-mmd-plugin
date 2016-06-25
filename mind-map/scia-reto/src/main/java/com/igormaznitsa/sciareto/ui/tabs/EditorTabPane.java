@@ -104,7 +104,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     return replaced;
   }
   
-  @Nonnull
+  @Nullable
   private JPopupMenu makePopupMenu() {
     final EditorTabPane theInstance = this;
     final int selected = this.getSelectedIndex();

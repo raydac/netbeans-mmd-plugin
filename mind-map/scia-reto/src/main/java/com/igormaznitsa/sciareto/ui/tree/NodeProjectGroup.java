@@ -134,12 +134,12 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
           if (!editedNode.isLeaf() && !context.safeCloseEditorsForFile(origFile)) {
             return;
           }
-          
+
           try {
             Files.move(origFile.toPath(), newFile.toPath());
             editedNode.setName(newFile.getName());
 
-            editedNode.fireNotifySubtreeChanged(this, listeners);;
+            editedNode.fireNotifySubtreeChanged(this, listeners);
 
             this.context.notifyFileRenamed(origFile, newFile);
           } catch (IOException ex) {
@@ -205,12 +205,15 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
   }
 
   public boolean deleteNode(@Nonnull final NodeFileOrFolder node) {
-    final TreeModelEvent event = new TreeModelEvent(this, node.getNodeParent().makeTreePath(), new int[]{node.getIndexAtParent()}, new Object[]{node});
-    if (node.getNodeParent().deleteChild(node)) {
-      for (final TreeModelListener l : this.listeners) {
-        l.treeNodesRemoved(event);
+    final NodeFileOrFolder parentNode = node.getNodeParent();
+    if (parentNode != null) {
+      final TreeModelEvent event = new TreeModelEvent(this, parentNode.makeTreePath(), new int[]{node.getIndexAtParent()}, new Object[]{node});
+      if (parentNode.deleteChild(node)) {
+        for (final TreeModelListener l : this.listeners) {
+          l.treeNodesRemoved(event);
+        }
+        return true;
       }
-      return true;
     }
     return false;
   }

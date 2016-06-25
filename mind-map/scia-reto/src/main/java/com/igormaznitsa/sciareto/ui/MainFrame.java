@@ -26,7 +26,6 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.KeyEventDispatcher;
@@ -95,7 +94,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private final AtomicReference<Runnable> taskToEndFullScreen = new AtomicReference<>();
 
   private final JPanel stackPanel;
-  
+
   public MainFrame(@Nonnull @MustNotContainNull final String... args) {
     super();
     initComponents();
@@ -105,23 +104,22 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     this.stackPanel.setOpaque(false);
     this.stackPanel.setBorder(BorderFactory.createEmptyBorder(32, 32, 16, 32));
     this.stackPanel.setLayout(new BoxLayout(this.stackPanel, BoxLayout.Y_AXIS));
-    
-    final JPanel glassPanel = (JPanel)this.getGlassPane();
+
+    final JPanel glassPanel = (JPanel) this.getGlassPane();
     glassPanel.setLayout(new BorderLayout(8, 8));
-    glassPanel.add(Box.createGlue(),BorderLayout.CENTER);
-    
-    final JPanel ppanel = new JPanel(new BorderLayout(0,0));
+    glassPanel.add(Box.createGlue(), BorderLayout.CENTER);
+
+    final JPanel ppanel = new JPanel(new BorderLayout(0, 0));
     ppanel.setFocusable(false);
     ppanel.setOpaque(false);
-    ppanel.add(this.stackPanel,BorderLayout.SOUTH);
-    
-    glassPanel.add(ppanel,BorderLayout.EAST);
-    
+    ppanel.add(this.stackPanel, BorderLayout.SOUTH);
+
+    glassPanel.add(ppanel, BorderLayout.EAST);
+
     this.stackPanel.add(Box.createGlue());
 
-    
     glassPanel.setVisible(true);
-    
+
     this.setTitle("Scia Reto");
 
     setIconImage(UiUtils.loadImage("logo256x256.png"));
@@ -254,10 +252,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     }
   }
 
-  public JPanel getStackPanel(){
+  public JPanel getStackPanel() {
     return this.stackPanel;
   }
-  
+
   private boolean doClosing() {
     endFullScreenIfActive();
 
@@ -337,7 +335,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
       for (final TabTitle p : this.tabPane) {
         final File f = p.getAssociatedFile();
-        if (f.isFile()) {
+        if (f != null && f.isFile()) {
           files.add(f);
         }
       }
@@ -398,7 +396,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   @Override
   public void focusInTree(@Nonnull final TabTitle title) {
-    this.explorerTree.focusToFileItem(title.getAssociatedFile());
+    final File file = title.getAssociatedFile();
+    if (file != null) {
+      this.explorerTree.focusToFileItem(file);
+    }
   }
 
   @Override
@@ -432,11 +433,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   @Override
   public void onCloseProject(@Nonnull final NodeProject project) {
     final File projectFolder = project.getFolder();
-    if (projectFolder != null) {
-      for (final TabTitle t : this.tabPane) {
-        if (t.belongFolderOrSame(projectFolder)) {
-          t.doSafeClose();
-        }
+    for (final TabTitle t : this.tabPane) {
+      if (t.belongFolderOrSame(projectFolder)) {
+        t.doSafeClose();
       }
     }
   }
@@ -447,15 +446,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     if (file != null && file.exists()) {
       final List<TabTitle> tabsToClose = this.tabPane.findListOfRelatedTabs(file);
       boolean hasUnsaved = false;
-      
+
       for (final TabTitle t : tabsToClose) {
         hasUnsaved |= t.isChanged();
       }
-      
+
       if (hasUnsaved && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Confirmation", "Are you sure to delete changed unsaved file?")) {
         return false;
       }
-      
+
       closeTab(tabsToClose.toArray(new TabTitle[tabsToClose.size()]));
       boolean ok = false;
       if (file.isDirectory()) {
@@ -472,11 +471,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete file!");
         }
       }
-      
-      if (ok){
+
+      if (ok) {
         explorerTree.deleteNode(node);
       }
-      
+
       return ok;
     }
     return false;

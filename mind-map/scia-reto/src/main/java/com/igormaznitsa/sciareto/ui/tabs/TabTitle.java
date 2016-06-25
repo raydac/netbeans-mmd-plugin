@@ -68,6 +68,7 @@ public final class TabTitle extends JPanel {
     final TabTitle theInstance = this;
 
     this.titleLabel = new JLabel() {
+      private static final long serialVersionUID = 8689945842487138781L;
       
       @Override
       protected void processKeyEvent(@Nonnull final KeyEvent e) {
@@ -89,6 +90,7 @@ public final class TabTitle extends JPanel {
     final Icon uiCloseIcon = UIManager.getIcon("InternalFrameTitlePane.closeIcon");
 
     this.closeButton = new JButton(uiCloseIcon == null ? NIMBUS_CLOSE_ICON : uiCloseIcon) {
+      private static final long serialVersionUID = -8005282815756047979L;
       @Override
       public String getToolTipText() {
         return theInstance.getToolTipText();

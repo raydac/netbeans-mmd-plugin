@@ -28,7 +28,7 @@ import java.util.Random;
 import java.util.prefs.Preferences;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import javax.annotation.Nonnull;
-import javax.swing.JLabel;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
@@ -41,7 +41,6 @@ import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.notifications.MessagesService;
-import com.igormaznitsa.sciareto.notifications.NotificationManager;
 import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -166,7 +165,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            MAIN_FRAME.setExtendedState(MAIN_FRAME.getExtendedState() | MAIN_FRAME.MAXIMIZED_BOTH);
+            MAIN_FRAME.setExtendedState(MAIN_FRAME.getExtendedState() | JFrame.MAXIMIZED_BOTH);
             final JHtmlLabel label = new JHtmlLabel("<html>You use the application already for some time. If you like it then you could support its author and <a href=\"http://www.google.com\"><b>make some donation</b></a>.</html>");
             label.addLinkListener(new JHtmlLabel.LinkListener() {
               @Override

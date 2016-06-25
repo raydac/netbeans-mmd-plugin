@@ -119,7 +119,7 @@ public class NodeFileOrFolder implements TreeNode {
       if (file.equals(theFile) || theFile.toPath().startsWith(file.toPath())) {
         list.add(this);
         for (final NodeFileOrFolder f : this.children) {
-          findRelatedNodes(file, list);
+          f.findRelatedNodes(file, list);
         }
       }
     }

@@ -24,7 +24,6 @@ import org.apache.commons.codec.binary.Base64;
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.sun.javafx.font.Metrics;
 
 public class PreferencesManager {
   

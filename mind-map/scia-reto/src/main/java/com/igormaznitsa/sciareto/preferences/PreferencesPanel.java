@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
@@ -1223,54 +1224,56 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   }
 
   public void save() {
-    try {
-      this.config.setShowGrid(this.checkBoxShowGrid.isSelected());
-      this.config.setDropShadow(this.checkBoxDropShadow.isSelected());
-      this.config.setPaperColor(this.colorChooserPaperColor.getValue());
-      this.config.setGridColor(this.colorChooserGridColor.getValue());
-      this.config.setConnectorColor(this.colorChooserConnectorColor.getValue());
-      this.config.setJumpLinkColor(this.colorChooserJumpLink.getValue());
-      this.config.setRootBackgroundColor(this.colorChooserRootBackground.getValue());
-      this.config.setRootTextColor(this.colorChooserRootText.getValue());
-      this.config.setFirstLevelBackgroundColor(this.colorChooser1stBackground.getValue());
-      this.config.setFirstLevelTextColor(this.colorChooser1stText.getValue());
-      this.config.setOtherLevelBackgroundColor(this.colorChooser2ndBackground.getValue());
-      this.config.setOtherLevelTextColor(this.colorChooser2ndText.getValue());
-      this.config.setSelectLineColor(this.colorChooserSelectLine.getValue());
-      this.config.setCollapsatorBackgroundColor(this.colorChooserCollapsatorBackground.getValue());
-      this.config.setCollapsatorBorderColor(this.colorChooserCollapsatorBorder.getValue());
-      this.config.setGridStep((Integer) this.spinnerGridStep.getValue());
-      this.config.setSelectLineGap((Integer) this.spinnerSelectLineGap.getValue());
-      this.config.setCollapsatorSize((Integer) this.spinnerCollapsatorSize.getValue());
-      this.config.setConnectorWidth((Float) this.spinnerConnectorWidth.getValue());
-      this.config.setJumpLinkWidth((Float) this.spinnerJumpLinkWidth.getValue());
-      this.config.setSelectLineWidth((Float) this.spinnerSelectLineWidth.getValue());
-      this.config.setCollapsatorBorderWidth((Float) this.spinnerCollapsatorWidth.getValue());
-      this.config.setElementBorderWidth((Float) this.spinnerElementBorderWidth.getValue());
+    final MindMapPanelConfig config = this.config;
+    if (config != null) {
+      try {
+        config.setShowGrid(this.checkBoxShowGrid.isSelected());
+        config.setDropShadow(this.checkBoxDropShadow.isSelected());
+        config.setPaperColor(Assertions.assertNotNull(this.colorChooserPaperColor.getValue()));
+        config.setGridColor(Assertions.assertNotNull(this.colorChooserGridColor.getValue()));
+        config.setConnectorColor(Assertions.assertNotNull(this.colorChooserConnectorColor.getValue()));
+        config.setJumpLinkColor(Assertions.assertNotNull(this.colorChooserJumpLink.getValue()));
+        config.setRootBackgroundColor(Assertions.assertNotNull(this.colorChooserRootBackground.getValue()));
+        config.setRootTextColor(Assertions.assertNotNull(this.colorChooserRootText.getValue()));
+        config.setFirstLevelBackgroundColor(Assertions.assertNotNull(this.colorChooser1stBackground.getValue()));
+        config.setFirstLevelTextColor(Assertions.assertNotNull(this.colorChooser1stText.getValue()));
+        config.setOtherLevelBackgroundColor(Assertions.assertNotNull(this.colorChooser2ndBackground.getValue()));
+        config.setOtherLevelTextColor(Assertions.assertNotNull(this.colorChooser2ndText.getValue()));
+        config.setSelectLineColor(Assertions.assertNotNull(this.colorChooserSelectLine.getValue()));
+        config.setCollapsatorBackgroundColor(Assertions.assertNotNull(this.colorChooserCollapsatorBackground.getValue()));
+        config.setCollapsatorBorderColor(Assertions.assertNotNull(this.colorChooserCollapsatorBorder.getValue()));
+        config.setGridStep((Integer) this.spinnerGridStep.getValue());
+        config.setSelectLineGap((Integer) this.spinnerSelectLineGap.getValue());
+        config.setCollapsatorSize((Integer) this.spinnerCollapsatorSize.getValue());
+        config.setConnectorWidth((Float) this.spinnerConnectorWidth.getValue());
+        config.setJumpLinkWidth((Float) this.spinnerJumpLinkWidth.getValue());
+        config.setSelectLineWidth((Float) this.spinnerSelectLineWidth.getValue());
+        config.setCollapsatorBorderWidth((Float) this.spinnerCollapsatorWidth.getValue());
+        config.setElementBorderWidth((Float) this.spinnerElementBorderWidth.getValue());
 
-      this.config.setFirstLevelHorizontalInset(this.slider1stLevelHorzGap.getValue());
-      this.config.setFirstLevelVerticalInset(this.slider1stLevelVertGap.getValue());
-      this.config.setOtherLevelHorizontalInset(this.slider2ndLevelHorzGap.getValue());
-      this.config.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
+        config.setFirstLevelHorizontalInset(this.slider1stLevelHorzGap.getValue());
+        config.setFirstLevelVerticalInset(this.slider1stLevelVertGap.getValue());
+        config.setOtherLevelHorizontalInset(this.slider2ndLevelHorzGap.getValue());
+        config.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
 
-      for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
-        this.config.setKeyShortCut(e.getValue());
+        for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
+          config.setKeyShortCut(e.getValue());
+        }
+
+        config.setScaleModifiers(getScalingModifiers());
+        config.saveTo(PreferencesManager.getInstance().getPreferences());
+
+        // Common behaviour options
+        PreferencesManager.getInstance().getPreferences().putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected());
+        PreferencesManager.getInstance().getPreferences().putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
+        PreferencesManager.getInstance().getPreferences().putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
+        PreferencesManager.getInstance().getPreferences().putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
+        PreferencesManager.getInstance().getPreferences().putBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
+        // Metrics
+        MetricsService.getInstance().setEnabled(this.checkboxMetricsAllowed.isSelected());
+      } finally {
+        context.notifyReloadConfig();
       }
-
-      this.config.setScaleModifiers(getScalingModifiers());
-
-      this.config.saveTo(PreferencesManager.getInstance().getPreferences());
-
-      // Common behaviour options
-      PreferencesManager.getInstance().getPreferences().putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected());
-      PreferencesManager.getInstance().getPreferences().putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
-      PreferencesManager.getInstance().getPreferences().putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
-      PreferencesManager.getInstance().getPreferences().putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
-      PreferencesManager.getInstance().getPreferences().putBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
-      // Metrics
-      MetricsService.getInstance().setEnabled(this.checkboxMetricsAllowed.isSelected());
-    } finally {
-      this.context.notifyReloadConfig();
     }
   }
 
