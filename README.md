@@ -39,6 +39,9 @@ __1.1.4 (21-feb-2015)__
 Because my main programming tool is [NetBeans IDE](https://netbeans.org/), I have developed plugin for the IDE. It is compatible with Java 1.7+ and NetBeans 7.4+.  
 ![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshot1.png)  
 [You can take a look at the nice screencast made by Geertjan Wielenga about the plugin](https://www.youtube.com/watch?v=7TUU25dsOfM)  
+If you don't use either NetBeans IDE or Intellij IDEA then you can try standalone version made from the plugin and called SciaReto editor. There are two versions of the editor
+- [Executable file for Windows](https://drive.google.com/open?id=0BxHnNp97IgMRbDZER0JnUmQtZnc), you have to have installed Java version 1.7+
+- [Cross-platform JAR version](https://drive.google.com/open?id=0BxHnNp97IgMRa0lwNmxCd08yWDA) to start you have to use `java -jar sciareto.jar` command line if your OS doesn't allow to start JAR just by click
 
 # Key features
 ## Data format
