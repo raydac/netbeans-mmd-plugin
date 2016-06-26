@@ -37,6 +37,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     final Properties props = new Properties();
     props.setProperty("version", version);
     props.setProperty("ideversion", Main.IDE_VERSION.toString());
+
     this.textLabel.replaceMacroses(props);
     this.textLabel.addLinkListener(this);
     this.textLabel.setShowLinkAddressInTooltip(true);

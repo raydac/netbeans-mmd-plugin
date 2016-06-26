@@ -198,15 +198,15 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
 
     add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-    labelKeyCode.setText(bundle.getString("KeyShortCutEditPanel.labelKeyCode.text")); // NOI18N
+    labelKeyCode.setText(bundle.getString("KeyShortCutEditPanel.labelKeyCode.text_1")); // NOI18N
 
-    checkBoxALT.setText(bundle.getString("KeyShortCutEditPanel.checkBoxALT.text")); // NOI18N
+    checkBoxALT.setText(bundle.getString("KeyShortCutEditPanel.checkBoxALT.text_1")); // NOI18N
 
-    checkBoxCTRL.setText(bundle.getString("KeyShortCutEditPanel.checkBoxCTRL.text")); // NOI18N
+    checkBoxCTRL.setText(bundle.getString("KeyShortCutEditPanel.checkBoxCTRL.text_1")); // NOI18N
 
-    checkBoxSHIFT.setText(bundle.getString("KeyShortCutEditPanel.checkBoxSHIFT.text")); // NOI18N
+    checkBoxSHIFT.setText(bundle.getString("KeyShortCutEditPanel.checkBoxSHIFT.text_1")); // NOI18N
 
-    checkBoxMeta.setText(bundle.getString("KeyShortCutEditPanel.checkBoxMeta.text")); // NOI18N
+    checkBoxMeta.setText(bundle.getString("KeyShortCutEditPanel.checkBoxMeta.text_1")); // NOI18N
 
     textFieldKeyCode.addFocusListener(new java.awt.event.FocusAdapter() {
       public void focusLost(java.awt.event.FocusEvent evt) {
@@ -222,7 +222,7 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
       }
     });
 
-    buttonEditKeyCode.setText(bundle.getString("KeyShortCutEditPanel.buttonEditKeyCode.text")); // NOI18N
+    buttonEditKeyCode.setText(bundle.getString("KeyShortCutEditPanel.buttonEditKeyCode.text_1")); // NOI18N
     buttonEditKeyCode.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonEditKeyCodeActionPerformed(evt);
