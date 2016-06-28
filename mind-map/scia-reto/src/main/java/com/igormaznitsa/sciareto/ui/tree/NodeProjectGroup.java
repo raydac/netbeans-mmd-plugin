@@ -127,24 +127,26 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
       if (last instanceof NodeFileOrFolder) {
         final NodeFileOrFolder editedNode = (NodeFileOrFolder) last;
 
-        final File origFile = ((NodeFileOrFolder) last).makeFileForNode();
-        if (origFile != null) {
-          final File newFile = new File(origFile.getParentFile(), newFileName);
+        if (!editedNode.toString().equals(newFileName)) {
+          final File origFile = ((NodeFileOrFolder) last).makeFileForNode();
+          if (origFile != null) {
+            final File newFile = new File(origFile.getParentFile(), newFileName);
 
-          if (!editedNode.isLeaf() && !context.safeCloseEditorsForFile(origFile)) {
-            return;
-          }
+            if (!editedNode.isLeaf() && !context.safeCloseEditorsForFile(origFile)) {
+              return;
+            }
 
-          try {
-            Files.move(origFile.toPath(), newFile.toPath());
-            editedNode.setName(newFile.getName());
+            try {
+              Files.move(origFile.toPath(), newFile.toPath());
+              editedNode.setName(newFile.getName());
 
-            editedNode.fireNotifySubtreeChanged(this, listeners);
+              editedNode.fireNotifySubtreeChanged(this, listeners);
 
-            this.context.notifyFileRenamed(origFile, newFile);
-          } catch (IOException ex) {
-            LOGGER.error("Can't rename file", ex);
-            DialogProviderManager.getInstance().getDialogProvider().msgError("Can't rename file to '" + newValue + "\'");
+              this.context.notifyFileRenamed(origFile, newFile);
+            } catch (IOException ex) {
+              LOGGER.error("Can't rename file", ex);
+              DialogProviderManager.getInstance().getDialogProvider().msgError("Can't rename file to '" + newValue + "\'");
+            }
           }
         }
       }

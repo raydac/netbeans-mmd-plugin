@@ -81,7 +81,7 @@ public final class ExplorerTree extends JScrollPane {
           final TreePath selPath = projectTree.getPathForLocation(e.getX(), e.getY());
           if (selRow >= 0) {
             final NodeFileOrFolder node = (NodeFileOrFolder) selPath.getLastPathComponent();
-            if (node != null) {
+            if (node != null && node.isLeaf()) {
               final File file = node.makeFileForNode();
               if (file!=null && !context.openFileAsTab(file)) {
                 UiUtils.openInSystemViewer(file);
