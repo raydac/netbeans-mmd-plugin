@@ -17,8 +17,9 @@
     
   <properties>
     <model.version>1.2.0</model.version>
+    <app.name>sciareto_${project.version}</app.name>
   </properties>
-    
+
   <dependencies>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
@@ -86,8 +87,7 @@
                 </goals>
                 <configuration>
                   <headerType>gui</headerType>
-                  <jar>${project.build.directory}/${project.artifactId}-${project.version}.jar</jar>
-                  <outfile>${project.build.directory}/sciareto_${project.version}.exe</outfile>
+                  <outfile>${project.build.directory}/${app.name}.exe</outfile>
                   <downloadUrl>http://www.oracle.com/technetwork/java/javase/downloads</downloadUrl>
                   <classPath>
                     <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
@@ -101,16 +101,38 @@
                   <versionInfo>
                     <fileVersion>1.0.0.0</fileVersion>
                     <txtFileVersion>${project.version}</txtFileVersion>
-                    <fileDescription>SciaReto Min Map editor</fileDescription>
+                    <fileDescription>SciaReto Mind Map editor</fileDescription>
                     <copyright>2016 Igor Maznitsa</copyright>
                     <productVersion>${main.version.raw}.0</productVersion>
                     <txtProductVersion>${project.version}</txtProductVersion>
                     <productName>${project.name}</productName>
                     <companyName>igormaznitsa.com</companyName>
                     <internalName>${project.name}</internalName>
-                    <originalFilename>sciareto_${project.version}.exe</originalFilename>
+                    <originalFilename>${app.name}.exe</originalFilename>
                   </versionInfo>
                 </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>sh.tak.appbundler</groupId>
+            <artifactId>appbundle-maven-plugin</artifactId>
+            <version>1.1.0</version>
+            <configuration>
+              <bundleName>${app.name}</bundleName>
+              <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
+              <iconFile>${basedir}/logo.icns</iconFile>
+              <bundleName>Scia-Reto Editor</bundleName>
+              <generateDiskImageFile>true</generateDiskImageFile>
+              <diskImageInternetEnable>true</diskImageInternetEnable>
+              <jvmVersion>1.7+</jvmVersion>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>bundle</goal>
+                </goals>
               </execution>
             </executions>
           </plugin>
@@ -120,6 +142,7 @@
   </profiles>
     
   <build>
+    <finalName>${app.name}</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
