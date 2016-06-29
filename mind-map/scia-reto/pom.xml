@@ -124,6 +124,7 @@
               <iconFile>${basedir}/logo.icns</iconFile>
               <bundleName>Scia-Reto Editor</bundleName>
               <generateDiskImageFile>true</generateDiskImageFile>
+              <includeApplicationsSymlink>true</includeApplicationsSymlink>
               <diskImageInternetEnable>true</diskImageInternetEnable>
               <jvmVersion>1.7+</jvmVersion>
             </configuration>
