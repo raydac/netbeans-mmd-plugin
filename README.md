@@ -39,7 +39,7 @@ __1.1.4 (21-feb-2015)__
 Because my main programming tool is [NetBeans IDE](https://netbeans.org/), I have developed plugin for the IDE. It is compatible with Java 1.7+ and NetBeans 7.4+.  
 ![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshot1.png)  
 [You can take a look at the nice screencast made by Geertjan Wielenga about the plugin](https://www.youtube.com/watch?v=7TUU25dsOfM)  
-If you don't use neither NetBeans IDE nor Intellij IDEA then you can try small editor based on the plugin. [Just download appropriate version](https://drive.google.com/open?id=0BxHnNp97IgMRS1d6TjRGSmE1cXc) for your OS (exe for Windows, dmg for Mac OS, jar - cross platform one but must be started manually from command line)
+__If you don't use neither NetBeans IDE nor Intellij IDEA then you can try small editor based on the plugin. [Just download appropriate version](https://drive.google.com/open?id=0BxHnNp97IgMRS1d6TjRGSmE1cXc) for your OS (exe for Windows, dmg for Mac OS, jar - cross platform one but must be started manually from command line)__
 
 # Key features
 ## Data format
