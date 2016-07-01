@@ -105,7 +105,7 @@ public final class UiUtils {
   }
 
   @Nonnull
-  public static Image makeBadged(@Nonnull final Image base, @Nonnull final Image badge) {
+  public static Image makeBadgedRightBottom(@Nonnull final Image base, @Nonnull final Image badge) {
     final int width = Math.max(base.getWidth(null), badge.getWidth(null));
     final int height = Math.max(base.getHeight(null), badge.getHeight(null));
     final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -113,6 +113,21 @@ public final class UiUtils {
     try {
       gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
       gfx.drawImage(badge, width - badge.getWidth(null) - 1, height - badge.getHeight(null) - 1, null);
+    } finally {
+      gfx.dispose();
+    }
+    return result;
+  }
+
+  @Nonnull
+  public static Image makeBadgedRightTop(@Nonnull final Image base, @Nonnull final Image badge) {
+    final int width = Math.max(base.getWidth(null), badge.getWidth(null));
+    final int height = Math.max(base.getHeight(null), badge.getHeight(null));
+    final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    final Graphics gfx = result.getGraphics();
+    try {
+      gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
+      gfx.drawImage(badge, width - badge.getWidth(null) - 1, 1, null);
     } finally {
       gfx.dispose();
     }

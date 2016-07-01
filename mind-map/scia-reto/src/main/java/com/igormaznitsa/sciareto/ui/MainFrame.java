@@ -65,7 +65,6 @@ import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileView;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
@@ -86,6 +85,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
 
+  private static final boolean DELETE_MOVING_FILE_TO_TRASH = true;
+  
   private final EditorTabPane tabPane;
   private final ExplorerTree explorerTree;
 
@@ -458,15 +459,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       closeTab(tabsToClose.toArray(new TabTitle[tabsToClose.size()]));
       boolean ok = false;
       if (file.isDirectory()) {
-        try {
-          FileUtils.deleteDirectory(file);
+        if (SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH)){
           ok = true;
-        } catch (IOException ex) {
+        } else {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete directory, see the log!");
-          LOGGER.error("Can't delete directory", ex);
         }
       } else {
-        ok = file.delete();
+        ok = SystemUtils.deleteFile(file,DELETE_MOVING_FILE_TO_TRASH);
         if (!ok) {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete file!");
         }
@@ -670,7 +669,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
             if (KNOWLEDGE_FOLDER_ICO == null) {
               final Icon icon = UIManager.getIcon("FileView.directoryIcon");
               if (icon != null) {
-                KNOWLEDGE_FOLDER_ICO = new ImageIcon(UiUtils.makeBadged(UiUtils.iconToImage(fileChooser, icon), Icons.MMDBADGE.getIcon().getImage()));
+                KNOWLEDGE_FOLDER_ICO = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(fileChooser, icon), Icons.MMDBADGE.getIcon().getImage()));
               }
             }
             return KNOWLEDGE_FOLDER_ICO;
@@ -731,7 +730,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   private void menuSaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveAllActionPerformed
     for (final TabTitle t : this.tabPane) {
-      t.save();
+      try {
+        t.save();
+      } catch (IOException ex) {
+        LOGGER.error("Can't save file", ex);
+        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+      }
     }
   }//GEN-LAST:event_menuSaveAllActionPerformed
 
@@ -755,14 +759,24 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private void menSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menSaveActionPerformed
     final int index = this.tabPane.getSelectedIndex();
     if (index >= 0) {
-      ((TabTitle) this.tabPane.getTabComponentAt(index)).save();
+      try {
+        ((TabTitle) this.tabPane.getTabComponentAt(index)).save();
+      } catch (IOException ex) {
+        LOGGER.error("Can't save file", ex);
+        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+      }
     }
   }//GEN-LAST:event_menSaveActionPerformed
 
   private void menuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveAsActionPerformed
     final int index = this.tabPane.getSelectedIndex();
     if (index >= 0) {
-      ((TabTitle) this.tabPane.getTabComponentAt(index)).saveAs();
+      try {
+        ((TabTitle) this.tabPane.getTabComponentAt(index)).saveAs();
+      } catch (IOException ex) {
+        LOGGER.error("Can't save file", ex);
+        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+      }
     }
   }//GEN-LAST:event_menuSaveAsActionPerformed
 
@@ -898,7 +912,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
         try {
           final MindMap mindMap = new MindMap(null, true);
           final String text = mindMap.write(new StringWriter()).toString();
-          FileUtils.write(file, text, "UTF-8");
+          SystemUtils.saveUTFText(file, text);
           result = file;
         } catch (IOException ex) {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save mind map into file '" + file.getName() + "'");

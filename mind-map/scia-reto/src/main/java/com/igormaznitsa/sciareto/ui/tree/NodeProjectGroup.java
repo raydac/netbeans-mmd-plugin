@@ -48,7 +48,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProjectGroup.class);
 
   public NodeProjectGroup(@Nonnull final Context context, @Nonnull final String name) {
-    super(null, true, ".");
+    super(null, true, ".", false);
     this.groupName = name;
     this.context = context;
   }

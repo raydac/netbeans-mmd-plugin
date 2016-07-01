@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 
@@ -38,6 +41,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
   private static final long serialVersionUID = -8971773653667281550L;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(EditorTabPane.class);
+  
   private final Context context;
   
   public EditorTabPane(@Nonnull final Context context) {
@@ -118,7 +123,12 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
         saveItem.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
-            title.save();
+            try{
+              title.save();
+            }catch(IOException ex){
+              LOGGER.error("Can't save file", ex);
+              DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+            }
           }
         });
         result.add(saveItem);
@@ -127,7 +137,12 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       saveAsItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          title.saveAs();
+          try {
+            title.saveAs();
+          } catch (IOException ex) {
+            LOGGER.error("Can't save file", ex);
+            DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+          }
         }
       });
       result.add(saveAsItem);

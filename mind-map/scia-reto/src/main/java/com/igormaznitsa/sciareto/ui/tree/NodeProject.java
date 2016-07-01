@@ -25,7 +25,7 @@ public class NodeProject  extends NodeFileOrFolder {
   private volatile File folder;
   
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
-    super(group, true, folder.getName());
+    super(group, true, folder.getName(), !folder.canWrite());
     this.folder = folder;
     reloadSubtree();
   }

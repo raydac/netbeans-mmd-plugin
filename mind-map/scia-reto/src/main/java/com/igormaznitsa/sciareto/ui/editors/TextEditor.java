@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
 public final class TextEditor extends AbstractScrollPane {
@@ -110,7 +111,7 @@ public final class TextEditor extends AbstractScrollPane {
   }
 
   @Override
-  public boolean saveDocument() {
+  public boolean saveDocument() throws IOException {
     boolean result = false;
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
@@ -120,13 +121,9 @@ public final class TextEditor extends AbstractScrollPane {
           return result;
         }
       }
-      try {
-        FileUtils.write(file, this.editor.getText(), "UTF-8", false);
+        SystemUtils.saveUTFText(file, this.editor.getText());
         this.title.setChanged(false);
         result = true;
-      } catch (IOException ex) {
-        LOGGER.error("Can't write file : " + file, ex);
-      }
     } else {
       result = true;
     }

@@ -45,7 +45,9 @@ public class NodeFileOrFolder implements TreeNode {
 
   private static final DataFlavor[] DATA_FLAVOR = new DataFlavor[]{DataFlavor.javaFileListFlavor};
 
-  public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name) {
+  private final boolean readonly;
+  
+  public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean readOnly) {
     this.parent = parent;
     this.name = name;
 
@@ -57,12 +59,18 @@ public class NodeFileOrFolder implements TreeNode {
       this.children = Collections.EMPTY_LIST;
       this.folderFlag = false;
     }
+    
+    this.readonly = readOnly;
   }
-
+  
+  public boolean isReadOnly(){
+    return this.readonly;
+  }
+  
   @Nonnull
   public NodeFileOrFolder addFile(@Nonnull final File file){
     Assertions.assertTrue("Unexpected state!",this.folderFlag && file.getParentFile().equals(this.makeFileForNode()));
-    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName());
+    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !file.canWrite());
     this.children.add(0,result);
     return result;
   }
@@ -78,7 +86,7 @@ public class NodeFileOrFolder implements TreeNode {
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
         for (final File f : generatedFile.listFiles()) {
-          this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName()));
+          this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(),!f.canWrite()));
         }
       }
     }

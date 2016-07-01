@@ -167,7 +167,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   @Override
-  public boolean saveDocument() {
+  public boolean saveDocument() throws IOException {
     boolean result = false;
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
@@ -177,13 +177,9 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
           return result;
         }
       }
-      try {
-        FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false);
-        this.title.setChanged(false);
-        result = true;
-      } catch (IOException ex) {
-        LOGGER.error("Can't write file : " + file, ex);
-      }
+      FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false);
+      this.title.setChanged(false);
+      result = true;
     } else {
       result = true;
     }

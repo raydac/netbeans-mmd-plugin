@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tabs;
 
+import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
@@ -29,8 +30,8 @@ public interface TabProvider {
   @Weight(Weight.Unit.LIGHT)
   @Nonnull
   JComponent getMainComponent();
-  boolean saveDocument();
-  boolean saveDocumentAs();
+  boolean saveDocument() throws IOException;
+  boolean saveDocumentAs() throws IOException;
   @Nonnull
   FileFilter getFileFilter();
   void dispose();

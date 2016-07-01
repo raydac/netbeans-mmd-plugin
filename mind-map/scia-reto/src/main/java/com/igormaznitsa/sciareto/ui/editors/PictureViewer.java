@@ -116,7 +116,7 @@ public final class PictureViewer extends AbstractScrollPane {
   }
 
   @Override
-  public boolean saveDocument() {
+  public boolean saveDocument() throws IOException {
     boolean result = false;
     final File docFile = this.title.getAssociatedFile();
     if (docFile != null) {
@@ -126,7 +126,10 @@ public final class PictureViewer extends AbstractScrollPane {
           ImageIO.write(this.image, ext, docFile);
           result = true;
         } catch (Exception ex) {
-          LOGGER.error("Can't write image", ex);
+          if (ex instanceof IOException) {
+            throw (IOException) ex;
+          }
+          throw new IOException("Can't write image", ex);
         }
       } else {
         try {
@@ -134,7 +137,10 @@ public final class PictureViewer extends AbstractScrollPane {
           ImageIO.write(this.image, "png", docFile);
           result = true;
         } catch (Exception ex) {
-          LOGGER.error("Can't write image", ex);
+          if (ex instanceof IOException) {
+            throw (IOException) ex;
+          }
+          throw new IOException("Can't write image", ex);
         }
       }
     }

@@ -37,14 +37,13 @@ public abstract class AbstractScrollPane extends JScrollPane implements TabProvi
   }
 
   @Override
-  public boolean saveDocumentAs() {
+  public boolean saveDocumentAs() throws IOException {
     final File file = this.getTabTitle().getAssociatedFile();
     final File fileToSave = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("save-as", "Save as", file, true, getFileFilter(), "Save");
     if (fileToSave!=null){
       this.getTabTitle().setAssociatedFile(fileToSave);
       this.getTabTitle().setChanged(true);
-      this.saveDocument();
-      return true;
+      return this.saveDocument();
     }
     return false;
   }

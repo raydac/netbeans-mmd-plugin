@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -69,32 +70,34 @@ public final class TabTitle extends JPanel {
 
     this.titleLabel = new JLabel() {
       private static final long serialVersionUID = 8689945842487138781L;
-      
+
       @Override
       protected void processKeyEvent(@Nonnull final KeyEvent e) {
         theInstance.getParent().dispatchEvent(e);
       }
-      
+
       @Override
       public String getToolTipText() {
         return theInstance.getToolTipText();
       }
-      
+
       @Override
-      public boolean isFocusable(){
+      public boolean isFocusable() {
         return false;
       }
     };
     this.add(this.titleLabel, constraints);
-    
+
     final Icon uiCloseIcon = UIManager.getIcon("InternalFrameTitlePane.closeIcon");
 
     this.closeButton = new JButton(uiCloseIcon == null ? NIMBUS_CLOSE_ICON : uiCloseIcon) {
       private static final long serialVersionUID = -8005282815756047979L;
+
       @Override
       public String getToolTipText() {
         return theInstance.getToolTipText();
       }
+
       @Override
       public boolean isFocusable() {
         return false;
@@ -130,24 +133,29 @@ public final class TabTitle extends JPanel {
     return this.closeButton.getBounds().contains(x, y);
   }
 
-    public void save(){
+  public boolean save() throws IOException {
+    boolean result = false;
     if (this.parent.saveDocument()) {
+      result = true;
       this.changed = false;
       updateView();
     }
+    return result;
   }
-  
-  public void saveAs(){
-    if (this.parent.saveDocumentAs()){
+
+  public boolean saveAs() throws IOException {
+    boolean result = false;
+    if (this.parent.saveDocumentAs()) {
+      result = true;
       final NodeProject project = this.context.findProjectForFile(this.associatedFile);
-      if (project!=null){
+      if (project != null) {
         project.getGroup().refreshProjectFolder(project);
         this.context.focusInTree(this);
       }
     }
+    return result;
   }
-  
-  
+
   @Override
   public boolean isFocusable() {
     return false;
@@ -200,7 +208,7 @@ public final class TabTitle extends JPanel {
 
   public void disposeEditor() {
     final JComponent compo = this.parent.getMainComponent();
-    if (compo instanceof Disposable){
+    if (compo instanceof Disposable) {
       ((Disposable) compo).dispose();
     }
   }
