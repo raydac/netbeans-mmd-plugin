@@ -16,6 +16,7 @@
 package com.igormaznitsa.sciareto.ui.tree;
 
 import java.io.File;
+import java.nio.file.Files;
 import javax.annotation.Nonnull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import javax.annotation.Nullable;
@@ -25,7 +26,7 @@ public class NodeProject  extends NodeFileOrFolder {
   private volatile File folder;
   
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
-    super(group, true, folder.getName(), !folder.canWrite());
+    super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
     reloadSubtree();
   }

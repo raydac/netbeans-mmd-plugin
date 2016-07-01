@@ -58,6 +58,9 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   private Icon FOLDER_OPENED;
   private Icon FOLDER_OPENED_RO;
 
+  private Icon LEAF_MINDMAP;
+  private Icon LEAF_MINDMAP_RO;
+
   public TreeCellRenderer() {
     super();
 
@@ -88,6 +91,11 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
       LEAF = new ImageIcon(UiUtils.iconToImage(tree, UIManager.getIcon("Tree.leafIcon")));
       LEAF_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) PROJECT_OPENED).getImage(), READONLY_BADGE));
     }
+    
+    if (LEAF_MINDMAP == null) {
+      LEAF_MINDMAP = Icons.DOCUMENT.getIcon();
+      LEAF_MINDMAP_RO = new ImageIcon(UiUtils.makeBadgedRightTop(Icons.DOCUMENT.getIcon().getImage(), READONLY_BADGE));
+    }
   }
 
   @Override
@@ -107,7 +115,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
         } else if (node.isLeaf()) {
           final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
           if (ext.equals("mmd")) {
-            this.setIcon(Icons.DOCUMENT.getIcon());
+            this.setIcon(node.isReadOnly() ? LEAF_MINDMAP_RO : LEAF_MINDMAP);
           } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
             this.setIcon(node.isReadOnly() ? ICON_IMAGE_RO : ICON_IMAGE);
           } else {

@@ -17,6 +17,7 @@ package com.igormaznitsa.sciareto.ui.tree;
 
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -70,7 +71,7 @@ public class NodeFileOrFolder implements TreeNode {
   @Nonnull
   public NodeFileOrFolder addFile(@Nonnull final File file){
     Assertions.assertTrue("Unexpected state!",this.folderFlag && file.getParentFile().equals(this.makeFileForNode()));
-    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !file.canWrite());
+    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
     this.children.add(0,result);
     return result;
   }
@@ -86,7 +87,7 @@ public class NodeFileOrFolder implements TreeNode {
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
         for (final File f : generatedFile.listFiles()) {
-          this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(),!f.canWrite()));
+          this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(),!Files.isWritable(f.toPath())));
         }
       }
     }
