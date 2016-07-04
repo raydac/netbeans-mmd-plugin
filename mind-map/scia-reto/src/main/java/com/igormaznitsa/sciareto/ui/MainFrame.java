@@ -38,7 +38,10 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,7 +89,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
 
   private static final boolean DELETE_MOVING_FILE_TO_TRASH = true;
-  
+
   private final EditorTabPane tabPane;
   private final ExplorerTree explorerTree;
 
@@ -441,9 +444,20 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     }
   }
 
+  @Nullable
+  @MustNotContainNull
+  private List<File> selectAffectedFiles(final List<File> files) {
+    final FileListPanel panel = new FileListPanel(files);
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Affected files", panel)) {
+      return panel.getSelectedFiles();
+    }
+    return null;
+  }
+
   @Override
   public boolean deleteTreeNode(@Nonnull final NodeFileOrFolder node) {
     final File file = node.makeFileForNode();
+
     if (file != null && file.exists()) {
       final List<TabTitle> tabsToClose = this.tabPane.findListOfRelatedTabs(file);
       boolean hasUnsaved = false;
@@ -457,15 +471,35 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
 
       closeTab(tabsToClose.toArray(new TabTitle[tabsToClose.size()]));
+
+      final NodeProject project = findProjectForFile(file);
+
+      List<File> affectedFiles = project == null ? Collections.EMPTY_LIST : project.findAffectedFiles(file);
+      
+      final Iterator<File> iterator = affectedFiles.iterator();
+      final Path removingFile = file.toPath();
+      while(iterator.hasNext()){
+        if (iterator.next().toPath().startsWith(removingFile)){
+          iterator.remove();
+        }
+      }
+      
+      if (!affectedFiles.isEmpty()) {
+        affectedFiles = selectAffectedFiles(affectedFiles);
+        if (affectedFiles == null) {
+          return false;
+        }
+      }
+
       boolean ok = false;
       if (file.isDirectory()) {
-        if (SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH)){
+        if (SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH)) {
           ok = true;
         } else {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete directory, see the log!");
         }
       } else {
-        ok = SystemUtils.deleteFile(file,DELETE_MOVING_FILE_TO_TRASH);
+        ok = SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH);
         if (!ok) {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete file!");
         }
@@ -473,6 +507,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
       if (ok) {
         explorerTree.deleteNode(node);
+      }
+
+      if (!affectedFiles.isEmpty()) {
+        project.deleteAllLinksToFile(affectedFiles, file);
       }
 
       return ok;

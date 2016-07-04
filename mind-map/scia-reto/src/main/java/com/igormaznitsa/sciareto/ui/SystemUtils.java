@@ -52,6 +52,8 @@ public final class SystemUtils {
       } else if (file.isFile()){
         if (!file.delete()){
           LOGGER.error("Can't delete file : " + file);
+        } else {
+          result = true;
         }
       }
     }

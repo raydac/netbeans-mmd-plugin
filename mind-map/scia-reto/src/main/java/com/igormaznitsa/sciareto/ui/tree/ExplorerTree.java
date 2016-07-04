@@ -292,7 +292,7 @@ public final class ExplorerTree extends JScrollPane {
   }
 
   public boolean deleteNode(@Nonnull final NodeFileOrFolder node) {
-    return getCurrentGroup().deleteNode(node);
+    return getCurrentGroup().fireNotificationThatNodeDeleted(node);
   }
 
   @Nonnull

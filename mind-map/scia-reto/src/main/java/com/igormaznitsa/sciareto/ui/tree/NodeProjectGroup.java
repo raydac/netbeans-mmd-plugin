@@ -206,7 +206,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
     }
   }
 
-  public boolean deleteNode(@Nonnull final NodeFileOrFolder node) {
+  public boolean fireNotificationThatNodeDeleted(@Nonnull final NodeFileOrFolder node) {
     final NodeFileOrFolder parentNode = node.getNodeParent();
     if (parentNode != null) {
       final TreeModelEvent event = new TreeModelEvent(this, parentNode.makeTreePath(), new int[]{node.getIndexAtParent()}, new Object[]{node});
@@ -231,6 +231,11 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
         return result.hasNext();
       }
 
+      @Override
+      public void remove(){
+        result.remove();
+      }
+      
       @Override
       @Nonnull
       public NodeProject next() {
