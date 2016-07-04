@@ -27,6 +27,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
@@ -38,6 +39,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 final class MessagePanel extends JPanel implements ActionListener {
@@ -46,6 +48,8 @@ final class MessagePanel extends JPanel implements ActionListener {
 
   private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadImage("nimbusCloseFrame.png"));
 
+  private static final AtomicInteger ACTIVE_MESSAGES = new AtomicInteger();
+  
   MessagePanel(@Nullable final Image icon, @Nullable final String title, @Nonnull final Color background, @Nonnull final JComponent component) {
     super(new GridBagLayout());
     this.setBackground(background);
@@ -102,6 +106,8 @@ final class MessagePanel extends JPanel implements ActionListener {
     this.setAlignmentY(Component.RIGHT_ALIGNMENT);
     
     doLayout();
+  
+    ACTIVE_MESSAGES.incrementAndGet();
   }
 
   @Override
@@ -115,6 +121,9 @@ final class MessagePanel extends JPanel implements ActionListener {
     final Container parent = this.getParent();
     if (parent != null) {
       parent.remove(this);
+      if (ACTIVE_MESSAGES.decrementAndGet()<=0){
+        Main.getApplicationFrame().getGlassPane().setVisible(false);
+      }
       parent.revalidate();
     }
   }

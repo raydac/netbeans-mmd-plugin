@@ -109,20 +109,25 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     this.stackPanel.setBorder(BorderFactory.createEmptyBorder(32, 32, 16, 32));
     this.stackPanel.setLayout(new BoxLayout(this.stackPanel, BoxLayout.Y_AXIS));
 
-    final JPanel glassPanel = (JPanel) this.getGlassPane();
+    final JPanel glassPanel = (JPanel)this.getGlassPane();
+    glassPanel.setOpaque(false);
+    
+    this.setGlassPane(glassPanel);
+
     glassPanel.setLayout(new BorderLayout(8, 8));
     glassPanel.add(Box.createGlue(), BorderLayout.CENTER);
 
     final JPanel ppanel = new JPanel(new BorderLayout(0, 0));
     ppanel.setFocusable(false);
     ppanel.setOpaque(false);
+    ppanel.setCursor(null);
     ppanel.add(this.stackPanel, BorderLayout.SOUTH);
 
     glassPanel.add(ppanel, BorderLayout.EAST);
 
     this.stackPanel.add(Box.createGlue());
 
-    glassPanel.setVisible(true);
+    glassPanel.setVisible(false);
 
     this.setTitle("Scia Reto");
 
@@ -475,15 +480,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       final NodeProject project = findProjectForFile(file);
 
       List<File> affectedFiles = project == null ? Collections.EMPTY_LIST : project.findAffectedFiles(file);
-      
+
       final Iterator<File> iterator = affectedFiles.iterator();
       final Path removingFile = file.toPath();
-      while(iterator.hasNext()){
-        if (iterator.next().toPath().startsWith(removingFile)){
+      while (iterator.hasNext()) {
+        if (iterator.next().toPath().startsWith(removingFile)) {
           iterator.remove();
         }
       }
-      
+
       if (!affectedFiles.isEmpty()) {
         affectedFiles = selectAffectedFiles(affectedFiles);
         if (affectedFiles == null) {

@@ -47,6 +47,7 @@ public class NotificationManager {
       @Override
       public void run() {
         Main.getApplicationFrame().getStackPanel().removeAll();
+        Main.getApplicationFrame().getGlassPane().setVisible(false);
       }
     });
   }
@@ -77,6 +78,8 @@ public class NotificationManager {
         }
 
         stack.add(new MessagePanel(icon, title, color, component), 0);
+        stack.revalidate();
+        Main.getApplicationFrame().getGlassPane().setVisible(true);
       }
     });
   }
