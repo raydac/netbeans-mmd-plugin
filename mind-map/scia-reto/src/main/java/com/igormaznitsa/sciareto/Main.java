@@ -39,6 +39,8 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
+import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
+import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.notifications.MessagesService;
 import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
@@ -151,6 +153,9 @@ public class Main {
         final int height = gd.getDisplayMode().getHeight();
 
         MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
+        MindMapPluginRegistry.getInstance().unregisterPluginForClass(AboutPlugin.class);
+        MindMapPluginRegistry.getInstance().unregisterPluginForClass(OptionsPlugin.class);
+        
         MAIN_FRAME = new MainFrame(args);
         MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
 

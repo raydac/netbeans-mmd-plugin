@@ -20,6 +20,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +36,7 @@ import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 
-public class NodeFileOrFolder implements TreeNode {
+public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> {
 
   protected final NodeFileOrFolder parent;
 
@@ -67,12 +68,24 @@ public class NodeFileOrFolder implements TreeNode {
   public boolean isReadOnly(){
     return this.readonly;
   }
+
+  @Override
+  public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
+    final String name1 = o1.name;
+    final String name2 = o2.name;
+    if (o1.isLeaf() == o2.isLeaf()){
+      return name1.compareTo(name2);
+    } else {
+      return o1.isLeaf() ? 1 : -1;
+    }
+  }
   
   @Nonnull
   public NodeFileOrFolder addFile(@Nonnull final File file){
     Assertions.assertTrue("Unexpected state!",this.folderFlag && file.getParentFile().equals(this.makeFileForNode()));
     final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
     this.children.add(0,result);
+    Collections.sort(this.children, this);
     return result;
   }
   
@@ -89,6 +102,7 @@ public class NodeFileOrFolder implements TreeNode {
         for (final File f : generatedFile.listFiles()) {
           this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(),!Files.isWritable(f.toPath())));
         }
+        Collections.sort(this.children,this);
       }
     }
   }
@@ -133,15 +147,6 @@ public class NodeFileOrFolder implements TreeNode {
       }
     }
     return list;
-  }
-
-  public boolean replaceChild(@Nonnull final NodeFileOrFolder oldOne, @Nonnull final NodeFileOrFolder newOne) {
-    final int index = this.children.indexOf(oldOne);
-    if (index >= 0) {
-      this.children.set(index, newOne);
-      return true;
-    }
-    return false;
   }
 
   @Override

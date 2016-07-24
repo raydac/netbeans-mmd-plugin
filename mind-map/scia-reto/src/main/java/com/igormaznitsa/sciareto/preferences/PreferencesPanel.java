@@ -723,7 +723,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel7Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(buttonFont, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
+        .addComponent(buttonFont, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
         .addContainerGap())
     );
     jPanel7Layout.setVerticalGroup(
@@ -749,7 +749,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       }
     });
 
-    panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+    panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder("Activator for scaling with mouse wheel"));
 
     checkBoxScalingCTRL.setText("CTRL"); // NOI18N
     checkBoxScalingCTRL.addActionListener(new java.awt.event.ActionListener() {

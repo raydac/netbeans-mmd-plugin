@@ -540,18 +540,6 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
           processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
         }
       });
-      this.customProcessors.put(AboutPlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          showAbout();
-        }
-      });
-      this.customProcessors.put(OptionsPlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          startOptionsEdit();
-        }
-      });
     }
     return this.customProcessors;
   }
