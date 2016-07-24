@@ -1,3 +1,6 @@
+1.2.1
+- fixed issue #22, added key short-cut into options to tune "next line char" for topic text editor, by default SHIFT+ENTER
+
 1.2.0 (05-jun-2016)
 - IJ: Minimal supported API version changed to 143.2370
 - fixed issue #16, Added default key board shortcut to open popup context menu, CTRL+ALT+SPACE
