@@ -241,14 +241,12 @@ public class MindMapPanel extends JPanel {
       public void keyTyped(@Nonnull final KeyEvent e) {
         if (lockIfNotDisposed()) {
           try {
-            if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-              if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
-                e.consume();
-                endEdit(true);
-              } else {
-                e.consume();
-                textEditor.insert("\n", textEditor.getCaretPosition()); //NOI18N
-              }
+            if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)) {
+              e.consume();
+              textEditor.insert("\n", textEditor.getCaretPosition()); //NOI18N
+            } else if (e.getKeyChar() == KeyEvent.VK_ENTER && (e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
+              e.consume();
+              endEdit(true);
             }
           } finally {
             unlock();
@@ -362,14 +360,14 @@ public class MindMapPanel extends JPanel {
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
               e.consume();
               deleteSelectedTopics(false);
-            } else if (config.isKeyEventDetected(e, 
-                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, 
-                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, 
-                MindMapPanelConfig.KEY_FOCUS_MOVE_UP, 
+            } else if (config.isKeyEventDetected(e,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_UP,
                 MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, 
-                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, 
-                MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED, 
+                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
                 MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED)) {
               e.consume();
               processMoveFocusByKey(e);
@@ -704,11 +702,13 @@ public class MindMapPanel extends JPanel {
                     break;
                 }
               } else // group
-               if (selectedTopics.isEmpty()) {
+              {
+                if (selectedTopics.isEmpty()) {
                   select(element.getModel(), false);
                 } else {
                   select(element.getModel(), true);
                 }
+              }
             }
           } finally {
             unlock();
@@ -924,93 +924,93 @@ public class MindMapPanel extends JPanel {
   }
 
   private void processMoveFocusByKey(@Nonnull final KeyEvent key) {
-    final AbstractElement lastSelectedTopic = this.selectedTopics.isEmpty() ? null : (AbstractElement) this.selectedTopics.get(this.selectedTopics.size()-1).getPayload();
-      if (lastSelectedTopic == null) {
-        return;
-      }
+    final AbstractElement lastSelectedTopic = this.selectedTopics.isEmpty() ? null : (AbstractElement) this.selectedTopics.get(this.selectedTopics.size() - 1).getPayload();
+    if (lastSelectedTopic == null) {
+      return;
+    }
 
-      AbstractElement nextFocused = null;
+    AbstractElement nextFocused = null;
 
-      boolean modelChanged = false;
+    boolean modelChanged = false;
 
-      if (lastSelectedTopic.isMoveable()) {
-        boolean processFirstChild = false;
-        if (config.isKeyEventDetected(key,MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED)) {
-          if (lastSelectedTopic.isLeftDirection()) {
-            processFirstChild = true;
-          } else {
-            nextFocused = (AbstractElement) assertNotNull(lastSelectedTopic.getModel().getParent()).getPayload();
-          }
-        } else if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED)) {
-          if (lastSelectedTopic.isLeftDirection()) {
-            nextFocused = (AbstractElement) assertNotNull(lastSelectedTopic.getModel().getParent()).getPayload();
-          } else {
-            processFirstChild = true;
-          }
+    if (lastSelectedTopic.isMoveable()) {
+      boolean processFirstChild = false;
+      if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED)) {
+        if (lastSelectedTopic.isLeftDirection()) {
+          processFirstChild = true;
         } else {
-          final boolean pressedButtonMoveUp = config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_UP, MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED);
-          final boolean firstLevel = lastSelectedTopic.getClass() == ElementLevelFirst.class;
-          final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(lastSelectedTopic.getModel());
-
-          final TopicChecker checker = new TopicChecker() {
-            @Override
-            public boolean check(@Nonnull final Topic topic) {
-              if (!firstLevel) {
-                return true;
-              } else if (currentLeft) {
-                return AbstractCollapsableElement.isLeftSidedTopic(topic);
-              } else {
-                return !AbstractCollapsableElement.isLeftSidedTopic(topic);
-              }
-            }
-          };
-          final Topic topic = pressedButtonMoveUp ? lastSelectedTopic.getModel().findPrev(checker) : lastSelectedTopic.getModel().findNext(checker);
-          nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
-        }
-
-        if (processFirstChild) {
-          if (lastSelectedTopic.hasChildren()) {
-            if (lastSelectedTopic.isCollapsed()) {
-              ((AbstractCollapsableElement) lastSelectedTopic).setCollapse(false);
-              modelChanged = true;
-            }
-
-            nextFocused = (AbstractElement) (lastSelectedTopic.getModel().getChildren().get(0)).getPayload();
-          }
-        }
-      } else if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED)) {
-        for (final Topic t : lastSelectedTopic.getModel().getChildren()) {
-          final AbstractElement e = (AbstractElement) t.getPayload();
-          if (e != null && e.isLeftDirection()) {
-            nextFocused = e;
-            break;
-          }
+          nextFocused = (AbstractElement) assertNotNull(lastSelectedTopic.getModel().getParent()).getPayload();
         }
       } else if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED)) {
-        for (final Topic t : lastSelectedTopic.getModel().getChildren()) {
-          final AbstractElement e = (AbstractElement) t.getPayload();
-          if (e != null && !e.isLeftDirection()) {
-            nextFocused = e;
-            break;
+        if (lastSelectedTopic.isLeftDirection()) {
+          nextFocused = (AbstractElement) assertNotNull(lastSelectedTopic.getModel().getParent()).getPayload();
+        } else {
+          processFirstChild = true;
+        }
+      } else {
+        final boolean pressedButtonMoveUp = config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_UP, MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED);
+        final boolean firstLevel = lastSelectedTopic.getClass() == ElementLevelFirst.class;
+        final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(lastSelectedTopic.getModel());
+
+        final TopicChecker checker = new TopicChecker() {
+          @Override
+          public boolean check(@Nonnull final Topic topic) {
+            if (!firstLevel) {
+              return true;
+            } else if (currentLeft) {
+              return AbstractCollapsableElement.isLeftSidedTopic(topic);
+            } else {
+              return !AbstractCollapsableElement.isLeftSidedTopic(topic);
+            }
           }
-        }
+        };
+        final Topic topic = pressedButtonMoveUp ? lastSelectedTopic.getModel().findPrev(checker) : lastSelectedTopic.getModel().findNext(checker);
+        nextFocused = topic == null ? null : (AbstractElement) topic.getPayload();
       }
 
-      if (nextFocused != null) {
-        final boolean addFocused = config.isKeyEventDetected(key,
-            MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED, 
-            MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, 
-            MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, 
-            MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
-        if (!addFocused || this.selectedTopics.contains(nextFocused.getModel())) {
-          removeAllSelection();
-        }
-        select(nextFocused.getModel(), false);
-      }
+      if (processFirstChild) {
+        if (lastSelectedTopic.hasChildren()) {
+          if (lastSelectedTopic.isCollapsed()) {
+            ((AbstractCollapsableElement) lastSelectedTopic).setCollapse(false);
+            modelChanged = true;
+          }
 
-      if (modelChanged) {
-        notifyModelChanged();
+          nextFocused = (AbstractElement) (lastSelectedTopic.getModel().getChildren().get(0)).getPayload();
+        }
       }
+    } else if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT, MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED)) {
+      for (final Topic t : lastSelectedTopic.getModel().getChildren()) {
+        final AbstractElement e = (AbstractElement) t.getPayload();
+        if (e != null && e.isLeftDirection()) {
+          nextFocused = e;
+          break;
+        }
+      }
+    } else if (config.isKeyEventDetected(key, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT, MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED)) {
+      for (final Topic t : lastSelectedTopic.getModel().getChildren()) {
+        final AbstractElement e = (AbstractElement) t.getPayload();
+        if (e != null && !e.isLeftDirection()) {
+          nextFocused = e;
+          break;
+        }
+      }
+    }
+
+    if (nextFocused != null) {
+      final boolean addFocused = config.isKeyEventDetected(key,
+          MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+          MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
+          MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+          MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
+      if (!addFocused || this.selectedTopics.contains(nextFocused.getModel())) {
+        removeAllSelection();
+      }
+      select(nextFocused.getModel(), false);
+    }
+
+    if (modelChanged) {
+      notifyModelChanged();
+    }
   }
 
   /**

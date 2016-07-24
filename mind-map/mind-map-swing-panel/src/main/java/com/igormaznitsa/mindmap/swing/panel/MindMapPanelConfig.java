@@ -98,6 +98,7 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED = "moveFocusLeftAddFocused";
   public static final String KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED = "moveFocusRightAddFocused";
   public static final String KEY_DELETE_TOPIC = "deleteSelectedTopic";
+  public static final String KEY_TOPIC_TEXT_NEXT_LINE = "nextLineInTopicText";
   public static final String KEY_ZOOM_IN = "zoomIn";
   public static final String KEY_ZOOM_OUT = "zoomOut";
   public static final String KEY_ZOOM_RESET = "zoomReset";
@@ -413,6 +414,7 @@ public final class MindMapPanelConfig implements Serializable {
     this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, KeyEvent.VK_LEFT, KeyEvent.SHIFT_MASK));
     this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, KeyEvent.VK_RIGHT, KeyEvent.SHIFT_MASK));
     this.mapShortCut.put(KEY_DELETE_TOPIC, new KeyShortcut(KEY_DELETE_TOPIC, KeyEvent.VK_DELETE, 0));
+    this.mapShortCut.put(KEY_TOPIC_TEXT_NEXT_LINE, new KeyShortcut(KEY_TOPIC_TEXT_NEXT_LINE, KeyEvent.VK_ENTER, KeyEvent.SHIFT_MASK));
     this.mapShortCut.put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, KeyEvent.VK_PLUS, KeyEvent.CTRL_MASK));
     this.mapShortCut.put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, KeyEvent.VK_MINUS, KeyEvent.CTRL_MASK));
     this.mapShortCut.put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, KeyEvent.VK_0, KeyEvent.CTRL_MASK));

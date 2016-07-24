@@ -49,10 +49,14 @@ import com.igormaznitsa.mindmap.plugins.tools.UnfoldAllPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonPopUpMenuPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonVisualAttributePlugin;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPluginRegistry.class);
+  
   private final List<MindMapPlugin> pluginList = new ArrayList<MindMapPlugin>();
 
   private static final MindMapPluginRegistry INSTANCE = new MindMapPluginRegistry();
@@ -93,14 +97,29 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   public void registerPlugin(@Nonnull final MindMapPlugin plugin) {
     synchronized (FIND_CACHE) {
       this.pluginList.add(assertNotNull(plugin));
+      LOGGER.info("Registered plugin " + plugin.getClass().getName());
       Collections.sort(this.pluginList);
       FIND_CACHE.clear();
     }
   }
 
+  public void unregisterPluginForClass(@Nonnull final Class<? extends MindMapPlugin> pluginClass) {
+    synchronized(FIND_CACHE){
+      final Iterator<MindMapPlugin> iterator = this.pluginList.iterator();
+      while(iterator.hasNext()){
+        final MindMapPlugin plugin = iterator.next();
+        if (pluginClass.isAssignableFrom(plugin.getClass())){
+          LOGGER.info("Unregistered plugin "+plugin.getClass().getName()+" for class "+pluginClass.getName());
+          iterator.remove();
+        }
+      }
+    }
+  }
+  
   public void unregisterPlugin(@Nonnull final MindMapPlugin plugin) {
     synchronized (FIND_CACHE) {
       if (this.pluginList.remove(assertNotNull(plugin))) {
+        LOGGER.info("Unregistered plugin " + plugin.getClass().getName());
         Collections.sort(this.pluginList);
       }
       FIND_CACHE.clear();
