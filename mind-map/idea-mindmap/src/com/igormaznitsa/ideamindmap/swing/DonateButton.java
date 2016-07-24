@@ -42,7 +42,7 @@ public class DonateButton extends JButton {
   public DonateButton(){
     super("Donate", AllIcons.Buttons.COINS);
     this.addActionListener(LISTENER);
-    setToolTipText("Make donation to the author of the project");
+    setToolTipText("If you like the plugin, you could maake some donation");
   }
 
 
