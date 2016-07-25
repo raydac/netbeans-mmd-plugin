@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.swing.services;
 public enum IconID {
   POPUP_EXPORT,
   POPUP_EXPORT_FREEMIND,
+  POPUP_EXPORT_SVG,
   POPUP_EXPORT_MARKDOWN,
   POPUP_EXPORT_MINDMUP,
   POPUP_EXPORT_PNG,

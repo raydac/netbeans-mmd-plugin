@@ -20,9 +20,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 
-import java.awt.BasicStroke;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Path2D;
@@ -30,6 +28,9 @@ import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.Color;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public abstract class AbstractCollapsableElement extends AbstractElement {
@@ -45,7 +46,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     super(model);
   }
 
-  protected void drawCollapsator(@Nonnull final Graphics2D g, @Nonnull final MindMapPanelConfig cfg, final boolean collapsed) {
+  protected void drawCollapsator(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, final boolean collapsed) {
     final int x = (int) Math.round(collapsatorZone.getX());
     final int y = (int) Math.round(collapsatorZone.getY());
     final int w = (int) Math.round(collapsatorZone.getWidth());
@@ -53,14 +54,15 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
     final int DELTA = (int) Math.round(cfg.getCollapsatorSize() * 0.3d * cfg.getScale());
 
-    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getCollapsatorBorderWidth(), 0.1f)));
-    g.setColor(cfg.getCollapsatorBackgroundColor());
-    g.fillOval(x, y, w, h);
-    g.setColor(cfg.getCollapsatorBorderColor());
-    g.drawOval(x, y, w, h);
-    g.drawLine(x + DELTA, y + h / 2, x + w - DELTA, y + h / 2);
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getCollapsatorBorderWidth(), 0.1f),StrokeType.SOLID);
+
+    final Color linecolor = cfg.getCollapsatorBorderColor();
+    
+    g.drawOval(x, y, w, h, linecolor, cfg.getCollapsatorBackgroundColor());
+    
+    g.drawLine(x + DELTA, y + h / 2, x + w - DELTA, y + h / 2, linecolor);
     if (collapsed) {
-      g.drawLine(x + w / 2, y + DELTA, x + w / 2, y + h - DELTA);
+      g.drawLine(x + w / 2, y + DELTA, x + w / 2, y + h - DELTA, linecolor);
     }
   }
 
@@ -204,7 +206,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   @Override
-  public void doPaintConnectors(@Nonnull final Graphics2D g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
+  public void doPaintConnectors(@Nonnull final Gfx g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
     final Rectangle2D source = new Rectangle2D.Double(this.bounds.getX() + this.collapsatorZone.getX(), this.bounds.getY() + this.collapsatorZone.getY(), this.collapsatorZone.getWidth(), this.collapsatorZone.getHeight());
     final boolean lefDir = isLeftDirection();
     for (final Topic t : this.model.getChildren()) {
@@ -213,13 +215,12 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   @Override
-  public void drawConnector(@Nonnull final Graphics2D g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
-    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f)));
-    g.setColor(cfg.getConnectorColor());
+  public void drawConnector(@Nonnull final Gfx g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f),StrokeType.SOLID);
 
     final double dy = Math.abs(destination.getCenterY() - source.getCenterY());
     if (dy < (16.0d * cfg.getScale())) {
-      g.drawLine((int) source.getCenterX(), (int) source.getCenterY(), (int) destination.getCenterX(), (int) source.getCenterY());
+      g.drawLine((int) source.getCenterX(), (int) source.getCenterY(), (int) destination.getCenterX(), (int) source.getCenterY(), cfg.getConnectorColor());
     } else {
       final Path2D path = new Path2D.Double();
       path.moveTo(source.getCenterX(), source.getCenterY());
@@ -236,7 +237,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
         path.lineTo(destination.getCenterX(), destination.getCenterY());
       }
 
-      g.draw(path);
+      g.draw(path,cfg.getConnectorColor(),null);
     }
   }
 
@@ -266,7 +267,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   @Override
-  public void updateElementBounds(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateElementBounds(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
     super.updateElementBounds(gfx, cfg);
     final double marginOffset = ((cfg.getTextMargins() + cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);

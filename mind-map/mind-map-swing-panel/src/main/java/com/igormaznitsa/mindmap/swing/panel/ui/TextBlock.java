@@ -19,9 +19,8 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 
 import static com.igormaznitsa.mindmap.model.ModelUtils.breakToLines;
 
+import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
@@ -29,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
 
 public final class TextBlock implements Cloneable {
 
@@ -99,11 +99,11 @@ public final class TextBlock implements Cloneable {
     this.bounds.setFrame(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
   
-  public void updateSize(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateSize(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
       this.font = cfg.getFont().deriveFont(cfg.safeScaleFloatValue(cfg.getFont().getSize2D(),2f));
-      final FontMetrics metrics = gfx.getFontMetrics(this.font);
-
-      this.maxLineAscent = metrics.getMaxAscent();
+      gfx.setFont(font);
+      
+      this.maxLineAscent = gfx.getFontMaxAscent();
 
       float maxWidth = 0.0f;
       float maxHeight = 0.0f;
@@ -114,7 +114,7 @@ public final class TextBlock implements Cloneable {
 
       int index = 0;
       for (final String s : brokenText) {
-        final Rectangle2D lineBounds = metrics.getStringBounds(s, gfx);
+        final Rectangle2D lineBounds = gfx.getStringBounds(s);
         if (Float.compare((float) lineBounds.getWidth(), maxWidth) > 0) {
           maxWidth = (float) lineBounds.getWidth();
         }
@@ -124,7 +124,7 @@ public final class TextBlock implements Cloneable {
       this.bounds.setRect(0f, 0f, maxWidth, maxHeight);
   }
 
-  public void paint(@Nonnull final Graphics2D gfx) {
+  public void paint(@Nonnull final Gfx gfx, @Nonnull final Color color) {
     if (this.font != null && this.lines != null) {
       double posy = this.bounds.getY() + this.maxLineAscent;
       gfx.setFont(this.font);
@@ -147,7 +147,7 @@ public final class TextBlock implements Cloneable {
             throw new Error("unexpected situation #283794"); //NOI18N
         }
 
-        gfx.drawString(l.line, (int)Math.round(drawX), (int)Math.round(posy));
+        gfx.drawString(l.line, (int)Math.round(drawX), (int)Math.round(posy),color);
         posy += l.bounds.getHeight();
       }
     }

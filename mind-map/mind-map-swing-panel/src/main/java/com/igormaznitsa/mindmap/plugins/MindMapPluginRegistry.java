@@ -51,6 +51,7 @@ import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonVisualAttrib
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.exporters.SVGExporter;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
@@ -69,6 +70,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new MindmupExporter());
     registerPlugin(new PNGImageExporter());
     registerPlugin(new TextExporter());
+    registerPlugin(new SVGExporter());
 
     registerPlugin(new ExtraFilePlugin());
     registerPlugin(new ExtraNotePlugin());

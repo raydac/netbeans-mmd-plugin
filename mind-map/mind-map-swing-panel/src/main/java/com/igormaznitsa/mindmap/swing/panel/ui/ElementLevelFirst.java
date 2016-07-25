@@ -18,13 +18,13 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 
 public class ElementLevelFirst extends AbstractCollapsableElement {
 
@@ -48,29 +48,23 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
   }
 
   @Override
-  public void drawComponent(@Nonnull final Graphics2D g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
-    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f)));
+  public void drawComponent(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f),StrokeType.SOLID);
 
     final Shape shape = makeShape(cfg, 0f, 0f);
 
     if (cfg.isDropShadow()) {
-      g.setColor(cfg.getShadowColor());
       final float offset = cfg.safeScaleFloatValue(cfg.getShadowOffset(), 0.0f);
-      g.fill(makeShape(cfg, offset, offset));
+      g.draw(makeShape(cfg, offset, offset),null,cfg.getShadowColor());
     }
 
-    g.setColor(getBackgroundColor(cfg));
-    g.fill(shape);
-
-    g.setColor(getBorderColor(cfg));
-    g.draw(shape);
-
+    g.draw(shape,getBorderColor(cfg),getBackgroundColor(cfg));
+    
     if (this.visualAttributeImageBlock.mayHaveContent()) {
       this.visualAttributeImageBlock.paint(g, cfg);
     }
     
-    g.setColor(getTextColor(cfg));
-    this.textBlock.paint(g);
+    this.textBlock.paint(g,getTextColor(cfg));
 
     if (this.extrasIconBlock.hasContent()) {
       this.extrasIconBlock.paint(g);

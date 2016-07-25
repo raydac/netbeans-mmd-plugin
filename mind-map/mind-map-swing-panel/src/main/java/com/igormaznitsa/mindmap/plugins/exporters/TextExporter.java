@@ -267,7 +267,7 @@ public class TextExporter extends AbstractExporter {
   
   @Override
   public int getOrder() {
-    return 5;
+    return 6;
   }
 
 }

@@ -18,15 +18,12 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Dimension2D;
-import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
@@ -34,6 +31,9 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public final class ElementRoot extends AbstractElement {
@@ -75,29 +75,23 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public void drawComponent(@Nonnull final Graphics2D g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
-    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f)));
+  public void drawComponent(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f),StrokeType.SOLID);
 
     final Shape shape = makeShape(cfg, 0f, 0f);
 
     if (cfg.isDropShadow()) {
-      g.setColor(cfg.getShadowColor());
       final float offset = cfg.safeScaleFloatValue(cfg.getShadowOffset(), 0.0f);
-      g.fill(makeShape(cfg, offset, offset));
+      g.draw(makeShape(cfg, offset, offset),null,cfg.getShadowColor());
     }
 
-    g.setColor(this.getBackgroundColor(cfg));
-    g.fill(shape);
-
-    g.setColor(this.getBorderColor(cfg));
-    g.draw(shape);
+    g.draw(shape, this.getBorderColor(cfg), this.getBackgroundColor(cfg));
 
     if (this.visualAttributeImageBlock.mayHaveContent()) {
       this.visualAttributeImageBlock.paint(g, cfg);
     }
     
-    g.setColor(this.getTextColor(cfg));
-    this.textBlock.paint(g);
+    this.textBlock.paint(g,this.getTextColor(cfg));
 
     if (this.extrasIconBlock.hasContent()) {
       this.extrasIconBlock.paint(g);
@@ -105,11 +99,8 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public void drawConnector(@Nonnull final Graphics2D g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
-    g.setStroke(new BasicStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(),0.1f)));
-    g.setColor(cfg.getConnectorColor());
-
-    final Path2D path = new Path2D.Double();
+  public void drawConnector(@Nonnull final Gfx g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(),0.1f),StrokeType.SOLID);
 
     final double startX;
     if (destination.getCenterX() < source.getCenterX()) {
@@ -120,11 +111,8 @@ public final class ElementRoot extends AbstractElement {
       // right
       startX = source.getCenterX() + source.getWidth() / 4;
     }
-
-    path.moveTo(startX, source.getCenterY());
-    path.curveTo(startX, destination.getCenterY(), startX, destination.getCenterY(), destination.getCenterX(), destination.getCenterY());
-
-    g.draw(path);
+      
+    g.drawCurve(startX, source.getCenterY(), destination.getCenterX(), destination.getCenterY(), cfg.getConnectorColor());
   }
 
   private double calcTotalChildrenHeight(final double vertInset, final boolean left) {
@@ -186,7 +174,7 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public void updateElementBounds(@Nonnull final Graphics2D gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateElementBounds(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
     super.updateElementBounds(gfx, cfg);
     final double marginOffset = ((cfg.getTextMargins()+cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);

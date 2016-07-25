@@ -63,6 +63,8 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.GfxGraphics2D;
 
 public final class Utils {
 
@@ -371,9 +373,10 @@ public final class Utils {
       }
     }
 
-    final Graphics2D gfx = (Graphics2D) result.createGraphics();
+    final Graphics2D g = result.createGraphics();
+    final Gfx gfx = new GfxGraphics2D(g);
     try {
-      prepareGraphicsForQuality(gfx);
+      prepareGraphicsForQuality(g);
       cloned.doPaint(gfx, config, false);
     } finally {
       gfx.dispose();
@@ -501,6 +504,44 @@ public final class Utils {
       }
     }
     return result;
+  }
+
+  private static final char[] BASE64_TABLE = {
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+    'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+    'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+    'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
+
+  @Nonnull
+  public static String base64encode(@Nonnull final byte[] data) {
+
+    final StringBuilder buffer = new StringBuilder(data.length << 1);
+    int pad = 0;
+    for (int i = 0; i < data.length; i += 3) {
+
+      int b = ((data[i] & 0xFF) << 16) & 0xFFFFFF;
+      if (i + 1 < data.length) {
+        b |= (data[i + 1] & 0xFF) << 8;
+      } else {
+        pad++;
+      }
+      if (i + 2 < data.length) {
+        b |= (data[i + 2] & 0xFF);
+      } else {
+        pad++;
+      }
+
+      for (int j = 0; j < 4 - pad; j++) {
+        int c = (b & 0xFC0000) >> 18;
+        buffer.append(BASE64_TABLE[c]);
+        b <<= 6;
+      }
+    }
+    for (int j = 0; j < pad; j++) {
+      buffer.append("=");
+    }
+
+    return buffer.toString();
   }
 
 }
