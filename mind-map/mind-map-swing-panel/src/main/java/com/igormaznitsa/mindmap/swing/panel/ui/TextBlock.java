@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
 public final class TextBlock implements Cloneable {
 
@@ -99,7 +99,7 @@ public final class TextBlock implements Cloneable {
     this.bounds.setFrame(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
   
-  public void updateSize(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateSize(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
       this.font = cfg.getFont().deriveFont(cfg.safeScaleFloatValue(cfg.getFont().getSize2D(),2f));
       gfx.setFont(font);
       
@@ -124,7 +124,7 @@ public final class TextBlock implements Cloneable {
       this.bounds.setRect(0f, 0f, maxWidth, maxHeight);
   }
 
-  public void paint(@Nonnull final Gfx gfx, @Nonnull final Color color) {
+  public void paint(@Nonnull final MMGraphics gfx, @Nonnull final Color color) {
     if (this.font != null && this.lines != null) {
       double posy = this.bounds.getY() + this.maxLineAscent;
       gfx.setFont(this.font);

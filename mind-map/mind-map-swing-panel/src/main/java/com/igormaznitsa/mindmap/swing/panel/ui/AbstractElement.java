@@ -32,7 +32,8 @@ import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public abstract class AbstractElement {
@@ -111,7 +112,7 @@ public abstract class AbstractElement {
     this.model.setAttribute("align", this.textBlock.getTextAlign().name()); //NOI18N
   }
 
-  public void updateElementBounds(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateElementBounds(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
     this.visualAttributeImageBlock.updateSize(gfx, cfg);
     this.textBlock.updateSize(gfx, cfg);
     this.extrasIconBlock.updateSize(gfx, cfg);
@@ -160,8 +161,8 @@ public abstract class AbstractElement {
     return this.bounds;
   }
 
-  public final void doPaint(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
-    final Gfx gfx = g.copy();
+  public final void doPaint(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+    final MMGraphics gfx = g.copy();
     try {
       if (this.hasChildren() && !isCollapsed()) {
         doPaintConnectors(g, isLeftDirection(), cfg);
@@ -181,7 +182,7 @@ public abstract class AbstractElement {
     }
   }
 
-  public void doPaintConnectors(@Nonnull final Gfx g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
+  public void doPaintConnectors(@Nonnull final MMGraphics g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
     final Rectangle2D source = this.bounds;
     for (final Topic t : this.model.getChildren()) {
       drawConnector(g, source, (assertNotNull((AbstractElement) t.getPayload())).getBounds(), leftDirection, cfg);
@@ -198,9 +199,9 @@ public abstract class AbstractElement {
     return compo;
   }
 
-  public abstract void drawComponent(@Nonnull Gfx g, @Nonnull MindMapPanelConfig cfg, boolean drawCollapsator);
+  public abstract void drawComponent(@Nonnull MMGraphics g, @Nonnull MindMapPanelConfig cfg, boolean drawCollapsator);
 
-  public abstract void drawConnector(@Nonnull Gfx g, @Nonnull Rectangle2D source, @Nonnull Rectangle2D destination, boolean leftDirection, @Nonnull MindMapPanelConfig cfg);
+  public abstract void drawConnector(@Nonnull MMGraphics g, @Nonnull Rectangle2D source, @Nonnull Rectangle2D destination, boolean leftDirection, @Nonnull MindMapPanelConfig cfg);
 
   public abstract boolean isMoveable();
 

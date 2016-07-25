@@ -31,7 +31,7 @@ import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
 public class IconBlock {
   private final Rectangle2D bounds = new Rectangle2D.Double();
@@ -57,7 +57,7 @@ public class IconBlock {
     this.bounds.setRect(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
-  public void updateSize(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateSize(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
     final int numberOfIcons = this.model.getNumberOfExtras();
     this.scale = cfg.getScale();
     if (numberOfIcons == 0) {
@@ -80,7 +80,7 @@ public class IconBlock {
     return this.currentExtras!=null && this.contentPresented;
   }
   
-  public void paint(@Nonnull final Gfx gfx) {
+  public void paint(@Nonnull final MMGraphics gfx) {
     final int numberOfIcons = this.model.getNumberOfExtras();
     if (numberOfIcons!=0){
       double offsetX = this.bounds.getX();

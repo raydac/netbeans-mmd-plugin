@@ -72,10 +72,22 @@ import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
 import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
 import java.util.concurrent.locks.ReentrantLock;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.GfxGraphics2D;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
@@ -708,13 +720,11 @@ public class MindMapPanel extends JPanel {
                     break;
                 }
               } else // group
-              {
-                if (selectedTopics.isEmpty()) {
+               if (selectedTopics.isEmpty()) {
                   select(element.getModel(), false);
                 } else {
                   select(element.getModel(), true);
                 }
-              }
             }
           } finally {
             unlock();
@@ -1548,36 +1558,40 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static void drawBackground(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg) {
+  private static void drawBackground(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg) {
     final Rectangle clipBounds = g.getClipBounds();
 
     if (cfg.isDrawBackground()) {
-      g.drawRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height,null,cfg.getPaperColor());
+      if (clipBounds == null) {
+        LOGGER.warn("Can't draw background because clip bounds is not provided!");
+      } else {
+        g.drawRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, null, cfg.getPaperColor());
 
-      if (cfg.isShowGrid()) {
-        final double scaledGridStep = cfg.getGridStep() * cfg.getScale();
+        if (cfg.isShowGrid()) {
+          final double scaledGridStep = cfg.getGridStep() * cfg.getScale();
 
-        final float minX = clipBounds.x;
-        final float minY = clipBounds.y;
-        final float maxX = clipBounds.x + clipBounds.width;
-        final float maxY = clipBounds.y + clipBounds.height;
+          final float minX = clipBounds.x;
+          final float minY = clipBounds.y;
+          final float maxX = clipBounds.x + clipBounds.width;
+          final float maxY = clipBounds.y + clipBounds.height;
 
-        final Color gridColor = cfg.getGridColor();
+          final Color gridColor = cfg.getGridColor();
 
-        for (float x = 0.0f; x < maxX; x += scaledGridStep) {
-          if (x < minX) {
-            continue;
+          for (float x = 0.0f; x < maxX; x += scaledGridStep) {
+            if (x < minX) {
+              continue;
+            }
+            final int intx = Math.round(x);
+            g.drawLine(intx, (int) minY, intx, (int) maxY, gridColor);
           }
-          final int intx = Math.round(x);
-          g.drawLine(intx, (int) minY, intx, (int) maxY, gridColor);
-        }
 
-        for (float y = 0.0f; y < maxY; y += scaledGridStep) {
-          if (y < minY) {
-            continue;
+          for (float y = 0.0f; y < maxY; y += scaledGridStep) {
+            if (y < minY) {
+              continue;
+            }
+            final int inty = Math.round(y);
+            g.drawLine((int) minX, inty, (int) maxX, inty, gridColor);
           }
-          final int inty = Math.round(y);
-          g.drawLine((int) minX, inty, (int) maxX, inty, gridColor);
         }
       }
     }
@@ -1594,7 +1608,7 @@ public class MindMapPanel extends JPanel {
     return result;
   }
 
-  public static void drawOnGraphicsForConfiguration(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig config, @Nonnull final MindMap map, final boolean drawSelection, @Nullable @MustNotContainNull final List<Topic> selectedTopics) {
+  public static void drawOnGraphicsForConfiguration(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig config, @Nonnull final MindMap map, final boolean drawSelection, @Nullable @MustNotContainNull final List<Topic> selectedTopics) {
     drawBackground(g, config);
     drawTopics(g, config, map);
     if (drawSelection && selectedTopics != null && !selectedTopics.isEmpty()) {
@@ -1654,10 +1668,10 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static void drawSelection(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, @Nullable @MustNotContainNull final List<Topic> selectedTopics) {
+  private static void drawSelection(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, @Nullable @MustNotContainNull final List<Topic> selectedTopics) {
     if (selectedTopics != null && !selectedTopics.isEmpty()) {
       final Color selectLineColor = cfg.getSelectLineColor();
-      g.setStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(), 0.1f),StrokeType.DASHES);
+      g.setStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(), 0.1f), StrokeType.DASHES);
       final double selectLineGap = (double) cfg.safeScaleFloatValue(cfg.getSelectLineGap(), 0.05f);
       final double selectLineGapX2 = selectLineGap + selectLineGap;
 
@@ -1668,13 +1682,13 @@ public class MindMapPanel extends JPanel {
           final int y = (int) Math.round(e.getBounds().getY() - selectLineGap);
           final int w = (int) Math.round(e.getBounds().getWidth() + selectLineGapX2);
           final int h = (int) Math.round(e.getBounds().getHeight() + selectLineGapX2);
-          g.drawRect(x, y, w, h,selectLineColor,null);
+          g.drawRect(x, y, w, h, selectLineColor, null);
         }
       }
     }
   }
 
-  private static void drawTopics(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, @Nullable final MindMap map) {
+  private static void drawTopics(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, @Nullable final MindMap map) {
     if (map != null) {
       if (Boolean.parseBoolean(map.getAttribute(ATTR_SHOW_JUMPS))) {
         drawJumps(g, map, cfg);
@@ -1695,7 +1709,7 @@ public class MindMapPanel extends JPanel {
     return Math.atan((ey - sy) / deltax) + (ex < sx ? Math.PI : 0);
   }
 
-  private static void drawJumps(@Nonnull final Gfx gfx, @Nonnull final MindMap map, @Nonnull final MindMapPanelConfig cfg) {
+  private static void drawJumps(@Nonnull final MMGraphics gfx, @Nonnull final MindMap map, @Nonnull final MindMapPanelConfig cfg) {
     final List<Topic> allTopicsWithJumps = map.findAllTopicsForExtraType(Extra.ExtraType.TOPIC);
 
     final float scaledSize = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
@@ -1736,7 +1750,7 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static void drawArrowToDestination(@Nonnull final Gfx gfx, @Nonnull final Rectangle2D start, @Nonnull final Rectangle2D destination, @Nonnull final float lineWidth, @Nonnull final float arrowWidth, final float arrowSize, @Nonnull final Color color) {
+  private static void drawArrowToDestination(@Nonnull final MMGraphics gfx, @Nonnull final Rectangle2D start, @Nonnull final Rectangle2D destination, @Nonnull final float lineWidth, @Nonnull final float arrowWidth, final float arrowSize, @Nonnull final Color color) {
 
     final double startx = start.getCenterX();
     final double starty = start.getCenterY();
@@ -1744,7 +1758,7 @@ public class MindMapPanel extends JPanel {
     final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startx, starty);
 
     if (arrowPoint != null) {
-      gfx.setStroke(lineWidth,StrokeType.SOLID);
+      gfx.setStroke(lineWidth, StrokeType.SOLID);
 
       double angle = findLineAngle(arrowPoint.getX(), arrowPoint.getY(), startx, starty);
 
@@ -1763,14 +1777,14 @@ public class MindMapPanel extends JPanel {
       polygon.lineTo(arrowPoint.getX() + x1, arrowPoint.getY() + y1);
       polygon.lineTo(arrowPoint.getX() + x2, arrowPoint.getY() + y2);
       polygon.closePath();
-      gfx.draw(polygon,null,color);
+      gfx.draw(polygon, null, color);
 
-      gfx.setStroke(lineWidth,StrokeType.DOTS);
-      gfx.drawLine((int) startx, (int) starty, (int) (arrowPoint.getX() + cx), (int) (arrowPoint.getY() + cy),color);
+      gfx.setStroke(lineWidth, StrokeType.DOTS);
+      gfx.drawLine((int) startx, (int) starty, (int) (arrowPoint.getX() + cx), (int) (arrowPoint.getY() + cy), color);
     }
   }
 
-  private static void drawTopicTree(@Nonnull final Gfx gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
+  private static void drawTopicTree(@Nonnull final MMGraphics gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
     paintTopic(gfx, topic, cfg);
     final AbstractElement w = assertNotNull((AbstractElement) topic.getPayload());
     if (w.isCollapsed()) {
@@ -1781,14 +1795,14 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private static void paintTopic(@Nonnull final Gfx gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
+  private static void paintTopic(@Nonnull final MMGraphics gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
     final AbstractElement element = (AbstractElement) topic.getPayload();
     if (element != null) {
       element.doPaint(gfx, cfg, true);
     }
   }
 
-  private static void setElementSizesForElementAndChildren(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic, final int level) {
+  private static void setElementSizesForElementAndChildren(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic, final int level) {
     AbstractElement widget = (AbstractElement) topic.getPayload();
     if (widget == null) {
       switch (level) {
@@ -1812,14 +1826,14 @@ public class MindMapPanel extends JPanel {
     widget.updateBlockSize(cfg);
   }
 
-  public static boolean calculateElementSizes(@Nonnull final Gfx gfx, @Nullable final MindMap model, @Nonnull final MindMapPanelConfig cfg) {
+  public static boolean calculateElementSizes(@Nonnull final MMGraphics gfx, @Nullable final MindMap model, @Nonnull final MindMapPanelConfig cfg) {
     boolean result = false;
 
     final Topic root = model == null ? null : model.getRoot();
     if (root != null && model != null) {
-        model.resetPayload();
-        setElementSizesForElementAndChildren(gfx, cfg, root, 0);
-        result = true;
+      model.resetPayload();
+      setElementSizesForElementAndChildren(gfx, cfg, root, 0);
+      result = true;
     }
     return result;
   }
@@ -1863,7 +1877,7 @@ public class MindMapPanel extends JPanel {
   }
 
   @Nullable
-  public static Dimension layoutFullDiagramWithCenteringToPaper(@Nonnull final Gfx gfx, @Nonnull final MindMap map, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Dimension2D paperSize) {
+  public static Dimension layoutFullDiagramWithCenteringToPaper(@Nonnull final MMGraphics gfx, @Nonnull final MindMap map, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Dimension2D paperSize) {
     Dimension resultSize = null;
     if (calculateElementSizes(gfx, map, cfg)) {
       Dimension2D rootBlockSize = layoutModelElements(map, cfg);
@@ -1910,8 +1924,8 @@ public class MindMapPanel extends JPanel {
           if (lockIfNotDisposed()) {
             try {
               final Graphics2D graph = (Graphics2D) getGraphics();
-              if (graph!=null){
-                final Gfx gfx = new GfxGraphics2D(graph);
+              if (graph != null) {
+                final MMGraphics gfx = new MMGraphics2DWrapper(graph);
                 if (calculateElementSizes(gfx, model, config)) {
                   changeSizeOfComponentWithNotification(layoutFullDiagramWithCenteringToPaper(gfx, model, config, getSize()));
                 }
@@ -2006,7 +2020,7 @@ public class MindMapPanel extends JPanel {
             drawErrorText(gfx, this.getSize(), error);
           } else {
             revalidate();
-            drawOnGraphicsForConfiguration(new GfxGraphics2D(gfx), this.config, this.model, true, this.selectedTopics);
+            drawOnGraphicsForConfiguration(new MMGraphics2DWrapper(gfx), this.config, this.model, true, this.selectedTopics);
             drawDestinationElement(gfx, this.config);
           }
 
@@ -2156,7 +2170,7 @@ public class MindMapPanel extends JPanel {
     BufferedImage img = new BufferedImage(32, 32, cfg.isDrawBackground() ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
     Dimension2D blockSize = null;
     final Graphics2D g = img.createGraphics();
-    final Gfx gfx = new GfxGraphics2D(g);
+    final MMGraphics gfx = new MMGraphics2DWrapper(g);
     try {
       Utils.prepareGraphicsForQuality(g);
       if (calculateElementSizes(gfx, workMap, cfg)) {
@@ -2191,7 +2205,7 @@ public class MindMapPanel extends JPanel {
 
     final BufferedImage img = new BufferedImage((int) blockSize.getWidth(), (int) blockSize.getHeight(), BufferedImage.TYPE_INT_ARGB);
     final Graphics2D g = img.createGraphics();
-    final Gfx gfx = new GfxGraphics2D(g);
+    final MMGraphics gfx = new MMGraphics2DWrapper(g);
     try {
       Utils.prepareGraphicsForQuality(g);
       gfx.setClip(0, 0, img.getWidth(), img.getHeight());

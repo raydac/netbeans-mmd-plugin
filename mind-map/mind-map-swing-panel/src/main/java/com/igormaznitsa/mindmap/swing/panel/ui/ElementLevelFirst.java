@@ -23,8 +23,8 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
 public class ElementLevelFirst extends AbstractCollapsableElement {
 
@@ -48,7 +48,7 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
   }
 
   @Override
-  public void drawComponent(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+  public void drawComponent(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
     g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f),StrokeType.SOLID);
 
     final Shape shape = makeShape(cfg, 0f, 0f);

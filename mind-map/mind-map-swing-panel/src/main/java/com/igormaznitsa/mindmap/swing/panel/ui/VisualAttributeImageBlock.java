@@ -26,7 +26,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
 public class VisualAttributeImageBlock {
 
@@ -96,7 +96,7 @@ public class VisualAttributeImageBlock {
       return relativeX >= this.relx && relativeY >= this.rely && relativeX < this.relx + this.width && relativeY < this.rely + this.height;
     }
 
-    void draw(@Nonnull final Gfx gfx, final int basex, final int basey) {
+    void draw(@Nonnull final MMGraphics gfx, final int basex, final int basey) {
       if (this.isVisible()) {
         gfx.drawImage(this.image, basex + this.relx, basey + this.rely);
       }
@@ -117,7 +117,7 @@ public class VisualAttributeImageBlock {
     this.bounds.setRect(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
-  public void updateSize(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateSize(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
     final List<VisualAttributePlugin> pluginsFromRegistry = MindMapPluginRegistry.getInstance().findFor(VisualAttributePlugin.class);
     int x = 0;
     int maxheight = 0;
@@ -157,7 +157,7 @@ public class VisualAttributeImageBlock {
     return this.items == null || this.items.length > 0;
   }
 
-  public void paint(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void paint(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
     if (this.items == null) {
       updateSize(gfx, cfg);
     }

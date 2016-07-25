@@ -65,12 +65,12 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
 public class SVGExporter extends AbstractExporter {
 
@@ -82,11 +82,11 @@ public class SVGExporter extends AbstractExporter {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_SVG);
 
-  private static final String SVG_HEADER = "<svg version=\"1.1\" baseProfile=\"tiny\" id=\"svg-root\" width=\"%d%%\" height=\"%d%%\" viewBox=\"0 0 %s %s\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
+  private static final String SVG_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<svg version=\"1.1\" baseProfile=\"tiny\" id=\"svg-root\" width=\"%d%%\" height=\"%d%%\" viewBox=\"0 0 %s %s\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
   private static final String NEXT_LINE = "\n";
   private static final DecimalFormat DOUBLE = new DecimalFormat("#.###");
 
-  private static final class SVGGraphics implements Gfx {
+  private static final class SVGMMGraphics implements MMGraphics {
 
     private final StringBuilder buffer;
     private final Graphics2D context;
@@ -135,7 +135,7 @@ public class SVGExporter extends AbstractExporter {
       }
     }
 
-    private SVGGraphics(@Nonnull final StringBuilder buffer, @Nonnull final Graphics2D context) {
+    private SVGMMGraphics(@Nonnull final StringBuilder buffer, @Nonnull final Graphics2D context) {
       this.buffer = buffer;
       this.context = (Graphics2D) context.create();
     }
@@ -158,8 +158,8 @@ public class SVGExporter extends AbstractExporter {
 
     @Override
     @Nonnull
-    public Gfx copy() {
-      final SVGGraphics result = new SVGGraphics(this.buffer, this.context);
+    public MMGraphics copy() {
+      final SVGMMGraphics result = new SVGMMGraphics(this.buffer, this.context);
       result.translateX = this.translateX;
       result.translateY = this.translateY;
       result.strokeType = this.strokeType;
@@ -480,7 +480,7 @@ public class SVGExporter extends AbstractExporter {
 
     final BufferedImage image = new BufferedImage(32, 32, BufferedImage.TYPE_INT_RGB);
     final Graphics2D g = image.createGraphics();
-    final Gfx gfx = new SVGGraphics(buffer, g);
+    final MMGraphics gfx = new SVGMMGraphics(buffer, g);
 
     gfx.setClip(0, 0, (int) Math.round(blockSize.getWidth()), (int) Math.round(blockSize.getHeight()));
     try {

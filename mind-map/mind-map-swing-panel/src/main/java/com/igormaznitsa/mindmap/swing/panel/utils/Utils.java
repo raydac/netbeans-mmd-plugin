@@ -63,8 +63,8 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.GfxGraphics2D;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
 public final class Utils {
 
@@ -374,7 +374,7 @@ public final class Utils {
     }
 
     final Graphics2D g = result.createGraphics();
-    final Gfx gfx = new GfxGraphics2D(g);
+    final MMGraphics gfx = new MMGraphics2DWrapper(g);
     try {
       prepareGraphicsForQuality(g);
       cloned.doPaint(gfx, config, false);

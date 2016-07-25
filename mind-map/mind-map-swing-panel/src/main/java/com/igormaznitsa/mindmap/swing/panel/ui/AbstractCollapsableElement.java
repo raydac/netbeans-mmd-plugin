@@ -29,8 +29,9 @@ import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public abstract class AbstractCollapsableElement extends AbstractElement {
@@ -46,7 +47,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     super(model);
   }
 
-  protected void drawCollapsator(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, final boolean collapsed) {
+  protected void drawCollapsator(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean collapsed) {
     final int x = (int) Math.round(collapsatorZone.getX());
     final int y = (int) Math.round(collapsatorZone.getY());
     final int w = (int) Math.round(collapsatorZone.getWidth());
@@ -206,7 +207,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   @Override
-  public void doPaintConnectors(@Nonnull final Gfx g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
+  public void doPaintConnectors(@Nonnull final MMGraphics g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
     final Rectangle2D source = new Rectangle2D.Double(this.bounds.getX() + this.collapsatorZone.getX(), this.bounds.getY() + this.collapsatorZone.getY(), this.collapsatorZone.getWidth(), this.collapsatorZone.getHeight());
     final boolean lefDir = isLeftDirection();
     for (final Topic t : this.model.getChildren()) {
@@ -215,7 +216,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   @Override
-  public void drawConnector(@Nonnull final Gfx g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
+  public void drawConnector(@Nonnull final MMGraphics g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
     g.setStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f),StrokeType.SOLID);
 
     final double dy = Math.abs(destination.getCenterY() - source.getCenterY());
@@ -267,7 +268,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   @Override
-  public void updateElementBounds(@Nonnull final Gfx gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateElementBounds(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
     super.updateElementBounds(gfx, cfg);
     final double marginOffset = ((cfg.getTextMargins() + cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);

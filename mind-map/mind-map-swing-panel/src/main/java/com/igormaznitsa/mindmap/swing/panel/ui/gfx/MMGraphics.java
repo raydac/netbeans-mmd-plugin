@@ -20,14 +20,13 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface Gfx {
+public interface MMGraphics {
   @Nonnull
-  Gfx copy();
+  MMGraphics copy();
 
   void dispose();
 

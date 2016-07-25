@@ -28,39 +28,44 @@ import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class GfxGraphics2D implements Gfx {
+public class MMGraphics2DWrapper implements MMGraphics {
 
-  private final Graphics2D base;
+  private final Graphics2D wrapped;
   private StrokeType strokeType = StrokeType.SOLID;
   private float strokeWidth = 1.0f;
-  
-  public GfxGraphics2D(@Nonnull final Graphics2D base){
-    this.base = base;
-    this.base.setStroke(new BasicStroke(this.strokeWidth));
+
+  public MMGraphics2DWrapper(@Nonnull final Graphics2D wrapped) {
+    this.wrapped = wrapped;
+    this.wrapped.setStroke(new BasicStroke(this.strokeWidth));
+  }
+
+  @Nonnull
+  public Graphics2D getWrappedGraphics() {
+    return this.wrapped;
   }
 
   @Override
   public void setClip(final int x, final int y, final int w, final int h) {
-    this.base.setClip(x, y, w, h);
+    this.wrapped.setClip(x, y, w, h);
   }
 
   @Override
   public void drawRect(final int x, final int y, final int width, final int height, @Nullable final Color border, @Nullable final Color fill) {
-    if (fill!=null){
-      this.base.setColor(fill);
-      this.base.fillRect(x, y, width, height);
+    if (fill != null) {
+      this.wrapped.setColor(fill);
+      this.wrapped.fillRect(x, y, width, height);
     }
-    
-    if (border!=null){
-      this.base.setColor(border);
-      this.base.drawRect(x, y, width, height);
+
+    if (border != null) {
+      this.wrapped.setColor(border);
+      this.wrapped.drawRect(x, y, width, height);
     }
   }
-  
+
   @Override
   @Nonnull
-  public Gfx copy() {
-    final GfxGraphics2D result = new GfxGraphics2D((Graphics2D)base.create());
+  public MMGraphics copy() {
+    final MMGraphics2DWrapper result = new MMGraphics2DWrapper((Graphics2D) wrapped.create());
     result.strokeType = this.strokeType;
     result.strokeWidth = this.strokeWidth;
     return result;
@@ -68,56 +73,63 @@ public class GfxGraphics2D implements Gfx {
 
   @Override
   public void dispose() {
-    this.base.dispose();
+    this.wrapped.dispose();
   }
 
   @Override
   public void translate(final double x, final double y) {
-    this.base.translate(x, y);
+    this.wrapped.translate(x, y);
   }
 
   @Override
   @Nullable
   public Rectangle getClipBounds() {
-    return this.base.getClipBounds();
+    return this.wrapped.getClipBounds();
   }
 
   @Override
   public void setStroke(@Nonnull final float width, @Nonnull final StrokeType type) {
-    if (type != this.strokeType || Float.compare(this.strokeWidth, width) != 0){
+    if (type != this.strokeType || Float.compare(this.strokeWidth, width) != 0) {
       this.strokeType = type;
       this.strokeWidth = width;
-      
+
       final Stroke stroke;
-      
+
       switch (type) {
-        case SOLID: stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);break;
-        case DASHES: stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{width*5.0f, width*2.0f}, 0.0f);break;
-        case DOTS: stroke = new BasicStroke(width,BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{width,width*2.0f}, 0.0f);break;
-        default : throw new Error("Unexpected stroke type : "+type);
+        case SOLID:
+          stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+          break;
+        case DASHES:
+          stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{width * 5.0f, width * 2.0f}, 0.0f);
+          break;
+        case DOTS:
+          stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{width, width * 2.0f}, 0.0f);
+          break;
+        default:
+          throw new Error("Unexpected stroke type : " + type);
       }
-      this.base.setStroke(stroke);
+      this.wrapped.setStroke(stroke);
     }
   }
 
   @Override
   public void drawLine(final int startX, final int startY, final int endX, final int endY, @Nullable final Color color) {
-    if (color!=null){
-      this.base.setColor(color);
-      this.base.drawLine(startX, startY, endX, endY);
+    if (color != null) {
+      this.wrapped.setColor(color);
+      this.wrapped.drawLine(startX, startY, endX, endY);
     }
   }
 
   @Override
   public void draw(@Nonnull final Shape shape, @Nullable final Color border, @Nullable final Color fill) {
-    if (fill!=null){
-      this.base.setColor(fill);
-      this.base.fill(shape);
+    if (fill != null) {
+      this.wrapped.setColor(fill);
+      this.wrapped.fill(shape);
     }
-    
-    if (border!=null){
-      this.base.setColor(border);
-      this.base.draw(shape);
+
+    if (border != null) {
+      this.wrapped.setColor(border);
+      this.wrapped.draw(shape);
     }
   }
 
@@ -126,51 +138,52 @@ public class GfxGraphics2D implements Gfx {
     final Path2D path = new Path2D.Double();
     path.moveTo(startX, startY);
     path.curveTo(startX, endY, startX, endY, endX, endY);
-    if (color!=null) this.base.setColor(color);
-    this.base.draw(path);
+    if (color != null) {
+      this.wrapped.setColor(color);
+    }
+    this.wrapped.draw(path);
   }
 
   @Override
   public void drawOval(final int x, final int y, final int w, final int h, @Nullable final Color border, @Nullable final Color fill) {
-    if (fill != null){
-      this.base.setColor(fill);
-      this.base.fillOval(x, y, w, h);
+    if (fill != null) {
+      this.wrapped.setColor(fill);
+      this.wrapped.fillOval(x, y, w, h);
     }
 
-    if (border != null){
-      this.base.setColor(border);
-      this.base.drawOval(x, y, w, h);
+    if (border != null) {
+      this.wrapped.setColor(border);
+      this.wrapped.drawOval(x, y, w, h);
     }
   }
 
-
   @Override
   public void drawImage(@Nonnull final Image image, final int x, final int y) {
-    this.base.drawImage(image, x, y, null);
+    this.wrapped.drawImage(image, x, y, null);
   }
 
   @Override
   public float getFontMaxAscent() {
-    return this.base.getFontMetrics().getMaxAscent();
+    return this.wrapped.getFontMetrics().getMaxAscent();
   }
 
   @Override
   @Nonnull
   public Rectangle2D getStringBounds(@Nonnull final String str) {
-    return this.base.getFontMetrics().getStringBounds(str, this.base);
+    return this.wrapped.getFontMetrics().getStringBounds(str, this.wrapped);
   }
 
   @Override
   public void setFont(@Nonnull final Font font) {
-    this.base.setFont(font);
+    this.wrapped.setFont(font);
   }
 
   @Override
   public void drawString(@Nonnull final String text, final int x, final int y, @Nullable Color color) {
-    if (color!=null){
-      this.base.setColor(color);
-      this.base.drawString(text, x, y);
+    if (color != null) {
+      this.wrapped.setColor(color);
+      this.wrapped.drawString(text, x, y);
     }
   }
-  
+
 }

@@ -24,8 +24,9 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import javax.annotation.Nonnull;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.Gfx;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class ElementLevelOther extends ElementLevelFirst {
@@ -45,7 +46,7 @@ public class ElementLevelOther extends ElementLevelFirst {
   }
   
   @Override
-  public void drawComponent(@Nonnull final Gfx g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+  public void drawComponent(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
     g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f),StrokeType.SOLID);
 
     final Shape shape = makeShape(cfg, 0f, 0f);
@@ -73,7 +74,7 @@ public class ElementLevelOther extends ElementLevelFirst {
   }
   
   @Override
-  public void doPaintConnectors(@Nonnull final Gfx g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
+  public void doPaintConnectors(@Nonnull final MMGraphics g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
     final Rectangle2D source = new Rectangle2D.Double(this.bounds.getX() + this.collapsatorZone.getX(), this.bounds.getY() + this.collapsatorZone.getY(), this.collapsatorZone.getWidth(), this.collapsatorZone.getHeight());
     for (final Topic t : this.model.getChildren()) {
       this.drawConnector(g, source, assertNotNull(((AbstractElement) t.getPayload())).getBounds(), leftDirection, cfg);
