@@ -100,7 +100,7 @@ public class MMGraphics2DWrapper implements MMGraphics {
           stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
           break;
         case DASHES:
-          stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{width * 5.0f, width * 2.0f}, 0.0f);
+          stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{width * 3.0f, width}, 0.0f);
           break;
         case DOTS:
           stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{width, width * 2.0f}, 0.0f);
