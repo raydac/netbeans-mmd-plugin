@@ -1,4 +1,4 @@
-[![Codewake](https://www.codewake.com/badges/codewake.svg)](https://www.codewake.com/p/nb-mind-map-plugin)
+[![Codewake](https://www.codewake.com/badges/codewake2.svg)](https://www.codewake.com/p/nb-mind-map-plugin)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/6cec4cb9ac42419aa003a27597c3c357)](https://www.codacy.com/app/rrg4400/netbeans-mmd-plugin)
 [![Java 7.0+](https://img.shields.io/badge/java-7.0%2b-green.svg)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
