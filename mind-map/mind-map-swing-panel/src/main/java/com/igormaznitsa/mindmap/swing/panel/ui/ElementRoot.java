@@ -31,11 +31,8 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public final class ElementRoot extends AbstractElement {

@@ -92,7 +92,7 @@ class DefaultIDEBridge implements IDEBridge {
   @Override
   @Nonnull
   public Icon loadIcon(@Nonnull final String path,@Nonnull final Class<?> klazz) {
-    Image image = null;
+    Image image;
     synchronized(IMAGE_CACHE){
       image = IMAGE_CACHE.get(path);
       if (image == null){

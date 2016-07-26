@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +39,8 @@ public class MiscIcons {
   static {
     final InputStream iconListReadStream = MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icon.lst");
     try {
-      ICON_NAMES = IOUtils.readLines(iconListReadStream).toArray(new String[0]);
+      final List<String> lines = IOUtils.readLines(iconListReadStream);
+      ICON_NAMES = lines.toArray(new String[lines.size()]);
     } catch (Exception ex) {
       throw new Error("Can't read list of icons", ex);
     } finally {

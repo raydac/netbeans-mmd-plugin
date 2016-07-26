@@ -48,10 +48,10 @@ import com.igormaznitsa.mindmap.plugins.tools.ShowJumpsPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.UnfoldAllPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonPopUpMenuPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonVisualAttributePlugin;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.exporters.SVGExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
@@ -70,7 +70,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new MindmupExporter());
     registerPlugin(new PNGImageExporter());
     registerPlugin(new TextExporter());
-    registerPlugin(new SVGExporter());
+    registerPlugin(new SVGImageExporter());
 
     registerPlugin(new ExtraFilePlugin());
     registerPlugin(new ExtraNotePlugin());

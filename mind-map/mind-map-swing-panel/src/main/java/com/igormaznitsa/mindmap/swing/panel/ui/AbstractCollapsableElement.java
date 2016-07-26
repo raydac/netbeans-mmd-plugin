@@ -30,7 +30,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
