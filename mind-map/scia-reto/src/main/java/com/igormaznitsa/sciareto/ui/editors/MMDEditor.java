@@ -64,8 +64,6 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
-import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;

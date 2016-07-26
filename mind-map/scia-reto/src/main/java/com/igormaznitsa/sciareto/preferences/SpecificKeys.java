@@ -13,27 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.sciareto.ui.tabs;
+package com.igormaznitsa.sciareto.preferences;
 
-import java.io.IOException;
-import javax.annotation.Nonnull;
-import javax.swing.JComponent;
-import javax.swing.filechooser.FileFilter;
-import com.igormaznitsa.meta.annotation.Weight;
-
-public interface TabProvider {
-
-  @Weight(Weight.Unit.NORMAL)
-  @Nonnull
-  TabTitle getTabTitle();
-  
-  @Weight(Weight.Unit.LIGHT)
-  @Nonnull
-  JComponent getMainComponent();
-  boolean saveDocument() throws IOException;
-  boolean saveDocumentAs() throws IOException;
-  @Nonnull
-  FileFilter getFileFilter();
-  void dispose();
-  void updateConfiguration();
+public interface SpecificKeys {
+  public static final String PROPERTY_TEXT_EDITOR_FONT = "sr.sk.text.editor.font";
 }

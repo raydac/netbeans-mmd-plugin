@@ -15,11 +15,15 @@
  */
 package com.igormaznitsa.sciareto.preferences;
 
+import java.awt.Font;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.codec.binary.Base64;
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -31,10 +35,13 @@ public class PreferencesManager {
   private static final PreferencesManager INSTANCE = new PreferencesManager();
   
   private final Preferences prefs;
+  private final UUID installationUUID;
   
+  public static final Font DEFAULT_EDITOR_FONT = new Font("Arial", Font.PLAIN, 12);
+
   private static final String PROPERTY_UUID = "installation.uuid";
   
-  private final UUID installationUUID;
+  private final Map<String,Object> localCache = new HashMap<>();
   
   private PreferencesManager(){
     this.prefs = Preferences.userNodeForPackage(PreferencesManager.class);
@@ -67,6 +74,33 @@ public class PreferencesManager {
     }catch(UnsupportedEncodingException ex){
       LOGGER.error("Can't decode UUID",ex);
       throw new Error("Unexpected error",ex);
+    }
+  }
+  
+  @Nullable
+  public Font getFont(@Nonnull final String key, @Nullable final Font dflt){
+    synchronized(this.localCache){
+      Font result = (Font)this.localCache.get(key);
+      if (result == null){
+        result = PrefUtils.str2font(this.prefs.get(key, null),dflt);
+        if (result!=null){
+          this.localCache.put(key, result);
+        }
+      }
+      return result;
+    }
+  }
+  
+  public void setFont(@Nonnull final String key, @Nullable final Font font){
+    synchronized(this.localCache){
+      if (font == null){
+        this.localCache.remove(key);
+        this.prefs.remove(key);
+      } else {
+        final String packed = PrefUtils.font2str(font);
+        this.localCache.put(key, font);
+        this.prefs.put(key, packed);
+      }
     }
   }
   

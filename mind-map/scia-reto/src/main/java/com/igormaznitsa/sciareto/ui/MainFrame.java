@@ -79,6 +79,7 @@ import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
+import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
@@ -768,6 +769,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     configPanel.load();
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Preferences", configPanel)) {
       configPanel.save();
+      for(final TabTitle t : this.tabPane){
+        t.getProvider().updateConfiguration();
+      }
     }
   }
 

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
+import static com.igormaznitsa.sciareto.ui.editors.TextEditor.DEFAUT_TEXT_EDITOR_FONT;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -37,6 +38,8 @@ import javax.swing.text.Utilities;
 import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
@@ -111,6 +114,7 @@ public class NoteEditor extends javax.swing.JPanel {
   public NoteEditor(@Nonnull final String text) {
     initComponents();
     this.setPreferredSize(new Dimension(640, 480));
+    this.editorPane.setFont(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
     this.editorPane.setText(text);
     this.addAncestorListener(new AncestorListener() {
       @Override
@@ -288,6 +292,7 @@ public class NoteEditor extends javax.swing.JPanel {
     jPanel1.add(jSeparator1);
 
     labelWrapMode.setText("...");
+    labelWrapMode.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     labelWrapMode.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {
         labelWrapModeMouseClicked(evt);

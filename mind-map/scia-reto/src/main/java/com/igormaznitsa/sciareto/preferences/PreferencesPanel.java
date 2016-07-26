@@ -30,12 +30,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.editors.TextEditor;
 
 public final class PreferencesPanel extends javax.swing.JPanel {
 
@@ -52,6 +54,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private boolean changed;
 
+  private Font fontTextEditor = TextEditor.DEFAUT_TEXT_EDITOR_FONT;
+  
   private final MindMapPanelConfig config = new MindMapPanelConfig();
   private final Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(new Comparator<String>() {
     @Override
@@ -99,7 +103,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     spinnerGridStep = new javax.swing.JSpinner();
     jLabel1 = new javax.swing.JLabel();
     jPanel2 = new javax.swing.JPanel();
-    checkBoxDropShadow = new javax.swing.JCheckBox();
     colorChooserRootBackground = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
     colorChooserRootText = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
     colorChooser1stBackground = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
@@ -110,8 +113,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     slider1stLevelVertGap = new javax.swing.JSlider();
     slider2ndLevelHorzGap = new javax.swing.JSlider();
     slider2ndLevelVertGap = new javax.swing.JSlider();
-    labelBorderWidth = new javax.swing.JLabel();
-    spinnerElementBorderWidth = new javax.swing.JSpinner();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
     jLabel3 = new javax.swing.JLabel();
@@ -119,6 +120,13 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     jLabel4 = new javax.swing.JLabel();
     spinnerSelectLineGap = new javax.swing.JSpinner();
     filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+    jPanel10 = new javax.swing.JPanel();
+    buttonFontForEditor = new javax.swing.JButton();
+    jPanel11 = new javax.swing.JPanel();
+    checkBoxDropShadow = new javax.swing.JCheckBox();
+    jPanel12 = new javax.swing.JPanel();
+    spinnerElementBorderWidth = new javax.swing.JSpinner();
+    labelBorderWidth = new javax.swing.JLabel();
     jPanel1 = new javax.swing.JPanel();
     checkboxUseInsideBrowser = new javax.swing.JCheckBox();
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -380,18 +388,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Element options"));
     jPanel2.setLayout(new java.awt.GridBagLayout());
 
-    checkBoxDropShadow.setText("Drop shadow");
-    checkBoxDropShadow.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        checkBoxDropShadowActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(checkBoxDropShadow, gridBagConstraints);
-
     colorChooserRootBackground.setText("Root fill");
     colorChooserRootBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     colorChooserRootBackground.addActionListener(new java.awt.event.ActionListener() {
@@ -552,27 +548,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel2.add(slider2ndLevelVertGap, gridBagConstraints);
 
-    labelBorderWidth.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-    labelBorderWidth.setText("Border width:");
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(labelBorderWidth, gridBagConstraints);
-
-    spinnerElementBorderWidth.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.5f), Float.valueOf(0.05f), Float.valueOf(50.0f), Float.valueOf(0.1f)));
-    spinnerElementBorderWidth.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        spinnerElementBorderWidthStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 8;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(spinnerElementBorderWidth, gridBagConstraints);
-
     jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Selection frame"));
     jPanel5.setLayout(new java.awt.GridBagLayout());
 
@@ -636,6 +611,58 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.weighty = 1000.0;
     jPanel2.add(filler2, gridBagConstraints);
+
+    jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Text editor font"));
+    jPanel10.setLayout(new java.awt.BorderLayout());
+
+    buttonFontForEditor.setText("...");
+    buttonFontForEditor.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonFontForEditorActionPerformed(evt);
+      }
+    });
+    jPanel10.add(buttonFontForEditor, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 10;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    jPanel2.add(jPanel10, gridBagConstraints);
+
+    jPanel11.setLayout(new java.awt.BorderLayout());
+
+    checkBoxDropShadow.setText("Drop shadow");
+    checkBoxDropShadow.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxDropShadowActionPerformed(evt);
+      }
+    });
+    jPanel11.add(checkBoxDropShadow, java.awt.BorderLayout.CENTER);
+
+    jPanel12.setLayout(new java.awt.BorderLayout());
+
+    spinnerElementBorderWidth.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.5f), Float.valueOf(0.05f), Float.valueOf(50.0f), Float.valueOf(0.1f)));
+    spinnerElementBorderWidth.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        spinnerElementBorderWidthStateChanged(evt);
+      }
+    });
+    jPanel12.add(spinnerElementBorderWidth, java.awt.BorderLayout.CENTER);
+
+    labelBorderWidth.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+    labelBorderWidth.setText("Border width:");
+    jPanel12.add(labelBorderWidth, java.awt.BorderLayout.WEST);
+
+    jPanel11.add(jPanel12, java.awt.BorderLayout.EAST);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+    jPanel2.add(jPanel11, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -708,7 +735,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkBoxKnowledgeFolderAutogenerationAllowed, gridBagConstraints);
 
-    jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Font"));
+    jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Mind map topic text font"));
+    jPanel7.setLayout(new java.awt.BorderLayout());
 
     buttonFont.setText("..."); // NOI18N
     buttonFont.addActionListener(new java.awt.event.ActionListener() {
@@ -716,22 +744,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         buttonFontActionPerformed(evt);
       }
     });
-
-    javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-    jPanel7.setLayout(jPanel7Layout);
-    jPanel7Layout.setHorizontalGroup(
-      jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel7Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(buttonFont, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
-        .addContainerGap())
-    );
-    jPanel7Layout.setVerticalGroup(
-      jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel7Layout.createSequentialGroup()
-        .addComponent(buttonFont)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
+    jPanel7.add(buttonFont, java.awt.BorderLayout.CENTER);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -741,6 +754,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.ShortCutsTitle"))); // NOI18N
+    jPanel8.setLayout(new java.awt.BorderLayout());
 
     buttonOpenShortcutEditor.setText(bundle.getString("MMDCfgPanel.ShortCutsButtonText")); // NOI18N
     buttonOpenShortcutEditor.addActionListener(new java.awt.event.ActionListener() {
@@ -748,8 +762,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         buttonOpenShortcutEditorActionPerformed(evt);
       }
     });
+    jPanel8.add(buttonOpenShortcutEditor, java.awt.BorderLayout.NORTH);
 
-    panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder("Activator for scaling with mouse wheel"));
+    panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder("Activator to scale with wheel"));
+    panelScalingModifiers.setLayout(new java.awt.GridLayout(1, 0));
 
     checkBoxScalingCTRL.setText("CTRL"); // NOI18N
     checkBoxScalingCTRL.addActionListener(new java.awt.event.ActionListener() {
@@ -757,6 +773,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         checkBoxScalingCTRLActionPerformed(evt);
       }
     });
+    panelScalingModifiers.add(checkBoxScalingCTRL);
 
     checkBoxScalingALT.setText("ALT"); // NOI18N
     checkBoxScalingALT.addActionListener(new java.awt.event.ActionListener() {
@@ -764,6 +781,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         checkBoxScalingALTActionPerformed(evt);
       }
     });
+    panelScalingModifiers.add(checkBoxScalingALT);
 
     checkBoxScalingSHIFT.setText("SHIFT"); // NOI18N
     checkBoxScalingSHIFT.addActionListener(new java.awt.event.ActionListener() {
@@ -771,6 +789,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         checkBoxScalingSHIFTActionPerformed(evt);
       }
     });
+    panelScalingModifiers.add(checkBoxScalingSHIFT);
 
     checkBoxScalingMETA.setText("META"); // NOI18N
     checkBoxScalingMETA.addActionListener(new java.awt.event.ActionListener() {
@@ -778,59 +797,14 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         checkBoxScalingMETAActionPerformed(evt);
       }
     });
+    panelScalingModifiers.add(checkBoxScalingMETA);
 
-    javax.swing.GroupLayout panelScalingModifiersLayout = new javax.swing.GroupLayout(panelScalingModifiers);
-    panelScalingModifiers.setLayout(panelScalingModifiersLayout);
-    panelScalingModifiersLayout.setHorizontalGroup(
-      panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(panelScalingModifiersLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(checkBoxScalingCTRL)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(checkBoxScalingALT)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(checkBoxScalingSHIFT)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(checkBoxScalingMETA)
-        .addContainerGap(74, Short.MAX_VALUE))
-    );
-    panelScalingModifiersLayout.setVerticalGroup(
-      panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(panelScalingModifiersLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(checkBoxScalingCTRL)
-          .addComponent(checkBoxScalingALT)
-          .addComponent(checkBoxScalingSHIFT)
-          .addComponent(checkBoxScalingMETA))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-
-    javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
-    jPanel8.setLayout(jPanel8Layout);
-    jPanel8Layout.setHorizontalGroup(
-      jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel8Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(buttonOpenShortcutEditor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(panelScalingModifiers, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap())
-    );
-    jPanel8Layout.setVerticalGroup(
-      jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel8Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(buttonOpenShortcutEditor)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(panelScalingModifiers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
+    jPanel8.add(panelScalingModifiers, java.awt.BorderLayout.SOUTH);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 7;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel1.add(jPanel8, gridBagConstraints);
 
     checkboxMetricsAllowed.setText("Enable metrics upload");
@@ -965,18 +939,15 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_spinnerCollapsatorSizeStateChanged
 
-  private void updateFontButton() {
+  private void updateFontButton(@Nonnull final JButton button, @Nonnull final Font font) {
     final String strStyle;
-
-    final Font thefont = this.config.getFont();
-
-    if (thefont.isBold()) {
-      strStyle = thefont.isItalic() ? "bolditalic" : "bold";
+    if (font.isBold()) {
+      strStyle = font.isItalic() ? "bolditalic" : "bold";
     } else {
-      strStyle = thefont.isItalic() ? "italic" : "plain";
+      strStyle = font.isItalic() ? "italic" : "plain";
     }
 
-    this.buttonFont.setText(thefont.getName() + ", " + strStyle + ", " + thefont.getSize());
+    button.setText(font.getName() + ", " + strStyle + ", " + font.getSize());
   }
 
   private void buttonFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontActionPerformed
@@ -984,7 +955,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Select font", fontSelector)) {
       this.config.setFont(fontSelector.getValue());
-      updateFontButton();
+      updateFontButton(this.buttonFont,fontSelector.getValue());
       if (this.changeNotificationAllowed) {
         this.changed = true;
       }
@@ -1151,7 +1122,20 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private void buttonResetToDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetToDefaultActionPerformed
     loadFrom(new MindMapPanelConfig());
+    this.fontTextEditor = TextEditor.DEFAUT_TEXT_EDITOR_FONT;
+    updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
   }//GEN-LAST:event_buttonResetToDefaultActionPerformed
+
+  private void buttonFontForEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontForEditorActionPerformed
+    final FontSelector fontSelector = new FontSelector(this.fontTextEditor);
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Select Text editor font", fontSelector)) {
+      this.fontTextEditor = fontSelector.getValue();
+      updateFontButton(this.buttonFontForEditor, fontSelector.getValue());
+      if (this.changeNotificationAllowed) {
+        this.changed = true;
+      }
+    }
+  }//GEN-LAST:event_buttonFontForEditorActionPerformed
 
   public void load() {
     this.config.loadFrom(PreferencesManager.getInstance().getPreferences());
@@ -1217,7 +1201,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
       setScalingModifiers(config.getScaleModifiers());
 
-      updateFontButton();
+      updateFontButton(this.buttonFont,config.getFont());
+      
+      this.fontTextEditor = Assertions.assertNotNull(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, TextEditor.DEFAUT_TEXT_EDITOR_FONT));
+      updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
     } finally {
       changeNotificationAllowed = true;
     }
@@ -1269,6 +1256,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         PreferencesManager.getInstance().getPreferences().putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
         PreferencesManager.getInstance().getPreferences().putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
         PreferencesManager.getInstance().getPreferences().putBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
+        PreferencesManager.getInstance().setFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, fontTextEditor);
+
+        PreferencesManager.getInstance().flush();
+        
         // Metrics
         MetricsService.getInstance().setEnabled(this.checkboxMetricsAllowed.isSelected());
       } finally {
@@ -1295,6 +1286,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonAbout;
   private javax.swing.JButton buttonFont;
+  private javax.swing.JButton buttonFontForEditor;
   private javax.swing.JButton buttonOpenShortcutEditor;
   private javax.swing.JButton buttonResetToDefault;
   private javax.swing.JCheckBox checkBoxCopyColorInfoToNewAllowed;
@@ -1334,6 +1326,9 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JPanel jPanel1;
+  private javax.swing.JPanel jPanel10;
+  private javax.swing.JPanel jPanel11;
+  private javax.swing.JPanel jPanel12;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;

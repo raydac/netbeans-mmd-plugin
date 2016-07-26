@@ -30,10 +30,12 @@ public abstract class AbstractScrollPane extends JScrollPane implements TabProvi
   
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   
-  
-  
   public AbstractScrollPane(){
     super();
+  }
+
+  @Override
+  public void updateConfiguration() {
   }
 
   @Override

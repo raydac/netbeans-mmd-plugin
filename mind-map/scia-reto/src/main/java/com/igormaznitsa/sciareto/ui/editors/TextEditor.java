@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import javax.annotation.Nonnull;
@@ -28,6 +29,8 @@ import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
@@ -43,6 +46,8 @@ public final class TextEditor extends AbstractScrollPane {
 
   private boolean ignoreChange;
 
+  public static final Font DEFAUT_TEXT_EDITOR_FONT = new Font("Arial",Font.PLAIN,12);
+  
   public static final FileFilter TXT_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -66,6 +71,7 @@ public final class TextEditor extends AbstractScrollPane {
   public TextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     this.editor = new JTextArea();
+    this.editor.setFont(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
     this.title = new TabTitle(context, this, file);
     
     this.editor.getDocument().addDocumentListener(new DocumentListener() {
@@ -94,6 +100,13 @@ public final class TextEditor extends AbstractScrollPane {
     setViewportView(this.editor);
     
     loadContent(file);
+  }
+
+  @Override
+  public void updateConfiguration() {
+    this.editor.setFont(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
+    this.editor.revalidate();
+    this.editor.repaint();
   }
 
   @Override
