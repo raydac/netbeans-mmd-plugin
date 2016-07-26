@@ -1,5 +1,5 @@
 1.2.1
-- added exporter to SVG images
+- added export into SVG image format
 - fixed issue #22, added key short-cut into options to tune "next line char" for topic text editor, by default SHIFT+ENTER
 
 1.2.0 (05-jun-2016)

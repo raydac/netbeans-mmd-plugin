@@ -13,7 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.2.1 (under development)__
-- added exporter to SVG images
+- added export into SVG image format
 - fixed issue [#22](https://github.com/raydac/netbeans-mmd-plugin/issues/22), added key short-cut into options to tune "next line char" for topic text editor, by default SHIFT+ENTER
 
 __1.2.0 (05-jun-2016)__
