@@ -362,7 +362,7 @@ public class MindMapPanel extends JPanel {
               processPopUpForShortcut();
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
               e.consume();
-              deleteSelectedTopics(false);
+              focusTo(deleteSelectedTopics(false));
             } else if (config.isKeyEventDetected(e,
                 MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,
                 MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,
@@ -1196,16 +1196,23 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void deleteSelectedTopics(final boolean force) {
+  @Nullable
+  public Topic deleteSelectedTopics(final boolean force) {
+    Topic nextToFocus = null;
     if (this.lockIfNotDisposed()) {
       try {
         if (!this.selectedTopics.isEmpty()) {
+          if (this.selectedTopics.size()==1){
+            nextToFocus = this.selectedTopics.get(0).getParent();
+          }
+          
           deleteTopics(force, this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
         }
       } finally {
         this.unlock();
       }
     }
+    return nextToFocus;
   }
 
   public boolean hasSelectedTopics() {
