@@ -30,6 +30,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -62,6 +63,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.JWindow;
+import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -69,6 +71,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileView;
 import org.apache.commons.io.FilenameUtils;
+import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -79,11 +82,13 @@ import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
-import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
+import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
+import com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent;
+import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
-public final class MainFrame extends javax.swing.JFrame implements Context {
+public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
 
   private static final long serialVersionUID = 3798040833406256900L;
 
@@ -104,6 +109,21 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     super();
     initComponents();
 
+    if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.ABOUT, this)) {
+      this.menuHelp.setVisible(false);
+    }
+
+    if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.PREFERENCES, this)) {
+      this.menuPreferences.setVisible(false);
+    }
+    
+    if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.QUIT, this)) {
+      this.separatorExitSection.setVisible(false);
+      this.menuExit.setVisible(false);
+    }
+    
+    PlatformProvider.getPlatform().registerPlatformMenuEvent(PlatformMenuEvent.REOPEN_APPLICATION, this);
+    
     this.stackPanel = new JPanel();
     this.stackPanel.setFocusable(false);
     this.stackPanel.setOpaque(false);
@@ -264,6 +284,32 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   public JPanel getStackPanel() {
     return this.stackPanel;
+  }
+
+  @Override
+  public boolean doPlatformMenuAction(@Nonnull final PlatformMenuEvent event, @Nullable @MayContainNull final Object... args) {
+    boolean handled = false;
+    switch(event){
+      case ABOUT :{
+        this.menuAboutActionPerformed(new ActionEvent(this, 0, "about"));
+        handled = true;
+      }break;
+      case QUIT : {
+        handled = doClosing();
+        if (handled){
+          dispose();
+        }
+      }break;
+      case REOPEN_APPLICATION : {
+        this.setVisible(true);
+        handled = true;
+      }break;
+      case PREFERENCES : {
+        this.menuPreferencesActionPerformed(new ActionEvent(this,0,"show"));
+        handled = true;
+      }break;
+    }
+    return handled;
   }
 
   private boolean doClosing() {
@@ -544,7 +590,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menSave = new javax.swing.JMenuItem();
     menuSaveAs = new javax.swing.JMenuItem();
     menuSaveAll = new javax.swing.JMenuItem();
-    jSeparator1 = new javax.swing.JPopupMenu.Separator();
+    separatorExitSection = new javax.swing.JPopupMenu.Separator();
     menuExit = new javax.swing.JMenuItem();
     menuEdit = new javax.swing.JMenu();
     menuPreferences = new javax.swing.JMenuItem();
@@ -561,6 +607,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
     menuFile.setText("File");
 
+    menuNewProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
     menuNewProject.setText("New Project");
     menuNewProject.addActionListener(new java.awt.event.ActionListener() {
@@ -571,7 +618,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuFile.add(menuNewProject);
     menuFile.add(jSeparator2);
 
-    menuOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+    menuOpenProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/open_folder.png"))); // NOI18N
     menuOpenProject.setText("Open Project");
     menuOpenProject.addActionListener(new java.awt.event.ActionListener() {
@@ -584,6 +631,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     menuOpenRecentProject.setText("Open Recent Project");
     menuFile.add(menuOpenRecentProject);
 
+    menuOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuOpenFile.setText("Open File");
     menuOpenFile.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -614,7 +662,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
     });
     menuFile.add(menuSaveAs);
 
-    menuSaveAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+    menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuSaveAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/disk_multiple.png"))); // NOI18N
     menuSaveAll.setText("Save All");
     menuSaveAll.addActionListener(new java.awt.event.ActionListener() {
@@ -623,7 +671,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
       }
     });
     menuFile.add(menuSaveAll);
-    menuFile.add(jSeparator1);
+    menuFile.add(separatorExitSection);
 
     menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
     menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/door_in.png"))); // NOI18N
@@ -971,7 +1019,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuBar jMenuBar1;
-  private javax.swing.JPopupMenu.Separator jSeparator1;
   private javax.swing.JPopupMenu.Separator jSeparator2;
   private javax.swing.JPopupMenu.Separator jSeparator3;
   private javax.swing.JPopupMenu.Separator jSeparator4;
@@ -993,5 +1040,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context {
   private javax.swing.JMenuItem menuSaveAll;
   private javax.swing.JMenuItem menuSaveAs;
   private javax.swing.JMenu menuView;
+  private javax.swing.JPopupMenu.Separator separatorExitSection;
   // End of variables declaration//GEN-END:variables
 }

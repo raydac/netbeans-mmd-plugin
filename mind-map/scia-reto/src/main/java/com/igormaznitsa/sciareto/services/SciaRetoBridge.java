@@ -33,6 +33,7 @@ import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.notifications.NotificationManager;
+import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 
 public class SciaRetoBridge implements IDEBridge {
 
@@ -74,7 +75,11 @@ public class SciaRetoBridge implements IDEBridge {
   @Override
   public void notifyRestart() {
     JOptionPane.showMessageDialog(null, "Work of application will be completed for request! You have to restart it!", "Restart application", JOptionPane.WARNING_MESSAGE);
-    System.exit(0);
+    try{
+      PlatformProvider.getPlatform().dispose();
+    }finally{
+      System.exit(0);
+    }
   }
 
   @Nonnull

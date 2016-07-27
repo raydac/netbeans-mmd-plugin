@@ -15,12 +15,10 @@
  */
 package com.igormaznitsa.sciareto;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.SplashScreen;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -35,6 +33,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import org.apache.commons.lang.SystemUtils;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -49,6 +48,7 @@ import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
+import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 
 public class Main {
 
@@ -89,7 +89,9 @@ public class Main {
   }
 
   public static void main(@Nonnull @MustNotContainNull final String... args) {
-    final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, null);
+    PlatformProvider.getPlatform().init();
+
+    final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, PlatformProvider.getPlatform().getDefaultLFClassName());
 
     LOGGER.info("java.vendor = "+System.getProperty("java.vendor","unknown"));
     LOGGER.info("java.version = "+System.getProperty("java.version","unknown"));
@@ -122,20 +124,19 @@ public class Main {
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
+        try{
         final Preferences prefs = PreferencesManager.getInstance().getPreferences();
         prefs.putLong(PROPERTY_TOTAL_UPSTART, prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (System.currentTimeMillis() - UPSTART));
         PreferencesManager.getInstance().flush();
+        }finally{
+          PlatformProvider.getPlatform().dispose();
+        }
       }
     });
 
     try {
-      for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if (selectedLookAndFeel == null) {
-          if ("nimbus".equalsIgnoreCase(info.getName())) {
-            UIManager.setLookAndFeel(info.getClassName());
-            break;
-          }
-        } else if (selectedLookAndFeel.equals(info.getClassName())) {
+      for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+        if (selectedLookAndFeel.equals(info.getClassName())) {
           UIManager.setLookAndFeel(info.getClassName());
           break;
         }
