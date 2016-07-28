@@ -34,7 +34,15 @@ public final class PlatformProvider {
         LOGGER.error("Can't init MACOSX platform specific part",ex);
         detected = null;
       }
+    } else if (SystemUtils.IS_OS_WINDOWS) {
+      try {
+        detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformWindows").newInstance();
+      } catch (Exception ex) {
+        LOGGER.error("Can't init WINDOWS platform specific part", ex);
+        detected = null;
+      }
     }
+    
     INSTANCE = detected == null ? new PlatformDefault() : detected;
     LOGGER.info("Detected platform : "+INSTANCE.getName());
   }

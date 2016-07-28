@@ -305,7 +305,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         handled = true;
       }break;
       case PREFERENCES : {
-        this.menuPreferencesActionPerformed(new ActionEvent(this,0,"show"));
+        editPreferences();
         handled = true;
       }break;
     }

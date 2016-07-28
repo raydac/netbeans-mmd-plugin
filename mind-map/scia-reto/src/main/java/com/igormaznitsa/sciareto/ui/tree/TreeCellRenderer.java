@@ -26,6 +26,7 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.apache.commons.io.FilenameUtils;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.sciareto.ui.Icons;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
@@ -39,6 +40,10 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   private static final Icon ICON_IMAGE = new ImageIcon(UiUtils.loadImage("image16.png"));
   private static final Icon ICON_IMAGE_RO;
 
+  private static final Icon DEFAULT_FOLDER_CLOSED = new ImageIcon(UiUtils.loadImage("folder16.gif"));
+  private static final Icon DEFAULT_FOLDER_OPENED = new ImageIcon(UiUtils.loadImage("folderOpen16.gif"));
+  private static final Icon DEFAULT_FILE = new ImageIcon(UiUtils.loadImage("document_empty16.png"));
+  
   static {
     ICON_IMAGE_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) ICON_IMAGE).getImage(), READONLY_BADGE));
   }
@@ -68,28 +73,28 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
 
   private void ensureIcons(@Nonnull final JTree tree) {
     if (PROJECT_CLOSED == null) {
-      PROJECT_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, UIManager.getIcon("Tree.closedIcon")), PROJECT_BADGE));
+      PROJECT_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"),DEFAULT_FOLDER_CLOSED)), PROJECT_BADGE));
       PROJECT_CLOSED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) PROJECT_CLOSED).getImage(), READONLY_BADGE));
     }
 
     if (PROJECT_OPENED == null) {
-      PROJECT_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, UIManager.getIcon("Tree.openIcon")), PROJECT_BADGE));
+      PROJECT_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"),DEFAULT_FOLDER_OPENED)), PROJECT_BADGE));
       PROJECT_OPENED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) PROJECT_OPENED).getImage(), READONLY_BADGE));
     }
 
     if (FOLDER_CLOSED == null) {
-      FOLDER_CLOSED = new ImageIcon(UiUtils.iconToImage(tree, UIManager.getIcon("Tree.closedIcon")));
+      FOLDER_CLOSED = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED)));
       FOLDER_CLOSED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_CLOSED).getImage(), READONLY_BADGE));
     }
 
     if (FOLDER_OPENED == null) {
-      FOLDER_OPENED = new ImageIcon(UiUtils.iconToImage(tree, UIManager.getIcon("Tree.openIcon")));
+      FOLDER_OPENED = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED)));
       FOLDER_OPENED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_OPENED).getImage(), READONLY_BADGE));
     }
 
     if (LEAF == null) {
-      LEAF = new ImageIcon(UiUtils.iconToImage(tree, UIManager.getIcon("Tree.leafIcon")));
-      LEAF_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) PROJECT_OPENED).getImage(), READONLY_BADGE));
+      LEAF = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.leafIcon"),DEFAULT_FILE)));
+      LEAF_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) LEAF).getImage(), READONLY_BADGE));
     }
     
     if (LEAF_MINDMAP == null) {

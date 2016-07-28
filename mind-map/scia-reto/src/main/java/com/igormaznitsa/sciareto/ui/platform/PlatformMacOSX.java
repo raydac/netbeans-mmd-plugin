@@ -15,28 +15,31 @@
  */
 package com.igormaznitsa.sciareto.ui.platform;
 
-import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationEvent;
 import com.apple.eawt.ApplicationListener;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 
 class PlatformMacOSX implements Platform, ApplicationListener {
 
   private final Application application;
 
+  private final Logger LOGGER = LoggerFactory.getLogger(PlatformMacOSX.class);
+  
   private final Map<PlatformMenuEvent, PlatformMenuAction> actions = Collections.synchronizedMap(new EnumMap<PlatformMenuEvent, PlatformMenuAction>(PlatformMenuEvent.class));
 
   public PlatformMacOSX() {
     this.application = Application.getApplication();
+    this.application.addApplicationListener(this);
   }
 
   @Override
@@ -73,18 +76,21 @@ class PlatformMacOSX implements Platform, ApplicationListener {
   public void dispose() {
   }
 
-  private boolean processMenuEvent(@Nonnull final PlatformMenuEvent event, @Nullable @MayContainNull final Object... objects) {
+  private boolean processMenuEvent(@Nonnull final PlatformMenuEvent event, @Nullable @MayContainNull final Object... args) {
     final PlatformMenuAction action = this.actions.get(event);
     boolean handled = false;
-    if (action != null) {
-      handled = action.doPlatformMenuAction(event, objects);
+    if (action == null) {
+      LOGGER.info("No registered menu event handler : " + event);      
+    }else {
+      handled = action.doPlatformMenuAction(event, args);
+      LOGGER.info("Processed menu event : " + event);
     }
     return handled;
   }
 
   @Override
   public void handleAbout(@Nonnull final ApplicationEvent ae) {
-    processMenuEvent(PlatformMenuEvent.ABOUT);
+    ae.setHandled(processMenuEvent(PlatformMenuEvent.ABOUT));
   }
 
   @Override
