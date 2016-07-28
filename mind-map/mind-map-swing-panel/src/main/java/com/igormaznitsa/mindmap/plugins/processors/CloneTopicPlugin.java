@@ -51,10 +51,15 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
 
   @Override
   protected void doActionForTopic(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    if (selectedTopics.length > 0) {
-      panel.cloneTopic(selectedTopics[0]);
-    } else if (actionTopic != null) {
-      panel.cloneTopic(actionTopic);
+    final Topic toClone = selectedTopics.length > 0 ? selectedTopics[0] : actionTopic;
+
+    if (toClone != null) {
+
+      final Boolean cloneSubtree = toClone.hasChildren() ? dialogProvider.msgConfirmYesNoCancel(Texts.getString("MindMapPanel.titleCloneTopicRequest"), Texts.getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) : Boolean.FALSE;
+      if (cloneSubtree == null) {
+        return;
+      }
+      panel.cloneTopic(toClone, cloneSubtree);
     }
   }
 

@@ -2097,18 +2097,17 @@ public class MindMapPanel extends JPanel {
   }
 
   public boolean cloneTopic(@Nullable final Topic topic) {
+    return this.cloneTopic(topic, true);
+  }
+  
+  public boolean cloneTopic(@Nullable final Topic topic, final boolean cloneSubtree) {
     this.lock();
     try {
       if (topic == null || topic.getTopicLevel() == 0) {
         return false;
       }
 
-      final Boolean cloneFullTree = this.controller == null ? Boolean.TRUE : this.controller.getDialogProvider(this).msgConfirmYesNoCancel(BUNDLE.getString("MindMapPanel.titleCloneTopicRequest"), BUNDLE.getString("MindMapPanel.cloneTopicSubtreeRequestMsg"));
-      if (cloneFullTree == null) {
-        return false;
-      }
-
-      final Topic cloned = this.model.cloneTopic(topic, cloneFullTree);
+      final Topic cloned = this.model.cloneTopic(topic, cloneSubtree);
 
       if (cloned != null) {
         cloned.moveAfter(topic);
