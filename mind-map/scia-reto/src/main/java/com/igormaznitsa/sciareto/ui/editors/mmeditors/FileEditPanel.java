@@ -21,6 +21,7 @@ import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JFileChooser;
+import com.igormaznitsa.sciareto.ui.Focuser;
 
 public final class FileEditPanel extends javax.swing.JPanel {
 
@@ -66,6 +67,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
     this.projectFolder = projectFolder;
     this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath());
     this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
+    new Focuser(this.textFieldFilePath);
   }
 
   @Nonnull

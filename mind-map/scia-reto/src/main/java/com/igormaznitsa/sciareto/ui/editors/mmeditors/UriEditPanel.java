@@ -21,11 +21,16 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Toolkit;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.annotation.Nonnull;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import com.igormaznitsa.sciareto.ui.Focuser;
 
-public final class UriEditPanel extends javax.swing.JPanel {
+public final class UriEditPanel extends javax.swing.JPanel  {
 
   private static final long serialVersionUID = -6683682013891751388L;
 
@@ -58,6 +63,8 @@ public final class UriEditPanel extends javax.swing.JPanel {
       }
     });
 
+    new Focuser(this.textFieldURI);
+    
     validateUri();
   }
 

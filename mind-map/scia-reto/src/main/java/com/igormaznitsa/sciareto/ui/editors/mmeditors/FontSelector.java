@@ -136,7 +136,7 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.ipadx = 404;
     gridBagConstraints.ipady = 224;
@@ -191,7 +191,9 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
     gridBagConstraints.ipadx = 80;
     jPanel1.add(comboBoxSize, gridBagConstraints);
 
-    add(jPanel1, new java.awt.GridBagConstraints());
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
+    add(jPanel1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
