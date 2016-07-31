@@ -547,6 +547,11 @@ public class MindMapPanel extends JPanel {
         }
       }
 
+      private boolean isNonOverCollapsator(@Nonnull final MouseEvent e, @Nonnull final AbstractElement element){
+        final ElementPart part = element.findPartForPoint(e.getPoint());
+        return part != ElementPart.COLLAPSATOR; 
+      }
+      
       @Override
       public void mouseDragged(@Nonnull final MouseEvent e) {
         if (lockIfNotDisposed()) {
@@ -568,7 +573,7 @@ public class MindMapPanel extends JPanel {
                     }
                   }
                 } else if (controller.isElementDragAllowed(theInstance)) {
-                  if (elementUnderMouse.isMoveable()) {
+                  if (elementUnderMouse.isMoveable() && isNonOverCollapsator(e, elementUnderMouse)) {
                     selectedTopics.clear();
 
                     final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
