@@ -15,10 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 import java.awt.Color;
 import java.awt.Dimension;

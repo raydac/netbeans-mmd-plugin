@@ -33,7 +33,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import org.apache.commons.lang.SystemUtils;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
