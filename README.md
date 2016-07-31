@@ -14,6 +14,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.2.1 (under development)__
+- fixed casual d'n'd topic operations through click over its fold-unfold icon
 - added export into SVG image format
 - fixed issue [#22](https://github.com/raydac/netbeans-mmd-plugin/issues/22), added key short-cut into options to tune "next line char" for topic text editor, by default SHIFT+ENTER
 
