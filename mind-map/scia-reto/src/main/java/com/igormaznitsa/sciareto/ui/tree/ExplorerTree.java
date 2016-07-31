@@ -41,6 +41,7 @@ import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -83,7 +84,7 @@ public final class ExplorerTree extends JScrollPane {
             final NodeFileOrFolder node = (NodeFileOrFolder) selPath.getLastPathComponent();
             if (node != null && node.isLeaf()) {
               final File file = node.makeFileForNode();
-              if (file!=null && !context.openFileAsTab(file)) {
+              if (file != null && !context.openFileAsTab(file)) {
                 UiUtils.openInSystemViewer(file);
               }
             }
@@ -256,6 +257,10 @@ public final class ExplorerTree extends JScrollPane {
           switch (extension) {
             case "mmd": {
               final MindMap model = new MindMap(null, true);
+              final Topic root = model.getRoot();
+              if (root != null) {
+                root.setText("Root");
+              }
               try {
                 FileUtils.write(file, model.write(new StringWriter()).toString(), "UTF-8");
                 ok = true;
