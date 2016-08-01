@@ -185,14 +185,16 @@ public final class ExplorerTree extends JScrollPane {
       result.add(makeNew);
     }
 
-    final JMenuItem rename = new JMenuItem("Rename");
-    rename.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        projectTree.startEditingAtPath(node.makeTreePath());
-      }
-    });
-    result.add(rename);
+    if (!node.isProjectKnowledgeFolder()) {
+      final JMenuItem rename = new JMenuItem("Rename");
+      rename.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          projectTree.startEditingAtPath(node.makeTreePath());
+        }
+      });
+      result.add(rename);
+    }
 
     if (node instanceof NodeProject) {
       final JMenuItem close = new JMenuItem("Close");
@@ -223,6 +225,18 @@ public final class ExplorerTree extends JScrollPane {
       }
     });
     result.add(delete);
+
+    final JMenuItem openInSystem = new JMenuItem("Open with system");
+    openInSystem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        final File file = node.makeFileForNode();
+        if (file.exists()) {
+          UiUtils.openInSystemViewer(file);
+        }
+      }
+    });
+    result.add(openInSystem);
 
     return result;
   }

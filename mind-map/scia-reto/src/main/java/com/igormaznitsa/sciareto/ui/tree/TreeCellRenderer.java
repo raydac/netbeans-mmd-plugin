@@ -36,6 +36,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   private static final long serialVersionUID = -6283018126496160094L;
 
   private static final Image PROJECT_BADGE = UiUtils.loadImage("project_badge.png");
+  private static final Image KF_BADGE = UiUtils.loadImage("mmdbadge.png");
   private static final Image READONLY_BADGE = UiUtils.loadImage("ro.png");
   private static final Icon ICON_IMAGE = new ImageIcon(UiUtils.loadImage("image16.png"));
   private static final Icon ICON_IMAGE_RO;
@@ -43,7 +44,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   private static final Icon DEFAULT_FOLDER_CLOSED = new ImageIcon(UiUtils.loadImage("folder16.gif"));
   private static final Icon DEFAULT_FOLDER_OPENED = new ImageIcon(UiUtils.loadImage("folderOpen16.gif"));
   private static final Icon DEFAULT_FILE = new ImageIcon(UiUtils.loadImage("document_empty16.png"));
-  
+
   static {
     ICON_IMAGE_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) ICON_IMAGE).getImage(), READONLY_BADGE));
   }
@@ -60,8 +61,14 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   private Icon FOLDER_CLOSED;
   private Icon FOLDER_CLOSED_RO;
 
+  private Icon FOLDER_KF_CLOSED;
+  private Icon FOLDER_KF_CLOSED_RO;
+
   private Icon FOLDER_OPENED;
   private Icon FOLDER_OPENED_RO;
+
+  private Icon FOLDER_KF_OPENED;
+  private Icon FOLDER_KF_OPENED_RO;
 
   private Icon LEAF_MINDMAP;
   private Icon LEAF_MINDMAP_RO;
@@ -73,12 +80,12 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
 
   private void ensureIcons(@Nonnull final JTree tree) {
     if (PROJECT_CLOSED == null) {
-      PROJECT_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"),DEFAULT_FOLDER_CLOSED)), PROJECT_BADGE));
+      PROJECT_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED)), PROJECT_BADGE));
       PROJECT_CLOSED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) PROJECT_CLOSED).getImage(), READONLY_BADGE));
     }
 
     if (PROJECT_OPENED == null) {
-      PROJECT_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"),DEFAULT_FOLDER_OPENED)), PROJECT_BADGE));
+      PROJECT_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED)), PROJECT_BADGE));
       PROJECT_OPENED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) PROJECT_OPENED).getImage(), READONLY_BADGE));
     }
 
@@ -92,11 +99,21 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
       FOLDER_OPENED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_OPENED).getImage(), READONLY_BADGE));
     }
 
+    if (FOLDER_KF_CLOSED == null) {
+      FOLDER_KF_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED)), KF_BADGE));
+      FOLDER_KF_CLOSED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_KF_CLOSED).getImage(), READONLY_BADGE));
+    }
+
+    if (FOLDER_KF_OPENED == null) {
+      FOLDER_KF_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED)), KF_BADGE));
+      FOLDER_KF_OPENED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_KF_OPENED).getImage(), READONLY_BADGE));
+    }
+
     if (LEAF == null) {
-      LEAF = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.leafIcon"),DEFAULT_FILE)));
+      LEAF = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.leafIcon"), DEFAULT_FILE)));
       LEAF_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) LEAF).getImage(), READONLY_BADGE));
     }
-    
+
     if (LEAF_MINDMAP == null) {
       LEAF_MINDMAP = Icons.DOCUMENT.getIcon();
       LEAF_MINDMAP_RO = new ImageIcon(UiUtils.makeBadgedRightTop(Icons.DOCUMENT.getIcon().getImage(), READONLY_BADGE));
@@ -125,6 +142,13 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
             this.setIcon(node.isReadOnly() ? ICON_IMAGE_RO : ICON_IMAGE);
           } else {
             this.setIcon(node.isReadOnly() ? LEAF_RO : LEAF);
+          }
+        } else if (node.isProjectKnowledgeFolder()) {
+          this.setText("Knowledge");
+          if (node.isReadOnly()) {
+            this.setIcon(expanded ? FOLDER_KF_OPENED_RO : FOLDER_KF_CLOSED_RO);
+          } else {
+            this.setIcon(expanded ? FOLDER_KF_OPENED : FOLDER_KF_CLOSED);
           }
         } else if (node.isReadOnly()) {
           this.setIcon(expanded ? FOLDER_OPENED_RO : FOLDER_CLOSED_RO);

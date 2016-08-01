@@ -38,13 +38,19 @@ public class NodeProject extends NodeFileOrFolder {
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProject.class);
 
   private volatile File folder;
-
+  private final boolean knowledgeFolderPresented;
+  
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
     super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
+    this.knowledgeFolderPresented = new File(folder,".projectKnowledge").isDirectory();
     reloadSubtree();
   }
 
+  public boolean hasKnowledgeFolder(){
+    return this.knowledgeFolderPresented;
+  }
+  
   @Override
   public void setName(@Nonnull final String name) {
     this.name = name;

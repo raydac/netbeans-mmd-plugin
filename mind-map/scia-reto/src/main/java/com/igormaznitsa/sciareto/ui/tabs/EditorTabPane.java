@@ -36,6 +36,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
@@ -194,6 +195,18 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
         }
       });
       result.add(showInTree);
+    
+      final JMenuItem openInSystem = new JMenuItem("Open with system");
+      openInSystem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          final File file = title.getAssociatedFile();
+          if (file.exists()){
+            UiUtils.openInSystemViewer(file);
+          }
+        }
+      });
+      result.add(openInSystem);
     }
     return result;
   }

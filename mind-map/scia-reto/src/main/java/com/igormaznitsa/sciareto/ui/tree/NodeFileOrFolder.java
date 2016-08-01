@@ -69,6 +69,10 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
     return this.readonly;
   }
 
+  public boolean isProjectKnowledgeFolder(){
+    return !this.isLeaf() && ".projectKnowledge".equals(this.name);
+  }
+  
   @Override
   public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
     final String name1 = o1.name;
