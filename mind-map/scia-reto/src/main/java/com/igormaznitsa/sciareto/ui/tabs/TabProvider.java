@@ -36,4 +36,10 @@ public interface TabProvider {
   FileFilter getFileFilter();
   void dispose();
   void updateConfiguration();
+  
+  boolean isEditable();
+
+  boolean isSaveable();
+
+
 }

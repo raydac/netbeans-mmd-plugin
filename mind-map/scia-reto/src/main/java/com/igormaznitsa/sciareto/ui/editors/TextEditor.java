@@ -103,6 +103,16 @@ public final class TextEditor extends AbstractScrollPane {
   }
 
   @Override
+  public boolean isEditable() {
+    return true;
+  }
+
+  @Override
+  public boolean isSaveable() {
+    return true;
+  }
+
+  @Override
   public void updateConfiguration() {
     this.editor.setFont(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
     this.editor.revalidate();

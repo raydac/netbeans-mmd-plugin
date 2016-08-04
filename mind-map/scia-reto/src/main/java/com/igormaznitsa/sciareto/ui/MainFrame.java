@@ -67,6 +67,8 @@ import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileView;
@@ -280,6 +282,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       });
       this.menuLookAndFeel.add(menuItem);
     }
+    
+    this.tabPane.addChangeListener(new ChangeListener() {
+      @Override
+      public void stateChanged(@Nonnull final ChangeEvent e) {
+        processTabSelection();
+      }
+    });
   }
 
   public JPanel getStackPanel() {
@@ -587,7 +596,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuOpenFile = new javax.swing.JMenuItem();
     menuOpenRecentFile = new javax.swing.JMenu();
     jSeparator3 = new javax.swing.JPopupMenu.Separator();
-    menSave = new javax.swing.JMenuItem();
+    menuSave = new javax.swing.JMenuItem();
     menuSaveAs = new javax.swing.JMenuItem();
     menuSaveAll = new javax.swing.JMenuItem();
     separatorExitSection = new javax.swing.JPopupMenu.Separator();
@@ -606,6 +615,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     setLocationByPlatform(true);
 
     menuFile.setText("File");
+    menuFile.addMenuListener(new javax.swing.event.MenuListener() {
+      public void menuSelected(javax.swing.event.MenuEvent evt) {
+        menuFileMenuSelected(evt);
+      }
+      public void menuDeselected(javax.swing.event.MenuEvent evt) {
+      }
+      public void menuCanceled(javax.swing.event.MenuEvent evt) {
+      }
+    });
 
     menuNewProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
@@ -644,14 +662,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuFile.add(menuOpenRecentFile);
     menuFile.add(jSeparator3);
 
-    menSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/diskette.png"))); // NOI18N
-    menSave.setText("Save");
-    menSave.addActionListener(new java.awt.event.ActionListener() {
+    menuSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/diskette.png"))); // NOI18N
+    menuSave.setText("Save");
+    menuSave.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        menSaveActionPerformed(evt);
+        menuSaveActionPerformed(evt);
       }
     });
-    menuFile.add(menSave);
+    menuFile.add(menuSave);
 
     menuSaveAs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/file_save_as.png"))); // NOI18N
     menuSaveAs.setText("Save As");
@@ -851,7 +869,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }//GEN-LAST:event_menuOpenFileActionPerformed
 
-  private void menSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menSaveActionPerformed
+  private void menuSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveActionPerformed
     final int index = this.tabPane.getSelectedIndex();
     if (index >= 0) {
       try {
@@ -861,7 +879,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
       }
     }
-  }//GEN-LAST:event_menSaveActionPerformed
+  }//GEN-LAST:event_menuSaveActionPerformed
 
   private void menuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveAsActionPerformed
     final int index = this.tabPane.getSelectedIndex();
@@ -977,6 +995,23 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     new DonateButton().doClick();
   }//GEN-LAST:event_menuMakeDonationActionPerformed
 
+  private void processTabSelection(){
+    final TabTitle title = this.tabPane.getCurrentTitle();
+    if (title != null && title.getProvider().isSaveable()) {
+      this.menuSave.setEnabled(title != null && title.isChanged());
+      this.menuSaveAs.setEnabled(true);
+    } else {
+      this.menuSave.setEnabled(false);
+      this.menuSaveAs.setEnabled(false);
+    }
+
+    this.menuSaveAll.setEnabled(this.tabPane.hasEditableAndChangedDocument());
+  }
+  
+  private void menuFileMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuFileMenuSelected
+    processTabSelection();
+  }//GEN-LAST:event_menuFileMenuSelected
+
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {
@@ -1022,7 +1057,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JPopupMenu.Separator jSeparator2;
   private javax.swing.JPopupMenu.Separator jSeparator3;
   private javax.swing.JPopupMenu.Separator jSeparator4;
-  private javax.swing.JMenuItem menSave;
   private javax.swing.JMenuItem menuAbout;
   private javax.swing.JMenu menuEdit;
   private javax.swing.JMenuItem menuExit;
@@ -1037,6 +1071,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenu menuOpenRecentFile;
   private javax.swing.JMenu menuOpenRecentProject;
   private javax.swing.JMenuItem menuPreferences;
+  private javax.swing.JMenuItem menuSave;
   private javax.swing.JMenuItem menuSaveAll;
   private javax.swing.JMenuItem menuSaveAs;
   private javax.swing.JMenu menuView;

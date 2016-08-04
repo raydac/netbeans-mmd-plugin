@@ -226,7 +226,7 @@ public final class ExplorerTree extends JScrollPane {
     });
     result.add(delete);
 
-    final JMenuItem openInSystem = new JMenuItem("Open with system");
+    final JMenuItem openInSystem = new JMenuItem("Open in System");
     openInSystem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {

@@ -43,9 +43,9 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
   private static final long serialVersionUID = -8971773653667281550L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EditorTabPane.class);
-  
+
   private final Context context;
-  
+
   public EditorTabPane(@Nonnull final Context context) {
     super(JTabbedPane.TOP);
     this.context = context;
@@ -78,18 +78,31 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     });
   }
 
+  public boolean hasEditableAndChangedDocument() {
+    boolean result = false;
+
+    for (final TabTitle t : this) {
+      if (t!=null && t.isChanged()) {
+        result = true;
+        break;
+      }
+    }
+
+    return result;
+  }
+
   @Nullable
-  public TabTitle getCurrentTitle(){
+  public TabTitle getCurrentTitle() {
     final int index = this.getSelectedIndex();
-    return index<0 ? null : (TabTitle)this.getTabComponentAt(index);
+    return index < 0 ? null : (TabTitle) this.getTabComponentAt(index);
   }
 
   @Nonnull
   @MustNotContainNull
-  public List<TabTitle> findListOfRelatedTabs(@Nonnull final File file){
+  public List<TabTitle> findListOfRelatedTabs(@Nonnull final File file) {
     final List<TabTitle> result = new ArrayList<>();
-    for(final TabTitle t : this){
-      if (t.belongFolderOrSame(file)){
+    for (final TabTitle t : this) {
+      if (t.belongFolderOrSame(file)) {
         result.add(t);
       }
     }
@@ -99,8 +112,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
   public boolean replaceFileLink(@Nonnull final File oldFile, @Nonnull final File newFile) {
     boolean replaced = false;
     int index = 0;
-    for(final TabTitle title : this){
-      if (oldFile.equals(title.getAssociatedFile())){
+    for (final TabTitle title : this) {
+      if (oldFile.equals(title.getAssociatedFile())) {
         title.setAssociatedFile(newFile);
         this.setToolTipTextAt(index, title.getToolTipText());
         replaced |= true;
@@ -109,7 +122,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     }
     return replaced;
   }
-  
+
   @Nullable
   private JPopupMenu makePopupMenu() {
     final EditorTabPane theInstance = this;
@@ -118,15 +131,15 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     if (selected >= 0) {
       final TabTitle title = (TabTitle) this.getTabComponentAt(selected);
       result = new JPopupMenu();
-      
-      if (title.isChanged()){
+
+      if (title.isChanged()) {
         final JMenuItem saveItem = new JMenuItem("Save");
         saveItem.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
-            try{
+            try {
               title.save();
-            }catch(IOException ex){
+            } catch (IOException ex) {
               LOGGER.error("Can't save file", ex);
               DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
             }
@@ -134,22 +147,24 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
         });
         result.add(saveItem);
       }
-      final JMenuItem saveAsItem = new JMenuItem("Save As..");
-      saveAsItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          try {
-            title.saveAs();
-          } catch (IOException ex) {
-            LOGGER.error("Can't save file", ex);
-            DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+
+      if (title.getProvider().isSaveable()) {
+        final JMenuItem saveAsItem = new JMenuItem("Save As..");
+        saveAsItem.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(@Nonnull final ActionEvent e) {
+            try {
+              title.saveAs();
+            } catch (IOException ex) {
+              LOGGER.error("Can't save file", ex);
+              DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+            }
           }
-        }
-      });
-      result.add(saveAsItem);
-      
+        });
+        result.add(saveAsItem);
+      }
       result.add(new JSeparator());
-      
+
       final JMenuItem closeItem = new JMenuItem("Close");
       closeItem.addActionListener(new ActionListener() {
         @Override
@@ -159,34 +174,36 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       });
       result.add(closeItem);
 
-      final JMenuItem closeOthers = new JMenuItem("Close Others");
+      final JMenuItem closeOthers = new JMenuItem("Close Other");
       closeOthers.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull ActionEvent e) {
           final List<TabTitle> list = new ArrayList<>();
           for (final TabTitle t : theInstance) {
-            if (title!=t) list.add(t);
+            if (title != t) {
+              list.add(t);
+            }
           }
           safeCloseTabs(list.toArray(new TabTitle[list.size()]));
         }
       });
       result.add(closeOthers);
-      
+
       final JMenuItem closeAll = new JMenuItem("Close All");
       closeAll.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull ActionEvent e) {
           final List<TabTitle> list = new ArrayList<>();
-          for(final TabTitle t : theInstance){
+          for (final TabTitle t : theInstance) {
             list.add(t);
           }
           safeCloseTabs(list.toArray(new TabTitle[list.size()]));
         }
       });
       result.add(closeAll);
-      
+
       result.add(new JSeparator());
-      
+
       final JMenuItem showInTree = new JMenuItem("Select in Tree");
       showInTree.addActionListener(new ActionListener() {
         @Override
@@ -195,13 +212,13 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
         }
       });
       result.add(showInTree);
-    
-      final JMenuItem openInSystem = new JMenuItem("Open with system");
+
+      final JMenuItem openInSystem = new JMenuItem("Open in System");
       openInSystem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
           final File file = title.getAssociatedFile();
-          if (file.exists()){
+          if (file.exists()) {
             UiUtils.openInSystemViewer(file);
           }
         }
@@ -211,16 +228,16 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     return result;
   }
 
-  private void safeCloseTabs(@Nonnull @MustNotContainNull final TabTitle ... titles){
+  private void safeCloseTabs(@Nonnull @MustNotContainNull final TabTitle... titles) {
     boolean foundUnsaved = false;
-    for(final TabTitle t : titles){
-      foundUnsaved  |= t.isChanged();
+    for (final TabTitle t : titles) {
+      foundUnsaved |= t.isChanged();
     }
-    if (!foundUnsaved || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected unsaved","Detected unsaved documents! Close anyway?")){
+    if (!foundUnsaved || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected unsaved", "Detected unsaved documents! Close anyway?")) {
       this.context.closeTab(titles);
     }
   }
-  
+
   public void createTab(@Nonnull final TabProvider panel) {
     super.addTab("...", panel.getMainComponent());
     final int count = this.getTabCount() - 1;
@@ -233,7 +250,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
     });
     this.setSelectedIndex(count);
-    this.setToolTipTextAt(count,tabTitle.getToolTipText());
+    this.setToolTipTextAt(count, tabTitle.getToolTipText());
   }
 
   public boolean focusToFile(@Nonnull final File file) {
@@ -256,9 +273,9 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
     }
     if (index >= 0) {
-      try{
+      try {
         this.removeTabAt(index);
-      }finally{
+      } finally {
         title.disposeEditor();
       }
       return true;

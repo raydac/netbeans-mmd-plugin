@@ -62,7 +62,7 @@ public abstract class AbstractScrollPane extends JScrollPane implements TabProvi
   protected void doDispose(){
     
   }
-  
+
   @Override
   public boolean isDisposed() {
     return this.disposeFlag.get();

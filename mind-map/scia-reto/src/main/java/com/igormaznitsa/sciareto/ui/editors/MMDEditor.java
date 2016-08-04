@@ -149,6 +149,16 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   @Override
+  public boolean isEditable() {
+    return true;
+  }
+
+  @Override
+  public boolean isSaveable() {
+    return true;
+  }
+
+  @Override
   public void loadContent(@Nullable File file) throws IOException {
     final MindMap map;
     if (file == null) {
