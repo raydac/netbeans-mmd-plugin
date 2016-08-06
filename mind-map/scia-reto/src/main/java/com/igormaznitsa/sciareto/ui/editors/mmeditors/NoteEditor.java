@@ -22,18 +22,25 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.swing.Action;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.TextAction;
 import javax.swing.text.Utilities;
 import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -41,6 +48,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class NoteEditor extends javax.swing.JPanel {
@@ -107,12 +115,73 @@ public class NoteEditor extends javax.swing.JPanel {
     }
   };
 
-  
-  
   private Wrapping wrapping;
 
   public NoteEditor(@Nonnull final String text) {
     initComponents();
+
+    this.editorPane.getActionMap().put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
+      private Action start = new TextAction("wordStart") {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          final JTextComponent target = getTextComponent(e);
+          try {
+            if (target != null) {
+              int offs = target.getCaretPosition();
+
+              final Document doc = target.getDocument();
+              final String text = doc.getText(0, doc.getLength());
+              int startOffs = offs;
+              for (int i = offs; i >= 0; i--) {
+                if (!Character.isWhitespace(text.charAt(i)) && !Character.isISOControl(text.charAt(i))) {
+                  startOffs = i;
+                } else {
+                  break;
+                }
+              }
+              target.setCaretPosition(startOffs);
+            }
+          } catch (BadLocationException ex) {
+            UIManager.getLookAndFeel().provideErrorFeedback(target);
+          }
+        }
+      };
+      private Action end = new TextAction("wordEnd") {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          final JTextComponent target = getTextComponent(e);
+          try {
+            if (target != null) {
+              int offs = target.getCaretPosition();
+
+              final Document doc = target.getDocument();
+              final String text = doc.getText(0, doc.getLength());
+              int endOffs = offs;
+              for (int i = offs; i < text.length(); i++) {
+                endOffs = i;
+                if (Character.isWhitespace(text.charAt(i)) || Character.isISOControl(text.charAt(i))) {
+                  break;
+                }
+              }
+              if (endOffs<text.length() && !Character.isWhitespace(text.charAt(endOffs)) && !Character.isISOControl(text.charAt(endOffs))){
+                endOffs++;
+              }
+              target.moveCaretPosition(endOffs);
+            }
+          } catch (BadLocationException ex) {
+            UIManager.getLookAndFeel().provideErrorFeedback(target);
+          }
+        }
+      };
+
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        this.start.actionPerformed(e);
+        this.end.actionPerformed(e);
+      }
+
+    });
+
     this.setPreferredSize(new Dimension(640, 480));
     this.editorPane.setFont(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
     this.editorPane.setText(text);
@@ -149,13 +218,27 @@ public class NoteEditor extends javax.swing.JPanel {
     updateBottomPanel();
   }
 
-  private void updateCaretPos(){
+  private void updateCaretPos() {
     final int pos = this.editorPane.getCaretPosition();
     final int col = getColumn(pos, this.editorPane);
     final int row = getRow(pos, this.editorPane);
     this.labelCursorPos.setText(row + ":" + col);
-  }
   
+    final String selectedText = this.editorPane.getSelectedText();
+    if (selectedText == null || selectedText.isEmpty()){
+      this.buttonCopy.setEnabled(false);
+      this.buttonBrowse.setEnabled(false);
+    } else {
+      this.buttonCopy.setEnabled(true);
+      try{
+        final URI uri = URI.create(selectedText.trim());
+        this.buttonBrowse.setEnabled(uri.isAbsolute());
+      }catch(Exception ex){
+        this.buttonBrowse.setEnabled(false);
+      }
+    }
+  }
+
   private static int getRow(final int pos, final JTextComponent editor) {
     int rn = (pos == 0) ? 1 : 0;
     try {
@@ -201,6 +284,7 @@ public class NoteEditor extends javax.swing.JPanel {
     buttonExport = new javax.swing.JButton();
     buttonCopy = new javax.swing.JButton();
     buttonPaste = new javax.swing.JButton();
+    buttonBrowse = new javax.swing.JButton();
     buttonClear = new javax.swing.JButton();
     jPanel1 = new javax.swing.JPanel();
     labelCursorPos = new javax.swing.JLabel();
@@ -217,6 +301,7 @@ public class NoteEditor extends javax.swing.JPanel {
 
     buttonImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/disk16.png"))); // NOI18N
     buttonImport.setText("Import");
+    buttonImport.setToolTipText("Import text content from UTF8 encoded text file");
     buttonImport.setFocusable(false);
     buttonImport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonImport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -229,6 +314,7 @@ public class NoteEditor extends javax.swing.JPanel {
 
     buttonExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_save16.png"))); // NOI18N
     buttonExport.setText("Export");
+    buttonExport.setToolTipText("Export text content into UTF8 encoded file");
     buttonExport.setFocusable(false);
     buttonExport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonExport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -241,6 +327,7 @@ public class NoteEditor extends javax.swing.JPanel {
 
     buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
     buttonCopy.setText("Copy");
+    buttonCopy.setToolTipText("Copy selected text content into clipboard");
     buttonCopy.setFocusable(false);
     buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -253,6 +340,7 @@ public class NoteEditor extends javax.swing.JPanel {
 
     buttonPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
     buttonPaste.setText("Paste");
+    buttonPaste.setToolTipText("Paste text content from clipboard into current position");
     buttonPaste.setFocusable(false);
     buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -263,8 +351,22 @@ public class NoteEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonPaste);
 
+    buttonBrowse.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/link16.png"))); // NOI18N
+    buttonBrowse.setText("Browse");
+    buttonBrowse.setToolTipText("Open selected link in browser");
+    buttonBrowse.setFocusable(false);
+    buttonBrowse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonBrowse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonBrowse.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonBrowseActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(buttonBrowse);
+
     buttonClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
     buttonClear.setText("Clear All");
+    buttonClear.setToolTipText("Clear all text content");
     buttonClear.setFocusable(false);
     buttonClear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonClear.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -332,7 +434,7 @@ public class NoteEditor extends javax.swing.JPanel {
         DialogProviderManager.getInstance().getDialogProvider().msgError(UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
-    
+
   }//GEN-LAST:event_buttonImportActionPerformed
 
   private void buttonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportActionPerformed
@@ -369,12 +471,23 @@ public class NoteEditor extends javax.swing.JPanel {
     this.editorPane.setText("");
   }//GEN-LAST:event_buttonClearActionPerformed
 
+  private void buttonBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBrowseActionPerformed
+    final String selectedText = this.editorPane.getSelectedText().trim();
+    try{
+    UiUtils.browseURI(URI.create(selectedText), false);
+    }catch(Exception ex){
+      LOGGER.error("Can't open link : "+selectedText);
+      DialogProviderManager.getInstance().getDialogProvider().msgError("Can't browse link : "+selectedText);
+    }
+  }//GEN-LAST:event_buttonBrowseActionPerformed
+
   private void updateBottomPanel() {
     this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
   }
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonBrowse;
   private javax.swing.JButton buttonClear;
   private javax.swing.JButton buttonCopy;
   private javax.swing.JButton buttonExport;

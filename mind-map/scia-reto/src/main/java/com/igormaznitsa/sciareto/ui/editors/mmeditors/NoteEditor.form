@@ -35,6 +35,7 @@
               <Image iconType="3" name="/icons/disk16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Import"/>
+            <Property name="toolTipText" type="java.lang.String" value="Import text content from UTF8 encoded text file"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -49,6 +50,7 @@
               <Image iconType="3" name="/icons/file_save16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Export"/>
+            <Property name="toolTipText" type="java.lang.String" value="Export text content into UTF8 encoded file"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -63,6 +65,7 @@
               <Image iconType="3" name="/icons/page_copy16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Copy"/>
+            <Property name="toolTipText" type="java.lang.String" value="Copy selected text content into clipboard"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -77,6 +80,7 @@
               <Image iconType="3" name="/icons/paste_plain16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Paste"/>
+            <Property name="toolTipText" type="java.lang.String" value="Paste text content from clipboard into current position"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -85,12 +89,28 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonPasteActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JButton" name="buttonBrowse">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/link16.png"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Browse"/>
+            <Property name="toolTipText" type="java.lang.String" value="Open selected link in browser"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonBrowseActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JButton" name="buttonClear">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/icons/cross16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Clear All"/>
+            <Property name="toolTipText" type="java.lang.String" value="Clear all text content"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
