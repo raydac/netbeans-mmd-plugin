@@ -254,6 +254,7 @@
             <ignore>*.FontSelector</ignore>
             <ignore>*.KeyShortCutEditPanel</ignore>
             <ignore>*.PreferencesPanel</ignore>
+            <ignore>*.GoToFilePanel</ignore>
           </ignoreClasses>
         </configuration>
         <executions>

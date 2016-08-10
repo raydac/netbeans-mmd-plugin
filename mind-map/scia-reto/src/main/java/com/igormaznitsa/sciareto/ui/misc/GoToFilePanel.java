@@ -16,7 +16,6 @@
 package com.igormaznitsa.sciareto.ui.misc;
 
 import java.awt.Dimension;
-import java.awt.Window;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +23,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.ListModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
