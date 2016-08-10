@@ -75,6 +75,10 @@ import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 public class MindMapPanel extends JPanel {
 
@@ -320,7 +324,7 @@ public class MindMapPanel extends JPanel {
       }
     });
     this.textEditorPanel.add(this.textEditor, BorderLayout.CENTER);
-
+    
     super.setOpaque(true);
 
     final KeyAdapter keyAdapter = new KeyAdapter() {
@@ -731,6 +735,18 @@ public class MindMapPanel extends JPanel {
     this.textEditorPanel.setVisible(false);
     this.add(this.textEditorPanel);
 
+    this.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentResized(@Nonnull final ComponentEvent e) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            endEdit(true);
+          }
+        });
+      }
+    });
+    
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
