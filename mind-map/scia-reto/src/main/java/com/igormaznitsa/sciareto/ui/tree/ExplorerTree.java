@@ -25,6 +25,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DropMode;
@@ -122,6 +123,12 @@ public final class ExplorerTree extends JScrollPane {
 
   @Nonnull
   @MustNotContainNull
+  public List<NodeFileOrFolder> findForNamePattern(@Nullable final Pattern namePattern) {
+    return getCurrentGroup().findForNamePattern(namePattern);
+  }
+  
+  @Nonnull
+  @MustNotContainNull
   public List<NodeFileOrFolder> findNodesForFile(@Nonnull final File file) {
     return getCurrentGroup().findRelatedNodes(file, new ArrayList<NodeFileOrFolder>());
   }
@@ -136,6 +143,7 @@ public final class ExplorerTree extends JScrollPane {
     final TreePath pathToFile = group.findPathToFile(file);
     if (pathToFile != null) {
       this.projectTree.setSelectionPath(pathToFile);
+      this.projectTree.scrollPathToVisible(pathToFile);
     }
   }
 
@@ -231,7 +239,7 @@ public final class ExplorerTree extends JScrollPane {
       @Override
       public void actionPerformed(ActionEvent e) {
         final File file = node.makeFileForNode();
-        if (file.exists()) {
+        if (file!= null && file.exists()) {
           UiUtils.openInSystemViewer(file);
         }
       }

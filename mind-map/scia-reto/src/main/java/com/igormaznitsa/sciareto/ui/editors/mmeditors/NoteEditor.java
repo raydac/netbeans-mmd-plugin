@@ -48,7 +48,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class NoteEditor extends javax.swing.JPanel {
@@ -117,29 +116,36 @@ public class NoteEditor extends javax.swing.JPanel {
 
   private Wrapping wrapping;
 
+  private static boolean IsWhitespaceOrControl(final char c) {
+    return Character.isISOControl(c) || Character.isWhitespace(c);
+  }
+
   public NoteEditor(@Nonnull final String text) {
     initComponents();
 
     this.editorPane.getActionMap().put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
+      private static final long serialVersionUID = -6477916799997545798L;
       private Action start = new TextAction("wordStart") {
+        private static final long serialVersionUID = 4377386270269629176L;
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
           final JTextComponent target = getTextComponent(e);
           try {
             if (target != null) {
               int offs = target.getCaretPosition();
-
               final Document doc = target.getDocument();
               final String text = doc.getText(0, doc.getLength());
               int startOffs = offs;
-              for (int i = offs; i >= 0; i--) {
-                if (!Character.isWhitespace(text.charAt(i)) && !Character.isISOControl(text.charAt(i))) {
-                  startOffs = i;
-                } else {
-                  break;
+              if (startOffs < text.length()) {
+                for (int i = offs; i >= 0; i--) {
+                  if (!IsWhitespaceOrControl(text.charAt(i))) {
+                    startOffs = i;
+                  } else {
+                    break;
+                  }
                 }
+                target.setCaretPosition(startOffs);
               }
-              target.setCaretPosition(startOffs);
             }
           } catch (BadLocationException ex) {
             UIManager.getLookAndFeel().provideErrorFeedback(target);
@@ -147,6 +153,7 @@ public class NoteEditor extends javax.swing.JPanel {
         }
       };
       private Action end = new TextAction("wordEnd") {
+        private static final long serialVersionUID = 4377386270269629176L;
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
           final JTextComponent target = getTextComponent(e);
@@ -159,11 +166,11 @@ public class NoteEditor extends javax.swing.JPanel {
               int endOffs = offs;
               for (int i = offs; i < text.length(); i++) {
                 endOffs = i;
-                if (Character.isWhitespace(text.charAt(i)) || Character.isISOControl(text.charAt(i))) {
+                if (IsWhitespaceOrControl(text.charAt(i))) {
                   break;
                 }
               }
-              if (endOffs<text.length() && !Character.isWhitespace(text.charAt(endOffs)) && !Character.isISOControl(text.charAt(endOffs))){
+              if (endOffs < text.length() && !IsWhitespaceOrControl(text.charAt(endOffs))) {
                 endOffs++;
               }
               target.moveCaretPosition(endOffs);
@@ -223,17 +230,17 @@ public class NoteEditor extends javax.swing.JPanel {
     final int col = getColumn(pos, this.editorPane);
     final int row = getRow(pos, this.editorPane);
     this.labelCursorPos.setText(row + ":" + col);
-  
+
     final String selectedText = this.editorPane.getSelectedText();
-    if (selectedText == null || selectedText.isEmpty()){
+    if (selectedText == null || selectedText.isEmpty()) {
       this.buttonCopy.setEnabled(false);
       this.buttonBrowse.setEnabled(false);
     } else {
       this.buttonCopy.setEnabled(true);
-      try{
+      try {
         final URI uri = URI.create(selectedText.trim());
         this.buttonBrowse.setEnabled(uri.isAbsolute());
-      }catch(Exception ex){
+      } catch (Exception ex) {
         this.buttonBrowse.setEnabled(false);
       }
     }
@@ -473,11 +480,11 @@ public class NoteEditor extends javax.swing.JPanel {
 
   private void buttonBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBrowseActionPerformed
     final String selectedText = this.editorPane.getSelectedText().trim();
-    try{
-    UiUtils.browseURI(URI.create(selectedText), false);
-    }catch(Exception ex){
-      LOGGER.error("Can't open link : "+selectedText);
-      DialogProviderManager.getInstance().getDialogProvider().msgError("Can't browse link : "+selectedText);
+    try {
+      UiUtils.browseURI(URI.create(selectedText), false);
+    } catch (Exception ex) {
+      LOGGER.error("Can't open link : " + selectedText);
+      DialogProviderManager.getInstance().getDialogProvider().msgError("Can't browse link : " + selectedText);
     }
   }//GEN-LAST:event_buttonBrowseActionPerformed
 

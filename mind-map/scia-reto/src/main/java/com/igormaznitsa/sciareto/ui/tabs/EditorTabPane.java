@@ -218,7 +218,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
         @Override
         public void actionPerformed(ActionEvent e) {
           final File file = title.getAssociatedFile();
-          if (file.exists()) {
+          if (file != null && file.exists()) {
             UiUtils.openInSystemViewer(file);
           }
         }

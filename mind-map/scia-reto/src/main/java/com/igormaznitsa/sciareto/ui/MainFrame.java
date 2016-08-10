@@ -84,6 +84,7 @@ import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
+import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
@@ -289,6 +290,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         processTabSelection();
       }
     });
+    
+    this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()|KeyEvent.SHIFT_MASK));
   }
 
   public JPanel getStackPanel() {
@@ -606,6 +609,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuView = new javax.swing.JMenu();
     menuFullScreen = new javax.swing.JMenuItem();
     menuLookAndFeel = new javax.swing.JMenu();
+    menuNavigate = new javax.swing.JMenu();
+    menuGoToFile = new javax.swing.JMenuItem();
     menuHelp = new javax.swing.JMenu();
     menuAbout = new javax.swing.JMenuItem();
     jSeparator4 = new javax.swing.JPopupMenu.Separator();
@@ -733,6 +738,19 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuView.add(menuLookAndFeel);
 
     jMenuBar1.add(menuView);
+
+    menuNavigate.setText("Navigate");
+
+    menuGoToFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/rocket.png"))); // NOI18N
+    menuGoToFile.setText("Go to File");
+    menuGoToFile.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuGoToFileActionPerformed(evt);
+      }
+    });
+    menuNavigate.add(menuGoToFile);
+
+    jMenuBar1.add(menuNavigate);
 
     menuHelp.setText("Help");
 
@@ -1012,6 +1030,19 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     processTabSelection();
   }//GEN-LAST:event_menuFileMenuSelected
 
+  private void menuGoToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuGoToFileActionPerformed
+    final GoToFilePanel panel = new GoToFilePanel(this, this.explorerTree);
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Go To File",panel)){
+      final NodeFileOrFolder selected = panel.getSelected();
+      if (selected!=null){
+        final File file = selected.makeFileForNode();
+        if (file!=null){
+          this.focusInTree(file);
+        }
+      }
+    }
+  }//GEN-LAST:event_menuGoToFileActionPerformed
+
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {
@@ -1062,9 +1093,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenuItem menuExit;
   private javax.swing.JMenu menuFile;
   private javax.swing.JMenuItem menuFullScreen;
+  private javax.swing.JMenuItem menuGoToFile;
   private javax.swing.JMenu menuHelp;
   private javax.swing.JMenu menuLookAndFeel;
   private javax.swing.JMenuItem menuMakeDonation;
+  private javax.swing.JMenu menuNavigate;
   private javax.swing.JMenuItem menuNewProject;
   private javax.swing.JMenuItem menuOpenFile;
   private javax.swing.JMenuItem menuOpenProject;

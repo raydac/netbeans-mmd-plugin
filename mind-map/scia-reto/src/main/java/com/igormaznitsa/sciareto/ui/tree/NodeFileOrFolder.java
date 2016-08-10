@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.event.TreeModelEvent;
@@ -254,6 +255,17 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
 
   boolean deleteChild(@Nonnull final NodeFileOrFolder child) {
     return this.children.remove(child);
+  }
+
+  protected void fillAllMatchNamePattern(@Nonnull final Pattern namePattern, @Nonnull @MustNotContainNull final List<NodeFileOrFolder> resultList) {
+    if (namePattern.matcher(this.name).matches()){
+      resultList.add(this);
+    }
+    if (!this.isLeaf()){
+      for(final NodeFileOrFolder c : this.children){
+        c.fillAllMatchNamePattern(namePattern, resultList);
+      }
+    }
   }
 
 }

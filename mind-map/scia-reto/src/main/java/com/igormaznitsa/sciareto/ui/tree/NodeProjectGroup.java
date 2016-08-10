@@ -29,6 +29,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -250,6 +251,20 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
     for (final TreeModelListener l : this.listeners) {
       l.treeNodesInserted(event);
     }
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  public List<NodeFileOrFolder> findForNamePattern(@Nullable final Pattern namePattern) {
+    final List<NodeFileOrFolder> result = new ArrayList<>();
+    
+    if (namePattern!=null){
+      for(final NodeFileOrFolder f : this.children){
+        f.fillAllMatchNamePattern(namePattern,result);
+      }
+    }
+    
+    return result;
   }
 
 }
