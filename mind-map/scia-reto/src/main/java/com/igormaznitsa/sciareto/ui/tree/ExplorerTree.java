@@ -17,6 +17,8 @@ package com.igormaznitsa.sciareto.ui.tree;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -75,6 +77,29 @@ public final class ExplorerTree extends JScrollPane {
     this.projectTree.setRootVisible(false);
     this.setViewportView(this.projectTree);
 
+    this.projectTree.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(@Nonnull final KeyEvent e) {
+        if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER){
+          final TreePath selectedPath = projectTree.getSelectionPath();
+          if (selectedPath != null){
+            final NodeFileOrFolder node = (NodeFileOrFolder) selectedPath.getLastPathComponent();
+            if (node != null){
+              if (node.isLeaf()){
+              final File file = node.makeFileForNode();
+              if (file != null && !context.openFileAsTab(file)) {
+                UiUtils.openInSystemViewer(file);
+              }
+              }else{
+                projectTree.expandPath(selectedPath);
+              }
+            }
+          }
+        }
+      }
+      
+    });
+    
     this.projectTree.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(@Nonnull final MouseEvent e) {
