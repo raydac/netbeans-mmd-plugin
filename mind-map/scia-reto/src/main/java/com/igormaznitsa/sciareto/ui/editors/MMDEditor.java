@@ -149,6 +149,11 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   @Override
+  public void focusToEditor() {
+    this.mindMapPanel.requestFocus();
+  }
+
+  @Override
   public boolean isEditable() {
     return true;
   }

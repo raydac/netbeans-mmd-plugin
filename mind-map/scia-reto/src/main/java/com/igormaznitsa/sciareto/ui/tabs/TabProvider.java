@@ -23,6 +23,8 @@ import com.igormaznitsa.meta.annotation.Weight;
 
 public interface TabProvider {
 
+  void focusToEditor();
+
   @Weight(Weight.Unit.NORMAL)
   @Nonnull
   TabTitle getTabTitle();

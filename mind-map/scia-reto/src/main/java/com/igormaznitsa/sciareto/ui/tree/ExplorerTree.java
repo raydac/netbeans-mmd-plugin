@@ -80,26 +80,27 @@ public final class ExplorerTree extends JScrollPane {
     this.projectTree.addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(@Nonnull final KeyEvent e) {
-        if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER){
+        if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+          e.consume();
           final TreePath selectedPath = projectTree.getSelectionPath();
-          if (selectedPath != null){
+          if (selectedPath != null) {
             final NodeFileOrFolder node = (NodeFileOrFolder) selectedPath.getLastPathComponent();
-            if (node != null){
-              if (node.isLeaf()){
-              final File file = node.makeFileForNode();
-              if (file != null && !context.openFileAsTab(file)) {
-                UiUtils.openInSystemViewer(file);
-              }
-              }else{
+            if (node != null) {
+              if (node.isLeaf()) {
+                final File file = node.makeFileForNode();
+                if (file != null && !context.openFileAsTab(file)) {
+                  UiUtils.openInSystemViewer(file);
+                }
+              } else {
                 projectTree.expandPath(selectedPath);
               }
             }
           }
         }
       }
-      
+
     });
-    
+
     this.projectTree.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(@Nonnull final MouseEvent e) {
@@ -146,12 +147,17 @@ public final class ExplorerTree extends JScrollPane {
     });
   }
 
+  @Override
+  public void requestFocus() {
+    this.projectTree.requestFocus();
+  }
+
   @Nonnull
   @MustNotContainNull
   public List<NodeFileOrFolder> findForNamePattern(@Nullable final Pattern namePattern) {
     return getCurrentGroup().findForNamePattern(namePattern);
   }
-  
+
   @Nonnull
   @MustNotContainNull
   public List<NodeFileOrFolder> findNodesForFile(@Nonnull final File file) {
@@ -264,7 +270,7 @@ public final class ExplorerTree extends JScrollPane {
       @Override
       public void actionPerformed(ActionEvent e) {
         final File file = node.makeFileForNode();
-        if (file!= null && file.exists()) {
+        if (file != null && file.exists()) {
           UiUtils.openInSystemViewer(file);
         }
       }

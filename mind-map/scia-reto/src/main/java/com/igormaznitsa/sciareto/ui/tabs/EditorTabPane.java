@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -258,6 +259,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       final TabTitle title = (TabTitle) this.getTabComponentAt(i);
       if (file.equals(title.getAssociatedFile())) {
         this.setSelectedIndex(i);
+        ((TabTitle)this.getTabComponentAt(i)).getProvider().focusToEditor();
         return true;
       }
     }

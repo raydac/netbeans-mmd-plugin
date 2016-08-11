@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
@@ -100,6 +101,16 @@ public final class TextEditor extends AbstractScrollPane {
     setViewportView(this.editor);
     
     loadContent(file);
+  }
+
+  @Override
+  public void focusToEditor() {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        editor.requestFocusInWindow();
+      }
+    });
   }
 
   @Override

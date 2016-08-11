@@ -292,6 +292,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     
     this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()|KeyEvent.SHIFT_MASK));
+    this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
   }
 
   public JPanel getStackPanel() {
@@ -457,6 +458,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         FileHistoryManager.getInstance().registerOpenedFile(file);
       } catch (IOException x) {
         LOGGER.error("Can't register last opened file", x);
+      } finally {
+        this.tabPane.focusToFile(file);
       }
     }
     return result;
@@ -630,7 +633,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     });
 
-    menuNewProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
     menuNewProject.setText("New Project");
     menuNewProject.addActionListener(new java.awt.event.ActionListener() {
@@ -685,7 +687,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuFile.add(menuSaveAs);
 
-    menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuSaveAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/disk_multiple.png"))); // NOI18N
     menuSaveAll.setText("Save All");
     menuSaveAll.addActionListener(new java.awt.event.ActionListener() {
@@ -1022,8 +1023,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuSave.setEnabled(false);
       this.menuSaveAs.setEnabled(false);
     }
-
-    this.menuSaveAll.setEnabled(this.tabPane.hasEditableAndChangedDocument());
   }
   
   private void menuFileMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuFileMenuSelected
@@ -1038,6 +1037,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         final File file = selected.makeFileForNode();
         if (file!=null){
           this.focusInTree(file);
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              explorerTree.requestFocus();
+            }
+          });
         }
       }
     }

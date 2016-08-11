@@ -139,6 +139,10 @@ public final class PictureViewer extends AbstractScrollPane {
   }
 
   private final ScalableImage imageViewer;
+
+  @Override
+  public void focusToEditor() {
+  }
   
   public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
     @Override
