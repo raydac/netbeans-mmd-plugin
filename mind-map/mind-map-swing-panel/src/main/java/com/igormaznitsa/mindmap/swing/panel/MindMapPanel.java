@@ -77,8 +77,6 @@ import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 
 public class MindMapPanel extends JPanel {
 
@@ -324,7 +322,7 @@ public class MindMapPanel extends JPanel {
       }
     });
     this.textEditorPanel.add(this.textEditor, BorderLayout.CENTER);
-    
+
     super.setOpaque(true);
 
     final KeyAdapter keyAdapter = new KeyAdapter() {
@@ -551,11 +549,11 @@ public class MindMapPanel extends JPanel {
         }
       }
 
-      private boolean isNonOverCollapsator(@Nonnull final MouseEvent e, @Nonnull final AbstractElement element){
+      private boolean isNonOverCollapsator(@Nonnull final MouseEvent e, @Nonnull final AbstractElement element) {
         final ElementPart part = element.findPartForPoint(e.getPoint());
-        return part != ElementPart.COLLAPSATOR; 
+        return part != ElementPart.COLLAPSATOR;
       }
-      
+
       @Override
       public void mouseDragged(@Nonnull final MouseEvent e) {
         if (lockIfNotDisposed()) {
@@ -714,11 +712,13 @@ public class MindMapPanel extends JPanel {
                     break;
                 }
               } else // group
-               if (selectedTopics.isEmpty()) {
+              {
+                if (selectedTopics.isEmpty()) {
                   select(element.getModel(), false);
                 } else {
                   select(element.getModel(), true);
                 }
+              }
             }
           } finally {
             unlock();
@@ -741,12 +741,13 @@ public class MindMapPanel extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            endEdit(true);
+            updateView(false);
+            updateEditorAfterResizing();
           }
         });
       }
     });
-    
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -1223,10 +1224,10 @@ public class MindMapPanel extends JPanel {
     if (this.lockIfNotDisposed()) {
       try {
         if (!this.selectedTopics.isEmpty()) {
-          if (this.selectedTopics.size()==1){
+          if (this.selectedTopics.size() == 1) {
             nextToFocus = this.selectedTopics.get(0).getParent();
           }
-          
+
           deleteTopics(force, this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
         }
       } finally {
@@ -2120,7 +2121,7 @@ public class MindMapPanel extends JPanel {
   public boolean cloneTopic(@Nullable final Topic topic) {
     return this.cloneTopic(topic, true);
   }
-  
+
   public boolean cloneTopic(@Nullable final Topic topic, final boolean cloneSubtree) {
     this.lock();
     try {
