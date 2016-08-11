@@ -17,6 +17,7 @@ package com.igormaznitsa.sciareto.ui.misc;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,9 +56,9 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
   public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
     return o1.toString().compareTo(o2.toString());
   }
-  
+
   private static class ListRenderer extends DefaultListCellRenderer {
-    
+
     private static final long serialVersionUID = 3875614392486198647L;
 
     public ListRenderer() {
@@ -65,25 +66,25 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
     }
 
     @Nonnull
-    private static String makeTextForNode(@Nonnull final NodeFileOrFolder node){
-        final NodeProject project = node.findProject();
-        if (project==null){
-          return node.toString();
-        } else {
-          final String projectName = project.toString();
-          return node.toString()+" (found in "+projectName+')';
-        }
+    private static String makeTextForNode(@Nonnull final NodeFileOrFolder node) {
+      final NodeProject project = node.findProject();
+      if (project == null) {
+        return node.toString();
+      } else {
+        final String projectName = project.toString();
+        return node.toString() + " (found in " + projectName + ')';
+      }
     }
-    
+
     @Override
     @Nonnull
     public Component getListCellRendererComponent(@Nonnull final JList<?> list, @Nonnull final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
       super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
       final NodeFileOrFolder node = (NodeFileOrFolder) value;
-      
-      final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH); 
-      if (node instanceof NodeProject || !node.isLeaf()){
+
+      final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
+      if (node instanceof NodeProject || !node.isLeaf()) {
         this.setIcon(TreeCellRenderer.DEFAULT_FOLDER_CLOSED);
       } else if (ext.equals("mmd")) {
         this.setIcon(Icons.DOCUMENT.getIcon());
@@ -94,19 +95,19 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
       }
 
       this.setText(makeTextForNode(node));
-      
+
       return this;
     }
-    
+
   }
-  
+
   public GoToFilePanel(@Nonnull final ExplorerTree tree) {
     this.tree = tree;
-    
+
     initComponents();
-    
+
     this.listFoundFiles.setCellRenderer(new ListRenderer());
-    
+
     final Dimension dim = new Dimension(512, 400);
     setPreferredSize(dim);
     setMinimumSize(dim);
@@ -129,10 +130,9 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
         processEnteredPattern();
       }
     });
-    
-    this.listFoundFiles.setModel(new ListModel<NodeFileOrFolder>(){
-      
-      
+
+    this.listFoundFiles.setModel(new ListModel<NodeFileOrFolder>() {
+
       @Override
       public int getSize() {
         return foundNodeList.size();
@@ -153,7 +153,7 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
       public void removeListDataListener(@Nonnull final ListDataListener l) {
         listeners.remove(l);
       }
-      
+
     });
   }
 
@@ -165,13 +165,13 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
   private void processEnteredPattern() {
     this.foundNodeList.clear();
     this.foundNodeList.addAll(this.tree.findForNamePattern(makePattern(this.textFieldMask.getText())));
-    for(final ListDataListener l : this.listeners){
+    for (final ListDataListener l : this.listeners) {
       l.contentsChanged(new ListDataEvent(this.listFoundFiles.getModel(), ListDataEvent.CONTENTS_CHANGED, 0, this.foundNodeList.size()));
     }
-    
+
     Collections.sort(this.foundNodeList, this);
-    
-    if (!this.foundNodeList.isEmpty()){
+
+    if (!this.foundNodeList.isEmpty()) {
       this.listFoundFiles.setSelectedIndex(0);
       this.listFoundFiles.ensureIndexIsVisible(0);
     }
@@ -196,7 +196,7 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
             buffer.append("\\s");
           } else {
             final String code = Integer.toHexString(c).toUpperCase(Locale.ENGLISH);
-            buffer.append("\\u").append("0000",0,4-code.length()).append(code);
+            buffer.append("\\u").append("0000", 0, 4 - code.length()).append(code);
           }
         }
         break;
@@ -229,6 +229,12 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
     add(labelFilenameMask, gridBagConstraints);
+
+    textFieldMask.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyPressed(java.awt.event.KeyEvent evt) {
+        textFieldMaskKeyPressed(evt);
+      }
+    });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
@@ -257,13 +263,49 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
   private void listFoundFilesMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFoundFilesMouseMoved
     final ListModel model = this.listFoundFiles.getModel();
     final int index = this.listFoundFiles.locationToIndex(evt.getPoint());
-    if (index<0){
+    if (index < 0) {
       this.listFoundFiles.setToolTipText(null);
     } else {
       final File file = ((NodeFileOrFolder) model.getElementAt(index)).makeFileForNode();
       this.listFoundFiles.setToolTipText(file == null ? null : file.getAbsolutePath());
     }
   }//GEN-LAST:event_listFoundFilesMouseMoved
+
+  private void textFieldMaskKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldMaskKeyPressed
+    int selectedIndex = this.listFoundFiles.getSelectedIndex();
+    boolean processed = false;
+    if (!evt.isConsumed() && evt.getModifiers() == 0) {
+      switch (evt.getKeyCode()) {
+        case KeyEvent.VK_UP: {
+          processed = true;
+          evt.consume();
+          if (selectedIndex >= 0) {
+            selectedIndex--;
+          }
+        }
+        break;
+        case KeyEvent.VK_DOWN: {
+          processed = true;
+          evt.consume();
+          if (selectedIndex >= 0) {
+            selectedIndex++;
+          }
+        }
+        break;
+      }
+
+      if (processed && !this.foundNodeList.isEmpty()) {
+        if (selectedIndex < 0) {
+          selectedIndex = this.foundNodeList.size() - 1;
+        } else if (selectedIndex >= this.foundNodeList.size()) {
+          selectedIndex = 0;
+        }
+        this.listFoundFiles.setSelectedIndex(selectedIndex);
+        this.listFoundFiles.ensureIndexIsVisible(selectedIndex);
+      }
+
+    }
+  }//GEN-LAST:event_textFieldMaskKeyPressed
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
