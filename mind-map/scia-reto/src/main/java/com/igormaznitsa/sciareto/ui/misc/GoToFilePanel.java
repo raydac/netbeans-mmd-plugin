@@ -19,6 +19,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -32,17 +34,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import org.apache.commons.io.FilenameUtils;
-import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.Focuser;
 import com.igormaznitsa.sciareto.ui.Icons;
-import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tree.TreeCellRenderer;
 
-public class GoToFilePanel extends javax.swing.JPanel {
+public class GoToFilePanel extends javax.swing.JPanel implements Comparator<NodeFileOrFolder> {
 
   private static final long serialVersionUID = 6372355072139143322L;
 
@@ -50,6 +50,11 @@ public class GoToFilePanel extends javax.swing.JPanel {
 
   private final List<NodeFileOrFolder> foundNodeList = new ArrayList<>();
   private final List<ListDataListener> listeners = new ArrayList<>();
+
+  @Override
+  public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
+    return o1.toString().compareTo(o2.toString());
+  }
   
   private static class ListRenderer extends DefaultListCellRenderer {
     
@@ -163,6 +168,9 @@ public class GoToFilePanel extends javax.swing.JPanel {
     for(final ListDataListener l : this.listeners){
       l.contentsChanged(new ListDataEvent(this.listFoundFiles.getModel(), ListDataEvent.CONTENTS_CHANGED, 0, this.foundNodeList.size()));
     }
+    
+    Collections.sort(this.foundNodeList, this);
+    
     if (!this.foundNodeList.isEmpty()){
       this.listFoundFiles.setSelectedIndex(0);
       this.listFoundFiles.ensureIndexIsVisible(0);

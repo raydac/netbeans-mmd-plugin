@@ -94,7 +94,7 @@ public final class SortedTreeModelWrapper implements TreeModel, TreeModelListene
   private List<Object> getChildrenFromCache(@Nonnull final Object parent){
     List<Object> result = this.sortedCache.get(parent);
     if (result == null){
-      result = new ArrayList<Object>();
+      result = new ArrayList<>();
       final int childCount = model.getChildCount(parent);
       for(int i=0;i<childCount;i++){
         result.add(model.getChild(parent, i));
