@@ -1031,7 +1031,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuFileMenuSelected
 
   private void menuGoToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuGoToFileActionPerformed
-    final GoToFilePanel panel = new GoToFilePanel(this, this.explorerTree);
+    final GoToFilePanel panel = new GoToFilePanel(this.explorerTree);
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Go To File",panel)){
       final NodeFileOrFolder selected = panel.getSelected();
       if (selected!=null){

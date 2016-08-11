@@ -49,7 +49,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
   private static final DataFlavor[] DATA_FLAVOR = new DataFlavor[]{DataFlavor.javaFileListFlavor};
 
   private final boolean readonly;
-  
+
   public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean readOnly) {
     this.parent = parent;
     this.name = name;
@@ -62,38 +62,50 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
       this.children = Collections.EMPTY_LIST;
       this.folderFlag = false;
     }
-    
+
     this.readonly = readOnly;
   }
-  
-  public boolean isReadOnly(){
+
+  public boolean isReadOnly() {
     return this.readonly;
   }
 
-  public boolean isProjectKnowledgeFolder(){
+  public boolean isProjectKnowledgeFolder() {
     return !this.isLeaf() && ".projectKnowledge".equals(this.name);
   }
-  
+
+  @Nullable
+  public NodeProject findProject() {
+    NodeFileOrFolder path = this;
+    while (path != null) {
+      if (path instanceof NodeProject) {
+        return (NodeProject) path;
+      }
+      path = path.getNodeParent();
+    }
+    return null;
+  }
+
   @Override
   public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
     final String name1 = o1.name;
     final String name2 = o2.name;
-    if (o1.isLeaf() == o2.isLeaf()){
+    if (o1.isLeaf() == o2.isLeaf()) {
       return name1.compareTo(name2);
     } else {
       return o1.isLeaf() ? 1 : -1;
     }
   }
-  
+
   @Nonnull
-  public NodeFileOrFolder addFile(@Nonnull final File file){
-    Assertions.assertTrue("Unexpected state!",this.folderFlag && file.getParentFile().equals(this.makeFileForNode()));
+  public NodeFileOrFolder addFile(@Nonnull final File file) {
+    Assertions.assertTrue("Unexpected state!", this.folderFlag && file.getParentFile().equals(this.makeFileForNode()));
     final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
-    this.children.add(0,result);
+    this.children.add(0, result);
     Collections.sort(this.children, this);
     return result;
   }
-  
+
   public void setName(@Nonnull final String name) {
     this.name = name;
     reloadSubtree();
@@ -105,9 +117,9 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
         for (final File f : generatedFile.listFiles()) {
-          this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(),!Files.isWritable(f.toPath())));
+          this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(), !Files.isWritable(f.toPath())));
         }
-        Collections.sort(this.children,this);
+        Collections.sort(this.children, this);
       }
     }
   }
@@ -258,11 +270,11 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
   }
 
   protected void fillAllMatchNamePattern(@Nonnull final Pattern namePattern, @Nonnull @MustNotContainNull final List<NodeFileOrFolder> resultList) {
-    if (namePattern.matcher(this.name).matches()){
+    if (namePattern.matcher(this.name).matches()) {
       resultList.add(this);
     }
-    if (!this.isLeaf()){
-      for(final NodeFileOrFolder c : this.children){
+    if (!this.isLeaf()) {
+      for (final NodeFileOrFolder c : this.children) {
         c.fillAllMatchNamePattern(namePattern, resultList);
       }
     }

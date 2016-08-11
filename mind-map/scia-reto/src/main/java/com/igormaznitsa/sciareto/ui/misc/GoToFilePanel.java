@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
@@ -23,33 +24,84 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 import javax.swing.ListModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.Focuser;
+import com.igormaznitsa.sciareto.ui.Icons;
+import com.igormaznitsa.sciareto.ui.MainFrame;
+import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
+import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import com.igormaznitsa.sciareto.ui.tree.TreeCellRenderer;
 
 public class GoToFilePanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = 6372355072139143322L;
 
   private final ExplorerTree tree;
-  private final Context context;
 
   private final List<NodeFileOrFolder> foundNodeList = new ArrayList<>();
   private final List<ListDataListener> listeners = new ArrayList<>();
   
-  private NodeFileOrFolder selected;
+  private static class ListRenderer extends DefaultListCellRenderer {
+    
+    private static final long serialVersionUID = 3875614392486198647L;
+
+    public ListRenderer() {
+      super();
+    }
+
+    @Nonnull
+    private static String makeTextForNode(@Nonnull final NodeFileOrFolder node){
+        final NodeProject project = node.findProject();
+        if (project==null){
+          return node.toString();
+        } else {
+          final String projectName = project.toString();
+          return node.toString()+" (found in "+projectName+')';
+        }
+    }
+    
+    @Override
+    @Nonnull
+    public Component getListCellRendererComponent(@Nonnull final JList<?> list, @Nonnull final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
+      super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+      final NodeFileOrFolder node = (NodeFileOrFolder) value;
+      
+      final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH); 
+      if (node instanceof NodeProject || !node.isLeaf()){
+        this.setIcon(TreeCellRenderer.DEFAULT_FOLDER_CLOSED);
+      } else if (ext.equals("mmd")) {
+        this.setIcon(Icons.DOCUMENT.getIcon());
+      } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
+        this.setIcon(TreeCellRenderer.ICON_IMAGE);
+      } else {
+        this.setIcon(TreeCellRenderer.DEFAULT_FILE);
+      }
+
+      this.setText(makeTextForNode(node));
+      
+      return this;
+    }
+    
+  }
   
-  public GoToFilePanel(@Nonnull final Context context, @Nonnull final ExplorerTree tree) {
-    this.context = context;
+  public GoToFilePanel(@Nonnull final ExplorerTree tree) {
     this.tree = tree;
     
     initComponents();
+    
+    this.listFoundFiles.setCellRenderer(new ListRenderer());
+    
     final Dimension dim = new Dimension(512, 400);
     setPreferredSize(dim);
     setMinimumSize(dim);
@@ -111,7 +163,10 @@ public class GoToFilePanel extends javax.swing.JPanel {
     for(final ListDataListener l : this.listeners){
       l.contentsChanged(new ListDataEvent(this.listFoundFiles.getModel(), ListDataEvent.CONTENTS_CHANGED, 0, this.foundNodeList.size()));
     }
-    this.selected = null;
+    if (!this.foundNodeList.isEmpty()){
+      this.listFoundFiles.setSelectedIndex(0);
+      this.listFoundFiles.ensureIndexIsVisible(0);
+    }
   }
 
   @Nullable

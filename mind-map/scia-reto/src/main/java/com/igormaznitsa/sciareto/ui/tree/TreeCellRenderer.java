@@ -38,12 +38,12 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   private static final Image PROJECT_BADGE = UiUtils.loadImage("project_badge.png");
   private static final Image KF_BADGE = UiUtils.loadImage("mmdbadge.png");
   private static final Image READONLY_BADGE = UiUtils.loadImage("ro.png");
-  private static final Icon ICON_IMAGE = new ImageIcon(UiUtils.loadImage("image16.png"));
   private static final Icon ICON_IMAGE_RO;
 
-  private static final Icon DEFAULT_FOLDER_CLOSED = new ImageIcon(UiUtils.loadImage("folder16.gif"));
-  private static final Icon DEFAULT_FOLDER_OPENED = new ImageIcon(UiUtils.loadImage("folderOpen16.gif"));
-  private static final Icon DEFAULT_FILE = new ImageIcon(UiUtils.loadImage("document_empty16.png"));
+  public static final Icon ICON_IMAGE = new ImageIcon(UiUtils.loadImage("image16.png"));
+  public static final Icon DEFAULT_FOLDER_CLOSED = new ImageIcon(UiUtils.loadImage("folder16.gif"));
+  public static final Icon DEFAULT_FOLDER_OPENED = new ImageIcon(UiUtils.loadImage("folderOpen16.gif"));
+  public static final Icon DEFAULT_FILE = new ImageIcon(UiUtils.loadImage("document_empty16.png"));
 
   static {
     ICON_IMAGE_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) ICON_IMAGE).getImage(), READONLY_BADGE));
