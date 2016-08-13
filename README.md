@@ -13,7 +13,9 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
-__1.2.1 (under development)__
+__1.3.0 (under development)__
+- added plugin to add an image into a topic
+- changed Plugin API
 - fixed casual d'n'd topic operations through click over its fold-unfold icon
 - added export into SVG image format
 - fixed issue [#22](https://github.com/raydac/netbeans-mmd-plugin/issues/22), added key short-cut into options to tune "next line char" for topic text editor, by default SHIFT+ENTER

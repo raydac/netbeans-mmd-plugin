@@ -1,4 +1,6 @@
-1.2.1
+1.3.0
+- added plugin to add an image into a topic
+- changed Plugin API
 - added export into SVG image format
 - fixed issue #22, added key short-cut into options to tune "next line char" for topic text editor, by default SHIFT+ENTER
 
