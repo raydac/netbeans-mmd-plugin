@@ -19,6 +19,7 @@ public class IdeaImageIconService implements ImageIconService {
     MAP.put(IconID.ICON_PRINTER, AllIcons.PopUp.PRINTER);
     MAP.put(IconID.ICON_PAGE, AllIcons.PopUp.PAGE);
     MAP.put(IconID.ICON_EMOTICONS, AllIcons.PopUp.EMOTICONS);
+    MAP.put(IconID.ICON_IMAGES, AllIcons.PopUp.IMAGES);
     MAP.put(IconID.POPUP_EXTRAS_TEXT, AllIcons.PopUp.NOTE);
     MAP.put(IconID.POPUP_EXTRAS_FILE, AllIcons.PopUp.FILE);
     MAP.put(IconID.POPUP_EXTRAS_JUMP, AllIcons.PopUp.TOPIC);

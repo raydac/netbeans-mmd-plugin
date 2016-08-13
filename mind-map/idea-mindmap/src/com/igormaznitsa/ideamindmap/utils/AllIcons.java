@@ -78,6 +78,7 @@ public class AllIcons {
     public static final Icon PAGE = IconLoader.getIcon("/icons/page.png");
     public static final Icon PRINTER = IconLoader.getIcon("/icons/printer.png");
     public static final Icon EMOTICONS = IconLoader.getIcon("/icons/emoticons.png");
+    public static final Icon IMAGES = IconLoader.getIcon("/icons/pictures.png");
   }
 
 }
