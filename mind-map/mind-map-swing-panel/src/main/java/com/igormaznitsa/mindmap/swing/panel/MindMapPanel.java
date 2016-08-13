@@ -110,7 +110,7 @@ public class MindMapPanel extends JPanel {
 
     public DraggedElement(@Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Point mousePointerOffset, @Nonnull final DraggedElement.Modifier modifier) {
       this.element = element;
-      this.prerenderedImage = Utils.renderWithTransparency(0.65f, element, cfg);
+      this.prerenderedImage = Utils.renderWithTransparency(0.55f, element, cfg);
       this.mousePointerOffset = mousePointerOffset;
       this.currentPosition = new Point();
       this.modifier = modifier;

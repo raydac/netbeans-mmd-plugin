@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +26,7 @@ import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import com.igormaznitsa.mindmap.plugins.api.Renderable;
 
 public class VisualAttributeImageBlock {
 
@@ -41,7 +41,7 @@ public class VisualAttributeImageBlock {
     private static final VisualItem[] EMPTY = new VisualItem[0];
 
     private final VisualAttributeImageBlock parent;
-    private Image image;
+    private Renderable image;
     private final VisualAttributePlugin plugin;
     private final int relx;
     private int rely;
@@ -49,6 +49,17 @@ public class VisualAttributeImageBlock {
     private int height;
     private double lastScale = -1.0d;
 
+    VisualItem(@Nonnull VisualAttributeImageBlock parent, @Nonnull final VisualItem item) {
+      this.parent = parent;
+      this.plugin = item.plugin;
+      this.relx = item.relx;
+      this.rely = item.rely;
+      this.width = item.width;
+      this.height = item.height;
+      this.lastScale = item.lastScale;
+      this.image = item.image;
+    }
+    
     VisualItem(@Nonnull final VisualAttributeImageBlock parent, @Nonnull final MindMapPanelConfig cfg, final int x, final int y, @Nonnull final VisualAttributePlugin plugin) {
       this.parent = parent;
       this.relx = x;
@@ -74,16 +85,18 @@ public class VisualAttributeImageBlock {
       return this.height;
     }
 
-    void updateImage(@Nonnull final MindMapPanelConfig cfg) {
-      if (this.image == null || Double.compare(this.lastScale, cfg.getScale()) != 0) {
-        this.image = this.plugin.getScaledImage(cfg, this.parent.model);
-        this.lastScale = cfg.getScale();
+    void updateImage(@Nonnull final MindMapPanelConfig config) {
+      final double scale = config.getScale();
+      
+      if (this.image == null || Double.compare(this.lastScale, scale) != 0) {
+        this.image = this.plugin.getScaledImage(config, this.parent.model);
+        this.lastScale = scale;
         if (this.image == null) {
           this.width = 0;
           this.height = 0;
         } else {
-          this.width = image.getWidth(null);
-          this.height = image.getHeight(null);
+          this.width = image.getWidth(scale);
+          this.height = image.getHeight(scale);
         }
       }
     }
@@ -96,9 +109,9 @@ public class VisualAttributeImageBlock {
       return relativeX >= this.relx && relativeY >= this.rely && relativeX < this.relx + this.width && relativeY < this.rely + this.height;
     }
 
-    void draw(@Nonnull final MMGraphics gfx, final int basex, final int basey) {
+    void draw(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg, final int basex, final int basey) {
       if (this.isVisible()) {
-        gfx.drawImage(this.image, basex + this.relx, basey + this.rely);
+        this.image.renderAt(gfx, cfg, basex + this.relx, basey + this.rely);
       }
     }
   }
@@ -107,6 +120,14 @@ public class VisualAttributeImageBlock {
     this.bounds.setRect(orig.bounds);
     this.model = orig.model;
     this.contentPresented = orig.contentPresented;
+    if (orig.items == null){
+      this.items = null;
+    } else {
+      this.items = new VisualItem[orig.items.length];
+      for(int i=0;i<orig.items.length;i++){
+        this.items[i] = new VisualItem(this, orig.items[i]);
+      }
+    }
   }
 
   public VisualAttributeImageBlock(@Nonnull final Topic model) {
@@ -166,7 +187,7 @@ public class VisualAttributeImageBlock {
     final int offsetY = (int) Math.round(this.bounds.getY());
     for (final VisualItem i : this.items) {
       if (i.isVisible()) {
-        i.draw(gfx, offsetX, offsetY);
+        i.draw(gfx, cfg, offsetX, offsetY);
       }
     }
   }

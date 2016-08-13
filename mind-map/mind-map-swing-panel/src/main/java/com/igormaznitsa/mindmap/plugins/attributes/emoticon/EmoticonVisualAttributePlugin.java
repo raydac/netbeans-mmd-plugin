@@ -21,12 +21,14 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.plugins.api.RenderableImage;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.plugins.api.Renderable;
 
 public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
@@ -43,7 +45,7 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
     private double scale = -1.0d;
     private final Image baseImage;
-    private Image scaledImage;
+    private Renderable scaledImage;
 
     public ScaledImage(@Nonnull final String imageName, final double scale) {
       this.baseImage = MiscIcons.findForName(imageName);
@@ -58,13 +60,13 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
     }
 
     @Nullable
-    public Image getImage(final double scale) {
-      final Image result;
+    public Renderable getImage(final double scale) {
+      final Renderable result;
       if (this.baseImage == null || Double.compare(this.scale, scale) == 0) {
         result = this.scaledImage;
       } else {
         this.scale = scale;
-        this.scaledImage = Utils.scaleImage(this.baseImage, BASE_SCALE_X, BASE_SCALE_Y, scale);
+        this.scaledImage = new RenderableImage(Utils.scaleImage(this.baseImage, BASE_SCALE_X, BASE_SCALE_Y, scale));
         result = this.scaledImage;
       }
       return result;
@@ -74,7 +76,7 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   @Nullable
-  public Image getScaledImage(@Nonnull final MindMapPanelConfig config, @Nonnull final Topic topic) {
+  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config, @Nonnull final Topic topic) {
     final String name = topic.getAttribute(ATTR_KEY);
     if (name == null) {
       return null;
