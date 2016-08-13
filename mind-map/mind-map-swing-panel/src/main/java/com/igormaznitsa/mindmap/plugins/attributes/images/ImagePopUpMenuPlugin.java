@@ -148,7 +148,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     }
 
     final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    ImageIO.write((RenderedImage) image, "jpg", bos);
+    ImageIO.write((RenderedImage) image, "png", bos);
     bos.close();
 
     data = bos.toByteArray();
