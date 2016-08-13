@@ -9,7 +9,7 @@
     <requiredProperty key="author">
     </requiredProperty>
     <requiredProperty key="pluginApi">
-      <defaultValue>1.2.1</defaultValue>
+      <defaultValue>1.3.0</defaultValue>
     </requiredProperty>
   </requiredProperties>
 
