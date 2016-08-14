@@ -1493,6 +1493,16 @@ public class MindMapPanel extends JPanel {
   }
 
   public void setModel(@Nonnull final MindMap model) {
+    this.setModel(model, false);
+  }  
+  
+  /**
+   * Set model for the panel, allows to notify listeners optionally.
+   * @param model model to be set
+   * @param notifyModelChangeListeners true if to notify model change listeners, false otherwise
+   * @since 1.3.0
+   */
+  public void setModel(@Nonnull final MindMap model, final boolean notifyModelChangeListeners) {
     this.lock();
     try {
       if (this.elementUnderEdit != null) {
@@ -1535,6 +1545,9 @@ public class MindMapPanel extends JPanel {
       repaint();
     } finally {
       this.unlock();
+      if (notifyModelChangeListeners) {
+        notifyModelChanged();
+      }
     }
   }
 

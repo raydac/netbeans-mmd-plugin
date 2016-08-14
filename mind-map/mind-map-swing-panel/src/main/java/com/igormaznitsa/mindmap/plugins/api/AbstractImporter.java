@@ -69,7 +69,7 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem {
                 SwingUtilities.invokeLater(new Runnable() {
                   @Override
                   public void run() {
-                    panel.setModel(map);
+                    panel.setModel(map,false);
                     panel.updateView(true);
                   }
                 });
