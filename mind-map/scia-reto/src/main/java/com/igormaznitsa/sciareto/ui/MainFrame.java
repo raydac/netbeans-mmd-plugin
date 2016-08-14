@@ -62,6 +62,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
@@ -287,14 +288,57 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.tabPane.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(@Nonnull final ChangeEvent e) {
-        processTabSelection();
+        final JTabbedPane sourceTabbedPane = (JTabbedPane) e.getSource();
+        final int index = sourceTabbedPane.getSelectedIndex();
+        final TabTitle selected = index<0 ? null : (TabTitle)sourceTabbedPane.getTabComponentAt(index);
+        onTabChanged(selected);
       }
     });
     
     this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()|KeyEvent.SHIFT_MASK));
     this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+  
+    this.menuRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
+    this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+ 
+    if (tabPane.getTabCount()>0){
+      this.tabPane.setSelectedIndex(0);
+    } else {
+      onTabChanged(null);
+    }
   }
 
+  private void onTabChanged(@Nullable final TabTitle title){
+    this.menuSaveAll.setEnabled(this.tabPane.getTabCount()>0);
+    
+    if (title == null){
+      this.menuRedo.setEnabled(false);
+      this.menuUndo.setEnabled(false);
+      this.menuSave.setEnabled(false);
+      this.menuSaveAs.setEnabled(false);
+    }else{
+      this.menuRedo.setEnabled(title.getProvider().isRedo());
+      this.menuUndo.setEnabled(title.getProvider().isUndo());
+      if (title.getProvider().isSaveable()){
+        this.menuSave.setEnabled(title != null && title.isChanged());
+        this.menuSaveAs.setEnabled(true);
+      } else {
+        this.menuSave.setEnabled(false);
+        this.menuSaveAs.setEnabled(false);
+      }
+    }
+  }
+
+  @Override
+  public void notifyUpdateRedoUndo() {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        onTabChanged(tabPane.getCurrentTitle());
+      }
+    });
+  }
+  
   public JPanel getStackPanel() {
     return this.stackPanel;
   }
@@ -608,6 +652,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     separatorExitSection = new javax.swing.JPopupMenu.Separator();
     menuExit = new javax.swing.JMenuItem();
     menuEdit = new javax.swing.JMenu();
+    menuUndo = new javax.swing.JMenuItem();
+    menuRedo = new javax.swing.JMenuItem();
+    jSeparator1 = new javax.swing.JPopupMenu.Separator();
     menuPreferences = new javax.swing.JMenuItem();
     menuView = new javax.swing.JMenu();
     menuFullScreen = new javax.swing.JMenuItem();
@@ -623,15 +670,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     setLocationByPlatform(true);
 
     menuFile.setText("File");
-    menuFile.addMenuListener(new javax.swing.event.MenuListener() {
-      public void menuSelected(javax.swing.event.MenuEvent evt) {
-        menuFileMenuSelected(evt);
-      }
-      public void menuDeselected(javax.swing.event.MenuEvent evt) {
-      }
-      public void menuCanceled(javax.swing.event.MenuEvent evt) {
-      }
-    });
 
     menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
     menuNewProject.setText("New Project");
@@ -710,6 +748,25 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     jMenuBar1.add(menuFile);
 
     menuEdit.setText("Edit");
+
+    menuUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
+    menuUndo.setText("Undo");
+    menuUndo.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuUndoActionPerformed(evt);
+      }
+    });
+    menuEdit.add(menuUndo);
+
+    menuRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
+    menuRedo.setText("Redo");
+    menuRedo.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuRedoActionPerformed(evt);
+      }
+    });
+    menuEdit.add(menuRedo);
+    menuEdit.add(jSeparator1);
 
     menuPreferences.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/setting_tools.png"))); // NOI18N
     menuPreferences.setText("Preferences");
@@ -1014,21 +1071,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     new DonateButton().doClick();
   }//GEN-LAST:event_menuMakeDonationActionPerformed
 
-  private void processTabSelection(){
-    final TabTitle title = this.tabPane.getCurrentTitle();
-    if (title != null && title.getProvider().isSaveable()) {
-      this.menuSave.setEnabled(title != null && title.isChanged());
-      this.menuSaveAs.setEnabled(true);
-    } else {
-      this.menuSave.setEnabled(false);
-      this.menuSaveAs.setEnabled(false);
-    }
-  }
-  
-  private void menuFileMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuFileMenuSelected
-    processTabSelection();
-  }//GEN-LAST:event_menuFileMenuSelected
-
   private void menuGoToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuGoToFileActionPerformed
     final GoToFilePanel panel = new GoToFilePanel(this.explorerTree);
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Go To File",panel)){
@@ -1047,6 +1089,28 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     }
   }//GEN-LAST:event_menuGoToFileActionPerformed
+
+  private void menuUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuUndoActionPerformed
+    final TabTitle title = this.tabPane.getCurrentTitle();
+    if (title == null){
+      this.menuUndo.setEnabled(false);
+      this.menuRedo.setEnabled(false);
+    }else{
+      this.menuUndo.setEnabled(title.getProvider().undo());
+      this.menuRedo.setEnabled(title.getProvider().isRedo());
+    }
+  }//GEN-LAST:event_menuUndoActionPerformed
+
+  private void menuRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRedoActionPerformed
+    final TabTitle title = this.tabPane.getCurrentTitle();
+    if (title == null) {
+      this.menuUndo.setEnabled(false);
+      this.menuRedo.setEnabled(false);
+    } else {
+      this.menuRedo.setEnabled(title.getProvider().redo());
+      this.menuUndo.setEnabled(title.getProvider().isUndo());
+    }
+  }//GEN-LAST:event_menuRedoActionPerformed
 
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
@@ -1090,6 +1154,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuBar jMenuBar1;
+  private javax.swing.JPopupMenu.Separator jSeparator1;
   private javax.swing.JPopupMenu.Separator jSeparator2;
   private javax.swing.JPopupMenu.Separator jSeparator3;
   private javax.swing.JPopupMenu.Separator jSeparator4;
@@ -1109,9 +1174,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenu menuOpenRecentFile;
   private javax.swing.JMenu menuOpenRecentProject;
   private javax.swing.JMenuItem menuPreferences;
+  private javax.swing.JMenuItem menuRedo;
   private javax.swing.JMenuItem menuSave;
   private javax.swing.JMenuItem menuSaveAll;
   private javax.swing.JMenuItem menuSaveAs;
+  private javax.swing.JMenuItem menuUndo;
   private javax.swing.JMenu menuView;
   private javax.swing.JPopupMenu.Separator separatorExitSection;
   // End of variables declaration//GEN-END:variables

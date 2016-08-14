@@ -43,5 +43,10 @@ public interface TabProvider {
 
   boolean isSaveable();
 
+  boolean isRedo();
+  boolean isUndo();
 
+  boolean redo();
+  boolean undo();
+  
 }

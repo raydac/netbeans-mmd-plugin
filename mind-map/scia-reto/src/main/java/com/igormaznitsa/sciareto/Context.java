@@ -53,4 +53,5 @@ public interface Context {
   boolean deleteTreeNode(@Nonnull NodeFileOrFolder node);
   
   void notifyFileRenamed(@Nonnull File oldFile, @Nonnull File newFile);
+  void notifyUpdateRedoUndo();
 }

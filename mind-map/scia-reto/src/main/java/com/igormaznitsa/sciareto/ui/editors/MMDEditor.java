@@ -102,7 +102,11 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   private final Context context;
 
   private boolean dragAcceptableType;
+  private final UndoRedoStorage<String> undoStorage;
 
+  private boolean preventAddUndo = false;
+  private String currentModelState;
+  
   public void refreshConfig() {
     this.mindMapPanel.refreshConfiguration();
   }
@@ -143,9 +147,12 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
     }
 
-    this.mindMapPanel.setModel(Assertions.assertNotNull(map));
+    this.mindMapPanel.setModel(Assertions.assertNotNull(map),false);
 
     loadContent(file);
+    
+    this.undoStorage = new UndoRedoStorage<>(5);
+    this.currentModelState = this.mindMapPanel.getModel().packToString();
   }
 
   @Override
@@ -164,6 +171,16 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   @Override
+  public boolean isRedo() {
+    return this.undoStorage.hasRedo();
+  }
+
+  @Override
+  public boolean isUndo() {
+    return this.undoStorage.hasUndo();
+  }
+
+  @Override
   public void loadContent(@Nullable File file) throws IOException {
     final MindMap map;
     if (file == null) {
@@ -171,7 +188,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     } else {
       map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
     }
-    this.mindMapPanel.setModel(Assertions.assertNotNull(map));
+    this.mindMapPanel.setModel(Assertions.assertNotNull(map),false);
 
     this.revalidate();
   }
@@ -280,11 +297,55 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
   @Override
   public void onMindMapModelChanged(@Nonnull final MindMapPanel source) {
-    this.title.setChanged(true);
-    this.getViewport().revalidate();
-    this.repaint();
+    if (!this.preventAddUndo && this.currentModelState!=null) {
+      this.undoStorage.addToUndo(this.currentModelState);
+      this.undoStorage.clearRedo();
+      this.currentModelState = source.getModel().packToString();
+    }
+
+    try {
+      this.title.setChanged(true);
+      this.getViewport().revalidate();
+      this.repaint();
+    } finally {
+      this.context.notifyUpdateRedoUndo();
+    }
   }
 
+  @Override
+  public boolean redo() {
+    if (this.undoStorage.hasRedo()){
+      this.undoStorage.addToUndo(this.currentModelState);
+      this.currentModelState = this.undoStorage.fromRedo();
+      this.preventAddUndo = true;
+      try {
+        this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
+      } catch (IOException ex) {
+        LOGGER.error("Can't redo mind map", ex);
+      } finally {
+        this.preventAddUndo = false;
+      }
+    }
+    return this.undoStorage.hasRedo();
+  }
+
+  @Override
+  public boolean undo() {
+    if (this.undoStorage.hasUndo()){
+      this.undoStorage.addToRedo(this.currentModelState);
+      this.currentModelState = this.undoStorage.fromUndo();
+      this.preventAddUndo = true;
+      try {
+        this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
+      } catch (IOException ex) {
+        LOGGER.error("Can't redo mind map", ex);
+      } finally {
+        this.preventAddUndo = false;
+      }
+    }
+    return this.undoStorage.hasUndo();
+  }
+  
   @Override
   public void onMindMapModelRealigned(@Nonnull final MindMapPanel source, @Nonnull final Dimension coveredAreaSize) {
     this.getViewport().revalidate();

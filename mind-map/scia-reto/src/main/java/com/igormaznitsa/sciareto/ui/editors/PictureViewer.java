@@ -255,4 +255,23 @@ public final class PictureViewer extends AbstractScrollPane {
     return this;
   }
 
+  @Override
+  public boolean isRedo() {
+    return false;
+  }
+
+  @Override
+  public boolean isUndo() {
+    return false;
+  }
+
+  @Override
+  public boolean redo() {
+    return false;
+  }
+
+  @Override
+  public boolean undo() {
+    return false;
+  }
 }

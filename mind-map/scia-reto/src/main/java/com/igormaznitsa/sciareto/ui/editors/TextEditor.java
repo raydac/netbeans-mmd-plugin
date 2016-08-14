@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -47,8 +48,10 @@ public final class TextEditor extends AbstractScrollPane {
 
   private boolean ignoreChange;
 
-  public static final Font DEFAUT_TEXT_EDITOR_FONT = new Font("Arial",Font.PLAIN,12);
-  
+  public static final Font DEFAUT_TEXT_EDITOR_FONT = new Font("Arial", Font.PLAIN, 12);
+
+  private final UndoManager undoManager = new UndoManager();
+
   public static final FileFilter TXT_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -74,13 +77,14 @@ public final class TextEditor extends AbstractScrollPane {
     this.editor = new JTextArea();
     this.editor.setFont(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
     this.title = new TabTitle(context, this, file);
-    
+
     this.editor.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void insertUpdate(@Nonnull final DocumentEvent e) {
         if (!ignoreChange) {
           title.setChanged(true);
         }
+        context.notifyUpdateRedoUndo();
       }
 
       @Override
@@ -88,6 +92,7 @@ public final class TextEditor extends AbstractScrollPane {
         if (!ignoreChange) {
           title.setChanged(true);
         }
+        context.notifyUpdateRedoUndo();
       }
 
       @Override
@@ -95,12 +100,14 @@ public final class TextEditor extends AbstractScrollPane {
         if (!ignoreChange) {
           title.setChanged(true);
         }
+        context.notifyUpdateRedoUndo();
       }
     });
 
     setViewportView(this.editor);
-    
+
     loadContent(file);
+    this.editor.getDocument().addUndoableEditListener(this.undoManager);
   }
 
   @Override
@@ -111,6 +118,32 @@ public final class TextEditor extends AbstractScrollPane {
         editor.requestFocusInWindow();
       }
     });
+  }
+
+  @Override
+  public boolean isRedo() {
+    return this.undoManager.canRedo();
+  }
+
+  @Override
+  public boolean isUndo() {
+    return this.undoManager.canUndo();
+  }
+
+  @Override
+  public boolean redo() {
+    if (this.undoManager.canRedo()) {
+      this.undoManager.redo();
+    }
+    return this.undoManager.canRedo();
+  }
+
+  @Override
+  public boolean undo() {
+    if (this.undoManager.canUndo()) {
+      this.undoManager.undo();
+    }
+    return this.undoManager.canUndo();
   }
 
   @Override
@@ -155,9 +188,9 @@ public final class TextEditor extends AbstractScrollPane {
           return result;
         }
       }
-        SystemUtils.saveUTFText(file, this.editor.getText());
-        this.title.setChanged(false);
-        result = true;
+      SystemUtils.saveUTFText(file, this.editor.getText());
+      this.title.setChanged(false);
+      result = true;
     } else {
       result = true;
     }
