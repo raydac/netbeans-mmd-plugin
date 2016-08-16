@@ -36,6 +36,8 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import org.apache.commons.lang.StringEscapeUtils;
 import com.igormaznitsa.meta.common.interfaces.Disposable;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
@@ -55,6 +57,8 @@ public final class TabTitle extends JPanel {
 
   private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadImage("nimbusCloseFrame.png"));
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(TabTitle.class);
+  
   public TabTitle(@Nonnull final Context context, @Nonnull final TabProvider parent, @Nullable final File associatedFile) {
     super(new GridBagLayout());
     this.parent = parent;
@@ -211,6 +215,20 @@ public final class TabTitle extends JPanel {
     if (compo instanceof Disposable) {
       ((Disposable) compo).dispose();
     }
+  }
+
+  public boolean reload() {
+    boolean reloaded = false;
+    final File file = getAssociatedFile();
+    if (file.isFile()){
+      try{
+        this.parent.loadContent(file);
+        reloaded = true;
+      }catch(IOException ex){
+        LOGGER.error("Can't reload file :"+file, ex);
+      }
+    }
+    return reloaded;
   }
 
   @Nonnull

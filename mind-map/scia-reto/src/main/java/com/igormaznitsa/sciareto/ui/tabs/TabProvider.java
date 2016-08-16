@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tabs;
 
+import java.io.File;
 import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
@@ -22,6 +23,7 @@ import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.Weight;
 
 public interface TabProvider {
+
 
   void focusToEditor();
 
@@ -38,6 +40,7 @@ public interface TabProvider {
   FileFilter getFileFilter();
   void dispose();
   void updateConfiguration();
+  void loadContent(@Nonnull File file) throws IOException;
   
   boolean isEditable();
 

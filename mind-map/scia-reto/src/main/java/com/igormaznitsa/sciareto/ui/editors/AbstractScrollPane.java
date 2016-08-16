@@ -57,8 +57,6 @@ public abstract class AbstractScrollPane extends JScrollPane implements TabProvi
     }
   }
 
-  public abstract void loadContent(@Nullable final File file) throws IOException ;
-  
   protected void doDispose(){
     
   }

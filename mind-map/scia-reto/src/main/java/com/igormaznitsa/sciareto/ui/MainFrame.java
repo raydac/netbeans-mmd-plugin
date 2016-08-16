@@ -620,8 +620,18 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         explorerTree.deleteNode(node);
       }
 
-      if (!affectedFiles.isEmpty()) {
-        project.deleteAllLinksToFile(affectedFiles, file);
+      if (!affectedFiles.isEmpty() && project!=null) {
+        final List<File> changedFiles = project.deleteAllLinksToFile(affectedFiles, file);
+        if (!changedFiles.isEmpty()){
+          for(final TabTitle t : tabPane){
+            final File associated = t.getAssociatedFile();
+            if (associated!=null && changedFiles.contains(associated)){
+              if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Changd file", "Opened file "+associated.getName()+" has been changed, reload?")){
+                t.reload();
+              }
+            }
+          }
+        }
       }
 
       return ok;

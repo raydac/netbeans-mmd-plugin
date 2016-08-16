@@ -60,10 +60,13 @@ public final class UndoRedoStorage<T> {
   public void clearRedo(){
     this.redoItems.clear();
   }
+
+  public void clearUndo() {
+    this.undoItems.clear();
+  }
   
   public void addToUndo(@Nonnull final T val) {
     this.undoItems.add(val);
     while(this.undoItems.size()>maxSize) this.undoItems.remove(0);
   }
-  
 }

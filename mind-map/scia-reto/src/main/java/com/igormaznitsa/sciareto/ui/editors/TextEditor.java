@@ -174,6 +174,10 @@ public final class TextEditor extends AbstractScrollPane {
     } finally {
       this.ignoreChange = false;
     }
+  
+    this.undoManager.discardAllEdits();
+    this.title.setChanged(false);
+    
     this.revalidate();
   }
 

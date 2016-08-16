@@ -102,7 +102,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   private final Context context;
 
   private boolean dragAcceptableType;
-  private final UndoRedoStorage<String> undoStorage;
+  private final UndoRedoStorage<String> undoStorage = new UndoRedoStorage<>(5);
 
   private boolean preventAddUndo = false;
   private String currentModelState;
@@ -150,8 +150,6 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     this.mindMapPanel.setModel(Assertions.assertNotNull(map),false);
 
     loadContent(file);
-    
-    this.undoStorage = new UndoRedoStorage<>(5);
     this.currentModelState = this.mindMapPanel.getModel().packToString();
   }
 
@@ -190,7 +188,14 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     }
     this.mindMapPanel.setModel(Assertions.assertNotNull(map),false);
 
+    this.undoStorage.clearRedo();
+    this.undoStorage.clearUndo();
+    
+    this.title.setChanged(false);
+    
     this.revalidate();
+    
+    this.context.notifyUpdateRedoUndo();
   }
 
   @Override
