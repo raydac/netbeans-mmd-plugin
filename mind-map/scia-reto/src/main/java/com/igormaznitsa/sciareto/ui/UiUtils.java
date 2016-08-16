@@ -35,6 +35,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -76,6 +77,16 @@ public final class UiUtils {
   }
 
   private UiUtils() {
+  }
+
+  @Nullable
+  @MustNotContainNull
+  public static List<File> showSelectAffectedFiles(@Nonnull @MustNotContainNull final List<File> files) {
+    final FileListPanel panel = new FileListPanel(files);
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Affected files", panel)) {
+      return panel.getSelectedFiles();
+    }
+    return null;
   }
 
   public static int calculateBrightness(@Nonnull final Color color) {

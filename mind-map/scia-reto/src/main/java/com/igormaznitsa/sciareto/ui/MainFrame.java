@@ -390,8 +390,18 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   @Override
-  public void notifyFileRenamed(@Nonnull final File oldFile, @Nonnull final File newFile) {
+  public void notifyFileRenamed(@Nullable @MustNotContainNull final List<File> affectedFiles, @Nonnull final File oldFile, @Nonnull final File newFile) {
     this.tabPane.replaceFileLink(oldFile, newFile);
+    if (affectedFiles!=null){
+        for(final TabTitle t : this.tabPane){
+          final File tabFile = t.getAssociatedFile();
+          if (tabFile!=null && affectedFiles.contains(tabFile)){
+            if (!t.isChanged() || DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("File changed", String.format("File '%s' content changed! Reload it?",tabFile.getName()))){
+            t.reload();
+          }
+        }
+      }
+    }
   }
 
   @Override
@@ -555,16 +565,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }
 
-  @Nullable
-  @MustNotContainNull
-  private List<File> selectAffectedFiles(final List<File> files) {
-    final FileListPanel panel = new FileListPanel(files);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Affected files", panel)) {
-      return panel.getSelectedFiles();
-    }
-    return null;
-  }
-
   @Override
   public boolean deleteTreeNode(@Nonnull final NodeFileOrFolder node) {
     final File file = node.makeFileForNode();
@@ -596,7 +596,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
 
       if (!affectedFiles.isEmpty()) {
-        affectedFiles = selectAffectedFiles(affectedFiles);
+        affectedFiles = UiUtils.showSelectAffectedFiles(affectedFiles);
         if (affectedFiles == null) {
           return false;
         }
@@ -626,7 +626,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           for(final TabTitle t : tabPane){
             final File associated = t.getAssociatedFile();
             if (associated!=null && changedFiles.contains(associated)){
-              if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Changd file", "Opened file "+associated.getName()+" has been changed, reload?")){
+              if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Changd file", "File '"+associated.getName()+"' content is changed, reload?")){
                 t.reload();
               }
             }

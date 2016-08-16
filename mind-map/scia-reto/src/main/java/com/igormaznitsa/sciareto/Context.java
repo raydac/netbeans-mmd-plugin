@@ -16,6 +16,7 @@
 package com.igormaznitsa.sciareto;
 
 import java.io.File;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -52,6 +53,6 @@ public interface Context {
 
   boolean deleteTreeNode(@Nonnull NodeFileOrFolder node);
   
-  void notifyFileRenamed(@Nonnull File oldFile, @Nonnull File newFile);
+  void notifyFileRenamed(@Nullable @MustNotContainNull List<File> affectedFiles, @Nonnull File oldFile, @Nonnull File newFile);
   void notifyUpdateRedoUndo();
 }

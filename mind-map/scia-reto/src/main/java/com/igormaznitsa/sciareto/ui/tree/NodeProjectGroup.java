@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -29,6 +30,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -37,6 +39,7 @@ import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Iterable<NodeProject> {
 
@@ -122,14 +125,26 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
 
   @Override
   public void valueForPathChanged(@Nonnull final TreePath path, @Nonnull final Object newValue) {
-    final String newFileName = String.valueOf(newValue);
+    String newFileName = String.valueOf(newValue);
+    
     if (FILE_NAME.matcher(newFileName).matches()) {
       final Object last = path.getLastPathComponent();
       if (last instanceof NodeFileOrFolder) {
         final NodeFileOrFolder editedNode = (NodeFileOrFolder) last;
 
-        if (!editedNode.toString().equals(newFileName)) {
+        final String oldName = editedNode.toString();
+        
+        if (!oldName.equals(newFileName)) {
           final File origFile = ((NodeFileOrFolder) last).makeFileForNode();
+          final String oldExtension = FilenameUtils.getExtension(oldName);
+          final String newExtension = FilenameUtils.getExtension(newFileName);
+          
+          if (!oldExtension.equals(newExtension)){
+            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Changed extension", String.format("You have changed extension! Restore old extension '%s'?",oldExtension))){
+              newFileName = FilenameUtils.getBaseName(newFileName)+(oldExtension.isEmpty() ? "" : '.'+oldExtension);
+            }
+          }
+          
           if (origFile != null) {
             final File newFile = new File(origFile.getParentFile(), newFileName);
 
@@ -138,12 +153,32 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
             }
 
             try {
-              Files.move(origFile.toPath(), newFile.toPath());
-              editedNode.setName(newFile.getName());
 
-              editedNode.fireNotifySubtreeChanged(this, listeners);
+              boolean doIt = true;
 
-              this.context.notifyFileRenamed(origFile, newFile);
+              List<File> affectedFiles = null;
+              
+              final NodeProject project = editedNode.findProject();
+              if (project != null) {
+                affectedFiles = project.findAffectedFiles(origFile);
+                if (!affectedFiles.isEmpty()) {
+                  affectedFiles = UiUtils.showSelectAffectedFiles(affectedFiles);
+                  if (affectedFiles == null) {
+                    doIt = false;
+                  } else {
+                      affectedFiles = project.replaceAllLinksToFile(affectedFiles, origFile, newFile);
+                  }
+                }
+              }
+
+              if (doIt) {
+                Files.move(origFile.toPath(), newFile.toPath());
+                editedNode.setName(newFile.getName());
+
+                editedNode.fireNotifySubtreeChanged(this, listeners);
+
+                this.context.notifyFileRenamed(affectedFiles, origFile, newFile);
+              }
             } catch (IOException ex) {
               LOGGER.error("Can't rename file", ex);
               DialogProviderManager.getInstance().getDialogProvider().msgError("Can't rename file to '" + newValue + "\'");
@@ -233,10 +268,10 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
       }
 
       @Override
-      public void remove(){
+      public void remove() {
         result.remove();
       }
-      
+
       @Override
       @Nonnull
       public NodeProject next() {
@@ -257,13 +292,13 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
   @MustNotContainNull
   public List<NodeFileOrFolder> findForNamePattern(@Nullable final Pattern namePattern) {
     final List<NodeFileOrFolder> result = new ArrayList<>();
-    
-    if (namePattern!=null){
-      for(final NodeFileOrFolder f : this.children){
-        f.fillAllMatchNamePattern(namePattern,result);
+
+    if (namePattern != null) {
+      for (final NodeFileOrFolder f : this.children) {
+        f.fillAllMatchNamePattern(namePattern, result);
       }
     }
-    
+
     return result;
   }
 
