@@ -120,23 +120,23 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.PREFERENCES, this)) {
       this.menuPreferences.setVisible(false);
     }
-    
+
     if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.QUIT, this)) {
       this.separatorExitSection.setVisible(false);
       this.menuExit.setVisible(false);
     }
-    
+
     PlatformProvider.getPlatform().registerPlatformMenuEvent(PlatformMenuEvent.REOPEN_APPLICATION, this);
-    
+
     this.stackPanel = new JPanel();
     this.stackPanel.setFocusable(false);
     this.stackPanel.setOpaque(false);
     this.stackPanel.setBorder(BorderFactory.createEmptyBorder(32, 32, 16, 32));
     this.stackPanel.setLayout(new BoxLayout(this.stackPanel, BoxLayout.Y_AXIS));
 
-    final JPanel glassPanel = (JPanel)this.getGlassPane();
+    final JPanel glassPanel = (JPanel) this.getGlassPane();
     glassPanel.setOpaque(false);
-    
+
     this.setGlassPane(glassPanel);
 
     glassPanel.setLayout(new BorderLayout(8, 8));
@@ -284,42 +284,42 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       });
       this.menuLookAndFeel.add(menuItem);
     }
-    
+
     this.tabPane.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(@Nonnull final ChangeEvent e) {
         final JTabbedPane sourceTabbedPane = (JTabbedPane) e.getSource();
         final int index = sourceTabbedPane.getSelectedIndex();
-        final TabTitle selected = index<0 ? null : (TabTitle)sourceTabbedPane.getTabComponentAt(index);
+        final TabTitle selected = index < 0 ? null : (TabTitle) sourceTabbedPane.getTabComponentAt(index);
         onTabChanged(selected);
       }
     });
-    
-    this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()|KeyEvent.SHIFT_MASK));
+
+    this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
     this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-  
+
     this.menuRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
     this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
- 
-    if (tabPane.getTabCount()>0){
+
+    if (tabPane.getTabCount() > 0) {
       this.tabPane.setSelectedIndex(0);
     } else {
       onTabChanged(null);
     }
   }
 
-  private void onTabChanged(@Nullable final TabTitle title){
-    this.menuSaveAll.setEnabled(this.tabPane.getTabCount()>0);
-    
-    if (title == null){
+  private void onTabChanged(@Nullable final TabTitle title) {
+    this.menuSaveAll.setEnabled(this.tabPane.getTabCount() > 0);
+
+    if (title == null) {
       this.menuRedo.setEnabled(false);
       this.menuUndo.setEnabled(false);
       this.menuSave.setEnabled(false);
       this.menuSaveAs.setEnabled(false);
-    }else{
+    } else {
       this.menuRedo.setEnabled(title.getProvider().isRedo());
       this.menuUndo.setEnabled(title.getProvider().isUndo());
-      if (title.getProvider().isSaveable()){
+      if (title.getProvider().isSaveable()) {
         this.menuSave.setEnabled(title != null && title.isChanged());
         this.menuSaveAs.setEnabled(true);
       } else {
@@ -338,7 +338,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     });
   }
-  
+
   public JPanel getStackPanel() {
     return this.stackPanel;
   }
@@ -346,25 +346,29 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Override
   public boolean doPlatformMenuAction(@Nonnull final PlatformMenuEvent event, @Nullable @MayContainNull final Object... args) {
     boolean handled = false;
-    switch(event){
-      case ABOUT :{
+    switch (event) {
+      case ABOUT: {
         this.menuAboutActionPerformed(new ActionEvent(this, 0, "about"));
         handled = true;
-      }break;
-      case QUIT : {
+      }
+      break;
+      case QUIT: {
         handled = doClosing();
-        if (handled){
+        if (handled) {
           dispose();
         }
-      }break;
-      case REOPEN_APPLICATION : {
+      }
+      break;
+      case REOPEN_APPLICATION: {
         this.setVisible(true);
         handled = true;
-      }break;
-      case PREFERENCES : {
+      }
+      break;
+      case PREFERENCES: {
         editPreferences();
         handled = true;
-      }break;
+      }
+      break;
     }
     return handled;
   }
@@ -392,13 +396,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Override
   public void notifyFileRenamed(@Nullable @MustNotContainNull final List<File> affectedFiles, @Nonnull final File oldFile, @Nonnull final File newFile) {
     this.tabPane.replaceFileLink(oldFile, newFile);
-    if (affectedFiles!=null){
-        for(final TabTitle t : this.tabPane){
-          final File tabFile = t.getAssociatedFile();
-          if (tabFile!=null && affectedFiles.contains(tabFile)){
-            if (!t.isChanged() || DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("File changed", String.format("File '%s' content changed! Reload it?",tabFile.getName()))){
-            t.reload();
-          }
+    if (affectedFiles != null) {
+      for (final TabTitle t : this.tabPane) {
+        final File tabFile = t.getAssociatedFile();
+        if (tabFile != null && affectedFiles.contains(tabFile)) {
+          t.reload(true);
         }
       }
     }
@@ -620,15 +622,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         explorerTree.deleteNode(node);
       }
 
-      if (!affectedFiles.isEmpty() && project!=null) {
+      if (!affectedFiles.isEmpty() && project != null) {
         final List<File> changedFiles = project.deleteAllLinksToFile(affectedFiles, file);
-        if (!changedFiles.isEmpty()){
-          for(final TabTitle t : tabPane){
+        if (!changedFiles.isEmpty()) {
+          for (final TabTitle t : tabPane) {
             final File associated = t.getAssociatedFile();
-            if (associated!=null && changedFiles.contains(associated)){
-              if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Changd file", "File '"+associated.getName()+"' content is changed, reload?")){
-                t.reload();
-              }
+            if (associated != null && changedFiles.contains(associated)) {
+              t.reload(true);
             }
           }
         }
@@ -921,7 +921,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     configPanel.load();
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Preferences", configPanel)) {
       configPanel.save();
-      for(final TabTitle t : this.tabPane){
+      for (final TabTitle t : this.tabPane) {
         t.getProvider().updateConfiguration();
       }
     }
@@ -1083,11 +1083,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuGoToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuGoToFileActionPerformed
     final GoToFilePanel panel = new GoToFilePanel(this.explorerTree);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Go To File",panel)){
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Go To File", panel)) {
       final NodeFileOrFolder selected = panel.getSelected();
-      if (selected!=null){
+      if (selected != null) {
         final File file = selected.makeFileForNode();
-        if (file!=null){
+        if (file != null) {
           this.focusInTree(file);
           SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -1102,10 +1102,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuUndoActionPerformed
     final TabTitle title = this.tabPane.getCurrentTitle();
-    if (title == null){
+    if (title == null) {
       this.menuUndo.setEnabled(false);
       this.menuRedo.setEnabled(false);
-    }else{
+    } else {
       this.menuUndo.setEnabled(title.getProvider().undo());
       this.menuRedo.setEnabled(title.getProvider().isRedo());
     }

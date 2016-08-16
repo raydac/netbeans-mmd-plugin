@@ -217,8 +217,13 @@ public final class TabTitle extends JPanel {
     }
   }
 
-  public boolean reload() {
+  public boolean reload(final boolean askUserConfirmationIfChanged) {
     boolean reloaded = false;
+  
+    if (askUserConfirmationIfChanged && isChanged() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("File changed", String.format("File '%s' is changed, reload?", (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
+      return reloaded;
+    }
+    
     final File file = getAssociatedFile();
     if (file.isFile()){
       try{
