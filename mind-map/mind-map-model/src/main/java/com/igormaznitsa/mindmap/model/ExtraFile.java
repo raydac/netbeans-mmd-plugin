@@ -20,7 +20,9 @@ import java.net.URISyntaxException;
 
 import javax.annotation.Nonnull;
 
+import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 
 public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
@@ -86,6 +88,24 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   private static String ensureFolderPath(@Nonnull final String str) {
     if (str.endsWith("/") || str.endsWith("\\")) return str;
     return str + File.separatorChar;
+  }
+  
+  @Nullable
+  public ExtraFile replaceParentPath(@Nonnull final File baseFolder, @Nonnull final MMapURI oldFolder, @Nonnull final MMapURI newFolder) {
+    final File theFile = this.fileUri.asFile(baseFolder);
+    final File oldFolderFile = oldFolder.asFile(baseFolder);
+    final File newFolderFile = newFolder.asFile(baseFolder);
+
+    final String theFilePath = FilenameUtils.normalize(theFile.getAbsolutePath());
+    final String oldFolderFilePath = ensureFolderPath(FilenameUtils.normalize(oldFolderFile.getAbsolutePath()));
+    final String newFolderFilePath = ensureFolderPath(FilenameUtils.normalize(newFolderFile.getAbsolutePath()));
+    
+    if (theFilePath.startsWith(oldFolderFilePath)){
+      final String changedPath = newFolderFilePath+theFilePath.substring(oldFolderFilePath.length());
+      return new ExtraFile(new MMapURI(this.isAbsolute() ? null : baseFolder, new File(changedPath),this.fileUri.getParameters()));
+    } else {
+      return null;
+    }
   }
   
   public boolean hasParent(@Nonnull final File baseFolder, @Nonnull final MMapURI folder) {

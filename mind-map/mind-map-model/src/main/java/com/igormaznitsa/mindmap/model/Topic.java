@@ -25,12 +25,13 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.Nonnull;
@@ -55,7 +56,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   private final EnumMap<Extra.ExtraType, Extra<?>> extras = new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
   private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras = Collections.unmodifiableMap(this.extras);
-  private final Map<String, String> attributes = new HashMap<String, String>();
+  private final Map<String, String> attributes = new TreeMap<String, String>(MindMap.STRING_COMPARATOR);
   private final Map<String, String> unmodifableAttributes = Collections.unmodifiableMap(this.attributes);
 
   @Nonnull
@@ -867,12 +868,21 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     boolean result = false;
     if (this.extras.containsKey(Extra.ExtraType.FILE)) {
       final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
+      final ExtraFile replacement;
+
       if (fileLink.isSame(baseFolder, oldFile)) {
-        this.extras.remove(Extra.ExtraType.FILE);
-        this.extras.put(Extra.ExtraType.FILE, new ExtraFile(newFile));
+        replacement = new ExtraFile(newFile);
+      }else {
+        replacement = fileLink.replaceParentPath(baseFolder, oldFile, newFile);
+      }
+      
+      if (replacement!=null){
         result = true;
+        this.extras.remove(Extra.ExtraType.FILE);
+        this.extras.put(Extra.ExtraType.FILE, replacement);
       }
     }
+    
     for (final Topic c : this.children) {
       result |= c.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
     }
