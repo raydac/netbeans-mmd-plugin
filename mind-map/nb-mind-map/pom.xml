@@ -20,7 +20,7 @@
 
   <properties>
     <nb.platform>RELEASE74</nb.platform>
-    <mindmap.model.version>1.2.0</mindmap.model.version>
+    <mindmap.model.version>1.2.1-SNAPSHOT</mindmap.model.version>
     <mindmap.panel.version>1.3.0-SNAPSHOT</mindmap.panel.version>
   </properties>
 

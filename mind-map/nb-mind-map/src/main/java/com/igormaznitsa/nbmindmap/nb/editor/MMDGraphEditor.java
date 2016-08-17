@@ -272,7 +272,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantLoadDocument"));
       } else {
         try {
-          this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)));
+          this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)),false);
         } catch (IllegalArgumentException ex) {
           LOGGER.warn("Can't detect mind map"); //NOI18N
           this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantDetectMMap"));
