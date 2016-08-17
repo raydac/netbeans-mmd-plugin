@@ -16,7 +16,7 @@
   <description>Swing based panel to show and interact with mind map</description>
     
   <properties>
-    <mmd.model.version>1.2.0</mmd.model.version>
+    <mmd.model.version>1.2.1-SNAPSHOT</mmd.model.version>
   </properties>  
     
   <profiles>

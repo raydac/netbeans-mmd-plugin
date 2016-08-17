@@ -26,7 +26,6 @@ import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
@@ -56,7 +55,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
   private static final Icon ICON = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_IMAGES);
 
   private static File lastSelectedFile = null;
-  private static final int MAX_IMAGE_SIZE = 320;
+  private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 300;
 
   private static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
     @Override
@@ -130,18 +129,22 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     final int width = image.getWidth(null);
     final int height = image.getHeight(null);
 
-    if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
-      final float scale = (float) MAX_IMAGE_SIZE / (float) Math.max(width, height);
+    if (width > MAX_IMAGE_SIDE_SIZE_IN_PIXELS || height > MAX_IMAGE_SIDE_SIZE_IN_PIXELS) {
+      final float scale = (float) MAX_IMAGE_SIDE_SIZE_IN_PIXELS / (float) Math.max(width, height);
 
       final int swidth = Math.round(scale * width);
       final int sheight = Math.round(scale * height);
 
       final BufferedImage buffer = new BufferedImage(swidth, sheight, BufferedImage.TYPE_INT_ARGB);
       final Graphics2D gfx = (Graphics2D) buffer.createGraphics();
-      gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      
       gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
       gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      gfx.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+      gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+      
       gfx.drawImage(image, AffineTransform.getScaleInstance(scale, scale), null);
       gfx.dispose();
       image = buffer;
