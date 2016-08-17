@@ -19,6 +19,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.net.URI;
 import java.util.Properties;
+import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -32,10 +33,13 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
   public AboutPanel() {
     initComponents();
 
-    final String version = MindMapPlugin.API.toString();
+    final String pluginAPIVersion = MindMapPlugin.API.toString();
+    final String formatVersion = MindMap.FORMAT_VERSION;
 
     final Properties props = new Properties();
-    props.setProperty("version", version);
+    props.setProperty("plugin.api", pluginAPIVersion);
+    props.setProperty("format.version", formatVersion);
+    props.setProperty("ideversion", Main.IDE_VERSION.toString());
     props.setProperty("ideversion", Main.IDE_VERSION.toString());
 
     this.textLabel.replaceMacroses(props);
