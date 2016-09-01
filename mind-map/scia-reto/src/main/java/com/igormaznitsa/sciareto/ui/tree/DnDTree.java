@@ -47,7 +47,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
 
   private static final long serialVersionUID = -4915750239120689053L;
 
-  private boolean dragAcceptableType;
+  private boolean dragAcceptableType = false;
   
   public DnDTree(){
     super();

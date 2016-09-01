@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -18,6 +18,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.3.0 (01-sep-2016)</p>
+        <ul>
+            <li>added plugin to add an image into a topic</li>
+            <li>changed Plugin API</li>
+            <li>fixed casual d'n'd topic operations through click over its fold-unfold icon</li>
+            <li>added export into SVG image format</li>
+            <li>fixed issue #22, added key short-cut into options to tune "next line char" for topic text editor, by default SHIFT+ENTER</li>
+        </ul>
         <p>1.2.0 (05-jun-2016)</p>
         <ul>
             <li><b>Minimal supported API version changed to 143.2370</b></li>
