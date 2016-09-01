@@ -121,7 +121,7 @@ header h2 {
 }
 
 .inner {
-  width: 620px;
+  width: 640px;
   margin: 0 auto;
 }
 
@@ -192,6 +192,9 @@ a.button span {
 }
 #download-idea span {
   background: transparent url(../images/idea-icon.png) 12px 50% no-repeat;
+}
+#download-standalone span {
+  background: transparent url(../images/sciareto-icon.png) 12px 50% no-repeat;
 }
 #download-tar-gz span {
   background: transparent url(../images/tar-gz-icon.png) 12px 50% no-repeat;
