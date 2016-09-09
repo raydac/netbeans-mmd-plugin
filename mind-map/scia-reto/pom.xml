@@ -4,20 +4,20 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
     
   <artifactId>scia-reto</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   
   <name>SciaReto Mind Map Editor</name>
   <description>Standalone editor to create and edit mind maps</description>
     
   <properties>
-    <model.version>1.2.1</model.version>
-    <panel.version>1.3.0</panel.version>
+    <model.version>1.2.2-SNAPSHOT</model.version>
+    <panel.version>1.3.1-SNAPSHOT</panel.version>
     <app.name>sciareto_${project.version}</app.name>
   </properties>
 
@@ -104,7 +104,7 @@
                 </goals>
                 <configuration>
                   <appendAssemblyId>false</appendAssemblyId>
-                  <finalName>${project.artifactId}-${project.version}</finalName>
+                  <finalName>sciareto_${project.version}_LINUX</finalName>
                   <descriptors>
                     <descriptor>src/assemble/linux.xml</descriptor>
                   </descriptors>
@@ -132,6 +132,10 @@
                     <preCp>anything</preCp>
                   </classPath>
                   <icon>logo.ico</icon>
+                  <outfile>${project.build.directory}/${app.name}_WINDOWS.exe</outfile>
+                  <singleInstance>
+                    <mutexName>sciaretoeditor</mutexName>
+                  </singleInstance>
                   <jre>
                     <minVersion>1.7.0</minVersion>
                     <jdkPreference>preferJre</jdkPreference>
@@ -158,6 +162,7 @@
             <version>1.1.0</version>
             <configuration>
               <bundleName>${app.name}</bundleName>
+              <diskImageFile>${project.build.directory}/${project.build.finalName}_OSX.dmg</diskImageFile>
               <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
               <iconFile>${basedir}/logo.icns</iconFile>
               <bundleName>Scia-Reto Editor</bundleName>
