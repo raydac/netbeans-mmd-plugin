@@ -147,6 +147,12 @@ public final class TextEditor extends AbstractScrollPane {
   }
 
   @Override
+  @Nonnull
+  public EditorType getContentType() {
+    return EditorType.IMAGE;
+  }
+
+  @Override
   public boolean isEditable() {
     return true;
   }

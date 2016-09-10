@@ -251,6 +251,13 @@ public final class PictureViewer extends AbstractScrollPane {
 
   @Override
   @Nonnull
+  public EditorType getContentType() {
+    return EditorType.IMAGE;
+  }
+
+  
+  @Override
+  @Nonnull
   public JComponent getMainComponent() {
     return this;
   }

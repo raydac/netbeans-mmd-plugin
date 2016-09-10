@@ -1129,6 +1129,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }
 
+  @Override
+  @Nullable
+  public TabTitle getFocusedTab() {
+    return this.tabPane.getCurrentTitle();
+  }
+
   @Nullable
   @Override
   public File createMindMapFile(@Nullable final File folder) {

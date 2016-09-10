@@ -21,6 +21,7 @@ import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.Weight;
+import com.igormaznitsa.sciareto.ui.editors.EditorType;
 
 public interface TabProvider {
 
@@ -41,6 +42,9 @@ public interface TabProvider {
   void dispose();
   void updateConfiguration();
   void loadContent(@Nonnull File file) throws IOException;
+  
+  @Nonnull
+  EditorType getContentType();
   
   boolean isEditable();
 

@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -36,6 +38,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -43,15 +47,21 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.editors.EditorType;
+import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
+import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
 public final class ExplorerTree extends JScrollPane {
 
@@ -268,7 +278,7 @@ public final class ExplorerTree extends JScrollPane {
     final JMenuItem openInSystem = new JMenuItem("Open in System");
     openInSystem.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(@Nonnull final ActionEvent e) {
         final File file = node.makeFileForNode();
         if (file != null && file.exists()) {
           UiUtils.openInSystemViewer(file);
@@ -277,7 +287,107 @@ public final class ExplorerTree extends JScrollPane {
     });
     result.add(openInSystem);
 
+    final List<JMenuItem> optional = new ArrayList<>();
+    
+    final TabTitle editingTab = this.context.getFocusedTab();
+    if (editingTab != null && editingTab.getType() == EditorType.MINDMAP) {
+      final JMenuItem addIntoMap = new JMenuItem("Add as topic");
+      addIntoMap.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          addTreeAsTopic(context.findProjectForFile(editingTab.getAssociatedFile()), node, (MMDEditor) editingTab.getProvider().getMainComponent());
+        }
+      });
+      optional.add(addIntoMap);
+    }
+
+    
+    if (!optional.isEmpty()){
+      result.add(new JSeparator());
+      for(final JMenuItem i : optional){
+        result.add(i);
+      }
+    }
+    
     return result;
+  }
+
+  private void addTreeAsTopic(@Nullable final NodeProject project, @Nonnull final NodeFileOrFolder node, @Nonnull final MMDEditor editor) {
+
+    final File projectFolder = project == null ? null : project.getFolder();
+
+    if (project!=null){
+      if (node.findProject()!=project){
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Different projects", "Opened Map file from another project. File paths will not be relative ones.")) {
+          return;
+        }
+      }
+    }
+    
+    final List<Topic> targetTopics = new ArrayList<>(Arrays.asList(editor.getMindMapPanel().getSelectedTopics()));
+
+    if (targetTopics.size() > 1) {
+      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Multiple selection detected", "New children will be generated for all focused topics.")) {
+        return;
+      }
+    }
+
+    if (targetTopics.isEmpty() && editor.getMindMapPanel().getModel().getRoot() != null) {
+      targetTopics.add(editor.getMindMapPanel().getModel().getRoot());
+    }
+
+    editor.getMindMapPanel().executeModelJobs(new MindMapPanel.ModelJob() {
+      @Nonnull
+      private Topic recursiveGenerateTopics(@Nullable final File projectFolder, @Nonnull final MindMap model, @Nullable final Topic parent, @Nonnull final NodeFileOrFolder node) {
+        final ExtraFile fileLink = new ExtraFile(new MMapURI(projectFolder, node.makeFileForNode(), null));
+        final Topic theTopic;
+        if (parent == null) {
+          theTopic = new Topic(model, null, node.toString(), fileLink);
+        } else {
+          theTopic = parent.makeChild(node.toString(), null);
+          theTopic.setExtra(fileLink);
+        }
+
+        if (!node.isLeaf()) {
+          final Enumeration<NodeFileOrFolder> children = node.children();
+          while (children.hasMoreElements()) {
+            recursiveGenerateTopics(projectFolder, model, theTopic, children.nextElement());
+          }
+        }
+
+        return theTopic;
+      }
+
+      @Override
+      public boolean doChangeModel(@Nonnull final MindMap model) {
+
+        Topic createdTopic = null;
+        if (targetTopics.isEmpty()) {
+          createdTopic = recursiveGenerateTopics(projectFolder, model, null, node);
+        } else {
+          boolean first = true;
+          for (final Topic t : targetTopics) {
+            final Topic generated = recursiveGenerateTopics(projectFolder, model, t, node);
+            if (first) {
+              createdTopic = generated;
+            }
+            first = false;
+          }
+        }
+
+        if (editor.getMindMapPanel().getSelectedTopics().length == 0 && createdTopic != null) {
+          final Topic forfocus = createdTopic;
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              editor.getMindMapPanel().focusTo(forfocus);
+            }
+          });
+        }
+
+        return true;
+      }
+    });
   }
 
   private void addChildTo(@Nonnull final NodeFileOrFolder folder, @Nullable final String extension) {

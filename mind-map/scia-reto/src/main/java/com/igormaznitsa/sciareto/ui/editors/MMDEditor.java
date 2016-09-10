@@ -40,7 +40,6 @@ import java.util.Properties;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
@@ -78,7 +77,6 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -151,6 +149,12 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
     loadContent(file);
     this.currentModelState = this.mindMapPanel.getModel().packToString();
+  }
+
+  @Override
+  @Nonnull
+  public EditorType getContentType() {
+    return EditorType.MINDMAP;
   }
 
   @Override
@@ -263,6 +267,11 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
   private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors = null;
 
+  @Nonnull
+  public MindMapPanel getMindMapPanel(){
+    return this.mindMapPanel;
+  }
+  
   @Override
   @Nonnull
   public TabTitle getTabTitle() {
@@ -797,19 +806,10 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     }
   }
 
-  private void showAbout() {
-    JOptionPane.showMessageDialog(Main.getApplicationFrame(), new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
-  }
-
-  private void startOptionsEdit() {
-    this.context.editPreferences();
-  }
-
   @Override
   @Nonnull
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement elementUnderMouse, @Nullable final ElementPart elementPartUnderMouse) {
     return Utils.makePopUp(source, DialogProviderManager.getInstance().getDialogProvider(), elementUnderMouse == null ? null : elementUnderMouse.getModel(), source.getSelectedTopics(), getCustomProcessors());
-
   }
 
   @Override

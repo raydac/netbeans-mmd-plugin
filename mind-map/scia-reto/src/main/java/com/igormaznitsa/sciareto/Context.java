@@ -47,6 +47,9 @@ public interface Context {
   boolean safeCloseEditorsForFile(@Nonnull File file);
 
   @Nullable
+  TabTitle getFocusedTab();
+  
+  @Nullable
   File createMindMapFile(@Nonnull File folder);
 
   void notifyReloadConfig();

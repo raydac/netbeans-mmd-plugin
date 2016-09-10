@@ -43,6 +43,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
 public final class TabTitle extends JPanel {
@@ -234,6 +235,11 @@ public final class TabTitle extends JPanel {
       }
     }
     return reloaded;
+  }
+
+  @Nonnull
+  public EditorType getType() {
+    return this.parent.getContentType();
   }
 
   @Nonnull
