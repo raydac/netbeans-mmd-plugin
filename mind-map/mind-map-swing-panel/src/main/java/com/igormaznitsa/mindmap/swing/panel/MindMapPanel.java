@@ -74,13 +74,30 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MindMapPanel extends JPanel {
 
   public static final long serialVersionUID = 2783412123454232L;
+
+  /**
+   * Some Job over mind map model.
+   *
+   * @since 1.3.1
+   * @see MindMapPanel#executeModelJobs(com.igormaznitsa.mindmap.swing.panel.MindMapPanel.ModelJob...)
+   */
+  public interface ModelJob {
+
+    /**
+     * Execute the job.
+     *
+     * @param model model to be processed
+     * @return true if to continue job sequence, false if to interrupt
+     */
+    boolean doChangeModel(@Nonnull MindMap model);
+  }
 
   public static final String ATTR_SHOW_JUMPS = "showJumps";
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanel.class);
@@ -1037,6 +1054,31 @@ public class MindMapPanel extends JPanel {
   }
 
   /**
+   * Safe Swing thread execution sequence of some jobs over model with model changed notification in the end
+   *
+   * @param jobs sequence of jobs to be executed
+   *
+   * @since 1.3.1
+   */
+  public void executeModelJobs(@Nonnull @MustNotContainNull final ModelJob... jobs) {
+    Utils.safeSwingCall(new Runnable() {
+      @Override
+      public void run() {
+        for (final ModelJob j : jobs) {
+          try {
+            if (!j.doChangeModel(model)) {
+              break;
+            }
+          } catch (Exception ex) {
+            LOGGER.error("Errot during job execution", ex);
+          }
+        }
+        notifyModelChanged();
+      }
+    });
+  }
+
+  /**
    * Send signal that the model has been changed.
    *
    * @since 1.2
@@ -1494,10 +1536,11 @@ public class MindMapPanel extends JPanel {
 
   public void setModel(@Nonnull final MindMap model) {
     this.setModel(model, false);
-  }  
-  
+  }
+
   /**
    * Set model for the panel, allows to notify listeners optionally.
+   *
    * @param model model to be set
    * @param notifyModelChangeListeners true if to notify model change listeners, false otherwise
    * @since 1.3.0
