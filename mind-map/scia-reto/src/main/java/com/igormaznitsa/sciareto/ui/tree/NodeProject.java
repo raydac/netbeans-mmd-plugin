@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -150,5 +151,4 @@ public class NodeProject extends NodeFileOrFolder {
 
     return affectedFiles;
   }
-
 }

@@ -23,9 +23,9 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
+import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
 
 public interface Context {
-
 
   @Nullable
   NodeProject findProjectForFile(@Nonnull File file);
@@ -57,5 +57,11 @@ public interface Context {
   boolean deleteTreeNode(@Nonnull NodeFileOrFolder node);
   
   void notifyFileRenamed(@Nullable @MustNotContainNull List<File> affectedFiles, @Nonnull File oldFile, @Nonnull File newFile);
+ 
   void notifyUpdateRedoUndo();
+
+  boolean hasUnsavedDocument();
+
+  @Nonnull
+  NodeProjectGroup getCurrentGroup();
 }

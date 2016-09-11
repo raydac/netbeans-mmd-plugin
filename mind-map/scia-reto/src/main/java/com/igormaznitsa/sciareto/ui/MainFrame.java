@@ -91,6 +91,7 @@ import com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
 
 public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
 
@@ -449,8 +450,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private void saveState() {
     try {
       final List<File> files = new ArrayList<>();
-      for (final NodeProject p : this.explorerTree.getCurrentGroup()) {
-        final File f = p.getFolder();
+      for (final NodeFileOrFolder p : this.explorerTree.getCurrentGroup()) {
+        final File f = ((NodeProject)p).getFolder();
         if (f.isDirectory()) {
           files.add(f);
         }
@@ -1130,9 +1131,20 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   @Override
+  public boolean hasUnsavedDocument() {
+    return this.tabPane.hasEditableAndChangedDocument();
+  }
+
+  @Override
   @Nullable
   public TabTitle getFocusedTab() {
     return this.tabPane.getCurrentTitle();
+  }
+
+  @Override
+  @Nonnull
+  public NodeProjectGroup getCurrentGroup() {
+    return this.explorerTree.getCurrentGroup();
   }
 
   @Nullable

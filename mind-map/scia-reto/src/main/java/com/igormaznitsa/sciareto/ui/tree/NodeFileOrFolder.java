@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
-import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 
-public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> {
+public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,Iterable<NodeFileOrFolder>  {
 
   protected final NodeFileOrFolder parent;
 
@@ -45,8 +44,6 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
   protected final boolean folderFlag;
 
   protected volatile String name;
-
-  private static final DataFlavor[] DATA_FLAVOR = new DataFlavor[]{DataFlavor.javaFileListFlavor};
 
   private final boolean readonly;
 
@@ -66,6 +63,18 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
     this.readonly = readOnly;
   }
 
+  public int size(){
+    if (this.folderFlag){
+      int counter = 1;
+      for(final NodeFileOrFolder f : this.children){
+        counter += f.size();
+      }
+      return counter;
+    }else{
+      return 1;
+    }
+  }
+  
   public boolean isReadOnly() {
     return this.readonly;
   }
@@ -279,5 +288,30 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder> 
       }
     }
   }
+
+  @Override
+  @Nonnull
+  public Iterator<NodeFileOrFolder> iterator() {
+    final List<NodeFileOrFolder> projects = new ArrayList<>(this.children);
+    final Iterator<NodeFileOrFolder> result = projects.iterator();
+    return new Iterator<NodeFileOrFolder>() {
+      @Override
+      public boolean hasNext() {
+        return result.hasNext();
+      }
+
+      @Override
+      public void remove() {
+        result.remove();
+      }
+
+      @Override
+      @Nonnull
+      public NodeFileOrFolder next() {
+        return result.next();
+      }
+    };
+  }
+
 
 }

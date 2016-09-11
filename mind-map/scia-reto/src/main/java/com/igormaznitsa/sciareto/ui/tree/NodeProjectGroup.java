@@ -41,7 +41,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
-public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Iterable<NodeProject> {
+public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
   protected final String groupName;
   protected final List<TreeModelListener> listeners = new CopyOnWriteArrayList<>();
@@ -254,30 +254,6 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel, Ite
       }
     }
     return false;
-  }
-
-  @Override
-  @Nonnull
-  public Iterator<NodeProject> iterator() {
-    final List<NodeFileOrFolder> projects = new ArrayList<>(this.children);
-    final Iterator<NodeFileOrFolder> result = projects.iterator();
-    return new Iterator<NodeProject>() {
-      @Override
-      public boolean hasNext() {
-        return result.hasNext();
-      }
-
-      @Override
-      public void remove() {
-        result.remove();
-      }
-
-      @Override
-      @Nonnull
-      public NodeProject next() {
-        return (NodeProject) result.next();
-      }
-    };
   }
 
   public void addChild(@Nonnull final NodeFileOrFolder folder, @Nonnull final File childFile) {

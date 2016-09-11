@@ -58,6 +58,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
@@ -288,7 +289,39 @@ public final class ExplorerTree extends JScrollPane {
     result.add(openInSystem);
 
     final List<JMenuItem> optional = new ArrayList<>();
-    
+
+    final JMenuItem menuSearchUsage = new JMenuItem("Find usages");
+    menuSearchUsage.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        
+        if (context.hasUnsavedDocument() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected unsaved documents", "Unsaved documents will not be processed!")){
+          return;
+        }
+        
+        final FindUsagesPanel panel = new FindUsagesPanel(context, node);
+        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Find usages in all opened projects", panel)){
+          final NodeFileOrFolder selected = panel.getSelected();
+          panel.dispose();
+          if (selected != null) {
+            final File file = selected.makeFileForNode();
+            if (file != null) {
+              context.focusInTree(file);
+              SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                  requestFocus();
+                }
+              });
+            }
+          }
+        }else{
+          panel.dispose();
+        }
+      }
+    });
+    optional.add(menuSearchUsage);
+
     final TabTitle editingTab = this.context.getFocusedTab();
     if (editingTab != null && editingTab.getType() == EditorType.MINDMAP) {
       final JMenuItem addIntoMap = new JMenuItem("Add as topic");
@@ -301,14 +334,13 @@ public final class ExplorerTree extends JScrollPane {
       optional.add(addIntoMap);
     }
 
-    
-    if (!optional.isEmpty()){
+    if (!optional.isEmpty()) {
       result.add(new JSeparator());
-      for(final JMenuItem i : optional){
+      for (final JMenuItem i : optional) {
         result.add(i);
       }
     }
-    
+
     return result;
   }
 
@@ -316,14 +348,14 @@ public final class ExplorerTree extends JScrollPane {
 
     final File projectFolder = project == null ? null : project.getFolder();
 
-    if (project!=null){
-      if (node.findProject()!=project){
+    if (project != null) {
+      if (node.findProject() != project) {
         if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Different projects", "Opened Map file from another project. File paths will not be relative ones.")) {
           return;
         }
       }
     }
-    
+
     final List<Topic> targetTopics = new ArrayList<>(Arrays.asList(editor.getMindMapPanel().getSelectedTopics()));
 
     if (targetTopics.size() > 1) {
