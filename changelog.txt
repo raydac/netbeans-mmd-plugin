@@ -1,4 +1,5 @@
-1.3.0
+1.3.0 (01-sep-2016)
+- added sorting of attributes before mind map saving
 - added plugin to add an image into a topic
 - changed Plugin API
 - added export into SVG image format

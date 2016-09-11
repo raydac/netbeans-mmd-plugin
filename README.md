@@ -101,6 +101,10 @@ Today it is very important to have way to export data to another formats to use 
 -  **FreeMind map** - XML based format for [the FreeMind editor](http://freemind.sourceforge.net/), a popular mind map editing tool, also the format is supported for export by [X-Mind editor](https://www.xmind.net/).
 -  **Mindmup map** - JSON based format for [the Mindmup online editor](https://www.mindmup.com).
 -  **PNG image** - just standard PNG image files.
+-  **SVG image** - vector SVG format image files.
+
+## Import data as Mind map
+At Present there is only format supported for import. It is plain UTF-8 encoded TAB-formatted text files.
 
 ## Content alowed in mind maps
 Mainly you can keep short texts in your mind maps as topic names but sometime it is useful to keep and another information, the plugin allows to keep below listed information assets:
