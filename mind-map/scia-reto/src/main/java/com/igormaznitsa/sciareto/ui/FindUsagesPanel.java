@@ -55,9 +55,13 @@ public class FindUsagesPanel extends javax.swing.JPanel {
 
   private final String fullNormalizedPath;
 
-  public FindUsagesPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind) {
+  private final boolean findEverywhere;
+  
+  public FindUsagesPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind, final boolean findEverywhere) {
     initComponents();
 
+    this.findEverywhere = findEverywhere;
+    
     final File asfile = itemToFind.makeFileForNode();
 
     if (asfile == null) {
@@ -165,7 +169,7 @@ public class FindUsagesPanel extends javax.swing.JPanel {
               } finally {
                 IOUtils.closeQuietly(reader);
               }
-            } else {
+            } else if (findEverywhere){
               try {
                 final Scanner scanner = new Scanner(f, "UTF-8");
                 try {

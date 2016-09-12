@@ -290,17 +290,17 @@ public final class ExplorerTree extends JScrollPane {
 
     final List<JMenuItem> optional = new ArrayList<>();
 
-    final JMenuItem menuSearchUsage = new JMenuItem("Find usages");
+    final JMenuItem menuSearchUsage = new JMenuItem("Find usages in maps");
     menuSearchUsage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        
-        if (context.hasUnsavedDocument() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected unsaved documents", "Unsaved documents will not be processed!")){
+
+        if (context.hasUnsavedDocument() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected unsaved documents", "Unsaved content will not be processed!")) {
           return;
         }
-        
-        final FindUsagesPanel panel = new FindUsagesPanel(context, node);
-        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Find usages in all opened projects", panel)){
+
+        final FindUsagesPanel panel = new FindUsagesPanel(context, node, false);
+        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Find usages in all opened projects", panel)) {
           final NodeFileOrFolder selected = panel.getSelected();
           panel.dispose();
           if (selected != null) {
@@ -315,7 +315,7 @@ public final class ExplorerTree extends JScrollPane {
               });
             }
           }
-        }else{
+        } else {
           panel.dispose();
         }
       }
@@ -362,10 +362,13 @@ public final class ExplorerTree extends JScrollPane {
       if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Multiple selection detected", "New children will be generated for all focused topics.")) {
         return;
       }
-    }
-
-    if (targetTopics.isEmpty() && editor.getMindMapPanel().getModel().getRoot() != null) {
-      targetTopics.add(editor.getMindMapPanel().getModel().getRoot());
+    } else {
+      if (targetTopics.isEmpty() && editor.getMindMapPanel().getModel().getRoot() != null) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("No selected parent", "There is not selected topic. The Root will be used as the parent.")) {
+          return;
+        }
+        targetTopics.add(editor.getMindMapPanel().getModel().getRoot());
+      }
     }
 
     editor.getMindMapPanel().executeModelJobs(new MindMapPanel.ModelJob() {
