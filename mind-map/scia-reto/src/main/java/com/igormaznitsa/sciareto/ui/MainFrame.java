@@ -84,7 +84,6 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
@@ -319,8 +318,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   public void processTabChanged(@Nullable final TabTitle title) {
-    this.menuSaveAll.setEnabled(this.tabPane.getTabCount() > 0);
-
+    this.menuSaveAll.setEnabled(this.tabPane.hasEditableAndChangedDocument());
+    
+    if (title != null && !this.tabPane.isEmpty() && title.getProvider().doesSupportTextSearch()){
+      this.menuFindText.setEnabled(true);
+    }else{
+      this.menuFindText.setEnabled(false);
+      hideFindTextPane();
+    }
+    
     if (title == null) {
       this.menuRedo.setEnabled(false);
       this.menuUndo.setEnabled(false);

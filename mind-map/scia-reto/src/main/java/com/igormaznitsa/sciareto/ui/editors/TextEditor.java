@@ -28,7 +28,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.text.DefaultCaret;
 import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -226,12 +225,12 @@ public final class TextEditor extends AbstractScrollPane {
   private boolean searchSubstring(@Nonnull final String substring, final boolean next) {
     final Pattern pattern = Pattern.compile(Pattern.quote(substring), Pattern.CASE_INSENSITIVE);
     final String currentText = this.editor.getText();
-    final int cursorPos = this.editor.getCaretPosition();
+    int cursorPos = this.editor.getCaretPosition();
     final Matcher matcher = pattern.matcher(currentText);
     boolean result = false;
     if (next) {
       if (cursorPos < currentText.length()) {
-        if (matcher.find(cursorPos)) {
+        if (matcher.find(cursorPos) || matcher.find(0)) {
           final int foundPosition = matcher.start();
           this.editor.select(foundPosition, foundPosition + substring.length());
           this.editor.getCaret().setSelectionVisible(true);
@@ -241,16 +240,22 @@ public final class TextEditor extends AbstractScrollPane {
     } else {
       int lastFound = -1;
       int pos = 0;
-      
-      final int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ? this.editor.getCaretPosition() : this.editor.getSelectionStart();
-      
-      while (matcher.find()) {
-        pos = matcher.start();
-        if (pos < maxPos) {
-          lastFound = pos;
-        } else {
+
+      int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ? this.editor.getCaretPosition() : this.editor.getSelectionStart();
+
+      for (int i = 0; i < 2; i++) {
+        while (matcher.find()) {
+          pos = matcher.start();
+          if (pos < maxPos) {
+            lastFound = pos;
+          } else {
+            break;
+          }
+        }
+        if (lastFound >= 0) {
           break;
         }
+        maxPos = currentText.length();
       }
 
       if (lastFound >= 0) {
