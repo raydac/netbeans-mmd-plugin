@@ -555,6 +555,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   private void processTabChange(){
+    this.menuFindText.setEnabled(!this.tabPane.isEmpty() && this.tabPane.getCurrentTitle().getProvider().doesSupportTextSearch());
+    
     if (this.tabPane.isEmpty() || !this.tabPane.getCurrentTitle().getProvider().doesSupportTextSearch()){
       hideFindTextPane();
     }

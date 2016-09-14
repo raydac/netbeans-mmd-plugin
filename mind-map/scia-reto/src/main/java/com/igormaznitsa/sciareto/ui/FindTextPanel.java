@@ -17,6 +17,7 @@ package com.igormaznitsa.sciareto.ui;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.KeyEvent;
 import javax.annotation.Nonnull;
@@ -29,8 +30,15 @@ public class FindTextPanel extends javax.swing.JPanel {
 
   private final Context context;
   
+  private static final int TEXT_FIELD_WIDTH = 300;
+  
   public FindTextPanel(@Nonnull final Context context, @Nullable final String text) {
     initComponents();
+    
+    this.textFieldSearchText.setPreferredSize(new Dimension(TEXT_FIELD_WIDTH, this.textFieldSearchText.getPreferredSize().height));
+    this.textFieldSearchText.setMinimumSize(new Dimension(TEXT_FIELD_WIDTH, this.textFieldSearchText.getMinimumSize().height));
+    this.textFieldSearchText.setMaximumSize(new Dimension(TEXT_FIELD_WIDTH, this.textFieldSearchText.getMaximumSize().height));
+    
     this.context = context;
 
     this.textFieldSearchText.setText(text == null ? "": text);
@@ -95,6 +103,7 @@ public class FindTextPanel extends javax.swing.JPanel {
     labelTitle.setFocusable(false);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.weightx = 10.0;
     gridBagConstraints.insets = new java.awt.Insets(0, 16, 0, 8);
     add(labelTitle, gridBagConstraints);
 
@@ -105,8 +114,10 @@ public class FindTextPanel extends javax.swing.JPanel {
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.ipadx = 196;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 16);
     add(textFieldSearchText, gridBagConstraints);
 
@@ -119,6 +130,7 @@ public class FindTextPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.weightx = 10.0;
     add(buttonPrev, gridBagConstraints);
 
     buttonNext.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/resultset_next.png"))); // NOI18N
@@ -130,6 +142,7 @@ public class FindTextPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.weightx = 10.0;
     add(buttonNext, gridBagConstraints);
 
     labelClose.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -150,8 +163,8 @@ public class FindTextPanel extends javax.swing.JPanel {
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 4;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 1000.0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.weightx = 100000.0;
     add(filler1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
