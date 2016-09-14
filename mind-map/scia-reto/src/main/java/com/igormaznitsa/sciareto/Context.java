@@ -46,6 +46,10 @@ public interface Context {
   
   boolean safeCloseEditorsForFile(@Nonnull File file);
 
+  void showFindTextPane(@Nullable String text);
+  
+  void hideFindTextPane();
+  
   @Nullable
   TabTitle getFocusedTab();
   

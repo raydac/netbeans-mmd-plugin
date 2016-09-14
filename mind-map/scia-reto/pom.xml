@@ -260,6 +260,7 @@
             <ignore>*.KeyShortCutEditPanel</ignore>
             <ignore>*.PreferencesPanel</ignore>
             <ignore>*.GoToFilePanel</ignore>
+            <ignore>*.FindTextPanel</ignore>
           </ignoreClasses>
         </configuration>
         <executions>

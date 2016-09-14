@@ -56,4 +56,7 @@ public interface TabProvider {
   boolean redo();
   boolean undo();
   
+  boolean findNext(@Nonnull String text);
+  boolean findPrev(@Nonnull String text);
+  boolean doesSupportTextSearch();
 }

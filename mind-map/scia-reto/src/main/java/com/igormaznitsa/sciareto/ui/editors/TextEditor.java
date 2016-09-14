@@ -18,6 +18,8 @@ package com.igormaznitsa.sciareto.ui.editors;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -26,6 +28,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.DefaultCaret;
 import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -75,6 +78,7 @@ public final class TextEditor extends AbstractScrollPane {
   public TextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     this.editor = new JTextArea();
+    this.editor.getCaret().setSelectionVisible(true);
     this.editor.setFont(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
     this.title = new TabTitle(context, this, file);
 
@@ -149,7 +153,7 @@ public final class TextEditor extends AbstractScrollPane {
   @Override
   @Nonnull
   public EditorType getContentType() {
-    return EditorType.IMAGE;
+    return EditorType.TEXT;
   }
 
   @Override
@@ -180,10 +184,10 @@ public final class TextEditor extends AbstractScrollPane {
     } finally {
       this.ignoreChange = false;
     }
-  
+
     this.undoManager.discardAllEdits();
     this.title.setChanged(false);
-    
+
     this.revalidate();
   }
 
@@ -217,6 +221,60 @@ public final class TextEditor extends AbstractScrollPane {
   @Nonnull
   public JComponent getMainComponent() {
     return this;
+  }
+
+  private boolean searchSubstring(@Nonnull final String substring, final boolean next) {
+    final Pattern pattern = Pattern.compile(Pattern.quote(substring), Pattern.CASE_INSENSITIVE);
+    final String currentText = this.editor.getText();
+    final int cursorPos = this.editor.getCaretPosition();
+    final Matcher matcher = pattern.matcher(currentText);
+    boolean result = false;
+    if (next) {
+      if (cursorPos < currentText.length()) {
+        if (matcher.find(cursorPos)) {
+          final int foundPosition = matcher.start();
+          this.editor.select(foundPosition, foundPosition + substring.length());
+          this.editor.getCaret().setSelectionVisible(true);
+          result = true;
+        }
+      }
+    } else {
+      int lastFound = -1;
+      int pos = 0;
+      
+      final int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ? this.editor.getCaretPosition() : this.editor.getSelectionStart();
+      
+      while (matcher.find()) {
+        pos = matcher.start();
+        if (pos < maxPos) {
+          lastFound = pos;
+        } else {
+          break;
+        }
+      }
+
+      if (lastFound >= 0) {
+        this.editor.select(lastFound, lastFound + substring.length());
+        this.editor.getCaret().setSelectionVisible(true);
+        result = true;
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public boolean findNext(@Nonnull final String text) {
+    return searchSubstring(text, true);
+  }
+
+  @Override
+  public boolean findPrev(@Nonnull final String text) {
+    return searchSubstring(text, false);
+  }
+
+  @Override
+  public boolean doesSupportTextSearch() {
+    return true;
   }
 
 }

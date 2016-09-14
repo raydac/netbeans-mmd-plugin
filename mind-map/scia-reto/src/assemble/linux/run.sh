@@ -1,8 +1,16 @@
 #!/bin/bash
 
 SCIARETO_HOME="$(dirname ${BASH_SOURCE[0]})"
+LOG_FILE=$SCIARETO_HOME/console.log
 SCIARETO_PLUGINS=$SCIARETO_HOME/plugins
-JAVA_RUN=java
+
+if [ -z $JAVA_HOME ]; then
+    echo \$JAVA_HOME is undefined &>$LOG_FILE
+    JAVA_RUN=java
+else
+    echo Detected \$JAVA_HOME : $JAVA_HOME &>$LOG_FILE
+    JAVA_RUN=$JAVA_HOME/bin/java
+fi
 
 if [ -f $SCIARETO_HOME/.pid ];
 then
@@ -14,7 +22,9 @@ then
     fi
 fi    
 
-$JAVA_RUN -Dnbmmd.plugin.folder=$SCIARETO_PLUGINS -jar $SCIARETO_HOME/sciareto.jar $@ &> $SCIARETO_HOME/console.log&
+echo \$JAVA_RUN=$JAVA_RUN &>>$LOG_FILE
+
+$JAVA_RUN -Dnbmmd.plugin.folder=$SCIARETO_PLUGINS -jar $SCIARETO_HOME/sciareto.jar $@ &>> $SCIARETO_HOME/console.log&
 THE_PID=$!
 echo $THE_PID>$SCIARETO_HOME/.pid
 wait $THE_PID

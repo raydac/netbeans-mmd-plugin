@@ -84,6 +84,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
@@ -109,7 +110,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private final AtomicReference<Runnable> taskToEndFullScreen = new AtomicReference<>();
 
   private final JPanel stackPanel;
+  private final JPanel mainPanel;
 
+  private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
+  
   public MainFrame(@Nonnull @MustNotContainNull final String... args) {
     super();
     initComponents();
@@ -181,7 +185,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     splitPane.setDividerLocation(250);
     splitPane.setResizeWeight(0.0d);
     splitPane.setLeftComponent(this.explorerTree);
-    splitPane.setRightComponent(this.tabPane);
+
+    this.mainPanel = new JPanel(new BorderLayout(0, 0));
+    this.mainPanel.add(this.tabPane,BorderLayout.CENTER);
+
+    splitPane.setRightComponent(this.mainPanel);
 
     add(splitPane, BorderLayout.CENTER);
 
@@ -292,7 +300,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         final JTabbedPane sourceTabbedPane = (JTabbedPane) e.getSource();
         final int index = sourceTabbedPane.getSelectedIndex();
         final TabTitle selected = index < 0 ? null : (TabTitle) sourceTabbedPane.getTabComponentAt(index);
-        onTabChanged(selected);
+        processTabChanged(selected);
       }
     });
 
@@ -301,15 +309,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     this.menuRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
     this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    this.menuFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
     if (tabPane.getTabCount() > 0) {
       this.tabPane.setSelectedIndex(0);
     } else {
-      onTabChanged(null);
+      processTabChanged(null);
     }
   }
 
-  private void onTabChanged(@Nullable final TabTitle title) {
+  public void processTabChanged(@Nullable final TabTitle title) {
     this.menuSaveAll.setEnabled(this.tabPane.getTabCount() > 0);
 
     if (title == null) {
@@ -335,7 +344,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        onTabChanged(tabPane.getCurrentTitle());
+        processTabChanged(tabPane.getCurrentTitle());
       }
     });
   }
@@ -506,6 +515,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             result = true;
           } catch (IOException ex) {
             LOGGER.error("Can't load file as text", ex);
+          } finally {
+            processTabChange();
           }
         }
       }
@@ -540,8 +551,47 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     for (final TabTitle t : titles) {
       this.tabPane.removeTab(t);
     }
+    processTabChange();
   }
 
+  private void processTabChange(){
+    if (this.tabPane.isEmpty() || !this.tabPane.getCurrentTitle().getProvider().doesSupportTextSearch()){
+      hideFindTextPane();
+    }
+  }
+
+  @Override
+  public void showFindTextPane(@Nullable final String text) {
+    final TabTitle current = getFocusedTab();
+    if (current != null && this.tabPane.getCurrentTitle().getProvider().doesSupportTextSearch()) {
+      
+      FindTextPanel panel = this.currentFindTextPanel.get();
+      
+      if (panel == null){
+        panel = new FindTextPanel(this, text);
+        this.mainPanel.add(panel, BorderLayout.SOUTH);
+      }
+
+      this.currentFindTextPanel.set(panel);
+      
+      this.mainPanel.revalidate();
+      this.mainPanel.repaint();
+     
+      panel.requestFocus();
+    }
+  }
+
+  @Override
+  public void hideFindTextPane() {
+    final FindTextPanel panel = this.currentFindTextPanel.get();
+    if (panel!=null){
+      this.currentFindTextPanel.set(null);
+      this.mainPanel.remove(panel);
+      this.mainPanel.revalidate();
+      this.mainPanel.repaint();
+    }
+  }
+  
   @Override
   @Nullable
   public NodeProject findProjectForFile(@Nonnull final File file) {
@@ -666,6 +716,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuUndo = new javax.swing.JMenuItem();
     menuRedo = new javax.swing.JMenuItem();
     jSeparator1 = new javax.swing.JPopupMenu.Separator();
+    menuFindText = new javax.swing.JMenuItem();
+    jSeparator5 = new javax.swing.JPopupMenu.Separator();
     menuPreferences = new javax.swing.JMenuItem();
     menuView = new javax.swing.JMenu();
     menuFullScreen = new javax.swing.JMenuItem();
@@ -778,6 +830,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuEdit.add(menuRedo);
     menuEdit.add(jSeparator1);
+
+    menuFindText.setText("Find text");
+    menuFindText.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuFindTextActionPerformed(evt);
+      }
+    });
+    menuEdit.add(menuFindText);
+    menuEdit.add(jSeparator5);
 
     menuPreferences.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/setting_tools.png"))); // NOI18N
     menuPreferences.setText("Preferences");
@@ -1123,6 +1184,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }//GEN-LAST:event_menuRedoActionPerformed
 
+  private void menuFindTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFindTextActionPerformed
+    showFindTextPane("");
+  }//GEN-LAST:event_menuFindTextActionPerformed
+
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {
@@ -1186,10 +1251,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JPopupMenu.Separator jSeparator2;
   private javax.swing.JPopupMenu.Separator jSeparator3;
   private javax.swing.JPopupMenu.Separator jSeparator4;
+  private javax.swing.JPopupMenu.Separator jSeparator5;
   private javax.swing.JMenuItem menuAbout;
   private javax.swing.JMenu menuEdit;
   private javax.swing.JMenuItem menuExit;
   private javax.swing.JMenu menuFile;
+  private javax.swing.JMenuItem menuFindText;
   private javax.swing.JMenuItem menuFullScreen;
   private javax.swing.JMenuItem menuGoToFile;
   private javax.swing.JMenu menuHelp;

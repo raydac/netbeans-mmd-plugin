@@ -281,4 +281,20 @@ public final class PictureViewer extends AbstractScrollPane {
   public boolean undo() {
     return false;
   }
+
+  @Override
+  public boolean findNext(@Nonnull final String text) {
+    return false;
+  }
+
+  @Override
+  public boolean findPrev(@Nonnull final String text) {
+    return false;
+  }
+
+  @Override
+  public boolean doesSupportTextSearch() {
+    return false;
+  }
+  
 }

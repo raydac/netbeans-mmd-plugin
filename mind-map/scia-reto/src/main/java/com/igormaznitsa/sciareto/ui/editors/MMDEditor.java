@@ -840,4 +840,21 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   public boolean canBeDeletedSilently(@Nonnull final MindMap map, @Nonnull final Topic topic) {
     return topic.getText().isEmpty() && topic.getExtras().isEmpty() && doesContainOnlyStandardAttributes(topic);
   }
+
+  @Override
+  public boolean findNext(@Nonnull final String text) {
+    return false;
+  }
+
+  @Override
+  public boolean findPrev(@Nonnull final String text) {
+    return false;
+  }
+
+  @Override
+  public boolean doesSupportTextSearch() {
+    return true;
+  }
+  
+  
 }

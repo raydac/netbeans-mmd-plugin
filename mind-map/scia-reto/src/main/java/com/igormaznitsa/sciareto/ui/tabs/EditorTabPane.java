@@ -31,11 +31,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
@@ -50,6 +53,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     super(JTabbedPane.TOP);
     this.context = context;
     this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+    
     this.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseReleased(MouseEvent e) {
@@ -76,6 +80,14 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
         }
       }
     });
+    
+    this.addChangeListener(new ChangeListener() {
+      @Override
+      public void stateChanged(@Nonnull final ChangeEvent e) {
+        ((MainFrame)context).processTabChanged(getCurrentTitle());
+      }
+    });
+    
   }
 
   public boolean hasEditableAndChangedDocument() {
@@ -121,6 +133,10 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       index++;
     }
     return replaced;
+  }
+
+  public boolean isEmpty() {
+    return this.getTabCount() == 0;
   }
 
   @Nullable
