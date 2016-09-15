@@ -18,11 +18,11 @@ package com.igormaznitsa.mindmap.model;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
 import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 
 public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
@@ -41,6 +41,12 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
   public ExtraFile(@Nonnull final String text) throws URISyntaxException {
     this(new MMapURI(text));
+  }
+
+  @Override
+  public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
+    final String filePathAsText = FilenameUtils.normalize(this.fileUri.asFile(baseFolder).getAbsolutePath());
+    return pattern.matcher(filePathAsText).find();
   }
 
   public boolean isMMDFile() {

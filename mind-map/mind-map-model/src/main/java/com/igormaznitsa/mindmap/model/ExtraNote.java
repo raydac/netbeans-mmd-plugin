@@ -15,7 +15,10 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.io.File;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ExtraNote extends Extra<String> {
   private static final long serialVersionUID = 8612886872756838947L;
@@ -24,6 +27,11 @@ public class ExtraNote extends Extra<String> {
   
   public ExtraNote(@Nonnull final String text) {
     this.text = text;
+  }
+
+  @Override
+  public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
+    return pattern.matcher(this.text).find();
   }
   
   @Override

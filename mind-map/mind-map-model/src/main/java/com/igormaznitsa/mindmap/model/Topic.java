@@ -33,6 +33,7 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -105,10 +106,53 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
     if (this == topic) {
       result = true;
-    }
-    else {
+    } else {
       for (final Topic t : this.children) {
         if (t.containTopic(topic)) {
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  @Nullable
+  public Topic nextSibling() {
+    final int position = this.parent == null ? -1 : this.parent.getChildren().indexOf(this);
+
+    final Topic result;
+    if (position < 0) {
+      result = null;
+    } else {
+      final List<Topic> all = this.parent.getChildren();
+      final int nextPosition = position + 1;
+      result = all.size() > nextPosition ? all.get(nextPosition) : null;
+    }
+    return result;
+  }
+
+  @Nullable
+  public Topic prevSibling() {
+    final int position = this.parent == null ? -1 : this.parent.getChildren().indexOf(this);
+
+    final Topic result;
+    if (position <= 0) {
+      result = null;
+    } else {
+      final List<Topic> all = this.parent.getChildren();
+      result = all.get(position - 1);
+    }
+    return result;
+  }
+
+  public boolean containsPattern(final @Nullable File baseFolder, final @Nonnull Pattern pattern) {
+    boolean result = false;
+    if (pattern.matcher(this.text).find()) {
+      result = true;
+    } else {
+      for (final Extra<?> e : this.extras.values()) {
+        if (e.containsPattern(baseFolder, pattern)) {
           result = true;
           break;
         }
@@ -160,8 +204,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         depth--;
       }
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -179,8 +222,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         result = prev;
       }
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -206,8 +248,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         }
       }
       return noImportantContent;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -236,11 +277,9 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
             if (topicDepth == depth + 1) {
               depth = topicDepth;
               topic = new Topic(map, topic, newTopicText);
-            }
-            else if (topicDepth == depth) {
+            } else if (topicDepth == depth) {
               topic = new Topic(map, topic == null ? null : topic.getParent(), newTopicText);
-            }
-            else if (topicDepth < depth) {
+            } else if (topicDepth < depth) {
               if (topic != null) {
                 topic = topic.findParentForDepth(depth - topicDepth);
                 topic = new Topic(map, topic, newTopicText);
@@ -254,8 +293,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
             final String extraName = lexer.getTokenText().substring(1).trim();
             try {
               extraType = Extra.ExtraType.valueOf(extraName);
-            }
-            catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ex) {
               extraType = null;
             }
           }
@@ -275,15 +313,12 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
                 final String groupPre = extraType.preprocessString(text.substring(5, text.length() - 6));
                 if (groupPre != null) {
                   topic.setExtra(extraType.parseLoaded(groupPre));
-                }
-                else {
+                } else {
                   logger.error("Detected invalid extra data " + extraType);
                 }
-              }
-              catch (Exception ex) {
+              } catch (Exception ex) {
                 logger.error("Unexpected exception #23241", ex); //NOI18N
-              }
-              finally {
+              } finally {
                 extraType = null;
               }
             }
@@ -300,8 +335,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         }
       }
       return topic == null ? null : topic.getRoot();
-    }
-    finally {
+    } finally {
       map.unlock();
     }
   }
@@ -341,12 +375,10 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     try {
       if (value == null) {
         return this.attributes.remove(name) != null;
-      }
-      else {
+      } else {
         return !value.equals(this.attributes.put(name, value));
       }
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -363,8 +395,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       if (theParent != null) {
         theParent.children.remove(this);
       }
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -391,8 +422,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     this.map.lock();
     try {
       this.text = Assertions.assertNotNull(text);
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -405,8 +435,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         result |= this.extras.remove(e) != null;
       }
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -417,8 +446,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       for (final Extra<?> e : Assertions.assertDoesntContainNull(extras)) {
         this.extras.put(e.getType(), e);
       }
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -436,8 +464,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         }
       }
       return false;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -466,8 +493,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         }
       }
       return false;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -489,8 +515,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
           theParent.children.add(thatIndex, this);
         }
       }
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -506,8 +531,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         current = current.parent;
       }
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -529,8 +553,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
           theParent.children.add(thatIndex + 1, this);
         }
       }
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -539,8 +562,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     this.map.lock();
     try {
       write(1, out);
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -591,8 +613,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     this.map.lock();
     try {
       return !this.children.isEmpty();
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -627,8 +648,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       if (t == topic) {
         iterator.remove();
         return true;
-      }
-      else if (t.removeTopic(topic)) {
+      } else if (t.removeTopic(topic)) {
         return true;
       }
     }
@@ -654,8 +674,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       this.parent = newParent;
 
       return true;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -669,8 +688,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         result.moveAfter(afterTheTopic);
       }
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -688,8 +706,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
             if (checker == null) {
               result = current.children.get(i);
               break;
-            }
-            else if (checker.check(current.children.get(i))) {
+            } else if (checker.check(current.children.get(i))) {
               result = current.children.get(i);
               break;
             }
@@ -698,8 +715,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       }
 
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -723,8 +739,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       }
 
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -734,16 +749,14 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     try {
       if (extras == null || extras.length == 0) {
         this.extras.clear();
-      }
-      else {
+      } else {
         for (final Extra<?> e : extras) {
           if (e != null) {
             this.extras.remove(e.getType());
           }
         }
       }
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -791,8 +804,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     do {
       list.add(0, current);
       current = current.parent;
-    }
-    while (current != null);
+    } while (current != null);
     return list.toArray(new Topic[list.size()]);
   }
 
@@ -807,8 +819,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       result.attributes.putAll(this.attributes);
 
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -825,8 +836,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         result |= c.removeExtraFromSubtree(type);
       }
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -843,8 +853,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         result |= c.removeAttributeFromSubtree(names);
       }
       return result;
-    }
-    finally {
+    } finally {
       this.map.unlock();
     }
   }
@@ -871,17 +880,17 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
       if (fileLink.isSame(baseFolder, oldFile)) {
         replacement = new ExtraFile(newFile);
-      }else {
+      } else {
         replacement = fileLink.replaceParentPath(baseFolder, oldFile, newFile);
       }
-      
-      if (replacement!=null){
+
+      if (replacement != null) {
         result = true;
         this.extras.remove(Extra.ExtraType.FILE);
         this.extras.put(Extra.ExtraType.FILE, replacement);
       }
     }
-    
+
     for (final Topic c : this.children) {
       result |= c.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
     }
@@ -907,8 +916,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   @Nonnull
   public Iterator<Topic> iterator() {
     final Iterator<Topic> iter = this.children.iterator();
-    
-    return new Iterator<Topic>(){
+
+    return new Iterator<Topic>() {
       Topic childTopic;
       Iterator<Topic> childIterator;
 
@@ -916,30 +925,30 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       public void remove() {
         iter.remove();
       }
-      
+
       @Nonnull
-      Iterator<Topic> init(){
-        if (iter.hasNext()){
+      Iterator<Topic> init() {
+        if (iter.hasNext()) {
           this.childTopic = iter.next();
         }
         return this;
       }
-      
+
       @Override
       public boolean hasNext() {
-        return iter.hasNext() || this.childTopic!=null || (this.childIterator!=null && this.childIterator.hasNext());
+        return iter.hasNext() || this.childTopic != null || (this.childIterator != null && this.childIterator.hasNext());
       }
 
       @Nonnull
       @Override
       public Topic next() {
         final Topic result;
-        if (this.childTopic!=null){
+        if (this.childTopic != null) {
           result = this.childTopic;
           this.childTopic = null;
           this.childIterator = result.iterator();
-        } else if (this.childIterator!=null){
-          if (this.childIterator.hasNext()){
+        } else if (this.childIterator != null) {
+          if (this.childIterator.hasNext()) {
             result = this.childIterator.next();
           } else {
             result = iter.next();

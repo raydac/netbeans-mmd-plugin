@@ -15,8 +15,10 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.io.File;
 import java.util.Locale;
 
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -57,7 +59,12 @@ public class ExtraTopic extends Extra<String> {
   public ExtraTopic(@Nonnull final String topicUID) {
     this.topicUID = topicUID;
   }
-  
+
+  @Override
+  public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
+    return false;
+  }
+
   @Override
   @Nonnull
   public String getValue() {

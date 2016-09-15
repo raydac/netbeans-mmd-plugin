@@ -15,12 +15,14 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -94,6 +96,8 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
 
   @Nonnull
   public abstract String provideAsStringForSave();
+
+  public abstract boolean containsPattern(@Nullable File baseFolder, @Nonnull Pattern pattern);
 
   public final void write(@Nonnull final Writer out) throws IOException {
     out.append("- ").append(getType().name()).append(NEXT_LINE); //NOI18N

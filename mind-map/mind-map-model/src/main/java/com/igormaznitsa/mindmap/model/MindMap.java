@@ -26,7 +26,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,13 +55,13 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMap.class);
 
-  static final Comparator<String> STRING_COMPARATOR = new Comparator<String>(){
+  static final Comparator<String> STRING_COMPARATOR = new Comparator<String>() {
     @Override
     public int compare(@Nonnull final String o1, @Nonnull final String o2) {
       return o1.compareTo(o2);
     }
   };
-  
+
   @Nullable
   private Topic root;
 
@@ -80,7 +79,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
 
   public MindMap(@Nullable final MindMapController nullableController, final boolean makeRoot) {
     this.controller = nullableController;
-    if (makeRoot){
+    if (makeRoot) {
       this.root = new Topic(this, null, "");
     }
   }
@@ -130,10 +129,69 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     this.attributes.put(GENERATOR_VERSION_NAME, FORMAT_VERSION);
   }
 
-  public void clear(){
+  public void clear() {
     setRoot(null, true);
   }
-  
+
+  @Nullable
+  public Topic findNext(@Nullable final File baseFolder, @Nullable final Topic start, @Nonnull final Pattern pattern) {
+    if (start != null && start.getMap() != this) {
+      throw new IllegalArgumentException("Topic doesn't belong to the mind map");
+    }
+
+    Topic result = null;
+
+    this.locker.lock();
+    try {
+      boolean startFound = start == null;
+      for (final Topic t : this) {
+        if (startFound) {
+          if (t.containsPattern(baseFolder, pattern)) {
+            result = t;
+            break;
+          }
+        } else if (t == start) {
+          startFound = true;
+        }
+      }
+    } finally {
+      this.locker.unlock();
+    }
+
+    return result;
+  }
+
+  @Nullable
+  public Topic findPrev(@Nullable final File baseFolder, @Nullable final Topic start, @Nonnull final Pattern pattern) {
+    if (start != null && start.getMap() != this) {
+      throw new IllegalArgumentException("Topic doesn't belong to the mind map");
+    }
+
+    Topic result = null;
+
+    this.locker.lock();
+    try {
+      final List<Topic> plain = this.makePlainList();
+      int startIndex = start == null ? plain.size() : plain.indexOf(start);
+      if (startIndex < 0) {
+        throw new IllegalArgumentException("It looks like that topic doesn't belong to the mind map");
+      }
+      if (startIndex > 0) {
+        while (startIndex >= 0) {
+          final Topic candidate = plain.get(--startIndex);
+          if (candidate.containsPattern(baseFolder, pattern)){
+            result = candidate;
+            break;
+          }
+        }
+      }
+    } finally {
+      this.locker.unlock();
+    }
+
+    return result;
+  }
+
   public void setRoot(@Nullable final Topic newRoot, final boolean makeNotification) {
     this.locker.lock();
     try {
@@ -145,7 +203,9 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
         }
         this.root = newRoot;
       }
-      if (makeNotification) fireModelChanged();
+      if (makeNotification) {
+        fireModelChanged();
+      }
     } finally {
       this.locker.unlock();
     }
@@ -555,6 +615,21 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       }
     }
     return changed;
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  public List<Topic> makePlainList() {
+    this.locker.lock();
+    try {
+      final List<Topic> result = new ArrayList<Topic>();
+      for (final Topic t : this) {
+        result.add(t);
+      }
+      return result;
+    } finally {
+      this.locker.unlock();
+    }
   }
 
 }
