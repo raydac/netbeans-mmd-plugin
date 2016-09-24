@@ -22,10 +22,10 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
 public final class Focuser implements AncestorListener {
-  
+
   private final JComponent component;
-  
-  public Focuser(@Nonnull final JComponent component){
+
+  public Focuser(@Nonnull final JComponent component) {
     this.component = component;
     this.component.addAncestorListener(this);
   }
@@ -35,7 +35,7 @@ public final class Focuser implements AncestorListener {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        component.requestFocusInWindow();
+        component.grabFocus();
       }
     });
     this.component.removeAncestorListener(this);

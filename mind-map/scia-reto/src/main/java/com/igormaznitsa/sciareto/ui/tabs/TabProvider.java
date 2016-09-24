@@ -17,11 +17,13 @@ package com.igormaznitsa.sciareto.ui.tabs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.sciareto.ui.editors.EditorType;
+import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
 public interface TabProvider {
 
@@ -56,7 +58,7 @@ public interface TabProvider {
   boolean redo();
   boolean undo();
   
-  boolean findNext(@Nonnull String text);
-  boolean findPrev(@Nonnull String text);
-  boolean doesSupportTextSearch();
+  boolean findNext(@Nonnull Pattern pattern, @Nonnull FindTextScopeProvider provider);
+  boolean findPrev(@Nonnull Pattern pattern,@Nonnull FindTextScopeProvider provider);
+  boolean doesSupportPatternSearch();
 }

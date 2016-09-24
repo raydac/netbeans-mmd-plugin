@@ -33,10 +33,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -85,6 +89,7 @@ import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
+import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
 public final class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
 
@@ -104,7 +109,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
   private boolean preventAddUndo = false;
   private String currentModelState;
-  
+
   public void refreshConfig() {
     this.mindMapPanel.refreshConfiguration();
   }
@@ -141,11 +146,12 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     final MindMap map;
     if (file == null) {
       map = new MindMap(this, true);
-    } else {
+    }
+    else {
       map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
     }
 
-    this.mindMapPanel.setModel(Assertions.assertNotNull(map),false);
+    this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
 
     loadContent(file);
     this.currentModelState = this.mindMapPanel.getModel().packToString();
@@ -187,18 +193,19 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     final MindMap map;
     if (file == null) {
       map = new MindMap(this, true);
-    } else {
+    }
+    else {
       map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
     }
-    this.mindMapPanel.setModel(Assertions.assertNotNull(map),false);
+    this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
 
     this.undoStorage.clearRedo();
     this.undoStorage.clearUndo();
-    
+
     this.title.setChanged(false);
-    
+
     this.revalidate();
-    
+
     this.context.notifyUpdateRedoUndo();
   }
 
@@ -216,7 +223,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false);
       this.title.setChanged(false);
       result = true;
-    } else {
+    }
+    else {
       result = true;
     }
     return result;
@@ -268,10 +276,10 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors = null;
 
   @Nonnull
-  public MindMapPanel getMindMapPanel(){
+  public MindMapPanel getMindMapPanel() {
     return this.mindMapPanel;
   }
-  
+
   @Override
   @Nonnull
   public TabTitle getTabTitle() {
@@ -311,7 +319,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
   @Override
   public void onMindMapModelChanged(@Nonnull final MindMapPanel source) {
-    if (!this.preventAddUndo && this.currentModelState!=null) {
+    if (!this.preventAddUndo && this.currentModelState != null) {
       this.undoStorage.addToUndo(this.currentModelState);
       this.undoStorage.clearRedo();
       this.currentModelState = source.getModel().packToString();
@@ -321,23 +329,29 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       this.title.setChanged(true);
       this.getViewport().revalidate();
       this.repaint();
-    } finally {
+    }
+    finally {
       this.context.notifyUpdateRedoUndo();
     }
   }
 
   @Override
   public boolean redo() {
-    if (this.undoStorage.hasRedo()){
-      this.undoStorage.addToUndo(this.currentModelState);
-      this.currentModelState = this.undoStorage.fromRedo();
-      this.preventAddUndo = true;
-      try {
-        this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
-      } catch (IOException ex) {
-        LOGGER.error("Can't redo mind map", ex);
-      } finally {
-        this.preventAddUndo = false;
+    if (!this.mindMapPanel.endEdit(false)) {
+      if (this.undoStorage.hasRedo()) {
+        this.undoStorage.addToUndo(this.currentModelState);
+        this.currentModelState = this.undoStorage.fromRedo();
+        this.preventAddUndo = true;
+        try {
+          this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
+          this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
+        }
+        catch (IOException ex) {
+          LOGGER.error("Can't redo mind map", ex);
+        }
+        finally {
+          this.preventAddUndo = false;
+        }
       }
     }
     return this.undoStorage.hasRedo();
@@ -345,21 +359,26 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
   @Override
   public boolean undo() {
-    if (this.undoStorage.hasUndo()){
-      this.undoStorage.addToRedo(this.currentModelState);
-      this.currentModelState = this.undoStorage.fromUndo();
-      this.preventAddUndo = true;
-      try {
-        this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
-      } catch (IOException ex) {
-        LOGGER.error("Can't redo mind map", ex);
-      } finally {
-        this.preventAddUndo = false;
+    if (!this.mindMapPanel.endEdit(false)) {
+      if (this.undoStorage.hasUndo()) {
+        this.undoStorage.addToRedo(this.currentModelState);
+        this.currentModelState = this.undoStorage.fromUndo();
+        this.preventAddUndo = true;
+        try {
+          this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
+          this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
+        }
+        catch (IOException ex) {
+          LOGGER.error("Can't redo mind map", ex);
+        }
+        finally {
+          this.preventAddUndo = false;
+        }
       }
     }
     return this.undoStorage.hasUndo();
   }
-  
+
   @Override
   public void onMindMapModelRealigned(@Nonnull final MindMapPanel source, @Nonnull final Dimension coveredAreaSize) {
     this.getViewport().revalidate();
@@ -413,9 +432,11 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
           final File theFile = uri.asFile(getProjectFolder());
           if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
             UiUtils.openInSystemViewer(theFile);
-          } else if (theFile.isDirectory()) {
+          }
+          else if (theFile.isDirectory()) {
             this.context.openProject(theFile, false);
-          } else if (!this.context.openFileAsTab(theFile)) {
+          }
+          else if (!this.context.openFileAsTab(theFile)) {
             UiUtils.openInSystemViewer(theFile);
           }
         }
@@ -437,7 +458,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
           if (theTopic == null) {
             // not presented
             DialogProviderManager.getInstance().getDialogProvider().msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
-          } else {
+          }
+          else {
             // detected
             this.mindMapPanel.focusTo(theTopic);
           }
@@ -466,7 +488,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
     if (topicsNotImportant) {
       result = true;
-    } else {
+    }
+    else {
       result = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
@@ -477,7 +500,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     this.dragAcceptableType = checkDragType(dtde);
     if (!this.dragAcceptableType) {
       dtde.rejectDrag();
-    } else {
+    }
+    else {
       dtde.acceptDrag(DnDConstants.ACTION_MOVE);
     }
     repaint();
@@ -487,7 +511,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   public void dragOver(@Nonnull final DropTargetDragEvent dtde) {
     if (acceptOrRejectDragging(dtde)) {
       dtde.acceptDrag(DnDConstants.ACTION_MOVE);
-    } else {
+    }
+    else {
       dtde.rejectDrag();
     }
     repaint();
@@ -514,14 +539,16 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
         final List<File> listOfFiles = t.getFiles();
         detectedFileObject = listOfFiles.isEmpty() ? null : listOfFiles.get(0);
         break;
-      } else if (df.isFlavorJavaFileListType()) {
+      }
+      else if (df.isFlavorJavaFileListType()) {
         try {
           final List list = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
           if (list != null && !list.isEmpty()) {
             detectedFileObject = (File) list.get(0);
           }
           break;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
           LOGGER.error("Can't extract file from DnD", ex);
         }
       }
@@ -541,10 +568,12 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
         final File projectFolder = getProjectFolder();
         if (theFile.equals(projectFolder)) {
           theURI = new MMapURI(projectFolder, new File("."), null);
-        } else {
+        }
+        else {
           theURI = new MMapURI(projectFolder, theFile, null);
         }
-      } else {
+      }
+      else {
         theURI = new MMapURI(null, theFile, null);
       }
 
@@ -635,14 +664,16 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     if (note == null) {
       // create new
       result = UiUtils.editText(String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
-    } else {
+    }
+    else {
       // edit
       result = UiUtils.editText(String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), note.getValue());
     }
     if (result != null) {
       if (result.isEmpty()) {
         topic.removeExtra(Extra.ExtraType.NOTE);
-      } else {
+      }
+      else {
         topic.setExtra(new ExtraNote(result));
       }
       this.mindMapPanel.invalidate();
@@ -671,7 +702,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       final File projectFolder = getProjectFolder();
       if (file == null) {
         path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
-      } else {
+      }
+      else {
         final MMapURI uri = file.getValue();
         final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
 
@@ -684,7 +716,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
         final boolean valueChanged;
         if (path.isEmpty()) {
           valueChanged = topic.removeExtra(Extra.ExtraType.FILE);
-        } else {
+        }
+        else {
           final Properties props = new Properties();
           if (path.isShowWithSystemTool()) {
             props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
@@ -696,7 +729,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
           if (theFile.exists()) {
             topic.setExtra(new ExtraFile(fileUri));
             valueChanged = true;
-          } else {
+          }
+          else {
             DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
             valueChanged = false;
           }
@@ -726,17 +760,20 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
           treePanel.dispose();
           if (selected != null) {
             result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
-          } else {
+          }
+          else {
             result = remove;
           }
         }
-      } else {
+      }
+      else {
         final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
           final Topic selected = panel.getSelectedTopic();
           if (selected != null) {
             result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
-          } else {
+          }
+          else {
             result = remove;
           }
         }
@@ -745,7 +782,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       if (result != null) {
         if (result == remove) {
           topic.removeExtra(Extra.ExtraType.TOPIC);
-        } else {
+        }
+        else {
           topic.setExtra(result);
         }
         this.mindMapPanel.invalidate();
@@ -762,14 +800,16 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       if (link == null) {
         // create new
         result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
-      } else {
+      }
+      else {
         // edit
         result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
       }
       if (result != null) {
         if (result == UiUtils.EMPTY_URI) {
           topic.removeExtra(Extra.ExtraType.LINK);
-        } else {
+        }
+        else {
           topic.setExtra(new ExtraLink(result));
         }
         this.mindMapPanel.invalidate();
@@ -842,19 +882,78 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   @Override
-  public boolean findNext(@Nonnull final String text) {
-    return false;
+  public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+    Topic startTopic = null;
+    if (this.mindMapPanel.hasSelectedTopics()) {
+      final Topic[] selected = this.mindMapPanel.getSelectedTopics();
+      startTopic = selected[selected.length - 1];
+    }
+
+    final File projectBaseFolder = this.getProjectFolder();
+
+    final Set<Extra.ExtraType> extras = EnumSet.noneOf(Extra.ExtraType.class);
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_NOTES)) {
+      extras.add(Extra.ExtraType.NOTE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_FILES)) {
+      extras.add(Extra.ExtraType.FILE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_URI)) {
+      extras.add(Extra.ExtraType.LINK);
+    }
+    final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
+
+    Topic found = this.mindMapPanel.getModel().findNext(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    if (found == null && startTopic != null) {
+      found = this.mindMapPanel.getModel().findNext(projectBaseFolder, null, pattern, inTopicText, extras);
+    }
+
+    if (found != null) {
+      this.mindMapPanel.removeAllSelection();
+      this.mindMapPanel.focusTo(found);
+    }
+
+    return found != null;
   }
 
   @Override
-  public boolean findPrev(@Nonnull final String text) {
-    return false;
+  public boolean findPrev(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+    Topic startTopic = null;
+    if (this.mindMapPanel.hasSelectedTopics()) {
+      final Topic[] selected = this.mindMapPanel.getSelectedTopics();
+      startTopic = selected[0];
+    }
+
+    final File projectBaseFolder = this.getProjectFolder();
+
+    final Set<Extra.ExtraType> extras = new HashSet<>();
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_NOTES)) {
+      extras.add(Extra.ExtraType.NOTE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_FILES)) {
+      extras.add(Extra.ExtraType.FILE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_URI)) {
+      extras.add(Extra.ExtraType.LINK);
+    }
+    final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
+
+    Topic found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    if (found == null && startTopic != null) {
+      found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, null, pattern, inTopicText, extras);
+    }
+
+    if (found != null) {
+      this.mindMapPanel.removeAllSelection();
+      this.mindMapPanel.focusTo(found);
+    }
+
+    return found != null;
   }
 
   @Override
-  public boolean doesSupportTextSearch() {
+  public boolean doesSupportPatternSearch() {
     return true;
   }
-  
-  
+
 }

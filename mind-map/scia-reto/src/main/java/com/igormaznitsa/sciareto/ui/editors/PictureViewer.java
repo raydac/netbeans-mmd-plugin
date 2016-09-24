@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -43,6 +44,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
 public final class PictureViewer extends AbstractScrollPane {
 
@@ -283,17 +285,17 @@ public final class PictureViewer extends AbstractScrollPane {
   }
 
   @Override
-  public boolean findNext(@Nonnull final String text) {
+  public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
     return false;
   }
 
   @Override
-  public boolean findPrev(@Nonnull final String text) {
+  public boolean findPrev(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
     return false;
   }
 
   @Override
-  public boolean doesSupportTextSearch() {
+  public boolean doesSupportPatternSearch() {
     return false;
   }
   

@@ -22,11 +22,13 @@ import javax.annotation.Nullable;
 import javax.swing.undo.UndoManager;
 
 public final class UndoRedoStorage<T> {
-  
+
   private final List<T> undoItems = new ArrayList<>();
   private final List<T> redoItems = new ArrayList<>();
   private final int maxSize;
-  
+
+  private boolean hasUndoStateRemovedForFullBuffer = false;
+
   public UndoRedoStorage(final int max) {
     UndoManager manager;
     this.maxSize = max;
@@ -38,7 +40,7 @@ public final class UndoRedoStorage<T> {
 
   public boolean hasRedo() {
     return !this.redoItems.isEmpty();
-  } 
+  }
 
   @Nullable
   public T fromUndo() {
@@ -46,10 +48,10 @@ public final class UndoRedoStorage<T> {
   }
 
   @Nullable
-  public T fromRedo(){
+  public T fromRedo() {
     return this.redoItems.isEmpty() ? null : this.redoItems.remove(this.redoItems.size() - 1);
   }
-  
+
   public void addToRedo(@Nonnull final T val) {
     this.redoItems.add(val);
     while (this.redoItems.size() > maxSize) {
@@ -57,16 +59,24 @@ public final class UndoRedoStorage<T> {
     }
   }
 
-  public void clearRedo(){
+  public void clearRedo() {
     this.redoItems.clear();
   }
 
   public void clearUndo() {
+    this.hasUndoStateRemovedForFullBuffer = false;
     this.undoItems.clear();
   }
-  
+
+  public boolean hasRemovedUndoStateForFullBuffer() {
+    return this.hasUndoStateRemovedForFullBuffer;
+  }
+
   public void addToUndo(@Nonnull final T val) {
     this.undoItems.add(val);
-    while(this.undoItems.size()>maxSize) this.undoItems.remove(0);
+    while (this.undoItems.size() > maxSize) {
+      this.hasUndoStateRemovedForFullBuffer = true;
+      this.undoItems.remove(0);
+    }
   }
 }

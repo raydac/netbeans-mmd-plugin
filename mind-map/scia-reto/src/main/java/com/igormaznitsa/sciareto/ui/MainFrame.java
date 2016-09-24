@@ -320,8 +320,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public void processTabChanged(@Nullable final TabTitle title) {
     this.menuSaveAll.setEnabled(this.tabPane.hasEditableAndChangedDocument());
     
-    if (title != null && !this.tabPane.isEmpty() && title.getProvider().doesSupportTextSearch()){
+    if (title != null && !this.tabPane.isEmpty() && title.getProvider().doesSupportPatternSearch()){
       this.menuFindText.setEnabled(true);
+      final FindTextPanel findTextPanel = this.currentFindTextPanel.get();
+      if (findTextPanel!=null){
+        findTextPanel.updateUI(title);
+      }
     }else{
       this.menuFindText.setEnabled(false);
       hideFindTextPane();
@@ -561,9 +565,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   private void processTabChange(){
-    this.menuFindText.setEnabled(!this.tabPane.isEmpty() && this.tabPane.getCurrentTitle().getProvider().doesSupportTextSearch());
+    this.menuFindText.setEnabled(!this.tabPane.isEmpty() && this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch());
     
-    if (this.tabPane.isEmpty() || !this.tabPane.getCurrentTitle().getProvider().doesSupportTextSearch()){
+    if (this.tabPane.isEmpty() || !this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch()){
       hideFindTextPane();
     }
   }
@@ -571,12 +575,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Override
   public void showFindTextPane(@Nullable final String text) {
     final TabTitle current = getFocusedTab();
-    if (current != null && this.tabPane.getCurrentTitle().getProvider().doesSupportTextSearch()) {
+    if (current != null && this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch()) {
       
       FindTextPanel panel = this.currentFindTextPanel.get();
       
       if (panel == null){
         panel = new FindTextPanel(this, text);
+        panel.updateUI(current);
         this.mainPanel.add(panel, BorderLayout.SOUTH);
       }
 

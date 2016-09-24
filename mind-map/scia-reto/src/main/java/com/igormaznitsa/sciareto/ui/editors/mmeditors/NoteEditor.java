@@ -198,7 +198,7 @@ public class NoteEditor extends javax.swing.JPanel {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            editorPane.requestFocusInWindow();
+            editorPane.grabFocus();
             updateCaretPos();
           }
         });
@@ -220,9 +220,9 @@ public class NoteEditor extends javax.swing.JPanel {
       }
     });
 
-    this.wrapping = Wrapping.NONE;
-
-    updateBottomPanel();
+    this.wrapping = Wrapping.WORD_WRAP;
+    editorPane.setCaretPosition(0);
+    updateWrapping();
   }
 
   private void updateCaretPos() {
@@ -425,10 +425,14 @@ public class NoteEditor extends javax.swing.JPanel {
 
   private void labelWrapModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelWrapModeMouseClicked
     this.wrapping = this.wrapping.next();
+    updateWrapping();
+  }//GEN-LAST:event_labelWrapModeMouseClicked
+
+  private void updateWrapping() {
     this.editorPane.setWrapStyleWord(this.wrapping != Wrapping.CHAR_WRAP);
     this.editorPane.setLineWrap(this.wrapping != Wrapping.NONE);
     updateBottomPanel();
-  }//GEN-LAST:event_labelWrapModeMouseClicked
+  }
 
   private void buttonImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
     final File toOpen = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true, TEXT_FILE_FILTER, "Open"); //NOI18N

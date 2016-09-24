@@ -19,6 +19,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -34,6 +36,19 @@ public final class MapUtils {
 
   }
 
+  @Nonnull
+  public static Pattern string2pattern(@Nonnull final String text, final int patternFlags){
+    final StringBuilder result = new StringBuilder();
+    
+    for(final char c : text.toCharArray()){
+      result.append("\\u");
+      final String code = Integer.toHexString(c).toUpperCase(Locale.ENGLISH);
+      result.append("0000",0,4-code.length()).append(code);
+    }
+    
+    return Pattern.compile(result.toString(), patternFlags);
+  }
+  
   @Nonnull
   @MustNotContainNull
   public static List<Topic> findTopicsRelatedToFile(@Nullable final File baseFolder, @Nonnull final File file, @Nonnull final MindMap map) {

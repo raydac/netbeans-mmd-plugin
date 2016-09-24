@@ -38,6 +38,7 @@ import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
 public final class TextEditor extends AbstractScrollPane {
 
@@ -222,8 +223,7 @@ public final class TextEditor extends AbstractScrollPane {
     return this;
   }
 
-  private boolean searchSubstring(@Nonnull final String substring, final boolean next) {
-    final Pattern pattern = Pattern.compile(Pattern.quote(substring), Pattern.CASE_INSENSITIVE);
+  private boolean searchSubstring(@Nonnull final Pattern pattern, final boolean next) {
     final String currentText = this.editor.getText();
     int cursorPos = this.editor.getCaretPosition();
     final Matcher matcher = pattern.matcher(currentText);
@@ -232,13 +232,14 @@ public final class TextEditor extends AbstractScrollPane {
       if (cursorPos < currentText.length()) {
         if (matcher.find(cursorPos) || matcher.find(0)) {
           final int foundPosition = matcher.start();
-          this.editor.select(foundPosition, foundPosition + substring.length());
+          this.editor.select(foundPosition, matcher.end());
           this.editor.getCaret().setSelectionVisible(true);
           result = true;
         }
       }
     } else {
       int lastFound = -1;
+      int lastFoundEnd = -1;
       int pos = 0;
 
       int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ? this.editor.getCaretPosition() : this.editor.getSelectionStart();
@@ -248,6 +249,7 @@ public final class TextEditor extends AbstractScrollPane {
           pos = matcher.start();
           if (pos < maxPos) {
             lastFound = pos;
+            lastFoundEnd = matcher.end();
           } else {
             break;
           }
@@ -259,7 +261,7 @@ public final class TextEditor extends AbstractScrollPane {
       }
 
       if (lastFound >= 0) {
-        this.editor.select(lastFound, lastFound + substring.length());
+        this.editor.select(lastFound, lastFoundEnd);
         this.editor.getCaret().setSelectionVisible(true);
         result = true;
       }
@@ -268,17 +270,17 @@ public final class TextEditor extends AbstractScrollPane {
   }
 
   @Override
-  public boolean findNext(@Nonnull final String text) {
-    return searchSubstring(text, true);
+  public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+    return searchSubstring(pattern, true);
   }
 
   @Override
-  public boolean findPrev(@Nonnull final String text) {
-    return searchSubstring(text, false);
+  public boolean findPrev(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+    return searchSubstring(pattern, false);
   }
 
   @Override
-  public boolean doesSupportTextSearch() {
+  public boolean doesSupportPatternSearch() {
     return true;
   }
 

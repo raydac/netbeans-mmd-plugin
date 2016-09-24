@@ -65,8 +65,8 @@ public class Main {
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel";
   public static final String PROPERTY_TOTAL_UPSTART = "time.total.upstart";
 
-  private static final long STATISTICS_DELAY = 7L * 24L * 3600L * 1000L; 
-  
+  private static final long STATISTICS_DELAY = 7L * 24L * 3600L * 1000L;
+
   @Nonnull
   public static MainFrame getApplicationFrame() {
     return MAIN_FRAME;
@@ -79,10 +79,12 @@ public class Main {
       if (folder.isDirectory()) {
         LOGGER.info("Loading plugins from folder : " + folder);
         new ExternalPlugins(folder).init();
-      } else {
+      }
+      else {
         LOGGER.error("Can't find plugin folder : " + folder);
       }
-    } else {
+    }
+    else {
       LOGGER.info("Property " + PROPERTY + " is not defined");
     }
   }
@@ -92,24 +94,35 @@ public class Main {
 
     final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, PlatformProvider.getPlatform().getDefaultLFClassName());
 
-    LOGGER.info("java.vendor = "+System.getProperty("java.vendor","unknown"));
-    LOGGER.info("java.version = "+System.getProperty("java.version","unknown"));
-    LOGGER.info("os.name = "+System.getProperty("os.name","unknown"));
-    LOGGER.info("os.arch = "+System.getProperty("os.arch","unknown"));
-    LOGGER.info("os.version = "+System.getProperty("os.version","unknown"));
-    
-    final SplashScreen splash = SplashScreen.getSplashScreen();
-    if (splash == null) {
-      LOGGER.warn("There is no splash screen");
-    } else {
-      final Graphics2D gfx = splash.createGraphics();
-      gfx.dispose();
-      splash.update();
+    LOGGER.info("java.vendor = " + System.getProperty("java.vendor", "unknown"));
+    LOGGER.info("java.version = " + System.getProperty("java.version", "unknown"));
+    LOGGER.info("os.name = " + System.getProperty("os.name", "unknown"));
+    LOGGER.info("os.arch = " + System.getProperty("os.arch", "unknown"));
+    LOGGER.info("os.version = " + System.getProperty("os.version", "unknown"));
+
+    final SplashScreen splash;
+    SplashScreen foundSplash = null;
+    try {
+      foundSplash = SplashScreen.getSplashScreen();
+      if (foundSplash == null) {
+        LOGGER.warn("There is no splash screen");
+      }
+      else {
+        final Graphics2D gfx = foundSplash.createGraphics();
+        gfx.dispose();
+        foundSplash.update();
+      }
+    }
+    catch (Exception ex) {
+      LOGGER.error("Splash is not supported", ex);
+    }
+    finally {
+      splash = foundSplash;
     }
 
-    if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences().getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis()+STATISTICS_DELAY)) >= STATISTICS_DELAY) {
+    if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences().getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis() + STATISTICS_DELAY)) >= STATISTICS_DELAY) {
       LOGGER.info("Statistics scheduled");
-      
+
       final Timer timer = new Timer(45000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -123,11 +136,12 @@ public class Main {
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
-        try{
-        final Preferences prefs = PreferencesManager.getInstance().getPreferences();
-        prefs.putLong(PROPERTY_TOTAL_UPSTART, prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (System.currentTimeMillis() - UPSTART));
-        PreferencesManager.getInstance().flush();
-        }finally{
+        try {
+          final Preferences prefs = PreferencesManager.getInstance().getPreferences();
+          prefs.putLong(PROPERTY_TOTAL_UPSTART, prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (System.currentTimeMillis() - UPSTART));
+          PreferencesManager.getInstance().flush();
+        }
+        finally {
           PlatformProvider.getPlatform().dispose();
         }
       }
@@ -140,7 +154,8 @@ public class Main {
           break;
         }
       }
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       LOGGER.error("Can't set L&F", e);
     }
 
@@ -157,7 +172,7 @@ public class Main {
         MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
         MindMapPluginRegistry.getInstance().unregisterPluginForClass(AboutPlugin.class);
         MindMapPluginRegistry.getInstance().unregisterPluginForClass(OptionsPlugin.class);
-        
+
         MAIN_FRAME = new MainFrame(args);
         MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
 
@@ -167,7 +182,8 @@ public class Main {
           if (delay > 0L) {
             try {
               Thread.sleep(delay);
-            } catch (InterruptedException ex) {
+            }
+            catch (InterruptedException ex) {
               return;
             }
           }
@@ -183,19 +199,20 @@ public class Main {
             label.addLinkListener(new JHtmlLabel.LinkListener() {
               @Override
               public void onLinkActivated(@Nonnull final JHtmlLabel source, @Nonnull final String link) {
-                try{
+                try {
                   UiUtils.browseURI(new URI(link), false);
-                }catch(URISyntaxException ex){
-                  LOGGER.error("Can't make URI",ex);
+                }
+                catch (URISyntaxException ex) {
+                  LOGGER.error("Can't make URI", ex);
                 }
               }
             });
- 
+
           }
         });
       }
     });
-    
+
     new MessagesService().execute();
   }
 }
