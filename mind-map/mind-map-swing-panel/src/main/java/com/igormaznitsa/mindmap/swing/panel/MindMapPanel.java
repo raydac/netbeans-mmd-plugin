@@ -30,6 +30,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -64,18 +65,24 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
+
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
 import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
+
 import java.util.concurrent.locks.ReentrantLock;
+
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MindMapPanel extends JPanel {
@@ -1377,8 +1384,10 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public void endEdit(final boolean commit) {
+  public boolean endEdit(final boolean commit) {
+    boolean result = false;
     if (this.lockIfNotDisposed()) {
+      result = this.elementUnderEdit != null;
       try {
         if (commit && this.elementUnderEdit != null) {
           this.pathToPrevTopicBeforeEdit = null;
@@ -1404,6 +1413,7 @@ public class MindMapPanel extends JPanel {
         }
       }
     }
+    return result;
   }
 
   public void startEdit(@Nullable final AbstractElement element) {
