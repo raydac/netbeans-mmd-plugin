@@ -110,8 +110,6 @@ import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.swing.services.ImageIconService;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 
@@ -131,7 +129,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDGraphEditor.class);
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
-  private static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
