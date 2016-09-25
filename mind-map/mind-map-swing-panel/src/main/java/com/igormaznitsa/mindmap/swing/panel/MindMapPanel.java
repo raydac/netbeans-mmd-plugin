@@ -2089,6 +2089,7 @@ public class MindMapPanel extends JPanel {
   @Override
   @SuppressWarnings("unchecked")
   public void paintComponent(@Nonnull final Graphics g) {
+    super.paintComponent(g);
     if (this.lockIfNotDisposed()) {
       try {
         final Graphics2D gfx = (Graphics2D) g.create();
