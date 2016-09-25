@@ -29,6 +29,7 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.AdjustmentEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -190,6 +191,11 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       };
       SwingUtilities.invokeLater(runnable);
     }
+  }
+
+  @Override
+  protected void onScrollBarAdjustment(@Nonnull final AdjustmentEvent event) {
+    this.mindMapPanel.repaint();
   }
 
   @Override

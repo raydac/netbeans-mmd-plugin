@@ -15,9 +15,12 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
 import javax.swing.JScrollPane;
 import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -31,6 +34,20 @@ public abstract class AbstractScrollPane extends JScrollPane implements TabProvi
   
   public AbstractScrollPane(){
     super();
+
+    final AdjustmentListener listener = new AdjustmentListener() {
+      @Override
+      public void adjustmentValueChanged(@Nonnull final AdjustmentEvent e) {
+        onScrollBarAdjustment(e);
+      }
+    };
+
+    this.getHorizontalScrollBar().addAdjustmentListener(listener);
+    this.getVerticalScrollBar().addAdjustmentListener(listener);
+  }
+
+  protected void onScrollBarAdjustment(@Nonnull final AdjustmentEvent event) {
+
   }
 
   @Override
