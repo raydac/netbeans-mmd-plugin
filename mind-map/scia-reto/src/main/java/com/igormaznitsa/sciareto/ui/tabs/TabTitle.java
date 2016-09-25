@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -32,10 +33,14 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
+
 import org.apache.commons.lang.StringEscapeUtils;
+
 import com.igormaznitsa.meta.common.interfaces.Disposable;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Paths;
@@ -44,6 +49,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorType;
+import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
 public final class TabTitle extends JPanel {
@@ -55,6 +61,8 @@ public final class TabTitle extends JPanel {
   private volatile boolean changed;
   private final Context context;
   private final TabProvider parent;
+
+  private boolean visited;
 
   private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadImage("nimbusCloseFrame.png"));
 
@@ -131,6 +139,26 @@ public final class TabTitle extends JPanel {
     ToolTipManager.sharedInstance().registerComponent(closeButton);
     ToolTipManager.sharedInstance().registerComponent(this.titleLabel);
     ToolTipManager.sharedInstance().registerComponent(this);
+  }
+
+  public void visited() {
+    if (!this.visited && this.parent.getContentType() == EditorType.MINDMAP) {
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          final MMDEditor editor = (MMDEditor) parent.getMainComponent();
+          final Topic root = editor.getMindMapPanel().getModel().getRoot();
+          if (root != null) {
+            editor.topicToCentre(root);
+          }
+        }
+      });
+    }
+    this.visited = true;
+  }
+
+  public boolean isVisited() {
+    return this.visited;
   }
 
   @Override

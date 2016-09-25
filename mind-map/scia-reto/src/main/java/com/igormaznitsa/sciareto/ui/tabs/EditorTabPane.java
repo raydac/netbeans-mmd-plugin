@@ -49,11 +49,13 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
   private final Context context;
 
+  private boolean enabledNotificationAboutChange;
+
   public EditorTabPane(@Nonnull final Context context) {
     super(JTabbedPane.TOP);
     this.context = context;
     this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-    
+
     this.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseReleased(MouseEvent e) {
@@ -80,21 +82,27 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
         }
       }
     });
-    
+
     this.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(@Nonnull final ChangeEvent e) {
-        ((MainFrame)context).processTabChanged(getCurrentTitle());
+        if (enabledNotificationAboutChange) {
+          ((MainFrame) context).processTabChanged(getCurrentTitle());
+        }
       }
     });
-    
+
+  }
+
+  public void setNotifyForTabChanged(final boolean enable) {
+    this.enabledNotificationAboutChange = enable;
   }
 
   public boolean hasEditableAndChangedDocument() {
     boolean result = false;
 
     for (final TabTitle t : this) {
-      if (t!=null && t.isChanged()) {
+      if (t != null && t.isChanged()) {
         result = true;
         break;
       }
@@ -155,7 +163,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
           public void actionPerformed(@Nonnull final ActionEvent e) {
             try {
               title.save();
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
               LOGGER.error("Can't save file", ex);
               DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
             }
@@ -171,7 +180,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
           public void actionPerformed(@Nonnull final ActionEvent e) {
             try {
               title.saveAs();
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
               LOGGER.error("Can't save file", ex);
               DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
             }
@@ -274,7 +284,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       final TabTitle title = (TabTitle) this.getTabComponentAt(i);
       if (file.equals(title.getAssociatedFile())) {
         this.setSelectedIndex(i);
-        ((TabTitle)this.getTabComponentAt(i)).getProvider().focusToEditor();
+        ((TabTitle) this.getTabComponentAt(i)).getProvider().focusToEditor();
         return true;
       }
     }
@@ -292,7 +302,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     if (index >= 0) {
       try {
         this.removeTabAt(index);
-      } finally {
+      }
+      finally {
         title.disposeEditor();
       }
       return true;

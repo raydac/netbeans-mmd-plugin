@@ -23,6 +23,7 @@ import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.editors.TextEditor;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -46,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
@@ -62,18 +64,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileView;
+
 import org.apache.commons.io.FilenameUtils;
+
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
@@ -112,7 +113,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private final JPanel mainPanel;
 
   private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
-  
+
   public MainFrame(@Nonnull @MustNotContainNull final String... args) {
     super();
     initComponents();
@@ -186,7 +187,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     splitPane.setLeftComponent(this.explorerTree);
 
     this.mainPanel = new JPanel(new BorderLayout(0, 0));
-    this.mainPanel.add(this.tabPane,BorderLayout.CENTER);
+    this.mainPanel.add(this.tabPane, BorderLayout.CENTER);
 
     splitPane.setRightComponent(this.mainPanel);
 
@@ -252,14 +253,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     if (!this.stateless) {
       restoreState();
-    } else {
+    }
+    else {
       boolean openedProject = false;
       for (final String filePath : args) {
         final File file = new File(filePath);
         if (file.isDirectory()) {
           openedProject = true;
           openProject(file, true);
-        } else if (file.isFile()) {
+        }
+        else if (file.isFile()) {
           openFileAsTab(file);
         }
       }
@@ -285,23 +288,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             SwingUtilities.updateComponentTreeUI(theInstance);
             PreferencesManager.getInstance().getPreferences().put(Main.PROPERTY_LOOKANDFEEL, info.getClassName());
             PreferencesManager.getInstance().flush();
-          } catch (Exception ex) {
+          }
+          catch (Exception ex) {
             LOGGER.error("Can't change LF", ex);
           }
         }
       });
       this.menuLookAndFeel.add(menuItem);
     }
-
-    this.tabPane.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(@Nonnull final ChangeEvent e) {
-        final JTabbedPane sourceTabbedPane = (JTabbedPane) e.getSource();
-        final int index = sourceTabbedPane.getSelectedIndex();
-        final TabTitle selected = index < 0 ? null : (TabTitle) sourceTabbedPane.getTabComponentAt(index);
-        processTabChanged(selected);
-      }
-    });
 
     this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
     this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -310,42 +304,55 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     this.menuFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
-    if (tabPane.getTabCount() > 0) {
-      this.tabPane.setSelectedIndex(0);
-    } else {
-      processTabChanged(null);
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        if (tabPane.getTabCount() > 0) {
+          tabPane.setSelectedIndex(0);
+          processTabChanged(tabPane.getCurrentTitle());
+        }
+        else {
+          processTabChanged(null);
+        }
+        tabPane.setNotifyForTabChanged(true);
+      }
+    });
+
   }
 
   public void processTabChanged(@Nullable final TabTitle title) {
     this.menuSaveAll.setEnabled(this.tabPane.hasEditableAndChangedDocument());
-    
-    if (title != null && !this.tabPane.isEmpty() && title.getProvider().doesSupportPatternSearch()){
+
+    if (title != null && !this.tabPane.isEmpty() && title.getProvider().doesSupportPatternSearch()) {
       this.menuFindText.setEnabled(true);
       final FindTextPanel findTextPanel = this.currentFindTextPanel.get();
-      if (findTextPanel!=null){
+      if (findTextPanel != null) {
         findTextPanel.updateUI(title);
       }
-    }else{
+    }
+    else {
       this.menuFindText.setEnabled(false);
       hideFindTextPane();
     }
-    
+
     if (title == null) {
       this.menuRedo.setEnabled(false);
       this.menuUndo.setEnabled(false);
       this.menuSave.setEnabled(false);
       this.menuSaveAs.setEnabled(false);
-    } else {
+    }
+    else {
       this.menuRedo.setEnabled(title.getProvider().isRedo());
       this.menuUndo.setEnabled(title.getProvider().isUndo());
       if (title.getProvider().isSaveable()) {
         this.menuSave.setEnabled(title != null && title.isChanged());
         this.menuSaveAs.setEnabled(true);
-      } else {
+      }
+      else {
         this.menuSave.setEnabled(false);
         this.menuSaveAs.setEnabled(false);
       }
+      title.visited();
     }
   }
 
@@ -461,7 +468,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           openFileAsTab(f);
         }
       }
-    } catch (IOException ex) {
+    }
+    catch (IOException ex) {
       LOGGER.error("Can't restore state", ex);
     }
   }
@@ -470,7 +478,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     try {
       final List<File> files = new ArrayList<>();
       for (final NodeFileOrFolder p : this.explorerTree.getCurrentGroup()) {
-        final File f = ((NodeProject)p).getFolder();
+        final File f = ((NodeProject) p).getFolder();
         if (f.isDirectory()) {
           files.add(f);
         }
@@ -485,7 +493,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         }
       }
       FileHistoryManager.getInstance().saveActiveFiles(files.toArray(new File[files.size()]));
-    } catch (IOException ex) {
+    }
+    catch (IOException ex) {
       LOGGER.error("Can't save state", ex);
     }
   }
@@ -496,25 +505,30 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (file.isFile()) {
       if (this.tabPane.focusToFile(file)) {
         result = true;
-      } else {
+      }
+      else {
         final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
         if (ext.equals("mmd")) {
           try {
             final MMDEditor panel = new MMDEditor(this, file);
             this.tabPane.createTab(panel);
             result = true;
-          } catch (IOException ex) {
+          }
+          catch (IOException ex) {
             LOGGER.error("Can't load mind map", ex);
           }
-        } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
+        }
+        else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
           try {
             final PictureViewer panel = new PictureViewer(this, file);
             this.tabPane.createTab(panel);
             result = true;
-          } catch (IOException ex) {
+          }
+          catch (IOException ex) {
             LOGGER.error("Can't load file as image", ex);
           }
-        } else {
+        }
+        else {
           if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Very big file", "It is a very big file! Are you sure to open it?")) {
             return true;
           }
@@ -523,9 +537,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             final TextEditor panel = new TextEditor(this, file);
             this.tabPane.createTab(panel);
             result = true;
-          } catch (IOException ex) {
+          }
+          catch (IOException ex) {
             LOGGER.error("Can't load file as text", ex);
-          } finally {
+          }
+          finally {
             processTabChange();
           }
         }
@@ -534,9 +550,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (result) {
       try {
         FileHistoryManager.getInstance().registerOpenedFile(file);
-      } catch (IOException x) {
+      }
+      catch (IOException x) {
         LOGGER.error("Can't register last opened file", x);
-      } finally {
+      }
+      finally {
         this.tabPane.focusToFile(file);
       }
     }
@@ -564,10 +582,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     processTabChange();
   }
 
-  private void processTabChange(){
+  private void processTabChange() {
     this.menuFindText.setEnabled(!this.tabPane.isEmpty() && this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch());
-    
-    if (this.tabPane.isEmpty() || !this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch()){
+
+    if (this.tabPane.isEmpty() || !this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch()) {
       hideFindTextPane();
     }
   }
@@ -576,20 +594,20 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public void showFindTextPane(@Nullable final String text) {
     final TabTitle current = getFocusedTab();
     if (current != null && this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch()) {
-      
+
       FindTextPanel panel = this.currentFindTextPanel.get();
-      
-      if (panel == null){
+
+      if (panel == null) {
         panel = new FindTextPanel(this, text);
         panel.updateUI(current);
         this.mainPanel.add(panel, BorderLayout.SOUTH);
       }
 
       this.currentFindTextPanel.set(panel);
-      
+
       this.mainPanel.revalidate();
       this.mainPanel.repaint();
-     
+
       panel.requestFocus();
     }
   }
@@ -597,14 +615,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Override
   public void hideFindTextPane() {
     final FindTextPanel panel = this.currentFindTextPanel.get();
-    if (panel!=null){
+    if (panel != null) {
       this.currentFindTextPanel.set(null);
       this.mainPanel.remove(panel);
       this.mainPanel.revalidate();
       this.mainPanel.repaint();
     }
   }
-  
+
   @Override
   @Nullable
   public NodeProject findProjectForFile(@Nonnull final File file) {
@@ -672,10 +690,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       if (file.isDirectory()) {
         if (SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH)) {
           ok = true;
-        } else {
+        }
+        else {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete directory, see the log!");
         }
-      } else {
+      }
+      else {
         ok = SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH);
         if (!ok) {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete file!");
@@ -944,12 +964,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
               }
             }
             return KNOWLEDGE_FOLDER_ICO;
-          } else {
+          }
+          else {
             return super.getIcon(f);
           }
-        } else if (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mmd")) {
+        }
+        else if (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mmd")) {
           return Icons.DOCUMENT.getIcon();
-        } else {
+        }
+        else {
           return super.getIcon(f);
         }
       }
@@ -976,14 +999,17 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         }
         try {
           FileHistoryManager.getInstance().registerOpenedProject(folder);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
           LOGGER.error("Can't register last opened project", ex);
         }
-      } else {
+      }
+      else {
         this.focusInTree(folder);
       }
       result = true;
-    } else {
+    }
+    else {
       LOGGER.error("Can't find folder : " + folder);
       DialogProviderManager.getInstance().getDialogProvider().msgError("Can't find project folder!");
     }
@@ -1006,7 +1032,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     for (final TabTitle t : this.tabPane) {
       try {
         t.save();
-      } catch (IOException ex) {
+      }
+      catch (IOException ex) {
         LOGGER.error("Can't save file", ex);
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
       }
@@ -1023,7 +1050,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       if (openFileAsTab(file)) {
         try {
           FileHistoryManager.getInstance().registerOpenedProject(file);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
           LOGGER.error("Can't register last opened file", ex);
         }
       }
@@ -1035,7 +1063,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (index >= 0) {
       try {
         ((TabTitle) this.tabPane.getTabComponentAt(index)).save();
-      } catch (IOException ex) {
+      }
+      catch (IOException ex) {
         LOGGER.error("Can't save file", ex);
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
       }
@@ -1047,7 +1076,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (index >= 0) {
       try {
         ((TabTitle) this.tabPane.getTabComponentAt(index)).saveAs();
-      } catch (IOException ex) {
+      }
+      catch (IOException ex) {
         LOGGER.error("Can't save file", ex);
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
       }
@@ -1070,7 +1100,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       final File file = folder.getSelectedFile();
       if (file.exists()) {
         DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file.getName() + "' already exists!");
-      } else if (file.mkdirs()) {
+      }
+      else if (file.mkdirs()) {
         if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true)) {
           final File knowledgeFolder = new File(file, ".projectKnowledge");
           knowledgeFolder.mkdirs();
@@ -1078,7 +1109,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         if (openProject(file, true)) {
           this.focusInTree(file);
         }
-      } else {
+      }
+      else {
         LOGGER.error("Can't create folder : " + file);
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create folder: " + file);
       }
@@ -1122,7 +1154,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             public void run() {
               try {
                 window.dispose();
-              } finally {
+              }
+              finally {
                 tabPane.setComponentAt(tabIndex, currentComponent);
                 device.setFullScreenWindow(null);
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
@@ -1132,22 +1165,27 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             try {
               KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(fullScreenEscCatcher);
               device.setFullScreenWindow(window);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
               LOGGER.error("Can't turn on full screen", ex);
               endFullScreenIfActive();
               KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
             }
-          } else {
+          }
+          else {
             LOGGER.error("Unexpected state, processor is not null!");
           }
-        } else {
+        }
+        else {
           LOGGER.warn("Attempt to full screen device which already in full screen!");
         }
-      } else {
+      }
+      else {
         LOGGER.warn("Device doesn's support full screen");
         DialogProviderManager.getInstance().getDialogProvider().msgWarn("The Device doesn't support full-screen mode!");
       }
-    } else {
+    }
+    else {
       LOGGER.warn("Can't find graphics config for the frame");
     }
   }//GEN-LAST:event_menuFullScreenActionPerformed
@@ -1180,7 +1218,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (title == null) {
       this.menuUndo.setEnabled(false);
       this.menuRedo.setEnabled(false);
-    } else {
+    }
+    else {
       this.menuUndo.setEnabled(title.getProvider().undo());
       this.menuRedo.setEnabled(title.getProvider().isRedo());
     }
@@ -1191,7 +1230,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (title == null) {
       this.menuUndo.setEnabled(false);
       this.menuRedo.setEnabled(false);
-    } else {
+    }
+    else {
       this.menuRedo.setEnabled(title.getProvider().redo());
       this.menuUndo.setEnabled(title.getProvider().isUndo());
     }
@@ -1244,13 +1284,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
       if (file.exists()) {
         DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file + "' already exists!");
-      } else {
+      }
+      else {
         try {
           final MindMap mindMap = new MindMap(null, true);
           final String text = mindMap.write(new StringWriter()).toString();
           SystemUtils.saveUTFText(file, text);
           result = file;
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
           DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save mind map into file '" + file.getName() + "'");
         }
       }
