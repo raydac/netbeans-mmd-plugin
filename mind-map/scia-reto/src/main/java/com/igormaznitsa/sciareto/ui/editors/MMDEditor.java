@@ -161,6 +161,13 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     this.currentModelState = this.mindMapPanel.getModel().packToString();
   }
 
+  public void rootToCentre() {
+    final Topic root = this.mindMapPanel.getModel().getRoot();
+    if (root != null) {
+      topicToCentre(root);
+    }
+  }
+
   public void topicToCentre(@Nullable final Topic topic) {
     if (topic != null) {
       final Runnable runnable = new Runnable() {

@@ -40,7 +40,6 @@ import javax.swing.UIManager;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.igormaznitsa.meta.common.interfaces.Disposable;
-import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Paths;
@@ -146,11 +145,7 @@ public final class TabTitle extends JPanel {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          final MMDEditor editor = (MMDEditor) parent.getMainComponent();
-          final Topic root = editor.getMindMapPanel().getModel().getRoot();
-          if (root != null) {
-            editor.topicToCentre(root);
-          }
+          ((MMDEditor) parent.getMainComponent()).rootToCentre();
         }
       });
     }

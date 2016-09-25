@@ -66,6 +66,8 @@ public interface Context {
 
   boolean hasUnsavedDocument();
 
+  boolean centerRootTopicIfFocusedMMD();
+
   @Nonnull
   NodeProjectGroup getCurrentGroup();
 }

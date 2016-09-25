@@ -85,6 +85,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
@@ -1050,6 +1051,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       if (openFileAsTab(file)) {
         try {
           FileHistoryManager.getInstance().registerOpenedProject(file);
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              centerRootTopicIfFocusedMMD();
+            }
+          });
         }
         catch (IOException ex) {
           LOGGER.error("Can't register last opened file", ex);
@@ -1057,6 +1064,17 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     }
   }//GEN-LAST:event_menuOpenFileActionPerformed
+
+  @Override
+  public boolean centerRootTopicIfFocusedMMD() {
+    boolean result = false;
+    final TabTitle title = this.getFocusedTab();
+    if (title != null && title.getProvider().getContentType() == EditorType.MINDMAP) {
+      ((MMDEditor) title.getProvider().getMainComponent()).rootToCentre();
+      result = true;
+    }
+    return result;
+  }
 
   private void menuSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveActionPerformed
     final int index = this.tabPane.getSelectedIndex();
