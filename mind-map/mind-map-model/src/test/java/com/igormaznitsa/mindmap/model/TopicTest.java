@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.util.regex.Pattern;
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
 public class TopicTest {
@@ -33,6 +34,14 @@ public class TopicTest {
     return lexer;
   }
 
+  @Test
+  public void test() throws Exception {
+    final MindMap mm = new MindMap(null, true);
+    final Topic topic = new Topic(mm,null,"авы аыва вы Что то");
+    assertTrue(topic.containsPattern(null, Pattern.compile(Pattern.quote("Что"), Pattern.CASE_INSENSITIVE), true, null));
+    assertTrue(topic.containsPattern(null, Pattern.compile(Pattern.quote("что"), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE), true, null));
+  }
+  
   @Test
   public void testParse_OnlyTopic() throws Exception {
     final MindMap mm = new MindMap(null,true);

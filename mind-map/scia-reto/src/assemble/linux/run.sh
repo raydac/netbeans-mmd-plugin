@@ -4,7 +4,9 @@ SCIARETO_HOME="$(dirname ${BASH_SOURCE[0]})"
 LOG_FILE=$SCIARETO_HOME/console.log
 SCIARETO_PLUGINS=$SCIARETO_HOME/plugins
 
-JAVA_FLAGS="-client -Dsun.java2d.opengl=true -Dapple.awt.graphics.UseQuartz=true -Dsun.java2d.noddraw=true -Dsun.java2d.dpiaware=true -Dsun.zip.disableMemoryMapping=true -Dswing.aatext=true -Dawt.useSystemAAFontSettings=on"
+# JAVA_EXTRA_GFX_FLAGS="-Dsun.java2d.opengl=true"
+
+JAVA_FLAGS="-client -Dsun.java2d.dpiaware=true -Dswing.aatext=true -Dawt.useSystemAAFontSettings=on"
 
 if [ -z $JAVA_HOME ]; then
     echo \$JAVA_HOME is undefined &>$LOG_FILE
@@ -26,7 +28,7 @@ fi
 
 echo \$JAVA_RUN=$JAVA_RUN &>>$LOG_FILE
 
-$JAVA_RUN $JAVA_FLAGS -Dnbmmd.plugin.folder=$SCIARETO_PLUGINS -jar $SCIARETO_HOME/sciareto.jar $@ &>> $SCIARETO_HOME/console.log&
+$JAVA_RUN $JAVA_FLAGS $JAVA_EXTRA_GFX_FLAGS -Dnbmmd.plugin.folder=$SCIARETO_PLUGINS -jar $SCIARETO_HOME/sciareto.jar $@ &>> $SCIARETO_HOME/console.log&
 THE_PID=$!
 echo $THE_PID>$SCIARETO_HOME/.pid
 wait $THE_PID

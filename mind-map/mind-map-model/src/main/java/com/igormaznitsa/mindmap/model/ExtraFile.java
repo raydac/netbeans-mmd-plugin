@@ -97,7 +97,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   }
   
   @Nullable
-  public ExtraFile replaceParentPath(@Nonnull final File baseFolder, @Nonnull final MMapURI oldFolder, @Nonnull final MMapURI newFolder) {
+  public ExtraFile replaceParentPath(@Nullable final File baseFolder, @Nonnull final MMapURI oldFolder, @Nonnull final MMapURI newFolder) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File oldFolderFile = oldFolder.asFile(baseFolder);
     final File newFolderFile = newFolder.asFile(baseFolder);
@@ -114,7 +114,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
   
-  public boolean hasParent(@Nonnull final File baseFolder, @Nonnull final MMapURI folder) {
+  public boolean hasParent(@Nullable final File baseFolder, @Nonnull final MMapURI folder) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = folder.asFile(baseFolder);
 
@@ -130,7 +130,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
   
-  public boolean isSameOrHasParent(@Nonnull final File baseFolder, @Nonnull final MMapURI file) {
+  public boolean isSameOrHasParent(@Nullable final File baseFolder, @Nonnull final MMapURI file) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = file.asFile(baseFolder);
 
@@ -146,7 +146,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
 
-  public boolean isSame(@Nonnull final File baseFolder, @Nonnull final MMapURI file) {
+  public boolean isSame(@Nullable final File baseFolder, @Nonnull final MMapURI file) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = file.asFile(baseFolder);
 

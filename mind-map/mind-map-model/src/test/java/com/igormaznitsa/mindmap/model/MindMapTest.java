@@ -28,38 +28,38 @@ public class MindMapTest {
   @Test
   public void testFindNext_Null() throws Exception {
     final MindMap map = new MindMap(null, new StringReader("test\n---\n# Solar\n## Mercury\n## Venus\n## Earth\n### Moon\n## Mars\n### Phobos\n### Deimos"));
-    assertEquals("Mercury",map.findNext(null, null, Pattern.compile(Pattern.quote("cury"))).getText());
+    assertEquals("Mercury",map.findNext(null, null, Pattern.compile(Pattern.quote("cury")), true, null).getText());
   }
   
   @Test
   public void testFindNext_NonNull() throws Exception {
     final MindMap map = new MindMap(null, new StringReader("test\n---\n# Solar\n## Mercury\n## Venus\n## Earth\n### Moon\n## Mars\n### Phobos\n### Deimos"));
-    final Topic base = map.findNext(null, null, Pattern.compile(Pattern.quote("cury")));
-    assertNull(map.findNext(null, base, Pattern.compile(Pattern.quote("cury"))));
-    final Topic earth = map.findNext(null, base, Pattern.compile(Pattern.quote("ar")));
+    final Topic base = map.findNext(null, null, Pattern.compile(Pattern.quote("cury")),true, null);
+    assertNull(map.findNext(null, base, Pattern.compile(Pattern.quote("cury")),true, null));
+    final Topic earth = map.findNext(null, base, Pattern.compile(Pattern.quote("ar")),true, null);
     assertEquals("Earth",earth.getText());
-    final Topic mars = map.findNext(null, earth, Pattern.compile(Pattern.quote("ar")));
+    final Topic mars = map.findNext(null, earth, Pattern.compile(Pattern.quote("ar")),true, null);
     assertEquals("Mars",mars.getText());
-    assertNull(map.findNext(null, mars, Pattern.compile(Pattern.quote("ar"))));
+    assertNull(map.findNext(null, mars, Pattern.compile(Pattern.quote("ar")),true, null));
   }
   
   @Test
   public void testFindPrev_Null() throws Exception {
     final MindMap map = new MindMap(null, new StringReader("test\n---\n# Solar\n## Mercury\n## Venus\n## Earth\n### Moon\n## Mars\n### Phobos\n### Deimos"));
-    assertEquals("Solar",map.findPrev(null, null, Pattern.compile(Pattern.quote("lar"))).getText());
+    assertEquals("Solar",map.findPrev(null, null, Pattern.compile(Pattern.quote("lar")),true, null).getText());
   }
 
   @Test
   public void testFindPrev_NonNull() throws Exception {
     final MindMap map = new MindMap(null, new StringReader("test\n---\n# Solar\n## Mercury\n## Venus\n## Earth\n### Moon\n## Mars\n### Phobos\n### Deimos"));
-    final Topic base = map.findNext(null, null, Pattern.compile(Pattern.quote("Deimos")));
-    final Topic mars = map.findPrev(null, base, Pattern.compile(Pattern.quote("ar")));
+    final Topic base = map.findNext(null, null, Pattern.compile(Pattern.quote("Deimos")),true, null);
+    final Topic mars = map.findPrev(null, base, Pattern.compile(Pattern.quote("ar")),true, null);
     assertEquals("Mars", mars.getText());
-    final Topic earth = map.findPrev(null, mars, Pattern.compile(Pattern.quote("ar")));
+    final Topic earth = map.findPrev(null, mars, Pattern.compile(Pattern.quote("ar")),true, null);
     assertEquals("Earth", earth.getText());
-    final Topic solar = map.findPrev(null, earth, Pattern.compile(Pattern.quote("ar")));
+    final Topic solar = map.findPrev(null, earth, Pattern.compile(Pattern.quote("ar")),true, null);
     assertEquals("Solar", solar.getText());
-    assertNull(map.findPrev(null, solar, Pattern.compile(Pattern.quote("ar"))));
+    assertNull(map.findPrev(null, solar, Pattern.compile(Pattern.quote("ar")),true, null));
   }
   
   @Test

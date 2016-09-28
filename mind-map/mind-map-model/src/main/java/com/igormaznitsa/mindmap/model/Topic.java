@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -146,13 +147,14 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return result;
   }
 
-  public boolean containsPattern(final @Nullable File baseFolder, final @Nonnull Pattern pattern) {
+  public boolean containsPattern(final @Nullable File baseFolder, final @Nonnull Pattern pattern, final boolean findInTopicText, @Nullable final Set<Extra.ExtraType> extrasForSearch) {
     boolean result = false;
-    if (pattern.matcher(this.text).find()) {
+    
+    if (findInTopicText && pattern.matcher(this.text).find()){
       result = true;
-    } else {
+    } else if (extrasForSearch!=null && !extrasForSearch.isEmpty()) {
       for (final Extra<?> e : this.extras.values()) {
-        if (e.containsPattern(baseFolder, pattern)) {
+        if (extrasForSearch.contains(e.getType()) && e.containsPattern(baseFolder, pattern)) {
           result = true;
           break;
         }
