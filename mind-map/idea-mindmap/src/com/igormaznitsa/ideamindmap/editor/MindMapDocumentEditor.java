@@ -68,8 +68,7 @@ import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -140,7 +139,42 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         loadMindMapFromDocument();
       }
     });
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        final Topic root = mindMapPanel.getModel().getRoot();
+        if (root!=null){
+          topicToCentre(root);
+        }
+      }
+    });
   }
+
+  public void topicToCentre(@Nullable final Topic topic) {
+    if (topic != null) {
+      final Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+          AbstractElement element = (AbstractElement) topic.getPayload();
+
+          if (element == null) {
+            return;
+          }
+
+          final Rectangle2D bounds = element.getBounds();
+          final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
+
+          final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
+          final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
+
+          mainScrollPane.getViewport().setViewPosition(new Point(x, y));
+        }
+      };
+      SwingUtilities.invokeLater(runnable);
+    }
+  }
+
 
   @Nullable
   public Document getDocument() {
