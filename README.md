@@ -121,3 +121,21 @@ Mainly you can keep short texts in your mind maps as topic names but sometime it
 -  **Transition** - link to another topic in the same mind map, it allows to make some navigation in very big mind maps
 
 You can add and edit new topic content through the mind map pop-up menu and if you want remove some content then just open editor for the content and remove all text information.
+
+# Public snapshot repository for project libraries
+To make accessible the snapshot version of the libraries during development, I have tuned public maven snapshot repository which can be added into project with snippet
+```xml
+<repositories>
+ <repository>
+  <id>coldcore.ru-snapshots</id>
+  <name>ColdCore.RU Mvn Snapshots</name>
+  <url>http://coldcore.ru/m2</url>
+  <snapshots>
+   <enabled>true</enabled>
+  </snapshots>
+  <releases>
+   <enabled>false</enabled>
+  </releases>
+ </repository>
+</repositories>
+```
