@@ -66,6 +66,20 @@ public final class MindMapUtils {
     return lastVisible;
   }
 
+  public static boolean isTopicVisible(@Nonnull final Topic topic) {
+    boolean result = true;
+
+    Topic current = topic.getParent();
+    while (current != null) {
+      if (isCollapsed(current)) {
+        result = false;
+        break;
+      }
+      current = current.getParent();
+    }
+    return result;
+  }
+
   public static boolean ensureVisibility(@Nonnull final Topic topic) {
     boolean result = false;
 

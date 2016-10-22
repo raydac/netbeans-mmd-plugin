@@ -413,7 +413,21 @@ public class MindMapPanel extends JPanel {
               setScale(1.0);
               updateView(false);
             }
-          } finally {
+            else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)) {
+              final Topic[] selectedTopics = getSelectedTopics();
+              final AbstractElement elementToProcess = selectedTopics.length == 1 ? (AbstractElement) selectedTopics[0].getPayload() : null;
+              if (elementToProcess != null) {
+                doFoldOrUnfoldTopic(elementToProcess, false, true);
+              }
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)) {
+              final Topic[] selectedTopics = getSelectedTopics();
+              final AbstractElement elementToProcess = selectedTopics.length == 1 ? (AbstractElement) selectedTopics[0].getPayload() : null;
+              if (elementToProcess != null) {
+                doFoldOrUnfoldTopic(elementToProcess, true, true);
+              }
+            }
+          }
+          finally {
             unlock();
           }
         }
@@ -684,18 +698,7 @@ public class MindMapPanel extends JPanel {
             if (element != null) {
               final ElementPart part = element.findPartForPoint(e.getPoint());
               if (part == ElementPart.COLLAPSATOR) {
-                removeAllSelection();
-
-                if (element.isCollapsed()) {
-                  ((AbstractCollapsableElement) element).setCollapse(false);
-                  if (isCtrlDown) {
-                    ((AbstractCollapsableElement) element).collapseAllFirstLevelChildren();
-                  }
-                } else {
-                  ((AbstractCollapsableElement) element).setCollapse(true);
-                }
-                notifyModelChanged();
-                repaint();
+                doFoldOrUnfoldTopic(element, element.isCollapsed(), isCtrlDown);
               } else if (!isCtrlDown) {
                 switch (part) {
                   case VISUAL_ATTRIBUTES:
@@ -786,6 +789,24 @@ public class MindMapPanel extends JPanel {
         }
       }
     });
+  }
+
+  private void doFoldOrUnfoldTopic(@Nonnull final AbstractElement element, final boolean unfold, final boolean onlyFirstLevel) {
+    if (unfold) {
+      ((AbstractCollapsableElement) element).setCollapse(false);
+      if (onlyFirstLevel) {
+        ((AbstractCollapsableElement) element).collapseAllFirstLevelChildren();
+      }
+    } else {
+      ((AbstractCollapsableElement) element).setCollapse(true);
+      for (final Topic t : getSelectedTopics()) {
+        if (!MindMapUtils.isTopicVisible(t)) {
+          this.selectedTopics.remove(t);
+        }
+      }
+    }
+    notifyModelChanged();
+    repaint();
   }
 
   @Nullable
