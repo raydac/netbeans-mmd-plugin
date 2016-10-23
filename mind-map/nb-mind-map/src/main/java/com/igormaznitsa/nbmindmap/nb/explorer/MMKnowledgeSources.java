@@ -72,7 +72,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
   }
   
   private static boolean isKnowledgeFolderAllowedForCreation() {
-    return NbUtils.getPreferences().getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true);
+    return NbUtils.getPreferences().getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false);
   }
 
   private static SourceGroup[] getSourceGroups(final Project project) {

@@ -103,7 +103,7 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
   }
 
   public boolean isDisableAutoCreateProjectKnowledgeFolder() {
-    return this.preferences.getBoolean(KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION,false);
+    return this.preferences.getBoolean(KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION,true);
   }
 
   public void setDisableAutoCreateProjectKnowledgeFolder(final boolean flag) {

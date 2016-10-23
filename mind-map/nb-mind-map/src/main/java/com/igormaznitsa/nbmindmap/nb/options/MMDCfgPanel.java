@@ -1135,7 +1135,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.checkboxRelativePathsForFilesInTheProject.setSelected(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true));
       this.checkBoxUnfoldCollapsedTarget.setSelected(NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true));
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true));
-      this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(NbUtils.getPreferences().getBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true));
+      this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(NbUtils.getPreferences().getBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
 
       updateFontButton();
     }
