@@ -26,6 +26,7 @@ public class AllIcons {
 
   public static class ImportExport {
     public static final Icon TXT2MM = IconLoader.getIcon("/icons/txt2mm.png");
+    public static final Icon ORGMODE = IconLoader.getIcon("/icons/orgmode.png");
   }
 
   public static class File {

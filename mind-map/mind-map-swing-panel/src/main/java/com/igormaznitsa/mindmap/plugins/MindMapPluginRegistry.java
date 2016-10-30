@@ -54,6 +54,7 @@ import com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImagePopUpMenuPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
+import com.igormaznitsa.mindmap.plugins.exporters.ORGMODEExporter;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
@@ -71,6 +72,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new MDExporter());
     registerPlugin(new MindmupExporter());
     registerPlugin(new PNGImageExporter());
+    registerPlugin(new ORGMODEExporter());
     registerPlugin(new TextExporter());
     registerPlugin(new SVGImageExporter());
 
