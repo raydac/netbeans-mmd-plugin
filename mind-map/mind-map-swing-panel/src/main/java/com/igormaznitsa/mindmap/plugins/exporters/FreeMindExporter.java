@@ -253,6 +253,11 @@ public class FreeMindExporter extends AbstractExporter {
     }
   }
 
+  @Override
+  public String getMnemonic() {
+    return "freemind";
+  }
+
   @Nonnull
   private static String escapeXML(@Nonnull final String text) {
     return StringEscapeUtils.escapeXml(text).replace("\n", "&#10;"); //NOI18N

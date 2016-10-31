@@ -144,6 +144,11 @@ public final class PNGImageExporter extends AbstractExporter {
   }
 
   @Override
+  public String getMnemonic() {
+    return "png";
+  }
+  
+  @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
     return Texts.getString("PNGImageExporter.exporterName");

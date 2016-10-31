@@ -417,6 +417,11 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   @Override
+  public String getMnemonic() {
+    return "svg";
+  }
+  
+  @Override
   @Nullable
   public JComponent makeOptions() {
     final JPanel panel = UI_FACTORY.makePanel();

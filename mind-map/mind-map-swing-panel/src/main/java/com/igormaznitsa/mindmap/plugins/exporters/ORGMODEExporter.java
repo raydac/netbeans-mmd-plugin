@@ -190,6 +190,11 @@ public class ORGMODEExporter extends AbstractExporter {
       state.append(prefix).append(": ").append(s).nextLine();//NOI18N
     }
   }
+  
+  @Override
+  public String getMnemonic() {
+    return "orgmode";
+  }
 
   private void writeInterTopicLine(@Nonnull final State state) {
     state.nextLine();

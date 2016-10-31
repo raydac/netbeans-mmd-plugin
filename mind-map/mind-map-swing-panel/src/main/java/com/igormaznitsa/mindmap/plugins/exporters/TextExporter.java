@@ -248,6 +248,11 @@ public class TextExporter extends AbstractExporter {
   }
 
   @Override
+  public String getMnemonic() {
+    return "text";
+  }
+  
+  @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
     return Texts.getString("TextExporter.exporterName");

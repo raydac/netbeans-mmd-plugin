@@ -269,6 +269,11 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
+  public String getMnemonic() {
+    return "markdown";
+  }
+  
+  @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
     return Texts.getString("MDExporter.exporterName");

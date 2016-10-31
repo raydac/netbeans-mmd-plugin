@@ -164,6 +164,11 @@ public class Text2MindMapImporter extends AbstractImporter {
   }
 
   @Override
+  public String getMnemonic() {
+    return "text";
+  }
+  
+  @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
     return Texts.getString("MMDImporters.Text2MindMap.Name");

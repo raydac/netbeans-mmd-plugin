@@ -117,6 +117,11 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem {
   }
   
   @Nullable
+  public String getMnemonic(){
+    return null;
+  }
+  
+  @Nullable
   public abstract MindMap doImport(@Nonnull final MindMapPanel panel,
       @Nonnull final DialogProvider dialogProvider,
       @Nullable final Topic actionTopic,

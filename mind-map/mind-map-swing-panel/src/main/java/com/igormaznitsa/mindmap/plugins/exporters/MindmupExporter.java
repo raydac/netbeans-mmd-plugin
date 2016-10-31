@@ -171,6 +171,11 @@ public class MindmupExporter extends AbstractExporter {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
+  @Override
+  public String getMnemonic() {
+    return "mindmup";
+  }
+
   private int writeTopic (@Nonnull final State state, int id, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
     state.startObj(Integer.toString(idCounter));
 

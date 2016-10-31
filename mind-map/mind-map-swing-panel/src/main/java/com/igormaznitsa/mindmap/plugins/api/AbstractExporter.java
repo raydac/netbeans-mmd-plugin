@@ -98,6 +98,11 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem {
     return null;
   }
 
+  @Nullable
+  public String getMnemonic() {
+    return null;
+  }
+
   public abstract void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException;
 
   @Nonnull
