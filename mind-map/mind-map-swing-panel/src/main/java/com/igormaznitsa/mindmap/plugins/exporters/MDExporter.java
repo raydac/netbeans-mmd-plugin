@@ -269,6 +269,7 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
+  @Nullable
   public String getMnemonic() {
     return "markdown";
   }

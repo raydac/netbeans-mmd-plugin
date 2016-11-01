@@ -172,6 +172,7 @@ public class MindmupExporter extends AbstractExporter {
   }
 
   @Override
+  @Nullable
   public String getMnemonic() {
     return "mindmup";
   }

@@ -144,6 +144,7 @@ public final class PNGImageExporter extends AbstractExporter {
   }
 
   @Override
+  @Nullable
   public String getMnemonic() {
     return "png";
   }

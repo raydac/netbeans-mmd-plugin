@@ -417,6 +417,7 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   @Override
+  @Nullable
   public String getMnemonic() {
     return "svg";
   }

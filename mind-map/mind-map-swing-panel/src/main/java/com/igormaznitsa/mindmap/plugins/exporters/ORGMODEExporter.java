@@ -157,21 +157,21 @@ public class ORGMODEExporter extends AbstractExporter {
 
     if (file != null) {
       final MMapURI fileURI = file.getValue();
-      state.append(prefix).append("FILE: ");//NOI18N
+      state.append(prefix).append("FILE: [[");//NOI18N
       if (fileURI.isAbsolute()) {
         state.append(fileURI.asURI().toASCIIString());
       } else {
         state.append("file://./").append(fileURI.asURI().toASCIIString());//NOI18N
       }
-      state.append(" \\\\").nextLine();//NOI18N
+      state.append("]] \\\\").nextLine();//NOI18N
       extrasPrinted = true;
     }
 
     if (link != null) {
       final String ascurl = link.getValue().asString(true, true);
-      state.append(prefix).append("URL: ")//NOI18N
+      state.append(prefix).append("URL: [[")//NOI18N
           .append(ascurl)
-          .append(" \\\\")//NOI18N
+          .append("]] \\\\")//NOI18N
           .nextLine();
       extrasPrinted = true;
     }
@@ -192,6 +192,7 @@ public class ORGMODEExporter extends AbstractExporter {
   }
   
   @Override
+  @Nullable
   public String getMnemonic() {
     return "orgmode";
   }

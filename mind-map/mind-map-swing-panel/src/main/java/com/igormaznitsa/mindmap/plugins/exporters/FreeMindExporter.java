@@ -254,6 +254,7 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   @Override
+  @Nullable
   public String getMnemonic() {
     return "freemind";
   }

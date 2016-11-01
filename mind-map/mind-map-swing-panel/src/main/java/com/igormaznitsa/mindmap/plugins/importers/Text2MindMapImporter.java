@@ -164,6 +164,7 @@ public class Text2MindMapImporter extends AbstractImporter {
   }
 
   @Override
+  @Nullable
   public String getMnemonic() {
     return "text";
   }

@@ -52,6 +52,8 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImagePopUpMenuPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
 import com.igormaznitsa.mindmap.plugins.exporters.ORGMODEExporter;
@@ -148,6 +150,40 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     }
   }
 
+  @Nullable
+  public AbstractExporter findExporterForMnemonic(@Nonnull final String mnemonic) {
+    AbstractExporter result = null;
+    synchronized (FIND_CACHE) {
+      for (final MindMapPlugin p : this.pluginList) {
+        if (p instanceof AbstractExporter) {
+          final AbstractExporter exporter = (AbstractExporter) p;
+          if (mnemonic.equals(exporter.getMnemonic())) {
+            result = exporter;
+            break;
+          }
+        }
+      }
+    }
+    return result;
+  }
+  
+  @Nullable
+  public AbstractImporter findImporterForMnemonic(@Nonnull final String mnemonic) {
+    AbstractImporter result = null;
+    synchronized (FIND_CACHE) {
+      for(final MindMapPlugin p : this.pluginList) {
+        if (p instanceof AbstractImporter){
+          final AbstractImporter importer = (AbstractImporter) p;
+          if (mnemonic.equals(importer.getMnemonic())){
+            result = importer;
+            break;
+          }
+        }
+      }
+    }
+    return result;
+  }
+  
   @Nonnull
   @MustNotContainNull
   public <T extends MindMapPlugin> List<T> findFor(@Nullable final Class<T> klazz) {

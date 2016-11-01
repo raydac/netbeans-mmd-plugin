@@ -248,6 +248,7 @@ public class TextExporter extends AbstractExporter {
   }
 
   @Override
+  @Nullable
   public String getMnemonic() {
     return "text";
   }
