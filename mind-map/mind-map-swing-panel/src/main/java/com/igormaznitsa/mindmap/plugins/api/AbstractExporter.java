@@ -38,7 +38,7 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
  * Abstract auxiliary class automates way to implement an abstract exporter.
  * @since 1.2
  */
-public abstract class AbstractExporter extends AbstractPopupMenuItem {
+public abstract class AbstractExporter extends AbstractPopupMenuItem implements HasMnemonic {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporter.class);
 

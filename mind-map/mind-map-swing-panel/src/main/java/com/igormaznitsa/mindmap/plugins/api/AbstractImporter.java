@@ -41,7 +41,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
  *
  * @since 1.2
  */
-public abstract class AbstractImporter extends AbstractPopupMenuItem {
+public abstract class AbstractImporter extends AbstractPopupMenuItem implements HasMnemonic {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractImporter.class);
 
