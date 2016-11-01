@@ -20,13 +20,21 @@ import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +50,12 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.apache.commons.lang.SystemUtils;
@@ -65,7 +78,8 @@ public final class UiUtils {
   static {
     try {
       EMPTY_URI = new MMapURI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
-    } catch (URISyntaxException ex) {
+    }
+    catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
     }
     final Color color = UIManager.getColor("Panel.background");
@@ -76,7 +90,51 @@ public final class UiUtils {
     }
   }
 
+  public static final class SplashScreen extends JWindow {
+
+    private final Image image;
+
+    public SplashScreen() {
+      super();
+      this.setAlwaysOnTop(true);
+
+      this.image = loadImage("splash.png");
+      final JLabel label = new JLabel(new ImageIcon(this.image));
+      final JPanel root = new JPanel(new BorderLayout(0, 0));
+      root.add(label, BorderLayout.CENTER);
+      this.setContentPane(root);
+      this.pack();
+
+      this.setLocation(getPointForCentering(this));
+    }
+  }
+
   private UiUtils() {
+  }
+
+  @Nonnull
+  public static Point getPointForCentering(@Nonnull final Window window) {
+    try {
+      final Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+      final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+
+      for (final GraphicsDevice device : devices) {
+        final Rectangle bounds = device.getDefaultConfiguration().getBounds();
+        if (mousePoint.x >= bounds.x && mousePoint.y >= bounds.y && mousePoint.x <= (bounds.x + bounds.width) && mousePoint.y <= (bounds.y + bounds.height)) {
+          int screenWidth = bounds.width;
+          int screenHeight = bounds.height;
+          int width = window.getWidth();
+          int height = window.getHeight();
+          return new Point(((screenWidth - width) / 2) + bounds.x, ((screenHeight - height) / 2) + bounds.y);
+        }
+      }
+    }
+    catch (final Exception e) {
+      LOGGER.error("Can't get point", e);
+    }
+    
+    final Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
+    return new Point((scrSize.width-window.getWidth())/2,(scrSize.height-window.getHeight())/2);
   }
 
   @Nullable
@@ -108,7 +166,8 @@ public final class UiUtils {
       final Graphics g = image.getGraphics();
       try {
         icon.paintIcon(context, g, 0, 0);
-      } finally {
+      }
+      finally {
         g.dispose();
       }
     }
@@ -124,7 +183,8 @@ public final class UiUtils {
     try {
       gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
       gfx.drawImage(badge, width - badge.getWidth(null) - 1, height - badge.getHeight(null) - 1, null);
-    } finally {
+    }
+    finally {
       gfx.dispose();
     }
     return result;
@@ -139,7 +199,8 @@ public final class UiUtils {
     try {
       gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
       gfx.drawImage(badge, width - badge.getWidth(null) - 1, 1, null);
-    } finally {
+    }
+    finally {
       gfx.dispose();
     }
     return result;
@@ -152,9 +213,11 @@ public final class UiUtils {
     if (inStream != null) {
       try {
         result = ImageIO.read(inStream);
-      } catch (IOException ex) {
+      }
+      catch (IOException ex) {
         result = null;
-      } finally {
+      }
+      finally {
         IOUtils.closeQuetly(inStream);
       }
     }
@@ -175,7 +238,8 @@ public final class UiUtils {
       }
       try {
         return new MMapURI(text.trim());
-      } catch (URISyntaxException ex) {
+      }
+      catch (URISyntaxException ex) {
         DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
@@ -229,7 +293,8 @@ public final class UiUtils {
       } else {
         return null;
       }
-    } finally {
+    }
+    finally {
       textEditor.dispose();
     }
   }
@@ -245,7 +310,8 @@ public final class UiUtils {
             try {
               dsk.open(file);
               ok = true;
-            } catch (Throwable ex) {
+            }
+            catch (Throwable ex) {
               LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
             }
           }
@@ -283,21 +349,24 @@ public final class UiUtils {
       if (desktop.isSupported(Desktop.Action.BROWSE)) {
         try {
           desktop.browse(url.toURI());
-        } catch (Exception x) {
+        }
+        catch (Exception x) {
           LOGGER.error("Can't browse URL in Desktop", x);
         }
       } else if (SystemUtils.IS_OS_LINUX) {
         final Runtime runtime = Runtime.getRuntime();
         try {
           runtime.exec("xdg-open " + url);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
           LOGGER.error("Can't browse URL under Linux", e);
         }
       } else if (SystemUtils.IS_OS_MAC) {
         final Runtime runtime = Runtime.getRuntime();
         try {
           runtime.exec("open " + url);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
           LOGGER.error("Can't browse URL on MAC", e);
         }
       }
@@ -313,7 +382,8 @@ public final class UiUtils {
         showURLExternal(uri.toURL());
       }
       return true;
-    } catch (MalformedURLException ex) {
+    }
+    catch (MalformedURLException ex) {
       LOGGER.error("MalformedURLException", ex); //NOI18N
       return false;
     }

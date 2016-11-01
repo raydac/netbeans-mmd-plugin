@@ -198,9 +198,6 @@
               <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
-            <manifestEntries>
-              <SplashScreen-Image>icons/splash.png</SplashScreen-Image>
-            </manifestEntries>
           </archive>
         </configuration>
       </plugin>

@@ -17,6 +17,7 @@ package com.igormaznitsa.sciareto.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -28,6 +29,15 @@ public final class SystemUtils {
   private SystemUtils(){
   }
 
+  public static void setDebugLevelForJavaLogger(@Nonnull final Level newLevel) {
+    final java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
+    final java.util.logging.Handler[] handlers = rootLogger.getHandlers();
+    rootLogger.setLevel(newLevel);
+    for (final java.util.logging.Handler h : handlers) {
+      h.setLevel(newLevel);
+    }
+  }
+  
   public static boolean deleteFile(@Nonnull final File file, final boolean moveToTrashIfPossible) {
     final com.sun.jna.platform.FileUtils fileUtils = com.sun.jna.platform.FileUtils.getInstance();
     boolean result = false;

@@ -1020,7 +1020,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Override
   public void editPreferences() {
     final PreferencesPanel configPanel = new PreferencesPanel(this);
-    configPanel.load();
+    configPanel.load(PreferencesManager.getInstance().getPreferences());
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Preferences", configPanel)) {
       configPanel.save();
       for (final TabTitle t : this.tabPane) {

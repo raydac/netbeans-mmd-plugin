@@ -190,7 +190,7 @@ public class NoteEditor extends javax.swing.JPanel {
     });
 
     this.setPreferredSize(new Dimension(640, 480));
-    this.editorPane.setFont(PreferencesManager.getInstance().getFont(SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
+    this.editorPane.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
     this.editorPane.setText(text);
     this.addAncestorListener(new AncestorListener() {
       @Override
