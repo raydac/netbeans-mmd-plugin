@@ -15,17 +15,22 @@
  */
 package com.igormaznitsa.mindmap.plugins.api;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 /**
- * Shows that plug-in provides its mnemonic name.
+ * Interface allows to set and get properties.
  * @since 1.3.1
  */
-public interface HasMnemonic {
-  /**
-   * Returns mnemocode.
-   * @return mnemocode which must be in lower-case, only Latin symbols and can't contain spaces or special chars, it can provide null.
-   */
+public interface HasOptions {
+  boolean doesSupportKey(@Nonnull final String key);
+  @Nonnull
+  @MustNotContainNull
+  String [] getOptionKeys();
+  @Nonnull
+  String getOptionKeyDescription(@Nonnull String key);
+  void setOption(@Nonnull String key, @Nullable String value);
   @Nullable
-  String getMnemonic();
+  String getOption(@Nonnull String key);
 }

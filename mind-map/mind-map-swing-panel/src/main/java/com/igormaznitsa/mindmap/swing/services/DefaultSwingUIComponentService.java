@@ -35,13 +35,61 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 
 public class DefaultSwingUIComponentService implements UIComponentFactory {
 
+  private static class JOptionablePanel extends JPanel implements HasOptions {
+
+    private static final long serialVersionUID = 7315573577255732183L;
+    private final HasOptions optionsProcessor;
+    
+    private JOptionablePanel(@Nonnull final HasOptions optionsProcessor){
+      super();
+      this.optionsProcessor = optionsProcessor;
+    }
+
+    @Override
+    public boolean doesSupportKey(@Nonnull final String key) {
+      return this.optionsProcessor.doesSupportKey(key);
+    }
+    
+    @Override
+    @Nonnull
+    @MustNotContainNull
+    public String[] getOptionKeys() {
+      return this.optionsProcessor.getOptionKeys();
+    }
+
+    @Override
+    @Nonnull
+    public String getOptionKeyDescription(@Nonnull final String key) {
+      return this.optionsProcessor.getOptionKeyDescription(key);
+    }
+
+    @Override
+    public void setOption(@Nonnull final String key, @Nullable final String value) {
+      this.optionsProcessor.setOption(key, value);
+    }
+
+    @Override
+    @Nullable
+    public String getOption(@Nonnull final String key) {
+      return this.optionsProcessor.getOption(key);
+    }
+  }
+  
   @Override
   @Nonnull
   public JPanel makePanel () {
     return new JPanel();
+  }
+
+  @Override
+  @Nonnull
+  public JPanel makePanelWithOptions(@Nonnull final HasOptions optionsProcessor) {
+    return new JOptionablePanel(optionsProcessor);
   }
 
   @Override

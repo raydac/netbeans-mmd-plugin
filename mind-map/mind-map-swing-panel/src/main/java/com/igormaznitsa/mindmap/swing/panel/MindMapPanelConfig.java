@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import javax.swing.KeyStroke;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 
 public final class MindMapPanelConfig implements Serializable {
 
@@ -180,6 +181,7 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   @Nullable
+  @ReturnsOriginal
   public Preferences saveTo (@Nullable final Preferences prefs) {
     if (prefs != null) {
       final String prefix = MindMapPanelConfig.class.getSimpleName();

@@ -35,10 +35,13 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 
 public interface UIComponentFactory {
   @Nonnull
   JPanel makePanel();
+  @Nonnull
+  JPanel makePanelWithOptions(@Nonnull HasOptions optionsProcessor);
   @Nonnull
   JComboBox makeComboBox();
   @Nonnull
