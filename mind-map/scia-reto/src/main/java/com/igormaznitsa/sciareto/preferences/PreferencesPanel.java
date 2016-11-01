@@ -77,7 +77,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private Font fontTextEditor = TextEditor.DEFAUT_TEXT_EDITOR_FONT;
 
   private final MindMapPanelConfig config = new MindMapPanelConfig();
-  private final Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(new Comparator<String>() {
+  private final transient Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(new Comparator<String>() {
     @Override
     public int compare(final String o1, final String o2) {
       return o1.compareTo(o2);

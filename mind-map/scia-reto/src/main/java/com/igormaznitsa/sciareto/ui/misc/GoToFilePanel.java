@@ -41,8 +41,8 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
 
   private final ExplorerTree tree;
 
-  private final List<NodeFileOrFolder> foundNodeList = new ArrayList<>();
-  private final List<ListDataListener> listeners = new ArrayList<>();
+  private final transient List<NodeFileOrFolder> foundNodeList = new ArrayList<>();
+  private final transient List<ListDataListener> listeners = new ArrayList<>();
 
   @Override
   public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {

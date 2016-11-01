@@ -25,7 +25,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -50,8 +49,6 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -91,6 +88,8 @@ public final class UiUtils {
   }
 
   public static final class SplashScreen extends JWindow {
+
+    private static final long serialVersionUID = 2481671028674534278L;
 
     private final Image image;
 

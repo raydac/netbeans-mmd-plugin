@@ -150,6 +150,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
             final PrintPage thePage = findPageForIndex(pageIndex);
             if (thePage == null) throw new IndexOutOfBoundsException();
             return new Printable() {
+              @SuppressWarnings("unchecked")
               @Override
               public int print (@Nonnull final Graphics graphics, @Nonnull final PageFormat format, final int pageIndex) throws PrinterException {
                 final Graphics2D gfx = (Graphics2D) graphics;

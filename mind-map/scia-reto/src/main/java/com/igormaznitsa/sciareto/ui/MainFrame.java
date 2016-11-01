@@ -1122,7 +1122,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       else if (file.mkdirs()) {
         if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true)) {
           final File knowledgeFolder = new File(file, ".projectKnowledge");
-          knowledgeFolder.mkdirs();
+          if (!knowledgeFolder.mkdirs()){
+            LOGGER.warn("Can't create .projectKnowledge folder");
+          }
         }
         if (openProject(file, true)) {
           this.focusInTree(file);

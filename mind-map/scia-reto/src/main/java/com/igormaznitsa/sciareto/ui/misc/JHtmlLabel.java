@@ -92,7 +92,7 @@ public class JHtmlLabel extends JLabel {
    */
   private transient List<HtmlLinkAddress> linkCache = null;
 
-  private final List<LinkListener> linkListeners = new CopyOnWriteArrayList<>();
+  private final transient List<LinkListener> linkListeners = new CopyOnWriteArrayList<>();
   private boolean showLinkAddressInToolTip = false;
   private int minClickCountToActivateLink = 1;
 

@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
-public class FindTextPanel extends javax.swing.JPanel implements FindTextScopeProvider {
+public final class FindTextPanel extends javax.swing.JPanel implements FindTextScopeProvider {
 
   private static final long serialVersionUID = -2286996344502363552L;
 

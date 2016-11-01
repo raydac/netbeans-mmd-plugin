@@ -110,7 +110,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   private final Context context;
 
   private boolean dragAcceptableType;
-  private final UndoRedoStorage<String> undoStorage = new UndoRedoStorage<>(5);
+  private final transient UndoRedoStorage<String> undoStorage = new UndoRedoStorage<>(5);
 
   private boolean preventAddUndo = false;
   private String currentModelState;
@@ -312,7 +312,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     return config;
   }
 
-  private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors = null;
+  private transient Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors = null;
 
   @Nonnull
   public MindMapPanel getMindMapPanel() {

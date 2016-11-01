@@ -43,6 +43,7 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 import javax.swing.text.Utilities;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
@@ -50,7 +51,7 @@ import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
-public class NoteEditor extends javax.swing.JPanel {
+public final class NoteEditor extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -1715683034655322518L;
 
@@ -116,7 +117,7 @@ public class NoteEditor extends javax.swing.JPanel {
 
   private Wrapping wrapping;
 
-  private static boolean IsWhitespaceOrControl(final char c) {
+  private static boolean isWhitespaceOrControl(final char c) {
     return Character.isISOControl(c) || Character.isWhitespace(c);
   }
 
@@ -125,7 +126,7 @@ public class NoteEditor extends javax.swing.JPanel {
 
     this.editorPane.getActionMap().put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
       private static final long serialVersionUID = -6477916799997545798L;
-      private Action start = new TextAction("wordStart") {
+      private final Action start = new TextAction("wordStart") {
         private static final long serialVersionUID = 4377386270269629176L;
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -138,7 +139,7 @@ public class NoteEditor extends javax.swing.JPanel {
               int startOffs = offs;
               if (startOffs < text.length()) {
                 for (int i = offs; i >= 0; i--) {
-                  if (!IsWhitespaceOrControl(text.charAt(i))) {
+                  if (!isWhitespaceOrControl(text.charAt(i))) {
                     startOffs = i;
                   } else {
                     break;
@@ -152,7 +153,7 @@ public class NoteEditor extends javax.swing.JPanel {
           }
         }
       };
-      private Action end = new TextAction("wordEnd") {
+      private final Action end = new TextAction("wordEnd") {
         private static final long serialVersionUID = 4377386270269629176L;
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -166,11 +167,11 @@ public class NoteEditor extends javax.swing.JPanel {
               int endOffs = offs;
               for (int i = offs; i < text.length(); i++) {
                 endOffs = i;
-                if (IsWhitespaceOrControl(text.charAt(i))) {
+                if (isWhitespaceOrControl(text.charAt(i))) {
                   break;
                 }
               }
-              if (endOffs < text.length() && !IsWhitespaceOrControl(text.charAt(endOffs))) {
+              if (endOffs < text.length() && !isWhitespaceOrControl(text.charAt(endOffs))) {
                 endOffs++;
               }
               target.moveCaretPosition(endOffs);
@@ -232,7 +233,7 @@ public class NoteEditor extends javax.swing.JPanel {
     this.labelCursorPos.setText(row + ":" + col);
 
     final String selectedText = this.editorPane.getSelectedText();
-    if (selectedText == null || selectedText.isEmpty()) {
+    if (StringUtils.isEmpty(selectedText)) {
       this.buttonCopy.setEnabled(false);
       this.buttonBrowse.setEnabled(false);
     } else {

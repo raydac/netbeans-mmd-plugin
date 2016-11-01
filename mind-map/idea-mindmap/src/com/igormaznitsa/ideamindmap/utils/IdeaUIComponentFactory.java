@@ -1,5 +1,7 @@
 package com.igormaznitsa.ideamindmap.utils;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.JBCheckboxMenuItem;
@@ -12,6 +14,7 @@ import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -32,8 +35,56 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 public class IdeaUIComponentFactory implements UIComponentFactory{
+
+  private static class JOptionablePanel extends JBPanel implements HasOptions {
+
+    private static final long serialVersionUID = 7315573532005732183L;
+    private final HasOptions optionsProcessor;
+
+    private JOptionablePanel(@Nonnull final HasOptions optionsProcessor){
+      super();
+      this.optionsProcessor = optionsProcessor;
+    }
+
+    @Override
+    public boolean doesSupportKey(@Nonnull final String key) {
+      return this.optionsProcessor.doesSupportKey(key);
+    }
+
+    @Override
+    @Nonnull
+    @MustNotContainNull
+    public String[] getOptionKeys() {
+      return this.optionsProcessor.getOptionKeys();
+    }
+
+    @Override
+    @Nonnull
+    public String getOptionKeyDescription(@Nonnull final String key) {
+      return this.optionsProcessor.getOptionKeyDescription(key);
+    }
+
+    @Override
+    public void setOption(@Nonnull final String key, @Nullable final String value) {
+      this.optionsProcessor.setOption(key, value);
+    }
+
+    @Override
+    @Nullable
+    public String getOption(@Nonnull final String key) {
+      return this.optionsProcessor.getOption(key);
+    }
+  }
+
+
   @Override public JPanel makePanel() {
     return new JBPanel();
+  }
+
+  @Nonnull
+  @Override
+  public JPanel makePanelWithOptions(@Nonnull HasOptions hasOptions) {
+    return new JOptionablePanel(hasOptions);
   }
 
   @Nonnull @Override public JToggleButton makeToggleButton() {

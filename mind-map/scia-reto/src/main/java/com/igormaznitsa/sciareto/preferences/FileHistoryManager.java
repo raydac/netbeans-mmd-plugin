@@ -19,10 +19,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.BackingStoreException;
 import javax.annotation.Nonnull;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -128,17 +128,9 @@ public final class FileHistoryManager {
   private static void fillList(@Nonnull @MustNotContainNull final String[] paths, @Nonnull @MustNotContainNull final List<File> list) {
     list.clear();
     for (final String s : paths) {
-      if (s != null && !s.trim().isEmpty()) {
+      if (StringUtils.isNotBlank(s)) {
         list.add(new File(s));
       }
-    }
-  }
-
-  private void flush() {
-    try {
-      PreferencesManager.getInstance().getPreferences().flush();
-    } catch (BackingStoreException ex) {
-      LOGGER.error("Can't flush preferences", ex);
     }
   }
 

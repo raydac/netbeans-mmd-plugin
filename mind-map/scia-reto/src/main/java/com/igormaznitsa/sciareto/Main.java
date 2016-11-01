@@ -102,12 +102,27 @@ public class Main {
 
   private static final long STATISTICS_DELAY = 7L * 24L * 3600L * 1000L;
 
+  private static final class FakeFileFilter extends FileFilter {
+
+    @Override
+    public boolean accept(@Nonnull final File f) {
+      return false;
+    }
+
+    @Override
+    @Nonnull
+    public String getDescription() {
+      return "";
+    }
+  
+  }
+  
   private static final class LocalMMDImporter extends AbstractImporter {
 
     @Override
     @Nullable
     public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-      final File fileToImport = dialogProvider.msgOpenFileDialog("", "", null, true, null, null);
+      final File fileToImport = dialogProvider.msgOpenFileDialog("", "", null, true, new FakeFileFilter(), "");
       return new MindMap(null, new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8")));
     }
 

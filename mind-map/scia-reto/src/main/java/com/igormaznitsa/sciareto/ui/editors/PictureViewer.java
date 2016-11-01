@@ -53,7 +53,7 @@ public final class PictureViewer extends AbstractScrollPane {
   private static final Logger LOGGER = LoggerFactory.getLogger(PictureViewer.class);
 
   private final TabTitle title;
-  private BufferedImage image;
+  private transient BufferedImage image;
   public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif")));
 
   private static final class ScalableImage extends JComponent {

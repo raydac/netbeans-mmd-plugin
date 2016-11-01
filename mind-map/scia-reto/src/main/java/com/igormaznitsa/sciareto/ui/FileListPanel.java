@@ -53,8 +53,8 @@ public class FileListPanel extends javax.swing.JPanel implements TableModel {
     
   }
   
-  private final List<FileSelector> files = new ArrayList<>();
-  private final List<TableModelListener> listeners = new ArrayList<>();
+  private final transient List<FileSelector> files = new ArrayList<>();
+  private final transient List<TableModelListener> listeners = new ArrayList<>();
   
   public FileListPanel(@Nonnull @MustNotContainNull final List<File> files) {
     initComponents();

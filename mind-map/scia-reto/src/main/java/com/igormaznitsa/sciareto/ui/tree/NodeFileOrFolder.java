@@ -36,7 +36,7 @@ import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 
-public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,Iterable<NodeFileOrFolder>  {
+public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
   protected final NodeFileOrFolder parent;
 
@@ -63,18 +63,18 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     this.readonly = readOnly;
   }
 
-  public int size(){
-    if (this.folderFlag){
+  public int size() {
+    if (this.folderFlag) {
       int counter = 1;
-      for(final NodeFileOrFolder f : this.children){
+      for (final NodeFileOrFolder f : this.children) {
         counter += f.size();
       }
       return counter;
-    }else{
+    } else {
       return 1;
     }
   }
-  
+
   public boolean isReadOnly() {
     return this.readonly;
   }
@@ -312,6 +312,5 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
       }
     };
   }
-
 
 }

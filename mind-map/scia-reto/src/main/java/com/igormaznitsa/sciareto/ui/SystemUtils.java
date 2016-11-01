@@ -25,7 +25,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 public final class SystemUtils {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(SystemUtils.class);
-  
+
   private SystemUtils(){
   }
 

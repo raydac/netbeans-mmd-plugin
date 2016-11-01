@@ -80,8 +80,8 @@ public class SVGImageExporter extends AbstractExporter {
   private static final Logger LOGGER = LoggerFactory.getLogger(SVGImageExporter.class);
   private static final UIComponentFactory UI_FACTORY = UIComponentFactoryProvider.findInstance();
 
-  private static boolean flagExpandAllNodes = false;
-  private static boolean flagDrawBackground = true;
+  private boolean flagExpandAllNodes = false;
+  private boolean flagDrawBackground = true;
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_SVG);
 
@@ -534,16 +534,16 @@ public class SVGImageExporter extends AbstractExporter {
   public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
     if (options instanceof HasOptions) {
       final HasOptions opts = (HasOptions) options;
-      flagExpandAllNodes = Boolean.parseBoolean(opts.getOption(Options.KEY_EXPAND_ALL));
-      flagDrawBackground = Boolean.parseBoolean(opts.getOption(Options.KEY_DRAW_BACK));
+      this.flagExpandAllNodes = Boolean.parseBoolean(opts.getOption(Options.KEY_EXPAND_ALL));
+      this.flagDrawBackground = Boolean.parseBoolean(opts.getOption(Options.KEY_DRAW_BACK));
     } else {
       for (final Component compo : Assertions.assertNotNull(options).getComponents()) {
         if (compo instanceof JCheckBox) {
           final JCheckBox cb = (JCheckBox) compo;
           if ("unfold".equalsIgnoreCase(cb.getActionCommand())) {
-            flagExpandAllNodes = cb.isSelected();
+            this.flagExpandAllNodes = cb.isSelected();
           } else if ("back".equalsIgnoreCase(cb.getActionCommand())) {
-            flagDrawBackground = cb.isSelected();
+            this.flagDrawBackground = cb.isSelected();
           }
         }
       }
@@ -552,12 +552,12 @@ public class SVGImageExporter extends AbstractExporter {
     final MindMap workMap = new MindMap(panel.getModel(), null);
     workMap.resetPayload();
 
-    if (flagExpandAllNodes) {
+    if (this.flagExpandAllNodes) {
       MindMapUtils.removeCollapseAttr(workMap);
     }
 
     final MindMapPanelConfig newConfig = new MindMapPanelConfig(panel.getConfiguration(), false);
-    newConfig.setDrawBackground(flagDrawBackground);
+    newConfig.setDrawBackground(this.flagDrawBackground);
     newConfig.setScale(1.0f);
 
     final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, newConfig, flagExpandAllNodes);

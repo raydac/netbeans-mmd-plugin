@@ -77,8 +77,8 @@ class Pages extends JPanel {
     return this.getPreferredSize();
   }
 
-  @SuppressWarnings("unchecked")
   @Override
+  @SuppressWarnings("unchecked")
   public void paint (@Nonnull final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
     gfx.setColor(parent.isDarkTheme() ? Color.DARK_GRAY : Color.LIGHT_GRAY);

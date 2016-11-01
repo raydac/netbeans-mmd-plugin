@@ -23,7 +23,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +32,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.LineIterator;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -50,8 +50,8 @@ public class FindUsagesPanel extends javax.swing.JPanel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FindUsagesPanel.class);
 
-  private final List<NodeFileOrFolder> foundFiles = new ArrayList<>();
-  private final List<ListDataListener> listListeners = new ArrayList<>();
+  private final transient List<NodeFileOrFolder> foundFiles = new ArrayList<>();
+  private final transient  List<ListDataListener> listListeners = new ArrayList<>();
 
   private final String fullNormalizedPath;
 
@@ -171,20 +171,20 @@ public class FindUsagesPanel extends javax.swing.JPanel {
               }
             } else if (findEverywhere){
               try {
-                final Scanner scanner = new Scanner(f, "UTF-8");
+                final LineIterator lineIterator = org.apache.commons.io.FileUtils.lineIterator(f, "UTF-8");
                 try {
-                  while (scanner.hasNextLine()) {
+                  while (lineIterator.hasNext()) {
                     if (Thread.currentThread().isInterrupted()) {
                       return;
                     }
-                    final String lineFromFile = scanner.nextLine();
+                    final String lineFromFile = lineIterator.nextLine();
                     if (lineFromFile.contains(fullNormalizedPath)) {
                       addFileIntoList(file);
                       break;
                     }
                   }
                 } finally {
-                  scanner.close();
+                  LineIterator.closeQuietly(lineIterator);
                 }
               } catch (Exception ex) {
                 LOGGER.error("Error during text search in file : " + f);
