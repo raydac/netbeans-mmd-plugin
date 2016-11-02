@@ -151,7 +151,7 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
       }
     }
     buffer.append(".*");
-    return Pattern.compile(buffer.toString(), WIDTH);
+    return Pattern.compile(buffer.toString(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
   /**
