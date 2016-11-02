@@ -141,6 +141,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuFindText">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/find16.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Find text"/>
               </Properties>
               <Events>

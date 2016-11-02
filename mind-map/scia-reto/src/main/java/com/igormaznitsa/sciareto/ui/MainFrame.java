@@ -865,6 +865,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.add(menuRedo);
     menuEdit.add(jSeparator1);
 
+    menuFindText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
     menuFindText.setText("Find text");
     menuFindText.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
