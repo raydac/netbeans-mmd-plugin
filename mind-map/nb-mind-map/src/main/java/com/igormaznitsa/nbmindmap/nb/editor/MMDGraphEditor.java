@@ -112,6 +112,7 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
 
 @MultiViewElement.Registration(
     displayName = "#MMDGraphEditor.displayName",
@@ -121,7 +122,7 @@ import com.igormaznitsa.mindmap.plugins.api.CustomJob;
     preferredID = MMDGraphEditor.ID,
     position = 1
 )
-public final class MMDGraphEditor extends CloneableEditor implements MindMapController, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, DialogProvider {
+public final class MMDGraphEditor extends CloneableEditor implements MindMapController, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -1016,7 +1017,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
-    return Utils.makePopUp(source, this, element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
+    return Utils.makePopUp(source, DialogProviderManager.getInstance().getDialogProvider(), element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
   }
 
   private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {
@@ -1046,52 +1047,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public DialogProvider getDialogProvider(final MindMapPanel source) {
-    return this;
-  }
-
-  @Override
-  public void msgError(final String text) {
-    NbUtils.msgError(text);
-  }
-
-  @Override
-  public void msgInfo(final String text) {
-    NbUtils.msgInfo(text);
-  }
-
-  @Override
-  public void msgWarn(final String text) {
-    NbUtils.msgWarn(text);
-  }
-
-  @Override
-  public boolean msgOkCancel(String title, JComponent component) {
-    return NbUtils.msgComponentOkCancel(title, component);
-  }
-
-  @Override
-  public boolean msgConfirmOkCancel(String title, String question) {
-    return NbUtils.msgConfirmOkCancel(title, question);
-  }
-
-  @Override
-  public boolean msgConfirmYesNo(String title, String question) {
-    return NbUtils.msgConfirmYesNo(title, question);
-  }
-
-  @Override
-  public Boolean msgConfirmYesNoCancel(String title, String question) {
-    return NbUtils.msgConfirmYesNoCancel(title, question);
-  }
-
-  @Override
-  public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
-    return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showSaveDialog();
-  }
-
-  @Override
-  public File msgOpenFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
-    return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showOpenDialog();
+    return DialogProviderManager.getInstance().getDialogProvider();
   }
 
   private void updateConfigFromPreferences() {

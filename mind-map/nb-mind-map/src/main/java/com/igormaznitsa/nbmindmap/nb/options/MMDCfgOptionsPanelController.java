@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 
 @OptionsPanelController.TopLevelRegistration(
         categoryName = "Mind Map",
@@ -39,8 +40,8 @@ public final class MMDCfgOptionsPanelController extends OptionsPanelController {
 
   @Override
   public void update() {
-    getPanel().load();
-    changed = false;
+    getPanel().load(NbUtils.getPreferences());
+    this.changed = false;
   }
 
   @Override
@@ -48,7 +49,8 @@ public final class MMDCfgOptionsPanelController extends OptionsPanelController {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        getPanel().store();
+        final MMDCfgPanel panel = getPanel();
+        panel.store(NbUtils.getPreferences(),panel.getConfig(),true);
         changed = false;
       }
     });
@@ -66,7 +68,7 @@ public final class MMDCfgOptionsPanelController extends OptionsPanelController {
 
   @Override
   public boolean isChanged() {
-    return changed;
+    return this.changed;
   }
 
   @Override
@@ -81,27 +83,27 @@ public final class MMDCfgOptionsPanelController extends OptionsPanelController {
 
   @Override
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    pcs.addPropertyChangeListener(l);
+    this.pcs.addPropertyChangeListener(l);
   }
 
   @Override
   public void removePropertyChangeListener(PropertyChangeListener l) {
-    pcs.removePropertyChangeListener(l);
+    this.pcs.removePropertyChangeListener(l);
   }
 
   private MMDCfgPanel getPanel() {
-    if (panel == null) {
-      panel = new MMDCfgPanel(this);
+    if (this.panel == null) {
+      this.panel = new MMDCfgPanel(this);
     }
-    return panel;
+    return this.panel;
   }
 
   void changed() {
-    if (!changed) {
-      changed = true;
-      pcs.firePropertyChange(OptionsPanelController.PROP_CHANGED, false, true);
+    if (!this.changed) {
+      this.changed = true;
+      this.pcs.firePropertyChange(OptionsPanelController.PROP_CHANGED, false, true);
     }
-    pcs.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
+    this.pcs.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
   }
 
 }

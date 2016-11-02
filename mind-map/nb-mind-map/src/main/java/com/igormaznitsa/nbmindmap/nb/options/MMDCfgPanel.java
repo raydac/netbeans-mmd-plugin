@@ -28,13 +28,21 @@ import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.prefs.Preferences;
+import javax.annotation.Nonnull;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FileUtils;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
+import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
 
 final class MMDCfgPanel extends javax.swing.JPanel {
 
@@ -46,12 +54,31 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private volatile boolean changeNotificationAllowed = true;
 
   private final MindMapPanelConfig config = new MindMapPanelConfig();
-  private final Map<String,KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
+  
+  private static File lastImportedSettingsFile = null;
+  private static File lastExportedSettingsFile = null;
+  
+  private final Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
     @Override
-    public int compare (final String o1, final String o2) {
+    public int compare(final String o1, final String o2) {
       return o1.compareTo(o2);
     }
   });
+
+  private static final class PropertiesFileFilter extends FileFilter {
+
+    @Override
+    public boolean accept(@Nonnull final File f) {
+      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
+    }
+
+    @Override
+    public String getDescription() {
+      return "Java properties file (*.properties)";
+    }
+
+  }
+
   
   MMDCfgPanel(final MMDCfgOptionsPanelController controller) {
     this.controller = controller;
@@ -124,6 +151,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     spinnerSelectLineGap = new javax.swing.JSpinner();
     buttonAbout = new javax.swing.JButton();
     donateButton1 = new com.igormaznitsa.nbmindmap.nb.swing.DonateButton();
+    buttonResetSettings = new javax.swing.JButton();
+    buttonExportSettings = new javax.swing.JButton();
+    buttonImportSettings = new javax.swing.JButton();
+    filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 16), new java.awt.Dimension(0, 16), new java.awt.Dimension(32767, 16));
 
     setLayout(new java.awt.BorderLayout());
 
@@ -498,28 +529,28 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
     panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.panelScalingModifiers.border.title"))); // NOI18N
 
-    checkBoxScalingCTRL.setText("CTRL");
+    checkBoxScalingCTRL.setText("CTRL"); // NOI18N
     checkBoxScalingCTRL.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         checkBoxScalingCTRLActionPerformed(evt);
       }
     });
 
-    checkBoxScalingALT.setText("ALT");
+    checkBoxScalingALT.setText("ALT"); // NOI18N
     checkBoxScalingALT.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         checkBoxScalingALTActionPerformed(evt);
       }
     });
 
-    checkBoxScalingSHIFT.setText("SHIFT");
+    checkBoxScalingSHIFT.setText("SHIFT"); // NOI18N
     checkBoxScalingSHIFT.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         checkBoxScalingSHIFTActionPerformed(evt);
       }
     });
 
-    checkBoxScalingMETA.setText("META");
+    checkBoxScalingMETA.setText("META"); // NOI18N
     checkBoxScalingMETA.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         checkBoxScalingMETAActionPerformed(evt);
@@ -777,6 +808,30 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
+    buttonResetSettings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/stop16.png"))); // NOI18N
+    buttonResetSettings.setText(bundle.getString("MMDCfgPanel.buttonResetSettings.text"));
+    buttonResetSettings.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonResetSettingsActionPerformed(evt);
+      }
+    });
+
+    buttonExportSettings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/document_export16.png"))); // NOI18N
+    buttonExportSettings.setText(bundle.getString("MMDCfgPanel.buttonExportSettings.text"));
+    buttonExportSettings.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonExportSettingsActionPerformed(evt);
+      }
+    });
+
+    buttonImportSettings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/document_import16.png"))); // NOI18N
+    buttonImportSettings.setText(bundle.getString("MMDCfgPanel.buttonImportSettings.text"));
+    buttonImportSettings.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonImportSettingsActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
     jPanel6.setLayout(jPanel6Layout);
     jPanel6Layout.setHorizontalGroup(
@@ -790,16 +845,24 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(buttonAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(17, Short.MAX_VALUE))
+          .addGroup(jPanel6Layout.createSequentialGroup()
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+              .addComponent(buttonAbout, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+              .addComponent(donateButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(buttonResetSettings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(buttonExportSettings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(buttonImportSettings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+          .addGroup(jPanel6Layout.createSequentialGroup()
+            .addGap(70, 70, 70)
+            .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addContainerGap(24, Short.MAX_VALUE))
     );
 
     jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jPanel1, jPanel3, jPanel4, jPanel5});
 
-    jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {buttonAbout, donateButton1});
+    jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {buttonAbout, buttonExportSettings, buttonImportSettings, buttonResetSettings, donateButton1});
 
     jPanel6Layout.setVerticalGroup(
       jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -819,7 +882,15 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addGroup(jPanel6Layout.createSequentialGroup()
             .addComponent(buttonAbout)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(donateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(buttonResetSettings)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(buttonExportSettings)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(buttonImportSettings)))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -961,8 +1032,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
     if (thefont.isBold()) {
       strStyle = thefont.isItalic() ? "bolditalic" : "bold";
-    }
-    else {
+    } else {
       strStyle = thefont.isItalic() ? "italic" : "plain";
     }
 
@@ -979,8 +1049,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     editor.setValue(this.config.getFont());
 
     final DialogDescriptor descriptor = new DialogDescriptor(
-            editor.getCustomEditor(),
-            "Mind map font"
+        editor.getCustomEditor(),
+        "Mind map font"
     );
 
     DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);
@@ -1047,12 +1117,12 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
   private void buttonOpenShortcutEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOpenShortcutEditorActionPerformed
     final List<KeyShortcut> list = new ArrayList<KeyShortcut>();
-    for(final Map.Entry<String,KeyShortcut> e : this.mapKeyShortCuts.entrySet()){
+    for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
       list.add(e.getValue());
     }
     final KeyShortCutEditPanel panel = new KeyShortCutEditPanel(list);
-    if (NbUtils.plainMessageOkCancel("Edit shortcuts", panel)){
-      for(final KeyShortcut s : panel.getResult()){
+    if (NbUtils.plainMessageOkCancel("Edit shortcuts", panel)) {
+      for (final KeyShortcut s : panel.getResult()) {
         this.mapKeyShortCuts.put(s.getID(), s);
       }
       this.controller.changed();
@@ -1083,59 +1153,116 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_checkBoxScalingMETAActionPerformed
 
-  void load() {
-    this.config.loadFrom(NbUtils.getPreferences());
+  private void buttonResetSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetSettingsActionPerformed
+    this.config.makeFullCopyOf(new MindMapPanelConfig(),false, false);
+    loadFromPreferences(new PropertiesPreferences("NB MindMap plugin"), this.config);
+    this.controller.changed();
+  }//GEN-LAST:event_buttonResetSettingsActionPerformed
 
-    changeNotificationAllowed = false;
+  private void buttonExportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportSettingsActionPerformed
+    File file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("exportSettings", "Export settings", lastExportedSettingsFile, true, new PropertiesFileFilter(), "Save");
+    if (file != null) {
+      lastExportedSettingsFile = file;
+      if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
+        final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel("Add extension", "Add '.properties' extension?");
+        if (addExt == null) {
+          return;
+        }
+        if (addExt) {
+          file = new File(file.getAbsolutePath() + ".properties");
+        }
+      }
+
+      if (file.exists() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Override file", String.format("File %s exists, to override it?", file.getName()))) {
+        return;
+      }
+
+      final PropertiesPreferences prefs = new PropertiesPreferences("NB MindMap plugin");
+      final MindMapPanelConfig cfg =  store(prefs, new MindMapPanelConfig(), false);
+      cfg.saveTo(prefs);
+      try {
+        FileUtils.write(file, prefs.toString());
+      }
+      catch (final Exception ex) {
+        LOGGER.error("Can't export settings", ex);
+        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't export settings [" + ex.getMessage() + ']');
+      }
+    }
+  }//GEN-LAST:event_buttonExportSettingsActionPerformed
+
+  private void buttonImportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportSettingsActionPerformed
+    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("importSettings", "Import settings", lastImportedSettingsFile, true, new PropertiesFileFilter(), "Open");
+    if (file != null) {
+      lastImportedSettingsFile = file;
+      try {
+        final Preferences prefs = (new PropertiesPreferences("NB MindMap plugin", FileUtils.readFileToString(file)));
+        loadFromPreferences(prefs, this.config);
+        this.controller.changed();
+      }
+      catch (final Exception ex) {
+        LOGGER.error("Can't import settings", ex);
+        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't import settings [" + ex.getMessage() + ']');
+      }
+    }
+  }//GEN-LAST:event_buttonImportSettingsActionPerformed
+
+  void load(@Nonnull final Preferences preferences){
+    loadFromPreferences(preferences, this.config);
+  }
+  
+  private void loadFromPreferences(@Nonnull final Preferences preferences, @Nonnull final MindMapPanelConfig cfg) {
+    cfg.loadFrom(preferences);
+
+    this.changeNotificationAllowed = false;
     try {
-      this.checkBoxShowGrid.setSelected(this.config.isShowGrid());
-      this.checkBoxDropShadow.setSelected(this.config.isDropShadow());
-      this.colorChooserPaperColor.setValue(this.config.getPaperColor());
-      this.colorChooserGridColor.setValue(this.config.getGridColor());
-      this.colorChooserConnectorColor.setValue(this.config.getConnectorColor());
-      this.colorChooserJumpLink.setValue(this.config.getJumpLinkColor());
+      this.checkBoxShowGrid.setSelected(cfg.isShowGrid());
+      this.checkBoxDropShadow.setSelected(cfg.isDropShadow());
+      this.colorChooserPaperColor.setValue(cfg.getPaperColor());
+      this.colorChooserGridColor.setValue(cfg.getGridColor());
+      this.colorChooserConnectorColor.setValue(cfg.getConnectorColor());
+      this.colorChooserJumpLink.setValue(cfg.getJumpLinkColor());
 
-      this.colorChooserRootBackground.setValue(this.config.getRootBackgroundColor());
-      this.colorChooserRootText.setValue(this.config.getRootTextColor());
+      this.colorChooserRootBackground.setValue(cfg.getRootBackgroundColor());
+      this.colorChooserRootText.setValue(cfg.getRootTextColor());
 
-      this.colorChooser1stBackground.setValue(this.config.getFirstLevelBackgroundColor());
-      this.colorChooser1stText.setValue(this.config.getFirstLevelTextColor());
+      this.colorChooser1stBackground.setValue(cfg.getFirstLevelBackgroundColor());
+      this.colorChooser1stText.setValue(cfg.getFirstLevelTextColor());
 
-      this.colorChooser2ndBackground.setValue(this.config.getOtherLevelBackgroundColor());
-      this.colorChooser2ndText.setValue(this.config.getOtherLevelTextColor());
+      this.colorChooser2ndBackground.setValue(cfg.getOtherLevelBackgroundColor());
+      this.colorChooser2ndText.setValue(cfg.getOtherLevelTextColor());
 
-      this.colorChooserSelectLine.setValue(this.config.getSelectLineColor());
+      this.colorChooserSelectLine.setValue(cfg.getSelectLineColor());
 
-      this.spinnerGridStep.setValue(this.config.getGridStep());
-      this.spinnerSelectLineGap.setValue(this.config.getSelectLineGap());
-      this.spinnerConnectorWidth.setValue(this.config.getConnectorWidth());
-      this.spinnerJumpLinkWidth.setValue(this.config.getJumpLinkWidth());
-      this.spinnerCollapsatorWidth.setValue(this.config.getCollapsatorBorderWidth());
-      this.spinnerCollapsatorSize.setValue(this.config.getCollapsatorSize());
-      this.spinnerElementBorderWidth.setValue(this.config.getElementBorderWidth());
+      this.spinnerGridStep.setValue(cfg.getGridStep());
+      this.spinnerSelectLineGap.setValue(cfg.getSelectLineGap());
+      this.spinnerConnectorWidth.setValue(cfg.getConnectorWidth());
+      this.spinnerJumpLinkWidth.setValue(cfg.getJumpLinkWidth());
+      this.spinnerCollapsatorWidth.setValue(cfg.getCollapsatorBorderWidth());
+      this.spinnerCollapsatorSize.setValue(cfg.getCollapsatorSize());
+      this.spinnerElementBorderWidth.setValue(cfg.getElementBorderWidth());
 
-      this.colorChooserCollapsatorBackground.setValue(this.config.getCollapsatorBackgroundColor());
-      this.colorChooserCollapsatorBorder.setValue(this.config.getCollapsatorBorderColor());
+      this.colorChooserCollapsatorBackground.setValue(cfg.getCollapsatorBackgroundColor());
+      this.colorChooserCollapsatorBorder.setValue(cfg.getCollapsatorBorderColor());
 
-      this.spinnerSelectLineWidth.setValue(this.config.getSelectLineWidth());
+      this.spinnerSelectLineWidth.setValue(cfg.getSelectLineWidth());
 
-      this.slider1stLevelHorzGap.setValue(this.config.getFirstLevelHorizontalInset());
-      this.slider1stLevelVertGap.setValue(this.config.getFirstLevelVerticalInset());
+      this.slider1stLevelHorzGap.setValue(cfg.getFirstLevelHorizontalInset());
+      this.slider1stLevelVertGap.setValue(cfg.getFirstLevelVerticalInset());
 
-      this.slider2ndLevelHorzGap.setValue(this.config.getOtherLevelHorizontalInset());
-      this.slider2ndLevelVertGap.setValue(this.config.getOtherLevelVerticalInset());
+      this.slider2ndLevelHorzGap.setValue(cfg.getOtherLevelHorizontalInset());
+      this.slider2ndLevelVertGap.setValue(cfg.getOtherLevelVerticalInset());
 
       this.mapKeyShortCuts.clear();
-      this.mapKeyShortCuts.putAll(this.config.getKeyShortcutMap());
+      this.mapKeyShortCuts.putAll(cfg.getKeyShortcutMap());
 
-      setScalingModifiers(this.config.getScaleModifiers());
-      
+      setScalingModifiers(cfg.getScaleModifiers());
+
       // Common behaviour options
-      this.checkboxUseInsideBrowser.setSelected(NbUtils.getPreferences().getBoolean("useInsideBrowser", false));
-      this.checkboxRelativePathsForFilesInTheProject.setSelected(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true));
-      this.checkBoxUnfoldCollapsedTarget.setSelected(NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true));
-      this.checkBoxCopyColorInfoToNewAllowed.setSelected(NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true));
-      this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(NbUtils.getPreferences().getBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
+      this.checkboxUseInsideBrowser.setSelected(preferences.getBoolean("useInsideBrowser", false));
+      this.checkboxRelativePathsForFilesInTheProject.setSelected(preferences.getBoolean("makeRelativePathToProject", true));
+      this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true));
+      this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true));
+      this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
 
       updateFontButton();
     }
@@ -1144,79 +1271,91 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }
 
-  void store() {
+  @Nonnull
+  MindMapPanelConfig store(@Nonnull final Preferences prefs, @Nonnull final MindMapPanelConfig cfg, final boolean notifyConfigReload) {
     try {
-      this.config.setShowGrid(this.checkBoxShowGrid.isSelected());
-      this.config.setDropShadow(this.checkBoxDropShadow.isSelected());
-      this.config.setPaperColor(this.colorChooserPaperColor.getValue());
-      this.config.setGridColor(this.colorChooserGridColor.getValue());
-      this.config.setConnectorColor(this.colorChooserConnectorColor.getValue());
-      this.config.setJumpLinkColor(this.colorChooserJumpLink.getValue());
-      this.config.setRootBackgroundColor(this.colorChooserRootBackground.getValue());
-      this.config.setRootTextColor(this.colorChooserRootText.getValue());
-      this.config.setFirstLevelBackgroundColor(this.colorChooser1stBackground.getValue());
-      this.config.setFirstLevelTextColor(this.colorChooser1stText.getValue());
-      this.config.setOtherLevelBackgroundColor(this.colorChooser2ndBackground.getValue());
-      this.config.setOtherLevelTextColor(this.colorChooser2ndText.getValue());
-      this.config.setSelectLineColor(this.colorChooserSelectLine.getValue());
-      this.config.setCollapsatorBackgroundColor(this.colorChooserCollapsatorBackground.getValue());
-      this.config.setCollapsatorBorderColor(this.colorChooserCollapsatorBorder.getValue());
-      this.config.setGridStep((Integer) this.spinnerGridStep.getValue());
-      this.config.setSelectLineGap((Integer) this.spinnerSelectLineGap.getValue());
-      this.config.setCollapsatorSize((Integer) this.spinnerCollapsatorSize.getValue());
-      this.config.setConnectorWidth((Float) this.spinnerConnectorWidth.getValue());
-      this.config.setJumpLinkWidth((Float) this.spinnerJumpLinkWidth.getValue());
-      this.config.setSelectLineWidth((Float) this.spinnerSelectLineWidth.getValue());
-      this.config.setCollapsatorBorderWidth((Float) this.spinnerCollapsatorWidth.getValue());
-      this.config.setElementBorderWidth((Float) this.spinnerElementBorderWidth.getValue());
+      cfg.setShowGrid(this.checkBoxShowGrid.isSelected());
+      cfg.setDropShadow(this.checkBoxDropShadow.isSelected());
+      cfg.setPaperColor(this.colorChooserPaperColor.getValue());
+      cfg.setGridColor(this.colorChooserGridColor.getValue());
+      cfg.setConnectorColor(this.colorChooserConnectorColor.getValue());
+      cfg.setJumpLinkColor(this.colorChooserJumpLink.getValue());
+      cfg.setRootBackgroundColor(this.colorChooserRootBackground.getValue());
+      cfg.setRootTextColor(this.colorChooserRootText.getValue());
+      cfg.setFirstLevelBackgroundColor(this.colorChooser1stBackground.getValue());
+      cfg.setFirstLevelTextColor(this.colorChooser1stText.getValue());
+      cfg.setOtherLevelBackgroundColor(this.colorChooser2ndBackground.getValue());
+      cfg.setOtherLevelTextColor(this.colorChooser2ndText.getValue());
+      cfg.setSelectLineColor(this.colorChooserSelectLine.getValue());
+      cfg.setCollapsatorBackgroundColor(this.colorChooserCollapsatorBackground.getValue());
+      cfg.setCollapsatorBorderColor(this.colorChooserCollapsatorBorder.getValue());
+      cfg.setGridStep((Integer) this.spinnerGridStep.getValue());
+      cfg.setSelectLineGap((Integer) this.spinnerSelectLineGap.getValue());
+      cfg.setCollapsatorSize((Integer) this.spinnerCollapsatorSize.getValue());
+      cfg.setConnectorWidth((Float) this.spinnerConnectorWidth.getValue());
+      cfg.setJumpLinkWidth((Float) this.spinnerJumpLinkWidth.getValue());
+      cfg.setSelectLineWidth((Float) this.spinnerSelectLineWidth.getValue());
+      cfg.setCollapsatorBorderWidth((Float) this.spinnerCollapsatorWidth.getValue());
+      cfg.setElementBorderWidth((Float) this.spinnerElementBorderWidth.getValue());
 
-      this.config.setFirstLevelHorizontalInset(this.slider1stLevelHorzGap.getValue());
-      this.config.setFirstLevelVerticalInset(this.slider1stLevelVertGap.getValue());
-      this.config.setOtherLevelHorizontalInset(this.slider2ndLevelHorzGap.getValue());
-      this.config.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
+      cfg.setFirstLevelHorizontalInset(this.slider1stLevelHorzGap.getValue());
+      cfg.setFirstLevelVerticalInset(this.slider1stLevelVertGap.getValue());
+      cfg.setOtherLevelHorizontalInset(this.slider2ndLevelHorzGap.getValue());
+      cfg.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
 
-      for(final Map.Entry<String,KeyShortcut> e : this.mapKeyShortCuts.entrySet()){
-        this.config.setKeyShortCut(e.getValue());
+      for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
+        cfg.setKeyShortCut(e.getValue());
       }
-      
-      this.config.setScaleModifiers(getScalingModifiers());
-      
-      this.config.saveTo(NbUtils.getPreferences());
+
+      cfg.setScaleModifiers(getScalingModifiers());
+
+      cfg.saveTo(prefs);
 
       // Common behaviour options
-      NbUtils.getPreferences().putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected());
-      NbUtils.getPreferences().putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
-      NbUtils.getPreferences().putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
-      NbUtils.getPreferences().putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
-      NbUtils.getPreferences().putBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
+      prefs.putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected());
+      prefs.putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
+      prefs.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
+      prefs.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
+      prefs.putBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
     }
     finally {
-      MMDGraphEditor.notifyReloadConfig();
+      if (notifyConfigReload) {
+        MMDGraphEditor.notifyReloadConfig();
+      }
     }
+    return cfg;
   }
 
-  private void setScalingModifiers(final int value){
-    this.checkBoxScalingALT.setSelected((value & KeyEvent.ALT_MASK)!=0);
-    this.checkBoxScalingCTRL.setSelected((value & KeyEvent.CTRL_MASK)!=0);
-    this.checkBoxScalingMETA.setSelected((value & KeyEvent.META_MASK)!=0);
-    this.checkBoxScalingSHIFT.setSelected((value & KeyEvent.SHIFT_MASK)!=0);
+  private void setScalingModifiers(final int value) {
+    this.checkBoxScalingALT.setSelected((value & KeyEvent.ALT_MASK) != 0);
+    this.checkBoxScalingCTRL.setSelected((value & KeyEvent.CTRL_MASK) != 0);
+    this.checkBoxScalingMETA.setSelected((value & KeyEvent.META_MASK) != 0);
+    this.checkBoxScalingSHIFT.setSelected((value & KeyEvent.SHIFT_MASK) != 0);
   }
-  
-  private int getScalingModifiers(){
-    return (this.checkBoxScalingALT.isSelected() ? KeyEvent.ALT_MASK : 0) |
-        (this.checkBoxScalingCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0) |
-        (this.checkBoxScalingMETA.isSelected() ? KeyEvent.ALT_MASK : 0) |
-        (this.checkBoxScalingSHIFT.isSelected() ? KeyEvent.SHIFT_MASK : 0);
+
+  private int getScalingModifiers() {
+    return (this.checkBoxScalingALT.isSelected() ? KeyEvent.ALT_MASK : 0)
+        | (this.checkBoxScalingCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0)
+        | (this.checkBoxScalingMETA.isSelected() ? KeyEvent.ALT_MASK : 0)
+        | (this.checkBoxScalingSHIFT.isSelected() ? KeyEvent.SHIFT_MASK : 0);
   }
-  
+
   boolean valid() {
     return true;
   }
 
+  @Nonnull
+  public MindMapPanelConfig getConfig(){
+    return this.config;
+  }
+  
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonAbout;
+  private javax.swing.JButton buttonExportSettings;
   private javax.swing.JButton buttonFont;
+  private javax.swing.JButton buttonImportSettings;
   private javax.swing.JButton buttonOpenShortcutEditor;
+  private javax.swing.JButton buttonResetSettings;
   private javax.swing.JCheckBox checkBoxCopyColorInfoToNewAllowed;
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxKnowledgeFolderAutogenerationAllowed;
@@ -1242,6 +1381,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserRootText;
   private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooserSelectLine;
   private com.igormaznitsa.nbmindmap.nb.swing.DonateButton donateButton1;
+  private javax.swing.Box.Filler filler1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
