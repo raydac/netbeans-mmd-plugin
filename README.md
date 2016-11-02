@@ -14,6 +14,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.3.1-SNAPSHOT (under development)__
+- SCIARETO: added CLI interface to convert data
 - ALL: export into [Org-Mode](http://orgmode.org/) format [#24](https://github.com/raydac/netbeans-mmd-plugin/issues/24)
 - IDEA,NB: by default disabled autocreation of .projectKnowledge folder [#23](https://github.com/raydac/netbeans-mmd-plugin/issues/23)
 - ALL: added keyboard shortcuts to fold and unfold topics (`-` and `=`) [#18](https://github.com/raydac/netbeans-mmd-plugin/issues/18)
