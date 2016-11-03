@@ -732,7 +732,7 @@ public class Main {
     out.println("   --from FORMAT - type of source format, be default 'mmd' (allowed " + allowedFormatsFrom + ')');
     out.println("   --out FILE - destination file, if file exists it will be overrided");
     out.println("   --to FORMAT - type of destination format, bye default 'mmd' (allowed " + allowedFormatsTo + ')');
-    out.println("   --settings FILE - use settings defined in property file");
+    out.println("   --settings FILE - use graphic settings defined in Java property file");
     out.println("   --option NAME=VALUE - an option to tune export process, specific for each exporter, see documentation");
     out.println();
   }
