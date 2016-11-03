@@ -21,7 +21,10 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 
@@ -31,9 +34,9 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
 
   public FontSelector(final Font initial) {
     initComponents();
-    final ComboBoxModel<String> modelName = new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+    final ComboBoxModel<String> modelName = new DefaultComboBoxModel<>(getAllFontFamilies());
     this.comboBoxName.setModel(modelName);
-    this.comboBoxName.setSelectedItem(initial.getFamily());
+    this.comboBoxName.setSelectedItem(initial.getName());
 
     final ComboBoxModel<String> modelStyle = new DefaultComboBoxModel<>(new String[]{"Plain", "Bold", "Italic", "Bold+Italic"});
     this.comboBoxStyle.setModel(modelStyle);
@@ -66,6 +69,10 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
     this.textArea.setPreferredSize(size);
   }
 
+  private final String [] getAllFontFamilies(){
+    return GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+  }
+  
   @Override
   public void actionPerformed(ActionEvent e) {
     this.textArea.setFont(getValue());

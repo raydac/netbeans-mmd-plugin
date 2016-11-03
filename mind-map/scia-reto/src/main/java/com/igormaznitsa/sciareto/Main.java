@@ -76,7 +76,7 @@ import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.notifications.MessagesService;
 import com.igormaznitsa.sciareto.plugins.PrinterPlugin;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.PropertiesPreferences;
+import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils.SplashScreen;

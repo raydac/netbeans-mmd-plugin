@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.preferences;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.KeyShortCutEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FontSelector;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
@@ -75,6 +76,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private boolean changed;
 
   private Font fontTextEditor = TextEditor.DEFAUT_TEXT_EDITOR_FONT;
+  private Font fontMindMapEditor = TextEditor.DEFAUT_TEXT_EDITOR_FONT;
 
   private final MindMapPanelConfig config = new MindMapPanelConfig();
   private final transient Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(new Comparator<String>() {
@@ -1003,8 +1005,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     final FontSelector fontSelector = new FontSelector(this.config.getFont());
 
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Select font", fontSelector)) {
-      this.config.setFont(fontSelector.getValue());
-      updateFontButton(this.buttonFont, fontSelector.getValue());
+      final Font selectedFont = fontSelector.getValue();
+      this.config.setFont(selectedFont);
+      this.fontMindMapEditor = selectedFont;
+      updateFontButton(this.buttonFont, selectedFont);
       if (this.changeNotificationAllowed) {
         this.changed = true;
       }
@@ -1292,7 +1296,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
       setScalingModifiers(config.getScaleModifiers());
 
-      updateFontButton(this.buttonFont, config.getFont());
+      this.fontMindMapEditor = config.getFont();
+      updateFontButton(this.buttonFont, this.fontMindMapEditor);
 
       this.fontTextEditor = Assertions.assertNotNull(PreferencesManager.getInstance().getFont(prefs, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, TextEditor.DEFAUT_TEXT_EDITOR_FONT));
       updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
@@ -1333,7 +1338,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     config.setFirstLevelVerticalInset(this.slider1stLevelVertGap.getValue());
     config.setOtherLevelHorizontalInset(this.slider2ndLevelHorzGap.getValue());
     config.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
-
+    config.setFont(this.fontMindMapEditor);
+    
     for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
       config.setKeyShortCut(e.getValue());
     }
