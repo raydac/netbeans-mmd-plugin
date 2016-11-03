@@ -107,7 +107,7 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_ZOOM_RESET = "zoomReset";
   public static final String KEY_SHOW_POPUP = "showPopupMenu";
 
-  private Font font = new Font("Arial", Font.BOLD, 18); //NOI18N
+  private Font font = new Font(Font.DIALOG, Font.BOLD, 18); //NOI18N
   private double scale = 1.0d;
   private boolean dropShadow = true;
 
