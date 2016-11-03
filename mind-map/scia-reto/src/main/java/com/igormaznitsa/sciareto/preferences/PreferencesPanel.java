@@ -75,8 +75,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private boolean changed;
 
-  private Font fontTextEditor = TextEditor.DEFAUT_TEXT_EDITOR_FONT;
-  private Font fontMindMapEditor = TextEditor.DEFAUT_TEXT_EDITOR_FONT;
+  private Font fontTextEditor = TextEditor.DEFAULT_FONT;
+  private Font fontMindMapEditor = TextEditor.DEFAULT_FONT;
 
   private final MindMapPanelConfig config = new MindMapPanelConfig();
   private final transient Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(new Comparator<String>() {
@@ -1175,7 +1175,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private void buttonResetToDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetToDefaultActionPerformed
     loadFrom(new MindMapPanelConfig(),PreferencesManager.getInstance().getPreferences());
-    this.fontTextEditor = TextEditor.DEFAUT_TEXT_EDITOR_FONT;
+    this.fontTextEditor = TextEditor.DEFAULT_FONT;
     updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
   }//GEN-LAST:event_buttonResetToDefaultActionPerformed
 
@@ -1299,7 +1299,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.fontMindMapEditor = config.getFont();
       updateFontButton(this.buttonFont, this.fontMindMapEditor);
 
-      this.fontTextEditor = Assertions.assertNotNull(PreferencesManager.getInstance().getFont(prefs, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, TextEditor.DEFAUT_TEXT_EDITOR_FONT));
+      this.fontTextEditor = Assertions.assertNotNull(PreferencesManager.getInstance().getFont(prefs, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, TextEditor.DEFAULT_FONT));
       updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
     }
     finally {

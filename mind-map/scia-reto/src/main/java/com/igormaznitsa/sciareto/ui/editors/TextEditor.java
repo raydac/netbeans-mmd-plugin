@@ -46,12 +46,12 @@ public final class TextEditor extends AbstractScrollPane {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TextEditor.class);
 
+  public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+
   private final JTextArea editor;
   private final TabTitle title;
 
   private boolean ignoreChange;
-
-  public static final Font DEFAUT_TEXT_EDITOR_FONT = new Font("Arial", Font.PLAIN, 12);
 
   private final UndoManager undoManager = new UndoManager();
 
@@ -79,7 +79,7 @@ public final class TextEditor extends AbstractScrollPane {
     super();
     this.editor = new JTextArea();
     this.editor.getCaret().setSelectionVisible(true);
-    this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
+    this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.title = new TabTitle(context, this, file);
 
     this.editor.getDocument().addDocumentListener(new DocumentListener() {
@@ -168,7 +168,7 @@ public final class TextEditor extends AbstractScrollPane {
 
   @Override
   public void updateConfiguration() {
-    this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
+    this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.editor.revalidate();
     this.editor.repaint();
   }

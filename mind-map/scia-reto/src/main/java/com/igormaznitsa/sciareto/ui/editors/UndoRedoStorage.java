@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.undo.UndoManager;
 
 public final class UndoRedoStorage<T> {
 
@@ -30,7 +29,6 @@ public final class UndoRedoStorage<T> {
   private boolean hasUndoStateRemovedForFullBuffer = false;
 
   public UndoRedoStorage(final int max) {
-    UndoManager manager;
     this.maxSize = max;
   }
 
@@ -68,6 +66,10 @@ public final class UndoRedoStorage<T> {
     this.undoItems.clear();
   }
 
+  public void setFlagThatSomeStateLost(){
+    this.hasUndoStateRemovedForFullBuffer = true;
+  }
+  
   public boolean hasRemovedUndoStateForFullBuffer() {
     return this.hasUndoStateRemovedForFullBuffer;
   }

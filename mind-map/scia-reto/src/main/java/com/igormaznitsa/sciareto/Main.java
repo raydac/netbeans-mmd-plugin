@@ -55,6 +55,7 @@ import org.apache.commons.io.IOUtils;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -654,9 +655,17 @@ public class Main {
 
           });
 
-          final MindMap map = fromFormat.doImport(panel, dialog, null, new Topic[0]);
+          MindMap map = new MindMap(new MindMapController() {
+            @Override
+            public boolean canBeDeletedSilently(@Nonnull final MindMap map, @Nonnull final Topic topic) {
+              return true;
+            }
+          }, false);
           panel.setModel(map);
-
+          
+          map = fromFormat.doImport(panel, dialog, null, new Topic[0]);
+          panel.setModel(map);
+          
           final JComponent optionsComponent = toFormat.makeOptions();
 
           if (!options.isEmpty()) {

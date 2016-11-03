@@ -4,6 +4,7 @@ SCIARETO_HOME="$(dirname ${BASH_SOURCE[0]})"
 LOG_FILE=$SCIARETO_HOME/console.log
 SCIARETO_PLUGINS=$SCIARETO_HOME/plugins
 
+# uncomment the line below if graphics works slowly
 # JAVA_EXTRA_GFX_FLAGS="-Dsun.java2d.opengl=true"
 
 JAVA_FLAGS="-client -Dsun.java2d.dpiaware=true -Dswing.aatext=true -Dawt.useSystemAAFontSettings=on"

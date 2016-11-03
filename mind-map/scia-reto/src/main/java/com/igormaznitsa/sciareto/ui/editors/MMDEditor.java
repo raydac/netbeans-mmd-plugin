@@ -260,6 +260,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false);
       this.title.setChanged(false);
       result = true;
+      this.undoStorage.setFlagThatSomeStateLost();
     } else {
       result = true;
     }

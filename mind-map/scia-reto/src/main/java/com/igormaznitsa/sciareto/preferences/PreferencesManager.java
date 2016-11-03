@@ -37,8 +37,6 @@ public class PreferencesManager {
   private final Preferences prefs;
   private final UUID installationUUID;
 
-  public static final Font DEFAULT_EDITOR_FONT = new Font("Arial", Font.PLAIN, 12);
-
   private static final String PROPERTY_UUID = "installation.uuid";
 
   private final Map<String, Object> localCache = new HashMap<>();

@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
-import static com.igormaznitsa.sciareto.ui.editors.TextEditor.DEFAUT_TEXT_EDITOR_FONT;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -50,6 +49,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.editors.TextEditor;
 
 public final class NoteEditor extends javax.swing.JPanel {
 
@@ -191,7 +191,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
 
     this.setPreferredSize(new Dimension(640, 480));
-    this.editorPane.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAUT_TEXT_EDITOR_FONT));
+    this.editorPane.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, TextEditor.DEFAULT_FONT));
     this.editorPane.setText(text);
     this.addAncestorListener(new AncestorListener() {
       @Override
