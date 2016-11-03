@@ -73,6 +73,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
 
     @Override
+    @Nonnull
     public String getDescription() {
       return "Java properties file (*.properties)";
     }
@@ -1025,10 +1026,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_slider2ndLevelVertGapStateChanged
 
-  private void updateFontButton() {
+  private void updateFontButton(@Nonnull final MindMapPanelConfig config) {
     final String strStyle;
 
-    final Font thefont = this.config.getFont();
+    final Font thefont = config.getFont();
 
     if (thefont.isBold()) {
       strStyle = thefont.isItalic() ? "bolditalic" : "bold";
@@ -1056,7 +1057,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);
     if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {
       this.config.setFont((Font) editor.getValue());
-      updateFontButton();
+      updateFontButton(this.config);
       if (changeNotificationAllowed) {
         this.controller.changed();
       }
@@ -1264,7 +1265,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true));
       this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
 
-      updateFontButton();
+      updateFontButton(cfg);
     }
     finally {
       changeNotificationAllowed = true;
