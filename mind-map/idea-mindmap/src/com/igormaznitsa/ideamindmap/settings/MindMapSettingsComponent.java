@@ -15,12 +15,15 @@
  */
 package com.igormaznitsa.ideamindmap.settings;
 
+import com.igormaznitsa.ideamindmap.editor.MindMapDialogProvider;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurableProvider;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.ProjectManager;
 import org.jetbrains.annotations.Nls;
 
 import javax.annotation.Nonnull;
@@ -38,12 +41,18 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
 
   private MindMapSettingsPanel uiPanel;
 
+  private final MindMapDialogProvider dialogProvider = new MindMapDialogProvider(null);
+
   public MindMapSettingsComponent getInstance(){
     if (instance == null){
       instance = new MindMapSettingsComponent();
     }
 
     return instance;
+  }
+
+  public DialogProvider getDialogProvider(){
+    return dialogProvider;
   }
 
   @Override public void initComponent() {

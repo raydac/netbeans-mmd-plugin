@@ -23,7 +23,9 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
+import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.intellij.openapi.ui.DialogWrapper;
+import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.JButton;
@@ -34,17 +36,16 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.File;
+import java.util.*;
+import java.util.prefs.Preferences;
 
 public class MindMapSettingsPanel {
   private JPanel mainPanel;
@@ -82,10 +83,31 @@ public class MindMapSettingsPanel {
   private JCheckBox checkBoxScalingModifierCTRL;
   private JCheckBox checkBoxScalingModifierSHFT;
   private JCheckBox checkBoxScalingModifierMETA;
+    private JButton buttonResetSettings;
+  private JButton buttonExportSettings;
+  private JButton buttonImportSettings;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsPanel.class);
 
   private final MindMapSettingsComponent controller;
+
+  private static File lastExportedSettingsFile;
+  private static File lastImportedSettingsFile;
+
+  private static final class PropertiesFileFilter extends FileFilter {
+
+    @Override
+    public boolean accept(final File f) {
+      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
+    }
+
+    @Override
+    public String getDescription() {
+      return "Java properties file (*.properties)";
+    }
+
+  }
+
 
   private final MindMapPanelConfig etalon = new MindMapPanelConfig();
   private Font theFont;
@@ -134,6 +156,68 @@ public class MindMapSettingsPanel {
       }
     });
 
+    buttonResetSettings.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        loadFieldsFrom(new MindMapPanelConfig());
+      }
+    });
+
+    buttonImportSettings.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        final File file = controller.getDialogProvider().msgOpenFileDialog("importSettings", "Import settings", lastImportedSettingsFile, true, new PropertiesFileFilter(), "Open");
+        if (file != null) {
+          lastImportedSettingsFile = file;
+          try {
+            final Preferences prefs = (new PropertiesPreferences("IDEA MindMap plugin", FileUtils.readFileToString(file)));
+            final MindMapPanelConfig loadedConfig = new MindMapPanelConfig();
+            loadedConfig.loadFrom(prefs);
+            loadFieldsFrom(loadedConfig);
+          }
+          catch (final Exception ex) {
+            LOGGER.error("Can't import settings", ex);
+            controller.getDialogProvider().msgError("Can't import settings [" + ex.getMessage() + ']');
+          }
+        }
+      }
+    });
+
+    buttonExportSettings.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        File file = controller.getDialogProvider().msgSaveFileDialog("exportSettings", "Export settings", lastExportedSettingsFile, true, new PropertiesFileFilter(), "Save");
+        if (file != null) {
+          lastExportedSettingsFile = file;
+          if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
+            final Boolean addExt = controller.getDialogProvider().msgConfirmYesNoCancel("Add extension", "Add '.properties' extension?");
+            if (addExt == null) {
+              return;
+            }
+            if (addExt) {
+              file = new File(file.getAbsolutePath() + ".properties");
+            }
+          }
+
+          if (file.exists() && !controller.getDialogProvider().msgConfirmOkCancel("Override file", String.format("File %s exists, to override it?", file.getName()))) {
+            return;
+          }
+
+          final PropertiesPreferences prefs = new PropertiesPreferences("IDEA MindMap plugin");
+          final MindMapPanelConfig cfg =  makeConfig();
+          cfg.saveTo(prefs);
+          try {
+            FileUtils.write(file, prefs.toString());
+          }
+          catch (final Exception ex) {
+            LOGGER.error("Can't export settings", ex);
+            controller.getDialogProvider().msgError("Can't export settings [" + ex.getMessage() + ']');
+          }
+        }
+
+      }
+    });
+
     buttonFont.addActionListener(new ActionListener() {
       @Override public void actionPerformed(ActionEvent e) {
         final FontSelector fontSelector = new FontSelector(theFont);
@@ -167,49 +251,53 @@ public class MindMapSettingsPanel {
 
   public void reset(final MindMapPanelConfig config) {
     this.etalon.makeFullCopyOf(config, false, false);
+    loadFieldsFrom(this.etalon);
+  }
 
-    this.colorButtonBackgroundColor.setValue(this.etalon.getPaperColor());
-    this.colorButtonGridColor.setValue(this.etalon.getGridColor());
-    this.colorButtonCollapsatorFill.setValue(this.etalon.getCollapsatorBackgroundColor());
-    this.colorButtonCollapsatorBorder.setValue(this.etalon.getCollapsatorBorderColor());
-    this.colorButtonConnectorColor.setValue(this.etalon.getConnectorColor());
-    this.colorButtonJumpLink.setValue(this.etalon.getJumpLinkColor());
-    this.colorButtonSelectFrameColor.setValue(this.etalon.getSelectLineColor());
+  public void loadFieldsFrom(final MindMapPanelConfig config) {
 
-    this.colorButtonRootFill.setValue(this.etalon.getRootBackgroundColor());
-    this.colorButtonRootText.setValue(this.etalon.getRootTextColor());
-    this.colorButton1stLevelFill.setValue(this.etalon.getFirstLevelBackgroundColor());
-    this.colorButton1stLevelText.setValue(this.etalon.getFirstLevelTextColor());
-    this.colorButton2ndLevelFill.setValue(this.etalon.getOtherLevelBackgroundColor());
-    this.colorButton2ndLevelText.setValue(this.etalon.getOtherLevelTextColor());
+    this.colorButtonBackgroundColor.setValue(config.getPaperColor());
+    this.colorButtonGridColor.setValue(config.getGridColor());
+    this.colorButtonCollapsatorFill.setValue(config.getCollapsatorBackgroundColor());
+    this.colorButtonCollapsatorBorder.setValue(config.getCollapsatorBorderColor());
+    this.colorButtonConnectorColor.setValue(config.getConnectorColor());
+    this.colorButtonJumpLink.setValue(config.getJumpLinkColor());
+    this.colorButtonSelectFrameColor.setValue(config.getSelectLineColor());
 
-    this.checkBoxShowGrid.setSelected(this.etalon.isShowGrid());
-    this.checkBoxDropShadow.setSelected(this.etalon.isDropShadow());
+    this.colorButtonRootFill.setValue(config.getRootBackgroundColor());
+    this.colorButtonRootText.setValue(config.getRootTextColor());
+    this.colorButton1stLevelFill.setValue(config.getFirstLevelBackgroundColor());
+    this.colorButton1stLevelText.setValue(config.getFirstLevelTextColor());
+    this.colorButton2ndLevelFill.setValue(config.getOtherLevelBackgroundColor());
+    this.colorButton2ndLevelText.setValue(config.getOtherLevelTextColor());
 
-    this.checkBoxScalingModifierALT.setSelected((this.etalon.getScaleModifiers() & KeyEvent.ALT_MASK)!=0);
-    this.checkBoxScalingModifierCTRL.setSelected((this.etalon.getScaleModifiers() & KeyEvent.CTRL_MASK)!=0);
-    this.checkBoxScalingModifierMETA.setSelected((this.etalon.getScaleModifiers() & KeyEvent.META_MASK)!=0);
-    this.checkBoxScalingModifierSHFT.setSelected((this.etalon.getScaleModifiers() & KeyEvent.SHIFT_MASK)!=0);
+    this.checkBoxShowGrid.setSelected(config.isShowGrid());
+    this.checkBoxDropShadow.setSelected(config.isDropShadow());
 
-    this.spinnerGridStep.setValue(this.etalon.getGridStep());
-    this.spinnerCollapsatorSize.setValue(this.etalon.getCollapsatorSize());
-    this.spinnerCollapsatorWidth.setValue(toDouble(this.etalon.getCollapsatorBorderWidth()));
-    this.spinnerConnectorWidth.setValue(toDouble(this.etalon.getConnectorWidth()));
-    this.spinnerJumpLinkWidth.setValue(toDouble(this.etalon.getJumpLinkWidth()));
-    this.spinnerSelectionFrameWidth.setValue(toDouble(this.etalon.getSelectLineWidth()));
-    this.spinnerSelectionFrameGap.setValue(this.etalon.getSelectLineGap());
-    this.spinnerBorderWidth.setValue(toDouble(this.etalon.getElementBorderWidth()));
+    this.checkBoxScalingModifierALT.setSelected((config.getScaleModifiers() & KeyEvent.ALT_MASK)!=0);
+    this.checkBoxScalingModifierCTRL.setSelected((config.getScaleModifiers() & KeyEvent.CTRL_MASK)!=0);
+    this.checkBoxScalingModifierMETA.setSelected((config.getScaleModifiers() & KeyEvent.META_MASK)!=0);
+    this.checkBoxScalingModifierSHFT.setSelected((config.getScaleModifiers() & KeyEvent.SHIFT_MASK)!=0);
 
-    this.slider1stLevelHorzGap.setValue(this.etalon.getFirstLevelHorizontalInset());
-    this.slider1stLevelVertGap.setValue(this.etalon.getFirstLevelVerticalInset());
+    this.spinnerGridStep.setValue(config.getGridStep());
+    this.spinnerCollapsatorSize.setValue(config.getCollapsatorSize());
+    this.spinnerCollapsatorWidth.setValue(toDouble(config.getCollapsatorBorderWidth()));
+    this.spinnerConnectorWidth.setValue(toDouble(config.getConnectorWidth()));
+    this.spinnerJumpLinkWidth.setValue(toDouble(config.getJumpLinkWidth()));
+    this.spinnerSelectionFrameWidth.setValue(toDouble(config.getSelectLineWidth()));
+    this.spinnerSelectionFrameGap.setValue(config.getSelectLineGap());
+    this.spinnerBorderWidth.setValue(toDouble(config.getElementBorderWidth()));
 
-    this.slider2ndLevelHorzGap.setValue(this.etalon.getOtherLevelHorizontalInset());
-    this.slider2ndLevelVertGap.setValue(this.etalon.getOtherLevelVerticalInset());
+    this.slider1stLevelHorzGap.setValue(config.getFirstLevelHorizontalInset());
+    this.slider1stLevelVertGap.setValue(config.getFirstLevelVerticalInset());
 
-    this.theFont = this.etalon.getFont();
+    this.slider2ndLevelHorzGap.setValue(config.getOtherLevelHorizontalInset());
+    this.slider2ndLevelVertGap.setValue(config.getOtherLevelVerticalInset());
+
+    this.theFont = config.getFont();
 
     this.mapKeyShortCuts.clear();
-    for(final Map.Entry<String,KeyShortcut> e : this.etalon.getKeyShortcutMap().entrySet()){
+    for(final Map.Entry<String,KeyShortcut> e : config.getKeyShortcutMap().entrySet()){
       this.mapKeyShortCuts.put(e.getKey(),e.getValue());
     }
 
