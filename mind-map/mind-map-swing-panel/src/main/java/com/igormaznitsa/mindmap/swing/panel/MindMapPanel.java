@@ -1634,7 +1634,7 @@ public class MindMapPanel extends JPanel {
   public MindMap getModel() {
     this.lock();
     try {
-      return this.model;
+      return Assertions.assertNotNull("Model is not provided, it must not be null!",this.model);
     } finally {
       this.unlock();
     }
