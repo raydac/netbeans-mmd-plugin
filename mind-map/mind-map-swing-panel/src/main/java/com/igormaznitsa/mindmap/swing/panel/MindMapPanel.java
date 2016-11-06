@@ -805,8 +805,16 @@ public class MindMapPanel extends JPanel {
         }
       }
     }
+    
     notifyModelChanged();
     repaint();
+  
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        fireNotificationEnsureTopicVisibility(element.getModel());
+      }
+    });
   }
 
   @Nullable
