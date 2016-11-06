@@ -334,7 +334,7 @@ public final class ExplorerTree extends JScrollPane {
 
     final TabTitle editingTab = this.context.getFocusedTab();
     if (editingTab != null && editingTab.getType() == EditorType.MINDMAP) {
-      final JMenuItem addIntoMap = new JMenuItem("Add as topic");
+      final JMenuItem addIntoMap = new JMenuItem("Add File as topic");
       addIntoMap.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
