@@ -16,6 +16,7 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 
 import java.awt.Color;
@@ -168,27 +169,37 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     }
   }
 
-  public void topicToCentre(@Nullable final Topic topic) {
+  public boolean topicToCentre(@Nullable final Topic topic) {
+    boolean result = false;
+
+    assertSwingDispatchThread();
     if (topic != null) {
-      final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-          AbstractElement element = (AbstractElement) topic.getPayload();
+      AbstractElement element = (AbstractElement) topic.getPayload();
 
-          if (element == null) {
-            return;
-          }
+      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true)) {
+        element = (AbstractElement) topic.getPayload();
+      }
 
-          final Rectangle2D bounds = element.getBounds();
-          final Dimension viewPortSize = getViewport().getExtentSize();
+      if (element != null) {
+        final Rectangle2D bounds = element.getBounds();
+        final Dimension viewPortSize = getViewport().getExtentSize();
 
-          final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
-          final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
+        final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
+        final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
 
-          getViewport().setViewPosition(new Point(x, y));
-        }
-      };
-      SwingUtilities.invokeLater(runnable);
+        getViewport().setViewPosition(new Point(x, y));
+        result = true;
+      }
+    }
+
+    return result;
+  }
+
+  @Override
+  public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
+    if (!beforeAction) {
+      source.updateElementsAndSizeForCurrentGraphics(true);
+      topicToCentre(topic);
     }
   }
 
