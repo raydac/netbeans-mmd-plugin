@@ -28,6 +28,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -332,28 +333,47 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     this.mainScrollPane.getViewport().revalidate();
   }
 
-  public void topicToCentre(final Topic topic) {
+  public boolean topicToCentre(@Nullable Topic topic) {
+    boolean result = false;
+    
+    assertSwingDispatchThread();
+    
     if (topic != null) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          final AbstractElement element = (AbstractElement) topic.getPayload();
-          if (element != null) {
-            final Rectangle2D bounds = element.getBounds();
-            final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
+      // to make it sure that topic is from the same model
+      topic = this.mindMapPanel.getModel().findForPositionPath(topic.getPositionPath());
+      
+      AbstractElement element = (AbstractElement) topic.getPayload();
+      
+      if (element == null) {
+        this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true);
+        element = (AbstractElement) topic.getPayload();
+      }
 
-            final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
-            final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
+      if (element != null) {
+        final Rectangle2D bounds = element.getBounds();
+        final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
 
-            mainScrollPane.getViewport().setViewPosition(new Point(x, y));
-          }
-        }
-      });
+        final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
+        final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
+
+        this.mainScrollPane.getViewport().setViewPosition(new Point(x, y));
+      
+        result = true;
+      }
     }
+    
+    return result;
   }
 
   @Override
-  public void onEnsureVisibilityOfTopic(final MindMapPanel source, final Topic topic) {
+  public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
+    if (!beforeAction){
+      topicToCentre(topic);
+    }
+  }
+  
+  @Override
+  public void onEnsureVisibilityOfTopic(@Nonnull final MindMapPanel source, @Nonnull final Topic topic) {
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
