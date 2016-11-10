@@ -22,11 +22,6 @@ public final class SwingUtils {
   private SwingUtils() {
   }
 
-  public static void assertSwingThread() {
-    if (!SwingUtilities.isEventDispatchThread())
-      throw new Error("Must be Swing event dispatching thread, but detected '" + Thread.currentThread().getName() + '\'');
-  }
-
   public static void safeSwing(@Nonnull final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
