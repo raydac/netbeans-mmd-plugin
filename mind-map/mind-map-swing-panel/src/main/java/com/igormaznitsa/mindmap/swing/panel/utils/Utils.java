@@ -439,6 +439,12 @@ public final class Utils {
     return list;
   }
 
+  public static void assertSwingDispatchThread() {
+    if (!SwingUtilities.isEventDispatchThread()) {
+      throw new Error("Must be called in Swing dispatch thread");
+    }
+  }
+  
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu, @Nullable final JMenu subMenu, @Nonnull @MustNotContainNull final List<JMenuItem> items) {
