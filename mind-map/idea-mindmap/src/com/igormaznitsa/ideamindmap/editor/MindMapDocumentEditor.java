@@ -17,6 +17,7 @@ package com.igormaznitsa.ideamindmap.editor;
 
 import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
@@ -151,27 +152,35 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     });
   }
 
-  public void topicToCentre(@Nullable final Topic topic) {
+  @Override
+  public void onTopicCollapsatorClick(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final Topic topic, final boolean beforeAction) {
+    if (!beforeAction){
+      topicToCentre(topic);
+    }
+  }
+
+  public void topicToCentre(@Nullable Topic topic) {
+    assertSwingDispatchThread();
+
     if (topic != null) {
-      final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-          AbstractElement element = (AbstractElement) topic.getPayload();
+      AbstractElement element = (AbstractElement) topic.getPayload();
 
-          if (element == null) {
-            return;
-          }
-
-          final Rectangle2D bounds = element.getBounds();
-          final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
-
-          final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
-          final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
-
-          mainScrollPane.getViewport().setViewPosition(new Point(x, y));
+      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true)) {
+        topic = this.mindMapPanel.getModel().findForPositionPath(topic.getPositionPath());
+        if (topic!=null) {
+          element = (AbstractElement) topic.getPayload();
         }
-      };
-      SwingUtilities.invokeLater(runnable);
+      }
+
+      if (element != null) {
+        final Rectangle2D bounds = element.getBounds();
+        final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
+
+        final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
+        final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
+
+        mainScrollPane.getViewport().setViewPosition(new Point(x, y));
+      }
     }
   }
 
