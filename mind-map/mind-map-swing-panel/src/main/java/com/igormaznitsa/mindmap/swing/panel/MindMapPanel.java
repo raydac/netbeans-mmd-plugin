@@ -84,6 +84,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
 public class MindMapPanel extends JPanel {
 
@@ -698,7 +699,9 @@ public class MindMapPanel extends JPanel {
             if (element != null) {
               final ElementPart part = element.findPartForPoint(e.getPoint());
               if (part == ElementPart.COLLAPSATOR) {
+                fireNotificationTopicCollapsatorClick(element.getModel(),true);
                 doFoldOrUnfoldTopic(element, element.isCollapsed(), isCtrlDown);
+                fireNotificationTopicCollapsatorClick(element.getModel(),false);
               } else if (!isCtrlDown) {
                 switch (part) {
                   case VISUAL_ATTRIBUTES:
@@ -805,16 +808,9 @@ public class MindMapPanel extends JPanel {
         }
       }
     }
-    
+    this.model.resetPayload();
     notifyModelChanged();
     repaint();
-  
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        fireNotificationEnsureTopicVisibility(element.getModel());
-      }
-    });
   }
 
   @Nullable
@@ -1245,6 +1241,12 @@ public class MindMapPanel extends JPanel {
   protected void fireNotificationEnsureTopicVisibility(@Nonnull final Topic topic) {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onEnsureVisibilityOfTopic(this, topic);
+    }
+  }
+
+  protected void fireNotificationTopicCollapsatorClick(@Nonnull final Topic topic, final boolean beforeAction) {
+    for (final MindMapListener l : this.mindMapListeners) {
+      l.onTopicCollapsatorClick(this, topic, beforeAction);
     }
   }
 
@@ -2024,26 +2026,36 @@ public class MindMapPanel extends JPanel {
     }
   }
 
+  public boolean updateElementsAndSizeForCurrentGraphics(final boolean enforce) {
+    assertSwingDispatchThread();
+    
+    boolean result = true;
+    if (enforce || !isValid()) {
+      if (lockIfNotDisposed()) {
+        try {
+          final Graphics2D graph = (Graphics2D) getGraphics();
+          if (graph != null) {
+            final MMGraphics gfx = new MMGraphics2DWrapper(graph);
+            if (calculateElementSizes(gfx, model, config)) {
+              changeSizeOfComponentWithNotification(layoutFullDiagramWithCenteringToPaper(gfx, model, config, getSize()));
+              result = true;
+            }
+          }
+        }
+        finally {
+          unlock();
+        }
+      }
+    }
+    return result;
+  }
+  
   @Override
   public void revalidate() {
     final Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        if (!isValid()) {
-          if (lockIfNotDisposed()) {
-            try {
-              final Graphics2D graph = (Graphics2D) getGraphics();
-              if (graph != null) {
-                final MMGraphics gfx = new MMGraphics2DWrapper(graph);
-                if (calculateElementSizes(gfx, model, config)) {
-                  changeSizeOfComponentWithNotification(layoutFullDiagramWithCenteringToPaper(gfx, model, config, getSize()));
-                }
-              }
-            } finally {
-              unlock();
-            }
-          }
-        }
+        updateElementsAndSizeForCurrentGraphics(true);
       }
     };
     if (SwingUtilities.isEventDispatchThread()) {
