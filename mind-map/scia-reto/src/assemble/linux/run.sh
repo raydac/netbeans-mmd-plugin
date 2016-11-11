@@ -29,6 +29,12 @@ fi
 
 echo \$JAVA_RUN=$JAVA_RUN &>>$LOG_FILE
 
+echo ------JAVA_VERSION------ &>>$LOG_FILE
+
+$JAVA_RUN -version &>>$LOG_FILE
+
+echo ------------------------ &>>$LOG_FILE
+
 $JAVA_RUN $JAVA_FLAGS $JAVA_EXTRA_GFX_FLAGS -Dnbmmd.plugin.folder=$SCIARETO_PLUGINS -jar $SCIARETO_HOME/sciareto.jar $@ &>> $SCIARETO_HOME/console.log&
 THE_PID=$!
 echo $THE_PID>$SCIARETO_HOME/.pid
