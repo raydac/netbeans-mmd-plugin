@@ -656,6 +656,7 @@ public class Main {
           });
 
           MindMap map = new MindMap(new MindMapController() {
+            private static final long serialVersionUID = -5276000656494506314L;
             @Override
             public boolean canBeDeletedSilently(@Nonnull final MindMap map, @Nonnull final Topic topic) {
               return true;
