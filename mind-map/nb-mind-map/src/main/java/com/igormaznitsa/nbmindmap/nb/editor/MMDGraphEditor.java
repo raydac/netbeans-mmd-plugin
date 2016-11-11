@@ -68,7 +68,6 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
@@ -81,7 +80,6 @@ import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.netbeans.spi.print.PrintPage;
 import org.netbeans.spi.print.PrintProvider;
-import org.openide.filesystems.FileChooserBuilder;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataFolder;
@@ -209,6 +207,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             topicToCentre(mindMapPanel.getFirstSelected());
           } else if (root != null) {
             mindMapPanel.select(root, false);
+            mindMapPanel.getModel().resetPayload();
             topicToCentre(root);
           }
         }
@@ -335,39 +334,41 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   public boolean topicToCentre(@Nullable Topic topic) {
     boolean result = false;
-    
+
     assertSwingDispatchThread();
-    
+
     if (topic != null) {
       // to make it sure that topic is from the same model
       topic = this.mindMapPanel.getModel().findForPositionPath(topic.getPositionPath());
-      
-      AbstractElement element = (AbstractElement) topic.getPayload();
-      
-      if (element == null) {
-        this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true);
-        element = (AbstractElement) topic.getPayload();
-      }
+      if (topic != null) {
+        AbstractElement element = (AbstractElement) topic.getPayload();
 
-      if (element != null) {
-        final Rectangle2D bounds = element.getBounds();
-        final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
+        if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, true)) {
+          element = (AbstractElement) topic.getPayload();
+          this.mainScrollPane.getViewport().doLayout();
+        }
 
-        final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
-        final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
+        if (element != null) {
+          final Rectangle2D bounds = element.getBounds();
+          final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
 
-        this.mainScrollPane.getViewport().setViewPosition(new Point(x, y));
-      
-        result = true;
+          final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
+          final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
+
+          this.mainScrollPane.getViewport().setViewPosition(new Point(x, y));
+
+          result = true;
+        }
       }
     }
-    
+
     return result;
   }
 
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
     if (!beforeAction){
+      this.mindMapPanel.getModel().resetPayload();
       topicToCentre(topic);
     }
   }
