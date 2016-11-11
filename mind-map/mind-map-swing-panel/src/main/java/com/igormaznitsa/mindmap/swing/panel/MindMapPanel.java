@@ -85,6 +85,7 @@ import java.awt.event.ComponentEvent;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import javax.swing.JViewport;
 
 public class MindMapPanel extends JPanel {
 
@@ -1910,6 +1911,35 @@ public class MindMapPanel extends JPanel {
     final AbstractElement element = (AbstractElement) topic.getPayload();
     if (element != null) {
       element.doPaint(gfx, cfg, true);
+
+// -------------- DRAW BORDERS ABOUND COMPONENT AREAS ---------------------------
+//      
+//      final Dimension2D elementAreaSize = element.getBlockSize();
+//      final Rectangle2D elementPosition = element.getBounds();
+//      
+//      if (element instanceof ElementRoot) {
+//        final ElementRoot root = (ElementRoot) element;
+//        final Dimension2D leftSubblock = root.getLeftBlockSize();
+//        final Dimension2D rightSubblock = root.getRightBlockSize();
+//        
+//        if (leftSubblock.getWidth()>0) {
+//          gfx.draw(new Rectangle2D.Double(elementPosition.getX() - leftSubblock.getWidth(), elementPosition.getY() - (leftSubblock.getHeight() - elementPosition.getHeight()) / 2d, leftSubblock.getWidth(), leftSubblock.getHeight()), Color.RED, null);
+//        }
+//        
+//        if (rightSubblock.getWidth()>0) {
+//          gfx.draw(new Rectangle2D.Double(elementPosition.getX() + elementPosition.getWidth(), elementPosition.getY() - (rightSubblock.getHeight() - elementPosition.getHeight()) / 2d, rightSubblock.getWidth(), rightSubblock.getHeight()), Color.RED, null);
+//        }
+//        
+//        gfx.draw(new Rectangle2D.Double(elementPosition.getX() - leftSubblock.getWidth(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.CYAN, null);
+//        
+//      }else 
+//      if (element.isLeftDirection()){
+//        gfx.draw(new Rectangle2D.Double(elementPosition.getX()-(elementAreaSize.getWidth()-elementPosition.getWidth()),elementPosition.getY()-(elementAreaSize.getHeight()-elementPosition.getHeight())/2d,elementAreaSize.getWidth(),elementAreaSize.getHeight()), Color.GREEN, null);
+//      } else {
+//        gfx.draw(new Rectangle2D.Double(elementPosition.getX(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.YELLOW, null);
+//      }
+// ------------------------------------------------------------------------------
+
     }
   }
 
@@ -1977,12 +2007,16 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  private void changeSizeOfComponentWithNotification(@Nullable final Dimension size) {
+  private void changeSizeOfComponent(@Nullable final Dimension size, final boolean doNotificationThatRealigned) {
     if (size != null) {
+      
       setMinimumSize(size);
       setPreferredSize(size);
-      for (final MindMapListener l : this.mindMapListeners) {
-        l.onMindMapModelRealigned(this, size);
+      
+      if (doNotificationThatRealigned) {
+        for (final MindMapListener l : this.mindMapListeners) {
+          l.onMindMapModelRealigned(this, size);
+        }
       }
     }
   }
@@ -2000,8 +2034,8 @@ public class MindMapPanel extends JPanel {
         double rootOffsetXInBlock = rootElement.getLeftBlockSize().getWidth();
         double rootOffsetYInBlock = (rootBlockSize.getHeight() - rootElement.getBounds().getHeight()) / 2;
 
-        rootOffsetXInBlock += paperSize.getWidth() - rootBlockSize.getWidth() <= paperMargin ? paperMargin : (paperSize.getWidth() - rootBlockSize.getWidth()) / 2;
-        rootOffsetYInBlock += paperSize.getHeight() - rootBlockSize.getHeight() <= paperMargin ? paperMargin : (paperSize.getHeight() - rootBlockSize.getHeight()) / 2;
+        rootOffsetXInBlock += (paperSize.getWidth() - rootBlockSize.getWidth()) <= paperMargin ? paperMargin : (paperSize.getWidth() - rootBlockSize.getWidth()) / 2;
+        rootOffsetYInBlock += (paperSize.getHeight() - rootBlockSize.getHeight()) <= paperMargin ? paperMargin : (paperSize.getHeight() - rootBlockSize.getHeight()) / 2;
 
         moveDiagram(map, rootOffsetXInBlock, rootOffsetYInBlock);
         resultSize = new Dimension((int) Math.round(rootBlockSize.getWidth() + paperMargin * 2), (int) Math.round(rootBlockSize.getHeight() + paperMargin * 2));
@@ -2026,9 +2060,9 @@ public class MindMapPanel extends JPanel {
     }
   }
 
-  public boolean updateElementsAndSizeForCurrentGraphics(final boolean enforce) {
+  public boolean updateElementsAndSizeForCurrentGraphics(final boolean enforce, final boolean doListenerNotification) {
     assertSwingDispatchThread();
-    
+
     boolean result = true;
     if (enforce || !isValid()) {
       if (lockIfNotDisposed()) {
@@ -2036,8 +2070,18 @@ public class MindMapPanel extends JPanel {
           final Graphics2D graph = (Graphics2D) getGraphics();
           if (graph != null) {
             final MMGraphics gfx = new MMGraphics2DWrapper(graph);
-            if (calculateElementSizes(gfx, model, config)) {
-              changeSizeOfComponentWithNotification(layoutFullDiagramWithCenteringToPaper(gfx, model, config, getSize()));
+            if (calculateElementSizes(gfx, this.model, this.config)) {
+
+              Dimension pageSize = getSize();
+
+              final Container parent = this.getParent();
+              if (parent != null) {
+                if (parent instanceof JViewport) {
+                  pageSize = ((JViewport) parent).getExtentSize();
+                }
+              }
+
+              changeSizeOfComponent(layoutFullDiagramWithCenteringToPaper(gfx, this.model, this.config, pageSize), doListenerNotification);
               result = true;
             }
           }
@@ -2055,7 +2099,7 @@ public class MindMapPanel extends JPanel {
     final Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        updateElementsAndSizeForCurrentGraphics(true);
+        updateElementsAndSizeForCurrentGraphics(true, true);
       }
     };
     if (SwingUtilities.isEventDispatchThread()) {
