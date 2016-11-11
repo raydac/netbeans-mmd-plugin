@@ -240,13 +240,12 @@ public final class TextEditor extends AbstractScrollPane {
     } else {
       int lastFound = -1;
       int lastFoundEnd = -1;
-      int pos = 0;
 
       int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ? this.editor.getCaretPosition() : this.editor.getSelectionStart();
 
       for (int i = 0; i < 2; i++) {
         while (matcher.find()) {
-          pos = matcher.start();
+          final int pos = matcher.start();
           if (pos < maxPos) {
             lastFound = pos;
             lastFoundEnd = matcher.end();
