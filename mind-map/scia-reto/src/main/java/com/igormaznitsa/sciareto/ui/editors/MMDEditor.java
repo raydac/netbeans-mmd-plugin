@@ -176,8 +176,9 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     if (topic != null) {
       AbstractElement element = (AbstractElement) topic.getPayload();
 
-      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true)) {
+      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true,true)) {
         element = (AbstractElement) topic.getPayload();
+        getViewport().doLayout();
       }
 
       if (element != null) {
@@ -198,7 +199,6 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
     if (!beforeAction) {
-      source.updateElementsAndSizeForCurrentGraphics(true);
       topicToCentre(topic);
     }
   }

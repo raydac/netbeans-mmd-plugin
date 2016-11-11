@@ -1071,7 +1071,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     boolean result = false;
     final TabTitle title = this.getFocusedTab();
     if (title != null && title.getProvider().getContentType() == EditorType.MINDMAP) {
-      ((MMDEditor) title.getProvider().getMainComponent()).rootToCentre();
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          ((MMDEditor) title.getProvider().getMainComponent()).rootToCentre();
+        }
+      });
+
       result = true;
     }
     return result;
