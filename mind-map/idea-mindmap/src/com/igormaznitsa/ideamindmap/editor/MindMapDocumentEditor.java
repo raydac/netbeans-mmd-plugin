@@ -153,8 +153,9 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   @Override
-  public void onTopicCollapsatorClick(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final Topic topic, final boolean beforeAction) {
+  public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
     if (!beforeAction){
+      this.mindMapPanel.getModel().resetPayload();
       topicToCentre(topic);
     }
   }
@@ -165,10 +166,11 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     if (topic != null) {
       AbstractElement element = (AbstractElement) topic.getPayload();
 
-      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true)) {
+      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true,true)) {
         topic = this.mindMapPanel.getModel().findForPositionPath(topic.getPositionPath());
         if (topic!=null) {
           element = (AbstractElement) topic.getPayload();
+          this.mainScrollPane.getViewport().doLayout();
         }
       }
 
