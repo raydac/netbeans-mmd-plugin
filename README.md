@@ -14,6 +14,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.3.1-SNAPSHOT (under development)__
+- ALL: improved image plugin to import images from clipboard and max edge size inceased up to 350 pixels
 - ALL: improved mind-map options panel, added functions to reset, import and export settings.
 - SCIARETO: added CLI interface to convert data
 - ALL: export into [Org-Mode](http://orgmode.org/) format [#24](https://github.com/raydac/netbeans-mmd-plugin/issues/24)

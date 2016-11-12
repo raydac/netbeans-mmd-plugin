@@ -1,4 +1,5 @@
 1.3.1 (under development)
+- ALL: improved image plugin to import images from clipboard and max edge size inceased up to 350 pixels
 - ALL: improved mind-map options panel, added functions to reset, import and export settings.
 - SCIARETO: added CLI interface to convert data
 - ALL: export into Org-Mode format [#24](https://github.com/raydac/netbeans-mmd-plugin/issues/24)
