@@ -451,6 +451,25 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   @Override
+  public void onScaledByMouse(@Nonnull final MindMapPanel source, @Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
+    if (!beforeAction && Double.compare(oldScale, newScale)!=0) {
+      final JViewport viewport = getViewport();
+      
+      final Point viewPos = viewport.getViewPosition();
+      final int dx = mousePoint.x - viewPos.x;
+      final int dy = mousePoint.y - viewPos.y;
+      
+      final double scaleRelation = newScale / oldScale;
+      
+      final int newMouseX = (int)(Math.round(mousePoint.x * scaleRelation));
+      final int newMouseY = (int)(Math.round(mousePoint.y * scaleRelation));
+
+      viewport.doLayout();
+      viewport.setViewPosition(new Point(newMouseX - dx, newMouseY - dy));
+    }
+  }
+
+  @Override
   public void onClickOnExtra(@Nonnull final MindMapPanel source, final int clicks, @Nonnull final Topic topic, @Nonnull final Extra<?> extra) {
     if (clicks > 1) {
       switch (extra.getType()) {

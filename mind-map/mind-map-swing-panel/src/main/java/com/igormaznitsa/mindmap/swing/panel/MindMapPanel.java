@@ -664,11 +664,20 @@ public class MindMapPanel extends JPanel {
 
               if (!e.isConsumed() && (theConfig != null && ((e.getModifiers() & theConfig.getScaleModifiers()) == theConfig.getScaleModifiers()))) {
                 endEdit(elementUnderEdit != null);
+                
+                final double oldScale = getScale();
+                final double newScale = Math.max(SCALE_MINIMUM, Math.min(oldScale + (SCALE_STEP * -e.getWheelRotation()), SCALE_MAXIMUM));
 
-                setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + (SCALE_STEP * -e.getWheelRotation()), SCALE_MAXIMUM)));
-
-                updateView(false);
+                fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, true);
+                
+                setScale(newScale);
+                updateElementsAndSizeForCurrentGraphics(true, false);
+                
+                fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, false);
+                
                 e.consume();
+                
+                repaint();
               } else {
                 sendToParent(e);
               }
@@ -1248,6 +1257,12 @@ public class MindMapPanel extends JPanel {
   protected void fireNotificationTopicCollapsatorClick(@Nonnull final Topic topic, final boolean beforeAction) {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onTopicCollapsatorClick(this, topic, beforeAction);
+    }
+  }
+
+  protected void fireNotificationScaledByMouse(@Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
+    for (final MindMapListener l : this.mindMapListeners) {
+      l.onScaledByMouse(this, mousePoint, oldScale, newScale, beforeAction);
     }
   }
 
