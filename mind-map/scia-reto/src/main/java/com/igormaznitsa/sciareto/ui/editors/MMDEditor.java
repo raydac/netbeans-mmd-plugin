@@ -465,7 +465,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
       final int newMouseY = (int)(Math.round(mousePoint.y * scaleRelation));
 
       viewport.doLayout();
-      viewport.setViewPosition(new Point(newMouseX - dx, newMouseY - dy));
+      viewport.setViewPosition(new Point(Math.max(0,newMouseX - dx), Math.max(0,newMouseY - dy)));
     }
   }
 
