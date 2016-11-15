@@ -1133,13 +1133,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
   
   private void menuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewProjectActionPerformed
-    final JFileChooser folder = new JFileChooser();
-    folder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    folder.setDialogTitle("Create project folder");
-    folder.setApproveButtonText("Create");
-    folder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    if (folder.showOpenDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
-      final File file = folder.getSelectedFile();
+    final JFileChooser folderChooser = new JFileChooser();
+    folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    folderChooser.setDialogTitle("Create project folder");
+    folderChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+    folderChooser.setApproveButtonText("Create");
+    folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    if (folderChooser.showSaveDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
+      final File file = folderChooser.getSelectedFile();
       if (file.isDirectory()) {
         if (file.list().length > 0) {
           DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file.getName() + "' already exists and non-empty!");
