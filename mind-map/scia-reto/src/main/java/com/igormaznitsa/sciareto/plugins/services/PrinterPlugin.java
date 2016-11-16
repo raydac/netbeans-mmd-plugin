@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.sciareto.plugins;
+package com.igormaznitsa.sciareto.plugins.services;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 import java.awt.Dimension;
