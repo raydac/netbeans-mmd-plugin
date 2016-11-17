@@ -15,23 +15,12 @@
  */
 package com.igormaznitsa.ideamindmap.editor;
 
-import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
-
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.MindMapController;
-import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
+import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
@@ -48,11 +37,7 @@ import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.fileEditor.DocumentsEditor;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileEditor.FileEditorLocation;
-import com.intellij.openapi.fileEditor.FileEditorState;
-import com.intellij.openapi.fileEditor.FileEditorStateLevel;
+import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -66,24 +51,24 @@ import com.intellij.util.xml.ui.UndoHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JComponent;
-import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ResourceBundle;
+
+import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
 public class MindMapDocumentEditor implements DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable {
 
@@ -108,8 +93,8 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     this.panelController = new MindMapPanelControllerImpl(this);
 
     this.mindMapPanel = new MindMapPanel(panelController);
-    this.mindMapPanel.putTmpObject("project",project);
-    this.mindMapPanel.putTmpObject("editor",this);
+    this.mindMapPanel.putTmpObject("project", project);
+    this.mindMapPanel.putTmpObject("editor", this);
 
     this.mindMapPanel.addMindMapListener(this);
     this.mainScrollPane = new JBScrollPane();
@@ -126,7 +111,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
     final Document document = FileDocumentManager.getInstance().getDocument(this.file);
 
-    this.documents = new Document[] { document };
+    this.documents = new Document[]{document};
 
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
@@ -136,7 +121,8 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     this.undoHelper.addWatchedDocument(getDocument());
 
     this.getDocument().addDocumentListener(new DocumentAdapter() {
-      @Override public void documentChanged(DocumentEvent e) {
+      @Override
+      public void documentChanged(DocumentEvent e) {
         loadMindMapFromDocument();
       }
     });
@@ -145,7 +131,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
       @Override
       public void run() {
         final Topic root = mindMapPanel.getModel().getRoot();
-        if (root!=null){
+        if (root != null) {
           topicToCentre(root);
         }
       }
@@ -154,7 +140,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
-    if (!beforeAction){
+    if (!beforeAction) {
       this.mindMapPanel.getModel().resetPayload();
       topicToCentre(topic);
     }
@@ -166,9 +152,9 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     if (topic != null) {
       AbstractElement element = (AbstractElement) topic.getPayload();
 
-      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true,true)) {
+      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, true)) {
         topic = this.mindMapPanel.getModel().findForPositionPath(topic.getPositionPath());
-        if (topic!=null) {
+        if (topic != null) {
           element = (AbstractElement) topic.getPayload();
           this.mainScrollPane.getViewport().doLayout();
         }
@@ -214,7 +200,8 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   private void loadMindMapFromDocument() {
     final MindMapDocumentEditor editorIstance = this;
     SwingUtils.safeSwing(new Runnable() {
-      @Override public void run() {
+      @Override
+      public void run() {
         final Document document = getDocument();
         if (document != null) {
           CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
@@ -229,8 +216,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
                     public void run() {
                       try {
                         mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
-                      }
-                      catch (Exception ex) {
+                      } catch (Exception ex) {
                         LOGGER.error("Can't parse MindMap text", ex);
                         editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
                       }
@@ -372,7 +358,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
       final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
 
       viewport.doLayout();
-      viewport.setViewPosition(new Point(Math.max(0,newMouseX - dx), Math.max(0,newMouseY - dy)));
+      viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0, newMouseY - dy)));
     }
   }
 
@@ -425,8 +411,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     final VirtualFile rootFolder;
     if (module == null) {
       rootFolder = this.project.getBaseDir();
-    }
-    else {
+    } else {
       rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
     }
 
@@ -437,63 +422,58 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   public void onClickOnExtra(final MindMapPanel source, final int clicks, final Topic topic, final Extra<?> extra) {
     if (clicks > 1) {
       switch (extra.getType()) {
-      case FILE: {
-        final MMapURI fileURI = (MMapURI) extra.getValue();
-        final boolean flagOpenFileLinkInSystemViewer = Boolean.parseBoolean(fileURI.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
+        case FILE: {
+          final MMapURI fileURI = (MMapURI) extra.getValue();
+          final boolean flagOpenFileLinkInSystemViewer = Boolean.parseBoolean(fileURI.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
 
-        final VirtualFile rootFolder = findRootFolderForEditedFile();
-        final VirtualFile theFile = LocalFileSystem.getInstance().findFileByIoFile(fileURI.asFile(IdeaUtils.vfile2iofile(rootFolder)));
+          final VirtualFile rootFolder = findRootFolderForEditedFile();
+          final VirtualFile theFile = LocalFileSystem.getInstance().findFileByIoFile(fileURI.asFile(IdeaUtils.vfile2iofile(rootFolder)));
 
-        if (theFile == null) {
-          // file not found
-          LOGGER.warn("Can't find FileObject for " + fileURI);
-          getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI.toString()));
-        }
-        else if (VfsUtilCore.isAncestor(rootFolder, theFile, false)) {
-          // inside project
-          if (flagOpenFileLinkInSystemViewer) {
-            SelectIn.SYSTEM.open(this, theFile);
-          }
-          else {
-            SelectIn.IDE.open(this, theFile);
-          }
-        }
-        else {
-          // outside project
-          if (flagOpenFileLinkInSystemViewer) {
-            SelectIn.SYSTEM.open(this, theFile);
-          }
-          else {
-            SelectIn.IDE.open(this, theFile);
+          if (theFile == null) {
+            // file not found
+            LOGGER.warn("Can't find FileObject for " + fileURI);
+            getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI.toString()));
+          } else if (VfsUtilCore.isAncestor(rootFolder, theFile, false)) {
+            // inside project
+            if (flagOpenFileLinkInSystemViewer) {
+              SelectIn.SYSTEM.open(this, theFile);
+            } else {
+              SelectIn.IDE.open(this, theFile);
+            }
+          } else {
+            // outside project
+            if (flagOpenFileLinkInSystemViewer) {
+              SelectIn.SYSTEM.open(this, theFile);
+            } else {
+              SelectIn.IDE.open(this, theFile);
+            }
           }
         }
-      }
-      break;
-      case LINK: {
-        final MMapURI uri = ((ExtraLink) extra).getValue();
-        if (!IdeaUtils.browseURI(uri.asURI(), isUseInsideBrowser())) { //NOI18N
-          getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+        break;
+        case LINK: {
+          final MMapURI uri = ((ExtraLink) extra).getValue();
+          if (!IdeaUtils.browseURI(uri.asURI(), isUseInsideBrowser())) { //NOI18N
+            getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+          }
         }
-      }
-      break;
-      case NOTE: {
-        editTextForTopic(topic);
-      }
-      break;
-      case TOPIC: {
-        final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic) extra);
-        if (theTopic == null) {
-          // not presented
-          getDialogProvider().msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+        break;
+        case NOTE: {
+          editTextForTopic(topic);
         }
-        else {
-          // detected
-          this.mindMapPanel.focusTo(theTopic);
+        break;
+        case TOPIC: {
+          final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic) extra);
+          if (theTopic == null) {
+            // not presented
+            getDialogProvider().msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+          } else {
+            // detected
+            this.mindMapPanel.focusTo(theTopic);
+          }
         }
-      }
-      break;
-      default:
-        throw new Error("Unexpected type " + extra);
+        break;
+        default:
+          throw new Error("Unexpected type " + extra);
       }
     }
   }
@@ -537,10 +517,9 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
     if (topicsNotImportant) {
       result = true;
-    }
-    else {
+    } else {
       result = this.getDialogProvider().msgConfirmYesNo(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"),
-        String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
+              String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
   }
@@ -551,19 +530,17 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     if (note == null) {
       // create new
       result = IdeaUtils
-        .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
-    }
-    else {
+              .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
+    } else {
       // edit
       result = IdeaUtils
-        .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
-          note.getValue());
+              .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
+                      note.getValue());
     }
     if (result != null) {
       if (result.isEmpty()) {
         topic.removeExtra(Extra.ExtraType.NOTE);
-      }
-      else {
+      } else {
         topic.setExtra(new ExtraNote(result));
       }
       this.mindMapPanel.invalidate();
@@ -574,28 +551,19 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     this.mainScrollPane.requestFocus();
   }
 
-  @Override public void commit() {
+  @Override
+  public void commit() {
     loadMindMapFromDocument();
   }
 
-  @Override public void reset() {
+  @Override
+  public void reset() {
     loadMindMapFromDocument();
-  }
-
-  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
-    boolean result = false;
-    for (final DataFlavor fl1 : dtde.getCurrentDataFlavors()) {
-      if (fl1.isFlavorJavaFileListType()) {
-        result = true;
-        break;
-      }
-    }
-    return result;
   }
 
   @Override
   public void dragEnter(DropTargetDragEvent dtde) {
-    this.dragAcceptableType = checkDragType(dtde);
+    this.dragAcceptableType = DnDUtils.isFileOrLinkOrText(dtde);
     if (!this.dragAcceptableType) {
       dtde.rejectDrag();
     }
@@ -605,8 +573,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   public void dragOver(DropTargetDragEvent dtde) {
     if (acceptOrRejectDragging(dtde)) {
       dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
-    }
-    else {
+    } else {
       dtde.rejectDrag();
     }
   }
@@ -621,37 +588,101 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   }
 
-  @SuppressWarnings("unchecked") @Override
-  public void drop(final DropTargetDropEvent dtde) {
+  @Nullable
+  private File extractDropFile(@Nonnull final DropTargetDropEvent dtde) throws Exception {
     try {
       java.util.List<File> files = null;
-      dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
       final Object objectToDrop = dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
       if (objectToDrop instanceof DnDDragStartBean) {
-        final Object wrapper = ((DnDDragStartBean)objectToDrop).getAttachedObject();
-        if (wrapper instanceof TransferableWrapper){
-          files = ((TransferableWrapper)wrapper).asFileList();
+        final Object wrapper = ((DnDDragStartBean) objectToDrop).getAttachedObject();
+        if (wrapper instanceof TransferableWrapper) {
+          files = ((TransferableWrapper) wrapper).asFileList();
         }
-      }
-      else if (objectToDrop instanceof java.util.List) {
+      } else if (objectToDrop instanceof java.util.List) {
         files = (java.util.List<File>) objectToDrop;
       }
-      if (files == null) {
-        this.getDialogProvider().msgWarn("Dragged element doesn't contain file references!");
-      }else{
-        if (files.isEmpty()) {
-          LOGGER.warn("Empty list of files in DnD");
-        }
-        else {
-          final File file = files.get(0);
-          addFileToElement(file, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
-        }
-      }
-    }
-    catch (Exception ex) {
-      LOGGER.error("Can't complete DnD operation for error", ex);
+
+      return files == null || files.isEmpty() ? null : files.get(0);
+    } catch (UnsupportedFlavorException ex) {
+      return null;
     }
   }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void drop(final DropTargetDropEvent dtde) {
+    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+
+    File dropFile = null;
+    String extractedLink = null;
+    String extractedText = null;
+    URI decodedLink = null;
+
+    try {
+      dropFile = extractDropFile(dtde);
+      extractedLink = DnDUtils.extractDropLink(dtde);
+      extractedText = DnDUtils.extractDropNote(dtde);
+      decodedLink = null;
+
+      if (extractedLink != null) {
+        try {
+          decodedLink = new URI(extractedLink);
+        } catch (final URISyntaxException ex) {
+          decodedLink = null;
+        }
+      }
+
+      dtde.dropComplete(true);
+
+    } catch (Exception ex) {
+      LOGGER.error("Can't complete DnD operation for error", ex);
+      dtde.dropComplete(false);
+    }
+
+    final AbstractElement element = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
+
+
+    if (dropFile != null && !DnDUtils.doesFileContainsURI(dropFile, extractedLink)) {
+      addFileToElement(dropFile, element);
+    } else if (decodedLink != null) {
+      addURItoElement(decodedLink, element);
+    } else if (extractedText != null) {
+      addNoteToElement(extractedText, element);
+    }
+
+  }
+
+  private void addURItoElement(@Nonnull final URI uri, @Nullable final AbstractElement element) {
+    if (element != null) {
+      final Topic topic = element.getModel();
+      final MMapURI mmapUri = new MMapURI(uri);
+      if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
+        if (!getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
+          return;
+        }
+      }
+      topic.setExtra(new ExtraLink(mmapUri));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+
+  private void addNoteToElement(@Nonnull final String text, @Nullable final AbstractElement element) {
+    if (element != null) {
+      final Topic topic = element.getModel();
+      if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
+        if (!getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
+          return;
+        }
+      }
+      topic.setExtra(new ExtraNote(text));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+
 
   private void addFileToElement(final File file, final AbstractElement element) {
     if (element != null) {
@@ -663,12 +694,12 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         final File theFileIo = IdeaUtils.vfile2iofile(theFile);
 
         final MMapURI theURI = isMakeRelativePath() ?
-          new MMapURI(rootFolder, theFileIo, null) :
-          new MMapURI(null, theFileIo, null); //NOI18N
+                new MMapURI(rootFolder, theFileIo, null) :
+                new MMapURI(null, theFileIo, null); //NOI18N
 
         if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
           if (!getDialogProvider()
-            .msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+                  .msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
             return;
           }
         }
@@ -683,6 +714,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
       }
     }
   }
+
 
   protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
     final int dropAction = dtde.getDropAction();

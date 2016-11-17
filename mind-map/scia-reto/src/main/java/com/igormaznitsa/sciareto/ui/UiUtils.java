@@ -96,7 +96,7 @@ public final class UiUtils {
     public SplashScreen() {
       super();
       this.setAlwaysOnTop(true);
-
+      
       this.image = loadImage("splash.png");
       final JLabel label = new JLabel(new ImageIcon(this.image));
       final JPanel root = new JPanel(new BorderLayout(0, 0));
@@ -105,6 +105,8 @@ public final class UiUtils {
       this.pack();
 
       this.setLocation(getPointForCentering(this));
+      invalidate();
+      repaint();
     }
   }
 

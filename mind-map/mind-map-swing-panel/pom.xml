@@ -9,15 +9,11 @@
   </parent>
     
   <artifactId>mind-map-swing-panel</artifactId>
-  <version>1.3.1-SNAPSHOT</version>
+  <version>${main.version}</version>
   <packaging>jar</packaging>
     
   <name>NB Mind Map swing panel</name>
   <description>Swing based panel to show and interact with mind map</description>
-    
-  <properties>
-    <mmd.model.version>1.2.2-SNAPSHOT</mmd.model.version>
-  </properties>  
     
   <profiles>
     <profile>
@@ -129,7 +125,7 @@
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-model</artifactId>
-      <version>${mmd.model.version}</version>
+      <version>${mindmap.model.version}</version>
       <optional>true</optional>
     </dependency>
     <dependency>

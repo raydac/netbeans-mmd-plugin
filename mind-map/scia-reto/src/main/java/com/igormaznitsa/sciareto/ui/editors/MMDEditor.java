@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,6 +59,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -176,7 +179,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     if (topic != null) {
       AbstractElement element = (AbstractElement) topic.getPayload();
 
-      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true,true)) {
+      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, true)) {
         element = (AbstractElement) topic.getPayload();
         getViewport().doLayout();
       }
@@ -452,20 +455,20 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
   @Override
   public void onScaledByMouse(@Nonnull final MindMapPanel source, @Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
-    if (!beforeAction && Double.compare(oldScale, newScale)!=0) {
+    if (!beforeAction && Double.compare(oldScale, newScale) != 0) {
       final JViewport viewport = getViewport();
-      
+
       final Point viewPos = viewport.getViewPosition();
       final int dx = mousePoint.x - viewPos.x;
       final int dy = mousePoint.y - viewPos.y;
-      
+
       final double scaleRelation = newScale / oldScale;
-      
-      final int newMouseX = (int)(Math.round(mousePoint.x * scaleRelation));
-      final int newMouseY = (int)(Math.round(mousePoint.y * scaleRelation));
+
+      final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
+      final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
 
       viewport.doLayout();
-      viewport.setViewPosition(new Point(Math.max(0,newMouseX - dx), Math.max(0,newMouseY - dy)));
+      viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0, newMouseY - dy)));
     }
   }
 
@@ -567,40 +570,107 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   public void dragExit(@Nonnull final DropTargetEvent dte) {
   }
 
+  @Nullable
+  private File extractDropFile(@Nonnull final DropTargetDropEvent dtde) throws Exception {
+    File result = null;
+    for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
+      final Class<?> representation = df.getRepresentationClass();
+      if (FileTransferable.class.isAssignableFrom(representation)) {
+        final FileTransferable t = (FileTransferable) dtde.getTransferable();
+        final List<File> listOfFiles = t.getFiles();
+        result = listOfFiles.isEmpty() ? null : listOfFiles.get(0);
+        break;
+      } else if (df.isFlavorJavaFileListType()) {
+        try {
+          final List list = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+          if (list != null && !list.isEmpty()) {
+            result = (File) list.get(0);
+          }
+          break;
+        }
+        catch (final Exception ex) {
+          LOGGER.error("Can't extract file from DnD", ex);
+        }
+      }
+    }
+    return result;
+  }
+
   @Override
   public void drop(@Nonnull final DropTargetDropEvent dtde) {
-
     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-    File detectedFileObject = null;
-    try {
-      for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
-        final Class<?> representation = df.getRepresentationClass();
-        if (FileTransferable.class.isAssignableFrom(representation)) {
-          final FileTransferable t = (FileTransferable) dtde.getTransferable();
-          final List<File> listOfFiles = t.getFiles();
-          detectedFileObject = listOfFiles.isEmpty() ? null : listOfFiles.get(0);
-          break;
-        } else if (df.isFlavorJavaFileListType()) {
-          try {
-            final List list = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-            if (list != null && !list.isEmpty()) {
-              detectedFileObject = (File) list.get(0);
-            }
-            break;
-          }
-          catch (final Exception ex) {
-            LOGGER.error("Can't extract file from DnD", ex);
-          }
+
+    File detectedFile = null;
+    String detectedLink = null;
+    String detectedNote = null;
+    URI decodedLink = null;
+    
+    try{
+      detectedFile = extractDropFile(dtde);
+      detectedLink = DnDUtils.extractDropLink(dtde);
+      detectedNote = DnDUtils.extractDropNote(dtde);
+      
+      decodedLink  = null;
+      if (detectedLink!=null){
+        try{
+          decodedLink = new URI(detectedLink);
+        }catch(final URISyntaxException ex){
+          decodedLink = null;
         }
       }
 
-      if (detectedFileObject != null) {
-        addFileToElement(detectedFileObject, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
-        dtde.dropComplete(true);
-      }
-    }
-    catch (Exception ex) {
+      dtde.dropComplete(true);
+      
+    }catch(final Exception ex){
+      LOGGER.error("Error during DnD processing", ex);
       dtde.dropComplete(false);
+      return;
+    }
+
+    final AbstractElement element = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
+
+    if (detectedFile != null && !DnDUtils.doesFileContainsURI(detectedFile, detectedLink)) {
+      addFileToElement(detectedFile, element);
+      dtde.dropComplete(true);
+    } else if (decodedLink != null) {
+      addURItoElement(decodedLink, element);
+      dtde.dropComplete(true);
+    } else if (detectedNote != null) {
+      addNoteToElement(detectedNote, element);
+      dtde.dropComplete(true);
+    } else {
+      dtde.dropComplete(false);
+    }
+  }
+
+  private void addURItoElement(@Nonnull final URI uri, @Nullable final AbstractElement element) {
+    if (element != null) {
+      final Topic topic = element.getModel();
+      final MMapURI mmapUri = new MMapURI(uri);
+      if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
+          return;
+        }
+      }
+      topic.setExtra(new ExtraLink(mmapUri));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+
+  private void addNoteToElement(@Nonnull final String text, @Nullable final AbstractElement element) {
+    if (element != null) {
+      final Topic topic = element.getModel();
+      if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
+          return;
+        }
+      }
+      topic.setExtra(new ExtraNote(text));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
     }
   }
 
@@ -646,12 +716,14 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   protected static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
-    boolean result = false;
-    for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
-      final Class dataClass = flavor.getRepresentationClass();
-      if (FileTransferable.class.isAssignableFrom(dataClass) || flavor.isFlavorJavaFileListType()) {
-        result = true;
-        break;
+    boolean result = DnDUtils.isFileOrLinkOrText(dtde);
+    if (!result) {
+      for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
+        final Class dataClass = flavor.getRepresentationClass();
+        if (FileTransferable.class.isAssignableFrom(dataClass)) {
+          result = true;
+          break;
+        }
       }
     }
     return result;

@@ -50,6 +50,6 @@ public class UtilsTest {
     assertEquals(700d, Utils.findRectEdgeIntersection(rect2, 590d, 10000d).getY(), 0.0d);
     assertTrue(rect2.getCenterX() > Utils.findRectEdgeIntersection(rect2, 520d, 10d).getX());
     assertTrue(rect2.getCenterX() < Utils.findRectEdgeIntersection(rect2, 660d, 10d).getX());
-
   }
+
 }

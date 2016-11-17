@@ -95,13 +95,15 @@ import org.openide.windows.TopComponent;
 
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
-import java.awt.dnd.InvalidDnDOperationException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
@@ -627,6 +629,38 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     return result;
   }
 
+  private void addURItoElement(@Nonnull final URI uri, @Nullable final AbstractElement element) {
+    if (element != null) {
+      final Topic topic = element.getModel();
+      final MMapURI mmapUri = new MMapURI(uri);
+      if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
+          return;
+        }
+      }
+      topic.setExtra(new ExtraLink(mmapUri));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+
+  private void addNoteToElement(@Nonnull final String text, @Nullable final AbstractElement element) {
+    if (element != null) {
+      final Topic topic = element.getModel();
+      if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
+          return;
+        }
+      }
+      topic.setExtra(new ExtraNote(text));
+      this.mindMapPanel.invalidate();
+      this.mindMapPanel.repaint();
+      onMindMapModelChanged(this.mindMapPanel);
+    }
+  }
+  
+  
   private void addFileToElement(final File theFile, final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();
@@ -660,13 +694,12 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     addFileToElement(FileUtil.toFile(dataObject.getPrimaryFile()), element);
   }
 
-  @Override
-  public void drop(final DropTargetDropEvent dtde) {
+  @Nullable
+  private Object extractDataObjectOrFileFromDnD(@Nonnull final DropTargetDropEvent dtde) throws Exception {
     DataFlavor dataObjectFlavor = null;
     DataFlavor nodeObjectFlavor = null;
     DataFlavor projectObjectFlavor = null;
 
-    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
     File detectedFileObject = null;
 
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
@@ -686,8 +719,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
           if (list != null && !list.isEmpty()) {
             detectedFileObject = (File) list.get(0);
           }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
           LOGGER.error("Can't extract file from DnD", ex);
+          throw ex;
         }
       }
     }
@@ -704,42 +739,82 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
             dataObject = DataObject.find(proj.getProjectDirectory());
           }
         }
-      } catch (Exception ex) {
+      }
+      catch (Exception ex) {
         LOGGER.error("Can't extract node from dragged element", ex);
-        dtde.rejectDrop();
-        return;
+        throw ex;
       }
     } else if (dataObjectFlavor != null) {
       try {
         dataObject = (DataObject) dtde.getTransferable().getTransferData(dataObjectFlavor);
-      } catch (Exception ex) {
+      }
+      catch (Exception ex) {
         LOGGER.error("Can't extract data object from dragged element", ex);
-        dtde.rejectDrop();
-        return;
+        throw ex;
       }
     } else if (projectObjectFlavor != null) {
       try {
         dataObject = DataObject.find(((Project) dtde.getTransferable().getTransferData(projectObjectFlavor)).getProjectDirectory());
-      } catch (Exception ex) {
+      }
+      catch (Exception ex) {
         LOGGER.error("Can't extract data object from project", ex);
-        dtde.rejectDrop();
-        return;
+        throw ex;
       }
     } else {
       dataObject = null;
     }
 
-    if (dataObject != null) {
-      addDataObjectToElement(dataObject, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
-    } else if (detectedFileObject != null) {
-      addFileToElement(detectedFileObject, this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()));
-    } else {
-      LOGGER.error("There is not any DataObject in the dragged element");
-      try {
-        dtde.rejectDrop();
-      } catch (InvalidDnDOperationException ex) {
-        LOGGER.error("Detected InvalidDnDOperationException during DnD reject");
+    return dataObject == null ? detectedFileObject : dataObject;
+  }
+  
+  @Override
+  public void drop(final DropTargetDropEvent dtde) {
+ 
+    DataObject detectedDataObject = null;
+    File detectedFileObject = null;
+    String detectedLink = null;
+    String detectedNote = null;
+    URI decodedLink = null;
+    
+    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+    
+    try {
+      final Object dataObjOrFile = extractDataObjectOrFileFromDnD(dtde);
+      if (dataObjOrFile instanceof DataObject) {
+        detectedDataObject = (DataObject) dataObjOrFile;
+      } else {
+        detectedFileObject = (File) dataObjOrFile;
       }
+
+      detectedLink = DnDUtils.extractDropLink(dtde);
+      detectedNote = DnDUtils.extractDropNote(dtde);
+      
+      if (detectedLink != null) {
+        try {
+          decodedLink = new URI(detectedLink);
+        }
+        catch (final URISyntaxException ex) {
+          decodedLink = null;
+        }
+      }
+      
+      dtde.dropComplete(true);
+    }
+    catch (final Exception ex) {
+      LOGGER.error("Can't extract data from DnD", ex);
+      dtde.dropComplete(false);
+    }
+
+    final AbstractElement element = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
+    
+    if (detectedDataObject!=null){
+      addDataObjectToElement(detectedDataObject, element);
+    } else if (detectedFileObject != null && !DnDUtils.doesFileContainsURI(detectedFileObject, detectedLink)) {
+      addFileToElement(detectedFileObject, element);
+    } else if (decodedLink != null) {
+      addURItoElement(decodedLink, element);
+    } else if (detectedNote != null) {
+      addNoteToElement(detectedNote, element);
     }
   }
 
@@ -772,12 +847,14 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   protected static boolean checkDragType(final DropTargetDragEvent dtde) {
-    boolean result = false;
-    for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
-      final Class dataClass = flavor.getRepresentationClass();
-      if (Node.class.isAssignableFrom(dataClass) || DataObject.class.isAssignableFrom(dataClass) || flavor.isFlavorJavaFileListType()) {
-        result = true;
-        break;
+    boolean result = DnDUtils.isFileOrLinkOrText(dtde);
+    if (!result) {
+      for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
+        final Class dataClass = flavor.getRepresentationClass();
+        if (Node.class.isAssignableFrom(dataClass) || DataObject.class.isAssignableFrom(dataClass)) {
+          result = true;
+          break;
+        }
       }
     }
     return result;

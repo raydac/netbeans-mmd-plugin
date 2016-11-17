@@ -16,21 +16,24 @@
   <description>Standalone editor to create and edit mind maps</description>
     
   <properties>
-    <model.version>1.2.2-SNAPSHOT</model.version>
-    <panel.version>1.3.1-SNAPSHOT</panel.version>
     <app.name>sciareto_${project.version}</app.name>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
+      <artifactId>mind-map-ide-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-swing-panel</artifactId>
-      <version>${panel.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-model</artifactId>
-      <version>${model.version}</version>
+      <version>${mindmap.model.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
