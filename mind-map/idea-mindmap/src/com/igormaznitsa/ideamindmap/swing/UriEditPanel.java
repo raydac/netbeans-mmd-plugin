@@ -21,10 +21,12 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ResourceBundle;
@@ -87,7 +89,7 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
         }
       }
       catch (Exception ex) {
-        this.labelValidator.setIcon(AllIcons.Buttons.CROSS);
+        this.labelValidator.setIcon(AllIcons.Buttons.CANCEL);
       }
     }
   }
@@ -129,6 +131,19 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
     gridBagConstraints.ipadx = 10;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     add(labelValidator, gridBagConstraints);
+
+    final JButton resetButton = new JButton(AllIcons.Buttons.CROSS);
+    gridBagConstraints.ipadx = 0;
+    add(resetButton,gridBagConstraints);
+
+    resetButton.setFocusable(false);
+
+    resetButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        textFieldURI.setText("");
+      }
+    });
   }
 
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {

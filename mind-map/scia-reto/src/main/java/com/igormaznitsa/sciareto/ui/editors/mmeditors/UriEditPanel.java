@@ -33,7 +33,7 @@ public final class UriEditPanel extends javax.swing.JPanel  {
   private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
 
   private static final ImageIcon IMAGE_OK = new ImageIcon(UiUtils.loadImage("tick16.png"));
-  private static final ImageIcon IMAGE_BAD = new ImageIcon(UiUtils.loadImage("cross16.png"));
+  private static final ImageIcon IMAGE_BAD = new ImageIcon(UiUtils.loadImage("cancel.png"));
   private static final ImageIcon IMAGE_QUESTION = new ImageIcon(UiUtils.loadImage("question16.png"));
 
   public UriEditPanel(final String uri) {
@@ -103,6 +103,7 @@ public final class UriEditPanel extends javax.swing.JPanel  {
     labelBrowseCurrentLink = new javax.swing.JLabel();
     textFieldURI = new javax.swing.JTextField();
     labelValidator = new javax.swing.JLabel();
+    butonReset = new javax.swing.JButton();
 
     setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
     setLayout(new java.awt.GridBagLayout());
@@ -133,6 +134,19 @@ public final class UriEditPanel extends javax.swing.JPanel  {
     gridBagConstraints.ipadx = 10;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     add(labelValidator, gridBagConstraints);
+
+    butonReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
+    butonReset.setFocusable(false);
+    butonReset.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        butonResetActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 3;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    add(butonReset, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
@@ -147,8 +161,13 @@ public final class UriEditPanel extends javax.swing.JPanel  {
     }
   }//GEN-LAST:event_labelBrowseCurrentLinkMouseClicked
 
+  private void butonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butonResetActionPerformed
+    this.textFieldURI.setText("");
+  }//GEN-LAST:event_butonResetActionPerformed
+
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton butonReset;
   private javax.swing.JLabel labelBrowseCurrentLink;
   private javax.swing.JLabel labelValidator;
   private javax.swing.JTextField textFieldURI;

@@ -42,6 +42,7 @@ public class AllIcons {
 
   public static class Buttons {
     public static final Icon CROSS= IconLoader.getIcon("/icons/cross.png");
+    public static final Icon CANCEL= IconLoader.getIcon("/icons/cancel.png");
     public static final Icon TICK= IconLoader.getIcon("/icons/tick.png");
     public static final Icon QUESTION= IconLoader.getIcon("/icons/question.png");
     public static final Icon EXPANDALL = IconLoader.getIcon("/icons/toggle_expand.png");

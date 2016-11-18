@@ -33,7 +33,7 @@ public final class UriEditPanel extends javax.swing.JPanel {
   private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
 
   private static final ImageIcon IMAGE_OK = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/tick16.png"));
-  private static final ImageIcon IMAGE_BAD = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/cross16.png"));
+  private static final ImageIcon IMAGE_BAD = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/cancel16.png"));
   private static final ImageIcon IMAGE_QUESTION = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/question16.png"));
 
   public UriEditPanel(final String uri) {
@@ -101,6 +101,7 @@ public final class UriEditPanel extends javax.swing.JPanel {
     labelBrowseCurrentLink = new javax.swing.JLabel();
     textFieldURI = new javax.swing.JTextField();
     labelValidator = new javax.swing.JLabel();
+    buttonResetURI = new javax.swing.JButton();
 
     setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
     setLayout(new java.awt.GridBagLayout());
@@ -131,6 +132,19 @@ public final class UriEditPanel extends javax.swing.JPanel {
     gridBagConstraints.ipadx = 10;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     add(labelValidator, gridBagConstraints);
+
+    buttonResetURI.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
+    buttonResetURI.setFocusable(false);
+    buttonResetURI.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonResetURIActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 3;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    add(buttonResetURI, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
@@ -145,8 +159,13 @@ public final class UriEditPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_labelBrowseCurrentLinkMouseClicked
 
+  private void buttonResetURIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetURIActionPerformed
+    this.textFieldURI.setText("");
+  }//GEN-LAST:event_buttonResetURIActionPerformed
+
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonResetURI;
   private javax.swing.JLabel labelBrowseCurrentLink;
   private javax.swing.JLabel labelValidator;
   private javax.swing.JTextField textFieldURI;
