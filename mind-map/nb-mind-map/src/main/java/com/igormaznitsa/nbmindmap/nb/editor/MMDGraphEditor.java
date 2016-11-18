@@ -809,8 +809,13 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     
     if (detectedDataObject!=null){
       addDataObjectToElement(detectedDataObject, element);
-    } else if (detectedFileObject != null && !DnDUtils.doesFileContainsURI(detectedFileObject, detectedLink)) {
-      addFileToElement(detectedFileObject, element);
+    } else if (detectedFileObject != null) {
+      decodedLink = DnDUtils.extractUrlLinkFromFile(detectedFileObject);
+      if (decodedLink!=null){
+        addURItoElement(decodedLink, element);
+      } else {
+        addFileToElement(detectedFileObject, element);
+      }
     } else if (decodedLink != null) {
       addURItoElement(decodedLink, element);
     } else if (detectedNote != null) {

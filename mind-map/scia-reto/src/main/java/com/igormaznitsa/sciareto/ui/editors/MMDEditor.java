@@ -629,8 +629,13 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
     final AbstractElement element = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
 
-    if (detectedFile != null && !DnDUtils.doesFileContainsURI(detectedFile, detectedLink)) {
-      addFileToElement(detectedFile, element);
+    if (detectedFile != null) {
+      decodedLink = DnDUtils.extractUrlLinkFromFile(detectedFile);
+      if (decodedLink!=null){
+        addURItoElement(decodedLink, element);
+      } else {
+        addFileToElement(detectedFile, element);
+      }
       dtde.dropComplete(true);
     } else if (decodedLink != null) {
       addURItoElement(decodedLink, element);

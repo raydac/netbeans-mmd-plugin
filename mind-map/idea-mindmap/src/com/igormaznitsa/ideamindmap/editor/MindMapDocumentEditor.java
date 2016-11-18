@@ -642,8 +642,13 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     final AbstractElement element = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
 
 
-    if (dropFile != null && !DnDUtils.doesFileContainsURI(dropFile, extractedLink)) {
-      addFileToElement(dropFile, element);
+    if (dropFile != null) {
+      decodedLink = DnDUtils.extractUrlLinkFromFile(dropFile);
+      if (decodedLink == null) {
+        addFileToElement(dropFile, element);
+      }else{
+        addURItoElement(decodedLink, element);
+      }
     } else if (decodedLink != null) {
       addURItoElement(decodedLink, element);
     } else if (extractedText != null) {
