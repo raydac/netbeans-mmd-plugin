@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.NotSerializableException;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -39,7 +41,7 @@ public final class DnDUtils {
 
   private static final Pattern HTML_LINK_PATTERN = Pattern.compile("^\\s*\\<\\s*a\\s[^>]*?href\\s*=\\s*\\\"(.*?)\\\"[^>]*?\\>.*?\\<\\s*\\/\\s*a\\s*\\>\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-  private DnDUtils(){
+  private DnDUtils() {
   }
 
   public static boolean isFileOrLinkOrText(@Nonnull final DropTargetDragEvent dtde) {
@@ -53,7 +55,6 @@ public final class DnDUtils {
     return result;
   }
 
-  
   @Nonnull
   public static String removeZeroChars(@Nonnull final String str) {
     final StringBuilder buffer = new StringBuilder(str.length());
@@ -81,7 +82,7 @@ public final class DnDUtils {
     }
     return result;
   }
-  
+
   @Nullable
   public static String extractDropLink(@Nonnull final DropTargetDropEvent dtde) throws Exception {
     String foundHtmlLink = null;
@@ -111,28 +112,34 @@ public final class DnDUtils {
   public static String extractDropNote(@Nonnull final DropTargetDropEvent dtde) throws Exception {
     String result;
     try {
-      result =  (String) dtde.getTransferable().getTransferData(DataFlavor.stringFlavor);
+      result = (String) dtde.getTransferable().getTransferData(DataFlavor.stringFlavor);
       result = result == null ? null : removeZeroChars(result);
-    } catch (NotSerializableException ex) {
+    }
+    catch (NotSerializableException ex) {
       result = null;
-    } catch (final UnsupportedFlavorException ex) {
+    }
+    catch (final UnsupportedFlavorException ex) {
       result = null;
     }
     return result;
   }
 
-  public static boolean doesFileContainsURI(@Nonnull final File fileToCheck, @Nullable final String uri) {
-    boolean result = false;
-    if (uri != null && fileToCheck.isFile() && fileToCheck.getName().endsWith(".url") && fileToCheck.length() < 4096) {
+  @Nullable
+  public static URI extractUrlLinkFromFile(@Nonnull final File file) {
+    URI result = null;
+    if (file.isFile() && file.getName().endsWith(".url")) {
       try {
-        result = FileUtils.readFileToString(fileToCheck).contains(uri);
+        final String uri = new UrlFile(file).getURL();
+        result = new URI(uri);
+      }
+      catch(URISyntaxException ex){
+        result = null;
       }
       catch (IOException ex) {
-        result = false;
+        result = null;
       }
     }
     return result;
   }
-
 
 }
