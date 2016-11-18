@@ -123,7 +123,7 @@ public final class DnDUtils {
 
   public static boolean doesFileContainsURI(@Nonnull final File fileToCheck, @Nullable final String uri) {
     boolean result = false;
-    if (uri != null && fileToCheck.isFile() && fileToCheck.getName().endsWith(".uri") && fileToCheck.length() < 4096) {
+    if (uri != null && fileToCheck.isFile() && fileToCheck.getName().endsWith(".url") && fileToCheck.length() < 4096) {
       try {
         result = FileUtils.readFileToString(fileToCheck).contains(uri);
       }
