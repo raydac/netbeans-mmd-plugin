@@ -95,6 +95,7 @@ import org.openide.windows.TopComponent;
 
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
+import java.awt.Graphics2D;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
@@ -327,6 +328,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     } finally {
       copyNameToCallbackTopComponent();
     }
+  }
+
+  @Override
+  public void onComponentElementsLayouted(@Nonnull final MindMapPanel source, @Nonnull final Graphics2D g) {
   }
 
   @Override

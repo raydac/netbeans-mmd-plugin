@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.ideamindmap.editor;
 
+import com.github.rjeschke.txtmark.Run;
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
@@ -58,6 +59,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -85,6 +87,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   private boolean dragAcceptableType = false;
   private final MindMapPanelControllerImpl panelController;
   private final UndoHelper undoHelper;
+  private boolean firstLayouting = true;
 
   public MindMapDocumentEditor(final Project project, final VirtualFile file) {
     this.project = project;
@@ -126,12 +129,23 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         loadMindMapFromDocument();
       }
     });
+  }
 
+  @Override
+  public void onComponentElementsLayouted(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final Graphics2D graphics2D) {
+    if (this.firstLayouting) {
+      this.firstLayouting = false;
+      centreToRoot();
+    }
+  }
+
+  public void centreToRoot(){
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         final Topic root = mindMapPanel.getModel().getRoot();
         if (root != null) {
+          mindMapPanel.updateElementsAndSizeForCurrentGraphics(true,false);
           topicToCentre(root);
         }
       }

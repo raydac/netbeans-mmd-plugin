@@ -1242,6 +1242,12 @@ public class MindMapPanel extends JPanel {
     }
   }
 
+  protected void fireNotificationComponentElementsLayouted(@Nonnull final Graphics2D graphics) {
+    for (final MindMapListener l : this.mindMapListeners) {
+      l.onComponentElementsLayouted(this,graphics);
+    }
+  }
+
   protected void fireNotificationClickOnExtra(@Nonnull final Topic topic, final int clicks, @Nonnull final Extra<?> extra) {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onClickOnExtra(this, clicks, topic, extra);
@@ -2098,6 +2104,7 @@ public class MindMapPanel extends JPanel {
 
               changeSizeOfComponent(layoutFullDiagramWithCenteringToPaper(gfx, this.model, this.config, pageSize), doListenerNotification);
               result = true;
+              fireNotificationComponentElementsLayouted(graph);
             }
           }
         }

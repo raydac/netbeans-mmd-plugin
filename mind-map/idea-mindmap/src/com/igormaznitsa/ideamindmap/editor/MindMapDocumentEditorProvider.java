@@ -22,6 +22,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Element;
 import javax.annotation.Nonnull;
+import javax.swing.*;
 
 public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware {
   @Override

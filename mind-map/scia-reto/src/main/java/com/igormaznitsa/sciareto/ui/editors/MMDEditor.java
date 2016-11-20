@@ -21,6 +21,7 @@ import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -281,6 +282,10 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     return result;
   }
 
+  @Override
+  public void onComponentElementsLayouted(@Nonnull final MindMapPanel source, @Nonnull final Graphics2D g) {
+  }  
+  
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
     return PreferencesManager.getInstance().getPreferences().getBoolean("unfoldCollapsedTarget", true);
