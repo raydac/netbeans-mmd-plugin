@@ -120,6 +120,8 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   private boolean preventAddUndo = false;
   private String currentModelState;
 
+  private boolean firstLayouting = true;
+  
   public void refreshConfig() {
     this.mindMapPanel.refreshConfiguration();
   }
@@ -284,6 +286,17 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
 
   @Override
   public void onComponentElementsLayouted(@Nonnull final MindMapPanel source, @Nonnull final Graphics2D g) {
+    if (this.firstLayouting) {
+      this.firstLayouting = false;
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          topicToCentre(mindMapPanel.getModel().getRoot());
+          revalidate();
+          repaint();
+        }
+      });
+    }
   }  
   
   @Override

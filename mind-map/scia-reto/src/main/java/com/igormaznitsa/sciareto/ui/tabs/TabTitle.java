@@ -33,7 +33,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
@@ -48,7 +47,6 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorType;
-import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
 public final class TabTitle extends JPanel {
@@ -141,14 +139,6 @@ public final class TabTitle extends JPanel {
   }
 
   public void visited() {
-    if (!this.visited && this.parent.getContentType() == EditorType.MINDMAP) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          ((MMDEditor) parent.getMainComponent()).rootToCentre();
-        }
-      });
-    }
     this.visited = true;
   }
 
