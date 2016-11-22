@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.ideamindmap.editor;
 
-import com.github.rjeschke.txtmark.Run;
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
