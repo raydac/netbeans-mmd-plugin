@@ -96,6 +96,7 @@ import org.openide.windows.TopComponent;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
@@ -378,6 +379,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       this.mindMapPanel.getModel().resetPayload();
       topicToCentre(topic);
     }
+  }
+
+  @Override
+  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent event) {
   }
   
   @Override

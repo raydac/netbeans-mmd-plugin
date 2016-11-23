@@ -21,6 +21,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import javax.annotation.Nonnull;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -35,4 +36,5 @@ public interface MindMapListener {
   void onClickOnExtra(@Nonnull MindMapPanel source,int clicks, @Nonnull Topic topic, @Nonnull Extra<?> extra);
   void onChangedSelection(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] currentSelectedTopics);
   boolean allowedRemovingOfTopics(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] topics);
+  void onNonConsumedKeyEvent(@Nonnull MindMapPanel source, @Nonnull KeyEvent event);
 }

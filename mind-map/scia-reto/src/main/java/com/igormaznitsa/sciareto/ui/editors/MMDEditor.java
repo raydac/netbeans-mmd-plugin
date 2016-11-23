@@ -32,6 +32,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.AdjustmentEvent;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -202,6 +203,10 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     return result;
   }
 
+  @Override
+  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent event) {
+  }
+  
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
     if (!beforeAction) {

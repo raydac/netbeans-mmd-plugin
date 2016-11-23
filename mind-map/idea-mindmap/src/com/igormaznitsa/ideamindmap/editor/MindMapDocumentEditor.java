@@ -59,6 +59,7 @@ import java.awt.dnd.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -338,6 +339,11 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   @Override
   public <T> void putUserData(@Nonnull Key<T> key, @Nullable T t) {
+
+  }
+
+  @Override
+  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final KeyEvent keyEvent) {
 
   }
 

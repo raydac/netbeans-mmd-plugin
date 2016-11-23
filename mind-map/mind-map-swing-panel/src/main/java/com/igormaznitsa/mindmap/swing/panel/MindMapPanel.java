@@ -416,17 +416,23 @@ public class MindMapPanel extends JPanel {
               updateView(false);
             }
             else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)) {
+              e.consume();
               final Topic[] selectedTopics = getSelectedTopics();
               final AbstractElement elementToProcess = selectedTopics.length == 1 ? (AbstractElement) selectedTopics[0].getPayload() : null;
               if (elementToProcess != null) {
                 doFoldOrUnfoldTopic(elementToProcess, false, true);
               }
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)) {
+              e.consume();
               final Topic[] selectedTopics = getSelectedTopics();
               final AbstractElement elementToProcess = selectedTopics.length == 1 ? (AbstractElement) selectedTopics[0].getPayload() : null;
               if (elementToProcess != null) {
                 doFoldOrUnfoldTopic(elementToProcess, true, true);
               }
+            }
+
+            if (e.isConsumed()) {
+              fireNotificationNonConsumedKeyEvent(e);
             }
           }
           finally {
@@ -1269,6 +1275,13 @@ public class MindMapPanel extends JPanel {
   protected void fireNotificationScaledByMouse(@Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
     for (final MindMapListener l : this.mindMapListeners) {
       l.onScaledByMouse(this, mousePoint, oldScale, newScale, beforeAction);
+    }
+  }
+
+  protected void fireNotificationNonConsumedKeyEvent(@Nonnull final KeyEvent keyEvent) {
+    for (final MindMapListener l : this.mindMapListeners) {
+      if (keyEvent.isConsumed()) break;
+      l.onNonConsumedKeyEvent(this, keyEvent);
     }
   }
 
