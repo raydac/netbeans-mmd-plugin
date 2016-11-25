@@ -33,12 +33,19 @@ import com.igormaznitsa.mindmap.model.Topic;
  */
 public class MMDTopicsTransferable implements Transferable {
 
-  public static final DataFlavor MMD_DATA_FLAVOR = new DataFlavor(DataFlavor.javaSerializedObjectMimeType+";class=\""+Topic[].class.getName()+"\"", "nb-mindmap-topic-list");
-
-  private static final DataFlavor[] FLAVORS = new DataFlavor[]{DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
-
-  private final Topic [] topics;
+  public static final DataFlavor MMD_DATA_FLAVOR;
   
+  static {
+    try{
+    MMD_DATA_FLAVOR = new DataFlavor(DataFlavor.javaSerializedObjectMimeType + ";class=\"" + NBMindMapTopicsContainer.class.getName() + "\"", "nb-mindmap-topic-list",NBMindMapTopicsContainer.class.getClassLoader());
+    }catch(ClassNotFoundException ex){
+      throw new Error("Can't find class",ex);
+    }
+  }
+  
+  private static final DataFlavor[] FLAVORS = new DataFlavor[]{DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
+  private final Topic [] topics;
+ 
   private static final String END_OF_LINE = System.getProperty("line.separator","\n");
   
   public MMDTopicsTransferable(@Nonnull @MustNotContainNull final Topic ... topics) {
@@ -111,7 +118,7 @@ public class MMDTopicsTransferable implements Transferable {
       
       return result.toString();
     } else if (flavor.isMimeTypeEqual(MMD_DATA_FLAVOR)) {
-      return this.topics;
+      return new NBMindMapTopicsContainer(this.topics);
     } else {
       throw new UnsupportedFlavorException(flavor);
     }

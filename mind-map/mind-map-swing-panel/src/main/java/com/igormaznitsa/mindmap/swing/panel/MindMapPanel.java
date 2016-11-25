@@ -86,11 +86,14 @@ import java.awt.event.ComponentEvent;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
 import javax.swing.JViewport;
 
-public class MindMapPanel extends JPanel {
+public class MindMapPanel extends JPanel implements ClipboardOwner {
 
   public static final long serialVersionUID = 2783412123454232L;
+
 
   /**
    * Some Job over mind map model.
@@ -2470,6 +2473,11 @@ public class MindMapPanel extends JPanel {
     }
   }
 
+  @Override
+  public void lostOwnership(@Nonnull final Clipboard clipboard, @Nonnull final Transferable contents) {
+ 
+  }  
+  
   /**
    * Create transferable topic list in system clipboard.
    * 
@@ -2486,7 +2494,7 @@ public class MindMapPanel extends JPanel {
       try {
         if (topics.length>0){
           final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-          clipboard.setContents(new MMDTopicsTransferable(topics), null);
+          clipboard.setContents(new MMDTopicsTransferable(topics), this);
           
           if (cut){
               deleteTopics(true, ensureNoRootInArray(topics));
@@ -2527,14 +2535,14 @@ public class MindMapPanel extends JPanel {
         final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         if (clipboard.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR)){
           try{
-            final Topic[] topics = (Topic[]) clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
-            if (topics!=null && topics.length!=0){
+            final NBMindMapTopicsContainer container  = (NBMindMapTopicsContainer) clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+            if (container!=null && !container.isEmpty()){
               
               final Topic [] selected = this.getSelectedTopics();
               
               if (selected.length>0){
                 for(final Topic s : selected){
-                  for(final Topic t : topics) {
+                  for(final Topic t : container.getTopics()) {
                     final Topic newTopic = new Topic(this.model,t,true);
                     newTopic.removeExtra(Extra.ExtraType.TOPIC);
                     newTopic.moveToNewParent(s);

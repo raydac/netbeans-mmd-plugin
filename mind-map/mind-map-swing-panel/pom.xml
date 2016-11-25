@@ -17,6 +17,42 @@
     
   <profiles>
     <profile>
+      <id>withmodel</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>2.4.3</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <finalName>${project.artifactId}-${project.version}-withmodel</finalName>
+                  <artifactSet>
+                    <includes>
+                      <include>com.igormaznitsa:mind-map-model:*</include>
+                    </includes>
+                    <excludes>
+                      <exclude>classworlds:classworlds</exclude>
+                      <exclude>junit:junit</exclude>
+                      <exclude>jmock:*</exclude>
+                      <exclude>*:xml-apis</exclude>
+                      <exclude>org.apache.maven:lib:tests</exclude>
+                      <exclude>log4j:log4j:jar:</exclude>
+                    </excludes>
+                  </artifactSet>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>publish</id>
       <build>
         <plugins>
