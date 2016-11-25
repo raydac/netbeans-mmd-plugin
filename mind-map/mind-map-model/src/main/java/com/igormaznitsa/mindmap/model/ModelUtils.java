@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.nio.Paths;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,6 +30,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -54,6 +56,18 @@ public final class ModelUtils {
   private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
   private static final Pattern URI_QUERY_PARAMETERS = Pattern.compile("\\&?([^=]+)=([^&]*)"); //NOI18N
 
+  private static final class StringComparator implements Comparator<String>,Serializable {
+
+    private static final long serialVersionUID = -68309989264175879L;
+
+    @Override
+    public int compare(@Nonnull final String o1, @Nonnull final String o2) {
+      return o1.compareTo(o2);
+    }
+  };
+
+  public static final Comparator<String> STRING_COMPARATOR = new StringComparator();
+  
   public static int calcCharsOnStart(final char chr, @Nonnull final String text) {
     int result = 0;
     for (int i = 0; i < text.length(); i++) {

@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,18 +55,11 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMap.class);
 
-  static final Comparator<String> STRING_COMPARATOR = new Comparator<String>() {
-    @Override
-    public int compare(@Nonnull final String o1, @Nonnull final String o2) {
-      return o1.compareTo(o2);
-    }
-  };
-
   @Nullable
   private Topic root;
 
-  private final Lock locker = new ReentrantLock();
-  private final Map<String, String> attributes = new TreeMap<String, String>(STRING_COMPARATOR);
+  private final transient Lock locker = new ReentrantLock();
+  private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s(.+)$"); //NOI18N
   private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*(\\`+)(.*?)\\2"); //NOI18N
 

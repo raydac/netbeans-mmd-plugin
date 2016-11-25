@@ -58,7 +58,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   private final EnumMap<Extra.ExtraType, Extra<?>> extras = new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
   private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras = Collections.unmodifiableMap(this.extras);
-  private final Map<String, String> attributes = new TreeMap<String, String>(MindMap.STRING_COMPARATOR);
+  private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
   private final Map<String, String> unmodifableAttributes = Collections.unmodifiableMap(this.attributes);
 
   @Nonnull

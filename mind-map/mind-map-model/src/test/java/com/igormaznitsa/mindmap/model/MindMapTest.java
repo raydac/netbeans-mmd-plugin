@@ -19,6 +19,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -138,5 +142,16 @@ public class MindMapTest {
       list.add(t.getText());
     }
     assertArrayEquals(new String[]{"root"}, list.toArray(new String[list.size()]));
+  }
+
+  @Test
+  public void testSerializableDeserializable_NoErrors() throws Exception {
+    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    final ObjectOutputStream stream = new ObjectOutputStream(buffer);
+    final MindMap map = new MindMap(null, true);
+    stream.writeObject(map);
+    
+    final ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray()));
+    assertTrue(in.readObject() instanceof MindMap);
   }
 }
