@@ -85,6 +85,7 @@ import java.awt.event.ComponentEvent;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import java.awt.datatransfer.Clipboard;
 import javax.swing.JViewport;
 
 public class MindMapPanel extends JPanel {
@@ -431,7 +432,7 @@ public class MindMapPanel extends JPanel {
               }
             }
 
-            if (e.isConsumed()) {
+            if (!e.isConsumed()) {
               fireNotificationNonConsumedKeyEvent(e);
             }
           }
@@ -2469,6 +2470,78 @@ public class MindMapPanel extends JPanel {
     }
   }
 
+  /**
+   * Create transferable topic list in system clipboard.
+   * @param topics topics to be placed into clipboard, if there are successors and ancestors then successors will be removed
+   * @return true if topic array is not empty and operation completed successfully, false otherwise
+   * @since 1.3.1
+   */
+  public boolean copyTopicsToClipboard(@Nonnull @MustNotContainNull final Topic ... topics){
+    boolean result = false;
+    
+    if (this.lockIfNotDisposed()) {
+      try {
+        if (topics.length>0){
+          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+          clipboard.setContents(new MMDTopicsTransferable(topics), null);
+          result = true;
+        }
+      }
+      finally {
+        this.unlock();
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Paste topics from clipboard to currently selected ones.
+   * 
+   * @return true if there detected topic list in clipboard and these topics added to selected ones, false otherwise
+   * @since 1.3.1
+   */
+  public boolean pasteTopicsFromClipboard() {
+    boolean result = false;
+    
+    if (this.lockIfNotDisposed()) {
+      try {
+        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR)){
+          try{
+            final List<Topic> topics = (List<Topic>)clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+            if (topics!=null && !topics.isEmpty()){
+              
+              final Topic [] selected = this.getSelectedTopics();
+              
+              if (selected.length>0){
+                for(final Topic s : selected){
+                  for(final Topic t : topics) {
+                    final Topic newTopic = new Topic(this.model,t,true);
+                    newTopic.removeExtra(Extra.ExtraType.TOPIC);
+                    newTopic.moveToNewParent(s);
+                    MindMapUtils.ensureVisibility(newTopic);
+                  }
+                }
+              }
+              
+              fireNotificationMindMapChanged();
+              
+              invalidate();
+              repaint();
+            }
+          }catch(final Exception ex){
+            LOGGER.error("Can't get clipboard data", ex);
+          }
+        }
+      }
+      finally {
+        this.unlock();
+      }
+    }
+    return result;
+  }
+  
   public boolean isDisposed() {
     return this.disposed.get();
   }
