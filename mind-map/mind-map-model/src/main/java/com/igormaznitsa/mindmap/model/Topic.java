@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -46,7 +47,7 @@ import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
 public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
-  private static final long serialVersionUID = -4512887489914466613L;
+  private static final long serialVersionUID = -4512887489914466713L;
 
   private static Logger logger = LoggerFactory.getLogger(Topic.class);
 
@@ -77,23 +78,33 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   @Nonnull
   private final MindMap map;
 
-  private Topic(@Nonnull final Topic base) {
-    this(base.map, base.parent, base.text);
+  /**
+   * Constructor to build topic on base of another topic for another mind map.
+   * 
+   * @param mindMap mind map to be owner for new topic
+   * @param base base souce topic
+   * @param copyChildren flag to make copy of children, true if to make copy, false otherwise
+   * 
+   * @since 1.2.2
+   */
+  public Topic(@Nonnull final MindMap mindMap, @Nonnull final Topic base, final boolean copyChildren) {
+    this(mindMap, base.text);
     this.attributes.putAll(base.attributes);
     this.extras.putAll(base.extras);
+    
+    if (copyChildren){
+      for(final Topic t : base.children){
+        final Topic clonedChildren = new Topic(mindMap, t, true);
+        clonedChildren.parent = this;
+        this.children.add(clonedChildren);
+      }
+    }
   }
 
   public Topic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final String text, @Nonnull @MayContainNull final Extra<?>... extras) {
-    this.map = Assertions.assertNotNull(map);
-    this.text = Assertions.assertNotNull(text);
+    this(map, text, extras);
     this.parent = parent;
-
-    for (final Extra<?> e : extras) {
-      if (e != null) {
-        this.extras.put(e.getType(), e);
-      }
-    }
-
+    
     if (parent != null) {
       if (parent.getMap() != map) {
         throw new IllegalArgumentException("Parent must belong to the same mind map");
@@ -102,6 +113,17 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
+  private Topic(@Nonnull final MindMap map, @Nonnull final String text, @Nonnull @MayContainNull final Extra<?>... extras){
+    this.map = Assertions.assertNotNull(map);
+    this.text = Assertions.assertNotNull(text);
+
+    for (final Extra<?> e : extras) {
+      if (e != null) {
+        this.extras.put(e.getType(), e);
+      }
+    }
+  }
+  
   public boolean containTopic(@Nonnull final Topic topic) {
     boolean result = false;
 
@@ -178,7 +200,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   @Nonnull
   private Object readResolve() {
-    return new Topic(this);
+    return new Topic(this.map, this, true);
   }
 
   @Nonnull
@@ -367,6 +389,13 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return this.unmodifableExtras;
   }
 
+  @Nonnull
+  @MustNotContainNull
+  public Extra<?>[] extrasToArray(){
+    final Collection<Extra<?>> collection = this.unmodifableExtras.values();
+    return collection.toArray(new Extra<?>[collection.size()]);
+  }
+  
   @Nonnull
   public Map<String, String> getAttributes() {
     return this.unmodifableAttributes;
