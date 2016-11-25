@@ -246,7 +246,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   @Override
   public void flavorsChanged(@Nonnull final FlavorEvent e) {
     final Clipboard source = (Clipboard) e.getSource();
-    this.actionPaste.setEnabled(source.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR));
+    this.actionPaste.setEnabled(this.mindMapPanel.hasSelectedTopics() && source.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR));
   }
 
   public boolean isPanelDisposed() {
