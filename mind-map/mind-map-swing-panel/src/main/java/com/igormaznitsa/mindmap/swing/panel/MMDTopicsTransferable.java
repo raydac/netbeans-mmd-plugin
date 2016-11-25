@@ -19,7 +19,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -34,7 +33,7 @@ import com.igormaznitsa.mindmap.model.Topic;
  */
 public class MMDTopicsTransferable implements Transferable {
 
-  public static final DataFlavor MMD_DATA_FLAVOR = new DataFlavor(MMDTopicsTransferable.class, "NB MindMap topic list");
+  public static final DataFlavor MMD_DATA_FLAVOR = new DataFlavor(DataFlavor.javaSerializedObjectMimeType+";class=\""+Topic[].class.getName()+"\"", "nb-mindmap-topic-list");
 
   private static final DataFlavor[] FLAVORS = new DataFlavor[]{DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
 
@@ -112,7 +111,7 @@ public class MMDTopicsTransferable implements Transferable {
       
       return result.toString();
     } else if (flavor.isMimeTypeEqual(MMD_DATA_FLAVOR)) {
-      return Arrays.asList(this.topics);
+      return this.topics;
     } else {
       throw new UnsupportedFlavorException(flavor);
     }

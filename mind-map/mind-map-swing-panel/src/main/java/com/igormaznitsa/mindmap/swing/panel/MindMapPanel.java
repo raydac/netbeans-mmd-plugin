@@ -2472,11 +2472,14 @@ public class MindMapPanel extends JPanel {
 
   /**
    * Create transferable topic list in system clipboard.
+   * 
+   * @param cut true shows that remove topics after placing into clipboard
    * @param topics topics to be placed into clipboard, if there are successors and ancestors then successors will be removed
    * @return true if topic array is not empty and operation completed successfully, false otherwise
+   * 
    * @since 1.3.1
    */
-  public boolean copyTopicsToClipboard(@Nonnull @MustNotContainNull final Topic ... topics){
+  public boolean copyTopicsToClipboard(final boolean cut, @Nonnull @MustNotContainNull final Topic ... topics){
     boolean result = false;
     
     if (this.lockIfNotDisposed()) {
@@ -2484,6 +2487,11 @@ public class MindMapPanel extends JPanel {
         if (topics.length>0){
           final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
           clipboard.setContents(new MMDTopicsTransferable(topics), null);
+          
+          if (cut){
+              deleteTopics(true, ensureNoRootInArray(topics));
+          }
+          
           result = true;
         }
       }
@@ -2493,6 +2501,16 @@ public class MindMapPanel extends JPanel {
     }
     
     return result;
+  }
+  
+  @Nonnull
+  @MustNotContainNull
+  private static Topic [] ensureNoRootInArray(@Nonnull @MustNotContainNull final Topic ... topics) {
+    final List<Topic> buffer = new ArrayList<Topic>(topics.length);
+    for(final Topic t : topics){
+      if (!t.isRoot()) buffer.add(t);
+    }
+    return buffer.toArray(new Topic[buffer.size()]);
   }
   
   /**
@@ -2509,8 +2527,8 @@ public class MindMapPanel extends JPanel {
         final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         if (clipboard.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR)){
           try{
-            final List<Topic> topics = (List<Topic>)clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
-            if (topics!=null && !topics.isEmpty()){
+            final Topic[] topics = (Topic[]) clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+            if (topics!=null && topics.length!=0){
               
               final Topic [] selected = this.getSelectedTopics();
               
