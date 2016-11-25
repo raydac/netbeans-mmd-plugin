@@ -301,6 +301,32 @@ public final class TextEditor extends AbstractScrollPane {
   }
 
   @Override
+  public boolean doesSupportCutCopyPaste() {
+    return true;
+  }
+
+  @Override
+  public boolean isCutAllowed() {
+    final String selected = this.editor.getSelectedText();
+    return selected != null && !selected.isEmpty();
+  }
+
+  @Override
+  public boolean doCut() {
+    boolean result = false;
+
+    final String selected = this.editor.getSelectedText();
+    if (selected != null && !selected.isEmpty()) {
+      final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      clipboard.setContents(new StringSelection(selected), null);
+      this.editor.replaceSelection("");
+    }
+
+    return result;
+  }
+
+  
+  @Override
   public boolean doPaste() {
     boolean result = false;
     
@@ -319,11 +345,6 @@ public final class TextEditor extends AbstractScrollPane {
       result = true;
     }
     return result;
-  }
-  
-  @Override
-  public boolean doesSupportCopyPaste() {
-    return true;
   }
 
   @Override

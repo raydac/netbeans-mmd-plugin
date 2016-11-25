@@ -300,7 +300,17 @@ public final class PictureViewer extends AbstractScrollPane {
   }
 
   @Override
-  public boolean doesSupportCopyPaste() {
+  public boolean doesSupportCutCopyPaste() {
+    return false;
+  }
+
+  @Override
+  public boolean isCutAllowed() {
+    return false;
+  }
+
+  @Override
+  public boolean doCut() {
     return false;
   }
 

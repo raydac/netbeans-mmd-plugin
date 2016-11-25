@@ -1093,10 +1093,21 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   @Override
-  public boolean doesSupportCopyPaste() {
+  public boolean doesSupportCutCopyPaste() {
     return true;
   }
 
+  @Override
+  public boolean isCutAllowed() {
+    return this.mindMapPanel.getSelectedTopics().length > 0;
+  }
+
+  @Override
+  public boolean doCut() {
+    assertSwingDispatchThread();
+    return this.mindMapPanel.copyTopicsToClipboard(true, MindMapUtils.removeSuccessorsAndDuplications(this.mindMapPanel.getSelectedTopics()));
+  }
+  
   @Override
   public boolean isCopyAllowed() {
     return this.mindMapPanel.getSelectedTopics().length>0;
@@ -1111,7 +1122,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   @Override
   public boolean doCopy() {
     assertSwingDispatchThread();
-    return this.mindMapPanel.copyTopicsToClipboard(MindMapUtils.removeSuccessorsAndDuplications(this.mindMapPanel.getSelectedTopics()));
+    return this.mindMapPanel.copyTopicsToClipboard(false, MindMapUtils.removeSuccessorsAndDuplications(this.mindMapPanel.getSelectedTopics()));
   }
 
   @Override

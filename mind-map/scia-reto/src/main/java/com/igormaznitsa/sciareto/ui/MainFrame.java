@@ -307,6 +307,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    this.menuEditCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -332,13 +333,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuSaveAs.setEnabled(false);
       this.menuEditCopy.setEnabled(false);
       this.menuEditPaste.setEnabled(false);
+      this.menuEditCut.setEnabled(false);
     } else {
-      if (provider.doesSupportCopyPaste()) {
+      if (provider.doesSupportCutCopyPaste()) {
         this.menuEditCopy.setEnabled(provider.isCopyAllowed());
         this.menuEditPaste.setEnabled(provider.isPasteAllowed());
+        this.menuEditCut.setEnabled(provider.isCutAllowed());
       } else {
         this.menuEditCopy.setEnabled(false);
         this.menuEditPaste.setEnabled(false);
+        this.menuEditCut.setEnabled(false);
       }
 
       this.menuRedo.setEnabled(provider.isRedo());
@@ -764,6 +768,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuUndo = new javax.swing.JMenuItem();
     menuRedo = new javax.swing.JMenuItem();
     jSeparator1 = new javax.swing.JPopupMenu.Separator();
+    menuEditCut = new javax.swing.JMenuItem();
     menuEditCopy = new javax.swing.JMenuItem();
     menuEditPaste = new javax.swing.JMenuItem();
     jSeparator6 = new javax.swing.JPopupMenu.Separator();
@@ -903,6 +908,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuEdit.add(menuRedo);
     menuEdit.add(jSeparator1);
+
+    menuEditCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cut16.png"))); // NOI18N
+    menuEditCut.setText("Cut");
+    menuEditCut.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuEditCutActionPerformed(evt);
+      }
+    });
+    menuEdit.add(menuEditCut);
 
     menuEditCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
     menuEditCopy.setText("Copy"); // NOI18N
@@ -1355,7 +1369,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuEditCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCopyActionPerformed
     final TabTitle title = this.getFocusedTab();
-    if (title!=null && title.getProvider().doesSupportCopyPaste()){
+    if (title!=null && title.getProvider().doesSupportCutCopyPaste()){
       title.getProvider().doCopy();
     }
     updateMenuItemsForProvider(title.getProvider());
@@ -1363,11 +1377,19 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuEditPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditPasteActionPerformed
     final TabTitle title = this.getFocusedTab();
-    if (title != null && title.getProvider().doesSupportCopyPaste()) {
+    if (title != null && title.getProvider().doesSupportCutCopyPaste()) {
       title.getProvider().doPaste();
     }
     updateMenuItemsForProvider(title.getProvider());
   }//GEN-LAST:event_menuEditPasteActionPerformed
+
+  private void menuEditCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCutActionPerformed
+    final TabTitle title = this.getFocusedTab();
+    if (title != null && title.getProvider().doesSupportCutCopyPaste()) {
+      title.getProvider().doCut();
+    }
+    updateMenuItemsForProvider(title.getProvider());
+  }//GEN-LAST:event_menuEditCutActionPerformed
 
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
@@ -1454,6 +1476,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenuItem menuAbout;
   private javax.swing.JMenu menuEdit;
   private javax.swing.JMenuItem menuEditCopy;
+  private javax.swing.JMenuItem menuEditCut;
   private javax.swing.JMenuItem menuEditPaste;
   private javax.swing.JMenuItem menuExit;
   private javax.swing.JMenu menuFile;
