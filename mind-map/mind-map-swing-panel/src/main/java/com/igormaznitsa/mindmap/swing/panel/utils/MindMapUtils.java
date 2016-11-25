@@ -22,10 +22,14 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.filechooser.FileFilter;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -253,5 +257,29 @@ public final class MindMapUtils {
       }
     }
     return file;
+  }
+  
+  /**
+   * Remove duplications and successors for presented topics in array.
+   * @param topics array to be processed
+   * @return resulted array
+   * @since 1.3.1
+   */
+  @Nonnull
+  @MustNotContainNull
+  public static Topic [] removeSuccessorsAndDuplications(@Nonnull @MustNotContainNull final Topic ... topics) {
+    final List<Topic> result = new ArrayList<Topic>();
+    
+    for(final Topic t : topics) {
+      final Iterator<Topic> iterator = result.iterator();
+      while(iterator.hasNext()){
+        final Topic listed = iterator.next();
+        if (listed == t || listed.hasAncestor(t)){
+          iterator.remove();
+        }
+      }
+      result.add(t);
+    }
+    return result.toArray(new Topic[result.size()]);
   }
 }
