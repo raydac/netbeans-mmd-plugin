@@ -160,6 +160,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   private static final WeakSet<MMDGraphEditor> ALL_EDITORS = new WeakSet<MMDGraphEditor>();
 
   private final Action actionCopy = new AbstractAction() {
+    private static final long serialVersionUID = 935382113400815225L;
+
     @Override
     public void actionPerformed(@Nonnull final ActionEvent e) {
       mindMapPanel.copyTopicsToClipboard(false, MindMapUtils.removeSuccessorsAndDuplications(mindMapPanel.getSelectedTopics()));
@@ -170,8 +172,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       return mindMapPanel.hasSelectedTopics();
     }
   };
-  
+
   private final Action actionCut = new AbstractAction() {
+    private static final long serialVersionUID = 935382113400815225L;
+
     @Override
     public void actionPerformed(@Nonnull final ActionEvent e) {
       mindMapPanel.copyTopicsToClipboard(true, MindMapUtils.removeSuccessorsAndDuplications(mindMapPanel.getSelectedTopics()));
@@ -182,14 +186,16 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       return mindMapPanel.hasSelectedTopics();
     }
   };
-  
+
   private final Action actionPaste = new AbstractAction() {
+    private static final long serialVersionUID = -5644390861803492172L;
+
     @Override
     public void actionPerformed(@Nonnull final ActionEvent e) {
       mindMapPanel.pasteTopicsFromClipboard();
     }
   };
-  
+
   public MMDGraphEditor() {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
   }
@@ -225,24 +231,24 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
 
     final ActionMap actionMap = this.getActionMap();
-    
+
     this.actionCut.setEnabled(false);
     this.actionCopy.setEnabled(false);
     this.actionPaste.setEnabled(false);
-    
+
     actionMap.put(DefaultEditorKit.cutAction, this.actionCut);
     actionMap.put(DefaultEditorKit.copyAction, this.actionCopy);
     actionMap.put(DefaultEditorKit.pasteAction, this.actionPaste);
-    
+
     Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(this);
   }
 
   @Override
   public void flavorsChanged(@Nonnull final FlavorEvent e) {
-    final Clipboard source = (Clipboard)e.getSource();
+    final Clipboard source = (Clipboard) e.getSource();
     this.actionPaste.setEnabled(source.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR));
   }
-  
+
   public boolean isPanelDisposed() {
     return this.mindMapPanel.isDisposed();
   }
@@ -280,7 +286,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     try {
       this.mindMapPanel.dispose();
       LOGGER.info("MMD Editor is disposed : " + this.mindMapPanel.toString());
-    } finally {
+    }
+    finally {
       Toolkit.getDefaultToolkit().getSystemClipboard().removeFlavorListener(this);
       super.componentClosed();
     }
@@ -331,11 +338,13 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantLoadDocument"));
       } else {
         try {
-          this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)),false);
-        } catch (IllegalArgumentException ex) {
+          this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)), false);
+        }
+        catch (IllegalArgumentException ex) {
           LOGGER.warn("Can't detect mind map"); //NOI18N
           this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantDetectMMap"));
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
           LOGGER.error("Can't parse mind map text", ex); //NOI18N
           this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantParseDoc"));
         }
@@ -381,9 +390,11 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       theMap.write(writer);
       this.editorSupport.replaceDocumentText(writer.toString());
       this.editorSupport.getDataObject().setModified(true);
-    } catch (Exception ex) {
+    }
+    catch (Exception ex) {
       LOGGER.error("Can't get document text", ex); //NOI18N
-    } finally {
+    }
+    finally {
       copyNameToCallbackTopComponent();
     }
   }
@@ -432,7 +443,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
-    if (!beforeAction){
+    if (!beforeAction) {
       this.mindMapPanel.getModel().resetPayload();
       topicToCentre(topic);
     }
@@ -441,7 +452,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent event) {
   }
-  
+
   @Override
   public void onEnsureVisibilityOfTopic(@Nonnull final MindMapPanel source, @Nonnull final Topic topic) {
     SwingUtilities.invokeLater(new Runnable() {
@@ -499,7 +510,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
               }
               return;
             }
-          } catch (Exception ex) {
+          }
+          catch (Exception ex) {
             LOGGER.error("onClickExtra#FILE", ex); //NOI18N
             NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), uri.toString()));
             return;
@@ -572,7 +584,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
                 NbUtils.SelectIn.PROJECTS.select(this, fileObj);
               }
             }
-          } catch (Exception ex) {
+          }
+          catch (Exception ex) {
             LOGGER.error("Cant't find or open data object", ex); //NOI18N
             NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.cantFindFileObj"), uri.toString()));
           }
@@ -608,8 +621,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
   @Override
   public void onChangedSelection(final MindMapPanel source, final Topic[] currentSelectedTopics) {
-    this.actionCopy.setEnabled(currentSelectedTopics.length!=0);
-    this.actionCut.setEnabled(currentSelectedTopics.length!=0);
+    this.actionCopy.setEnabled(currentSelectedTopics.length != 0);
+    this.actionCut.setEnabled(currentSelectedTopics.length != 0);
   }
 
   private static void processEditorResizing(final MindMapPanel panel) {
@@ -675,11 +688,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
 
       viewport.doLayout();
-      viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0,newMouseY - dy)));
+      viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0, newMouseY - dy)));
     }
   }
 
-  
   @Override
   public boolean processDropTopicToAnotherTopic(final MindMapPanel source, final Point dropPoint, final Topic draggedTopic, final Topic destinationTopic) {
     boolean result = false;
@@ -728,8 +740,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       onMindMapModelChanged(this.mindMapPanel);
     }
   }
-  
-  
+
   private void addFileToElement(final File theFile, final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();
@@ -835,18 +846,18 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     return dataObject == null ? detectedFileObject : dataObject;
   }
-  
+
   @Override
   public void drop(final DropTargetDropEvent dtde) {
- 
+
     DataObject detectedDataObject = null;
     File detectedFileObject = null;
     String detectedLink = null;
     String detectedNote = null;
     URI decodedLink = null;
-    
+
     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-    
+
     try {
       final Object dataObjOrFile = extractDataObjectOrFileFromDnD(dtde);
       if (dataObjOrFile instanceof DataObject) {
@@ -857,7 +868,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
       detectedLink = DnDUtils.extractDropLink(dtde);
       detectedNote = DnDUtils.extractDropNote(dtde);
-      
+
       if (detectedLink != null) {
         try {
           decodedLink = new URI(detectedLink);
@@ -866,7 +877,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
           decodedLink = null;
         }
       }
-      
+
       dtde.dropComplete(true);
     }
     catch (final Exception ex) {
@@ -875,12 +886,12 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
 
     final AbstractElement element = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
-    
-    if (detectedDataObject!=null){
+
+    if (detectedDataObject != null) {
       addDataObjectToElement(detectedDataObject, element);
     } else if (detectedFileObject != null) {
       decodedLink = DnDUtils.extractUrlLinkFromFile(detectedFileObject);
-      if (decodedLink!=null){
+      if (decodedLink != null) {
         addURItoElement(decodedLink, element);
       } else {
         addFileToElement(detectedFileObject, element);
@@ -1246,18 +1257,19 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-          if (mindMapPanel.lockIfNotDisposed()) {
-            try {
-              mindMapPanel.refreshConfiguration();
-              mindMapPanel.invalidate();
-              mindMapPanel.revalidate();
-              mindMapPanel.repaint();
-            } finally {
-              mindMapPanel.unlock();
-            }
-          } else {
-            LOGGER.warn("Attempt tp update disposed panel : "+mindMapPanel);
+        if (mindMapPanel.lockIfNotDisposed()) {
+          try {
+            mindMapPanel.refreshConfiguration();
+            mindMapPanel.invalidate();
+            mindMapPanel.revalidate();
+            mindMapPanel.repaint();
           }
+          finally {
+            mindMapPanel.unlock();
+          }
+        } else {
+          LOGGER.warn("Attempt tp update disposed panel : " + mindMapPanel);
+        }
       }
     });
   }
