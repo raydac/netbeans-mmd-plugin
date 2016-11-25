@@ -58,6 +58,13 @@ public interface TabProvider {
   boolean redo();
   boolean undo();
   
+  boolean doesSupportCopyPaste();
+  boolean isCopyAllowed();
+  boolean isPasteAllowed();
+  
+  boolean doCopy();
+  boolean doPaste();
+  
   boolean findNext(@Nonnull Pattern pattern, @Nonnull FindTextScopeProvider provider);
   boolean findPrev(@Nonnull Pattern pattern,@Nonnull FindTextScopeProvider provider);
   boolean doesSupportPatternSearch();

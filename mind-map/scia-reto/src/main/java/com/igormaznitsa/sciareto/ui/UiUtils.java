@@ -93,11 +93,11 @@ public final class UiUtils {
 
     private final Image image;
 
-    public SplashScreen() {
+    public SplashScreen(@Nonnull final Image image) {
       super();
       this.setAlwaysOnTop(true);
       
-      this.image = loadImage("splash.png");
+      this.image = image;
       final JLabel label = new JLabel(new ImageIcon(this.image));
       final JPanel root = new JPanel(new BorderLayout(0, 0));
       root.add(label, BorderLayout.CENTER);
@@ -208,7 +208,7 @@ public final class UiUtils {
   }
 
   @Nullable
-  public static Image loadImage(@Nonnull final String name) {
+  public static Image loadIcon(@Nonnull final String name) {
     final InputStream inStream = UiUtils.class.getClassLoader().getResourceAsStream("icons/" + name);
     Image result = null;
     if (inStream != null) {

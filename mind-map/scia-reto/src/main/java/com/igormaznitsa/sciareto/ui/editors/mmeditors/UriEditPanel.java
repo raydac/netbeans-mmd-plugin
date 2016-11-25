@@ -32,9 +32,9 @@ public final class UriEditPanel extends javax.swing.JPanel  {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
 
-  private static final ImageIcon IMAGE_OK = new ImageIcon(UiUtils.loadImage("tick16.png"));
-  private static final ImageIcon IMAGE_BAD = new ImageIcon(UiUtils.loadImage("cancel.png"));
-  private static final ImageIcon IMAGE_QUESTION = new ImageIcon(UiUtils.loadImage("question16.png"));
+  private static final ImageIcon IMAGE_OK = new ImageIcon(UiUtils.loadIcon("tick16.png"));
+  private static final ImageIcon IMAGE_BAD = new ImageIcon(UiUtils.loadIcon("cancel.png"));
+  private static final ImageIcon IMAGE_QUESTION = new ImageIcon(UiUtils.loadIcon("question16.png"));
 
   public UriEditPanel(final String uri) {
     initComponents();

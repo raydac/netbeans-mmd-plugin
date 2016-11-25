@@ -59,6 +59,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -91,6 +92,7 @@ import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
+import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
@@ -162,7 +164,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     this.setTitle("Scia Reto");
 
-    setIconImage(UiUtils.loadImage("logo256x256.png"));
+    setIconImage(UiUtils.loadIcon("logo256x256.png"));
 
     this.stateless = args.length > 0;
 
@@ -303,6 +305,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     this.menuFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
+    this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -316,6 +321,37 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     });
 
+    enableAllMenuItems();
+  }
+
+  private void updateMenuItemsForProvider(@Nullable final TabProvider provider) {
+    if (provider == null) {
+      this.menuRedo.setEnabled(false);
+      this.menuUndo.setEnabled(false);
+      this.menuSave.setEnabled(false);
+      this.menuSaveAs.setEnabled(false);
+      this.menuEditCopy.setEnabled(false);
+      this.menuEditPaste.setEnabled(false);
+    } else {
+      if (provider.doesSupportCopyPaste()) {
+        this.menuEditCopy.setEnabled(provider.isCopyAllowed());
+        this.menuEditPaste.setEnabled(provider.isPasteAllowed());
+      } else {
+        this.menuEditCopy.setEnabled(false);
+        this.menuEditPaste.setEnabled(false);
+      }
+
+      this.menuRedo.setEnabled(provider.isRedo());
+      this.menuUndo.setEnabled(provider.isUndo());
+
+      if (provider.isSaveable()) {
+        this.menuSave.setEnabled(provider.getTabTitle().isChanged());
+        this.menuSaveAs.setEnabled(true);
+      } else {
+        this.menuSave.setEnabled(false);
+        this.menuSaveAs.setEnabled(false);
+      }
+    }
   }
 
   public void processTabChanged(@Nullable final TabTitle title) {
@@ -332,21 +368,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       hideFindTextPane();
     }
 
-    if (title == null) {
-      this.menuRedo.setEnabled(false);
-      this.menuUndo.setEnabled(false);
-      this.menuSave.setEnabled(false);
-      this.menuSaveAs.setEnabled(false);
-    } else {
-      this.menuRedo.setEnabled(title.getProvider().isRedo());
-      this.menuUndo.setEnabled(title.getProvider().isUndo());
-      if (title.getProvider().isSaveable()) {
-        this.menuSave.setEnabled(title != null && title.isChanged());
-        this.menuSaveAs.setEnabled(true);
-      } else {
-        this.menuSave.setEnabled(false);
-        this.menuSaveAs.setEnabled(false);
-      }
+    enableAllMenuItems();
+    
+    if (title != null) {
       title.visited();
     }
   }
@@ -722,7 +746,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jMenuBar1 = new javax.swing.JMenuBar();
+    mainMenu = new javax.swing.JMenuBar();
     menuFile = new javax.swing.JMenu();
     menuNewProject = new javax.swing.JMenuItem();
     jSeparator2 = new javax.swing.JPopupMenu.Separator();
@@ -740,6 +764,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuUndo = new javax.swing.JMenuItem();
     menuRedo = new javax.swing.JMenuItem();
     jSeparator1 = new javax.swing.JPopupMenu.Separator();
+    menuEditCopy = new javax.swing.JMenuItem();
+    menuEditPaste = new javax.swing.JMenuItem();
+    jSeparator6 = new javax.swing.JPopupMenu.Separator();
     menuFindText = new javax.swing.JMenuItem();
     jSeparator5 = new javax.swing.JPopupMenu.Separator();
     menuPreferences = new javax.swing.JMenuItem();
@@ -757,6 +784,17 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     setLocationByPlatform(true);
 
     menuFile.setText("File");
+    menuFile.addMenuListener(new javax.swing.event.MenuListener() {
+      public void menuSelected(javax.swing.event.MenuEvent evt) {
+        menuFileMenuSelected(evt);
+      }
+      public void menuDeselected(javax.swing.event.MenuEvent evt) {
+        menuFileMenuDeselected(evt);
+      }
+      public void menuCanceled(javax.swing.event.MenuEvent evt) {
+        menuFileMenuCanceled(evt);
+      }
+    });
 
     menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
     menuNewProject.setText("New Project");
@@ -832,9 +870,20 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuFile.add(menuExit);
 
-    jMenuBar1.add(menuFile);
+    mainMenu.add(menuFile);
 
     menuEdit.setText("Edit");
+    menuEdit.addMenuListener(new javax.swing.event.MenuListener() {
+      public void menuSelected(javax.swing.event.MenuEvent evt) {
+        menuEditMenuSelected(evt);
+      }
+      public void menuDeselected(javax.swing.event.MenuEvent evt) {
+        menuEditMenuDeselected(evt);
+      }
+      public void menuCanceled(javax.swing.event.MenuEvent evt) {
+        menuEditMenuCanceled(evt);
+      }
+    });
 
     menuUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
     menuUndo.setText("Undo");
@@ -855,6 +904,25 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.add(menuRedo);
     menuEdit.add(jSeparator1);
 
+    menuEditCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
+    menuEditCopy.setText("Copy"); // NOI18N
+    menuEditCopy.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuEditCopyActionPerformed(evt);
+      }
+    });
+    menuEdit.add(menuEditCopy);
+
+    menuEditPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
+    menuEditPaste.setText("Paste"); // NOI18N
+    menuEditPaste.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuEditPasteActionPerformed(evt);
+      }
+    });
+    menuEdit.add(menuEditPaste);
+    menuEdit.add(jSeparator6);
+
     menuFindText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
     menuFindText.setText("Find text");
     menuFindText.addActionListener(new java.awt.event.ActionListener() {
@@ -874,7 +942,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuEdit.add(menuPreferences);
 
-    jMenuBar1.add(menuEdit);
+    mainMenu.add(menuEdit);
 
     menuView.setText("View");
 
@@ -892,7 +960,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuLookAndFeel.setText("Look and Feel");
     menuView.add(menuLookAndFeel);
 
-    jMenuBar1.add(menuView);
+    mainMenu.add(menuView);
 
     menuNavigate.setText("Navigate");
 
@@ -905,7 +973,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuNavigate.add(menuGoToFile);
 
-    jMenuBar1.add(menuNavigate);
+    mainMenu.add(menuNavigate);
 
     menuHelp.setText("Help");
 
@@ -928,9 +996,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuHelp.add(menuMakeDonation);
 
-    jMenuBar1.add(menuHelp);
+    mainMenu.add(menuHelp);
 
-    setJMenuBar(jMenuBar1);
+    setJMenuBar(mainMenu);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -1113,15 +1181,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     return result;
   }
 
-  private boolean openProjectFolder(@Nonnull final File folder) {
-    boolean result = false;
-    if (openProject(folder, true)) {
-      result = true;
-      this.focusInTree(folder);
-    }
-    return result;
-  }
-
   private boolean prepareAndOpenProjectFolder(@Nonnull final File folder) {
     boolean result = false;
     createKnowledgeFolder(folder);
@@ -1131,7 +1190,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
     return result;
   }
-  
+
   private void menuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewProjectActionPerformed
     final JFileChooser folderChooser = new JFileChooser();
     folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -1249,22 +1308,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuGoToFileActionPerformed
 
   private void menuUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuUndoActionPerformed
-    final TabTitle title = this.tabPane.getCurrentTitle();
-    if (title == null) {
-      this.menuUndo.setEnabled(false);
-      this.menuRedo.setEnabled(false);
-    } else {
+    final TabTitle title = this.getFocusedTab();
+    if (title != null) {
       this.menuUndo.setEnabled(title.getProvider().undo());
       this.menuRedo.setEnabled(title.getProvider().isRedo());
     }
   }//GEN-LAST:event_menuUndoActionPerformed
 
   private void menuRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRedoActionPerformed
-    final TabTitle title = this.tabPane.getCurrentTitle();
-    if (title == null) {
-      this.menuUndo.setEnabled(false);
-      this.menuRedo.setEnabled(false);
-    } else {
+    final TabTitle title = this.getFocusedTab();
+    if (title != null) {
       this.menuRedo.setEnabled(title.getProvider().redo());
       this.menuUndo.setEnabled(title.getProvider().isUndo());
     }
@@ -1274,6 +1327,64 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     showFindTextPane("");
   }//GEN-LAST:event_menuFindTextActionPerformed
 
+  private void menuEditMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuEditMenuSelected
+    final TabTitle title = this.getFocusedTab();
+    updateMenuItemsForProvider(title == null ? null : title.getProvider());
+  }//GEN-LAST:event_menuEditMenuSelected
+
+  private void menuEditMenuCanceled(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuEditMenuCanceled
+    enableAllMenuItems();
+  }//GEN-LAST:event_menuEditMenuCanceled
+
+  private void menuEditMenuDeselected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuEditMenuDeselected
+    enableAllMenuItems();
+  }//GEN-LAST:event_menuEditMenuDeselected
+
+  private void menuFileMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuFileMenuSelected
+    final TabTitle title = this.getFocusedTab();
+    updateMenuItemsForProvider(title == null ? null : title.getProvider());
+  }//GEN-LAST:event_menuFileMenuSelected
+
+  private void menuFileMenuCanceled(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuFileMenuCanceled
+    enableAllMenuItems();
+  }//GEN-LAST:event_menuFileMenuCanceled
+
+  private void menuFileMenuDeselected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuFileMenuDeselected
+    enableAllMenuItems();
+  }//GEN-LAST:event_menuFileMenuDeselected
+
+  private void menuEditCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCopyActionPerformed
+    final TabTitle title = this.getFocusedTab();
+    if (title!=null && title.getProvider().doesSupportCopyPaste()){
+      title.getProvider().doCopy();
+    }
+    updateMenuItemsForProvider(title.getProvider());
+  }//GEN-LAST:event_menuEditCopyActionPerformed
+
+  private void menuEditPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditPasteActionPerformed
+    final TabTitle title = this.getFocusedTab();
+    if (title != null && title.getProvider().doesSupportCopyPaste()) {
+      title.getProvider().doPaste();
+    }
+    updateMenuItemsForProvider(title.getProvider());
+  }//GEN-LAST:event_menuEditPasteActionPerformed
+
+  private void enableMenu(final JMenu menu) {
+    menu.setEnabled(true);
+    for(final Component c : menu.getMenuComponents()){
+      if (c instanceof JMenu) enableMenu((JMenu)c);
+      else if (c instanceof JMenuItem){
+        ((JMenuItem)c).setEnabled(true);
+      }
+    }
+  }
+  
+  private void enableAllMenuItems(){
+    for(int i=0;i<this.mainMenu.getMenuCount();i++){
+      enableMenu(this.mainMenu.getMenu(i));
+    }
+  }
+  
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {
@@ -1333,14 +1444,17 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JMenuBar jMenuBar1;
   private javax.swing.JPopupMenu.Separator jSeparator1;
   private javax.swing.JPopupMenu.Separator jSeparator2;
   private javax.swing.JPopupMenu.Separator jSeparator3;
   private javax.swing.JPopupMenu.Separator jSeparator4;
   private javax.swing.JPopupMenu.Separator jSeparator5;
+  private javax.swing.JPopupMenu.Separator jSeparator6;
+  private javax.swing.JMenuBar mainMenu;
   private javax.swing.JMenuItem menuAbout;
   private javax.swing.JMenu menuEdit;
+  private javax.swing.JMenuItem menuEditCopy;
+  private javax.swing.JMenuItem menuEditPaste;
   private javax.swing.JMenuItem menuExit;
   private javax.swing.JMenu menuFile;
   private javax.swing.JMenuItem menuFindText;

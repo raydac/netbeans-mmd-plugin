@@ -24,6 +24,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -81,12 +83,14 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
@@ -1088,4 +1092,33 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
     return true;
   }
 
+  @Override
+  public boolean doesSupportCopyPaste() {
+    return true;
+  }
+
+  @Override
+  public boolean isCopyAllowed() {
+    return this.mindMapPanel.getSelectedTopics().length>0;
+  }
+
+  @Override
+  public boolean isPasteAllowed() {
+    final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    return clipboard.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+  }
+
+  @Override
+  public boolean doCopy() {
+    assertSwingDispatchThread();
+    return this.mindMapPanel.copyTopicsToClipboard(MindMapUtils.removeSuccessorsAndDuplications(this.mindMapPanel.getSelectedTopics()));
+  }
+
+  @Override
+  public boolean doPaste() {
+    assertSwingDispatchThread();
+    return this.mindMapPanel.pasteTopicsFromClipboard();
+  }
+
+  
 }

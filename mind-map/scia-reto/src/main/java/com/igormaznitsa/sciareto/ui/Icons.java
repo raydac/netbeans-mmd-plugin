@@ -36,6 +36,6 @@ public enum Icons {
   }
   
   private Icons(@Nonnull final String name) {
-    this.icon = new ImageIcon(UiUtils.loadImage(name));
+    this.icon = new ImageIcon(UiUtils.loadIcon(name));
   }
 }

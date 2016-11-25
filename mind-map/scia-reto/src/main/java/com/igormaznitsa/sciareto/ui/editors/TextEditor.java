@@ -16,6 +16,10 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -281,6 +285,57 @@ public final class TextEditor extends AbstractScrollPane {
   @Override
   public boolean doesSupportPatternSearch() {
     return true;
+  }
+
+  @Override
+  public boolean doCopy() {
+    boolean result = false;
+    
+    final String selected = this.editor.getSelectedText();
+    if (selected != null && !selected.isEmpty()){
+      final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      clipboard.setContents(new StringSelection(selected), null);
+    }
+    
+    return result;
+  }
+
+  @Override
+  public boolean doPaste() {
+    boolean result = false;
+    
+    final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    String text = null;
+    try {
+      if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+        text = clipboard.getData(DataFlavor.stringFlavor).toString();
+      }
+    }
+    catch (Exception ex) {
+      LOGGER.warn("Can't get data from clipboard : "+ex.getMessage());
+    }
+    if (text != null) {
+      this.editor.replaceSelection(text);
+      result = true;
+    }
+    return result;
+  }
+  
+  @Override
+  public boolean doesSupportCopyPaste() {
+    return true;
+  }
+
+  @Override
+  public boolean isCopyAllowed() {
+    final String selected = this.editor.getSelectedText();
+    return selected!=null && !selected.isEmpty();
+  }
+
+  @Override
+  public boolean isPasteAllowed() {
+    final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    return clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor);
   }
 
 }

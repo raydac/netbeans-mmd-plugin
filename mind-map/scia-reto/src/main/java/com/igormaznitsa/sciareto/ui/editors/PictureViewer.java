@@ -298,5 +298,29 @@ public final class PictureViewer extends AbstractScrollPane {
   public boolean doesSupportPatternSearch() {
     return false;
   }
-  
+
+  @Override
+  public boolean doesSupportCopyPaste() {
+    return false;
+  }
+
+  @Override
+  public boolean isCopyAllowed() {
+    return false;
+  }
+
+  @Override
+  public boolean isPasteAllowed() {
+    return false;
+  }
+
+  @Override
+  public boolean doCopy() {
+    return false;
+  }
+
+  @Override
+  public boolean doPaste() {
+    return false;
+  }
 }

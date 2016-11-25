@@ -41,7 +41,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
 
-  private static final Image ICON_PRINTER = UiUtils.loadImage("printer.png");
+  private static final Image ICON_PRINTER = UiUtils.loadIcon("printer.png");
   
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterPlugin.class);
   

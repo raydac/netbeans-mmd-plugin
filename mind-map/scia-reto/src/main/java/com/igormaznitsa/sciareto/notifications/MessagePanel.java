@@ -46,7 +46,7 @@ final class MessagePanel extends JPanel implements ActionListener {
 
   private static final long serialVersionUID = 4382438833881000822L;
 
-  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadImage("nimbusCloseFrame.png"));
+  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png"));
 
   private static final AtomicInteger ACTIVE_MESSAGES = new AtomicInteger();
   

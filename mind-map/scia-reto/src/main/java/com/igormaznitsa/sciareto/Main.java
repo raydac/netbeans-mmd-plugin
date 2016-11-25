@@ -17,6 +17,7 @@ package com.igormaznitsa.sciareto;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -84,6 +85,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils.SplashScreen;
 import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class Main {
 
@@ -231,11 +233,13 @@ public class Main {
     final AtomicReference<SplashScreen> splash = new AtomicReference<>();
     if (args.length == 0) {
       try {
+        final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png"));
+        
         SwingUtilities.invokeAndWait(new Runnable() {
           @Override
           public void run() {
             try {
-              splash.set(new SplashScreen());
+              splash.set(new SplashScreen(splashImage));
               splash.get().setVisible(true);
             }
             catch (Exception ex) {

@@ -61,7 +61,7 @@ public final class TabTitle extends JPanel {
 
   private boolean visited;
 
-  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadImage("nimbusCloseFrame.png"));
+  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png"));
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TabTitle.class);
   
