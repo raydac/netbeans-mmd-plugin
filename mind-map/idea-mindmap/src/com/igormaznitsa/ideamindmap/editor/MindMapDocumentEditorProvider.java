@@ -16,15 +16,19 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.filetype.MindMapFileType;
-import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorPolicy;
+import com.intellij.openapi.fileEditor.FileEditorProvider;
+import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Element;
+
 import javax.annotation.Nonnull;
-import javax.swing.*;
 
 public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware {
+
   @Override
   public boolean accept(@Nonnull Project project, @Nonnull VirtualFile virtualFile) {
     return virtualFile.getFileType() instanceof MindMapFileType;
@@ -63,4 +67,5 @@ public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAw
   public FileEditorPolicy getPolicy() {
     return FileEditorPolicy.HIDE_DEFAULT_EDITOR;
   }
+
 }

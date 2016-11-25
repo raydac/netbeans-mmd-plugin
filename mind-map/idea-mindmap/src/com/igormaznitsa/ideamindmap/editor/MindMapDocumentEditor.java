@@ -24,14 +24,23 @@ import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
+import com.intellij.ide.CopyProvider;
+import com.intellij.ide.CutProvider;
+import com.intellij.ide.DataManager;
+import com.intellij.ide.PasteProvider;
 import com.intellij.ide.dnd.DnDDragStartBean;
 import com.intellij.ide.dnd.TransferableWrapper;
 import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
@@ -48,6 +57,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.xml.ui.Committable;
 import com.intellij.util.xml.ui.UndoHelper;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,7 +69,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
@@ -72,7 +82,7 @@ import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
-public class MindMapDocumentEditor implements DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable {
+public class MindMapDocumentEditor implements DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable, DataProvider, CopyProvider, CutProvider, PasteProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapDocumentEditor.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
@@ -88,6 +98,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   private final MindMapPanelControllerImpl panelController;
   private final UndoHelper undoHelper;
   private boolean firstLayouting = true;
+
 
   public MindMapDocumentEditor(final Project project, final VirtualFile file) {
     this.project = project;
@@ -129,6 +140,8 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         loadMindMapFromDocument();
       }
     });
+
+    DataManager.registerDataProvider(this.mainScrollPane,this);
   }
 
   @Override
@@ -139,13 +152,13 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     }
   }
 
-  public void centreToRoot(){
+  public void centreToRoot() {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         final Topic root = mindMapPanel.getModel().getRoot();
         if (root != null) {
-          mindMapPanel.updateElementsAndSizeForCurrentGraphics(true,false);
+          mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, false);
           topicToCentre(root);
         }
       }
@@ -328,7 +341,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   @Override
   public void dispose() {
-    this.mindMapPanel.dispose();
+      this.mindMapPanel.dispose();
   }
 
   @Nullable
@@ -513,8 +526,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   @Override
-  public void onChangedSelection(MindMapPanel mindMapPanel, Topic[] topics) {
-    // do nothing at present
+  public void onChangedSelection(final MindMapPanel mindMapPanel, final Topic[] topics) {
   }
 
   public DialogProvider getDialogProvider() {
@@ -665,7 +677,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
       decodedLink = DnDUtils.extractUrlLinkFromFile(dropFile);
       if (decodedLink == null) {
         addFileToElement(dropFile, element);
-      }else{
+      } else {
         addURItoElement(decodedLink, element);
       }
     } else if (decodedLink != null) {
@@ -732,8 +744,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
         this.mindMapPanel.invalidate();
         this.mindMapPanel.repaint();
         onMindMapModelChanged(this.mindMapPanel);
-      }
-      else {
+      } else {
         LOGGER.warn("Can't find VirtualFile for " + file);
       }
     }
@@ -764,5 +775,63 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     this.mindMapPanel.refreshConfiguration();
     this.mindMapPanel.revalidate();
     this.mindMapPanel.repaint();
+  }
+
+  @org.jetbrains.annotations.Nullable
+  @Override
+  public Object getData(@NonNls String s) {
+    if (PlatformDataKeys.COPY_PROVIDER.is(s) || PlatformDataKeys.CUT_PROVIDER.is(s) || PlatformDataKeys.PASTE_PROVIDER.is(s)) {
+      return this;
+    }
+    return null;
+  }
+
+  @Override
+  public void performCopy(@NotNull DataContext dataContext) {
+    this.mindMapPanel.copyTopicsToClipboard(false, MindMapUtils.removeSuccessorsAndDuplications(this.mindMapPanel.getSelectedTopics()));
+  }
+
+  @Override
+  public boolean isCopyEnabled(@NotNull DataContext dataContext) {
+    return this.mindMapPanel.hasSelectedTopics();
+  }
+
+  @Override
+  public boolean isCopyVisible(@NotNull DataContext dataContext) {
+    return true;
+  }
+
+  @Override
+  public void performCut(@NotNull DataContext dataContext) {
+    this.mindMapPanel.copyTopicsToClipboard(true, MindMapUtils.removeSuccessorsAndDuplications(this.mindMapPanel.getSelectedTopics()));
+  }
+
+  @Override
+  public boolean isCutEnabled(@NotNull DataContext dataContext) {
+    return this.mindMapPanel.hasSelectedTopics();
+  }
+
+  @Override
+  public boolean isCutVisible(@NotNull DataContext dataContext) {
+    return true;
+  }
+
+  @Override
+  public void performPaste(@NotNull DataContext dataContext) {
+    this.mindMapPanel.pasteTopicsFromClipboard();
+  }
+
+  @Override
+  public boolean isPastePossible(@NotNull DataContext dataContext) {
+    return isPasteEnabled(dataContext);
+  }
+
+  @Override
+  public boolean isPasteEnabled(@NotNull DataContext dataContext) {
+    boolean result = false;
+    if (this.mindMapPanel.hasSelectedTopics()) {
+      result = Toolkit.getDefaultToolkit().getSystemClipboard().isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+    }
+    return result;
   }
 }
