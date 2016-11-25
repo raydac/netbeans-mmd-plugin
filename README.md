@@ -14,6 +14,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.3.1-SNAPSHOT (under development)__
+- ALL: added support of Cut-Copy-Paste actions over Mind Maps
 - ALL: added reset button into URI edit dialog
 - ALL: added processing of dragged links and texts from external web browsers
 - SCIARETO: fixed 'New Project' under MacOSX
