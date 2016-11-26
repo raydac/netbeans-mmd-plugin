@@ -33,6 +33,7 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -67,9 +68,11 @@ import org.openide.nodes.Node;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
+import org.openide.util.datatransfer.ExClipboard;
 import org.openide.util.lookup.Lookups;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 
 public final class NbUtils {
 
@@ -459,4 +462,14 @@ public final class NbUtils {
       return false;
     }
   }
+
+  @Nonnull
+  public static Clipboard findClipboard() {
+    Clipboard result = Lookup.getDefault().lookup(ExClipboard.class);
+    if (result == null) {
+      result = Toolkit.getDefaultToolkit().getSystemClipboard();
+    }
+    return Assertions.assertNotNull("Clipbard is not found", result);
+  }
+
 }
