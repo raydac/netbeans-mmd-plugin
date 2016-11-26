@@ -247,7 +247,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     actionMap.put(DefaultEditorKit.cutAction, this.actionCut);
     actionMap.put(DefaultEditorKit.copyAction, this.actionCopy);
     actionMap.put(DefaultEditorKit.pasteAction, this.actionPaste);
-
   }
 
   private void registerAsClipboardListener(){
@@ -274,14 +273,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     actionMap.put(DefaultEditorKit.copyAction, SystemAction.get(CopyAction.class));
     actionMap.put(DefaultEditorKit.cutAction, SystemAction.get(CutAction.class));
     actionMap.put(DefaultEditorKit.pasteAction, SystemAction.get(PasteAction.class));
-
-    final Clipboard clipboard = NbUtils.findClipboard();
-    if (clipboard instanceof ExClipboard) {
-      ((ExClipboard) clipboard).removeClipboardListener(this);
-    } else {
-      clipboard.addFlavorListener(this);
-    }
-
   }
 
   @Override
@@ -528,10 +519,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
       @Override
       public void run() {
-        if (topic == null) {
-          return;
-        }
-
         final AbstractElement element = (AbstractElement) topic.getPayload();
         if (element == null) {
           return;
@@ -922,7 +909,6 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
 
     DataObject detectedDataObject = null;
     File detectedFileObject = null;
-    String detectedLink = null;
     String detectedNote = null;
     URI decodedLink = null;
 
@@ -936,7 +922,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         detectedFileObject = (File) dataObjOrFile;
       }
 
-      detectedLink = DnDUtils.extractDropLink(dtde);
+      final String detectedLink = DnDUtils.extractDropLink(dtde);
       detectedNote = DnDUtils.extractDropNote(dtde);
 
       if (detectedLink != null) {
