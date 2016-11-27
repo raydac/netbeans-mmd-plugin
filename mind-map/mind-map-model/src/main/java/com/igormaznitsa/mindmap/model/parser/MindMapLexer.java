@@ -25,6 +25,7 @@ import com.igormaznitsa.meta.common.utils.Assertions;
  * Allows to extract lexeme from mind map file.
  */
 public final class MindMapLexer {
+
   /**
    * Type of allowed lexeme.
    */
@@ -33,6 +34,9 @@ public final class MindMapLexer {
     HEAD_DELIMITER,
     ATTRIBUTE,
     TOPIC,
+    CODE_SNIPPET_START,
+    CODE_SNIPPET_BODY,
+    CODE_SNIPPET_END,
     EXTRA_TYPE,
     EXTRA_TEXT,
     WHITESPACE,
@@ -154,13 +158,14 @@ public final class MindMapLexer {
           this.position.state = TokenType.WHITESPACE;
         }
         break;
+        case CODE_SNIPPET_END: 
         case WHITESPACE: {
           skipAllWhitespaceAndSpecial();
           if (this.position.offset > this.tokenStart || isBufferEnd()) {
             tokenHasBeenCompleted = true;
             inAction = false;
-          }
-          else {
+          } else {
+            final boolean lineStart = isLineStart();
             final char chr = readChar();
             switch (chr) {
               case '#': {
@@ -173,8 +178,7 @@ public final class MindMapLexer {
                   this.position.state = chr == '>' ? TokenType.ATTRIBUTE : TokenType.EXTRA_TYPE;
                   tokenHasBeenCompleted = false;
                   inAction = false;
-                }
-                else {
+                } else {
                   this.position.state = readChar() == ' ' ? chr == '>' ? TokenType.ATTRIBUTE : TokenType.EXTRA_TYPE : TokenType.UNKNOWN_LINE;
                 }
               }
@@ -195,13 +199,18 @@ public final class MindMapLexer {
         case EXTRA_TEXT: {
           if (getTokenLength() <= 5 && !isTokenMayStartWith("<pre>")) {
             this.position.state = TokenType.UNKNOWN_LINE;
-          }
-          else if (readChar() == '>' && getTokenLength() > 5) {
+          } else if (readChar() == '>' && getTokenLength() > 5) {
             if (prevTextInBufferIs("</pre>")) {
               tokenHasBeenCompleted = true;
               inAction = false;
             }
           }
+        }
+        break;
+        case CODE_SNIPPET_START: {
+          tokenHasBeenCompleted = toStartPositionOfCodeSnippetEnd();
+          this.position.state = TokenType.CODE_SNIPPET_BODY;
+          inAction = false;
         }
         break;
         case ATTRIBUTE:
@@ -230,23 +239,45 @@ public final class MindMapLexer {
     }
 
     this.position.tokenCompleted = tokenHasBeenCompleted;
-    this.tokenType = this.position.getState();
-    this.tokenEnd = this.position.getOffset();
     this.tokenType = this.position.state;
+    this.tokenEnd = this.position.offset;
+
     if (tokenHasBeenCompleted) {
-      if (this.tokenType == TokenType.HEAD_LINE) {
-        if (hasTextAt("> ", this.tokenStart)) {
-          this.tokenType = TokenType.ATTRIBUTE;
+      switch (this.tokenType) {
+        case HEAD_LINE: {
+          if (hasTextAt("> ", this.tokenStart)) {
+            this.tokenType = TokenType.ATTRIBUTE;
+          }
         }
-      }
-      else {
-        this.position.state = TokenType.WHITESPACE;
+        break;
+        case UNKNOWN_LINE: {
+          if (tokenStartsWith("```")) {
+            this.tokenType = isAllLineFromChars('`') ? TokenType.CODE_SNIPPET_END : TokenType.CODE_SNIPPET_START;
+            this.position.state = this.tokenType;
+          }
+        }
+        break;
+        default: {
+          this.position.state = TokenType.WHITESPACE;
+        }
+        break;
       }
     }
   }
 
   private int getTokenLength() {
     return this.position.offset - this.tokenStart;
+  }
+
+  private boolean isLineStart() {
+    boolean result = false;
+    final int startPos = this.position.offset - 1;
+    if (startPos < 0) {
+      result = true;
+    } else {
+      result = this.buffer.charAt(startPos) == '\n';
+    }
+    return result;
   }
 
   private boolean prevTextInBufferIs(@Nonnull final String text) {
@@ -282,6 +313,24 @@ public final class MindMapLexer {
     return this.position.offset >= this.endOffset;
   }
 
+  private boolean tokenStartsWith(@Nonnull final String text) {
+    boolean result = true;
+    int index = 0;
+
+    if (this.position.offset - this.tokenStart >= text.length()) {
+      final int end = this.tokenStart + text.length();
+      for (int i = this.tokenStart; i < end; i++) {
+        if (text.charAt(index++) != this.buffer.charAt(i)) {
+          result = false;
+          break;
+        }
+      }
+    } else {
+      result = false;
+    }
+    return result;
+  }
+
   private boolean isTokenMayStartWith(@Nonnull final String text) {
     boolean result = true;
     int index = 0;
@@ -305,8 +354,7 @@ public final class MindMapLexer {
       }
       if (chr != c) {
         return false;
-      }
-      else {
+      } else {
         detected = true;
       }
     }
@@ -321,6 +369,54 @@ public final class MindMapLexer {
         break;
       }
     }
+  }
+
+  private boolean toStartPositionOfCodeSnippetEnd() {
+    boolean found = false;
+
+    boolean lineStart = isLineStart();
+    int lineStartPosition = lineStart ? this.position.offset : -1;
+    int endCharsCounter = 0;
+
+    while (!found && !isBufferEnd()) {
+      final char ch = readChar();
+
+      switch (ch) {
+        case '`': {
+          if (endCharsCounter > 0 || lineStart) {
+            endCharsCounter ++;
+          } else {
+            endCharsCounter = 0;
+          }
+          lineStart = false;
+        }
+        break;
+        case '\n': {
+          if (endCharsCounter>=3) { 
+            found = true;
+          }else{
+            lineStartPosition = this.position.offset;
+            lineStart = true;
+            endCharsCounter = 0;
+          }
+        }
+        break;
+        default: {
+          if (!Character.isISOControl(ch) && !Character.isWhitespace(ch)) {
+            endCharsCounter = 0;
+          }
+          lineStart = false;
+        }
+        break;
+      }
+    }
+
+    if (found || endCharsCounter>=3){
+      found = true;
+      this.position.offset = lineStartPosition;
+    }
+    
+    return found;
   }
 
   private boolean skipToNextLine() {

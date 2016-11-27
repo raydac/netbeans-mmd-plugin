@@ -320,4 +320,95 @@ public class MindMapLexerTest {
     assertNull(lexer.getTokenType());
   }
 
+  @Test
+  public void testTwoPhaseReading_CodeSnippetInTheEnd_NoNextLine() {
+    final MindMapLexer lexer = new MindMapLexer();
+    final String testString = "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```";
+    
+    lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.HEAD_LINE);
+    lexer.advance();
+    
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_LINE, "Header\n", 0, 7);
+    lexer.advance();
+    
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_START, "```Java\n", 10, 18);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY, "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_END, "```", 69, 72);
+    lexer.advance();
+  }
+
+  @Test
+  public void testTwoPhaseReading_CodeSnippetInTheEnd_NextLine() {
+    final MindMapLexer lexer = new MindMapLexer();
+    final String testString = "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```\n";
+    
+    lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.HEAD_LINE);
+    lexer.advance();
+    
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_LINE, "Header\n", 0, 7);
+    lexer.advance();
+    
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_START, "```Java\n", 10, 18);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY, "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_END, "```\n", 69, 73);
+    lexer.advance();
+  }
+
+  @Test
+  public void testTwoPhaseReading_CodeSnippetInTheEnd_TopicAfterCodeSnipet() {
+    final MindMapLexer lexer = new MindMapLexer();
+    final String testString = "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```\n# Topic\n";
+    
+    lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.HEAD_LINE);
+    lexer.advance();
+    
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_LINE, "Header\n", 0, 7);
+    lexer.advance();
+    
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_START, "```Java\n", 10, 18);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY, "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_END, "```\n", 69, 73);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC, "# Topic\n", 73, 81);
+    lexer.advance();
+  }
+
 }

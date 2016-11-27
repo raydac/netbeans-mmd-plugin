@@ -64,7 +64,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
   private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*(\\`+)(.*?)\\2"); //NOI18N
 
   private static final String GENERATOR_VERSION_NAME = "__version__"; //NOI18N
-  public static final String FORMAT_VERSION = "1.0"; //NOI18N
+  public static final String FORMAT_VERSION = "1.1"; //NOI18N
 
   private final transient List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
 
