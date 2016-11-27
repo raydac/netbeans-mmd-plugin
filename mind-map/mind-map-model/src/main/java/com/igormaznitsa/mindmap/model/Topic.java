@@ -47,7 +47,7 @@ import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
 public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
-  private static final long serialVersionUID = -4512887489914466713L;
+  private static final long serialVersionUID = -4642569244907433215L;
 
   private static Logger logger = LoggerFactory.getLogger(Topic.class);
 
