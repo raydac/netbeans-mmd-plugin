@@ -294,6 +294,15 @@ public final class Utils {
     }
   }
 
+  public static @Nonnull String removeAllISOControlsButTabs(@Nonnull final String str){
+    final StringBuilder result = new StringBuilder(str.length());
+    for(final char c : str.toCharArray()) {
+      if (c!='\t' && Character.isISOControl(c)) continue;
+      result.append(c);
+    }
+    return result.toString();
+  } 
+  
   @Nullable
   public static Point2D findRectEdgeIntersection(@Nonnull final Rectangle2D rect, final double outboundX, final double outboundY) {
     final int detectedSide = rect.outcode(outboundX, outboundY);

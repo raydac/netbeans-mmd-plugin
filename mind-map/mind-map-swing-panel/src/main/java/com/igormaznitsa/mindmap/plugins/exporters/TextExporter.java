@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -39,6 +40,7 @@ import javax.swing.JComponent;
 
 import org.apache.commons.io.IOUtils;
 
+import org.apache.commons.lang.StringUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -184,6 +186,23 @@ public class TextExporter extends AbstractExporter {
       }
       state.append(shiftString(note.getValue(), ' ', shift)).nextLine();
     }
+    
+    final Map<String,String> codeSnippets = topic.getCodeSnippets();
+    if (!codeSnippets.isEmpty()) {
+      for(final Map.Entry<String,String> e : codeSnippets.entrySet()) {
+        final String lang = e.getKey();
+        
+        state.append(shiftString("====Begin src: "+lang,' ',shift)).nextLine();
+        
+        final String body = e.getValue();
+        for(final String s : StringUtils.split(body,'\n')){
+          state.append(shiftString(Utils.removeAllISOControlsButTabs(s),' ',shift)).nextLine();
+        }
+        
+        state.append(shiftString("====End src", ' ', shift)).nextLine();
+      }
+    }
+
   }
 
   private void writeInterTopicLine(@Nonnull final State state) {

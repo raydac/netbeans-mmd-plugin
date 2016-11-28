@@ -45,6 +45,8 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import javax.swing.Icon;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.util.Calendar;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 
 public class ORGMODEExporter extends AbstractExporter {
@@ -182,6 +184,23 @@ public class ORGMODEExporter extends AbstractExporter {
       }
       printTextBlock(state, prefix, note.getValue());
     }
+    
+    final Map<String,String> codeSnippets = topic.getCodeSnippets();
+    if (!codeSnippets.isEmpty()) {
+      for(final Map.Entry<String,String> e : codeSnippets.entrySet()) {
+        final String lang = e.getKey();
+        
+        state.append(prefix).append("#+BEGIN_SRC ").append(lang).nextLine();
+        
+        final String body = e.getValue();
+        for(final String s : StringUtils.split(body,'\n')){
+          state.append(prefix).append(Utils.removeAllISOControlsButTabs(s)).nextLine();
+        }
+        
+        state.append(prefix).append("#+END_SRC").nextLine();
+      }
+    }
+    
   }
 
   private static void printTextBlock(@Nonnull final State state, @Nonnull final String prefix, @Nonnull final String text) {

@@ -47,6 +47,8 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import javax.swing.Icon;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 
 public class MDExporter extends AbstractExporter {
 
@@ -199,6 +201,22 @@ public class MDExporter extends AbstractExporter {
           .append(StringEscapeUtils.escapeHtml(note.getValue()))
           .append("</pre>")//NOI18N
           .nextLine();
+    }
+    
+    final Map<String,String> codeSnippets = topic.getCodeSnippets();
+    if (!codeSnippets.isEmpty()) {
+      for(final Map.Entry<String,String> e : codeSnippets.entrySet()) {
+        final String lang = e.getKey();
+        
+        state.append("```").append(lang).nextLine();
+        
+        final String body = e.getValue();
+        for(final String s : StringUtils.split(body,'\n')){
+          state.append(Utils.removeAllISOControlsButTabs(s)).nextLine();
+        }
+        
+        state.append("```").nextLine();
+      }
     }
   }
 
