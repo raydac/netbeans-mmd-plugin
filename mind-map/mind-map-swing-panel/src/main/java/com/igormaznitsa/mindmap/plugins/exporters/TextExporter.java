@@ -189,17 +189,24 @@ public class TextExporter extends AbstractExporter {
     
     final Map<String,String> codeSnippets = topic.getCodeSnippets();
     if (!codeSnippets.isEmpty()) {
+      boolean first = true;
       for(final Map.Entry<String,String> e : codeSnippets.entrySet()) {
         final String lang = e.getKey();
         
-        state.append(shiftString("====Begin src: "+lang,' ',shift)).nextLine();
+        if (!first) {
+          state.nextLine();
+        } else {
+          first = false;
+        }
+        
+        state.append(shiftString("====BEGIN SOURCE ("+lang+')',' ',shift)).nextLine();
         
         final String body = e.getValue();
         for(final String s : StringUtils.split(body,'\n')){
           state.append(shiftString(Utils.removeAllISOControlsButTabs(s),' ',shift)).nextLine();
         }
         
-        state.append(shiftString("====End src", ' ', shift)).nextLine();
+        state.append(shiftString("====END SOURCE", ' ', shift)).nextLine();
       }
     }
 
