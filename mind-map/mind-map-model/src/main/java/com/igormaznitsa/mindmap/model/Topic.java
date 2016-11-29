@@ -299,9 +299,12 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       String codeSnippetBody = null;
 
       while (true) {
+        final int oldLexerPosition = lexer.getCurrentPosition().getOffset();
         lexer.advance();
+        final boolean lexerPositionWasNotChanged = oldLexerPosition == lexer.getCurrentPosition().getOffset();
+        
         final MindMapLexer.TokenType token = lexer.getTokenType();
-        if (token == null) {
+        if (token == null || lexerPositionWasNotChanged) {
           break;
         }
         switch (token) {
@@ -347,7 +350,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
           }
           break;
           case CODE_SNIPPET_END: {
-            if (topic != null && codeSnippetlanguage != null) {
+            if (topic != null && codeSnippetlanguage != null && codeSnippetBody != null) {
               topic.codeSnippets.put(codeSnippetlanguage.trim(), codeSnippetBody);
             }
             codeSnippetlanguage = null;
@@ -1090,4 +1093,23 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }.init();
   }
 
+  /**
+   * Check that the topic contains any code snipet for language from array (case sensitive).
+   * @param languageNames names of language
+   * @return true if code snippet is detected for any language, false otherwise
+   * 
+   * @since 1.3.1
+   */
+  public boolean doesContainCodeSnippetForAnyLanguage(@Nonnull @MustNotContainNull String ... languageNames) {
+    boolean result = false;
+    if (!this.codeSnippets.isEmpty()){
+      for(final String s : languageNames){
+        if (this.codeSnippets.containsKey(s)){
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
+  }
 }
