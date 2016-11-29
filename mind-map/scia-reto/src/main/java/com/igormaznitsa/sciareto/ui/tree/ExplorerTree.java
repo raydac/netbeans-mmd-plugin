@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.io.FileUtils;
@@ -190,6 +191,10 @@ public final class ExplorerTree extends JScrollPane {
     this.context.onCloseProject(tree);
   }
 
+  public void focusToFirstElement(){
+    this.projectTree.focusToFirstElement();
+  }
+  
   public void focusToFileItem(@Nonnull final File file) {
     final NodeProjectGroup group = getCurrentGroup();
     final TreePath pathToFile = group.findPathToFile(file);

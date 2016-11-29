@@ -6,6 +6,7 @@
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menuFile">
           <Properties>
+            <Property name="mnemonic" type="int" value="102"/>
             <Property name="text" type="java.lang.String" value="File"/>
           </Properties>
           <Events>
@@ -19,6 +20,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/box_closed.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="119"/>
                 <Property name="text" type="java.lang.String" value="New Project"/>
               </Properties>
               <Events>
@@ -35,6 +37,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/open_folder.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="101"/>
                 <Property name="text" type="java.lang.String" value="Open Project"/>
               </Properties>
               <Events>
@@ -43,6 +46,7 @@
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="menuOpenRecentProject">
               <Properties>
+                <Property name="mnemonic" type="int" value="106"/>
                 <Property name="text" type="java.lang.String" value="Open Recent Project"/>
               </Properties>
             </Menu>
@@ -51,6 +55,7 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="KeyStroke.getKeyStroke(KeyEvent.VK_O,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())" type="code"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="111"/>
                 <Property name="text" type="java.lang.String" value="Open File"/>
               </Properties>
               <Events>
@@ -59,6 +64,7 @@
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="menuOpenRecentFile">
               <Properties>
+                <Property name="mnemonic" type="int" value="102"/>
                 <Property name="text" type="java.lang.String" value="Open Recent File"/>
               </Properties>
             </Menu>
@@ -69,6 +75,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/diskette.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="115"/>
                 <Property name="text" type="java.lang.String" value="Save"/>
               </Properties>
               <Events>
@@ -80,6 +87,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/file_save_as.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="118"/>
                 <Property name="text" type="java.lang.String" value="Save As"/>
               </Properties>
               <Events>
@@ -91,6 +99,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/disk_multiple.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="97"/>
                 <Property name="text" type="java.lang.String" value="Save All"/>
               </Properties>
               <Events>
@@ -107,6 +116,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/door_in.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="120"/>
                 <Property name="text" type="java.lang.String" value="Exit"/>
               </Properties>
               <Events>
@@ -117,6 +127,7 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="menuEdit">
           <Properties>
+            <Property name="mnemonic" type="int" value="101"/>
             <Property name="text" type="java.lang.String" value="Edit"/>
           </Properties>
           <Events>
@@ -130,6 +141,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/undo.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="117"/>
                 <Property name="text" type="java.lang.String" value="Undo"/>
               </Properties>
               <Events>
@@ -141,6 +153,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/redo.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="114"/>
                 <Property name="text" type="java.lang.String" value="Redo"/>
               </Properties>
               <Events>
@@ -154,6 +167,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/cut16.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="116"/>
                 <Property name="text" type="java.lang.String" value="Cut"/>
               </Properties>
               <Events>
@@ -165,6 +179,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/page_copy16.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="121"/>
                 <Property name="text" type="java.lang.String" value="Copy" noResource="true"/>
               </Properties>
               <Events>
@@ -176,6 +191,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/paste_plain16.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="112"/>
                 <Property name="text" type="java.lang.String" value="Paste" noResource="true"/>
               </Properties>
               <Events>
@@ -189,6 +205,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/find16.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="110"/>
                 <Property name="text" type="java.lang.String" value="Find text"/>
               </Properties>
               <Events>
@@ -202,6 +219,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/setting_tools.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="101"/>
                 <Property name="text" type="java.lang.String" value="Preferences"/>
               </Properties>
               <Events>
@@ -212,6 +230,7 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="menuView">
           <Properties>
+            <Property name="mnemonic" type="int" value="118"/>
             <Property name="text" type="java.lang.String" value="View"/>
           </Properties>
           <SubComponents>
@@ -241,6 +260,7 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="menuNavigate">
           <Properties>
+            <Property name="mnemonic" type="int" value="110"/>
             <Property name="text" type="java.lang.String" value="Navigate"/>
           </Properties>
           <SubComponents>
@@ -249,6 +269,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/rocket.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="102"/>
                 <Property name="text" type="java.lang.String" value="Go to File"/>
               </Properties>
               <Events>
@@ -259,6 +280,7 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="menuHelp">
           <Properties>
+            <Property name="mnemonic" type="int" value="104"/>
             <Property name="text" type="java.lang.String" value="Help"/>
           </Properties>
           <SubComponents>
@@ -267,6 +289,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/menu_icons/information.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="97"/>
                 <Property name="text" type="java.lang.String" value="About"/>
               </Properties>
               <Events>
@@ -280,6 +303,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/coins_in_hand16.png"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="109"/>
                 <Property name="text" type="java.lang.String" value="Make donation"/>
               </Properties>
               <Events>

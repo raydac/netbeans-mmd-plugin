@@ -323,6 +323,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
 
     enableAllMenuItems();
+
+    this.explorerTree.focusToFirstElement();
   }
 
   private void updateMenuItemsForProvider(@Nullable final TabProvider provider) {
@@ -788,6 +790,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     setLocationByPlatform(true);
 
+    menuFile.setMnemonic('f');
     menuFile.setText("File");
     menuFile.addMenuListener(new javax.swing.event.MenuListener() {
       public void menuSelected(javax.swing.event.MenuEvent evt) {
@@ -802,6 +805,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
 
     menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
+    menuNewProject.setMnemonic('w');
     menuNewProject.setText("New Project");
     menuNewProject.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -813,6 +817,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     menuOpenProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/open_folder.png"))); // NOI18N
+    menuOpenProject.setMnemonic('e');
     menuOpenProject.setText("Open Project");
     menuOpenProject.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -821,10 +826,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuFile.add(menuOpenProject);
 
+    menuOpenRecentProject.setMnemonic('j');
     menuOpenRecentProject.setText("Open Recent Project");
     menuFile.add(menuOpenRecentProject);
 
     menuOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    menuOpenFile.setMnemonic('o');
     menuOpenFile.setText("Open File");
     menuOpenFile.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -833,11 +840,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     menuFile.add(menuOpenFile);
 
+    menuOpenRecentFile.setMnemonic('f');
     menuOpenRecentFile.setText("Open Recent File");
     menuFile.add(menuOpenRecentFile);
     menuFile.add(jSeparator3);
 
     menuSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/diskette.png"))); // NOI18N
+    menuSave.setMnemonic('s');
     menuSave.setText("Save");
     menuSave.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -847,6 +856,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuFile.add(menuSave);
 
     menuSaveAs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/file_save_as.png"))); // NOI18N
+    menuSaveAs.setMnemonic('v');
     menuSaveAs.setText("Save As");
     menuSaveAs.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -856,6 +866,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuFile.add(menuSaveAs);
 
     menuSaveAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/disk_multiple.png"))); // NOI18N
+    menuSaveAll.setMnemonic('a');
     menuSaveAll.setText("Save All");
     menuSaveAll.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -867,6 +878,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
     menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/door_in.png"))); // NOI18N
+    menuExit.setMnemonic('x');
     menuExit.setText("Exit");
     menuExit.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -877,6 +889,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     mainMenu.add(menuFile);
 
+    menuEdit.setMnemonic('e');
     menuEdit.setText("Edit");
     menuEdit.addMenuListener(new javax.swing.event.MenuListener() {
       public void menuSelected(javax.swing.event.MenuEvent evt) {
@@ -891,6 +904,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
 
     menuUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
+    menuUndo.setMnemonic('u');
     menuUndo.setText("Undo");
     menuUndo.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -900,6 +914,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.add(menuUndo);
 
     menuRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
+    menuRedo.setMnemonic('r');
     menuRedo.setText("Redo");
     menuRedo.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -910,6 +925,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.add(jSeparator1);
 
     menuEditCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cut16.png"))); // NOI18N
+    menuEditCut.setMnemonic('t');
     menuEditCut.setText("Cut");
     menuEditCut.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -919,6 +935,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.add(menuEditCut);
 
     menuEditCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
+    menuEditCopy.setMnemonic('y');
     menuEditCopy.setText("Copy"); // NOI18N
     menuEditCopy.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -928,6 +945,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.add(menuEditCopy);
 
     menuEditPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
+    menuEditPaste.setMnemonic('p');
     menuEditPaste.setText("Paste"); // NOI18N
     menuEditPaste.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -938,6 +956,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.add(jSeparator6);
 
     menuFindText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
+    menuFindText.setMnemonic('n');
     menuFindText.setText("Find text");
     menuFindText.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -948,6 +967,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.add(jSeparator5);
 
     menuPreferences.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/setting_tools.png"))); // NOI18N
+    menuPreferences.setMnemonic('e');
     menuPreferences.setText("Preferences");
     menuPreferences.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -958,6 +978,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     mainMenu.add(menuEdit);
 
+    menuView.setMnemonic('v');
     menuView.setText("View");
 
     menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
@@ -976,9 +997,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     mainMenu.add(menuView);
 
+    menuNavigate.setMnemonic('n');
     menuNavigate.setText("Navigate");
 
     menuGoToFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/rocket.png"))); // NOI18N
+    menuGoToFile.setMnemonic('f');
     menuGoToFile.setText("Go to File");
     menuGoToFile.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -989,9 +1012,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     mainMenu.add(menuNavigate);
 
+    menuHelp.setMnemonic('h');
     menuHelp.setText("Help");
 
     menuAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/information.png"))); // NOI18N
+    menuAbout.setMnemonic('a');
     menuAbout.setText("About");
     menuAbout.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1002,6 +1027,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuHelp.add(jSeparator4);
 
     menuMakeDonation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/coins_in_hand16.png"))); // NOI18N
+    menuMakeDonation.setMnemonic('m');
     menuMakeDonation.setText("Make donation");
     menuMakeDonation.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {

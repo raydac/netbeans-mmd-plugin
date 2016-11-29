@@ -40,6 +40,7 @@ import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -98,6 +99,17 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
       return file == null ? null : file.getAbsolutePath();
     } else {
       return null;
+    }
+  }
+  
+  public void focusToFirstElement(){
+    final TreeModel model = this.getModel();
+    final Object root = model.getRoot();
+    if (root != null){
+      final Object firstChild = model.getChildCount(root)>0 ? model.getChild(root, 0) : null;
+      if (firstChild!=null){
+        this.setSelectionPath(new TreePath(new Object[]{root,firstChild}));
+      }
     }
   }
   
