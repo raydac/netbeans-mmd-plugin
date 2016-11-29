@@ -17,10 +17,13 @@ public interface MMTokens {
   IElementType EXTRA_DATA = new MMExtraData();
   IElementType EXTRA_BODY = new MMExtraBody();
   IElementType EXTRA_TYPE = new MMExtraType();
+  IElementType CODE_SNIPPET_START = new MMCodeSnippetStart();
+  IElementType CODE_SNIPPET_BODY = new MMCodeSnippetBody();
+  IElementType CODE_SNIPPET_END = new MMCodeSnippetEnd();
   IFileElementType FILE = new IFileElementType(MMLanguage.INSTANCE);
 
   TokenSet COMMENTS = TokenSet.create(HEADER_LINE,UNKNOWN);
-  TokenSet IDENTIFIERS = TokenSet.create(TOPIC,ATTRIBUTES,HEADER_DELIMITER,EXTRA_TYPE,EXTRA_DATA,EXTRA_BODY);
+  TokenSet IDENTIFIERS = TokenSet.create(TOPIC,ATTRIBUTES,HEADER_DELIMITER,EXTRA_TYPE,EXTRA_DATA,EXTRA_BODY,CODE_SNIPPET_START,CODE_SNIPPET_BODY,CODE_SNIPPET_END);
   TokenSet LITERALS = TokenSet.create(FILE);
 
 }

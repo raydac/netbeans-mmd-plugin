@@ -20,8 +20,7 @@ public class MMLexer extends Lexer {
     public void load(@Nonnull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
       if (this.pos == null) {
         this.pos = position.makeCopy();
-      }
-      else {
+      } else {
         this.pos.set(position);
       }
     }
@@ -30,90 +29,120 @@ public class MMLexer extends Lexer {
       position.set(this.pos);
     }
 
-    @Override public int getOffset() {
+    @Override
+    public int getOffset() {
       return this.pos.getOffset();
     }
 
-    @Override public int getState() {
+    @Override
+    public int getState() {
       return this.pos.getState().ordinal();
     }
   }
 
   private final Position pos = new Position();
 
-  @Override public void start(@Nonnull final CharSequence buffer, final int startOffset, final int endOffset, final int initialState) {
+  @Override
+  public void start(@Nonnull final CharSequence buffer, final int startOffset, final int endOffset, final int initialState) {
     this.delegate.start(buffer, startOffset, endOffset, com.igormaznitsa.mindmap.model.parser.MindMapLexer.TokenType.values()[initialState]);
     this.delegate.advance();
   }
 
-  @Override public int getState() {
+  @Override
+  public int getState() {
     return this.delegate.getCurrentPosition().getState().ordinal();
   }
 
-  @Nullable @Override public IElementType getTokenType() {
+  @Nullable
+  @Override
+  public IElementType getTokenType() {
     final com.igormaznitsa.mindmap.model.parser.MindMapLexer.TokenType type = this.delegate.getTokenType();
 
     IElementType result = null;
 
     if (type != null) {
       switch (type) {
-      case HEAD_LINE:
-        result = MMTokens.HEADER_LINE;
-        break;
-      case HEAD_DELIMITER:
-        result = MMTokens.HEADER_DELIMITER;
-        break;
-      case ATTRIBUTE:
-        result = MMTokens.ATTRIBUTES;
-        break;
-      case WHITESPACE:
-        result = MMTokens.WHITE_SPACE;
-        break;
-      case EXTRA_TYPE:
-        result = MMTokens.EXTRA_TYPE;
-      break;
-      case EXTRA_TEXT:
-        result = MMTokens.EXTRA_BODY;
-      break;
-      case TOPIC:
-        result = MMTokens.TOPIC;
-      break;
-      case UNKNOWN_LINE:
-        result = MMTokens.UNKNOWN;
-        break;
-      default:
-        throw Assertions.fail("Unsupported token detected [" + type + ']');
+        case HEAD_LINE:
+          result = MMTokens.HEADER_LINE;
+          break;
+        case HEAD_DELIMITER:
+          result = MMTokens.HEADER_DELIMITER;
+          break;
+        case ATTRIBUTE:
+          result = MMTokens.ATTRIBUTES;
+          break;
+        case WHITESPACE:
+          result = MMTokens.WHITE_SPACE;
+          break;
+        case EXTRA_TYPE:
+          result = MMTokens.EXTRA_TYPE;
+          break;
+        case EXTRA_TEXT:
+          result = MMTokens.EXTRA_BODY;
+          break;
+        case CODE_SNIPPET_START:
+          result = MMTokens.CODE_SNIPPET_START;
+          break;
+        case CODE_SNIPPET_BODY:
+          result = MMTokens.CODE_SNIPPET_BODY;
+          break;
+        case CODE_SNIPPET_END:
+          result = MMTokens.CODE_SNIPPET_END;
+          break;
+        case TOPIC:
+          result = MMTokens.TOPIC;
+          break;
+        case UNKNOWN_LINE:
+          result = MMTokens.UNKNOWN;
+          break;
+        default:
+          throw Assertions.fail("Unsupported token detected [" + type + ']');
       }
     }
     return result;
   }
 
-  @Override public int getTokenStart() {
+  @Override
+  public int getTokenStart() {
     return this.delegate.getTokenStartOffset();
   }
 
-  @Override public int getTokenEnd() {
+  @Override
+  public int getTokenEnd() {
     return this.delegate.getTokenEndOffset();
   }
 
-  @Override public void advance() {
+  @Override
+  public void advance() {
+    final int position = this.delegate.getCurrentPosition().getOffset();
     this.delegate.advance();
+
+    // processing situation with wrong document contains non-completed token
+    if (position == this.delegate.getCurrentPosition().getOffset()) {
+      this.delegate.resetTokenTypeToNull();
+    }
   }
 
-  @Nonnull @Override public LexerPosition getCurrentPosition() {
+  @Nonnull
+  @Override
+  public LexerPosition getCurrentPosition() {
     this.pos.load(this.delegate.getCurrentPosition());
     return this.pos;
   }
 
-  @Override public void restore(@Nonnull LexerPosition position) {
+  @Override
+  public void restore(@Nonnull LexerPosition position) {
     this.pos.save(this.delegate.getCurrentPosition());
   }
 
-  @Nonnull @Override public CharSequence getBufferSequence() {
+  @Nonnull
+  @Override
+  public CharSequence getBufferSequence() {
     return this.delegate.getBufferSequence();
   }
 
-  @Override public int getBufferEnd() {
+  @Override
+  public int getBufferEnd() {
     return this.delegate.getBufferEnd();
   }
 }
