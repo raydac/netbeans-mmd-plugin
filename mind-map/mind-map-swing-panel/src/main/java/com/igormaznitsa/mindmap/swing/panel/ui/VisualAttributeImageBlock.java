@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.api.AttributePlugin;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
@@ -150,7 +151,8 @@ public class VisualAttributeImageBlock {
       final Map<String, String> attributes = this.model.getAttributes();
       final Map<String, String> codeSnippets = this.model.getCodeSnippets();
       for (final VisualAttributePlugin p : pluginsFromRegistry) {
-        if (attributes.containsKey(p.getAttributeKey())) {
+        final String attributeKey = p.getAttributeKey();
+        if (attributeKey != AttributePlugin.NULL_ATTRIBUTE && attributes.containsKey(attributeKey)) {
           detectedPlugins.add(p);
         } else if (p instanceof CodeSnippetProcessor && this.model.doesContainCodeSnippetForAnyLanguage(((CodeSnippetProcessor)p).getProcessingLanguageNames())){
           detectedPlugins.add(p);

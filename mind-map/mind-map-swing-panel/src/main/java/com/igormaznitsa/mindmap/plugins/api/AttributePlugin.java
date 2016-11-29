@@ -23,9 +23,16 @@ import javax.annotation.Nonnull;
  * @since 1.2
  */
 public interface AttributePlugin extends MindMapPlugin {
+  
+  /**
+   * Attribute name which can be returned if plug-in doesn't process attributes.
+   */
+  public static final String NULL_ATTRIBUTE = ",=,";
+  
   /**
    * Get name of attribute key associated with the plug-in.
    * @return the name of the attribute key.
+   * @see #NULL_ATTRIBUTE
    */
   @Nonnull
   String getAttributeKey();
