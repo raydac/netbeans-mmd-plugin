@@ -27,6 +27,7 @@ import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.plugins.api.Renderable;
+import com.igormaznitsa.mindmap.plugins.api.CodeSnippetProcessor;
 
 public class VisualAttributeImageBlock {
 
@@ -147,8 +148,11 @@ public class VisualAttributeImageBlock {
     } else {
       final List<VisualAttributePlugin> detectedPlugins = new ArrayList<VisualAttributePlugin>();
       final Map<String, String> attributes = this.model.getAttributes();
+      final Map<String, String> codeSnippets = this.model.getCodeSnippets();
       for (final VisualAttributePlugin p : pluginsFromRegistry) {
         if (attributes.containsKey(p.getAttributeKey())) {
+          detectedPlugins.add(p);
+        } else if (p instanceof CodeSnippetProcessor && this.model.doesContainCodeSnippetForAnyLanguage(((CodeSnippetProcessor)p).getProcessingLanguageNames())){
           detectedPlugins.add(p);
         }
       }
