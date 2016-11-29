@@ -749,7 +749,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                   case ICONS:
                     final Extra<?> extra = element.getIconBlock().findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
                     if (extra != null) {
-                      fireNotificationClickOnExtra(element.getModel(), e.getClickCount(), extra);
+                      fireNotificationClickOnExtra(element.getModel(), e.getModifiers(), e.getClickCount(), extra);
                     }
                     break;
                   default:
@@ -1258,9 +1258,9 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
   }
 
-  protected void fireNotificationClickOnExtra(@Nonnull final Topic topic, final int clicks, @Nonnull final Extra<?> extra) {
+  protected void fireNotificationClickOnExtra(@Nonnull final Topic topic, final int modifiers, final int clicks, @Nonnull final Extra<?> extra) {
     for (final MindMapListener l : this.mindMapListeners) {
-      l.onClickOnExtra(this, clicks, topic, extra);
+      l.onClickOnExtra(this, modifiers, clicks, topic, extra);
     }
   }
 

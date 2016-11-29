@@ -500,7 +500,7 @@ public final class MMDEditor extends AbstractScrollPane implements MindMapPanelC
   }
 
   @Override
-  public void onClickOnExtra(@Nonnull final MindMapPanel source, final int clicks, @Nonnull final Topic topic, @Nonnull final Extra<?> extra) {
+  public void onClickOnExtra(@Nonnull final MindMapPanel source, final int modifiers, final int clicks, @Nonnull final Topic topic, @Nonnull final Extra<?> extra) {
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {

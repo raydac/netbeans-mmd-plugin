@@ -451,7 +451,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   @Override
-  public void onClickOnExtra(final MindMapPanel source, final int clicks, final Topic topic, final Extra<?> extra) {
+  public void onClickOnExtra(final MindMapPanel source, final int modifiers, final int clicks, final Topic topic, final Extra<?> extra) {
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {
