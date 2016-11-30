@@ -27,11 +27,14 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Frame;
+import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -58,6 +61,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -86,7 +90,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.ui.editors.AbstractScrollPane;
+import com.igormaznitsa.sciareto.ui.editors.AbstractScrollableEditor;
 import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
@@ -376,7 +380,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
 
     enableAllMenuItems();
-    
+
     if (title != null) {
       title.visited();
     }
@@ -1257,11 +1261,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuNewProjectActionPerformed
 
   private void menuFullScreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFullScreenActionPerformed
-    final AbstractScrollPane currentComponent = (AbstractScrollPane)this.tabPane.getSelectedComponent();
-    if (!(currentComponent instanceof Container)) {
-      LOGGER.warn("Detected attempt to full screen not a container : " + currentComponent);
-      return;
-    }
+    final AbstractScrollableEditor currentComponent = (AbstractScrollableEditor) this.tabPane.getSelectedComponent();
 
     final GraphicsConfiguration gconfig = this.getGraphicsConfiguration();
     if (gconfig != null) {
@@ -1273,7 +1273,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           this.tabPane.setComponentAt(tabIndex, label);
           final JWindow window = new JWindow(Main.getApplicationFrame());
           window.setAlwaysOnTop(true);
-          
+          window.setAutoRequestFocus(true);
           window.setContentPane((Container) currentComponent);
 
           endFullScreenIfActive();
@@ -1397,7 +1397,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuEditCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCopyActionPerformed
     final TabTitle title = this.getFocusedTab();
-    if (title!=null && title.getProvider().doesSupportCutCopyPaste()){
+    if (title != null && title.getProvider().doesSupportCutCopyPaste()) {
       title.getProvider().doCopy();
     }
     updateMenuItemsForProvider(title.getProvider());
@@ -1421,20 +1421,21 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
-    for(final Component c : menu.getMenuComponents()){
-      if (c instanceof JMenu) enableMenu((JMenu)c);
-      else if (c instanceof JMenuItem){
-        ((JMenuItem)c).setEnabled(true);
+    for (final Component c : menu.getMenuComponents()) {
+      if (c instanceof JMenu) {
+        enableMenu((JMenu) c);
+      } else if (c instanceof JMenuItem) {
+        ((JMenuItem) c).setEnabled(true);
       }
     }
   }
-  
-  private void enableAllMenuItems(){
-    for(int i=0;i<this.mainMenu.getMenuCount();i++){
+
+  private void enableAllMenuItems() {
+    for (int i = 0; i < this.mainMenu.getMenuCount(); i++) {
       enableMenu(this.mainMenu.getMenu(i));
     }
   }
-  
+
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {

@@ -46,7 +46,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
-public final class PictureViewer extends AbstractScrollPane {
+public final class PictureViewer extends AbstractScrollableEditor {
 
   private static final long serialVersionUID = 4262835444678960206L;
 

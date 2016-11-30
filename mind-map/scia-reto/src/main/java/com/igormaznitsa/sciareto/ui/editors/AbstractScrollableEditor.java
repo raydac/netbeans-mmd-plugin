@@ -26,13 +26,13 @@ import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 
-public abstract class AbstractScrollPane extends JScrollPane implements TabProvider,Disposable {
+public abstract class AbstractScrollableEditor extends JScrollPane implements TabProvider,Disposable {
 
   private static final long serialVersionUID = -6865229547826910048L;
   
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   
-  public AbstractScrollPane(){
+  public AbstractScrollableEditor(){
     super();
 
     final AdjustmentListener listener = new AdjustmentListener() {

@@ -44,7 +44,7 @@ import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
-public final class TextEditor extends AbstractScrollPane {
+public final class TextEditor extends AbstractScrollableEditor {
 
   private static final long serialVersionUID = -8551212562825517869L;
 

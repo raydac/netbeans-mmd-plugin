@@ -106,7 +106,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
-public final class MMDEditor extends AbstractScrollPane implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
+public final class MMDEditor extends AbstractScrollableEditor implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
