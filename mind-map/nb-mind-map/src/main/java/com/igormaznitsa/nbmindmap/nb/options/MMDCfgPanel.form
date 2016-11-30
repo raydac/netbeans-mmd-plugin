@@ -877,6 +877,7 @@
                               <Component id="checkBoxUnfoldCollapsedTarget" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="checkBoxCopyColorInfoToNewAllowed" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="checkBoxKnowledgeFolderAutogenerationAllowed" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkBoxWatchFileRefactoring" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace pref="48" max="32767" attributes="0"/>
                       </Group>
@@ -894,6 +895,8 @@
                           <Component id="checkBoxCopyColorInfoToNewAllowed" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="checkBoxKnowledgeFolderAutogenerationAllowed" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="checkBoxWatchFileRefactoring" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -949,6 +952,11 @@
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxKnowledgeFolderAutogenerationAllowedActionPerformed"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="checkBoxWatchFileRefactoring">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Watch file refactoring (Experimental)" noResource="true"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

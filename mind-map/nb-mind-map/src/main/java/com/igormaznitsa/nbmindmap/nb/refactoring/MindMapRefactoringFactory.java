@@ -29,33 +29,36 @@ import org.netbeans.modules.refactoring.api.WhereUsedQuery;
 import org.netbeans.modules.refactoring.spi.RefactoringPlugin;
 import org.netbeans.modules.refactoring.spi.RefactoringPluginFactory;
 import org.openide.util.lookup.ServiceProvider;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 
 @ServiceProvider(service = RefactoringPluginFactory.class)
 public class MindMapRefactoringFactory implements RefactoringPluginFactory {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapRefactoringFactory.class);
-  
+
   @Override
   public RefactoringPlugin createInstance(final AbstractRefactoring refactoring) {
-    LOGGER.info("Request to create refactoring plugin : "+refactoring);
+    final boolean fileManipulationWatchingAllowed = NbUtils.getPreferences().getBoolean("watchFileRefactoring", false);
     
-    final RefactoringPlugin result;
+    LOGGER.info("Request to create refactoring plugin : " + refactoring +", watchFileRefactoring = "+fileManipulationWatchingAllowed);
 
-    if (refactoring instanceof SafeDeleteRefactoring) {
-      result = new SafeDeleteFileActionPlugin((SafeDeleteRefactoring) refactoring);
+    RefactoringPlugin result = null;
+
+
+    if (fileManipulationWatchingAllowed) {
+      if (refactoring instanceof SafeDeleteRefactoring) {
+        result = new SafeDeleteFileActionPlugin((SafeDeleteRefactoring) refactoring);
+      } else if (refactoring instanceof MoveRefactoring) {
+        result = new MoveFileActionPlugin((MoveRefactoring) refactoring);
+      } else if (refactoring instanceof RenameRefactoring) {
+        result = new RenameFileActionPlugin((RenameRefactoring) refactoring);
+      }
     }
-    else if (refactoring instanceof MoveRefactoring) {
-      result = new MoveFileActionPlugin((MoveRefactoring)refactoring);
+
+    if (refactoring == null && refactoring instanceof WhereUsedQuery) {
+      result = new WhereUsedActionPlugin((WhereUsedQuery) refactoring);
     }
-    else if (refactoring instanceof RenameRefactoring) {
-      result = new RenameFileActionPlugin((RenameRefactoring)refactoring);
-    }
-    else if (refactoring instanceof WhereUsedQuery) {
-      result = new WhereUsedActionPlugin((WhereUsedQuery)refactoring);
-    }
-    else {
-      result = null;
-    }
+    
     return result;
   }
 

@@ -144,6 +144,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     checkBoxUnfoldCollapsedTarget = new javax.swing.JCheckBox();
     checkBoxCopyColorInfoToNewAllowed = new javax.swing.JCheckBox();
     checkBoxKnowledgeFolderAutogenerationAllowed = new javax.swing.JCheckBox();
+    checkBoxWatchFileRefactoring = new javax.swing.JCheckBox();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
     jLabel3 = new javax.swing.JLabel();
@@ -719,6 +720,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
 
+    checkBoxWatchFileRefactoring.setText("Watch file refactoring (Experimental)"); // NOI18N
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
@@ -730,7 +733,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(checkboxRelativePathsForFilesInTheProject)
           .addComponent(checkBoxUnfoldCollapsedTarget)
           .addComponent(checkBoxCopyColorInfoToNewAllowed)
-          .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed))
+          .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed)
+          .addComponent(checkBoxWatchFileRefactoring))
         .addContainerGap(48, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
@@ -745,6 +749,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addComponent(checkBoxCopyColorInfoToNewAllowed)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxWatchFileRefactoring)
         .addContainerGap())
     );
 
@@ -1264,6 +1270,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true));
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true));
       this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
+      this.checkBoxWatchFileRefactoring.setSelected(preferences.getBoolean("watchFileRefactoring", false));
 
       updateFontButton(cfg);
     }
@@ -1318,6 +1325,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       prefs.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
       prefs.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
       prefs.putBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
+      prefs.putBoolean("watchFileRefactoring", this.checkBoxWatchFileRefactoring.isSelected());
     }
     finally {
       if (notifyConfigReload) {
@@ -1366,6 +1374,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JCheckBox checkBoxScalingSHIFT;
   private javax.swing.JCheckBox checkBoxShowGrid;
   private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
+  private javax.swing.JCheckBox checkBoxWatchFileRefactoring;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
   private javax.swing.JCheckBox checkboxUseInsideBrowser;
   private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooser1stBackground;
