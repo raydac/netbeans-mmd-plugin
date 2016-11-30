@@ -357,6 +357,16 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
     final KeyAdapter keyAdapter = new KeyAdapter() {
       @Override
+      public void keyPressed(@Nonnull final KeyEvent e) {
+        if (e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
+            || e.getKeyCode() == KeyEvent.VK_LEFT
+            || e.getKeyCode() == KeyEvent.VK_RIGHT
+            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+          e.consume();
+        }
+      }
+      
+      @Override
       public void keyTyped(@Nonnull final KeyEvent e) {
         if (lockIfNotDisposed()) {
           try {
