@@ -231,7 +231,11 @@ public class Main {
     LOGGER.info("os.version = " + System.getProperty("os.version", "unknown"));
 
     final AtomicReference<SplashScreen> splash = new AtomicReference<>();
+
+    final long timeTakenBySplashStart;
+
     if (args.length == 0) {
+      final long splashTimerStart = System.currentTimeMillis();
       try {
         final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png"));
         
@@ -255,6 +259,9 @@ public class Main {
       catch (final Exception ex) {
         LOGGER.error("Error during splash processing", ex);
       }
+      timeTakenBySplashStart = System.currentTimeMillis() - splashTimerStart;
+    } else {
+      timeTakenBySplashStart = 0L;
     }
 
     if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences().getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis() + STATISTICS_DELAY)) >= STATISTICS_DELAY) {
@@ -357,7 +364,7 @@ public class Main {
           MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
 
           if (splash.get() != null) {
-            final long delay = 2000L - (System.currentTimeMillis() - UPSTART);
+            final long delay = (2000L + timeTakenBySplashStart) - (System.currentTimeMillis() - UPSTART);
             if (delay > 0L) {
               final Timer timer = new Timer((int) delay, new ActionListener() {
                 @Override
