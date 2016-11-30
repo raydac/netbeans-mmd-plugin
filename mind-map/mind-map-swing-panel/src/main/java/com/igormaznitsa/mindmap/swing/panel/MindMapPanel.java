@@ -721,6 +721,10 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
               if (part == ElementPart.COLLAPSATOR) {
                 fireNotificationTopicCollapsatorClick(element.getModel(),true);
                 doFoldOrUnfoldTopic(element, element.isCollapsed(), isCtrlDown);
+                if (selectedTopics.isEmpty() || selectedTopics.size() == 1) {
+                  removeAllSelection();
+                  select(element.getModel(), false);
+                }
                 fireNotificationTopicCollapsatorClick(element.getModel(),false);
               } else if (!isCtrlDown) {
                 switch (part) {
