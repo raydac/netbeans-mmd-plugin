@@ -86,6 +86,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.editors.AbstractScrollPane;
 import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
@@ -1256,7 +1257,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuNewProjectActionPerformed
 
   private void menuFullScreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFullScreenActionPerformed
-    final Component currentComponent = this.tabPane.getSelectedComponent();
+    final AbstractScrollPane currentComponent = (AbstractScrollPane)this.tabPane.getSelectedComponent();
     if (!(currentComponent instanceof Container)) {
       LOGGER.warn("Detected attempt to full screen not a container : " + currentComponent);
       return;
@@ -1272,6 +1273,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           this.tabPane.setComponentAt(tabIndex, label);
           final JWindow window = new JWindow(Main.getApplicationFrame());
           window.setAlwaysOnTop(true);
+          
           window.setContentPane((Container) currentComponent);
 
           endFullScreenIfActive();

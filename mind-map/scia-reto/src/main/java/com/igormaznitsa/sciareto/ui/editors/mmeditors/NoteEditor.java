@@ -22,18 +22,23 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.UndoableEditEvent;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
@@ -41,6 +46,7 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 import javax.swing.text.Utilities;
+import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -57,6 +63,15 @@ public final class NoteEditor extends javax.swing.JPanel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NoteEditor.class);
 
+  private final UndoManager undoManager = new UndoManager(){
+    @Override
+    public void undoableEditHappened(@Nonnull final UndoableEditEvent e) {
+      super.undoableEditHappened(e); 
+      updateRedoUndoState();
+    }
+    
+  };
+  
   private enum Wrapping {
 
     NONE("none", "off"),
@@ -121,9 +136,45 @@ public final class NoteEditor extends javax.swing.JPanel {
     return Character.isISOControl(c) || Character.isWhitespace(c);
   }
 
+  private void updateRedoUndoState(){
+    this.buttonUndo.setEnabled(this.undoManager.canUndo());
+    this.buttonRedo.setEnabled(this.undoManager.canRedo());
+  }
+
+  private void doUndo(){
+    if (this.undoManager.canUndo()){
+      this.undoManager.undo();
+    }
+    updateRedoUndoState();
+  }
+  
+  private void doRedo(){
+    if (this.undoManager.canRedo()){
+      this.undoManager.redo();
+    }
+    updateRedoUndoState();
+  }
+  
   public NoteEditor(@Nonnull final String text) {
     initComponents();
 
+    this.buttonRedo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK), "do-redo");
+    this.buttonRedo.getActionMap().put("do-redo", new AbstractAction(){
+      private static final long serialVersionUID = -5644390861803492172L;
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        doRedo();
+      }
+    });
+    
+    this.buttonUndo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"do-undo");
+    this.buttonUndo.getActionMap().put("do-undo", new AbstractAction() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        doUndo();
+      }
+    });
+    
     this.editorPane.getActionMap().put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
       private static final long serialVersionUID = -6477916799997545798L;
       private final Action start = new TextAction("wordStart") {
@@ -224,6 +275,9 @@ public final class NoteEditor extends javax.swing.JPanel {
     this.wrapping = Wrapping.WORD_WRAP;
     editorPane.setCaretPosition(0);
     updateWrapping();
+    
+    this.editorPane.getDocument().addUndoableEditListener(this.undoManager);
+    updateRedoUndoState();
   }
 
   private void updateCaretPos() {
@@ -288,6 +342,8 @@ public final class NoteEditor extends javax.swing.JPanel {
   private void initComponents() {
 
     jToolBar1 = new javax.swing.JToolBar();
+    buttonUndo = new javax.swing.JButton();
+    buttonRedo = new javax.swing.JButton();
     buttonImport = new javax.swing.JButton();
     buttonExport = new javax.swing.JButton();
     buttonCopy = new javax.swing.JButton();
@@ -307,11 +363,41 @@ public final class NoteEditor extends javax.swing.JPanel {
     jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
+    buttonUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
+    buttonUndo.setMnemonic('u');
+    buttonUndo.setText("Undo");
+    buttonUndo.setFocusable(false);
+    buttonUndo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonUndo.setNextFocusableComponent(buttonRedo);
+    buttonUndo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonUndo.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonUndoActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(buttonUndo);
+
+    buttonRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
+    buttonRedo.setMnemonic('r');
+    buttonRedo.setText("Redo");
+    buttonRedo.setFocusable(false);
+    buttonRedo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonRedo.setNextFocusableComponent(buttonImport);
+    buttonRedo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    buttonRedo.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonRedoActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(buttonRedo);
+
     buttonImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/disk16.png"))); // NOI18N
+    buttonImport.setMnemonic('i');
     buttonImport.setText("Import");
     buttonImport.setToolTipText("Import text content from UTF8 encoded text file");
     buttonImport.setFocusable(false);
     buttonImport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonImport.setNextFocusableComponent(buttonExport);
     buttonImport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     buttonImport.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -321,10 +407,12 @@ public final class NoteEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonImport);
 
     buttonExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_save16.png"))); // NOI18N
+    buttonExport.setMnemonic('e');
     buttonExport.setText("Export");
     buttonExport.setToolTipText("Export text content into UTF8 encoded file");
     buttonExport.setFocusable(false);
     buttonExport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonExport.setNextFocusableComponent(buttonCopy);
     buttonExport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     buttonExport.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -334,10 +422,12 @@ public final class NoteEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonExport);
 
     buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
+    buttonCopy.setMnemonic('c');
     buttonCopy.setText("Copy");
     buttonCopy.setToolTipText("Copy selected text content into clipboard");
     buttonCopy.setFocusable(false);
     buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonCopy.setNextFocusableComponent(buttonPaste);
     buttonCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     buttonCopy.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -347,10 +437,12 @@ public final class NoteEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonCopy);
 
     buttonPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
+    buttonPaste.setMnemonic('p');
     buttonPaste.setText("Paste");
     buttonPaste.setToolTipText("Paste text content from clipboard into current position");
     buttonPaste.setFocusable(false);
     buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonPaste.setNextFocusableComponent(buttonBrowse);
     buttonPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     buttonPaste.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -360,10 +452,12 @@ public final class NoteEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonPaste);
 
     buttonBrowse.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/link16.png"))); // NOI18N
+    buttonBrowse.setMnemonic('b');
     buttonBrowse.setText("Browse");
     buttonBrowse.setToolTipText("Open selected link in browser");
     buttonBrowse.setFocusable(false);
     buttonBrowse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonBrowse.setNextFocusableComponent(buttonClear);
     buttonBrowse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     buttonBrowse.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -373,10 +467,12 @@ public final class NoteEditor extends javax.swing.JPanel {
     jToolBar1.add(buttonBrowse);
 
     buttonClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
+    buttonClear.setMnemonic('a');
     buttonClear.setText("Clear All");
     buttonClear.setToolTipText("Clear all text content");
     buttonClear.setFocusable(false);
     buttonClear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    buttonClear.setNextFocusableComponent(editorPane);
     buttonClear.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     buttonClear.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -415,6 +511,7 @@ public final class NoteEditor extends javax.swing.JPanel {
 
     editorPane.setColumns(20);
     editorPane.setRows(5);
+    editorPane.setNextFocusableComponent(buttonUndo);
     jScrollPane2.setViewportView(editorPane);
 
     add(jScrollPane2, java.awt.BorderLayout.CENTER);
@@ -493,6 +590,14 @@ public final class NoteEditor extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_buttonBrowseActionPerformed
 
+  private void buttonUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUndoActionPerformed
+    doUndo();
+  }//GEN-LAST:event_buttonUndoActionPerformed
+
+  private void buttonRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRedoActionPerformed
+    doRedo();
+  }//GEN-LAST:event_buttonRedoActionPerformed
+
   private void updateBottomPanel() {
     this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
   }
@@ -505,6 +610,8 @@ public final class NoteEditor extends javax.swing.JPanel {
   private javax.swing.JButton buttonExport;
   private javax.swing.JButton buttonImport;
   private javax.swing.JButton buttonPaste;
+  private javax.swing.JButton buttonRedo;
+  private javax.swing.JButton buttonUndo;
   private javax.swing.JTextArea editorPane;
   private javax.swing.Box.Filler filler1;
   private javax.swing.JPanel jPanel1;
