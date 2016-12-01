@@ -51,6 +51,19 @@ public final class MapUtils {
   
   @Nonnull
   @MustNotContainNull
+  public static List<File> extractAllFileLinks(@Nullable final File baseFolder, @Nonnull final MindMap map) {
+    final List<File> result = new ArrayList<File>();
+    for(final Topic t : map){
+      final ExtraFile file = (ExtraFile) t.getExtras().get(Extra.ExtraType.FILE);
+      if (file != null){
+        result.add(file.getAsURI().asFile(baseFolder));
+      }
+    }
+    return result;
+  }
+  
+  @Nonnull
+  @MustNotContainNull
   public static List<Topic> findTopicsRelatedToFile(@Nullable final File baseFolder, @Nonnull final File file, @Nonnull final MindMap map) {
 
     final List<Topic> result = new ArrayList<>();

@@ -50,6 +50,8 @@ public interface Context {
   
   void hideFindTextPane();
   
+  boolean showGraphMindMapFileLinksDialog(@Nullable File projectFolder, @Nullable File file, final boolean openIfSelected);
+  
   @Nullable
   TabTitle getFocusedTab();
   

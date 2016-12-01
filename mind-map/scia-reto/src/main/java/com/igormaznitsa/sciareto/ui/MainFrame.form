@@ -263,6 +263,9 @@
             <Property name="mnemonic" type="int" value="110"/>
             <Property name="text" type="java.lang.String" value="Navigate"/>
           </Properties>
+          <Events>
+            <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="menuNavigateMenuSelected"/>
+          </Events>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="menuGoToFile">
               <Properties>
@@ -274,6 +277,17 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuGoToFileActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="menuNavigateLinksGraph">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/graph16.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Build File links graph"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuNavigateLinksGraphActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

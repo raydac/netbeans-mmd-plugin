@@ -27,14 +27,11 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -61,7 +58,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -93,6 +89,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.editors.AbstractScrollableEditor;
 import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
+import com.igormaznitsa.sciareto.ui.misc.FileLinkGraphPanel;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent;
@@ -787,6 +784,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuLookAndFeel = new javax.swing.JMenu();
     menuNavigate = new javax.swing.JMenu();
     menuGoToFile = new javax.swing.JMenuItem();
+    menuNavigateLinksGraph = new javax.swing.JMenuItem();
     menuHelp = new javax.swing.JMenu();
     menuAbout = new javax.swing.JMenuItem();
     jSeparator4 = new javax.swing.JPopupMenu.Separator();
@@ -1004,6 +1002,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     menuNavigate.setMnemonic('n');
     menuNavigate.setText("Navigate");
+    menuNavigate.addMenuListener(new javax.swing.event.MenuListener() {
+      public void menuSelected(javax.swing.event.MenuEvent evt) {
+        menuNavigateMenuSelected(evt);
+      }
+      public void menuDeselected(javax.swing.event.MenuEvent evt) {
+      }
+      public void menuCanceled(javax.swing.event.MenuEvent evt) {
+      }
+    });
 
     menuGoToFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/rocket.png"))); // NOI18N
     menuGoToFile.setMnemonic('f');
@@ -1014,6 +1021,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     });
     menuNavigate.add(menuGoToFile);
+
+    menuNavigateLinksGraph.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/graph16.png"))); // NOI18N
+    menuNavigateLinksGraph.setText("Build File links graph");
+    menuNavigateLinksGraph.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuNavigateLinksGraphActionPerformed(evt);
+      }
+    });
+    menuNavigate.add(menuNavigateLinksGraph);
 
     mainMenu.add(menuNavigate);
 
@@ -1419,6 +1435,50 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     updateMenuItemsForProvider(title.getProvider());
   }//GEN-LAST:event_menuEditCutActionPerformed
 
+  @Override
+  public boolean showGraphMindMapFileLinksDialog(@Nullable final File projectFolder, @Nullable final File file, final boolean openIfSelected) {
+    Utils.assertSwingDispatchThread();
+
+    boolean result = false;
+    if (projectFolder != null || file != null) {
+      File projectFolderToUse = projectFolder;
+      
+      if (projectFolderToUse == null){
+        final NodeProject foundProject = findProjectForFile(file);
+        if (foundProject!=null){
+          projectFolderToUse = foundProject.getFolder();
+        }
+      }
+      
+      final FileLinkGraphPanel graph = new FileLinkGraphPanel(projectFolderToUse, file);
+
+      JOptionPane.showMessageDialog(this, graph, "Graph of Mind Map file links", JOptionPane.PLAIN_MESSAGE);
+      final FileLinkGraphPanel.FileVertex selected = graph.getSelectedFile();
+
+      final File fileToOpen = selected == null ? null : selected.getFile();
+      if (openIfSelected && fileToOpen != null) {
+        result = true;
+        if (!openFileAsTab(fileToOpen)) {
+          DialogProviderManager.getInstance().getDialogProvider().msgWarn("Can't open file \'" + fileToOpen.getAbsolutePath() + "\'!");
+          result = false;
+        }
+      }
+    }
+    return result;
+  }
+
+  
+  private void menuNavigateLinksGraphActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNavigateLinksGraphActionPerformed
+    final File file = this.getFocusedTab().getAssociatedFile();
+    final NodeProject project = findProjectForFile(file);
+    showGraphMindMapFileLinksDialog(project == null ? null : project.getFolder(), file, true);
+  }//GEN-LAST:event_menuNavigateLinksGraphActionPerformed
+
+  private void menuNavigateMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuNavigateMenuSelected
+    final TabTitle title = getFocusedTab();
+    this.menuNavigateLinksGraph.setEnabled(title != null && title.getProvider().getContentType() == EditorType.MINDMAP);
+  }//GEN-LAST:event_menuNavigateMenuSelected
+
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
     for (final Component c : menu.getMenuComponents()) {
@@ -1516,6 +1576,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenu menuLookAndFeel;
   private javax.swing.JMenuItem menuMakeDonation;
   private javax.swing.JMenu menuNavigate;
+  private javax.swing.JMenuItem menuNavigateLinksGraph;
   private javax.swing.JMenuItem menuNewProject;
   private javax.swing.JMenuItem menuOpenFile;
   private javax.swing.JMenuItem menuOpenProject;

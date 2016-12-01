@@ -289,6 +289,10 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     }
   }
 
+  public boolean isMindMapFile(){
+    return !this.folderFlag && this.name.endsWith(".mmd");
+  }
+  
   @Override
   @Nonnull
   public Iterator<NodeFileOrFolder> iterator() {

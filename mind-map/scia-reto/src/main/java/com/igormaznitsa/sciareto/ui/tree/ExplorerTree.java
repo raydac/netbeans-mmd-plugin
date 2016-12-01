@@ -41,7 +41,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.io.FileUtils;
@@ -303,6 +302,27 @@ public final class ExplorerTree extends JScrollPane {
     });
     result.add(openInSystem);
 
+    if (node instanceof NodeProject) {
+      final JMenuItem buildMindMapGraph = new JMenuItem("Build MMD file links graph");
+      buildMindMapGraph.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          context.showGraphMindMapFileLinksDialog(((NodeProject) node).getFolder(), null, true);
+        }
+      });
+      result.add(buildMindMapGraph);
+    } else if (node.isLeaf() && node.isMindMapFile()){
+      final JMenuItem buildMindMapGraph = new JMenuItem("Build file links graph");
+      buildMindMapGraph.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          final NodeProject project = node.findProject();
+          context.showGraphMindMapFileLinksDialog(project == null ? null : project.getFolder(), node.makeFileForNode(), true);
+        }
+      });
+      result.add(buildMindMapGraph);
+    }
+    
     final List<JMenuItem> optional = new ArrayList<>();
 
     final JMenuItem menuSearchUsage = new JMenuItem("Find usages in maps");
