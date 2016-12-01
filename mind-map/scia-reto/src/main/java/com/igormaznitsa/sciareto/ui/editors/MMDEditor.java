@@ -90,6 +90,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
@@ -208,8 +209,15 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
   }
 
   @Override
-  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent event) {
+  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
+    if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
+        || e.getKeyCode() == KeyEvent.VK_LEFT
+        || e.getKeyCode() == KeyEvent.VK_RIGHT
+        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+      e.consume();
+    }
   }
+
   
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
