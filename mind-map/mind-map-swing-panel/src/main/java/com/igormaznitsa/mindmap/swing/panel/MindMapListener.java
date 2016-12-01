@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import javax.annotation.Nonnull;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 
 public interface MindMapListener {
   void onMindMapModelChanged(@Nonnull MindMapPanel source);
@@ -36,5 +37,5 @@ public interface MindMapListener {
   void onClickOnExtra(@Nonnull MindMapPanel source,int modifiers, int clicks, @Nonnull Topic topic, @Nonnull Extra<?> extra);
   void onChangedSelection(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] currentSelectedTopics);
   boolean allowedRemovingOfTopics(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] topics);
-  void onNonConsumedKeyEvent(@Nonnull MindMapPanel source, @Nonnull KeyEvent event);
+  void onNonConsumedKeyEvent(@Nonnull MindMapPanel source, @Nonnull KeyEvent event, @Nonnull KeyEventType type);
 }

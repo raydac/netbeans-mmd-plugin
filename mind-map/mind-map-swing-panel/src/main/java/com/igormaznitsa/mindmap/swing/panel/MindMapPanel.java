@@ -89,6 +89,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import javax.swing.JViewport;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 
 public class MindMapPanel extends JPanel implements ClipboardOwner {
 
@@ -358,11 +359,14 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     final KeyAdapter keyAdapter = new KeyAdapter() {
       @Override
       public void keyPressed(@Nonnull final KeyEvent e) {
-        if (e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-            || e.getKeyCode() == KeyEvent.VK_LEFT
-            || e.getKeyCode() == KeyEvent.VK_RIGHT
-            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
-          e.consume();
+        if (lockIfNotDisposed()){
+          try{
+            if (e.isConsumed()) {
+              fireNotificationNonConsumedKeyEvent(e,KeyEventType.RELEASED);
+            }
+          }finally{
+            unlock();
+          }
         }
       }
       
@@ -388,6 +392,10 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
               } else if (hasOnlyTopicSelected()) {
                 startEdit((AbstractElement) selectedTopics.get(0).getPayload());
               }
+            }
+            
+            if (!e.isConsumed()) {
+              fireNotificationNonConsumedKeyEvent(e,KeyEventType.TYPED);
             }
           } finally {
             unlock();
@@ -446,7 +454,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
             }
 
             if (!e.isConsumed()) {
-              fireNotificationNonConsumedKeyEvent(e);
+              fireNotificationNonConsumedKeyEvent(e,KeyEventType.RELEASED);
             }
           }
           finally {
@@ -1296,10 +1304,10 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
   }
 
-  protected void fireNotificationNonConsumedKeyEvent(@Nonnull final KeyEvent keyEvent) {
+  protected void fireNotificationNonConsumedKeyEvent(@Nonnull final KeyEvent keyEvent, @Nonnull final KeyEventType type) {
     for (final MindMapListener l : this.mindMapListeners) {
       if (keyEvent.isConsumed()) break;
-      l.onNonConsumedKeyEvent(this, keyEvent);
+      l.onNonConsumedKeyEvent(this, keyEvent, type);
     }
   }
 
