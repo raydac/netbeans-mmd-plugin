@@ -28,6 +28,7 @@ import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
@@ -356,8 +357,13 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   @Override
-  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final KeyEvent keyEvent) {
-
+  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
+    if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
+            || e.getKeyCode() == KeyEvent.VK_LEFT
+            || e.getKeyCode() == KeyEvent.VK_RIGHT
+            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+      e.consume();
+    }
   }
 
   @Override
