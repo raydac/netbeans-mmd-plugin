@@ -128,6 +128,7 @@ import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
 
 @MultiViewElement.Registration(
@@ -510,7 +511,13 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
   }
 
   @Override
-  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent event) {
+  public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
+    if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
+        || e.getKeyCode() == KeyEvent.VK_LEFT
+        || e.getKeyCode() == KeyEvent.VK_RIGHT
+        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+      e.consume();
+    }
   }
 
   @Override
