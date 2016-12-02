@@ -28,6 +28,7 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -39,7 +40,9 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import com.google.common.base.Function;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -71,14 +74,21 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
   private FileVertex selectedVertex;
 
   private enum FileVertexType {
-    FOLDER("folder.png"), DOCUMENT("document.png"), MINDMAP("mindmap.png"), UNKNOWN("unknown.png");
+    FOLDER("folder.png","Folder"), DOCUMENT("document.png","Document"), MINDMAP("mindmap.png","Mind Map"), UNKNOWN("unknown.png","Unknown"), NOTFOUND("notfound.png","Not found");
 
     private final Icon icon;
+    private final String text;
 
-    private FileVertexType(@Nonnull final String icon) {
+    private FileVertexType(@Nonnull final String icon, @Nonnull final String text) {
       this.icon = new ImageIcon(UiUtils.loadIcon("graph/" + icon));
+      this.text = text;
     }
 
+    @Override
+    public String toString(){
+      return text;
+    }
+    
     @Nonnull
     public Icon getIcon() {
       return this.icon;
@@ -98,7 +108,8 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
       final String name = FilenameUtils.getBaseName(file.getName());
       this.text = name.isEmpty() ? file.getName() : name;
 
-      this.tooltip = FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath());
+      this.tooltip = "<html><b>"+type.toString()+"</b><br>"+StringEscapeUtils.unescapeHtml(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath()))+"</html>";
+      
       this.file = file;
     }
 
@@ -145,11 +156,11 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     final DirectedSparseGraph<FileVertex, Number> result = new DirectedSparseGraph<FileVertex, Number>();
 
     final AtomicInteger edgeCounter = new AtomicInteger();
-    
+
     final Set<File> mapFilesInProcessing = new HashSet<File>();
-    
+
     if (startMindMap != null) {
-      addMindMapAndFillByItsLinks(null, result, projectFolder, startMindMap, edgeCounter,mapFilesInProcessing);
+      addMindMapAndFillByItsLinks(null, result, projectFolder, startMindMap, edgeCounter, mapFilesInProcessing);
     } else if (projectFolder != null) {
       final Iterator<File> iterator = FileUtils.iterateFiles(projectFolder, new String[]{"mmd"}, true);
       while (iterator.hasNext()) {
@@ -176,13 +187,15 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
       map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8")));
 
       if (parent != null) {
-        for (final File f : MapUtils.extractAllFileLinks(projectFolder, map)) {
-          if (parent.getFile().equals(f)) {
+        for (final MMapURI fileUri : MapUtils.extractAllFileLinks(map)) {
+          if (parent.getFile().equals(fileUri.asFile(projectFolder))) {
             graph.addEdge(edgeCounter.getAndIncrement(), thisVertex, parent, EdgeType.DIRECTED);
             break;
           }
         }
-        if (mapFilesInProcessing.contains(mindMapFile)) return null;
+        if (mapFilesInProcessing.contains(mindMapFile)) {
+          return null;
+        }
       }
     }
     catch (final Exception ex) {
@@ -192,26 +205,33 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     }
 
     mapFilesInProcessing.add(mindMapFile);
-    
+
     graph.addVertex(thisVertex);
 
     if (map != null) {
-      for (final File f : MapUtils.extractAllFileLinks(projectFolder, map)) {
+      for (final MMapURI fileUri : MapUtils.extractAllFileLinks(map)) {
         final FileVertex that;
-        if (f.isDirectory()) {
-          that = new FileVertex(f, FileVertexType.FOLDER);
-        } else if (f.isFile()) {
-          if (f.getName().endsWith(".mmd")) {
-            if (f.equals(mindMapFile)){
+
+        final File convertedFile = convertUriInFile(mindMapFile, projectFolder, fileUri);
+
+        if (convertedFile == null) {
+          that = new FileVertex(fileUri.asFile(projectFolder), FileVertexType.NOTFOUND);
+        } else if (convertedFile.isDirectory()) {
+          that = new FileVertex(convertedFile, FileVertexType.FOLDER);
+        } else if (convertedFile.isFile()) {
+
+          if (convertedFile.getName().endsWith(".mmd")) {
+            if (fileUri.equals(mindMapFile)) {
               that = thisVertex;
             } else {
-              that = addMindMapAndFillByItsLinks(thisVertex, graph, projectFolder, f, edgeCounter, mapFilesInProcessing);
+              that = addMindMapAndFillByItsLinks(thisVertex, graph, projectFolder, convertedFile, edgeCounter, mapFilesInProcessing);
             }
           } else {
-            that = new FileVertex(f, FileVertexType.DOCUMENT);
+            that = new FileVertex(convertedFile, FileVertexType.DOCUMENT);
           }
+
         } else {
-          that = new FileVertex(f, FileVertexType.UNKNOWN);
+          that = new FileVertex(convertedFile, convertedFile.exists() ? FileVertexType.UNKNOWN : FileVertexType.NOTFOUND);
         }
 
         if (that != null) {
@@ -221,6 +241,25 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     }
 
     return thisVertex;
+  }
+
+  @Nullable
+  private static File convertUriInFile(@Nonnull final File owningMindMap, @Nullable final File baseFolder, @Nonnull final MMapURI uri) {
+    File result = uri.asFile(baseFolder);
+
+    if (!uri.isAbsolute() && !result.exists()) {
+      final Path path = owningMindMap.toPath();
+      for (int i = path.getNameCount() - 1; i >= 0; i++) {
+        final Path root = path.subpath(0, path.getNameCount() - 1);
+        result = uri.asFile(root.toFile());
+        if (result.exists()) {
+          break;
+        }
+        result = null;
+      }
+    }
+
+    return result;
   }
 
   public FileLinkGraphPanel(@Nullable final File projectFolder, @Nullable final File startMindMap) {
@@ -272,7 +311,6 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer);
     graphViewer.getRenderContext().setArrowDrawPaintTransformer(edgePaintTransformer);
 
-    
     graphViewer.setVertexToolTipTransformer(new Function<FileVertex, String>() {
       @Override
       @Nonnull
@@ -284,7 +322,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     graphViewer.addGraphMouseListener(new GraphMouseListener<FileVertex>() {
       @Override
       public void graphClicked(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
-        if (!me.isPopupTrigger() && me.getClickCount() > 1) {
+        if (!me.isPopupTrigger() && me.getClickCount() > 1 && v.getType() != FileVertexType.NOTFOUND) {
           selectedVertex = v;
           final Window window = SwingUtilities.getWindowAncestor(graphViewer);
           if (window != null) {

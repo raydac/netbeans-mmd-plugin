@@ -51,12 +51,12 @@ public final class MapUtils {
   
   @Nonnull
   @MustNotContainNull
-  public static List<File> extractAllFileLinks(@Nullable final File baseFolder, @Nonnull final MindMap map) {
-    final List<File> result = new ArrayList<File>();
+  public static List<MMapURI> extractAllFileLinks(@Nonnull final MindMap map) {
+    final List<MMapURI> result = new ArrayList<MMapURI>();
     for(final Topic t : map){
       final ExtraFile file = (ExtraFile) t.getExtras().get(Extra.ExtraType.FILE);
       if (file != null){
-        result.add(file.getAsURI().asFile(baseFolder));
+        result.add(file.getAsURI());
       }
     }
     return result;

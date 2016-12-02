@@ -302,8 +302,10 @@ public final class ExplorerTree extends JScrollPane {
     });
     result.add(openInSystem);
 
+    final String BUILD_GRAPH_ITEM = "Build file links graph";
+        
     if (node instanceof NodeProject) {
-      final JMenuItem buildMindMapGraph = new JMenuItem("Build MMD file links graph");
+      final JMenuItem buildMindMapGraph = new JMenuItem(BUILD_GRAPH_ITEM);
       buildMindMapGraph.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -311,8 +313,8 @@ public final class ExplorerTree extends JScrollPane {
         }
       });
       result.add(buildMindMapGraph);
-    } else if (node.isLeaf() && node.isMindMapFile()){
-      final JMenuItem buildMindMapGraph = new JMenuItem("Build file links graph");
+    } else if (node.isLeaf() && node.isMindMapFile()) {
+      final JMenuItem buildMindMapGraph = new JMenuItem(BUILD_GRAPH_ITEM);
       buildMindMapGraph.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -322,7 +324,7 @@ public final class ExplorerTree extends JScrollPane {
       });
       result.add(buildMindMapGraph);
     }
-    
+
     final List<JMenuItem> optional = new ArrayList<>();
 
     final JMenuItem menuSearchUsage = new JMenuItem("Find usages in maps");

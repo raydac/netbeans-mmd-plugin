@@ -1436,21 +1436,21 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuEditCutActionPerformed
 
   @Override
-  public boolean showGraphMindMapFileLinksDialog(@Nullable final File projectFolder, @Nullable final File file, final boolean openIfSelected) {
+  public boolean showGraphMindMapFileLinksDialog(@Nullable final File projectFolder, @Nullable final File initialMindMapFile, final boolean openIfSelected) {
     Utils.assertSwingDispatchThread();
 
     boolean result = false;
-    if (projectFolder != null || file != null) {
+    if (projectFolder != null || initialMindMapFile != null) {
       File projectFolderToUse = projectFolder;
-      
-      if (projectFolderToUse == null){
-        final NodeProject foundProject = findProjectForFile(file);
-        if (foundProject!=null){
+
+      if (projectFolderToUse == null) {
+        final NodeProject foundProject = findProjectForFile(initialMindMapFile);
+        if (foundProject != null) {
           projectFolderToUse = foundProject.getFolder();
         }
       }
-      
-      final FileLinkGraphPanel graph = new FileLinkGraphPanel(projectFolderToUse, file);
+
+      final FileLinkGraphPanel graph = new FileLinkGraphPanel(projectFolderToUse, initialMindMapFile);
 
       JOptionPane.showMessageDialog(this, graph, "Graph of Mind Map file links", JOptionPane.PLAIN_MESSAGE);
       final FileLinkGraphPanel.FileVertex selected = graph.getSelectedFile();
@@ -1458,7 +1458,18 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       final File fileToOpen = selected == null ? null : selected.getFile();
       if (openIfSelected && fileToOpen != null) {
         result = true;
-        if (!openFileAsTab(fileToOpen)) {
+        boolean cantFind = true;
+        if (fileToOpen.exists()) {
+          if (fileToOpen.isFile()) {
+            if (openFileAsTab(fileToOpen)) {
+              cantFind = false;
+            }
+          } else if (fileToOpen.isDirectory()) {
+            focusInTree(fileToOpen);
+            cantFind = false;
+          }
+        }
+        if (cantFind) {
           DialogProviderManager.getInstance().getDialogProvider().msgWarn("Can't open file \'" + fileToOpen.getAbsolutePath() + "\'!");
           result = false;
         }
@@ -1467,7 +1478,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     return result;
   }
 
-  
+
   private void menuNavigateLinksGraphActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNavigateLinksGraphActionPerformed
     final File file = this.getFocusedTab().getAssociatedFile();
     final NodeProject project = findProjectForFile(file);
