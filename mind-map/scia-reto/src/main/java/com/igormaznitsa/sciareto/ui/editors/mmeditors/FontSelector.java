@@ -66,7 +66,7 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
     this.textArea.setPreferredSize(size);
   }
 
-  private final String [] getAllFontFamilies(){
+  private String [] getAllFontFamilies(){
     return GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
   }
   

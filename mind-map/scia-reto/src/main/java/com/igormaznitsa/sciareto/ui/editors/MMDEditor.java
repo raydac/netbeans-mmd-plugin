@@ -635,10 +635,10 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
   public void drop(@Nonnull final DropTargetDropEvent dtde) {
     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
-    File detectedFile = null;
-    String detectedLink = null;
-    String detectedNote = null;
-    URI decodedLink = null;
+    File detectedFile;
+    String detectedLink;
+    String detectedNote;
+    URI decodedLink;
     
     try{
       detectedFile = extractDropFile(dtde);

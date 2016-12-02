@@ -64,6 +64,7 @@ public final class NoteEditor extends javax.swing.JPanel {
   private static final Logger LOGGER = LoggerFactory.getLogger(NoteEditor.class);
 
   private final UndoManager undoManager = new UndoManager(){
+    private static final long serialVersionUID = -239961738072597268L;
     @Override
     public void undoableEditHappened(@Nonnull final UndoableEditEvent e) {
       super.undoableEditHappened(e); 
@@ -169,6 +170,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     
     this.buttonUndo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"do-undo");
     this.buttonUndo.getActionMap().put("do-undo", new AbstractAction() {
+      private static final long serialVersionUID = -5644390861803492172L;
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         doUndo();

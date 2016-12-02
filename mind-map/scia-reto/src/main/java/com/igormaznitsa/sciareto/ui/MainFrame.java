@@ -1416,7 +1416,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (title != null && title.getProvider().doesSupportCutCopyPaste()) {
       title.getProvider().doCopy();
     }
-    updateMenuItemsForProvider(title.getProvider());
+    updateMenuItemsForProvider(title == null ? null : title.getProvider());
   }//GEN-LAST:event_menuEditCopyActionPerformed
 
   private void menuEditPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditPasteActionPerformed
@@ -1424,7 +1424,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (title != null && title.getProvider().doesSupportCutCopyPaste()) {
       title.getProvider().doPaste();
     }
-    updateMenuItemsForProvider(title.getProvider());
+    updateMenuItemsForProvider(title == null ? null : title.getProvider());
   }//GEN-LAST:event_menuEditPasteActionPerformed
 
   private void menuEditCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCutActionPerformed
@@ -1432,7 +1432,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (title != null && title.getProvider().doesSupportCutCopyPaste()) {
       title.getProvider().doCut();
     }
-    updateMenuItemsForProvider(title.getProvider());
+    updateMenuItemsForProvider(title == null ? null : title.getProvider());
   }//GEN-LAST:event_menuEditCutActionPerformed
 
   @Override

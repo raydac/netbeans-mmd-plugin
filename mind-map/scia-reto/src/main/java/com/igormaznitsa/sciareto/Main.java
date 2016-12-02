@@ -495,7 +495,7 @@ public class Main {
               allOk = false;
             }
           }
-          if (allOk) {
+          if (allOk && importer!=null && exporter!=null) {
             try {
               makeConversion(inFile, importer, outFile, exporter, config, options);
             }
