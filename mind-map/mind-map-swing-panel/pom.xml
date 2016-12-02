@@ -9,7 +9,7 @@
   </parent>
     
   <artifactId>mind-map-swing-panel</artifactId>
-  <version>${main.version}</version>
+  <version>1.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
     
   <name>NB Mind Map swing panel</name>

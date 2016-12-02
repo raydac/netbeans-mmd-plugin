@@ -32,7 +32,7 @@ public interface MindMapPlugin extends Comparable<MindMapPlugin> {
   /**
    * Version of the API.
    */
-  public static final Version API = new Version("1.3.1");
+  public static final Version API = new Version("1.4.0");
   
   /**
    * Order of the plug-in among another plug-ins.
