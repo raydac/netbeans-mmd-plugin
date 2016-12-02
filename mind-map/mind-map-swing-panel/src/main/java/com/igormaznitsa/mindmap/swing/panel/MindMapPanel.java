@@ -361,8 +361,8 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       public void keyPressed(@Nonnull final KeyEvent e) {
         if (lockIfNotDisposed()){
           try{
-            if (e.isConsumed()) {
-              fireNotificationNonConsumedKeyEvent(e,KeyEventType.RELEASED);
+            if (!e.isConsumed()) {
+              fireNotificationNonConsumedKeyEvent(e,KeyEventType.PRESSED);
             }
           }finally{
             unlock();

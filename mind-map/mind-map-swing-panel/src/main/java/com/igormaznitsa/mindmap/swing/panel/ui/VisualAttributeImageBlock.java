@@ -152,7 +152,7 @@ public class VisualAttributeImageBlock {
       final Map<String, String> codeSnippets = this.model.getCodeSnippets();
       for (final VisualAttributePlugin p : pluginsFromRegistry) {
         final String attributeKey = p.getAttributeKey();
-        if (attributeKey != AttributePlugin.NULL_ATTRIBUTE && attributes.containsKey(attributeKey)) {
+        if (!AttributePlugin.NULL_ATTRIBUTE.equals(attributeKey)  && attributes.containsKey(attributeKey)) {
           detectedPlugins.add(p);
         } else if (p instanceof CodeSnippetProcessor && this.model.doesContainCodeSnippetForAnyLanguage(((CodeSnippetProcessor)p).getProcessingLanguageNames())){
           detectedPlugins.add(p);
