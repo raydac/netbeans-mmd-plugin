@@ -14,6 +14,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.3.1-SNAPSHOT (under development)__
+- SCIARETO: added graph generator for file links in mind maps of project
 - ALL: added support of Cut-Copy-Paste actions over Mind Maps
 - ALL: added reset button into URI edit dialog
 - ALL: added processing of dragged links and texts from external web browsers
