@@ -55,7 +55,7 @@ public class MindMapRefactoringFactory implements RefactoringPluginFactory {
       }
     }
 
-    if (refactoring == null && refactoring instanceof WhereUsedQuery) {
+    if (result == null && refactoring instanceof WhereUsedQuery) {
       result = new WhereUsedActionPlugin((WhereUsedQuery) refactoring);
     }
     
