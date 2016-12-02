@@ -17,10 +17,14 @@ package com.igormaznitsa.sciareto.ui.misc;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Paint;
+import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.HierarchyEvent;
@@ -36,6 +40,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -47,7 +52,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.EdgeType;
@@ -57,6 +62,7 @@ import edu.uci.ics.jung.visualization.VisualizationModel;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.GraphMouseListener;
+import edu.uci.ics.jung.visualization.control.LayoutScalingControl;
 import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.ViewScalingControl;
@@ -75,6 +81,8 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
   private static final Color COLOR_BACKGROUND = Color.WHITE;
   private static final Color COLOR_ARROW = Color.ORANGE.darker();
   private static final Color COLOR_LABELS = Color.BLACK;
+  
+  private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png"));
   
   public enum FileVertexType {
     FOLDER("folder.png","Folder"), DOCUMENT("document.png","Document"), MINDMAP("mindmap.png","Mind Map"), UNKNOWN("unknown.png","Unknown"), NOTFOUND("notfound.png","Not found");
@@ -264,12 +272,14 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
   public FileLinkGraphPanel(@Nullable final File projectFolder, @Nullable final File startMindMap) {
     initComponents();
 
-    final Dimension SCROLL_COMPONENT_SIZE = new Dimension(600, 400);
+    final Dimension SCROLL_COMPONENT_SIZE = new Dimension(600, 450);
 
     final Graph<FileVertex, Number> graph = makeGraph(projectFolder, startMindMap);
-    final FRLayout<FileVertex, Number> graphLayout = new FRLayout<FileVertex, Number>(graph, new Dimension(500, 500));
+    
+    final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<FileVertex, Number>(graph);
+    
     final VisualizationModel<FileVertex, Number> viewModel = new DefaultVisualizationModel<FileVertex, Number>(graphLayout, new Dimension(2000, 2000));
-    final VisualizationViewer<FileVertex, Number> graphViewer = new VisualizationViewer<FileVertex, Number>(viewModel);
+    final VisualizationViewer<FileVertex, Number> graphViewer = new VisualizationViewer<FileVertex, Number>(viewModel,new Dimension(800, 800));
 
     final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse() {
       @Override
@@ -341,9 +351,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
 
     final GraphZoomScrollPane scroll = new GraphZoomScrollPane(graphViewer);
     scroll.setPreferredSize(SCROLL_COMPONENT_SIZE);
-
-    this.add(scroll, BorderLayout.CENTER);
-
+    
     final FileLinkGraphPanel theIntance = this;
     this.addHierarchyListener(new HierarchyListener() {
       @Override
@@ -356,14 +364,32 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
             dialog.addComponentListener(new ComponentAdapter() {
               @Override
               public void componentResized(ComponentEvent e) {
-                scroll.invalidate();
-                scroll.doLayout();
+                viewModel.setGraphLayout(graphLayout);
               }
             });
           }
         }
       }
     });
+
+    graphViewer.scaleToLayout(new LayoutScalingControl());
+
+    final JButton layoutButton = new JButton(RELAYOUT_ICON);
+    layoutButton.setToolTipText("Relayout graph");
+    layoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    layoutButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+       final Rectangle visible = scroll.getVisibleRect();
+       graphViewer.getGraphLayout().reset();
+       graphViewer.getGraphLayout().setSize(new Dimension(visible.width,visible.height));
+       graphViewer.repaint();
+      }
+    });
+    
+    scroll.setCorner(layoutButton);
+    
+    this.add(scroll, BorderLayout.CENTER);
   }
 
   @Nullable

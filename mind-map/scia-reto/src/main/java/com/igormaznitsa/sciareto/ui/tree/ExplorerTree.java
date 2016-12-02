@@ -57,6 +57,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -130,8 +131,7 @@ public final class ExplorerTree extends JScrollPane {
                       context.centerRootTopicIfFocusedMMD();
                     }
                   });
-                }
-                else {
+                } else {
                   UiUtils.openInSystemViewer(file);
                 }
               }
@@ -190,10 +190,10 @@ public final class ExplorerTree extends JScrollPane {
     this.context.onCloseProject(tree);
   }
 
-  public void focusToFirstElement(){
+  public void focusToFirstElement() {
     this.projectTree.focusToFirstElement();
   }
-  
+
   public void focusToFileItem(@Nonnull final File file) {
     final NodeProjectGroup group = getCurrentGroup();
     final TreePath pathToFile = group.findPathToFile(file);
@@ -302,8 +302,28 @@ public final class ExplorerTree extends JScrollPane {
     });
     result.add(openInSystem);
 
+    if (node instanceof NodeProject) {
+      final NodeProject theProject = (NodeProject) node;
+      if (!theProject.hasKnowledgeFolder()) {
+        final File knowledgeFolder = new File(theProject.getFolder(), PreferencesPanel.KNOWLEDGE_FOLDER_NAME);
+        final JMenuItem addKnowledgeFolder = new JMenuItem("Create Knowledge folder");
+        addKnowledgeFolder.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(@Nonnull final ActionEvent e) {
+            if (knowledgeFolder.mkdirs()) {
+              getCurrentGroup().refreshProjectFolder(theProject);
+              context.focusInTree(knowledgeFolder);
+            } else {
+              LOGGER.error("Can't create knowledge folder : " + knowledgeFolder);
+            }
+          }
+        });
+        result.add(addKnowledgeFolder);
+      }
+    }
+
     final String BUILD_GRAPH_ITEM = "Build file links graph";
-        
+
     if (node instanceof NodeProject) {
       final JMenuItem buildMindMapGraph = new JMenuItem(BUILD_GRAPH_ITEM);
       buildMindMapGraph.addActionListener(new ActionListener() {
@@ -500,7 +520,8 @@ public final class ExplorerTree extends JScrollPane {
               try {
                 FileUtils.write(file, model.write(new StringWriter()).toString(), "UTF-8");
                 ok = true;
-              } catch (IOException ex) {
+              }
+              catch (IOException ex) {
                 LOGGER.error("Can't create MMD file", ex);
                 DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create mind map '" + fileName + "'!");
               }
@@ -510,7 +531,8 @@ public final class ExplorerTree extends JScrollPane {
               try {
                 FileUtils.write(file, "", "UTF-8");
                 ok = true;
-              } catch (IOException ex) {
+              }
+              catch (IOException ex) {
                 LOGGER.error("Can't create TXT file", ex);
                 DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create txt file '" + fileName + "'!");
               }

@@ -38,7 +38,7 @@ public class NodeProject extends NodeFileOrFolder {
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProject.class);
 
   private volatile File folder;
-  private final boolean knowledgeFolderPresented;
+  private volatile boolean knowledgeFolderPresented;
   
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
     super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
@@ -123,6 +123,12 @@ public class NodeProject extends NodeFileOrFolder {
     }
 
     return affectedFiles;
+  }
+
+  @Override
+  public void reloadSubtree() {
+    super.reloadSubtree();
+    this.knowledgeFolderPresented = new File(folder,".projectKnowledge").isDirectory();
   }
 
   @Nonnull
