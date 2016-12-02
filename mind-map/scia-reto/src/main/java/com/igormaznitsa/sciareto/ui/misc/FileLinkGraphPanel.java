@@ -269,7 +269,10 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     };
 
     graphViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
+    graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer);
+    graphViewer.getRenderContext().setArrowDrawPaintTransformer(edgePaintTransformer);
 
+    
     graphViewer.setVertexToolTipTransformer(new Function<FileVertex, String>() {
       @Override
       @Nonnull
