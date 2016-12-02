@@ -28,7 +28,9 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.StringReader;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +62,7 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.DefaultVertexLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 
-public class FileLinkGraphPanel extends javax.swing.JPanel {
+public final class FileLinkGraphPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -5145163577941732908L;
 
@@ -142,14 +144,18 @@ public class FileLinkGraphPanel extends javax.swing.JPanel {
   private Graph<FileVertex, Number> makeGraph(@Nullable final File projectFolder, @Nullable final File startMindMap) {
     final DirectedSparseGraph<FileVertex, Number> result = new DirectedSparseGraph<FileVertex, Number>();
 
+    final AtomicInteger edgeCounter = new AtomicInteger();
+    
+    final Set<File> mapFilesInProcessing = new HashSet<File>();
+    
     if (startMindMap != null) {
-      addMindMapAndFillByItsLinks(result, projectFolder, startMindMap, new AtomicInteger());
+      addMindMapAndFillByItsLinks(null, result, projectFolder, startMindMap, edgeCounter,mapFilesInProcessing);
     } else if (projectFolder != null) {
       final Iterator<File> iterator = FileUtils.iterateFiles(projectFolder, new String[]{"mmd"}, true);
       while (iterator.hasNext()) {
         final File mmdFile = iterator.next();
         if (mmdFile.isFile()) {
-          addMindMapAndFillByItsLinks(result, projectFolder, mmdFile, new AtomicInteger());
+          addMindMapAndFillByItsLinks(null, result, projectFolder, mmdFile, edgeCounter, mapFilesInProcessing);
         }
       }
     }
@@ -158,18 +164,26 @@ public class FileLinkGraphPanel extends javax.swing.JPanel {
   }
 
   @Nullable
-  private static FileVertex addMindMapAndFillByItsLinks(@Nonnull final @Nullable Graph<FileVertex, Number> graph, @Nullable final File projectFolder, @Nonnull final File mindMapFile, @Nonnull final AtomicInteger edgeCounter) {
+  private static FileVertex addMindMapAndFillByItsLinks(@Nullable final FileVertex parent, @Nonnull final @Nullable Graph<FileVertex, Number> graph, @Nullable final File projectFolder, @Nonnull final File mindMapFile, @Nonnull final AtomicInteger edgeCounter, @Nonnull Set<File> mapFilesInProcessing) {
 
     MindMap map;
 
     FileVertex thisVertex;
 
     try {
+
       thisVertex = new FileVertex(mindMapFile, FileVertexType.MINDMAP);
-      if (graph.containsVertex(thisVertex)) {
-        return null;
-      }
       map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8")));
+
+      if (parent != null) {
+        for (final File f : MapUtils.extractAllFileLinks(projectFolder, map)) {
+          if (parent.getFile().equals(f)) {
+            graph.addEdge(edgeCounter.getAndIncrement(), thisVertex, parent, EdgeType.DIRECTED);
+            break;
+          }
+        }
+        if (mapFilesInProcessing.contains(mindMapFile)) return null;
+      }
     }
     catch (final Exception ex) {
       LOGGER.error("Can't load mind map : " + mindMapFile, ex);
@@ -177,6 +191,8 @@ public class FileLinkGraphPanel extends javax.swing.JPanel {
       map = null;
     }
 
+    mapFilesInProcessing.add(mindMapFile);
+    
     graph.addVertex(thisVertex);
 
     if (map != null) {
@@ -186,7 +202,11 @@ public class FileLinkGraphPanel extends javax.swing.JPanel {
           that = new FileVertex(f, FileVertexType.FOLDER);
         } else if (f.isFile()) {
           if (f.getName().endsWith(".mmd")) {
-            that = addMindMapAndFillByItsLinks(graph, projectFolder, f, edgeCounter);
+            if (f.equals(mindMapFile)){
+              that = thisVertex;
+            } else {
+              that = addMindMapAndFillByItsLinks(thisVertex, graph, projectFolder, f, edgeCounter, mapFilesInProcessing);
+            }
           } else {
             that = new FileVertex(f, FileVertexType.DOCUMENT);
           }
