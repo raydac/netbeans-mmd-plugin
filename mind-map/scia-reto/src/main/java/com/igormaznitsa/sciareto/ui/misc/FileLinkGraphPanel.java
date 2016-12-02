@@ -28,7 +28,6 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.StringReader;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -73,7 +72,11 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
 
   private FileVertex selectedVertex;
 
-  private enum FileVertexType {
+  private static final Color COLOR_BACKGROUND = Color.WHITE;
+  private static final Color COLOR_ARROW = Color.ORANGE.darker();
+  private static final Color COLOR_LABELS = Color.BLACK;
+  
+  public enum FileVertexType {
     FOLDER("folder.png","Folder"), DOCUMENT("document.png","Document"), MINDMAP("mindmap.png","Mind Map"), UNKNOWN("unknown.png","Unknown"), NOTFOUND("notfound.png","Not found");
 
     private final Icon icon;
@@ -104,12 +107,8 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
 
     public FileVertex(@Nonnull final File file, @Nonnull final FileVertexType type) {
       this.type = type;
-
-      final String name = FilenameUtils.getBaseName(file.getName());
-      this.text = name.isEmpty() ? file.getName() : name;
-
+      this.text = file.getName();
       this.tooltip = "<html><b>"+type.toString()+"</b><br>"+StringEscapeUtils.unescapeHtml(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath()))+"</html>";
-      
       this.file = file;
     }
 
@@ -292,10 +291,10 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
       }
     });
 
-    graphViewer.setBackground(Color.WHITE);
+    graphViewer.setBackground(COLOR_BACKGROUND);
     graphViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
 
-    final DefaultVertexLabelRenderer labelRenderer = new DefaultVertexLabelRenderer(Color.BLACK);
+    final DefaultVertexLabelRenderer labelRenderer = new DefaultVertexLabelRenderer(COLOR_LABELS);
 
     graphViewer.getRenderContext().setVertexLabelRenderer(labelRenderer);
     graphViewer.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
@@ -303,7 +302,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     final Function<Number, Paint> edgePaintTransformer = new Function<Number, Paint>() {
       @Override
       public Paint apply(@Nonnull final Number input) {
-        return Color.lightGray;
+        return COLOR_ARROW;
       }
     };
 
