@@ -244,19 +244,19 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
   }
 
   @Nullable
-  private static File convertUriInFile(@Nonnull final File owningMindMap, @Nullable final File baseFolder, @Nonnull final MMapURI uri) {
+  private static File convertUriInFile(@Nonnull final File containingMindMap, @Nullable final File baseFolder, @Nonnull final MMapURI uri) {
     File result = uri.asFile(baseFolder);
 
     if (!uri.isAbsolute() && !result.exists()) {
-      final Path path = owningMindMap.toPath();
-      for (int i = path.getNameCount() - 1; i >= 0; i++) {
-        final Path root = path.subpath(0, path.getNameCount() - 1);
-        result = uri.asFile(root.toFile());
+      File basePath =  com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(containingMindMap);
+      do {
+        result = uri.asFile(basePath);
         if (result.exists()) {
           break;
         }
         result = null;
-      }
+        basePath = com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(basePath);
+      }while(!com.igormaznitsa.sciareto.ui.FileUtils.isRootFile(basePath));
     }
 
     return result;
