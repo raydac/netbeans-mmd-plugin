@@ -162,7 +162,15 @@ public final class Utils {
     Color result = null;
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
-        result = new Color(Integer.parseInt(str.substring(1), 16), hasAlpha);
+        final String color = str.substring(1);
+        if (color.length() == 6){
+          result = new Color(Integer.parseInt(color, 16), hasAlpha);
+        } else if (color.length() == 3) {
+          final int r = Integer.parseInt(color.charAt(0)+"0", 16);
+          final int g = Integer.parseInt(color.charAt(1)+"0", 16);
+          final int b = Integer.parseInt(color.charAt(2)+"0", 16);
+          result = new Color(r,g,b);
+        }
       } catch (NumberFormatException ex) {
         LOGGER.warn(String.format("Can't convert %s to color", str));
       }
