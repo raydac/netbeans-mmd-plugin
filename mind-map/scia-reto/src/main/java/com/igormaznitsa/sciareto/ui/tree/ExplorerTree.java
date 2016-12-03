@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -168,6 +169,20 @@ public final class ExplorerTree extends JScrollPane {
     });
   }
 
+  public boolean hasSelectedItem(){
+    return this.projectTree.getSelectionPath() != null;
+  }
+  
+  public void showPopUpForSelectedItem(){
+    final TreePath path = this.projectTree.getSelectionPath();
+    if (path!=null){
+      final NodeFileOrFolder component = (NodeFileOrFolder)path.getLastPathComponent();
+      final Rectangle rect = this.projectTree.getRowBounds(this.projectTree.getRowForPath(path));
+      final JPopupMenu popupMenu = makePopupMenu(component);
+      popupMenu.show(this.projectTree, rect.x+rect.width/2, rect.y+rect.height/2);
+    }
+  }
+  
   @Override
   public void requestFocus() {
     this.projectTree.requestFocus();

@@ -310,6 +310,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     this.menuEditCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    
+    this.menuEditShowContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -769,6 +771,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     separatorExitSection = new javax.swing.JPopupMenu.Separator();
     menuExit = new javax.swing.JMenuItem();
     menuEdit = new javax.swing.JMenu();
+    menuEditShowContextMenu = new javax.swing.JMenuItem();
+    jSeparator7 = new javax.swing.JPopupMenu.Separator();
     menuUndo = new javax.swing.JMenuItem();
     menuRedo = new javax.swing.JMenuItem();
     jSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -905,6 +909,17 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuEditMenuCanceled(evt);
       }
     });
+
+    menuEditShowContextMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/tree_list16.png"))); // NOI18N
+    menuEditShowContextMenu.setMnemonic('t');
+    menuEditShowContextMenu.setText("Show Tree context menu");
+    menuEditShowContextMenu.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuEditShowContextMenuActionPerformed(evt);
+      }
+    });
+    menuEdit.add(menuEditShowContextMenu);
+    menuEdit.add(jSeparator7);
 
     menuUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
     menuUndo.setMnemonic('u');
@@ -1388,6 +1403,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private void menuEditMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuEditMenuSelected
     final TabTitle title = this.getFocusedTab();
     updateMenuItemsForProvider(title == null ? null : title.getProvider());
+    this.menuEditShowContextMenu.setEnabled(this.explorerTree.hasSelectedItem());
   }//GEN-LAST:event_menuEditMenuSelected
 
   private void menuEditMenuCanceled(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuEditMenuCanceled
@@ -1490,6 +1506,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.menuNavigateLinksGraph.setEnabled(title != null && title.getProvider().getContentType() == EditorType.MINDMAP);
   }//GEN-LAST:event_menuNavigateMenuSelected
 
+  private void menuEditShowContextMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditShowContextMenuActionPerformed
+    this.explorerTree.showPopUpForSelectedItem();
+  }//GEN-LAST:event_menuEditShowContextMenuActionPerformed
+
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
     for (final Component c : menu.getMenuComponents()) {
@@ -1572,12 +1592,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JPopupMenu.Separator jSeparator4;
   private javax.swing.JPopupMenu.Separator jSeparator5;
   private javax.swing.JPopupMenu.Separator jSeparator6;
+  private javax.swing.JPopupMenu.Separator jSeparator7;
   private javax.swing.JMenuBar mainMenu;
   private javax.swing.JMenuItem menuAbout;
   private javax.swing.JMenu menuEdit;
   private javax.swing.JMenuItem menuEditCopy;
   private javax.swing.JMenuItem menuEditCut;
   private javax.swing.JMenuItem menuEditPaste;
+  private javax.swing.JMenuItem menuEditShowContextMenu;
   private javax.swing.JMenuItem menuExit;
   private javax.swing.JMenu menuFile;
   private javax.swing.JMenuItem menuFindText;
