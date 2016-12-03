@@ -34,7 +34,7 @@ import com.igormaznitsa.mindmap.plugins.api.Renderable;
 
 public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
-  static final String ATTR_KEY = "mmd.image";
+  public static final String ATTR_KEY = "mmd.image";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageVisualAttributePlugin.class);
   private static final Map<Topic, Renderable> CACHED_IMAGES = new WeakHashMap<Topic, Renderable>();

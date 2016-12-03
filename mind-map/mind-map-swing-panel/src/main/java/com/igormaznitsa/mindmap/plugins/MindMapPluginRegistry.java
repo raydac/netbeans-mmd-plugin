@@ -57,6 +57,7 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImagePopUpMenuPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
 import com.igormaznitsa.mindmap.plugins.exporters.ORGMODEExporter;
+import com.igormaznitsa.mindmap.plugins.importers.Mindmup2MindMapImporter;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
@@ -97,6 +98,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new ChangeColorPlugin());
     
     registerPlugin(new Text2MindMapImporter());
+    registerPlugin(new Mindmup2MindMapImporter());
     
     registerPlugin(new EmoticonPopUpMenuPlugin());
     registerPlugin(new EmoticonVisualAttributePlugin());
