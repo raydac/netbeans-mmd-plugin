@@ -16,6 +16,7 @@
 package com.igormaznitsa.mindmap.plugins.importers;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.RenderedImage;
@@ -46,7 +47,6 @@ import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
-import com.grack.nanojson.JsonParserException;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -97,14 +97,12 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
   public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
     final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), "mup", "Mindmup files (.MUP)", Texts.getString("MMDImporters.ApproveImport"));
 
-    final JsonObject parsedJson;
-    try {
-      parsedJson = JsonParser.object().from(FileUtils.readFileToString(file, "UTF-8"));
-    }
-    catch (JsonParserException ex) {
-      dialogProvider.msgError(Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
+    if (file == null) {
       return null;
     }
+    
+    final JsonObject parsedJson;
+    parsedJson = JsonParser.object().from(FileUtils.readFileToString(file, "UTF-8"));
 
     MindMap resultedMap = null;
 
@@ -112,25 +110,21 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     if (formatVersion == null) {
       dialogProvider.msgError(Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
     } else {
-      if (formatVersion.intValue() < 2) {
-        dialogProvider.msgError(Texts.getString("MMDImporters.Mindmup2MindMap.Error.UnsupportedVersion"));
-      } else {
-        resultedMap = new MindMap(null, true);
-        resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
+      resultedMap = new MindMap(null, true);
+      resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
-        final Topic mindMapRoot = Assertions.assertNotNull(resultedMap.getRoot());
-        final Map<Long, Topic> mapTopicId = new HashMap<Long, Topic>();
+      final Topic mindMapRoot = Assertions.assertNotNull(resultedMap.getRoot());
+      final Map<Long, Topic> mapTopicId = new HashMap<Long, Topic>();
 
-        parseTopic(resultedMap, null, mindMapRoot, parsedJson, mapTopicId);
+      parseTopic(resultedMap, null, mindMapRoot, parsedJson, mapTopicId);
 
-        if (!mindMapRoot.getExtras().containsKey(Extra.ExtraType.FILE)) {
-          mindMapRoot.setExtra(new ExtraFile(new MMapURI(null, file, null)));
-        }
+      if (!mindMapRoot.getExtras().containsKey(Extra.ExtraType.FILE)) {
+        mindMapRoot.setExtra(new ExtraFile(new MMapURI(null, file, null)));
+      }
 
-        final JsonArray links = parsedJson.getArray("links");
-        if (links != null) {
-          processLinks(resultedMap, links, mapTopicId);
-        }
+      final JsonArray links = parsedJson.getArray("links");
+      if (links != null) {
+        processLinks(resultedMap, links, mapTopicId);
       }
     }
     return resultedMap;
@@ -268,6 +262,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       final Color color = Utils.html2color(background, false);
       if (color != null) {
         topic.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(color, false));
+        topic.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(color),false));
       }
     }
   }
