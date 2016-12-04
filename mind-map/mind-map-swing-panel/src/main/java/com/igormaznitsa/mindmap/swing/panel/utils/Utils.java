@@ -426,6 +426,11 @@ public final class Utils {
   }
 
   @Nonnull
+  public static Color makeContrastColor(@Nonnull final Color color) {
+    return calculateColorBrightness(color) < 128 ? Color.WHITE : Color.BLACK;
+  }
+  
+  @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> findPopupMenuItems(
       @Nonnull final MindMapPanel panel,
