@@ -71,6 +71,10 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
                   public void run() {
                     panel.setModel(map,false);
                     panel.updateView(true);
+                    final Topic root = map.getRoot();
+                    if (root!=null){
+                      panel.focusTo(root);
+                    }
                   }
                 });
               }
