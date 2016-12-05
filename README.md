@@ -14,7 +14,8 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.0-SNAPSHOT (under development)__
-- ALL: added importers from Mindmup JSON format and FreeMind
+- IDEA: plugin adapted for compatibility with 14.0.5 (139.1803)
+- ALL: added importers for Mindmup, Freemind and XMind formats
 - NB:  disabled watching of file changes by default, added options flag to enable that
 - SCIARETO: added graph generator for file links in mind maps of project
 - ALL: added support of Cut-Copy-Paste actions over Mind Maps
