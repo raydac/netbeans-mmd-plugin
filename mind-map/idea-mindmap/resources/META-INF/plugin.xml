@@ -78,7 +78,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="143.2370"/>
+    <idea-version since-build="139.1803"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
@@ -92,7 +92,7 @@
         <applicationConfigurable instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"/>
         <projectViewPane implementation="com.igormaznitsa.ideamindmap.view.KnowledgeViewPane"/>
         <annotator language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMAnnotator"/>
-        <lang.syntaxHighlighterFactory language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMSyntaxHighlighterFactory" key="mmd"/>
         <lang.parserDefinition language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.MMParserDefinition"/>
         <psi.referenceContributor language="NBMindMap" implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
         <lang.elementManipulator forClass="com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile"
