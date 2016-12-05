@@ -55,7 +55,6 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.xml.ui.Committable;
 import com.intellij.util.xml.ui.UndoHelper;
 import org.jetbrains.annotations.NonNls;
@@ -90,7 +89,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
-  private final JBScrollPane mainScrollPane;
+  private final JScrollPane mainScrollPane;
   private final MindMapPanel mindMapPanel;
   private final Project project;
   private final VirtualFile file;
@@ -112,8 +111,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     this.mindMapPanel.putTmpObject("editor", this);
 
     this.mindMapPanel.addMindMapListener(this);
-    this.mainScrollPane = new JBScrollPane();
-    this.mainScrollPane.setViewportView(this.mindMapPanel);
+    this.mainScrollPane = new JScrollPane(this.mindMapPanel);
     this.mainScrollPane.setWheelScrollingEnabled(true);
     this.mainScrollPane.setAutoscrolls(true);
 
@@ -142,7 +140,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
       }
     });
 
-    DataManager.registerDataProvider(this.mainScrollPane,this);
+    DataManager.registerDataProvider(this.mainScrollPane, this);
   }
 
   @Override
@@ -210,18 +208,13 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     final Document document = getDocument();
     final MindMap model = this.mindMapPanel.getModel();
     if (document != null && model != null) {
-      CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
+      IdeaUtils.executeWriteAction(new Runnable() {
         @Override
         public void run() {
-          ApplicationManager.getApplication().runWriteAction(new Runnable() {
-            @Override
-            public void run() {
-              final String packedMindMap = model.packToString();
-              document.setText(packedMindMap);
-            }
-          });
+          final String packedMindMap = model.packToString();
+          document.setText(packedMindMap);
         }
-      }, null, null, document);
+      });
     }
   }
 
@@ -231,7 +224,28 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
       @Override
       public void run() {
         final Document document = getDocument();
+
         if (document != null) {
+          IdeaUtils.executeReadAction(new Runnable() {
+            @Override
+            public void run() {
+              final String documentText = document.getText();
+              safeSwing(new Runnable() {
+                @Override
+                public void run() {
+                  if (!mindMapPanel.isDisposed()) {
+                    try {
+                      mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
+                    } catch (Exception ex) {
+                      LOGGER.error("Can't parse MindMap text", ex);
+                      editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
+                    }
+                  }
+                }
+              });
+            }
+          });
+
           CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
             @Override
             public void run() {
@@ -242,11 +256,13 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
                   safeSwing(new Runnable() {
                     @Override
                     public void run() {
-                      try {
-                        mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
-                      } catch (Exception ex) {
-                        LOGGER.error("Can't parse MindMap text", ex);
-                        editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
+                      if (!mindMapPanel.isDisposed()) {
+                        try {
+                          mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
+                        } catch (Exception ex) {
+                          LOGGER.error("Can't parse MindMap text", ex);
+                          editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
+                        }
                       }
                     }
                   });
@@ -342,7 +358,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   @Override
   public void dispose() {
-      this.mindMapPanel.dispose();
+    this.mindMapPanel.dispose();
   }
 
   @Nullable

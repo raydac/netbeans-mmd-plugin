@@ -9,7 +9,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class MMSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
-  @Nonnull @Override public SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
+  @Nonnull
+  @Override
+  public SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
     return new MMHighlighter();
   }
 }

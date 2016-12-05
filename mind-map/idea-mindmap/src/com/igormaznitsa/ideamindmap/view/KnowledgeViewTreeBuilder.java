@@ -125,7 +125,6 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
       updateForFile(b.getFile());
     }
 
-    @Override
     public void bookmarksOrderChanged() {
       //do nothing
     }
