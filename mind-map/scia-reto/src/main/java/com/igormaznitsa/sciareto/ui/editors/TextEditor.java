@@ -185,7 +185,8 @@ public final class TextEditor extends AbstractScrollableEditor {
         this.editor.setText(FileUtils.readFileToString(file, "UTF-8"));
         this.editor.setCaretPosition(0);
       }
-    } finally {
+    }
+    finally {
       this.ignoreChange = false;
     }
 
@@ -290,13 +291,13 @@ public final class TextEditor extends AbstractScrollableEditor {
   @Override
   public boolean doCopy() {
     boolean result = false;
-    
+
     final String selected = this.editor.getSelectedText();
-    if (selected != null && !selected.isEmpty()){
+    if (selected != null && !selected.isEmpty()) {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       clipboard.setContents(new StringSelection(selected), null);
     }
-    
+
     return result;
   }
 
@@ -325,11 +326,10 @@ public final class TextEditor extends AbstractScrollableEditor {
     return result;
   }
 
-  
   @Override
   public boolean doPaste() {
     boolean result = false;
-    
+
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     String text = null;
     try {
@@ -338,7 +338,7 @@ public final class TextEditor extends AbstractScrollableEditor {
       }
     }
     catch (Exception ex) {
-      LOGGER.warn("Can't get data from clipboard : "+ex.getMessage());
+      LOGGER.warn("Can't get data from clipboard : " + ex.getMessage());
     }
     if (text != null) {
       this.editor.replaceSelection(text);
@@ -350,7 +350,7 @@ public final class TextEditor extends AbstractScrollableEditor {
   @Override
   public boolean isCopyAllowed() {
     final String selected = this.editor.getSelectedText();
-    return selected!=null && !selected.isEmpty();
+    return selected != null && !selected.isEmpty();
   }
 
   @Override
