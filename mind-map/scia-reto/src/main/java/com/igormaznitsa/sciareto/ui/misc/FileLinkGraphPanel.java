@@ -18,17 +18,12 @@ package com.igormaznitsa.sciareto.ui.misc;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.StringReader;
@@ -228,7 +223,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
         } else if (convertedFile.isFile()) {
 
           if (convertedFile.getName().endsWith(".mmd")) {
-            if (fileUri.equals(mindMapFile)) {
+            if (convertedFile.equals(mindMapFile)) {
               that = thisVertex;
             } else {
               that = addMindMapAndFillByItsLinks(thisVertex, graph, projectFolder, convertedFile, edgeCounter, mapFilesInProcessing);
@@ -351,26 +346,8 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
 
     final GraphZoomScrollPane scroll = new GraphZoomScrollPane(graphViewer);
     scroll.setPreferredSize(SCROLL_COMPONENT_SIZE);
-    
-    final FileLinkGraphPanel theIntance = this;
-    this.addHierarchyListener(new HierarchyListener() {
-      @Override
-      public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
-        Window window = SwingUtilities.getWindowAncestor(theIntance);
-        if (window instanceof Dialog) {
-          final Dialog dialog = (Dialog) window;
-          if (!dialog.isResizable()) {
-            dialog.setResizable(true);
-            dialog.addComponentListener(new ComponentAdapter() {
-              @Override
-              public void componentResized(ComponentEvent e) {
-                viewModel.setGraphLayout(graphLayout);
-              }
-            });
-          }
-        }
-      }
-    });
+
+    UiUtils.makeOwningDialogResizable(this);
 
     graphViewer.scaleToLayout(new LayoutScalingControl());
 
