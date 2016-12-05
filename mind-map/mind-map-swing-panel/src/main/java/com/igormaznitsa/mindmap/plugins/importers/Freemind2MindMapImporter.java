@@ -110,8 +110,12 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     }
 
     final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setIgnoringComments(true);
+    factory.setValidating(false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    
     final DocumentBuilder builder = factory.newDocumentBuilder();
-
+    
     final Document document = builder.parse(file);
 
     final Element rootElement = document.getDocumentElement();
