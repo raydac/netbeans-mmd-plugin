@@ -280,6 +280,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     
     this.editorPane.getDocument().addUndoableEditListener(this.undoManager);
     updateRedoUndoState();
+    
+    UiUtils.makeOwningDialogResizable(this);
   }
 
   private void updateCaretPos() {
