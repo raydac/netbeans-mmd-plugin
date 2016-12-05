@@ -403,12 +403,19 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
 
   @Nonnull
   public String packToString() {
-    final StringWriter writer = new StringWriter(16384);
+    final StringWriter writer;
+    this.locker.lock();
     try {
-      write(writer);
+      writer = new StringWriter(16384);
+      try {
+        write(writer);
+      }
+      catch (IOException ex) {
+        throw new Error("Unexpected exception", ex);
+      }
     }
-    catch (IOException ex) {
-      throw new Error("Unexpected exception", ex);
+    finally {
+      locker.unlock();
     }
     return writer.toString();
   }
