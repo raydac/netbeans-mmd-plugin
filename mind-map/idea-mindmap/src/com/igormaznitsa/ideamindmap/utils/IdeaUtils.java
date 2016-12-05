@@ -23,7 +23,7 @@ import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
-import com.igormaznitsa.meta.common.utils.GetUtils;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -32,6 +32,7 @@ import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.intellij.CommonBundle;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.module.Module;
@@ -58,30 +59,22 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.indexing.FileBasedIndex;
 import com.intellij.util.ui.UIUtil;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.velocity.exception.MethodInvocationException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 public enum IdeaUtils {
@@ -111,6 +104,111 @@ public enum IdeaUtils {
       }
     }
     return moduleRoot;
+  }
+
+  @Nullable
+  public static Object callGetInstance(@Nonnull final String className) {
+    Object result = null;
+    try{
+      final Class<?> foundClass = Class.forName(className);
+      try {
+        final Method instanceMethod = foundClass.getMethod("getInstance");
+        if (Modifier.isStatic(instanceMethod.getModifiers())) {
+          result = instanceMethod.invoke(null);
+        }
+      }catch(MethodInvocationException ex){
+        LOGGER.error("Error during dynamic getInstance() call",ex);
+      }catch(Exception ex){
+        result = null;
+      }
+    }catch(final ClassNotFoundException ex){
+      result = null;
+    }
+    return result;
+  }
+
+  public static boolean submitTransactionLater(@Nonnull final Runnable runnable) {
+    final Object transactionGuardInstance = callGetInstance("com.intellij.openapi.application.TransactionGuard");
+
+    boolean result = false;
+    if (transactionGuardInstance!=null){
+      result = safeInvokeMethodNoResult(transactionGuardInstance,"submitTransactionLater",new Class<?>[]{Disposable.class,Runnable.class},new Object[]{new Disposable() {
+        @Override
+        public void dispose() {
+        }
+      },runnable});
+    }
+
+    return result;
+  }
+
+  public static void executeWriteAction(@Nonnull final Runnable action) {
+    final Runnable block = new Runnable() {
+      @Override
+      public void run() {
+        ApplicationManager.getApplication().runWriteAction(action);
+      }
+    };
+
+    if (submitTransactionLater(block)) {
+      LOGGER.info("Using TransactionGuard for write action");
+    } else {
+      LOGGER.info("Using CommandProcessor for write action");
+      CommandProcessor.getInstance().executeCommand(null, block,null,null);
+    }
+  }
+
+  public static void executeReadAction(@Nonnull final Runnable action) {
+    final Runnable block = new Runnable() {
+      @Override
+      public void run() {
+        ApplicationManager.getApplication().runReadAction(action);
+      }
+    };
+
+    if (submitTransactionLater(block)) {
+      LOGGER.info("Using TransactionGuard for read action");
+    } else {
+      LOGGER.info("Using CommandProcessor for read action");
+      CommandProcessor.getInstance().executeCommand(null, block,null,null);
+    }
+  }
+
+  @Nullable
+  public static <T> T safeInvokeMethodForResult(@Nonnull final Object instance, @Nonnull final T defaultResult, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object [] arguments) {
+    final Method method;
+    try {
+      method = instance.getClass().getMethod(methodName, argumentClasses);
+    }catch(NoSuchMethodException ex){
+      LOGGER.info("Can't find method '"+methodName+"' in class "+instance.getClass().getName());
+      return defaultResult;
+    }
+
+    try {
+      return  (T)method.invoke(instance, arguments);
+    }catch(Exception ex){
+      LOGGER.error("Error during call "+instance.getClass().getName()+"."+methodName+", default result will be returned");
+    }
+    return defaultResult;
+  }
+
+  @Nullable
+  public static boolean safeInvokeMethodNoResult(@Nonnull final Object instance, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object [] arguments) {
+    final Method method;
+    try {
+      method = instance.getClass().getMethod(methodName, argumentClasses);
+    }catch(NoSuchMethodException ex){
+      LOGGER.info("Can't find method '"+methodName+"' in class "+instance.getClass().getName());
+      return false;
+    }
+
+    try {
+      method.invoke(instance, arguments);
+      return true;
+    }catch(Exception ex){
+      LOGGER.error("Error during call "+instance.getClass().getName()+"."+methodName);
+    }
+    return false;
   }
 
   @Nullable
