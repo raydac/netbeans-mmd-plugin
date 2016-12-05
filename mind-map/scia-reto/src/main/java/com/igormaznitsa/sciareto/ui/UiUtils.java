@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
@@ -34,6 +35,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -113,6 +116,27 @@ public final class UiUtils {
   private UiUtils() {
   }
 
+  public static void makeOwningDialogResizable(@Nonnull final Component component, @Nonnull @MustNotContainNull final Runnable ... extraActions) {
+    final HierarchyListener listener =  new HierarchyListener() {
+      @Override
+      public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
+        final Window window = SwingUtilities.getWindowAncestor(component);
+        if (window instanceof Dialog) {
+          final Dialog dialog = (Dialog) window;
+          if (!dialog.isResizable()) {
+            dialog.setResizable(true);
+            component.removeHierarchyListener(this);
+            
+            for(final Runnable r : extraActions){
+              r.run();
+            }
+          }
+        }
+      }
+    };
+    component.addHierarchyListener(listener);
+  }
+  
   @Nonnull
   public static Point getPointForCentering(@Nonnull final Window window) {
     try {
