@@ -206,15 +206,17 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
 
   private void saveMindMapToDocument() {
     final Document document = getDocument();
-    final MindMap model = this.mindMapPanel.getModel();
-    if (document != null && model != null) {
-      IdeaUtils.executeWriteAction(new Runnable() {
-        @Override
-        public void run() {
-          final String packedMindMap = model.packToString();
-          document.setText(packedMindMap);
-        }
-      });
+    if (!this.mindMapPanel.isDisposed()) {
+      final MindMap model = this.mindMapPanel.getModel();
+      if (document != null && model != null) {
+        IdeaUtils.executeWriteAction(new Runnable() {
+          @Override
+          public void run() {
+            final String packedMindMap = model.packToString();
+            document.setText(packedMindMap);
+          }
+        }, getDocument());
+      }
     }
   }
 
@@ -244,7 +246,7 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
                 }
               });
             }
-          });
+          }, getDocument());
 
           CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
             @Override

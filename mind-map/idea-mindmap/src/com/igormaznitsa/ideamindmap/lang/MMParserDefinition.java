@@ -1,16 +1,6 @@
 package com.igormaznitsa.ideamindmap.lang;
 
-import com.igormaznitsa.ideamindmap.lang.psi.PsiAttributes;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraBlock;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraJump;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraText;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraType;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraURI;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiHeadDelimiter;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiHeadLine;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiTopic;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiUnknown;
+import com.igormaznitsa.ideamindmap.lang.psi.*;
 import com.igormaznitsa.ideamindmap.lang.tokens.MMElementType;
 import com.igormaznitsa.ideamindmap.lang.tokens.MMTokens;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -31,7 +21,7 @@ import javax.annotation.Nonnull;
 public class MMParserDefinition implements ParserDefinition {
   public static final IFileElementType FILE = new IFileElementType(MMLanguage.INSTANCE);
   private static final TokenSet WHITESPACES = TokenSet.create(MMTokens.WHITE_SPACE);
-  private static final TokenSet STRING_LITERALS = TokenSet.create(MMTokens.TOPIC, MMTokens.EXTRA_BODY);
+  private static final TokenSet STRING_LITERALS = TokenSet.create(MMTokens.TOPIC, MMTokens.EXTRA_BODY, MMTokens.CODE_SNIPPET_BODY);
 
   @Nonnull
   @Override
@@ -84,19 +74,25 @@ public class MMParserDefinition implements ParserDefinition {
         return new PsiExtraType(node);
       if (type == MMTokens.EXTRA_DATA)
         return new PsiExtraBlock(node);
+      if (type == MMTokens.CODE_SNIPPET_START)
+        return new PsiCodeSnippetStart(node);
+      if (type == MMTokens.CODE_SNIPPET_BODY)
+        return new PsiCodeSnippetBody(node);
+      if (type == MMTokens.CODE_SNIPPET_END)
+        return new PsiCodeSnippetEnd(node);
       if (type == MMTokens.EXTRA_BODY) {
         final PsiExtraBlock parent = (PsiExtraBlock) node.getTreeParent().getPsi();
         switch (parent.getType()) {
-        case NOTE:
-          return new PsiExtraText(node);
-        case FILE:
-          return new PsiExtraFile(node);
-        case LINK:
-          return new PsiExtraURI(node);
-        case TOPIC:
-          return new PsiExtraJump(node);
-        default:
-          throw Assertions.fail("Unexpected extra type " + parent.getType());
+          case NOTE:
+            return new PsiExtraText(node);
+          case FILE:
+            return new PsiExtraFile(node);
+          case LINK:
+            return new PsiExtraURI(node);
+          case TOPIC:
+            return new PsiExtraJump(node);
+          default:
+            throw Assertions.fail("Unexpected extra type " + parent.getType());
         }
       }
     }

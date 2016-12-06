@@ -15,7 +15,8 @@ import javax.annotation.Nonnull;
 public class MMPsiParser implements PsiParser, LightPsiParser {
   @Nonnull @Override public ASTNode parse(@Nonnull final IElementType root, @Nonnull final PsiBuilder builder) {
     parseLight(root, builder);
-    return builder.getTreeBuilt();
+    final ASTNode result = builder.getTreeBuilt();
+    return result;
   }
 
   @Override public void parseLight(final IElementType root, final PsiBuilder builder) {
@@ -29,30 +30,119 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
   }
 
   private void parseHeader(@Nonnull final PsiBuilder builder) {
-    boolean working = true;
-    while (working && !builder.eof()) {
+    boolean doLoop = true;
+    while (doLoop && !builder.eof()) {
       final PsiBuilder.Marker marker = builder.mark();
+
       if (builder.getTokenType() == null) {
         marker.drop();
       }
       else {
         final IElementType token = builder.getTokenType();
-        marker.done(token);
+
         if (token == MMTokens.HEADER_DELIMITER) {
-          working = false;
+          marker.done(token);
+          doLoop = false;
         }
         else if (token == MMTokens.HEADER_LINE
           || token == MMTokens.UNKNOWN
           || token == MMTokens.WHITE_SPACE
           || token == MMTokens.ATTRIBUTES) {
-          // do nothing
+          marker.done(token);
         }
         else {
-          throw Assertions.fail("Unexpected token " + token);
+          throw Assertions.fail("Unexpected header token : " + token);
         }
       }
       builder.advanceLexer();
     }
+  }
+
+  private void parseTopics(@Nonnull final PsiBuilder builder) {
+    while (!builder.eof()) {
+      final PsiBuilder.Marker marker = builder.mark();
+      final IElementType token = builder.getTokenType();
+
+      if (token == null) {
+        marker.drop();
+      }
+      else {
+        if (token == MMTokens.TOPIC) {
+          final String tokenText = Assertions.assertNotNull(builder.getTokenText());
+          final int topicLevel = ModelUtils.calcCharsOnStart('#', tokenText);
+          if (topicLevel != 1) {
+            marker.done(MMTokens.UNKNOWN);
+          }
+          else {
+            builder.advanceLexer();
+            recursiveParseTopic(builder, topicLevel);
+            marker.done(token);
+          }
+        }
+        else {
+          marker.done(MMTokens.UNKNOWN);
+        }
+      }
+      builder.advanceLexer();
+    }
+  }
+
+  private int recursiveParseTopic(@Nonnull final PsiBuilder builder, final int level) {
+
+    while (!builder.eof()) {
+      final PsiBuilder.Marker marker = builder.mark();
+
+      final IElementType token = builder.getTokenType();
+
+      if (token == null) {
+        marker.drop();
+      }
+      else {
+        if (token == MMTokens.TOPIC) {
+          final String tokenText = Assertions.assertNotNull(builder.getTokenText());
+
+          final int theTopicLevel = ModelUtils.calcCharsOnStart('#', tokenText);
+          if (theTopicLevel <= 1) {
+            marker.done(MMTokens.UNKNOWN);
+          }
+          else {
+            if (theTopicLevel <= level) {
+              marker.rollbackTo();
+              return theTopicLevel;
+            }
+            else {
+              builder.advanceLexer();
+              final int parsedTopicLevel = recursiveParseTopic(builder, theTopicLevel);
+              marker.done(MMTokens.TOPIC);
+              if (parsedTopicLevel < theTopicLevel)
+                return parsedTopicLevel;
+              if (parsedTopicLevel == theTopicLevel)
+                continue;
+            }
+          }
+        }
+        else if (token == MMTokens.CODE_SNIPPET_BODY || token == MMTokens.CODE_SNIPPET_END || token == MMTokens.CODE_SNIPPET_START || token == MMTokens.ATTRIBUTES) {
+          marker.done(token);
+        }
+        else if (token == MMTokens.EXTRA_TYPE) {
+          try {
+            if (parseExtraBlock(builder)) continue;
+          }finally {
+            marker.done(MMTokens.EXTRA_DATA);
+          }
+        }
+        else if (token == MMTokens.WHITE_SPACE) {
+          marker.done(token);
+        }
+        else {
+          marker.done(MMTokens.UNKNOWN);
+        }
+      }
+      builder.advanceLexer();
+    }
+
+
+    return level;
   }
 
   private boolean parseExtraBlock(@Nonnull final PsiBuilder builder) {
@@ -97,81 +187,4 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
     return false;
   }
 
-  private int recursiveParseTopic(@Nonnull final PsiBuilder builder, final int level) {
-    while (!builder.eof()) {
-      final PsiBuilder.Marker marker = builder.mark();
-      final IElementType token = builder.getTokenType();
-      if (token == null) {
-        marker.drop();
-      }
-      else {
-        if (token == MMTokens.TOPIC) {
-          final int theTopicLevel = ModelUtils.calcCharsOnStart('#', Assertions.assertNotNull(builder.getTokenText()));
-          if (theTopicLevel <= 1) {
-            marker.done(MMTokens.UNKNOWN);
-          }
-          else {
-            if (theTopicLevel <= level) {
-              marker.rollbackTo();
-              return theTopicLevel;
-            }
-            else {
-              builder.advanceLexer();
-              final int result = recursiveParseTopic(builder, theTopicLevel);
-              marker.done(MMTokens.TOPIC);
-              if (result < theTopicLevel)
-                return result;
-              if (result == theTopicLevel)
-                continue;
-            }
-          }
-        }
-        else if (token == MMTokens.ATTRIBUTES) {
-          marker.done(token);
-        }
-        else if (token == MMTokens.EXTRA_TYPE) {
-          try {
-            if (parseExtraBlock(builder)) continue;
-          }finally {
-            marker.done(MMTokens.EXTRA_DATA);
-          }
-        }
-        else if (token == MMTokens.WHITE_SPACE) {
-          marker.done(token);
-        }
-        else {
-          marker.done(MMTokens.UNKNOWN);
-        }
-      }
-      builder.advanceLexer();
-    }
-    return level;
-  }
-
-  private void parseTopics(@Nonnull final PsiBuilder builder) {
-    while (!builder.eof()) {
-      final PsiBuilder.Marker marker = builder.mark();
-      final IElementType token = builder.getTokenType();
-      if (token == null) {
-        marker.drop();
-      }
-      else {
-        if (token == MMTokens.TOPIC) {
-          final int level = ModelUtils.calcCharsOnStart('#', Assertions.assertNotNull(builder.getTokenText()));
-          if (level != 1) {
-            marker.done(MMTokens.UNKNOWN);
-          }
-          else {
-            builder.advanceLexer();
-            recursiveParseTopic(builder, level);
-            marker.done(token);
-          }
-        }
-        else {
-          marker.done(MMTokens.UNKNOWN);
-        }
-      }
-      builder.advanceLexer();
-    }
-  }
 }

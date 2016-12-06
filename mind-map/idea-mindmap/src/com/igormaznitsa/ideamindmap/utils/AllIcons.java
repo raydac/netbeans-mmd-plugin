@@ -28,6 +28,7 @@ public class AllIcons {
     public static final Icon TXT2MM = IconLoader.getIcon("/icons/txt2mm.png");
     public static final Icon XMIND2MM = IconLoader.getIcon("/icons/xmind2mm.png");
     public static final Icon ORGMODE = IconLoader.getIcon("/icons/orgmode.png");
+    public static final Icon COGGLE = IconLoader.getIcon("/icons/coggle.png");
   }
 
   public static class File {

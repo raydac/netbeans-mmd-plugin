@@ -38,6 +38,7 @@ public class IdeaImageIconService implements ImageIconService {
     MAP.put(IconID.POPUP_IMPORT, AllIcons.PopUp.IMPORT);
     MAP.put(IconID.POPUP_IMPORT_TXT2MM, AllIcons.ImportExport.TXT2MM);
     MAP.put(IconID.POPUP_IMPORT_XMIND2MM, AllIcons.ImportExport.XMIND2MM);
+    MAP.put(IconID.POPUP_IMPORT_COGGLE2MM, AllIcons.ImportExport.COGGLE);
     MAP.put(IconID.POPUP_EXPORT_ORGMODE, AllIcons.ImportExport.ORGMODE);
   }
 

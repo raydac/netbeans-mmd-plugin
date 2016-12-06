@@ -35,6 +35,7 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -142,7 +143,7 @@ public enum IdeaUtils {
     return result;
   }
 
-  public static void executeWriteAction(@Nonnull final Runnable action) {
+  public static void executeWriteAction(@Nonnull final Runnable action, @Nullable final Document document) {
     final Runnable block = new Runnable() {
       @Override
       public void run() {
@@ -154,11 +155,11 @@ public enum IdeaUtils {
       LOGGER.info("Using TransactionGuard for write action");
     } else {
       LOGGER.info("Using CommandProcessor for write action");
-      CommandProcessor.getInstance().executeCommand(null, block,null,null);
+      CommandProcessor.getInstance().executeCommand(null, block,null,null, document);
     }
   }
 
-  public static void executeReadAction(@Nonnull final Runnable action) {
+  public static void executeReadAction(@Nonnull final Runnable action, @Nullable final Document document) {
     final Runnable block = new Runnable() {
       @Override
       public void run() {
@@ -170,7 +171,7 @@ public enum IdeaUtils {
       LOGGER.info("Using TransactionGuard for read action");
     } else {
       LOGGER.info("Using CommandProcessor for read action");
-      CommandProcessor.getInstance().executeCommand(null, block,null,null);
+      CommandProcessor.getInstance().executeCommand(null, block,null,null, document);
     }
   }
 
