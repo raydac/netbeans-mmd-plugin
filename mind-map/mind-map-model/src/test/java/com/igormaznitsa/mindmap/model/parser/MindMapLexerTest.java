@@ -19,8 +19,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.apache.commons.io.IOUtils;
+import com.igormaznitsa.mindmap.model.parser.MindMapLexer.TokenType;
 
 public class MindMapLexerTest {
 
@@ -465,4 +468,39 @@ public class MindMapLexerTest {
 
   }
 
+  @Test
+  public void testTextSplittingForLostOrDuplicatedTokens() throws Exception {
+    final String etalon = IOUtils.toString(MindMapLexerTest.class.getResourceAsStream("cancer_risk.mmd"),"UTF-8");
+    
+    final StringBuilder accum1 = new StringBuilder();
+    final StringBuilder accum2 = new StringBuilder();
+    final StringBuilder accum3 = new StringBuilder();
+    
+    final MindMapLexer lexer = new MindMapLexer();
+    lexer.start(etalon, 0, etalon.length(), MindMapLexer.TokenType.HEAD_LINE);
+    lexer.advance();
+    
+    int prevEnd = 0;
+    
+    while(true){
+      final TokenType type = lexer.getTokenType();
+      if (type == null){
+        break;
+      } 
+      
+      assertEquals(prevEnd, lexer.getTokenStartOffset());
+      prevEnd = lexer.getTokenEndOffset();
+//      assertNotEquals("Unknown line : "+lexer.getTokenText(),TokenType.UNKNOWN_LINE, type);
+      
+      accum1.append(etalon.substring(lexer.getTokenStartOffset(),lexer.getTokenEndOffset()));
+      accum2.append(lexer.getTokenText());
+      accum3.append(lexer.getTokenSequence());
+      lexer.advance();
+    }
+    
+    assertEquals(etalon,accum1.toString());
+    assertEquals(etalon,accum2.toString());
+    assertEquals(etalon,accum3.toString());
+  }
+  
 }
