@@ -59,11 +59,11 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
-public class Coggle2MindMapImporter extends AbstractImporter {
+public class CoggleMM2MindMapImporter extends AbstractImporter {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_COGGLE2MM);
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Coggle2MindMapImporter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CoggleMM2MindMapImporter.class);
 
   @Nonnull
   private static Document extractDocument(@Nonnull final InputStream xmlStream) throws Exception {
@@ -88,7 +88,7 @@ public class Coggle2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-    final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.Coggle2MindMap.openDialogTitle"), "mm", "Coggle files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
+    final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.CoggleMM2MindMap.openDialogTitle"), "mm", "Coggle MM files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
@@ -288,7 +288,8 @@ public class Coggle2MindMapImporter extends AbstractImporter {
     }
 
     if (edgeColor != null) {
-      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(), Utils.color2html(edgeColor, false));
+      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), Utils.color2html(edgeColor, false));
+      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(edgeColor), false));
     }
 
     if (note.length() > 0) {
@@ -318,19 +319,19 @@ public class Coggle2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public String getMnemonic() {
-    return "coggle";
+    return "cogglemm";
   }
 
   @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return Texts.getString("MMDImporters.Coggle2MindMap.Name");
+    return Texts.getString("MMDImporters.CoggleMM2MindMap.Name");
   }
 
   @Override
   @Nonnull
   public String getReference(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return Texts.getString("MMDImporters.Coggle2MindMap.Reference");
+    return Texts.getString("MMDImporters.CoggleMM2MindMap.Reference");
   }
 
   @Override
