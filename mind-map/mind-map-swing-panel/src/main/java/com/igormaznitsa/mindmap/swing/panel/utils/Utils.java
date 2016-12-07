@@ -44,6 +44,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import java.util.ResourceBundle;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -60,7 +62,6 @@ import javax.swing.tree.TreePath;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -107,6 +108,53 @@ public final class Utils {
   private Utils() {
   }
 
+  /**
+   * Get input stream for resource in zip file.
+   * @param zipFile zip file
+   * @param resourcePath path to resource
+   * @return input stream for resource or null if not found or directory
+   * @throws IOException if there is any transport error
+   */
+  @Nullable
+  public static InputStream findInputStreamForResource(@Nonnull final ZipFile zipFile, @Nonnull final String resourcePath) throws IOException {
+    final ZipEntry entry = zipFile.getEntry(resourcePath);
+
+    InputStream result = null;
+
+    if (entry != null && !entry.isDirectory()) {
+      result = zipFile.getInputStream(entry);
+    }
+
+    return result;
+  }
+
+  /**
+   * Read who;e zip item into byte array.
+   * @param zipFile zip file
+   * @param path path to resource
+   * @return byte array or null if not found
+   * @throws IOException thrown if there is any transport error
+   */
+  @Nullable
+  public static byte[] toByteArray(@Nonnull final ZipFile zipFile, @Nonnull final String path) throws IOException {
+    final InputStream in = findInputStreamForResource(zipFile, path);
+
+    byte[] result = null;
+
+    if (in != null) {
+      try {
+        result = IOUtils.toByteArray(in);
+      }
+      finally {
+        IOUtils.closeQuietly(in);
+      }
+    }
+
+    return result;
+  }
+
+  
+  
   /**
    * Load and parse XML document from input stream.
    *

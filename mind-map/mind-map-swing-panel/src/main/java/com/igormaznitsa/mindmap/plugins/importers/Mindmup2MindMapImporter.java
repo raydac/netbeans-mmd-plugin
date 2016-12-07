@@ -18,10 +18,7 @@ package com.igormaznitsa.mindmap.plugins.importers;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import java.io.File;
 import java.net.URISyntaxException;
@@ -32,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.io.FileUtils;
@@ -181,7 +177,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
           if (Assertions.assertNotNull(topicToProcess.getParent()).isRoot()) {
             if (i.isLeftBranch()) {
               AbstractCollapsableElement.makeTopicLeftSided(topicToProcess, true);
-              final Topic firstSibling = parentTopic.getFirst();
+              final Topic firstSibling = Assertions.assertNotNull(parentTopic).getFirst();
               if (firstSibling != null && firstSibling != topicToProcess) {
                 topicToProcess.moveBefore(firstSibling);
               }
@@ -233,17 +229,15 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       final String[] data = iconUrl.split("\\,");
       if (data.length == 2 && data[0].startsWith("data:image/") && data[0].endsWith("base64")) {
         try {
-          final Image image = ImageIO.read(new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(data[1].trim())));
-          if (image != null) {
-            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ImageIO.write((RenderedImage) image, "png", bos); //NOI18N
-            bos.close();
-            final String encoded = Utils.base64encode(bos.toByteArray());
+          final String encoded = Utils.rescaleImageAndEncodeAsBase64(new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(data[1].trim())), -1);
+          if (encoded == null) {
+            LOGGER.warn("Can't convert image : "+iconUrl);
+          } else {
             topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, encoded);
           }
         }
         catch (final Exception ex) {
-          LOGGER.error("Can't decode image", ex);
+          LOGGER.error("Can't load image : "+iconUrl, ex);
         }
       }
     } else {

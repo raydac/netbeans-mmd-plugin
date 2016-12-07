@@ -18,9 +18,6 @@ package com.igormaznitsa.mindmap.plugins.importers;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -157,7 +153,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     final Topic topicToProcess;
     if (preGeneratedTopic == null) {
       topicToProcess = Assertions.assertNotNull(parent).makeChild(text, null);
-      if (parent.isRoot()) {
+      if (Assertions.assertNotNull(parent).isRoot()) {
         if ("left".equalsIgnoreCase(position)) {
           AbstractCollapsableElement.makeTopicLeftSided(topicToProcess, true);
         }
@@ -219,12 +215,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
         }
 
         if (file.isFile()) {
-          final Image image = ImageIO.read(file);
-          final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          ImageIO.write((RenderedImage) image, "png", bos); //NOI18N
-          bos.close();
-          final String encoded = Utils.base64encode(bos.toByteArray());
-          topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, encoded);
+          topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, Utils.rescaleImageAndEncodeAsBase64(file, -1));
           break;
         }
       }

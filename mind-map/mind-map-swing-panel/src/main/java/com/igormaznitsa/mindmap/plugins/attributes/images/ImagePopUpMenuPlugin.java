@@ -166,7 +166,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
     final ButtonGroup group = new ButtonGroup();
 
-    int selectedIndex = this.lastSelectedImportIndex;
+    int selectedIndex = lastSelectedImportIndex;
 
     for (int i = 0; i < options.length; i++) {
       final JRadioButton button = new JRadioButton(options[i]);

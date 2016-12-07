@@ -17,31 +17,25 @@ package com.igormaznitsa.mindmap.plugins.importers;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -88,7 +82,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         byte[] result = null;
         final String path = "Resources/" + url;
         try {
-          result = readWholeItemFromZipFile(zipFile, path);
+          result = Utils.toByteArray(zipFile, path);
         }
         catch (Exception ex) {
           LOGGER.error("Can't extract resource data : " + path, ex);
@@ -103,7 +97,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     private Manifest(@Nonnull final ZipFile zipFile, @Nonnull final String manifestPath) {
       this.zipFile = zipFile;
       try {
-        final InputStream resourceIn = getZipInputStream(zipFile, manifestPath);
+        final InputStream resourceIn = Utils.findInputStreamForResource(zipFile, manifestPath);
         if (resourceIn != null) {
           final Document document = Utils.loadXmlDocument(resourceIn, null, true);
           final Element main = document.getDocumentElement();
@@ -136,15 +130,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         final byte[] imageFile = resource.extractResourceBody();
         if (imageFile != null) {
           try {
-            final Image image = ImageIO.read(new ByteArrayInputStream(imageFile));
-            if (image == null) {
-              LOGGER.warn("Can't load image " + resource.getUrl() + ", because unsupported format");
-            } else {
-              final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-              ImageIO.write((RenderedImage) image, "png", bos); //NOI18N
-              bos.close();
-              result = Utils.base64encode(bos.toByteArray());
-            }
+            result = Utils.rescaleImageAndEncodeAsBase64(new ByteArrayInputStream(imageFile),-1);
           }
           catch (Exception ex) {
             LOGGER.error("Can't find or convert image resource : " + resource.getUrl(), ex);
@@ -161,27 +147,27 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     }
   }
 
-  private static final class ContentModel {
+  private static final class ParsedContent {
 
-    private static final class TopicRef {
+    private static final class TopicReference {
 
       private final String id;
-      private final ContentTopiс linkedTopic;
+      private final ContentTopic linkedTopic;
 
       private final Color colorBorder;
       private final Color colorText;
       private final Color colorFill;
 
-      private final List<TopicRef> children = new ArrayList<TopicRef>();
+      private final List<TopicReference> children = new ArrayList<TopicReference>();
 
-      private TopicRef(@Nonnull final Element topicNode, @Nonnull final Map<String, ContentTopiс> topicMap) {
+      private TopicReference(@Nonnull final Element topicNode, @Nonnull final Map<String, ContentTopic> topicMap) {
         this.id = topicNode.getAttribute("id");
         this.linkedTopic = topicMap.get(topicNode.getAttribute("topic-ref"));
 
         final Element subTopics = Utils.findFirstElement(topicNode, "sub-topics");
         if (subTopics != null) {
           for (final Element t : Utils.findDirectChildrenForName(subTopics, "topic-node")) {
-            this.children.add(new TopicRef(t, topicMap));
+            this.children.add(new TopicReference(t, topicMap));
           }
         }
 
@@ -239,18 +225,18 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       }
 
       @Nullable
-      ContentTopiс getContentTopic() {
+      ContentTopic getContentTopic() {
         return this.linkedTopic;
       }
 
       @Nonnull
       @MustNotContainNull
-      public List<TopicRef> getChildren() {
+      public List<TopicReference> getChildren() {
         return this.children;
       }
     }
 
-    private static final class ContentTopiс {
+    private static final class ContentTopic {
 
       private final String id;
       private final String richText;
@@ -258,7 +244,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       private final List<String> linkUrls;
       private final String imageResourceId;
 
-      private ContentTopiс(@Nonnull final String id, @Nonnull final Element nodeElement) {
+      private ContentTopic(@Nonnull final String id, @Nonnull final Element nodeElement) {
         this.id = id;
         this.imageResourceId = extractImageId(nodeElement);
         this.notes = extractNotes(nodeElement);
@@ -361,18 +347,18 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
     }
 
-    private final Map<String, ContentTopiс> topicsMap = new HashMap<String, ContentTopiс>();
+    private final Map<String, ContentTopic> topicsMap = new HashMap<String, ContentTopic>();
     private final Map<String, String> linksBetweenTopics = new HashMap<String, String>();
-    private final TopicRef rootRef;
+    private final TopicReference rootRef;
 
     @Nullable
-    TopicRef findForTopicId(@Nonnull TopicRef startTopicRef, @Nonnull final String contentTopicId) {
-      TopicRef result = null;
+    TopicReference findForTopicId(@Nonnull TopicReference startTopicRef, @Nonnull final String contentTopicId) {
+      TopicReference result = null;
 
-      if (contentTopicId.equals(startTopicRef.getContentTopic().getId())) {
+      if (contentTopicId.equals(Assertions.assertNotNull(startTopicRef.getContentTopic()).getId())) {
         result = startTopicRef;
       } else {
-        for (final ContentModel.TopicRef c : startTopicRef.getChildren()) {
+        for (final ParsedContent.TopicReference c : startTopicRef.getChildren()) {
           result = findForTopicId(c, contentTopicId);
           if (result != null) {
             break;
@@ -384,7 +370,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     }
 
     @Nullable
-    TopicRef getRootTopic() {
+    TopicReference getRootTopic() {
       return this.rootRef;
     }
 
@@ -393,11 +379,11 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       return this.linksBetweenTopics;
     }
 
-    ContentModel(@Nonnull final ZipFile file, @Nonnull final String path) {
-      TopicRef mapRoot = null;
+    ParsedContent(@Nonnull final ZipFile file, @Nonnull final String path) {
+      TopicReference mapRoot = null;
 
       try {
-        final InputStream resourceIn = getZipInputStream(file, path);
+        final InputStream resourceIn = Utils.findInputStreamForResource(file, path);
         if (resourceIn != null) {
           final Document document = Utils.loadXmlDocument(resourceIn, null, true);
           final Element main = document.getDocumentElement();
@@ -405,7 +391,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
             for (final Element e : Utils.findDirectChildrenForName(main, "topics")) {
               for (final Element r : Utils.findDirectChildrenForName(e, "topic")) {
                 final String id = r.getAttribute("id");
-                this.topicsMap.put(id, new ContentTopiс(id, r));
+                this.topicsMap.put(id, new ContentTopic(id, r));
               }
             }
 
@@ -415,7 +401,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
               if (firstMap != null) {
                 final Element rootTopicNode = Utils.findFirstElement(firstMap, "topic-node");
                 if (rootTopicNode != null) {
-                  mapRoot = new TopicRef(rootTopicNode, this.topicsMap);
+                  mapRoot = new TopicReference(rootTopicNode, this.topicsMap);
                 }
 
                 for (final Element l : Utils.findDirectChildrenForName(firstMap, "link-lines")) {
@@ -447,37 +433,6 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
   }
 
-  @Nullable
-  private static InputStream getZipInputStream(@Nonnull final ZipFile zipFile, @Nonnull final String path) throws IOException {
-    final ZipEntry entry = zipFile.getEntry(path);
-
-    InputStream result = null;
-
-    if (entry != null && !entry.isDirectory()) {
-      result = zipFile.getInputStream(entry);
-    }
-
-    return result;
-  }
-
-  @Nullable
-  private static byte[] readWholeItemFromZipFile(@Nonnull final ZipFile zipFile, @Nonnull final String path) throws IOException {
-    final InputStream in = getZipInputStream(zipFile, path);
-
-    byte[] result = null;
-
-    if (in != null) {
-      try {
-        result = IOUtils.toByteArray(in);
-      }
-      finally {
-        IOUtils.closeQuietly(in);
-      }
-    }
-
-    return result;
-  }
-
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
@@ -489,14 +444,14 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
     final ZipFile zipFile = new ZipFile(file);
     final Manifest manifest = new Manifest(zipFile, "manifest.xml");
-    final ContentModel content = new ContentModel(zipFile, "content.xml");
+    final ParsedContent content = new ParsedContent(zipFile, "content.xml");
 
     final MindMap result = new MindMap(null, true);
     result.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
     assertNotNull(result.getRoot()).setText("Empty map");
 
-    final ContentModel.TopicRef rootRef = content.getRootTopic();
+    final ParsedContent.TopicReference rootRef = content.getRootTopic();
     if (rootRef != null) {
       final Map<String, Topic> mapIdToTopic = new HashMap<String, Topic>();
       convertContentTopicIntoMMTopic(result, null, rootRef, manifest, mapIdToTopic);
@@ -516,10 +471,10 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  private static void processURLLinks(@Nonnull final MindMap map, @Nonnull final ContentModel model, @Nonnull final ContentModel.TopicRef topicRef, @Nonnull final Map<String, Topic> mapTopicRefToTopics) {
+  private static void processURLLinks(@Nonnull final MindMap map, @Nonnull final ParsedContent model, @Nonnull final ParsedContent.TopicReference topicRef, @Nonnull final Map<String, Topic> mapTopicRefToTopics) {
     final Topic topic = mapTopicRefToTopics.get(topicRef.getId());
     if (topic != null) {
-      final ContentModel.ContentTopiс ctopic = topicRef.getContentTopic();
+      final ParsedContent.ContentTopic ctopic = Assertions.assertNotNull(topicRef.getContentTopic());
 
       final List<String> urls = ctopic.getLinkUrls();
 
@@ -531,7 +486,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         for (final String s : urls) {
           if (s.startsWith("novamind://topic/")) {
             final String targetTopicId = s.substring(17);
-            final ContentModel.TopicRef reference = model.findForTopicId(assertNotNull(model.getRootTopic()), targetTopicId);
+            final ParsedContent.TopicReference reference = model.findForTopicId(assertNotNull(model.getRootTopic()), targetTopicId);
             if (reference != null) {
               final Topic destTopic = mapTopicRefToTopics.get(reference.getId());
               if (destTopic != null) {
@@ -539,7 +494,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
               }
             }
           } else {
-            MMapURI uri = null;
+            MMapURI uri;
             try {
               uri = new MMapURI(s);
               if (!uri.isAbsolute()) {
@@ -591,13 +546,13 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         }
       }
 
-      for (final ContentModel.TopicRef c : topicRef.getChildren()) {
+      for (final ParsedContent.TopicReference c : topicRef.getChildren()) {
         processURLLinks(map, model, c, mapTopicRefToTopics);
       }
     }
   }
 
-  private static void convertContentTopicIntoMMTopic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final ContentModel.TopicRef node, @Nonnull final Manifest manifest, @Nonnull final Map<String, Topic> mapRefToTopic) {
+  private static void convertContentTopicIntoMMTopic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final ParsedContent.TopicReference node, @Nonnull final Manifest manifest, @Nonnull final Map<String, Topic> mapRefToTopic) {
     final Topic processing;
     if (parent == null) {
       processing = assertNotNull(map.getRoot());
@@ -617,7 +572,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       processing.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(), Utils.color2html(node.getColorText(), false));
     }
 
-    final ContentModel.ContentTopiс data = node.getContentTopic();
+    final ParsedContent.ContentTopic data = node.getContentTopic();
     if (data != null) {
 
       mapRefToTopic.put(node.getId(), processing);
@@ -636,7 +591,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         processing.setExtra(new ExtraNote(data.getNotes()));
       }
 
-      for (final ContentModel.TopicRef c : node.getChildren()) {
+      for (final ParsedContent.TopicReference c : node.getChildren()) {
         convertContentTopicIntoMMTopic(map, processing, c, manifest, mapRefToTopic);
       }
     }

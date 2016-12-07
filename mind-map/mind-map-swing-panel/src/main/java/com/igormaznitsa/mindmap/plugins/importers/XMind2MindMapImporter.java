@@ -16,23 +16,17 @@
 package com.igormaznitsa.mindmap.plugins.importers;
 
 import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
@@ -114,7 +108,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     private XMindStyles(@Nonnull final ZipFile zipFile) {
       try {
-        final InputStream stylesXml = getZipInputStream(zipFile, "styles.xml");
+        final InputStream stylesXml = Utils.findInputStreamForResource(zipFile, "styles.xml");
         if (stylesXml != null) {
           final Document parsedStyles = Utils.loadXmlDocument(stylesXml, null, true);
 
@@ -145,37 +139,6 @@ public class XMind2MindMapImporter extends AbstractImporter {
     }
   }
 
-  @Nullable
-  private static InputStream getZipInputStream(@Nonnull final ZipFile zipFile, @Nonnull final String path) throws IOException {
-    final ZipEntry entry = zipFile.getEntry(path);
-
-    InputStream result = null;
-
-    if (entry != null && !entry.isDirectory()) {
-      result = zipFile.getInputStream(entry);
-    }
-
-    return result;
-  }
-
-  @Nullable
-  private static byte[] readWholeItemFromZipFile(@Nonnull final ZipFile zipFile, @Nonnull final String path) throws IOException {
-    final InputStream in = getZipInputStream(zipFile, path);
-
-    byte[] result = null;
-
-    if (in != null) {
-      try {
-        result = IOUtils.toByteArray(in);
-      }
-      finally {
-        IOUtils.closeQuietly(in);
-      }
-    }
-
-    return result;
-  }
-
   private static void throwWrongFormat() {
     throw new IllegalArgumentException("Wrong or unsupported XMind file format");
   }
@@ -192,11 +155,11 @@ public class XMind2MindMapImporter extends AbstractImporter {
     final ZipFile zipFile = new ZipFile(file);
     final XMindStyles styles = new XMindStyles(zipFile);
 
-    final InputStream contentStream = getZipInputStream(zipFile, "content.xml");
+    final InputStream contentStream = Utils.findInputStreamForResource(zipFile, "content.xml");
     if (contentStream == null) {
       throwWrongFormat();
     }
-    final Document document = Utils.loadXmlDocument(contentStream, null, true);
+    final Document document = Utils.loadXmlDocument(Assertions.assertNotNull(contentStream), null, true);
 
     final Element rootElement = document.getDocumentElement();
     if (!rootElement.getTagName().equals("xmap-content")) {
@@ -298,7 +261,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
       styles.setStyle(styleId, topicToProcess);
     }
 
-    final String attachedImage = extractAttachedImage(zipFile, topicElement);
+    final String attachedImage = extractFirstAttachedImageAsBase64(zipFile, topicElement);
     if (attachedImage != null && !attachedImage.isEmpty()) {
       topicToProcess.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, attachedImage);
     }
@@ -336,36 +299,26 @@ public class XMind2MindMapImporter extends AbstractImporter {
   }
 
   @Nullable
-  private static String extractAttachedImage(@Nonnull final ZipFile file, @Nonnull final Element topic) {
+  private static String extractFirstAttachedImageAsBase64(@Nonnull final ZipFile file, @Nonnull final Element topic) {
     String result = null;
 
     for (final Element e : Utils.findDirectChildrenForName(topic, "xhtml:img")) {
       final String link = e.getAttribute("xhtml:src");
       if (!link.isEmpty()) {
         if (link.startsWith("xap:")) {
-          InputStream imageStream = null;
-          Image loadedImage = null;
+          InputStream inStream = null;
           try {
-            imageStream = getZipInputStream(file, link.substring(4));
-            loadedImage = ImageIO.read(imageStream);
+            inStream = Utils.findInputStreamForResource(file, link.substring(4));
+            if (inStream!=null) {
+              result = Utils.rescaleImageAndEncodeAsBase64(inStream, -1);
+              if (result != null) break;
+            }
           }
           catch (final Exception ex) {
-            LOGGER.error("Can't decode attached image", ex);
+            LOGGER.error("Can't decode attached image : "+link, ex);
           }
-          finally {
-            IOUtils.closeQuietly(imageStream);
-          }
-
-          if (loadedImage != null) {
-            try {
-              final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-              ImageIO.write((RenderedImage) loadedImage, "png", bos); //NOI18N
-              bos.close();
-              result = Utils.base64encode(bos.toByteArray());
-            }
-            catch (final Exception ex) {
-              LOGGER.error("Can't encode attached image into png", ex);
-            }
+          finally{
+            IOUtils.closeQuietly(inStream);
           }
         }
       }

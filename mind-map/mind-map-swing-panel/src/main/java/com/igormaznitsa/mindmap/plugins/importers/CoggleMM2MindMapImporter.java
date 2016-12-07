@@ -17,8 +17,6 @@ package com.igormaznitsa.mindmap.plugins.importers;
 
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -144,13 +142,10 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
 
     if (loadedImage != null) {
       try {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write((RenderedImage) loadedImage, "png", bos); //NOI18N
-        bos.close();
-        result = Utils.base64encode(bos.toByteArray());
+        result = Utils.rescaleImageAndEncodeAsBase64(loadedImage, -1);
       }
       catch (final Exception ex) {
-        LOGGER.error("Can't encode image into png", ex);
+        LOGGER.error("Can't decode image", ex);
       }
     }
 
