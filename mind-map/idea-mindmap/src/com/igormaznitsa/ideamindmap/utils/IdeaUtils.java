@@ -33,8 +33,10 @@ import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.intellij.CommonBundle;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
@@ -143,7 +145,7 @@ public enum IdeaUtils {
     return result;
   }
 
-  public static void executeWriteAction(@Nonnull final Runnable action, @Nullable final Document document) {
+  public static void executeWriteAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
     final Runnable block = new Runnable() {
       @Override
       public void run() {
@@ -155,11 +157,11 @@ public enum IdeaUtils {
       LOGGER.info("Using TransactionGuard for write action");
     } else {
       LOGGER.info("Using CommandProcessor for write action");
-      CommandProcessor.getInstance().executeCommand(null, block,null,null, document);
+      CommandProcessor.getInstance().executeCommand(project, block,null,null, document);
     }
   }
 
-  public static void executeReadAction(@Nonnull final Runnable action, @Nullable final Document document) {
+  public static void executeReadAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
     final Runnable block = new Runnable() {
       @Override
       public void run() {
@@ -171,7 +173,7 @@ public enum IdeaUtils {
       LOGGER.info("Using TransactionGuard for read action");
     } else {
       LOGGER.info("Using CommandProcessor for read action");
-      CommandProcessor.getInstance().executeCommand(null, block,null,null, document);
+      CommandProcessor.getInstance().executeCommand(project, block,null,null, document);
     }
   }
 

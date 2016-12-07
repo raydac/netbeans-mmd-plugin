@@ -62,24 +62,34 @@ public class MMParserDefinition implements ParserDefinition {
   public PsiElement createElement(final ASTNode node) {
     final IElementType type = node.getElementType();
     if (type instanceof MMElementType) {
+
       if (type == MMTokens.HEADER_LINE)
         return new PsiHeadLine(node);
+
       if (type == MMTokens.HEADER_DELIMITER)
         return new PsiHeadDelimiter(node);
+
       if (type == MMTokens.ATTRIBUTES)
         return new PsiAttributes(node);
+
       if (type == MMTokens.TOPIC)
         return new PsiTopic(node);
+
       if (type == MMTokens.EXTRA_TYPE)
         return new PsiExtraType(node);
+
       if (type == MMTokens.EXTRA_DATA)
         return new PsiExtraBlock(node);
+
       if (type == MMTokens.CODE_SNIPPET_START)
         return new PsiCodeSnippetStart(node);
+
       if (type == MMTokens.CODE_SNIPPET_BODY)
         return new PsiCodeSnippetBody(node);
+
       if (type == MMTokens.CODE_SNIPPET_END)
         return new PsiCodeSnippetEnd(node);
+
       if (type == MMTokens.EXTRA_BODY) {
         final PsiExtraBlock parent = (PsiExtraBlock) node.getTreeParent().getPsi();
         switch (parent.getType()) {
