@@ -1,5 +1,5 @@
 1.4.0 (under development)
-- IDEA: plugin adapted for compatibility with 14.0.5 (139.1803)
+- IJ: plugin adapted for compatibility with 14.0.5 (139.1803)
 - ALL: added importers for Mindmup, Freemind, Novamind, Coggle and XMind formats
 - NB:  disabled watching of file changes by default, added options flag to enable that
 - SCIARETO: added graph generator for file links in mind maps of project
@@ -11,10 +11,10 @@
 - ALL: improved mind-map options panel, added functions to reset, import and export settings.
 - SCIARETO: added CLI interface to convert data
 - ALL: export into Org-Mode format [#24](https://github.com/raydac/netbeans-mmd-plugin/issues/24)
-- IDEA,NB: by default disabled autocreation of .projectKnowledge folder [#23](https://github.com/raydac/netbeans-mmd-plugin/issues/23)
+- IJ,NB: by default disabled autocreation of .projectKnowledge folder [#23](https://github.com/raydac/netbeans-mmd-plugin/issues/23)
 - ALL: added keyboard shortcuts to fold and unfold topics (`-` and `=`) [#18](https://github.com/raydac/netbeans-mmd-plugin/issues/18)
 - ALL: added attribute in mind map templates to show jumps by default
-- IDEA: added auto-positioning of root topic into center of view area just as document open
+- IJ: added auto-positioning of root topic into center of view area just as document open
 - SCIARETO: added text search in map 
 
 1.3.0 (01-sep-2016)
