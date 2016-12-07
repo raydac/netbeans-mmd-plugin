@@ -57,6 +57,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         final MMDPrintPanel panel = new MMDPrintPanel(adaptor, mindMapPanel);
+        UiUtils.makeOwningDialogResizable(panel);
         JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(mindMapPanel), panel, "Print mind map",JOptionPane.PLAIN_MESSAGE);
       }
     });
