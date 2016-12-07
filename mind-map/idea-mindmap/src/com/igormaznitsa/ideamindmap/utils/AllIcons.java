@@ -29,6 +29,7 @@ public class AllIcons {
     public static final Icon XMIND2MM = IconLoader.getIcon("/icons/xmind2mm.png");
     public static final Icon ORGMODE = IconLoader.getIcon("/icons/orgmode.png");
     public static final Icon COGGLE = IconLoader.getIcon("/icons/coggle.png");
+    public static final Icon NOVAMIND = IconLoader.getIcon("/icons/novamind.png");
   }
 
   public static class File {
