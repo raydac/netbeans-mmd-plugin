@@ -32,6 +32,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -56,9 +57,15 @@ import javax.swing.UIManager;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import com.igormaznitsa.meta.annotation.ImplementationNote;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -101,12 +108,71 @@ public final class Utils {
   }
 
   /**
+   * Load and parse XML document from input stream.
+   *
+   * @param inStream stream to read document
+   * @param autoClose true if stream must be closed, false otherwise
+   * @return parsed document
+   * @throws IOException
+   * @throws ParserConfigurationException
+   * @throws SAXException
+   *
+   * @since 1.4.0
+   */
+  @Nonnull
+  public static Document loadXmlDocument(@Nonnull final InputStream inStream, @Nullable final String charset, final boolean autoClose) throws SAXException, IOException, ParserConfigurationException {
+    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setIgnoringComments(true);
+    factory.setValidating(false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+    final DocumentBuilder builder = factory.newDocumentBuilder();
+
+    final Document document;
+    try {
+      final InputStream stream;
+      if (charset == null) {
+        stream = inStream;
+      } else {
+        stream = new ByteArrayInputStream(IOUtils.toString(inStream, charset).getBytes("UTF-8"));
+      }
+      document = builder.parse(stream);
+    }
+    finally {
+      if (autoClose) {
+        IOUtils.closeQuietly(inStream);
+      }
+    }
+
+    return document;
+  }
+
+  /**
+   * Get first direct child for name.
+   *
+   * @param node element to find children
+   * @param elementName name of child element
+   * @return found first child or null if not found
+   *
+   * @since 1.4.0
+   */
+  @Nullable
+  public static Element findFirstElement(@Nonnull final Element node, @Nonnull final String elementName) {
+    Element result = null;
+    for (final Element l : Utils.findDirectChildrenForName(node, elementName)) {
+      result = l;
+      break;
+    }
+    return result;
+  }
+
+  /**
    * Find all direct children with defined name.
-   * 
+   *
    * @param element parent element
    * @param childElementname child element name
    * @return list of found elements
-   * 
+   *
    * @since 1.4.0
    */
   @Nonnull
@@ -124,12 +190,11 @@ public final class Utils {
     return resultList;
   }
 
-
-  
   /**
    * Get max image size.
+   *
    * @return max image size
-   * 
+   *
    * @see #MAX_IMAGE_SIDE_SIZE_IN_PIXELS
    * @see #PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE
    */
@@ -148,8 +213,6 @@ public final class Utils {
     return result;
   }
 
-
-  
   /**
    * Load and encode image into Base64.
    *
@@ -173,12 +236,12 @@ public final class Utils {
 
   /**
    * Load and encode image into Base64 from file.
-   * 
+   *
    * @param file image file
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return image
    * @throws IOException if any error during conversion or loading
-   * 
+   *
    * @since 1.4.0
    */
   @Nonnull
@@ -187,10 +250,9 @@ public final class Utils {
     if (image == null) {
       throw new IllegalArgumentException("Can't load image file : " + file); //NOI18N
     }
-    return rescaleImageAndEncodeAsBase64(image,maxSize);
+    return rescaleImageAndEncodeAsBase64(image, maxSize);
   }
 
-  
   /**
    * Rescale image and encode into Base64.
    *
