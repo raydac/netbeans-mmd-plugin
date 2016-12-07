@@ -132,7 +132,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     final MindMap resultedMap = new MindMap(null, true);
     resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
-    final List<Element> list = getDirectChildren(rootElement, "node");
+    final List<Element> list = Utils.findDirectChildrenForName(rootElement, "node");
     if (list.isEmpty()) {
       Assertions.assertNotNull(resultedMap.getRoot()).setText("Empty");
     } else {
@@ -151,23 +151,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   }
 
   @Nonnull
-  @MustNotContainNull
-  public static List<Element> getDirectChildren(@Nonnull final Element element, @Nonnull final String name) {
-    final NodeList found = element.getElementsByTagName(name);
-    final List<Element> resultList = new ArrayList<Element>();
-
-    for (int i = 0; i < found.getLength(); i++) {
-      if (found.item(i).getParentNode().equals(element) && found.item(i) instanceof Element) {
-        resultList.add((Element) found.item(i));
-      }
-    }
-
-    return resultList;
-  }
-
-  @Nonnull
   private static String findArrowlinkDestination(@Nonnull final Element element) {
-    final List<Element> arrows = getDirectChildren(element, "arrowlink");
+    final List<Element> arrows = Utils.findDirectChildrenForName(element, "arrowlink");
     return arrows.isEmpty() ? "" : arrows.get(0).getAttribute("DESTINATION");
   }
 
@@ -228,7 +213,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
       }
     }
 
-    for (final Element e : getDirectChildren(element, "node")) {
+    for (final Element e : Utils.findDirectChildrenForName(element, "node")) {
       parseTopic(rootFolder, map, topicToProcess, null, e, idTopicMap, linksMap);
     }
   }
@@ -295,9 +280,9 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   @Nonnull
   @ReturnsOriginal
   private static StringBuilder extractTextFromHtmlElement(@Nonnull final Element element, @Nonnull final StringBuilder buffer, @Nonnull @MustNotContainNull final List<String> imageURLs) {
-    final List<Element> html = getDirectChildren(element, "html");
+    final List<Element> html = Utils.findDirectChildrenForName(element, "html");
     if (!html.isEmpty()) {
-      final List<Element> body = getDirectChildren(html.get(0), "body");
+      final List<Element> body = Utils.findDirectChildrenForName(html.get(0), "body");
       if (!body.isEmpty()) {
         processHtmlElement(body.get(0), buffer, imageURLs);
       }
@@ -308,7 +293,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   @Nonnull
   @MustNotContainNull
   private static List<RichContent> extractRichContent(@Nonnull final Element richContentElement) {
-    final List<Element> richContents = getDirectChildren(richContentElement, "richcontent");
+    final List<Element> richContents = Utils.findDirectChildrenForName(richContentElement, "richcontent");
 
     final List<RichContent> result = new ArrayList<RichContent>();
 

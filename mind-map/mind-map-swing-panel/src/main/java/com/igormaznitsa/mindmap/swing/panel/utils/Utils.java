@@ -57,6 +57,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import com.igormaznitsa.meta.annotation.ImplementationNote;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -98,6 +100,32 @@ public final class Utils {
   private Utils() {
   }
 
+  /**
+   * Find all direct children with defined name.
+   * 
+   * @param element parent element
+   * @param childElementname child element name
+   * @return list of found elements
+   * 
+   * @since 1.4.0
+   */
+  @Nonnull
+  @MustNotContainNull
+  public static List<Element> findDirectChildrenForName(@Nonnull final Element element, @Nonnull final String childElementname) {
+    final NodeList found = element.getElementsByTagName(childElementname);
+    final List<Element> resultList = new ArrayList<Element>();
+
+    for (int i = 0; i < found.getLength(); i++) {
+      if (found.item(i).getParentNode().equals(element) && found.item(i) instanceof Element) {
+        resultList.add((Element) found.item(i));
+      }
+    }
+
+    return resultList;
+  }
+
+
+  
   /**
    * Get max image size.
    * @return max image size

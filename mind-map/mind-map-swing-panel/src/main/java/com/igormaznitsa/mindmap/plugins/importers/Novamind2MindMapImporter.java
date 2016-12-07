@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -111,8 +110,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
           final Document document = extractDocument(resourceIn);
           final Element main = document.getDocumentElement();
           if ("manifest".equals(main.getTagName())) {
-            for (final Element e : getDirectChildren(main, "resources")) {
-              for (final Element r : getDirectChildren(e, "resource")) {
+            for (final Element e : Utils.findDirectChildrenForName(main, "resources")) {
+              for (final Element r : Utils.findDirectChildrenForName(e, "resource")) {
                 final String id = r.getAttribute("id");
                 final String url = r.getAttribute("url");
                 if (!id.isEmpty() && !url.isEmpty()) {
@@ -183,7 +182,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
         final Element subTopics = findFirstElement(topicNode, "sub-topics");
         if (subTopics != null) {
-          for (final Element t : getDirectChildren(subTopics, "topic-node")) {
+          for (final Element t : Utils.findDirectChildrenForName(subTopics, "topic-node")) {
             this.children.add(new TopicRef(t, topicMap));
           }
         }
@@ -299,7 +298,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       private static String extractRichText(@Nonnull final Element richText) {
         final StringBuilder result = new StringBuilder();
 
-        for (final Element r : getDirectChildren(richText, "text-run")) {
+        for (final Element r : Utils.findDirectChildrenForName(richText, "text-run")) {
           NodeList list = r.getChildNodes();
           for (int i = 0; i < list.getLength(); i++) {
             final Node n = list.item(i);
@@ -329,7 +328,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       @Nullable
       private static String extractNotes(@Nonnull final Element node) {
         final StringBuilder result = new StringBuilder();
-        for (final Element e : getDirectChildren(node, "notes")) {
+        for (final Element e : Utils.findDirectChildrenForName(node, "notes")) {
           final String rtext = extractRichTextBlock(e);
           if (rtext != null) {
             result.append(rtext);
@@ -341,7 +340,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       @Nullable
       private static String extractRichTextBlock(@Nonnull final Element element) {
         final StringBuilder result = new StringBuilder();
-        for (final Element rc : getDirectChildren(element, "rich-text")) {
+        for (final Element rc : Utils.findDirectChildrenForName(element, "rich-text")) {
           result.append(extractRichText(rc));
         }
         return result.length() == 0 ? null : result.toString();
@@ -351,8 +350,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       @MustNotContainNull
       private static List<String> extractLinkUrls(@Nonnull final Element node) {
         final List<String> result = new ArrayList<String>();
-        for (final Element links : getDirectChildren(node, "links")) {
-          for (final Element l : getDirectChildren(links, "link")) {
+        for (final Element links : Utils.findDirectChildrenForName(node, "links")) {
+          for (final Element l : Utils.findDirectChildrenForName(links, "link")) {
             final String url = l.getAttribute("url");
             if (!url.isEmpty()) {
               result.add(url);
@@ -405,8 +404,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
           final Document document = extractDocument(resourceIn);
           final Element main = document.getDocumentElement();
           if ("document".equals(main.getTagName())) {
-            for (final Element e : getDirectChildren(main, "topics")) {
-              for (final Element r : getDirectChildren(e, "topic")) {
+            for (final Element e : Utils.findDirectChildrenForName(main, "topics")) {
+              for (final Element r : Utils.findDirectChildrenForName(e, "topic")) {
                 final String id = r.getAttribute("id");
                 this.topicsMap.put(id, new ContentTopiс(id, r));
               }
@@ -421,9 +420,9 @@ public class Novamind2MindMapImporter extends AbstractImporter {
                   mapRoot = new TopicRef(rootTopicNode, this.topicsMap);
                 }
 
-                for (final Element l : getDirectChildren(firstMap, "link-lines")) {
-                  for (final Element tn : getDirectChildren(l, "topic-node")) {
-                    for (final Element lld : getDirectChildren(tn, "link-line-data")) {
+                for (final Element l : Utils.findDirectChildrenForName(firstMap, "link-lines")) {
+                  for (final Element tn : Utils.findDirectChildrenForName(l, "topic-node")) {
+                    for (final Element lld : Utils.findDirectChildrenForName(tn, "link-line-data")) {
                       this.linksBetweenTopics.put(lld.getAttribute("start-topic-node-ref"), lld.getAttribute("end-topic-node-ref"));
                     }
                   }
@@ -453,7 +452,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
   @Nullable
   private static Element findFirstElement(@Nonnull final Element node, @Nonnull final String tag) {
     Element result = null;
-    for (final Element l : getDirectChildren(node, tag)) {
+    for (final Element l : Utils.findDirectChildrenForName(node, tag)) {
       result = l;
       break;
     }
@@ -673,21 +672,6 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         convertContentTopicIntoMMTopic(map, processing, c, manifest, mapRefToTopic);
       }
     }
-  }
-
-  @Nonnull
-  @MustNotContainNull
-  public static List<Element> getDirectChildren(@Nonnull final Element element, @Nonnull final String name) {
-    final NodeList found = element.getElementsByTagName(name);
-    final List<Element> resultList = new ArrayList<Element>();
-
-    for (int i = 0; i < found.getLength(); i++) {
-      if (found.item(i).getParentNode().equals(element) && found.item(i) instanceof Element) {
-        resultList.add((Element) found.item(i));
-      }
-    }
-
-    return resultList;
   }
 
   @Override

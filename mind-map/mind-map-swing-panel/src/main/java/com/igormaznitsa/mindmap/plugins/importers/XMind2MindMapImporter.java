@@ -77,7 +77,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
       Color front = null;
       Color bord = null;
 
-      for (final Element t : getDirectChildren(style, "topic-properties")) {
+      for (final Element t : Utils.findDirectChildrenForName(style, "topic-properties")) {
         final String colorFill = t.getAttribute("svg:fill");
         final String colorText = t.getAttribute("fo:color");
         final String colorBorder = t.getAttribute("border-line-color");
@@ -124,8 +124,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
           final Element root = parsedStyles.getDocumentElement();
 
           if ("xmap-styles".equals(root.getTagName())) {
-            for (final Element styles : getDirectChildren(root, "styles")) {
-              for (final Element style : getDirectChildren(styles, "style")) {
+            for (final Element styles : Utils.findDirectChildrenForName(root, "styles")) {
+              for (final Element style : Utils.findDirectChildrenForName(styles, "style")) {
                 final String id = style.getAttribute("id");
                 if (!id.isEmpty() && "topic".equals(style.getAttribute("type"))) {
                   this.stylesMap.put(id, new XMindStyle(style));
@@ -226,7 +226,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
       throwWrongFormat();
     }
 
-    final List<Element> sheets = getDirectChildren(document.getDocumentElement(), "sheet");
+    final List<Element> sheets = Utils.findDirectChildrenForName(document.getDocumentElement(), "sheet");
 
     final MindMap result;
 
@@ -251,13 +251,13 @@ public class XMind2MindMapImporter extends AbstractImporter {
     final Map<String, Topic> topicIdMap = new HashMap<String, Topic>();
     final Map<String, String> linksBetweenTopics = new HashMap<String, String>();
 
-    final List<Element> rootTopics = getDirectChildren(sheet, "topic");
+    final List<Element> rootTopics = Utils.findDirectChildrenForName(sheet, "topic");
     if (!rootTopics.isEmpty()) {
       convertTopic(file, styles, resultedMap, null, rootTopic, rootTopics.get(0), topicIdMap, linksBetweenTopics);
     }
 
-    for (final Element l : getDirectChildren(sheet, "relationships")) {
-      for (final Element r : getDirectChildren(l, "relationship")) {
+    for (final Element l : Utils.findDirectChildrenForName(sheet, "relationships")) {
+      for (final Element r : Utils.findDirectChildrenForName(l, "relationship")) {
         final String end1 = r.getAttribute("end1");
         final String end2 = r.getAttribute("end2");
         if (!linksBetweenTopics.containsKey(end1)) {
@@ -283,7 +283,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
   @Nonnull
   private static String extractTopicTitle(@Nonnull final Element topic) {
-    final List<Element> title = getDirectChildren(topic, "title");
+    final List<Element> title = Utils.findDirectChildrenForName(topic, "title");
     return title.isEmpty() ? "" : title.get(0).getTextContent();
   }
 
@@ -292,9 +292,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private static List<Element> getChildTopics(@Nonnull final Element topic) {
     List<Element> result = new ArrayList<Element>();
 
-    for (final Element c : getDirectChildren(topic, "children")) {
-      for (Element t : getDirectChildren(c, "topics")) {
-        result.addAll(getDirectChildren(t, "topic"));
+    for (final Element c : Utils.findDirectChildrenForName(topic, "children")) {
+      for (Element t : Utils.findDirectChildrenForName(c, "topics")) {
+        result.addAll(Utils.findDirectChildrenForName(t, "topic"));
       }
     }
 
@@ -362,7 +362,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private static String extractAttachedImage(@Nonnull final ZipFile file, @Nonnull final Element topic) {
     String result = null;
 
-    for (final Element e : getDirectChildren(topic, "xhtml:img")) {
+    for (final Element e : Utils.findDirectChildrenForName(topic, "xhtml:img")) {
       final String link = e.getAttribute("xhtml:src");
       if (!link.isEmpty()) {
         if (link.startsWith("xap:")) {
@@ -400,7 +400,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private static String extractNote(@Nonnull final Element topic) {
     final StringBuilder result = new StringBuilder();
 
-    for (final Element note : getDirectChildren(topic, "notes")) {
+    for (final Element note : Utils.findDirectChildrenForName(topic, "notes")) {
       final String plain = extractTextContentFrom(note, "plain");
       final String html = extractTextContentFrom(note, "html");
 
@@ -422,7 +422,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private static String extractTextContentFrom(@Nonnull final Element element, @Nonnull final String tag) {
     final StringBuilder result = new StringBuilder();
 
-    for (final Element c : getDirectChildren(element, tag)) {
+    for (final Element c : Utils.findDirectChildrenForName(element, tag)) {
       final String found = c.getTextContent();
       if (found != null && !found.isEmpty()) {
         result.append(found.replace("\r", ""));
@@ -430,21 +430,6 @@ public class XMind2MindMapImporter extends AbstractImporter {
     }
 
     return result.toString();
-  }
-
-  @Nonnull
-  @MustNotContainNull
-  public static List<Element> getDirectChildren(@Nonnull final Element element, @Nonnull final String name) {
-    final NodeList found = element.getElementsByTagName(name);
-    final List<Element> resultList = new ArrayList<Element>();
-
-    for (int i = 0; i < found.getLength(); i++) {
-      if (found.item(i).getParentNode().equals(element) && found.item(i) instanceof Element) {
-        resultList.add((Element) found.item(i));
-      }
-    }
-
-    return resultList;
   }
 
   @Override

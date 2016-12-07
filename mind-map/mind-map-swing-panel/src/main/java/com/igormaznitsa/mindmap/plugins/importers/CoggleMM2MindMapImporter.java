@@ -38,7 +38,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -103,7 +102,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
 
     final Element root = document.getDocumentElement();
     if ("map".equals(root.getTagName())) {
-      final List<Element> nodes = getDirectChildren(root, "node");
+      final List<Element> nodes = Utils.findDirectChildrenForName(root, "node");
       if (!nodes.isEmpty()) {
         parseTopic(result, null, result.getRoot(), nodes.get(0));
       }
@@ -268,7 +267,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     final String folded = element.getAttribute("FOLDED");
 
     Color edgeColor = null;
-    for (final Element e : getDirectChildren(element, "edge")) {
+    for (final Element e : Utils.findDirectChildrenForName(element, "edge")) {
       try {
         edgeColor = Utils.html2color(e.getAttribute("COLOR"), false);
       }
@@ -296,24 +295,9 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
       topicToProcess.setExtra(new ExtraNote(note.toString()));
     }
 
-    for (final Element c : getDirectChildren(element, "node")) {
+    for (final Element c : Utils.findDirectChildrenForName(element, "node")) {
       parseTopic(map, topicToProcess, null, c);
     }
-  }
-
-  @Nonnull
-  @MustNotContainNull
-  public static List<Element> getDirectChildren(@Nonnull final Element element, @Nonnull final String name) {
-    final NodeList found = element.getElementsByTagName(name);
-    final List<Element> resultList = new ArrayList<Element>();
-
-    for (int i = 0; i < found.getLength(); i++) {
-      if (found.item(i).getParentNode().equals(element) && found.item(i) instanceof Element) {
-        resultList.add((Element) found.item(i));
-      }
-    }
-
-    return resultList;
   }
 
   @Override
