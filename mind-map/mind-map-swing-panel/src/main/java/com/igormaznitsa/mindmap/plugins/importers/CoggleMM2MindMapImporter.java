@@ -18,11 +18,10 @@ package com.igormaznitsa.mindmap.plugins.importers;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import java.io.File;
-import java.io.InputStream;
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +31,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -64,26 +59,6 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CoggleMM2MindMapImporter.class);
 
-  @Nonnull
-  private static Document extractDocument(@Nonnull final InputStream xmlStream) throws Exception {
-    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setIgnoringComments(true);
-    factory.setValidating(false);
-    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-    final DocumentBuilder builder = factory.newDocumentBuilder();
-
-    final Document document;
-    try {
-      document = builder.parse(xmlStream);
-    }
-    finally {
-      IOUtils.closeQuietly(xmlStream);
-    }
-
-    return document;
-  }
-
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
@@ -93,12 +68,10 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
       return null;
     }
 
-    final String content = FileUtils.readFileToString(file, "UTF-8");
+    final Document document = Utils.loadXmlDocument(new FileInputStream(file), "UTF-8", true);
 
     final MindMap result = new MindMap(null, true);
     Assertions.assertNotNull(result.getRoot()).setText("Empty");
-
-    final Document document = extractDocument(new ByteArrayInputStream(content.getBytes("UTF-8")));
 
     final Element root = document.getDocumentElement();
     if ("map".equals(root.getTagName())) {

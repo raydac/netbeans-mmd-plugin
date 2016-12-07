@@ -20,10 +20,10 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_T
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,9 +36,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -111,16 +108,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
       return null;
     }
 
-    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setIgnoringComments(true);
-    factory.setValidating(false);
-    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-    
-    final DocumentBuilder builder = factory.newDocumentBuilder();
-    
-    final String content = FileUtils.readFileToString(file, "UTF-8");
-    
-    final Document document = builder.parse(new ByteArrayInputStream(content.getBytes("UTF-8")));
+    final Document document = Utils.loadXmlDocument(new FileInputStream(file), "UTF-8", true);
 
     final Element rootElement = document.getDocumentElement();
     if (!rootElement.getTagName().equals("map")) {

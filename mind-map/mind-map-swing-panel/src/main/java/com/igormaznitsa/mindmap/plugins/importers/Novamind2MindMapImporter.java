@@ -36,8 +36,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -107,7 +105,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       try {
         final InputStream resourceIn = getZipInputStream(zipFile, manifestPath);
         if (resourceIn != null) {
-          final Document document = extractDocument(resourceIn);
+          final Document document = Utils.loadXmlDocument(resourceIn, null, true);
           final Element main = document.getDocumentElement();
           if ("manifest".equals(main.getTagName())) {
             for (final Element e : Utils.findDirectChildrenForName(main, "resources")) {
@@ -180,44 +178,44 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         this.id = topicNode.getAttribute("id");
         this.linkedTopic = topicMap.get(topicNode.getAttribute("topic-ref"));
 
-        final Element subTopics = findFirstElement(topicNode, "sub-topics");
+        final Element subTopics = Utils.findFirstElement(topicNode, "sub-topics");
         if (subTopics != null) {
           for (final Element t : Utils.findDirectChildrenForName(subTopics, "topic-node")) {
             this.children.add(new TopicRef(t, topicMap));
           }
         }
 
-        Color colorBack = null;
-        Color colorForegr = null;
-        Color colorLine = null;
+        Color tmpColorBackground = null;
+        Color tmpColorText = null;
+        Color tmpColorBorder = null;
 
-        final Element topicNodeView = findFirstElement(topicNode, "topic-node-view");
+        final Element topicNodeView = Utils.findFirstElement(topicNode, "topic-node-view");
         if (topicNodeView != null) {
-          final Element style = findFirstElement(topicNodeView, "topic-node-style");
+          final Element style = Utils.findFirstElement(topicNodeView, "topic-node-style");
           if (style != null) {
-            final Element fillStyle = findFirstElement(style, "fill-style");
-            final Element lineStyle = findFirstElement(style, "line-style");
+            final Element fillStyle = Utils.findFirstElement(style, "fill-style");
+            final Element lineStyle = Utils.findFirstElement(style, "line-style");
 
             if (fillStyle != null) {
-              final Element solidColor = findFirstElement(fillStyle, "solid-color");
+              final Element solidColor = Utils.findFirstElement(fillStyle, "solid-color");
               if (solidColor != null) {
-                colorBack = Utils.html2color(solidColor.getAttribute("color"), false);
-                if (colorBack != null) {
-                  colorForegr = Utils.makeContrastColor(colorBack);
+                tmpColorBackground = Utils.html2color(solidColor.getAttribute("color"), false);
+                if (tmpColorBackground != null) {
+                  tmpColorText = Utils.makeContrastColor(tmpColorBackground);
                 }
               }
             }
 
             if (lineStyle != null) {
-              colorLine = Utils.html2color(lineStyle.getAttribute("color"), false);
+              tmpColorBorder = Utils.html2color(lineStyle.getAttribute("color"), false);
             }
 
           }
         }
 
-        this.colorBorder = colorLine;
-        this.colorText = colorForegr;
-        this.colorFill = colorBack;
+        this.colorBorder = tmpColorBorder;
+        this.colorText = tmpColorText;
+        this.colorFill = tmpColorBackground;
       }
 
       @Nullable
@@ -320,7 +318,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
       @Nullable
       private static String extractImageId(@Nonnull final Element node) {
-        final Element imageElement = findFirstElement(node, "top-image");
+        final Element imageElement = Utils.findFirstElement(node, "top-image");
         final String resourceRef = imageElement == null ? "" : imageElement.getAttribute("resource-ref");
         return resourceRef.isEmpty() ? null : resourceRef;
       }
@@ -401,7 +399,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       try {
         final InputStream resourceIn = getZipInputStream(file, path);
         if (resourceIn != null) {
-          final Document document = extractDocument(resourceIn);
+          final Document document = Utils.loadXmlDocument(resourceIn, null, true);
           final Element main = document.getDocumentElement();
           if ("document".equals(main.getTagName())) {
             for (final Element e : Utils.findDirectChildrenForName(main, "topics")) {
@@ -411,11 +409,11 @@ public class Novamind2MindMapImporter extends AbstractImporter {
               }
             }
 
-            final Element maps = findFirstElement(main, "maps");
+            final Element maps = Utils.findFirstElement(main, "maps");
             if (maps != null) {
-              final Element firstMap = findFirstElement(maps, "map");
+              final Element firstMap = Utils.findFirstElement(maps, "map");
               if (firstMap != null) {
-                final Element rootTopicNode = findFirstElement(firstMap, "topic-node");
+                final Element rootTopicNode = Utils.findFirstElement(firstMap, "topic-node");
                 if (rootTopicNode != null) {
                   mapRoot = new TopicRef(rootTopicNode, this.topicsMap);
                 }
@@ -450,16 +448,6 @@ public class Novamind2MindMapImporter extends AbstractImporter {
   }
 
   @Nullable
-  private static Element findFirstElement(@Nonnull final Element node, @Nonnull final String tag) {
-    Element result = null;
-    for (final Element l : Utils.findDirectChildrenForName(node, tag)) {
-      result = l;
-      break;
-    }
-    return result;
-  }
-
-  @Nullable
   private static InputStream getZipInputStream(@Nonnull final ZipFile zipFile, @Nonnull final String path) throws IOException {
     final ZipEntry entry = zipFile.getEntry(path);
 
@@ -488,26 +476,6 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     }
 
     return result;
-  }
-
-  @Nonnull
-  private static Document extractDocument(@Nonnull final InputStream xmlStream) throws Exception {
-    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setIgnoringComments(true);
-    factory.setValidating(false);
-    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-    final DocumentBuilder builder = factory.newDocumentBuilder();
-
-    final Document document;
-    try {
-      document = builder.parse(xmlStream);
-    }
-    finally {
-      IOUtils.closeQuietly(xmlStream);
-    }
-
-    return document;
   }
 
   @Override

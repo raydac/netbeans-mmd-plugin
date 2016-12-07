@@ -34,12 +34,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -119,7 +116,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
       try {
         final InputStream stylesXml = getZipInputStream(zipFile, "styles.xml");
         if (stylesXml != null) {
-          final Document parsedStyles = extractDocument(stylesXml);
+          final Document parsedStyles = Utils.loadXmlDocument(stylesXml, null, true);
 
           final Element root = parsedStyles.getDocumentElement();
 
@@ -183,26 +180,6 @@ public class XMind2MindMapImporter extends AbstractImporter {
     throw new IllegalArgumentException("Wrong or unsupported XMind file format");
   }
 
-  @Nonnull
-  private static Document extractDocument(@Nonnull final InputStream xmlStream) throws Exception {
-    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setIgnoringComments(true);
-    factory.setValidating(false);
-    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-    final DocumentBuilder builder = factory.newDocumentBuilder();
-
-    final Document document;
-    try {
-      document = builder.parse(xmlStream);
-    }
-    finally {
-      IOUtils.closeQuietly(xmlStream);
-    }
-
-    return document;
-  }
-
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
@@ -219,7 +196,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
     if (contentStream == null) {
       throwWrongFormat();
     }
-    final Document document = extractDocument(contentStream);
+    final Document document = Utils.loadXmlDocument(contentStream, null, true);
 
     final Element rootElement = document.getDocumentElement();
     if (!rootElement.getTagName().equals("xmap-content")) {
