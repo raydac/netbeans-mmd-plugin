@@ -15,35 +15,26 @@
  */
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.filechooser.FileFilter;
-import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -64,10 +55,6 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
   private static final Icon ICON = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_IMAGES);
 
   private static File lastSelectedFile = null;
-  private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
-
-  public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size"; //NOI18N
-
   private static int lastSelectedImportIndex = 0;
 
   private static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
@@ -125,12 +112,12 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
               if (selectedItem.get() == 0) {
                 try {
-                  setAttribute(prepareImageAndEncodeInBase64((Image) transferable.getTransferData(DataFlavor.imageFlavor)), topic, selectedTopics);
+                  setAttribute(Utils.rescaleImageAndEncodeAsBase64((Image) transferable.getTransferData(DataFlavor.imageFlavor), Utils.getMaxImageSize()), topic, selectedTopics);
                   panel.notifyModelChanged();
                 }
                 catch (final IllegalArgumentException ex) {
                   dialogProvider.msgError(BUNDLE.getString("Images.Plugin.Error"));
-                  LOGGER.error("Can't import from clipboard image",ex); //NOI18N
+                  LOGGER.error("Can't import from clipboard image", ex); //NOI18N
                 }
                 catch (final Exception ex) {
                   dialogProvider.msgError(BUNDLE.getString("Images.Plugin.Error"));
@@ -148,7 +135,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
             if (selected != null) {
               lastSelectedFile = selected;
               try {
-                setAttribute(prepareImageAndEncodeInBase64(selected), topic, selectedTopics);
+                setAttribute(Utils.rescaleImageAndEncodeAsBase64(selected, Utils.getMaxImageSize()), topic, selectedTopics);
                 panel.notifyModelChanged();
               }
               catch (final IllegalArgumentException ex) {
@@ -204,76 +191,6 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     }
 
     return panel;
-  }
-
-  private static int getMaxImageSize() {
-    int result = MAX_IMAGE_SIDE_SIZE_IN_PIXELS;
-    try {
-      final String defined = System.getProperty(PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE);
-      if (defined != null) {
-        LOGGER.info("Detected redefined max size for embedded image side : " + defined); //NOI18N
-        result = Math.max(8, Integer.parseInt(defined.trim()));
-      }
-    }
-    catch (NumberFormatException ex) {
-      LOGGER.error("Error during image size decoding : ", ex); //NOI18N
-    }
-    return result;
-  }
-
-  @Nonnull
-  private static String prepareImageAndEncodeInBase64(@Nonnull Image image) throws Exception {
-    final int width = image.getWidth(null);
-    final int height = image.getHeight(null);
-
-    final int maxImageSideSize = getMaxImageSize();
-
-    final float imageScale = width > maxImageSideSize || height > maxImageSideSize ? (float) maxImageSideSize / (float) Math.max(width, height) : 1.0f;
-
-    if (!(image instanceof RenderedImage) || Float.compare(imageScale, 1.0f) != 0) {
-      final int swidth;
-      final int sheight;
-
-      if (Float.compare(imageScale, 1.0f) == 0) {
-        swidth = width;
-        sheight = height;
-      } else {
-        swidth = Math.round(imageScale * width);
-        sheight = Math.round(imageScale * height);
-      }
-
-      final BufferedImage buffer = new BufferedImage(swidth, sheight, BufferedImage.TYPE_INT_ARGB);
-      final Graphics2D gfx = (Graphics2D) buffer.createGraphics();
-
-      gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-      gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-      gfx.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
-      gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-
-      gfx.drawImage(image, AffineTransform.getScaleInstance(imageScale, imageScale), null);
-      gfx.dispose();
-      image = buffer;
-    }
-
-    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    ImageIO.write((RenderedImage) image, "png", bos); //NOI18N
-    bos.close();
-
-    return Utils.base64encode(bos.toByteArray());
-  }
-
-  @Nonnull
-  private static String prepareImageAndEncodeInBase64(@Nonnull final File file) throws Exception {
-    final byte[] data = FileUtils.readFileToByteArray(file);
-
-    final Image image = ImageIO.read(new ByteArrayInputStream(data));
-    if (image == null) {
-      throw new IllegalArgumentException("Can't load image file : " + file); //NOI18N
-    }
-
-    return prepareImageAndEncodeInBase64(image);
   }
 
   private boolean containAttribute(@Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] topics) {
