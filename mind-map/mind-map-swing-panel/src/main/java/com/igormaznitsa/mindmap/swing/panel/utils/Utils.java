@@ -27,9 +27,15 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +45,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -49,6 +56,7 @@ import javax.swing.UIManager;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.io.IOUtils;
 import com.igormaznitsa.meta.annotation.ImplementationNote;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -72,6 +80,9 @@ public final class Utils {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
   public static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   public static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
+  public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size"; //NOI18N
+
+  private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
 
   private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
 
@@ -85,6 +96,129 @@ public final class Utils {
   }
 
   private Utils() {
+  }
+
+  /**
+   * Get max image size.
+   * @return max image size
+   * 
+   * @see #MAX_IMAGE_SIDE_SIZE_IN_PIXELS
+   * @see #PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE
+   */
+  public static int getMaxImageSize() {
+    int result = MAX_IMAGE_SIDE_SIZE_IN_PIXELS;
+    try {
+      final String defined = System.getProperty(PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE);
+      if (defined != null) {
+        LOGGER.info("Detected redefined max size for embedded image side : " + defined); //NOI18N
+        result = Math.max(8, Integer.parseInt(defined.trim()));
+      }
+    }
+    catch (NumberFormatException ex) {
+      LOGGER.error("Error during image size decoding : ", ex); //NOI18N
+    }
+    return result;
+  }
+
+
+  
+  /**
+   * Load and encode image into Base64.
+   *
+   * @param in stream to read image
+   * @param maxSize max size of image, if less or zero then don't rescale
+   * @return null if it was impossible to load image for its format, loaded
+   * prepared image
+   * @throws IOException if any error during conversion or loading
+   *
+   * @since 1.4.0
+   */
+  @Nullable
+  public static String rescaleImageAndEncodeAsBase64(@Nonnull final InputStream in, final int maxSize) throws IOException {
+    final Image image = ImageIO.read(in);
+    String result = null;
+    if (image != null) {
+      result = rescaleImageAndEncodeAsBase64(image, maxSize);
+    }
+    return result;
+  }
+
+  /**
+   * Load and encode image into Base64 from file.
+   * 
+   * @param file image file
+   * @param maxSize max size of image, if less or zero then don't rescale
+   * @return image
+   * @throws IOException if any error during conversion or loading
+   * 
+   * @since 1.4.0
+   */
+  @Nonnull
+  public static String rescaleImageAndEncodeAsBase64(@Nonnull final File file, final int maxSize) throws IOException {
+    final Image image = ImageIO.read(file);
+    if (image == null) {
+      throw new IllegalArgumentException("Can't load image file : " + file); //NOI18N
+    }
+    return rescaleImageAndEncodeAsBase64(image,maxSize);
+  }
+
+  
+  /**
+   * Rescale image and encode into Base64.
+   *
+   * @param image image to rescale and encode
+   * @param maxSize max size of image, if less or zero then don't rescale
+   * @return scaled and encoded image
+   * @throws IOException if it was impossible to encode image
+   *
+   * @since 1.4.0
+   */
+  @Nonnull
+  public static String rescaleImageAndEncodeAsBase64(@Nonnull Image image, final int maxSize) throws IOException {
+    final int width = image.getWidth(null);
+    final int height = image.getHeight(null);
+
+    final int maxImageSideSize = maxSize > 0 ? maxSize : Math.max(width, height);
+
+    final float imageScale = width > maxImageSideSize || height > maxImageSideSize ? (float) maxImageSideSize / (float) Math.max(width, height) : 1.0f;
+
+    if (!(image instanceof RenderedImage) || Float.compare(imageScale, 1.0f) != 0) {
+      final int swidth;
+      final int sheight;
+
+      if (Float.compare(imageScale, 1.0f) == 0) {
+        swidth = width;
+        sheight = height;
+      } else {
+        swidth = Math.round(imageScale * width);
+        sheight = Math.round(imageScale * height);
+      }
+
+      final BufferedImage buffer = new BufferedImage(swidth, sheight, BufferedImage.TYPE_INT_ARGB);
+      final Graphics2D gfx = (Graphics2D) buffer.createGraphics();
+
+      gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      gfx.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+      gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+
+      gfx.drawImage(image, AffineTransform.getScaleInstance(imageScale, imageScale), null);
+      gfx.dispose();
+      image = buffer;
+    }
+
+    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    try {
+      if (!ImageIO.write((RenderedImage) image, "png", bos)) {
+        throw new IOException("Can't encode image as PNG");
+      }
+    }
+    finally {
+      IOUtils.closeQuietly(bos);
+    }
+    return Utils.base64encode(bos.toByteArray());
   }
 
   public static int calculateColorBrightness(@Nonnull final Color color) {
@@ -163,19 +297,20 @@ public final class Utils {
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
         String color = str.substring(1);
-        if (color.length()>6){
-          color = color.substring(color.length()-6);
+        if (color.length() > 6) {
+          color = color.substring(color.length() - 6);
         }
-        
-        if (color.length() == 6){
+
+        if (color.length() == 6) {
           result = new Color(Integer.parseInt(color, 16), hasAlpha);
         } else if (color.length() == 3) {
-          final int r = Integer.parseInt(color.charAt(0)+"0", 16);
-          final int g = Integer.parseInt(color.charAt(1)+"0", 16);
-          final int b = Integer.parseInt(color.charAt(2)+"0", 16);
-          result = new Color(r,g,b);
+          final int r = Integer.parseInt(color.charAt(0) + "0", 16);
+          final int g = Integer.parseInt(color.charAt(1) + "0", 16);
+          final int b = Integer.parseInt(color.charAt(2) + "0", 16);
+          result = new Color(r, g, b);
         }
-      } catch (NumberFormatException ex) {
+      }
+      catch (NumberFormatException ex) {
         LOGGER.warn(String.format("Can't convert %s to color", str));
       }
     }
@@ -238,7 +373,8 @@ public final class Utils {
     } else {
       try {
         SwingUtilities.invokeAndWait(runnable);
-      } catch (Exception ex) {
+      }
+      catch (Exception ex) {
         throw new RuntimeException("Detected exception during SwingUtilities.invokeAndWait", ex);
       }
     }
@@ -306,15 +442,18 @@ public final class Utils {
     }
   }
 
-  public static @Nonnull String removeAllISOControlsButTabs(@Nonnull final String str){
+  public static @Nonnull
+  String removeAllISOControlsButTabs(@Nonnull final String str) {
     final StringBuilder result = new StringBuilder(str.length());
-    for(final char c : str.toCharArray()) {
-      if (c!='\t' && Character.isISOControl(c)) continue;
+    for (final char c : str.toCharArray()) {
+      if (c != '\t' && Character.isISOControl(c)) {
+        continue;
+      }
       result.append(c);
     }
     return result.toString();
-  } 
-  
+  }
+
   @Nullable
   public static Point2D findRectEdgeIntersection(@Nonnull final Rectangle2D rect, final double outboundX, final double outboundY) {
     final int detectedSide = rect.outcode(outboundX, outboundY);
@@ -399,7 +538,8 @@ public final class Utils {
     try {
       prepareGraphicsForQuality(g);
       cloned.doPaint(gfx, config, false);
-    } finally {
+    }
+    finally {
       gfx.dispose();
     }
 
@@ -433,7 +573,7 @@ public final class Utils {
   public static Color makeContrastColor(@Nonnull final Color color) {
     return calculateColorBrightness(color) < 128 ? Color.WHITE : Color.BLACK;
   }
-  
+
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> findPopupMenuItems(
@@ -470,7 +610,7 @@ public final class Utils {
       throw new Error("Must be called in Swing dispatch thread");
     }
   }
-  
+
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu, @Nullable final JMenu subMenu, @Nonnull @MustNotContainNull final List<JMenuItem> items) {
