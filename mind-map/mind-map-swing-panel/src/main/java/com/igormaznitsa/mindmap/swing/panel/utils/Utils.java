@@ -162,7 +162,11 @@ public final class Utils {
     Color result = null;
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
-        final String color = str.substring(1);
+        String color = str.substring(1);
+        if (color.length()>6){
+          color = color.substring(color.length()-6);
+        }
+        
         if (color.length() == 6){
           result = new Color(Integer.parseInt(color, 16), hasAlpha);
         } else if (color.length() == 3) {
