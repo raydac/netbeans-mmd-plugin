@@ -33,10 +33,8 @@ import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.intellij.CommonBundle;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
@@ -91,8 +89,7 @@ public enum IdeaUtils {
   static {
     try {
       EMPTY_URI = new MMapURI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
-    }
-    catch (URISyntaxException ex) {
+    } catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
     }
   }
@@ -112,19 +109,19 @@ public enum IdeaUtils {
   @Nullable
   public static Object callGetInstance(@Nonnull final String className) {
     Object result = null;
-    try{
+    try {
       final Class<?> foundClass = Class.forName(className);
       try {
         final Method instanceMethod = foundClass.getMethod("getInstance");
         if (Modifier.isStatic(instanceMethod.getModifiers())) {
           result = instanceMethod.invoke(null);
         }
-      }catch(MethodInvocationException ex){
-        LOGGER.error("Error during dynamic getInstance() call",ex);
-      }catch(Exception ex){
+      } catch (MethodInvocationException ex) {
+        LOGGER.error("Error during dynamic getInstance() call", ex);
+      } catch (Exception ex) {
         result = null;
       }
-    }catch(final ClassNotFoundException ex){
+    } catch (final ClassNotFoundException ex) {
       result = null;
     }
     return result;
@@ -134,82 +131,97 @@ public enum IdeaUtils {
     final Object transactionGuardInstance = callGetInstance("com.intellij.openapi.application.TransactionGuard");
 
     boolean result = false;
-    if (transactionGuardInstance!=null){
-      result = safeInvokeMethodNoResult(transactionGuardInstance,"submitTransactionLater",new Class<?>[]{Disposable.class,Runnable.class},new Object[]{new Disposable() {
+    if (transactionGuardInstance != null) {
+      result = safeInvokeMethodNoResult(transactionGuardInstance, "submitTransactionLater", new Class<?>[]{Disposable.class, Runnable.class}, new Object[]{new Disposable() {
         @Override
         public void dispose() {
         }
-      },runnable});
+      }, runnable});
     }
 
     return result;
   }
 
   public static void executeWriteAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
-    final Runnable block = new Runnable() {
+    if (submitTransactionLater(new Runnable() {
       @Override
       public void run() {
         ApplicationManager.getApplication().runWriteAction(action);
       }
-    };
-
-    if (submitTransactionLater(block)) {
+    })) {
       LOGGER.info("Using TransactionGuard for write action");
     } else {
       LOGGER.info("Using CommandProcessor for write action");
-      CommandProcessor.getInstance().executeCommand(project, block,null,null, document);
+      ApplicationManager.getApplication().runWriteAction(new Runnable() {
+        @Override
+        public void run() {
+          final CommandProcessor processor = CommandProcessor.getInstance();
+          processor.executeCommand(project, new Runnable() {
+            @Override
+            public void run() {
+              action.run();
+              if (document!=null) {
+                processor.addAffectedDocuments(project,document);
+              }
+            }
+          }, null, null, document);
+        }
+      });
     }
   }
 
   public static void executeReadAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
-    final Runnable block = new Runnable() {
+    if (submitTransactionLater(new Runnable() {
       @Override
       public void run() {
         ApplicationManager.getApplication().runReadAction(action);
       }
-    };
-
-    if (submitTransactionLater(block)) {
+    })) {
       LOGGER.info("Using TransactionGuard for read action");
     } else {
       LOGGER.info("Using CommandProcessor for read action");
-      CommandProcessor.getInstance().executeCommand(project, block,null,null, document);
+      ApplicationManager.getApplication().runReadAction(new Runnable() {
+        @Override
+        public void run() {
+          CommandProcessor.getInstance().executeCommand(project, action, null, null, document);
+        }
+      });
     }
   }
 
   @Nullable
-  public static <T> T safeInvokeMethodForResult(@Nonnull final Object instance, @Nonnull final T defaultResult, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object [] arguments) {
+  public static <T> T safeInvokeMethodForResult(@Nonnull final Object instance, @Nonnull final T defaultResult, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object[] arguments) {
     final Method method;
     try {
       method = instance.getClass().getMethod(methodName, argumentClasses);
-    }catch(NoSuchMethodException ex){
-      LOGGER.info("Can't find method '"+methodName+"' in class "+instance.getClass().getName());
+    } catch (NoSuchMethodException ex) {
+      LOGGER.info("Can't find method '" + methodName + "' in class " + instance.getClass().getName());
       return defaultResult;
     }
 
     try {
-      return  (T)method.invoke(instance, arguments);
-    }catch(Exception ex){
-      LOGGER.error("Error during call "+instance.getClass().getName()+"."+methodName+", default result will be returned");
+      return (T) method.invoke(instance, arguments);
+    } catch (Exception ex) {
+      LOGGER.error("Error during call " + instance.getClass().getName() + "." + methodName + ", default result will be returned");
     }
     return defaultResult;
   }
 
   @Nullable
-  public static boolean safeInvokeMethodNoResult(@Nonnull final Object instance, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object [] arguments) {
+  public static boolean safeInvokeMethodNoResult(@Nonnull final Object instance, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object[] arguments) {
     final Method method;
     try {
       method = instance.getClass().getMethod(methodName, argumentClasses);
-    }catch(NoSuchMethodException ex){
-      LOGGER.info("Can't find method '"+methodName+"' in class "+instance.getClass().getName());
+    } catch (NoSuchMethodException ex) {
+      LOGGER.info("Can't find method '" + methodName + "' in class " + instance.getClass().getName());
       return false;
     }
 
     try {
       method.invoke(instance, arguments);
       return true;
-    }catch(Exception ex){
-      LOGGER.error("Error during call "+instance.getClass().getName()+"."+methodName);
+    } catch (Exception ex) {
+      LOGGER.error("Error during call " + instance.getClass().getName() + "." + methodName);
     }
     return false;
   }
@@ -223,22 +235,22 @@ public enum IdeaUtils {
       if (result.get() == null || !result.get().isDirectory()) {
         if (createIfMissing) {
           CommandProcessor.getInstance().executeCommand(module.getProject(), new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
               ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                @Override public void run() {
+                @Override
+                public void run() {
                   try {
                     result.set(VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
                     LOGGER.info("Created knowledge folder for " + module);
-                  }
-                  catch (IOException ex) {
+                  } catch (IOException ex) {
                     LOGGER.error("Can't create knowledge folder for " + module, ex);
                   }
                 }
               });
             }
           }, null, null);
-        }
-        else {
+        } else {
           result.set(null);
         }
       }
@@ -254,8 +266,7 @@ public enum IdeaUtils {
   public static boolean browseURI(final URI uri, final boolean useInsideBrowser) {
     try {
       BrowserUtil.browse(uri);
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       ex.printStackTrace();
       return false;
     }
@@ -268,8 +279,7 @@ public enum IdeaUtils {
     if (file == null) {
       LOGGER.error("Can't find file to open, null provided");
       dialogProvider.msgError("Can't find file to open");
-    }
-    else {
+    } else {
       final Runnable startEdit = new Runnable() {
         @Override
         public void run() {
@@ -280,8 +290,7 @@ public enum IdeaUtils {
               try {
                 dsk.open(file);
                 ok = true;
-              }
-              catch (Throwable ex) {
+              } catch (Throwable ex) {
                 LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
               }
             }
@@ -358,8 +367,7 @@ public enum IdeaUtils {
 
     if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
       return chooser.getSelectedFile();
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -375,20 +383,23 @@ public enum IdeaUtils {
 
   public static boolean plainMessageOkCancel(final Project project, final String title, final JComponent centerComponent) {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
-      centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
+            centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
     return dialog.showAndGet();
   }
 
   public static void plainMessageClose(final Project project, final String title, final JComponent centerComponent) {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
-      centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true) {
-      @Nonnull @Override protected Action[] createActions() {
-        return new Action[] { new DialogWrapperAction(CommonBundle.getCloseButtonText()) {
+            centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true) {
+      @Nonnull
+      @Override
+      protected Action[] createActions() {
+        return new Action[]{new DialogWrapperAction(CommonBundle.getCloseButtonText()) {
 
-          @Override protected void doAction(ActionEvent e) {
+          @Override
+          protected void doAction(ActionEvent e) {
             doCancelAction();
           }
-        } };
+        }};
       }
     };
     dialog.show();
@@ -405,8 +416,7 @@ public enum IdeaUtils {
       final Color color = html2color(t.getAttribute(colorAttribute), false);
       if (result == null) {
         result = color;
-      }
-      else {
+      } else {
         if (!result.equals(color)) {
           return ColorChooserButton.DIFF_COLORS;
         }
@@ -420,8 +430,7 @@ public enum IdeaUtils {
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
         result = new Color(Integer.parseInt(str.substring(1), 16), hasAlpha);
-      }
-      catch (NumberFormatException ex) {
+      } catch (NumberFormatException ex) {
         LOGGER.warn(String.format("Can't convert %s to color", str));
       }
     }
@@ -438,13 +447,11 @@ public enum IdeaUtils {
       final FileEditPanel.DataContainer result = filePathEditor.getData();
       if (result.isValid()) {
         return result;
-      }
-      else {
+      } else {
         Messages.showErrorDialog(editor.getMindMapPanel(), String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()), "Error");
         return null;
       }
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -464,14 +471,12 @@ public enum IdeaUtils {
         if (!new URI(text).isAbsolute())
           throw new URISyntaxException(text, "URI is not absolute one");
         return new MMapURI(text.trim());
-      }
-      catch (URISyntaxException ex) {
+      } catch (URISyntaxException ex) {
         editor.getDialogProvider()
-          .msgError(String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+                .msgError(String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -487,7 +492,8 @@ public enum IdeaUtils {
 
   public static void showPopup(@Nonnull final String text, @Nonnull final MessageType type) {
     SwingUtils.safeSwing(new Runnable() {
-      @Override public void run() {
+      @Override
+      public void run() {
         final JBPopupFactory factory = JBPopupFactory.getInstance();
         final BalloonBuilder builder = factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml(text), type, null);
         final Balloon balloon = builder.createBalloon();
@@ -515,7 +521,7 @@ public enum IdeaUtils {
   public static List<PsiExtraFile> findPsiFileLinksForProjectScope(final Project project) {
     List<PsiExtraFile> result = new ArrayList<PsiExtraFile>();
     Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MindMapFileType.INSTANCE,
-      GlobalSearchScope.allScope(project));
+            GlobalSearchScope.allScope(project));
     for (VirtualFile virtualFile : virtualFiles) {
       final MMDFile simpleFile = (MMDFile) PsiManager.getInstance(project).findFile(virtualFile);
       if (simpleFile != null) {

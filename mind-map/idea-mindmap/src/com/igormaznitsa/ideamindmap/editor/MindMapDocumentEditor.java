@@ -55,6 +55,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.util.xml.ui.Committable;
 import com.intellij.util.xml.ui.UndoHelper;
 import org.jetbrains.annotations.NonNls;
@@ -205,7 +206,10 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
   }
 
   private void saveMindMapToDocument() {
+    final PsiDocumentManager psiManager = PsiDocumentManager.getInstance(getProject());
     final Document document = getDocument();
+    psiManager.doPostponedOperationsAndUnblockDocument(document);
+
     if (!this.mindMapPanel.isDisposed()) {
       final MindMap model = this.mindMapPanel.getModel();
       if (document != null && model != null) {
@@ -214,10 +218,18 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
           public void run() {
             final String packedMindMap = model.packToString();
             document.setText(packedMindMap);
+
+            final VirtualFile vfile = FileDocumentManager.getInstance().getFile(document);
+            if (vfile!=null){
+              vfile.refresh(false,false);
+            }
+
+            psiManager.commitDocument(document);
           }
         });
       }
     }
+
   }
 
   private void loadMindMapFromDocument() {
