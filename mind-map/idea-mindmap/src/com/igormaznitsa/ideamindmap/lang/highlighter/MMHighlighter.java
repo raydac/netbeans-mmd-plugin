@@ -43,6 +43,21 @@ public class MMHighlighter extends SyntaxHighlighterBase {
     DefaultLanguageHighlighterColors.KEYWORD
   );
 
+  public static final TextAttributesKey MMD_CODESNIPPET_START = TextAttributesKey.createTextAttributesKey(
+    "MMD.CODESNIPET.START",
+    DefaultLanguageHighlighterColors.METADATA
+  );
+
+  public static final TextAttributesKey MMD_CODESNIPPET_END = TextAttributesKey.createTextAttributesKey(
+    "MMD.CODESNIPET.END",
+    DefaultLanguageHighlighterColors.METADATA
+  );
+
+  public static final TextAttributesKey MMD_CODESNIPPET_BODY = TextAttributesKey.createTextAttributesKey(
+    "MMD.CODESNIPET.BODY",
+    DefaultLanguageHighlighterColors.STRING
+  );
+
   public static final TextAttributesKey MMD_EXTRA_NAME = TextAttributesKey.createTextAttributesKey(
     "MMD.EXTRANAME",
     DefaultLanguageHighlighterColors.LABEL
@@ -75,6 +90,9 @@ public class MMHighlighter extends SyntaxHighlighterBase {
     keys1.put(MMTokens.UNKNOWN, MMD_UNKNOWN);
     keys1.put(MMTokens.TOPIC, MMD_TOPIC);
     keys1.put(MMTokens.FILE, MMD_FILE);
+    keys1.put(MMTokens.CODE_SNIPPET_START, MMD_CODESNIPPET_START);
+    keys1.put(MMTokens.CODE_SNIPPET_END, MMD_CODESNIPPET_END);
+    keys1.put(MMTokens.CODE_SNIPPET_BODY, MMD_CODESNIPPET_BODY);
   }
 
   @Nonnull
@@ -91,6 +109,9 @@ public class MMHighlighter extends SyntaxHighlighterBase {
     DISPLAY_NAMES.put(MMD_FILE, Pair.create("File", HighlightSeverity.INFORMATION));
     DISPLAY_NAMES.put(MMD_EXTRA_NAME, Pair.create("Extra name", HighlightSeverity.INFORMATION));
     DISPLAY_NAMES.put(MMD_EXTRA_TEXT, Pair.create("Extra name", HighlightSeverity.INFORMATION));
+    DISPLAY_NAMES.put(MMD_CODESNIPPET_START, Pair.create("Code snippet start", HighlightSeverity.INFORMATION));
+    DISPLAY_NAMES.put(MMD_CODESNIPPET_END, Pair.create("Code snippet start", HighlightSeverity.INFORMATION));
+    DISPLAY_NAMES.put(MMD_CODESNIPPET_BODY, Pair.create("Code snippet body", HighlightSeverity.INFORMATION));
     DISPLAY_NAMES.put(MMD_UNKNOWN, Pair.create("Unknown", HighlightSeverity.WARNING));
   }
 }
