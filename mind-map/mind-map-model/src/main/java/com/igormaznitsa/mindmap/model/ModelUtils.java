@@ -331,6 +331,25 @@ public final class ModelUtils {
   }
 
   @Nonnull
+  public static String removeISOControls(@Nonnull final String text) {
+    StringBuilder result = null;
+    boolean detected = false;
+    for(int i=0;i<text.length();i++){
+      final char ch = text.charAt(i);
+      if (detected) {
+        if (!Character.isISOControl(ch)) result.append(ch);
+      } else {
+        if (Character.isISOControl(ch)) {
+          detected = true;
+          result = new StringBuilder(text.length());
+          result.append(text,0,i);
+        }
+      }
+    }
+    return detected ? result.toString() : text;
+  }
+  
+  @Nonnull
   private static String normalizeFileURI(@Nonnull final String fileUri) {
     final int schemePosition = fileUri.indexOf(':');
     final String scheme = schemePosition < 0 ? "" : fileUri.substring(0, schemePosition + 1); //NOI18N

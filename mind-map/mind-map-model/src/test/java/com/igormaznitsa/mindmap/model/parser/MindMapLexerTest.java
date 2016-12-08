@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.apache.commons.io.IOUtils;
@@ -134,9 +133,15 @@ public class MindMapLexerTest {
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.WHITESPACE, "   ", 29, 32);
     lexer.advance();
+    
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC, "# Topic\n", 32, 40);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ",32,34);
     lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "Topic\n",34,40);
+    lexer.advance();
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertNull(lexer.getTokenType());
   }
@@ -152,9 +157,15 @@ public class MindMapLexerTest {
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
+
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC, "# Hello\n", 10, 18);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ",10,12);
+
+    lexer.advance();
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "Hello\n", 12, 18);
+
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.ATTRIBUTE, "> attrs='some'\n", 18, 33);
@@ -241,7 +252,7 @@ public class MindMapLexerTest {
   @Test
   public void testTwoPhaseReading_Topic() {
     final MindMapLexer lexer = new MindMapLexer();
-    final String testString = "Header\n--\n#Topic name";
+    final String testString = "Header\n--\n# Topic name";
     lexer.start(testString, 0, 14, MindMapLexer.TokenType.HEAD_LINE);
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -249,13 +260,19 @@ public class MindMapLexerTest {
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
+
+    lexer.advance();
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ",10,12);
+    
     lexer.advance();
     assertFalse(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC, "#Top", 10, 14);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "To",12,14);
+    
     lexer.setBufferEndOffset(testString.length());
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC, "#Topic name", 10, 21);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "Topic name", 12, 22);
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertNull(lexer.getTokenType());
@@ -272,9 +289,14 @@ public class MindMapLexerTest {
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
+
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC, "# \\#Topic name", 10, 24);    
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ",10,12);
+
+    lexer.advance();
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "\\#Topic name", 12, 24);    
   }
   
   @Test
@@ -443,7 +465,11 @@ public class MindMapLexerTest {
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC, "# Topic\n", 73, 81);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ", 73, 75);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "Topic\n", 75, 81);
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());

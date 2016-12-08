@@ -298,6 +298,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       String codeSnippetlanguage = null;
       String codeSnippetBody = null;
 
+      int detectedLevel = -1;
+      
       while (true) {
         final int oldLexerPosition = lexer.getCurrentPosition().getOffset();
         lexer.advance();
@@ -307,22 +309,26 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         if (token == null || lexerPositionWasNotChanged) {
           break;
         }
+        
         switch (token) {
-          case TOPIC: {
+          case TOPIC_LEVEL: {
             final String tokenText = lexer.getTokenText();
-            final int topicDepth = ModelUtils.calcCharsOnStart('#', tokenText);
-            final String newTopicText = ModelUtils.unescapeMarkdownStr(tokenText.substring(topicDepth).trim());
+            detectedLevel = ModelUtils.calcCharsOnStart('#', tokenText);
+          }break;
+          case TOPIC_TITLE: {
+            final String tokenText = ModelUtils.removeISOControls(lexer.getTokenText());
+            final String newTopicText = ModelUtils.unescapeMarkdownStr(tokenText);
 
-            if (topicDepth == depth + 1) {
-              depth = topicDepth;
+            if (detectedLevel == depth + 1) {
+              depth = detectedLevel;
               topic = new Topic(map, topic, newTopicText);
-            } else if (topicDepth == depth) {
+            } else if (detectedLevel == depth) {
               topic = new Topic(map, topic == null ? null : topic.getParent(), newTopicText);
-            } else if (topicDepth < depth) {
+            } else if (detectedLevel < depth) {
               if (topic != null) {
-                topic = topic.findParentForDepth(depth - topicDepth);
+                topic = topic.findParentForDepth(depth - detectedLevel);
                 topic = new Topic(map, topic, newTopicText);
-                depth = topicDepth;
+                depth = detectedLevel;
               }
             }
 

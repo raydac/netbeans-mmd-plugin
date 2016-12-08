@@ -33,7 +33,8 @@ public final class MindMapLexer {
     HEAD_LINE,
     HEAD_DELIMITER,
     ATTRIBUTE,
-    TOPIC,
+    TOPIC_LEVEL,
+    TOPIC_TITLE,
     CODE_SNIPPET_START,
     CODE_SNIPPET_BODY,
     CODE_SNIPPET_END,
@@ -139,10 +140,10 @@ public final class MindMapLexer {
     return new TokenPosition(this.tokenStart, this.tokenEnd);
   }
 
-  public void resetTokenTypeToNull(){
+  public void resetTokenTypeToNull() {
     this.tokenType = null;
   }
-  
+
   public void advance() {
     boolean tokenHasBeenCompleted = this.position.isTokenCompleted();
     this.tokenStart = tokenHasBeenCompleted ? this.position.offset : this.tokenStart;
@@ -162,18 +163,17 @@ public final class MindMapLexer {
           this.position.state = TokenType.WHITESPACE;
         }
         break;
-        case CODE_SNIPPET_END: 
+        case CODE_SNIPPET_END:
         case WHITESPACE: {
           skipAllWhitespaceAndSpecial();
           if (this.position.offset > this.tokenStart || isBufferEnd()) {
             tokenHasBeenCompleted = true;
             inAction = false;
           } else {
-            final boolean lineStart = isLineStart();
             final char chr = readChar();
             switch (chr) {
               case '#': {
-                this.position.state = TokenType.TOPIC;
+                this.position.state = TokenType.TOPIC_LEVEL;
               }
               break;
               case '-':
@@ -213,10 +213,10 @@ public final class MindMapLexer {
         break;
         case CODE_SNIPPET_START: {
           tokenHasBeenCompleted = toStartPositionOfCodeSnippetEnd();
-          if (isEmptyToken()){
-            this.position.state = TokenType.CODE_SNIPPET_END;  
+          if (isEmptyToken()) {
+            this.position.state = TokenType.CODE_SNIPPET_END;
           } else {
-            this.position.state = TokenType.CODE_SNIPPET_BODY;  
+            this.position.state = TokenType.CODE_SNIPPET_BODY;
             inAction = false;
           }
         }
@@ -235,7 +235,20 @@ public final class MindMapLexer {
           }
         }
         break;
-        case TOPIC:
+        case TOPIC_LEVEL: {
+          if (!isBufferEnd()) {
+            final char ch = readChar();
+            if (ch == '#') {
+              continue;
+            } else if (!Character.isWhitespace(ch)) {
+              back();
+            }
+            tokenHasBeenCompleted = true;
+            inAction = false;
+          }
+        }
+        break;
+        case TOPIC_TITLE:
         case UNKNOWN_LINE: {
           tokenHasBeenCompleted = skipToNextLine();
           inAction = false;
@@ -256,6 +269,10 @@ public final class MindMapLexer {
           if (hasTextAt("> ", this.tokenStart)) {
             this.tokenType = TokenType.ATTRIBUTE;
           }
+        }
+        break;
+        case TOPIC_LEVEL: {
+          this.position.state = TokenType.TOPIC_TITLE;
         }
         break;
         case UNKNOWN_LINE: {
@@ -288,10 +305,10 @@ public final class MindMapLexer {
     return result;
   }
 
-  private boolean isEmptyToken(){
+  private boolean isEmptyToken() {
     return this.position.offset == this.tokenStart;
   }
-  
+
   private boolean prevTextInBufferIs(@Nonnull final String text) {
     final int len = text.length();
     int startPos = this.position.offset - len;
@@ -391,14 +408,14 @@ public final class MindMapLexer {
     int startingBacktickCounter = 0;
 
     int detectedSpaces = 0;
-    
+
     while (!found && !isBufferEnd()) {
       final char ch = readChar();
 
       switch (ch) {
         case '`': {
           if (detectedSpaces == 0 && (startingBacktickCounter > 0 || lineStart)) {
-            startingBacktickCounter ++;
+            startingBacktickCounter++;
           } else {
             startingBacktickCounter = 0;
           }
@@ -406,9 +423,9 @@ public final class MindMapLexer {
         }
         break;
         case '\n': {
-          if (startingBacktickCounter==3) { 
+          if (startingBacktickCounter == 3) {
             found = true;
-          }else{
+          } else {
             lineStartPosition = this.position.offset;
             startingBacktickCounter = 0;
           }
@@ -418,9 +435,8 @@ public final class MindMapLexer {
         break;
         default: {
           if (Character.isWhitespace(ch)) {
-            detectedSpaces ++;
-          } else 
-          if (!Character.isISOControl(ch) && !Character.isWhitespace(ch)) {
+            detectedSpaces++;
+          } else if (!Character.isISOControl(ch) && !Character.isWhitespace(ch)) {
             startingBacktickCounter = 0;
           }
           lineStart = false;
@@ -429,11 +445,11 @@ public final class MindMapLexer {
       }
     }
 
-    if (found || startingBacktickCounter==3){
+    if (found || startingBacktickCounter == 3) {
       found = true;
       this.position.offset = lineStartPosition;
     }
-    
+
     return found;
   }
 
