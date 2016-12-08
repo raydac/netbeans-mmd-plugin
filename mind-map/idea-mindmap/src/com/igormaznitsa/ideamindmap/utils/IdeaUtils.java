@@ -152,21 +152,12 @@ public enum IdeaUtils {
       LOGGER.info("Using TransactionGuard for write action");
     } else {
       LOGGER.info("Using CommandProcessor for write action");
-      ApplicationManager.getApplication().runWriteAction(new Runnable() {
+      CommandProcessor.getInstance().executeCommand(project, new Runnable() {
         @Override
         public void run() {
-          final CommandProcessor processor = CommandProcessor.getInstance();
-          processor.executeCommand(project, new Runnable() {
-            @Override
-            public void run() {
-              action.run();
-              if (document!=null) {
-                processor.addAffectedDocuments(project,document);
-              }
-            }
-          }, null, null, document);
+          ApplicationManager.getApplication().runWriteAction(action);
         }
-      });
+      },"MMD.executeWriteAction",null,document);
     }
   }
 
@@ -180,12 +171,12 @@ public enum IdeaUtils {
       LOGGER.info("Using TransactionGuard for read action");
     } else {
       LOGGER.info("Using CommandProcessor for read action");
-      ApplicationManager.getApplication().runReadAction(new Runnable() {
+      CommandProcessor.getInstance().executeCommand(project, new Runnable() {
         @Override
         public void run() {
-          CommandProcessor.getInstance().executeCommand(project, action, null, null, document);
+          ApplicationManager.getApplication().runReadAction(action);
         }
-      });
+      },"MMD>executeReadAction",null,document);
     }
   }
 
