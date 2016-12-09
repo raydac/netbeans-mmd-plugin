@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 public class MMParserDefinition implements ParserDefinition {
   public static final IFileElementType FILE = new IFileElementType(MMLanguage.INSTANCE);
   private static final TokenSet WHITESPACES = TokenSet.create(MMTokens.WHITE_SPACE);
-  private static final TokenSet STRING_LITERALS = TokenSet.create(MMTokens.TOPIC, MMTokens.EXTRA_BODY, MMTokens.CODE_SNIPPET_BODY);
+  private static final TokenSet STRING_LITERALS = TokenSet.create(MMTokens.TOPIC_TITLE, MMTokens.EXTRA_BODY, MMTokens.CODE_SNIPPET_BODY);
 
   @Nonnull
   @Override
@@ -74,6 +74,12 @@ public class MMParserDefinition implements ParserDefinition {
 
       if (type == MMTokens.TOPIC)
         return new PsiTopic(node);
+
+      if (type == MMTokens.TOPIC_LEVEL)
+        return new PsiTopicLevel(node);
+
+      if (type == MMTokens.TOPIC_TITLE)
+        return new PsiTopicTitle(node);
 
       if (type == MMTokens.EXTRA_TYPE)
         return new PsiExtraType(node);

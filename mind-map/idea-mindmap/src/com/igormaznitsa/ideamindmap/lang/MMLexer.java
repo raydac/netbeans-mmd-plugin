@@ -89,12 +89,15 @@ public class MMLexer extends Lexer {
         case CODE_SNIPPET_END:
           result = MMTokens.CODE_SNIPPET_END;
           break;
-        case TOPIC:
-          result = MMTokens.TOPIC;
+        case TOPIC_TITLE:
+          result = MMTokens.TOPIC_TITLE;
           break;
-        case UNKNOWN_LINE:
+        case TOPIC_LEVEL:
+          result = MMTokens.TOPIC_LEVEL;
+          break;
+        case UNKNOWN_LINE: {
           result = MMTokens.UNKNOWN;
-          break;
+        }break;
         default:
           throw Assertions.fail("Unsupported token detected [" + type + ']');
       }

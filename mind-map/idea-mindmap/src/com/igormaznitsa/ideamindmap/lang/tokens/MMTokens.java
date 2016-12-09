@@ -14,6 +14,8 @@ public interface MMTokens {
   IElementType HEADER_DELIMITER = new MMHeaderDelimiter();
   IElementType ATTRIBUTES = new MMAttributes();
   IElementType TOPIC = new MMTopic();
+  IElementType TOPIC_LEVEL = new MMTopicLevel();
+  IElementType TOPIC_TITLE = new MMTopicTitle();
   IElementType EXTRA_DATA = new MMExtraData();
   IElementType EXTRA_BODY = new MMExtraBody();
   IElementType EXTRA_TYPE = new MMExtraType();

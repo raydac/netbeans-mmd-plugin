@@ -40,7 +40,17 @@ public class MMHighlighter extends SyntaxHighlighterBase {
 
   public static final TextAttributesKey MMD_TOPIC = TextAttributesKey.createTextAttributesKey(
     "MMD.TOPIC",
+    DefaultLanguageHighlighterColors.METADATA
+  );
+
+  public static final TextAttributesKey MMD_TOPIC_LEVEL = TextAttributesKey.createTextAttributesKey(
+    "MMD.TOPIC.LEVEL",
     DefaultLanguageHighlighterColors.KEYWORD
+  );
+
+  public static final TextAttributesKey MMD_TOPIC_TITLE = TextAttributesKey.createTextAttributesKey(
+    "MMD.TOPIC.TITLE",
+    DefaultLanguageHighlighterColors.STRING
   );
 
   public static final TextAttributesKey MMD_CODESNIPPET_START = TextAttributesKey.createTextAttributesKey(
@@ -89,6 +99,8 @@ public class MMHighlighter extends SyntaxHighlighterBase {
     keys1.put(MMTokens.EXTRA_TYPE, MMD_EXTRA_NAME);
     keys1.put(MMTokens.UNKNOWN, MMD_UNKNOWN);
     keys1.put(MMTokens.TOPIC, MMD_TOPIC);
+    keys1.put(MMTokens.TOPIC_LEVEL, MMD_TOPIC_LEVEL);
+    keys1.put(MMTokens.TOPIC_TITLE, MMD_TOPIC_TITLE);
     keys1.put(MMTokens.FILE, MMD_FILE);
     keys1.put(MMTokens.CODE_SNIPPET_START, MMD_CODESNIPPET_START);
     keys1.put(MMTokens.CODE_SNIPPET_END, MMD_CODESNIPPET_END);
@@ -106,6 +118,8 @@ public class MMHighlighter extends SyntaxHighlighterBase {
     DISPLAY_NAMES.put(MMD_HEADER_DELIMITER, Pair.create("Header delimiter", HighlightSeverity.INFORMATION));
     DISPLAY_NAMES.put(MMD_ATTRIBUTES, Pair.create("Attributes", HighlightSeverity.INFORMATION));
     DISPLAY_NAMES.put(MMD_TOPIC, Pair.create("Topic", HighlightSeverity.INFORMATION));
+    DISPLAY_NAMES.put(MMD_TOPIC_LEVEL, Pair.create("Topic level", HighlightSeverity.INFORMATION));
+    DISPLAY_NAMES.put(MMD_TOPIC_TITLE, Pair.create("Topic title", HighlightSeverity.INFORMATION));
     DISPLAY_NAMES.put(MMD_FILE, Pair.create("File", HighlightSeverity.INFORMATION));
     DISPLAY_NAMES.put(MMD_EXTRA_NAME, Pair.create("Extra name", HighlightSeverity.INFORMATION));
     DISPLAY_NAMES.put(MMD_EXTRA_TEXT, Pair.create("Extra name", HighlightSeverity.INFORMATION));
