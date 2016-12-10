@@ -5,7 +5,7 @@
 [![NetBeans](https://img.shields.io/badge/netbeans-7.4%2b-green.svg)](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
 [![Intellij IDEA](https://img.shields.io/badge/idea-15.0.6%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)
 [![PayPal donation](https://img.shields.io/badge/donation-PayPal-red.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2)
-[![Yandex.Money donation](https://money.yandex.ru/to/41001158080699)
+[![Yandex.Money donation](https://img.shields.io/badge/donation-Я.деньги-yellow.svg)](https://money.yandex.ru/to/41001158080699)
 
 ![Banner](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png)  
 
