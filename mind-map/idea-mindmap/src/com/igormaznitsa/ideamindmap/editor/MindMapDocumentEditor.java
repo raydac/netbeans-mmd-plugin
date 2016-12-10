@@ -67,9 +67,7 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -82,7 +80,7 @@ import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
-public class MindMapDocumentEditor implements DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable, DataProvider, CopyProvider, CutProvider, PasteProvider {
+public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable, DataProvider, CopyProvider, CutProvider, PasteProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapDocumentEditor.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
@@ -141,6 +139,14 @@ public class MindMapDocumentEditor implements DocumentsEditor, MindMapController
     });
 
     DataManager.registerDataProvider(this.mainScrollPane, this);
+
+    this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
+    this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
+  }
+
+  @Override
+  public void adjustmentValueChanged(AdjustmentEvent e) {
+    this.mindMapPanel.repaint();
   }
 
   @Override
