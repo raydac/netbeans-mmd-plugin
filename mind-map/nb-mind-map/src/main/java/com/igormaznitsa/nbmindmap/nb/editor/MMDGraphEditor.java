@@ -100,6 +100,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -139,7 +141,7 @@ import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
     preferredID = MMDGraphEditor.ID,
     position = 1
 )
-public final class MMDGraphEditor extends CloneableEditor implements MindMapController, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, FlavorListener, ClipboardListener {
+public final class MMDGraphEditor extends CloneableEditor implements AdjustmentListener, MindMapController, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, FlavorListener, ClipboardListener {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -241,6 +243,14 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     this.actionCut.setEnabled(false);
     this.actionCopy.setEnabled(false);
     this.actionPaste.setEnabled(false);
+
+    this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
+    this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
+  }
+
+  @Override
+  public void adjustmentValueChanged(@Nonnull final AdjustmentEvent e) {
+    this.mindMapPanel.repaint();
   }
 
   private void registerCustomCCPActions(@Nonnull final JComponent component) {
@@ -250,7 +260,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     actionMap.put(DefaultEditorKit.pasteAction, this.actionPaste);
   }
 
-  private void registerAsClipboardListener(){
+  private void registerAsClipboardListener() {
     final Clipboard clipboard = NbUtils.findClipboard();
     if (clipboard instanceof ExClipboard) {
       ((ExClipboard) clipboard).addClipboardListener(this);
@@ -259,8 +269,8 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
     }
     processClipboardChange(clipboard);
   }
-  
-  private void unregisterFromClipboardListeners(){
+
+  private void unregisterFromClipboardListeners() {
     final Clipboard clipboard = NbUtils.findClipboard();
     if (clipboard instanceof ExClipboard) {
       ((ExClipboard) clipboard).removeClipboardListener(this);
@@ -268,7 +278,7 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
       clipboard.removeFlavorListener(this);
     }
   }
-  
+
   private void restoreSystemCCPActions(@Nonnull final JComponent component) {
     final ActionMap actionMap = component.getActionMap();
     actionMap.put(DefaultEditorKit.copyAction, SystemAction.get(CopyAction.class));
@@ -326,10 +336,10 @@ public final class MMDGraphEditor extends CloneableEditor implements MindMapCont
         }
       });
     }
-    
+
     registerCustomCCPActions(this);
     registerAsClipboardListener();
-    
+
     super.componentActivated();
   }
 
