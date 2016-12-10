@@ -37,7 +37,8 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
     FILE,
     LINK,
     NOTE,
-    TOPIC;
+    TOPIC,
+    UNKNOWN;
 
     @Nullable
     public String preprocessString(@Nullable final String str) {
