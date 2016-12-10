@@ -116,6 +116,26 @@ public class MindMapLexerTest {
   }
 
   @Test
+  public void testExtraLink() {
+    final MindMapLexer lexer = new MindMapLexer();
+    final String testString = "- LINK\n<pre>http://www.google.com</pre>\n";
+    lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.WHITESPACE);
+    lexer.advance();
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TYPE, "- LINK\n", 0, 7);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TEXT, "<pre>http://www.google.com</pre>", 7, 39);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.WHITESPACE, "\n", 39, 40);
+    lexer.advance();
+
+  }
+
+  @Test
   public void testHeaderWithAttributesAndTopic() {
     final MindMapLexer lexer = new MindMapLexer();
     final String testString = "First line\n> attr='hello'\n--\n   # Topic\n";
