@@ -67,16 +67,17 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
         marker.drop();
       }
       else {
-        if (token == MMTokens.TOPIC) {
-          final String tokenText = Assertions.assertNotNull(builder.getTokenText());
-          final int topicLevel = ModelUtils.calcCharsOnStart('#', tokenText);
+        if (token == MMTokens.TOPIC_LEVEL) {
+          final PsiBuilder.Marker levelMarker = builder.mark();
+          levelMarker.done(token);
+          final int topicLevel = ModelUtils.calcCharsOnStart('#', builder.getTokenText());
           if (topicLevel != 1) {
             marker.done(MMTokens.UNKNOWN);
           }
           else {
             builder.advanceLexer();
             recursiveParseTopic(builder, topicLevel);
-            marker.done(token);
+            marker.done(MMTokens.TOPIC);
           }
         }
         else {
@@ -98,10 +99,11 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
         marker.drop();
       }
       else {
-        if (token == MMTokens.TOPIC) {
-          final String tokenText = Assertions.assertNotNull(builder.getTokenText());
+        if (token == MMTokens.TOPIC_LEVEL) {
+          final PsiBuilder.Marker levelMarker = builder.mark();
+          levelMarker.done(token);
 
-          final int theTopicLevel = ModelUtils.calcCharsOnStart('#', tokenText);
+          final int theTopicLevel = ModelUtils.calcCharsOnStart('#', builder.getTokenText());
           if (theTopicLevel <= 1) {
             marker.done(MMTokens.UNKNOWN);
           }
@@ -121,7 +123,7 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
             }
           }
         }
-        else if (token == MMTokens.CODE_SNIPPET_BODY || token == MMTokens.CODE_SNIPPET_END || token == MMTokens.CODE_SNIPPET_START || token == MMTokens.ATTRIBUTES) {
+        else if (token == MMTokens.TOPIC_TITLE || token == MMTokens.CODE_SNIPPET_BODY || token == MMTokens.CODE_SNIPPET_END || token == MMTokens.CODE_SNIPPET_START || token == MMTokens.ATTRIBUTES) {
           marker.done(token);
         }
         else if (token == MMTokens.EXTRA_TYPE) {
@@ -163,7 +165,7 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
       }
       else {
         final IElementType token = builder.getTokenType();
-        if (token == MMTokens.TOPIC || token == MMTokens.EXTRA_TYPE) {
+        if (token == MMTokens.TOPIC_LEVEL || token == MMTokens.EXTRA_TYPE) {
           marker.rollbackTo();
           return true;
         }
