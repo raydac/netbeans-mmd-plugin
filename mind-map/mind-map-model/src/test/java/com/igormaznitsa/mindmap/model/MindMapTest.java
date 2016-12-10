@@ -29,6 +29,34 @@ import java.util.regex.Pattern;
 
 public class MindMapTest {
   
+  @Test(expected = IllegalArgumentException.class)
+  public void testMindMapParse_Error_Empty() throws Exception {
+    final MindMap map = new MindMap(null, new StringReader(""));
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testMindMapParse_Error_JustTextString() throws Exception {
+    final MindMap map = new MindMap(null, new StringReader("Who is here"));
+  }
+  
+  @Test
+  public void testMindMapParse_Error_OnlyHeader() throws Exception {
+    final MindMap map = new MindMap(null, new StringReader("Who is here\n-"));
+    assertNull(map.getRoot());
+  }
+  
+  @Test
+  public void testMindMapParse_Error_HeaderAndOnlyLevelChar() throws Exception {
+    final MindMap map = new MindMap(null, new StringReader("Who is here\n-\n#"));
+    assertNull(map.getRoot());
+  }
+  
+  @Test
+  public void testMindMapParse_Error_HeaderAndOnlySpacesAfterLevelChar() throws Exception {
+    final MindMap map = new MindMap(null, new StringReader("Who is here\n-\n#         "));
+    assertEquals("        ",map.getRoot().getText());
+  }
+  
   @Test
   public void testFindNext_Null() throws Exception {
     final MindMap map = new MindMap(null, new StringReader("test\n---\n# Solar\n## Mercury\n## Venus\n## Earth\n### Moon\n## Mars\n### Phobos\n### Deimos"));
