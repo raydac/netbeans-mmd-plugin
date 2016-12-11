@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.netbeans.api.fileinfo.NonRecursiveFolder;
 import org.netbeans.api.java.source.TreePathHandle;
 import org.netbeans.api.project.FileOwnerQuery;
@@ -49,7 +50,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
 
   private final List<RefactoringElementImplementation> elements = new ArrayList<RefactoringElementImplementation>();
 
-  private volatile boolean canceled;
+  private final AtomicBoolean canceled = new AtomicBoolean(false);
 
   public AbstractPlugin(final T refactoring) {
     super();
@@ -72,7 +73,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
           synchronized (this.cache) {
             Collection<FileObject> found = this.cache.get(f.getFolder());
             if (found == null) {
-              found = RefactoringUtils.findAllMindMapsInFolder(f);
+              found = RefactoringUtils.findAllMindMapsInFolder(f,this);
               this.cache.put(f.getFolder(), found);
             }
             mindMaps.addAll(found);
@@ -89,7 +90,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
       synchronized (this.cache) {
         Collection<FileObject> result = this.cache.get(projectFolder);
         if (result == null) {
-          result = RefactoringUtils.findAllMindMapsInProject(project);
+          result = RefactoringUtils.findAllMindMapsInProject(project, this);
           this.cache.put(projectFolder, result);
         }
         return result;
@@ -231,11 +232,11 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
 
   @Override
   public final void cancelRequest() {
-    this.canceled = true;
+    this.canceled.set(true);
   }
 
-  protected boolean isCanceled() {
-    return this.canceled;
+  public boolean isCanceled() {
+    return this.canceled.get();
   }
 
 }
