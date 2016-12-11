@@ -28,7 +28,7 @@ import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
 public class TopicTest {
 
-  private final MindMapLexer makeLexer(final String text) {
+  private MindMapLexer makeLexer(final String text) {
     final MindMapLexer lexer = new MindMapLexer();
     lexer.start(text, 0, text.length(), MindMapLexer.TokenType.WHITESPACE);
     return lexer;

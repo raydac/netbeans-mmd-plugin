@@ -295,7 +295,7 @@ public final class MindMapLexer {
   }
 
   private boolean isLineStart() {
-    boolean result = false;
+    boolean result;
     final int startPos = this.position.offset - 1;
     if (startPos < 0) {
       result = true;
