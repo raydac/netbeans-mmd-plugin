@@ -24,6 +24,8 @@ import java.awt.Color;
 import java.util.ResourceBundle;
 
 public class ColorAttributePanel extends JPanel {
+  private static final long serialVersionUID = -3436912869455827455L;
+
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   public static class Result {

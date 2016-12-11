@@ -18,6 +18,22 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.4.0 (under development)</p>
+        <ul>
+          <li>plugin adapted for compatibility with 14.0.5 (139.1803)</li>
+          <li>added importers for Mindmup, Freemind, Novamind, Coggle and XMind formats</li>
+          <li>disabled watching of file changes by default, added options flag to enable that</li>
+          <li>added support of Cut-Copy-Paste actions over Mind Maps</li>
+          <li>added reset button into URI edit dialog</li>
+          <li>added processing of dragged links and texts from external web browsers</li>
+          <li>improved image plugin to import images from clipboard and max edge size inceased up to 350 pixels</li>
+          <li>improved mind-map options panel, added functions to reset, import and export settings.</li>
+          <li>export into Org-Mode format #24</li>
+          <li>by default disabled autocreation of .projectKnowledge folder #23</li>
+          <li>added keyboard shortcuts to fold and unfold topics (- and =) #18</li>
+          <li>added attribute in mind map templates to show jumps by default</li>
+          <li>added auto-positioning of root topic into center of view area just as document open</li>
+        </ul>
         <p>1.3.0 (01-sep-2016)</p>
         <ul>
             <li>added plugin to add an image into a topic</li>
@@ -86,15 +102,21 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileEditorProvider implementation="com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditorProvider"/>
         <fileTypeFactory implementation="com.igormaznitsa.ideamindmap.filetype.MindMapFileTypeFactory"/>
-        <fileTemplateGroup implementation="com.igormaznitsa.ideamindmap.filetemplate.MindMapTemplateGroupDescriptionFactory"/>
+        <fileTemplateGroup
+                implementation="com.igormaznitsa.ideamindmap.filetemplate.MindMapTemplateGroupDescriptionFactory"/>
         <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
         <framework.detector implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetDetector"/>
         <applicationConfigurable instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"/>
         <projectViewPane implementation="com.igormaznitsa.ideamindmap.view.KnowledgeViewPane"/>
-        <annotator language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMAnnotator"/>
-        <lang.syntaxHighlighterFactory language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMSyntaxHighlighterFactory" key="mmd"/>
-        <lang.parserDefinition language="NBMindMap" implementationClass="com.igormaznitsa.ideamindmap.lang.MMParserDefinition"/>
-        <psi.referenceContributor language="NBMindMap" implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
+        <annotator language="NBMindMap"
+                   implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMAnnotator"/>
+        <lang.syntaxHighlighterFactory language="NBMindMap"
+                                       implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMSyntaxHighlighterFactory"
+                                       key="mmd"/>
+        <lang.parserDefinition language="NBMindMap"
+                               implementationClass="com.igormaznitsa.ideamindmap.lang.MMParserDefinition"/>
+        <psi.referenceContributor language="NBMindMap"
+                                  implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
         <lang.elementManipulator forClass="com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile"
                                  implementationClass="com.igormaznitsa.ideamindmap.lang.refactoring.references.manipulators.PsiExtraFileManipulator"/>
         <!--<moveFileHandler implementation="com.igormaznitsa.ideamindmap.lang.refactoring.move.FileMoveHandler"/>-->
@@ -102,7 +124,8 @@
 
     <application-components>
         <component>
-            <implementation-class>com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings</implementation-class>
+            <implementation-class>com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings
+            </implementation-class>
         </component>
     </application-components>
 

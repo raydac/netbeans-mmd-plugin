@@ -1,6 +1,5 @@
 package com.igormaznitsa.ideamindmap.print;
 
-import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -12,10 +11,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 
 import javax.annotation.Nonnull;
-import javax.swing.Icon;
-import javax.swing.SwingUtilities;
-import java.awt.Dimension;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 
 public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
 
@@ -45,11 +42,11 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
     ProgressManager.getInstance().run(backgroundTask);
   }
 
-  @Override public boolean isDarkTheme(final MMDPrintPanel source) {
+  @Override public boolean isDarkTheme(@Nonnull final MMDPrintPanel source) {
     return IdeaUtils.isDarkTheme();
   }
 
-  @Override public void onPrintTaskStarted(final MMDPrintPanel source) {
+  @Override public void onPrintTaskStarted(@Nonnull final MMDPrintPanel source) {
     SwingUtilities.invokeLater(new Runnable() {
       @Override public void run() {
         final Window wnd = SwingUtilities.windowForComponent(source);
@@ -58,7 +55,7 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
     });
   }
 
-  @Override public Dimension getPreferredSizeOfPanel(final MMDPrintPanel mmdPrintPanel) {
+  @Override @Nonnull public Dimension getPreferredSizeOfPanel(@Nonnull final MMDPrintPanel mmdPrintPanel) {
     return new Dimension(600, 450);
   }
 

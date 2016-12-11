@@ -18,7 +18,7 @@ public class PsiExtraType extends ASTWrapperPsiElement implements PsiNamedElemen
   public PsiExtraType(@Nonnull final ASTNode node) {
     super(node);
     final String text = node.getText();
-    Extra.ExtraType result = null;
+    Extra.ExtraType result;
     if (text.length() > 1) {
       try {
         result = Extra.ExtraType.valueOf(text.substring(1).trim());

@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.net.URI;
 
 public class DonateButton extends JButton {
+  private static final long serialVersionUID = -7732647214349379363L;
   private static final URI LINK = URI.create("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2");
 
   private static final ActionListener LISTENER = new ActionListener() {

@@ -1,7 +1,6 @@
 package com.igormaznitsa.ideamindmap.lang.refactoring.move;
 
 import com.igormaznitsa.ideamindmap.lang.refactoring.references.providers.PsiExtraFileReference;
-import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.psi.PsiDirectory;

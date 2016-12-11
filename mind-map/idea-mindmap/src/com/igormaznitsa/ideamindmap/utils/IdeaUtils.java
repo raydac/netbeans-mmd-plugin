@@ -180,6 +180,7 @@ public enum IdeaUtils {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Nullable
   public static <T> T safeInvokeMethodForResult(@Nonnull final Object instance, @Nonnull final T defaultResult, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object[] arguments) {
     final Method method;
@@ -198,7 +199,6 @@ public enum IdeaUtils {
     return defaultResult;
   }
 
-  @Nullable
   public static boolean safeInvokeMethodNoResult(@Nonnull final Object instance, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object[] arguments) {
     final Method method;
     try {

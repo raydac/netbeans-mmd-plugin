@@ -125,10 +125,6 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
       updateForFile(b.getFile());
     }
 
-    public void bookmarksOrderChanged() {
-      //do nothing
-    }
-
     private void updateForFile(@Nonnull VirtualFile file) {
       PsiElement element = findPsi(file);
       if (element != null) {

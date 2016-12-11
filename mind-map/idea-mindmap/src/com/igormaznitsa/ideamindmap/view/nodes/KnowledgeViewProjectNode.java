@@ -92,9 +92,6 @@ public class KnowledgeViewProjectNode extends AbstractProjectNode {
             return false;
           }
 
-          protected boolean shouldShowSourcesRoot() {
-            return false;
-          }
         };
         result.add(node);
       }

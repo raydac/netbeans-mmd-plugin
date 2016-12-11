@@ -21,6 +21,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.WindowManager;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -35,43 +36,43 @@ public class MindMapDialogProvider implements DialogProvider {
   }
 
   @Override
-  public void msgError(final String text) {
+  public void msgError(@Nonnull final String text) {
     Messages.showErrorDialog(this.project, text, "Error");
   }
 
   @Override
-  public void msgInfo(final String text) {
+  public void msgInfo(@Nonnull final String text) {
     Messages.showInfoMessage(this.project, text, "Info");
   }
 
   @Override
-  public void msgWarn(final String text) {
+  public void msgWarn(@Nonnull final String text) {
     Messages.showWarningDialog(this.project, text, "Warning");
   }
 
   @Override
-  public boolean msgConfirmOkCancel(final String title, final String text) {
+  public boolean msgConfirmOkCancel(@Nonnull final String title, @Nonnull final String text) {
     return Messages.showOkCancelDialog(this.project, text, title, Messages.getQuestionIcon()) == Messages.OK;
   }
 
-  @Override public boolean msgOkCancel(final String title, final JComponent component) {
+  @Override public boolean msgOkCancel(@Nonnull final String title, @Nonnull final JComponent component) {
     return IdeaUtils.plainMessageOkCancel(this.project, title, component);
   }
 
   @Override
-  public boolean msgConfirmYesNo(final String title, final String text) {
+  public boolean msgConfirmYesNo(@Nonnull final String title, @Nonnull final String text) {
     return Messages.showYesNoDialog(this.project, text, title, Messages.getQuestionIcon()) == Messages.YES;
   }
 
   @Override
-  public Boolean msgConfirmYesNoCancel(final String title, final String text) {
+  public Boolean msgConfirmYesNoCancel(@Nonnull final String title, @Nonnull final String text) {
     final int result = Messages.showYesNoCancelDialog(this.project, text, title, Messages.getQuestionIcon());
     return result == Messages.CANCEL ? null : result == Messages.YES;
   }
 
   @Nullable @Override
-  public File msgOpenFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter,
-    final String approveButtonText) {
+  public File msgOpenFileDialog(@Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean fileOnly, @Nullable final FileFilter fileFilter,
+                                @Nonnull final String approveButtonText) {
 
     final JFileChooser fileChooser = new JFileChooser(defaultFolder);
     fileChooser.setDialogTitle(title);
@@ -89,8 +90,8 @@ public class MindMapDialogProvider implements DialogProvider {
   }
 
   @Override
-  public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter,
-    final String approveButtonText) {
+  public File msgSaveFileDialog(@Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean fileOnly, @Nullable final FileFilter fileFilter,
+                                @Nonnull final String approveButtonText) {
       final JFileChooser fileChooser = new JFileChooser(defaultFolder);
       fileChooser.setDialogTitle(title);
       fileChooser.setFileFilter(fileFilter);

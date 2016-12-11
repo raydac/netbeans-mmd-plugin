@@ -1,7 +1,6 @@
 package com.igormaznitsa.ideamindmap.lang.highlighter;
 
 import com.igormaznitsa.ideamindmap.lang.psi.MMPsiElement;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -22,7 +21,7 @@ public class MMAnnotator implements Annotator {
 
   public void annotate(@Nonnull PsiElement element, @Nonnull AnnotationHolder holder) {
     if (!(element instanceof MMPsiElement)) return;
-    ASTNode keyNode = ((ASTWrapperPsiElement)element).getNode();
+    final ASTNode keyNode = element.getNode();
     highlightTokens(keyNode, holder, new MMHighlighter());
   }
 

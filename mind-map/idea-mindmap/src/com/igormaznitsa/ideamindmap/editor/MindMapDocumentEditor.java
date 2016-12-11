@@ -19,6 +19,7 @@ import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -81,6 +82,7 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesCo
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
 public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable, DataProvider, CopyProvider, CutProvider, PasteProvider {
+  private static final long serialVersionUID = -8185230144865144686L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapDocumentEditor.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
@@ -109,7 +111,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.mindMapPanel.putTmpObject("editor", this);
 
     this.mindMapPanel.addMindMapListener(this);
-    this.mainScrollPane = new JScrollPane(this.mindMapPanel);
+    this.mainScrollPane = new JScrollPane(this.mindMapPanel); // NB! JBScrollPane sometime doesn't show scrollbars so that it replaced by swing panel
     this.mainScrollPane.setWheelScrollingEnabled(true);
     this.mainScrollPane.setAutoscrolls(true);
 
@@ -396,12 +398,12 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   @Override
-  public void onMindMapModelChanged(final MindMapPanel mindMapPanel) {
+  public void onMindMapModelChanged(@Nonnull final MindMapPanel mindMapPanel) {
     saveMindMapToDocument();
   }
 
   @Override
-  public void onMindMapModelRealigned(MindMapPanel mindMapPanel, Dimension dimension) {
+  public void onMindMapModelRealigned(@Nonnull MindMapPanel mindMapPanel, @Nonnull Dimension dimension) {
     this.mainScrollPane.getViewport().revalidate();
   }
 
@@ -425,7 +427,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   @Override
-  public void onEnsureVisibilityOfTopic(MindMapPanel mindMapPanel, final Topic topic) {
+  public void onEnsureVisibilityOfTopic(@Nonnull MindMapPanel mindMapPanel, @Nonnull final Topic topic) {
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
@@ -481,7 +483,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   @Override
-  public void onClickOnExtra(final MindMapPanel source, final int modifiers, final int clicks, final Topic topic, final Extra<?> extra) {
+  public void onClickOnExtra(@Nonnull final MindMapPanel source, final int modifiers, final int clicks, @Nonnull final Topic topic, @Nonnull final Extra<?> extra) {
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {
@@ -556,7 +558,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   @Override
-  public void onChangedSelection(final MindMapPanel mindMapPanel, final Topic[] topics) {
+  public void onChangedSelection(@Nonnull final MindMapPanel mindMapPanel, @Nonnull @MustNotContainNull final Topic[] topics) {
   }
 
   public DialogProvider getDialogProvider() {
@@ -564,7 +566,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   @Override
-  public boolean allowedRemovingOfTopics(final MindMapPanel mindMapPanel, final Topic[] topics) {
+  public boolean allowedRemovingOfTopics(@Nonnull final MindMapPanel mindMapPanel, @Nonnull @MustNotContainNull final Topic[] topics) {
     boolean topicsNotImportant = true;
 
     for (final Topic t : topics) {
@@ -649,6 +651,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   }
 
+  @SuppressWarnings("unchecked")
   @Nullable
   private File extractDropFile(@Nonnull final DropTargetDropEvent dtde) throws Exception {
     try {
@@ -675,7 +678,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
     File dropFile = null;
-    String extractedLink = null;
+    String extractedLink;
     String extractedText = null;
     URI decodedLink = null;
 

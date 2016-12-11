@@ -77,7 +77,7 @@ public class IdeaUIComponentFactory implements UIComponentFactory{
   }
 
 
-  @Override public JPanel makePanel() {
+  @Override @Nonnull public JPanel makePanel() {
     return new JBPanel();
   }
 
@@ -95,59 +95,59 @@ public class IdeaUIComponentFactory implements UIComponentFactory{
     return new JBRadioButton();
   }
 
-  @Override public JComboBox makeComboBox() {
+  @Override @Nonnull public JComboBox makeComboBox() {
     return new ComboBox();
   }
 
-  @Override public JButton makeButton() {
+  @Override @Nonnull public JButton makeButton() {
     return new JButton();
   }
 
-  @Override public JToolBar makeToolBar() {
+  @Override @Nonnull public JToolBar makeToolBar() {
     return new JToolBar();
   }
 
-  @Override public JScrollPane makeScrollPane() {
+  @Override @Nonnull public JScrollPane makeScrollPane() {
     return new JBScrollPane();
   }
 
-  @Override public JCheckBox makeCheckBox() {
+  @Override @Nonnull public JCheckBox makeCheckBox() {
     return new JBCheckBox();
   }
 
-  @Override public JLabel makeLabel() {
+  @Override @Nonnull public JLabel makeLabel() {
     return new JBLabel();
   }
 
-  @Override public JPopupMenu makePopupMenu() {
+  @Override @Nonnull public JPopupMenu makePopupMenu() {
     return new JBPopupMenu();
   }
 
-  @Override public JTextArea makeTextArea() {
+  @Override @Nonnull public JTextArea makeTextArea() {
     return new JTextArea();
   }
 
-  @Override public JEditorPane makeEditorPane() {
+  @Override @Nonnull public JEditorPane makeEditorPane() {
     return new JEditorPane();
   }
 
-  @Override public JMenuItem makeMenuItem(final String s, final Icon icon) {
+  @Override @Nonnull public JMenuItem makeMenuItem(@Nonnull final String s, final Icon icon) {
     return new JBMenuItem(s, icon);
   }
 
-  @Override public JCheckBoxMenuItem makeCheckboxMenuItem(final String s, final Icon icon, final boolean b) {
+  @Override @Nonnull public JCheckBoxMenuItem makeCheckboxMenuItem(@Nonnull final String s, final Icon icon, final boolean b) {
     return new JBCheckboxMenuItem(s, icon, b);
   }
 
-  @Override public JSeparator makeMenuSeparator() {
+  @Override @Nonnull public JSeparator makeMenuSeparator() {
     return new JSeparator();
   }
 
-  @Override public JMenu makeMenu(final String s) {
+  @Override @Nonnull public JMenu makeMenu(@Nonnull final String s) {
     return new JMenu(s);
   }
 
-  @Override public JSlider makeSlider() {
+  @Override @Nonnull public JSlider makeSlider() {
     return new JSlider();
   }
 }

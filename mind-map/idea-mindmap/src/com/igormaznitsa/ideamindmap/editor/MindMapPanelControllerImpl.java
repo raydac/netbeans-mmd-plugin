@@ -18,21 +18,10 @@ package com.igormaznitsa.ideamindmap.editor;
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
-import com.igormaznitsa.ideamindmap.swing.AboutForm;
-import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
-import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
-import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
-import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
+import com.igormaznitsa.ideamindmap.swing.*;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
-import com.igormaznitsa.ideamindmap.utils.SwingUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
@@ -44,27 +33,16 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapConfigListener;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
-import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
+import com.igormaznitsa.mindmap.swing.panel.*;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.intellij.execution.application.ApplicationConfigurable;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurableProvider;
 import com.intellij.openapi.options.ShowSettingsUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
-import java.awt.Color;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,27 +89,28 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   @Override
-  public boolean isElementDragAllowed(MindMapPanel mindMapPanel) {
+  public boolean isElementDragAllowed(@Nonnull MindMapPanel mindMapPanel) {
     return true;
   }
 
   @Override
-  public boolean isMouseMoveProcessingAllowed(MindMapPanel mindMapPanel) {
+  public boolean isMouseMoveProcessingAllowed(@Nonnull MindMapPanel mindMapPanel) {
     return true;
   }
 
   @Override
-  public boolean isMouseWheelProcessingAllowed(MindMapPanel mindMapPanel) {
+  public boolean isMouseWheelProcessingAllowed(@Nonnull MindMapPanel mindMapPanel) {
     return true;
   }
 
   @Override
-  public boolean isMouseClickProcessingAllowed(MindMapPanel mindMapPanel) {
+  public boolean isMouseClickProcessingAllowed(@Nonnull MindMapPanel mindMapPanel) {
     return true;
   }
 
   @Override
-  public MindMapPanelConfig provideConfigForMindMapPanel(MindMapPanel mindMapPanel) {
+  @Nonnull
+  public MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull MindMapPanel mindMapPanel) {
     return MindMapApplicationSettings.findInstance().getConfig();
   }
 
@@ -142,47 +121,47 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       this.customProcessors = new HashMap<Class<? extends PopUpMenuItemPlugin>, CustomJob>();
       this.customProcessors.put(ExtraNotePlugin.class, new CustomJob() {
         @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nullable @MustNotContainNull final Topic[] selectedTopics) {
           editTextForTopic(topic);
           panel.requestFocus();
         }
       });
       this.customProcessors.put(ExtraFilePlugin.class, new CustomJob() {
         @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nullable @MustNotContainNull final Topic[] selectedTopics) {
           editFileLinkForTopic(topic);
           panel.requestFocus();
         }
       });
       this.customProcessors.put(ExtraURIPlugin.class, new CustomJob() {
         @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nullable @MustNotContainNull final Topic[] selectedTopics) {
           editLinkForTopic(topic);
           panel.requestFocus();
         }
       });
       this.customProcessors.put(ExtraJumpPlugin.class, new CustomJob() {
         @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nullable @MustNotContainNull final Topic[] selectedTopics) {
           editTopicLinkForTopic(topic);
           panel.requestFocus();
         }
       });
       this.customProcessors.put(ChangeColorPlugin.class, new CustomJob() {
         @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nullable @MustNotContainNull final Topic[] selectedTopics) {
           processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
         }
       });
       this.customProcessors.put(AboutPlugin.class, new CustomJob() {
         @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nullable @MustNotContainNull final Topic[] selectedTopics) {
           showAbout();
         }
       });
       this.customProcessors.put(OptionsPlugin.class, new CustomJob() {
         @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nullable @MustNotContainNull final Topic[] selectedTopics) {
           startOptionsEdit();
         }
       });
@@ -191,7 +170,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   @Override
-  public JPopupMenu makePopUpForMindMapPanel(final MindMapPanel source, final Point point, final AbstractElement element, final ElementPart partUnderMouse) {
+  public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
     return Utils.makePopUp(source, this.dialogProvider, element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
   }
 
@@ -393,12 +372,13 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   @Override
-  public DialogProvider getDialogProvider(final MindMapPanel mindMapPanel) {
+  @Nonnull
+  public DialogProvider getDialogProvider(@Nonnull final MindMapPanel mindMapPanel) {
     return this.dialogProvider;
   }
 
   @Override
-  public boolean processDropTopicToAnotherTopic(final MindMapPanel source, final Point dropPoint, final Topic draggedTopic, final Topic destinationTopic) {
+  public boolean processDropTopicToAnotherTopic(@Nonnull final MindMapPanel source, @Nonnull final Point dropPoint, @Nonnull final Topic draggedTopic, @Nullable final Topic destinationTopic) {
     boolean result = false;
     if (draggedTopic != null && destinationTopic != null && draggedTopic != destinationTopic) {
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
@@ -417,7 +397,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
   }
 
-  @Override public void onConfigurationPropertyChanged(final MindMapPanelConfig mindMapPanelConfig) {
+  @Override public void onConfigurationPropertyChanged(@Nonnull final MindMapPanelConfig mindMapPanelConfig) {
     this.editor.refreshConfiguration();
   }
 }

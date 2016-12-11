@@ -46,10 +46,6 @@ public class PsiExtraFileReference extends PsiReferenceBase<PsiExtraFile> {
     }
   }
 
-  @Override public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-    return super.handleElementRename(newElementName);
-  }
-
   public void retargetToFile(final PsiFileSystemItem file) {
     final MMapURI oldUri = extraFile.getMMapURI();
     try {
