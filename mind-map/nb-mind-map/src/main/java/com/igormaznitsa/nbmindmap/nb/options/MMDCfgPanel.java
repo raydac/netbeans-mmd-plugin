@@ -42,6 +42,7 @@ import org.apache.commons.io.FileUtils;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
+import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapRefactoringFactory;
 import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
 
 final class MMDCfgPanel extends javax.swing.JPanel {
@@ -54,10 +55,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private volatile boolean changeNotificationAllowed = true;
 
   private final MindMapPanelConfig config = new MindMapPanelConfig();
-  
+
   private static File lastImportedSettingsFile = null;
   private static File lastExportedSettingsFile = null;
-  
+
   private final Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
     @Override
     public int compare(final String o1, final String o2) {
@@ -80,10 +81,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
   }
 
-  
   MMDCfgPanel(final MMDCfgOptionsPanelController controller) {
     this.controller = controller;
     initComponents();
+    this.labelMiscNeedsReloading.setVisible(false);
   }
 
   /**
@@ -145,6 +146,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     checkBoxCopyColorInfoToNewAllowed = new javax.swing.JCheckBox();
     checkBoxKnowledgeFolderAutogenerationAllowed = new javax.swing.JCheckBox();
     checkBoxWatchFileRefactoring = new javax.swing.JCheckBox();
+    checkBoxIgnoreWhereUsedRequests = new javax.swing.JCheckBox();
+    labelMiscNeedsReloading = new javax.swing.JLabel();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
     jLabel3 = new javax.swing.JLabel();
@@ -234,7 +237,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 106, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -359,7 +362,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(colorChooserGridColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(colorChooserPaperColor, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE))
+          .addComponent(colorChooserPaperColor, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE))
         .addContainerGap())
     );
     jPanel4Layout.setVerticalGroup(
@@ -721,6 +724,21 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     });
 
     checkBoxWatchFileRefactoring.setText("Watch file refactoring (Experimental)"); // NOI18N
+    checkBoxWatchFileRefactoring.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxWatchFileRefactoringActionPerformed(evt);
+      }
+    });
+
+    checkBoxIgnoreWhereUsedRequests.setText("Turn off processing of \"Where used\" refactoring"); // NOI18N
+    checkBoxIgnoreWhereUsedRequests.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxIgnoreWhereUsedRequestsActionPerformed(evt);
+      }
+    });
+
+    labelMiscNeedsReloading.setForeground(java.awt.Color.red);
+    labelMiscNeedsReloading.setText("IDE should be reloaded for effect"); // NOI18N
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -734,8 +752,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(checkBoxUnfoldCollapsedTarget)
           .addComponent(checkBoxCopyColorInfoToNewAllowed)
           .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed)
-          .addComponent(checkBoxWatchFileRefactoring))
-        .addContainerGap(48, Short.MAX_VALUE))
+          .addComponent(checkBoxWatchFileRefactoring)
+          .addComponent(checkBoxIgnoreWhereUsedRequests)
+          .addComponent(labelMiscNeedsReloading))
+        .addContainerGap(54, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -751,7 +771,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(checkBoxWatchFileRefactoring)
-        .addContainerGap())
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxIgnoreWhereUsedRequests)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(labelMiscNeedsReloading))
     );
 
     jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel5.border.title"))); // NOI18N
@@ -777,7 +800,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     jPanel5Layout.setHorizontalGroup(
       jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-        .addContainerGap(43, Short.MAX_VALUE)
+        .addContainerGap(65, Short.MAX_VALUE)
         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
@@ -864,7 +887,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addGroup(jPanel6Layout.createSequentialGroup()
             .addGap(70, 70, 70)
             .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap(24, Short.MAX_VALUE))
+        .addContainerGap(33, Short.MAX_VALUE))
     );
 
     jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jPanel1, jPanel3, jPanel4, jPanel5});
@@ -898,7 +921,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
             .addComponent(buttonExportSettings)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(buttonImportSettings)))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(31, Short.MAX_VALUE))
     );
 
     jScrollPane1.setViewportView(jPanel6);
@@ -1161,7 +1184,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_checkBoxScalingMETAActionPerformed
 
   private void buttonResetSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetSettingsActionPerformed
-    this.config.makeFullCopyOf(new MindMapPanelConfig(),false, false);
+    this.config.makeFullCopyOf(new MindMapPanelConfig(), false, false);
     loadFromPreferences(new PropertiesPreferences("NB MindMap plugin"), this.config);
     this.controller.changed();
   }//GEN-LAST:event_buttonResetSettingsActionPerformed
@@ -1185,7 +1208,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
 
       final PropertiesPreferences prefs = new PropertiesPreferences("NB MindMap plugin");
-      final MindMapPanelConfig cfg =  store(prefs, new MindMapPanelConfig(), false);
+      final MindMapPanelConfig cfg = store(prefs, new MindMapPanelConfig(), false);
       cfg.saveTo(prefs);
       try {
         FileUtils.write(file, prefs.toString());
@@ -1213,10 +1236,26 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_buttonImportSettingsActionPerformed
 
-  void load(@Nonnull final Preferences preferences){
+  private void checkBoxWatchFileRefactoringActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxWatchFileRefactoringActionPerformed
+    if (this.changeNotificationAllowed) {
+      showNeedsReloadingNotification();
+    }
+  }//GEN-LAST:event_checkBoxWatchFileRefactoringActionPerformed
+
+  private void checkBoxIgnoreWhereUsedRequestsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxIgnoreWhereUsedRequestsActionPerformed
+    if (this.changeNotificationAllowed) {
+      showNeedsReloadingNotification();
+    }
+  }//GEN-LAST:event_checkBoxIgnoreWhereUsedRequestsActionPerformed
+
+  private void showNeedsReloadingNotification() {
+    this.labelMiscNeedsReloading.setVisible(true);
+  }
+
+  void load(@Nonnull final Preferences preferences) {
     loadFromPreferences(preferences, this.config);
   }
-  
+
   private void loadFromPreferences(@Nonnull final Preferences preferences, @Nonnull final MindMapPanelConfig cfg) {
     cfg.loadFrom(preferences);
 
@@ -1270,7 +1309,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true));
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true));
       this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
-      this.checkBoxWatchFileRefactoring.setSelected(preferences.getBoolean("watchFileRefactoring", false));
+      this.checkBoxWatchFileRefactoring.setSelected(preferences.getBoolean(MindMapRefactoringFactory.PROPERTY_WATCH_FILE_REFACTORING, false));
+      this.checkBoxIgnoreWhereUsedRequests.setSelected(preferences.getBoolean(MindMapRefactoringFactory.PROPERTY_IGNORE_WHEREUSED, false));
 
       updateFontButton(cfg);
     }
@@ -1325,7 +1365,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       prefs.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
       prefs.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
       prefs.putBoolean(MMKnowledgeSources.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
-      prefs.putBoolean("watchFileRefactoring", this.checkBoxWatchFileRefactoring.isSelected());
+      prefs.putBoolean(MindMapRefactoringFactory.PROPERTY_WATCH_FILE_REFACTORING, this.checkBoxWatchFileRefactoring.isSelected());
+      prefs.putBoolean(MindMapRefactoringFactory.PROPERTY_IGNORE_WHEREUSED, this.checkBoxIgnoreWhereUsedRequests.isSelected());
     }
     finally {
       if (notifyConfigReload) {
@@ -1354,10 +1395,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }
 
   @Nonnull
-  public MindMapPanelConfig getConfig(){
+  public MindMapPanelConfig getConfig() {
     return this.config;
   }
-  
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonAbout;
   private javax.swing.JButton buttonExportSettings;
@@ -1367,6 +1408,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JButton buttonResetSettings;
   private javax.swing.JCheckBox checkBoxCopyColorInfoToNewAllowed;
   private javax.swing.JCheckBox checkBoxDropShadow;
+  private javax.swing.JCheckBox checkBoxIgnoreWhereUsedRequests;
   private javax.swing.JCheckBox checkBoxKnowledgeFolderAutogenerationAllowed;
   private javax.swing.JCheckBox checkBoxScalingALT;
   private javax.swing.JCheckBox checkBoxScalingCTRL;
@@ -1409,6 +1451,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JPanel jPanel8;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JLabel labelBorderWidth;
+  private javax.swing.JLabel labelMiscNeedsReloading;
   private javax.swing.JPanel panelScalingModifiers;
   private javax.swing.JSlider slider1stLevelHorzGap;
   private javax.swing.JSlider slider1stLevelVertGap;

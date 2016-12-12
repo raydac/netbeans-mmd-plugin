@@ -36,11 +36,15 @@ public class MindMapRefactoringFactory implements RefactoringPluginFactory {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapRefactoringFactory.class);
 
+  public static final String PROPERTY_WATCH_FILE_REFACTORING = "watchFileRefactoring";
+  public static final String PROPERTY_IGNORE_WHEREUSED = "ignoreWhereUsed";
+
   @Override
   public RefactoringPlugin createInstance(final AbstractRefactoring refactoring) {
-    final boolean fileManipulationWatchingAllowed = NbUtils.getPreferences().getBoolean("watchFileRefactoring", false);
+    final boolean fileManipulationWatchingAllowed = NbUtils.getPreferences().getBoolean(PROPERTY_WATCH_FILE_REFACTORING, false);
+    final boolean ignoreWhereUsed = NbUtils.getPreferences().getBoolean(PROPERTY_IGNORE_WHEREUSED, false);
     
-    LOGGER.info("Request to create refactoring plugin : " + refactoring +", watchFileRefactoring = "+fileManipulationWatchingAllowed);
+    LOGGER.info("Request to create refactoring plugin : " + refactoring +", watchFileRefactoring = "+fileManipulationWatchingAllowed+", ignoreWhereUsed = "+ignoreWhereUsed);
 
     RefactoringPlugin result = null;
 
@@ -55,7 +59,7 @@ public class MindMapRefactoringFactory implements RefactoringPluginFactory {
       }
     }
 
-    if (result == null && refactoring instanceof WhereUsedQuery) {
+    if (result == null && !ignoreWhereUsed && refactoring instanceof WhereUsedQuery) {
       result = new WhereUsedActionPlugin((WhereUsedQuery) refactoring);
     }
     
