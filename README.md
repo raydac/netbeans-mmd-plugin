@@ -17,6 +17,7 @@ __1.4.0-SNAPSHOT (under development)__
 - IJ: plugin adapted for compatibility with 14.0.5 (139.1803)
 - ALL: added importers for Mindmup, Freemind, Novamind, Coggle and XMind formats
 - NB:  disabled watching of file changes by default, added options flag to enable that
+- NB:  added option to turn off "where used" refactoring actions for mind maps
 - SCIARETO: added graph generator for file links in mind maps of project
 - ALL: added support of Cut-Copy-Paste actions over Mind Maps
 - ALL: added reset button into URI edit dialog
