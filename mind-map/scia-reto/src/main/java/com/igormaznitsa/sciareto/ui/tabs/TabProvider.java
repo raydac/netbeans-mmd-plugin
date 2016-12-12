@@ -22,11 +22,10 @@ import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.Weight;
-import com.igormaznitsa.sciareto.ui.editors.EditorType;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
 
 public interface TabProvider {
-
 
   void focusToEditor();
 
@@ -35,8 +34,10 @@ public interface TabProvider {
   TabTitle getTabTitle();
   
   @Weight(Weight.Unit.LIGHT)
+  
   @Nonnull
   JComponent getMainComponent();
+  
   boolean saveDocument() throws IOException;
   boolean saveDocumentAs() throws IOException;
   @Nonnull
@@ -44,9 +45,9 @@ public interface TabProvider {
   void dispose();
   void updateConfiguration();
   void loadContent(@Nonnull File file) throws IOException;
-  
+
   @Nonnull
-  EditorType getContentType();
+  AbstractEditor getEditor();
   
   boolean isEditable();
 

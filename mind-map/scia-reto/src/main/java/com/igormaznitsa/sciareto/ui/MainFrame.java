@@ -26,7 +26,6 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.KeyEventDispatcher;
@@ -86,8 +85,9 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.ui.editors.AbstractScrollableEditor;
-import com.igormaznitsa.sciareto.ui.editors.EditorType;
+import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
+import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
+import com.igormaznitsa.sciareto.ui.editors.SourceTextEditor;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.FileLinkGraphPanel;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
@@ -310,7 +310,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     this.menuEditCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    
+
     this.menuEditShowContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
 
     SwingUtilities.invokeLater(new Runnable() {
@@ -554,6 +554,18 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           catch (IOException ex) {
             LOGGER.error("Can't load file as image", ex);
           }
+        } else if (SourceTextEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
+          try {
+            final SourceTextEditor panel = new SourceTextEditor(this, file);
+            this.tabPane.createTab(panel);
+            result = true;
+          }
+          catch (IOException ex) {
+            LOGGER.error("Can't load file as sources", ex);
+          }
+          finally {
+            processTabChange();
+          }
         } else {
           if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Very big file", "It is a very big file! Are you sure to open it?")) {
             return true;
@@ -658,7 +670,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Override
   public void notifyReloadConfig() {
     for (final TabTitle t : this.tabPane) {
-      final JComponent editor = t.getProvider().getMainComponent();
+      final AbstractEditor editor = t.getProvider().getEditor();
       if (editor instanceof MMDEditor) {
         ((MMDEditor) editor).refreshConfig();
       }
@@ -1199,11 +1211,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public boolean centerRootTopicIfFocusedMMD() {
     boolean result = false;
     final TabTitle title = this.getFocusedTab();
-    if (title != null && title.getProvider().getContentType() == EditorType.MINDMAP) {
+    if (title != null && title.getProvider().getEditor().getEditorContentType() == EditorContentType.MINDMAP) {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          ((MMDEditor) title.getProvider().getMainComponent()).rootToCentre();
+          ((MMDEditor) title.getProvider().getEditor()).rootToCentre();
         }
       });
 
@@ -1292,68 +1304,70 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuNewProjectActionPerformed
 
   private void menuFullScreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFullScreenActionPerformed
-    final AbstractScrollableEditor currentComponent = (AbstractScrollableEditor) this.tabPane.getSelectedComponent();
 
-    final GraphicsConfiguration gconfig = this.getGraphicsConfiguration();
-    if (gconfig != null) {
-      final GraphicsDevice device = gconfig.getDevice();
-      if (device.isFullScreenSupported()) {
-        if (device.getFullScreenWindow() == null) {
-          final JLabel label = new JLabel("Opened in full screen");
-          final int tabIndex = this.tabPane.getSelectedIndex();
-          this.tabPane.setComponentAt(tabIndex, label);
-          final JWindow window = new JWindow(Main.getApplicationFrame());
-          window.setAlwaysOnTop(true);
-          window.setAutoRequestFocus(true);
-          window.setContentPane((Container) currentComponent);
+    final AbstractEditor selectedEditor = this.tabPane.getCurrentEditor();
+    if (selectedEditor != null) {
+      final GraphicsConfiguration gconfig = this.getGraphicsConfiguration();
+      if (gconfig != null) {
+        final GraphicsDevice device = gconfig.getDevice();
+        if (device.isFullScreenSupported()) {
+          if (device.getFullScreenWindow() == null) {
+            final JLabel label = new JLabel("Opened in full screen");
+            final int tabIndex = this.tabPane.getSelectedIndex();
+            this.tabPane.setComponentAt(tabIndex, label);
+            final JWindow window = new JWindow(Main.getApplicationFrame());
+            window.setAlwaysOnTop(true);
+            window.setAutoRequestFocus(true);
+            window.setContentPane(selectedEditor.getContainerToShow());
 
-          endFullScreenIfActive();
+            endFullScreenIfActive();
 
-          final KeyEventDispatcher fullScreenEscCatcher = new KeyEventDispatcher() {
-            @Override
-            public boolean dispatchKeyEvent(@Nonnull final KeyEvent e) {
-              if (e.getID() == KeyEvent.KEY_PRESSED && (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_F11)) {
-                endFullScreenIfActive();
-                return true;
+            final KeyEventDispatcher fullScreenEscCatcher = new KeyEventDispatcher() {
+              @Override
+              public boolean dispatchKeyEvent(@Nonnull final KeyEvent e) {
+                if (e.getID() == KeyEvent.KEY_PRESSED && (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_F11)) {
+                  endFullScreenIfActive();
+                  return true;
+                }
+                return false;
               }
-              return false;
-            }
-          };
+            };
 
-          if (this.taskToEndFullScreen.compareAndSet(null, new Runnable() {
-            @Override
-            public void run() {
+            if (this.taskToEndFullScreen.compareAndSet(null, new Runnable() {
+              @Override
+              public void run() {
+                try {
+                  window.dispose();
+                }
+                finally {
+                  tabPane.setComponentAt(tabIndex, selectedEditor.getContainerToShow());
+                  device.setFullScreenWindow(null);
+                  KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
+                }
+              }
+            })) {
               try {
-                window.dispose();
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(fullScreenEscCatcher);
+                device.setFullScreenWindow(window);
               }
-              finally {
-                tabPane.setComponentAt(tabIndex, currentComponent);
-                device.setFullScreenWindow(null);
+              catch (Exception ex) {
+                LOGGER.error("Can't turn on full screen", ex);
+                endFullScreenIfActive();
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
               }
-            }
-          })) {
-            try {
-              KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(fullScreenEscCatcher);
-              device.setFullScreenWindow(window);
-            }
-            catch (Exception ex) {
-              LOGGER.error("Can't turn on full screen", ex);
-              endFullScreenIfActive();
-              KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
+            } else {
+              LOGGER.error("Unexpected state, processor is not null!");
             }
           } else {
-            LOGGER.error("Unexpected state, processor is not null!");
+            LOGGER.warn("Attempt to full screen device which already in full screen!");
           }
         } else {
-          LOGGER.warn("Attempt to full screen device which already in full screen!");
+          LOGGER.warn("Device doesn's support full screen");
+          DialogProviderManager.getInstance().getDialogProvider().msgWarn("The Device doesn't support full-screen mode!");
         }
       } else {
-        LOGGER.warn("Device doesn's support full screen");
-        DialogProviderManager.getInstance().getDialogProvider().msgWarn("The Device doesn't support full-screen mode!");
+        LOGGER.warn("Can't find graphics config for the frame");
       }
-    } else {
-      LOGGER.warn("Can't find graphics config for the frame");
     }
   }//GEN-LAST:event_menuFullScreenActionPerformed
 
@@ -1503,7 +1517,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuNavigateMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuNavigateMenuSelected
     final TabTitle title = getFocusedTab();
-    this.menuNavigateLinksGraph.setEnabled(title != null && title.getProvider().getContentType() == EditorType.MINDMAP);
+    this.menuNavigateLinksGraph.setEnabled(title != null && title.getProvider().getEditor().getEditorContentType() == EditorContentType.MINDMAP);
   }//GEN-LAST:event_menuNavigateMenuSelected
 
   private void menuEditShowContextMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditShowContextMenuActionPerformed

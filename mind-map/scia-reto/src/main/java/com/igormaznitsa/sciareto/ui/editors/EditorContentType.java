@@ -15,8 +15,9 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
-public enum EditorType {
+public enum EditorContentType {
   MINDMAP,
+  SOURCES,
   TEXT,
   IMAGE
 }

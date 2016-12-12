@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -22,19 +23,30 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
+import org.fife.ui.rtextarea.RUndoManager;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
@@ -45,50 +57,125 @@ import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
-public final class TextEditor extends AbstractEditor {
+public final class SourceTextEditor extends AbstractEditor {
 
-  private static final long serialVersionUID = -8551212562825517869L;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(TextEditor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SourceTextEditor.class);
 
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
-  private final JTextArea editor;
+  private final RSyntaxTextArea editor;
   private final TabTitle title;
 
   private boolean ignoreChange;
 
-  private final UndoManager undoManager = new UndoManager();
+  private final RUndoManager undoManager;
 
-  private final JScrollPane scrollPane;
-  
-  public static final FileFilter TXT_FILE_FILTER = new FileFilter() {
+  private final JPanel mainPanel;
+
+  private static final Map<String, List<String>> SRC_EXTENSIONS = new HashMap<String, List<String>>();
+  private static final Map<String, String> MAP_EXTENSION2TYPE = new HashMap<String, String>();
+
+  public static final Set<String> SUPPORTED_EXTENSIONS;
+
+  private static final String ALLEXTENSIONS;
+
+  static {
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, Arrays.asList("as"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, Arrays.asList("c","h"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CLOJURE, Arrays.asList("clj", "cljs", "cljc", "edn"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS, Arrays.asList("cc", "cpp", "cxx", "c++","hpp"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSHARP, Arrays.asList("cs"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSS, Arrays.asList("css"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DELPHI, Arrays.asList("pas"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DTD, Arrays.asList("dtd"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_FORTRAN, Arrays.asList("f", "for", "f90", "f95"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GROOVY, Arrays.asList("groovy"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTML, Arrays.asList("htm", "html"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVA, Arrays.asList("java"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT, Arrays.asList("js"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSON, Arrays.asList("json"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSP, Arrays.asList("jsp"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LATEX, Arrays.asList("tex"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LISP, Arrays.asList("lisp", "lsp"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LUA, Arrays.asList("lua"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MXML, Arrays.asList("mxml"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PERL, Arrays.asList("pl"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PHP, Arrays.asList("php"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE, Arrays.asList("properties"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PYTHON, Arrays.asList("py"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_RUBY, Arrays.asList("rb"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SCALA, Arrays.asList("scala", "sc"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SQL, Arrays.asList("sql"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TCL, Arrays.asList("tcl"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL, Arrays.asList("sh"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC, Arrays.asList("vb"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH, Arrays.asList("bat", "cmd"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_XML, Arrays.asList("xml"));
+
+    final StringBuilder acc = new StringBuilder();
+
+    final Set<String> allEtensinsions = new HashSet<String>();
+
+    for (final Map.Entry<String, List<String>> e : SRC_EXTENSIONS.entrySet()) {
+      final String type = e.getKey();
+      for (final String s : e.getValue()) {
+        if (MAP_EXTENSION2TYPE.put(s, type) != null) {
+          throw new Error("Detected duplicated extension : " + s);
+        }
+        if (acc.length() > 0) {
+          acc.append(',');
+        }
+        acc.append("*.").append(s);
+        allEtensinsions.add(s);
+      }
+    }
+    SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(allEtensinsions);
+    ALLEXTENSIONS = acc.toString();
+  }
+
+  public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
     @Override
     public boolean accept(@Nonnull final File f) {
-      return f.isDirectory() || f.getName().endsWith(".txt");
+      if (f.isDirectory()) {
+        return true;
+      }
+      return MAP_EXTENSION2TYPE.containsKey(FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
     }
 
     @Override
     @Nonnull
     public String getDescription() {
-      return "Text document (*.txt)";
+      return "Sources (" + ALLEXTENSIONS + ')';
     }
   };
 
   @Override
   @Nonnull
   public FileFilter getFileFilter() {
-    return TXT_FILE_FILTER;
+    return SRC_FILE_FILTER;
   }
 
-  public TextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
+  public SourceTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
-    this.editor = new JTextArea();
-    this.scrollPane = new JScrollPane(this.editor);
+    this.editor = new RSyntaxTextArea();
+    this.editor.setPopupMenu(null);
+
+    final String syntaxType = file == null ? null : MAP_EXTENSION2TYPE.get(FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH));
+
+    this.editor.setSyntaxEditingStyle(syntaxType == null ? SyntaxConstants.SYNTAX_STYLE_NONE : syntaxType);
+    this.editor.setAntiAliasingEnabled(true);
+    this.editor.setBracketMatchingEnabled(true);
+    this.editor.setCodeFoldingEnabled(true);
 
     this.editor.getCaret().setSelectionVisible(true);
     this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
+
+    this.mainPanel = new JPanel(new BorderLayout());
+
+    final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
+    this.mainPanel.add(scrollPane, BorderLayout.CENTER);
+
     this.title = new TabTitle(context, this, file);
 
     this.editor.getDocument().addDocumentListener(new DocumentListener() {
@@ -117,7 +204,15 @@ public final class TextEditor extends AbstractEditor {
       }
     });
 
+    this.undoManager = new RUndoManager(this.editor);
+    
     loadContent(file);
+
+    this.editor.discardAllEdits();
+    this.undoManager.discardAllEdits();
+
+    this.undoManager.updateActions();
+
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
   }
 
@@ -196,7 +291,8 @@ public final class TextEditor extends AbstractEditor {
     this.undoManager.discardAllEdits();
     this.title.setChanged(false);
 
-    this.scrollPane.revalidate();
+    this.mainPanel.revalidate();
+    this.mainPanel.repaint();
   }
 
   @Override
@@ -205,7 +301,7 @@ public final class TextEditor extends AbstractEditor {
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("text-editor", "Save Text document", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("sources-editor", "Save sources", null, true, getFileFilter(), "Save");
         if (file == null) {
           return result;
         }
@@ -228,13 +324,13 @@ public final class TextEditor extends AbstractEditor {
   @Override
   @Nonnull
   public EditorContentType getEditorContentType() {
-    return EditorContentType.TEXT;
+    return EditorContentType.SOURCES;
   }
 
   @Override
   @Nonnull
   public JComponent getContainerToShow() {
-    return this.scrollPane;
+    return this.mainPanel;
   }
 
   @Override

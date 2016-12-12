@@ -62,7 +62,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import com.igormaznitsa.sciareto.ui.editors.EditorType;
+import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 
@@ -395,12 +395,12 @@ public final class ExplorerTree extends JScrollPane {
     optional.add(menuSearchUsage);
 
     final TabTitle editingTab = this.context.getFocusedTab();
-    if (editingTab != null && editingTab.getType() == EditorType.MINDMAP) {
+    if (editingTab != null && editingTab.getType() == EditorContentType.MINDMAP) {
       final JMenuItem addIntoMap = new JMenuItem("Add File as topic");
       addIntoMap.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          addTreeAsTopic(context.findProjectForFile(editingTab.getAssociatedFile()), node, (MMDEditor) editingTab.getProvider().getMainComponent());
+          addTreeAsTopic(context.findProjectForFile(editingTab.getAssociatedFile()), node, ((MMDEditor) editingTab.getProvider().getEditor()));
         }
       });
       optional.add(addIntoMap);

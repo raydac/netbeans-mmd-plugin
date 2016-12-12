@@ -40,6 +40,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
 
 public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
@@ -264,8 +265,21 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     }
   }
 
+  @Nullable
+  public AbstractEditor getCurrentEditor(){
+    AbstractEditor result = null;
+    
+    final int selected = this.getSelectedIndex();
+    
+    if (selected>=0){
+      result = ((TabTitle)this.getSelectedComponent()).getProvider().getEditor();
+    }
+    
+    return result;
+  }
+  
   public void createTab(@Nonnull final TabProvider panel) {
-    super.addTab("...", panel.getMainComponent());
+    super.addTab("...", panel.getEditor().getContainerToShow());
     final int count = this.getTabCount() - 1;
     final TabTitle tabTitle = panel.getTabTitle();
     this.setTabComponentAt(count, tabTitle);

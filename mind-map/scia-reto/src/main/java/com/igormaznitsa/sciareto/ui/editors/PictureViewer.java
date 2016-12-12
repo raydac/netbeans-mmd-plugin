@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -46,7 +47,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
-public final class PictureViewer extends AbstractScrollableEditor {
+public final class PictureViewer extends AbstractEditor {
 
   private static final long serialVersionUID = 4262835444678960206L;
 
@@ -56,6 +57,8 @@ public final class PictureViewer extends AbstractScrollableEditor {
   private transient BufferedImage image;
   public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif")));
 
+  private final JScrollPane scrollPane = new JScrollPane();
+  
   private static final class ScalableImage extends JComponent {
 
     private static final long serialVersionUID = 6804581090800919466L;
@@ -192,8 +195,8 @@ public final class PictureViewer extends AbstractScrollableEditor {
     this.image = loaded;
 
     this.imageViewer.setImage(this.image);
-    this.setViewportView(this.imageViewer);
-    this.revalidate();
+    this.scrollPane.setViewportView(this.imageViewer);
+    this.scrollPane.revalidate();
   }
 
   @Override
@@ -231,8 +234,8 @@ public final class PictureViewer extends AbstractScrollableEditor {
   @Override
   public void updateConfiguration() {
     this.imageViewer.updateConfig();
-    revalidate();
-    repaint();
+    this.scrollPane.revalidate();
+    this.scrollPane.repaint();
   }
 
   @Override
@@ -253,14 +256,25 @@ public final class PictureViewer extends AbstractScrollableEditor {
 
   @Override
   @Nonnull
-  public EditorType getContentType() {
-    return EditorType.IMAGE;
+  public EditorContentType getEditorContentType() {
+    return EditorContentType.IMAGE;
   }
 
-  
   @Override
   @Nonnull
   public JComponent getMainComponent() {
+    return this.imageViewer;
+  }
+
+  @Override
+  @Nonnull
+  public JComponent getContainerToShow() {
+    return this.scrollPane;
+  }
+
+  @Override
+  @Nonnull
+  public AbstractEditor getEditor() {
     return this;
   }
 

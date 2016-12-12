@@ -34,6 +34,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
@@ -55,6 +56,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
@@ -107,7 +109,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
-public final class MMDEditor extends AbstractScrollableEditor implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
+public final class MMDEditor extends AbstractEditor implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
@@ -127,6 +129,8 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
   private String currentModelState;
 
   private boolean firstLayouting = true;
+  
+  private final JScrollPane scrollPane;
   
   public void refreshConfig() {
     this.mindMapPanel.refreshConfiguration();
@@ -158,7 +162,20 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
     this.title = new TabTitle(context, this, file);
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
-    this.setViewportView(this.mindMapPanel);
+    
+    this.scrollPane = new JScrollPane(this.mindMapPanel);
+
+    final AdjustmentListener listener = new AdjustmentListener() {
+      @Override
+      public void adjustmentValueChanged(@Nonnull final AdjustmentEvent e) {
+        mindMapPanel.repaint();
+      }
+    };
+
+    this.scrollPane.getHorizontalScrollBar().addAdjustmentListener(listener);
+    this.scrollPane.getVerticalScrollBar().addAdjustmentListener(listener);
+
+    
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
     final MindMap map;
@@ -190,17 +207,17 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
 
       if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, true)) {
         element = (AbstractElement) topic.getPayload();
-        getViewport().doLayout();
+        this.scrollPane.getViewport().doLayout();
       }
 
       if (element != null) {
         final Rectangle2D bounds = element.getBounds();
-        final Dimension viewPortSize = getViewport().getExtentSize();
+        final Dimension viewPortSize = this.scrollPane.getViewport().getExtentSize();
 
         final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
         final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
 
-        getViewport().setViewPosition(new Point(x, y));
+        this.scrollPane.getViewport().setViewPosition(new Point(x, y));
         result = true;
       }
     }
@@ -227,14 +244,15 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
   }
 
   @Override
-  protected void onScrollBarAdjustment(@Nonnull final AdjustmentEvent event) {
-    this.mindMapPanel.repaint();
+  @Nonnull
+  public JComponent getMainComponent() {
+    return this.mindMapPanel;
   }
 
   @Override
   @Nonnull
-  public EditorType getContentType() {
-    return EditorType.MINDMAP;
+  public EditorContentType getEditorContentType() {
+    return EditorContentType.MINDMAP;
   }
 
   @Override
@@ -277,7 +295,7 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
 
     this.title.setChanged(false);
 
-    this.revalidate();
+    this.scrollPane.revalidate();
   }
 
   @Override
@@ -309,8 +327,8 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
         @Override
         public void run() {
           topicToCentre(mindMapPanel.getModel().getRoot());
-          revalidate();
-          repaint();
+          scrollPane.revalidate();
+          scrollPane.repaint();
         }
       });
     }
@@ -374,13 +392,14 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
 
   @Override
   @Nonnull
-  public JComponent getMainComponent() {
-    return this;
+  public JComponent getContainerToShow() {
+    return this.scrollPane;
   }
 
   @Override
-  public void requestFocus() {
-    this.mindMapPanel.requestFocus();
+  @Nonnull
+  public AbstractEditor getEditor() {
+    return this;
   }
 
   @Override
@@ -393,8 +412,8 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
 
     try {
       this.title.setChanged(true);
-      this.getViewport().revalidate();
-      this.repaint();
+      this.scrollPane.revalidate();
+      this.scrollPane.repaint();
     }
     finally {
       this.context.notifyUpdateRedoUndo();
@@ -447,8 +466,8 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
 
   @Override
   public void onMindMapModelRealigned(@Nonnull final MindMapPanel source, @Nonnull final Dimension coveredAreaSize) {
-    this.getViewport().revalidate();
-    this.repaint();
+    this.scrollPane.getViewport().revalidate();
+    this.scrollPane.repaint();
   }
 
   @Override
@@ -473,7 +492,7 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
         bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
         bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
 
-        final JViewport viewport = getViewport();
+        final JViewport viewport = scrollPane.getViewport();
         final Rectangle visible = viewport.getViewRect();
 
         if (visible.contains(bounds)) {
@@ -491,7 +510,7 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
   @Override
   public void onScaledByMouse(@Nonnull final MindMapPanel source, @Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
     if (!beforeAction && Double.compare(oldScale, newScale) != 0) {
-      final JViewport viewport = getViewport();
+      final JViewport viewport = this.scrollPane.getViewport();
 
       final Point viewPos = viewport.getViewPosition();
       final int dx = mousePoint.x - viewPos.x;
@@ -584,7 +603,7 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
     } else {
       dtde.acceptDrag(DnDConstants.ACTION_MOVE);
     }
-    repaint();
+    this.scrollPane.repaint();
   }
 
   @Override
@@ -594,7 +613,7 @@ public final class MMDEditor extends AbstractScrollableEditor implements MindMap
     } else {
       dtde.rejectDrag();
     }
-    repaint();
+    this.scrollPane.repaint();
   }
 
   @Override

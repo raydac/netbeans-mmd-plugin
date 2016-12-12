@@ -15,41 +15,25 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
-import javax.swing.JScrollPane;
+import javax.swing.JComponent;
 import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 
-public abstract class AbstractScrollableEditor extends JScrollPane implements TabProvider,Disposable {
+public abstract class AbstractEditor implements TabProvider,Disposable {
 
   private static final long serialVersionUID = -6865229547826910048L;
   
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   
-  public AbstractScrollableEditor(){
+  public AbstractEditor(){
     super();
-
-    final AdjustmentListener listener = new AdjustmentListener() {
-      @Override
-      public void adjustmentValueChanged(@Nonnull final AdjustmentEvent e) {
-        onScrollBarAdjustment(e);
-      }
-    };
-
-    this.getHorizontalScrollBar().addAdjustmentListener(listener);
-    this.getVerticalScrollBar().addAdjustmentListener(listener);
   }
-
-  protected void onScrollBarAdjustment(@Nonnull final AdjustmentEvent event) {
-
-  }
-
+  
   @Override
   public void updateConfiguration() {
   }
@@ -66,6 +50,12 @@ public abstract class AbstractScrollableEditor extends JScrollPane implements Ta
     return false;
   }
 
+  @Nonnull
+  public abstract EditorContentType getEditorContentType();
+  
+  @Nonnull
+  public abstract JComponent getContainerToShow();
+  
   @Override
   public final void dispose() {
     if (disposeFlag.compareAndSet(false, true)){

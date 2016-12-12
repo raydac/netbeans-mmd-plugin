@@ -29,6 +29,11 @@
       <version>${jung.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.fifesoft</groupId>
+      <artifactId>rsyntaxtextarea</artifactId>
+      <version>2.5.3</version>
+    </dependency>
+    <dependency>
       <groupId>net.sf.jung</groupId>
       <artifactId>jung-visualization</artifactId>
       <version>${jung.version}</version>

@@ -116,7 +116,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
   }
   
   public void updateUI(@Nonnull final TabTitle title) {
-    switch(title.getProvider().getContentType()){
+    switch(title.getProvider().getEditor().getEditorContentType()){
       case IMAGE : {
         this.toggleButtonCaseSensitive.setVisible(false);
         this.panelButtonsForMap.setVisible(false);
