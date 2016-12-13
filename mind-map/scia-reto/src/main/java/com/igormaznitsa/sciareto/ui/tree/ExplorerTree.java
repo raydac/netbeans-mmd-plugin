@@ -58,7 +58,6 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -169,20 +168,20 @@ public final class ExplorerTree extends JScrollPane {
     });
   }
 
-  public boolean hasSelectedItem(){
+  public boolean hasSelectedItem() {
     return this.projectTree.getSelectionPath() != null;
   }
-  
-  public void showPopUpForSelectedItem(){
+
+  public void showPopUpForSelectedItem() {
     final TreePath path = this.projectTree.getSelectionPath();
-    if (path!=null){
-      final NodeFileOrFolder component = (NodeFileOrFolder)path.getLastPathComponent();
+    if (path != null) {
+      final NodeFileOrFolder component = (NodeFileOrFolder) path.getLastPathComponent();
       final Rectangle rect = this.projectTree.getRowBounds(this.projectTree.getRowForPath(path));
       final JPopupMenu popupMenu = makePopupMenu(component);
-      popupMenu.show(this.projectTree, rect.x+rect.width/2, rect.y+rect.height/2);
+      popupMenu.show(this.projectTree, rect.x + rect.width / 2, rect.y + rect.height / 2);
     }
   }
-  
+
   @Override
   public void requestFocus() {
     this.projectTree.requestFocus();
@@ -320,7 +319,7 @@ public final class ExplorerTree extends JScrollPane {
     if (node instanceof NodeProject) {
       final NodeProject theProject = (NodeProject) node;
       if (!theProject.hasKnowledgeFolder()) {
-        final File knowledgeFolder = new File(theProject.getFolder(), PreferencesPanel.KNOWLEDGE_FOLDER_NAME);
+        final File knowledgeFolder = new File(theProject.getFolder(), Context.KNOWLEDGE_FOLDER);
         final JMenuItem addKnowledgeFolder = new JMenuItem("Create Knowledge folder");
         addKnowledgeFolder.addActionListener(new ActionListener() {
           @Override

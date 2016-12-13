@@ -27,6 +27,8 @@ import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
 
 public interface Context {
 
+  public static final String KNOWLEDGE_FOLDER = ".projectKnowledge";
+  
   @Nullable
   NodeProject findProjectForFile(@Nonnull File file);
 

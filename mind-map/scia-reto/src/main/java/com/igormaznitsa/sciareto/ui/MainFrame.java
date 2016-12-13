@@ -1103,7 +1103,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       @Override
       public Icon getIcon(final File f) {
         if (f.isDirectory()) {
-          final File knowledge = new File(f, ".projectKnowledge"); //NOI18N
+          final File knowledge = new File(f, Context.KNOWLEDGE_FOLDER);
           if (knowledge.isDirectory()) {
             if (KNOWLEDGE_FOLDER_ICO == null) {
               final Icon icon = UIManager.getIcon("FileView.directoryIcon"); //NOI18N
@@ -1259,11 +1259,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private boolean createKnowledgeFolder(@Nonnull final File folder) {
     boolean result = false;
     if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true)) {
-      final File knowledgeFolder = new File(folder, ".projectKnowledge"); //NOI18N
+      final File knowledgeFolder = new File(folder, Context.KNOWLEDGE_FOLDER);
       if (knowledgeFolder.mkdirs()) {
         result = true;
       } else {
-        LOGGER.warn("Can't create .projectKnowledge folder"); //NOI18N
+        LOGGER.warn("Can't create folder : "+Context.KNOWLEDGE_FOLDER); //NOI18N
       }
     }
     return result;

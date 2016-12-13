@@ -30,6 +30,7 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 
@@ -43,7 +44,7 @@ public class NodeProject extends NodeFileOrFolder {
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
     super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
-    this.knowledgeFolderPresented = new File(folder,".projectKnowledge").isDirectory(); //NOI18N
+    this.knowledgeFolderPresented = new File(folder,Context.KNOWLEDGE_FOLDER).isDirectory();
     reloadSubtree();
   }
 
@@ -128,7 +129,7 @@ public class NodeProject extends NodeFileOrFolder {
   @Override
   public void reloadSubtree() {
     super.reloadSubtree();
-    this.knowledgeFolderPresented = new File(this.folder,".projectKnowledge").isDirectory(); //NOI18N
+    this.knowledgeFolderPresented = new File(this.folder,Context.KNOWLEDGE_FOLDER).isDirectory();
   }
 
   @Nonnull

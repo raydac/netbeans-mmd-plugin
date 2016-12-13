@@ -35,6 +35,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.sciareto.Context;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
@@ -80,7 +81,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   public boolean isProjectKnowledgeFolder() {
-    return !this.isLeaf() && ".projectKnowledge".equals(this.name); //NOI18N
+    return !this.isLeaf() && Context.KNOWLEDGE_FOLDER.equals(this.name); //NOI18N
   }
 
   @Nullable
@@ -99,7 +100,15 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
     final String name1 = o1.name;
     final String name2 = o2.name;
+
     if (o1.isLeaf() == o2.isLeaf()) {
+      if (!o1.isLeaf()) {
+        if (Context.KNOWLEDGE_FOLDER.equals(name1)) {
+          return -1;
+        } else if (Context.KNOWLEDGE_FOLDER.equals(name2)) {
+          return 1;
+        }
+      }
       return name1.compareTo(name2);
     } else {
       return o1.isLeaf() ? 1 : -1;
@@ -289,10 +298,10 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     }
   }
 
-  public boolean isMindMapFile(){
+  public boolean isMindMapFile() {
     return !this.folderFlag && this.name.endsWith(".mmd"); //NOI18N
   }
-  
+
   @Override
   @Nonnull
   public Iterator<NodeFileOrFolder> iterator() {

@@ -70,7 +70,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private final Context context;
 
-  public static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge"; //NOI18N
   public static final String PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED = "knowledgeFolderGenerationAllowed"; //NOI18N
 
   private boolean changed;
