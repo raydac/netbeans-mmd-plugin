@@ -28,11 +28,11 @@ import com.mixpanel.mixpanelapi.MixpanelAPI;
 
 public class MetricsService {
 
-  public static final String PROPERTY_METRICS_SENDING_FLAG = "metrics.sending";
-  public static final String PROPERTY_METRICS_SENDING_LAST_TIME = "metrics.sending.last.time";
+  public static final String PROPERTY_METRICS_SENDING_FLAG = "metrics.sending"; //NOI18N
+  public static final String PROPERTY_METRICS_SENDING_LAST_TIME = "metrics.sending.last.time"; //NOI18N
 
   private static final MetricsService INSTANCE = new MetricsService();
-  private static final String PROJECT_TOKEN = "3b0f869a336fd27dc5c2fbd73c7bd3ee";
+  private static final String PROJECT_TOKEN = "3b0f869a336fd27dc5c2fbd73c7bd3ee"; //NOI18N
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MetricsService.class);
 
@@ -48,38 +48,38 @@ public class MetricsService {
   }
 
   public void onFirstStart() {
-      LOGGER.info("Starting statistics send");
+      LOGGER.info("Starting statistics send"); //NOI18N
       final Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
           try {
             doFirstStartAction();
           } catch (Exception ex) {
-            LOGGER.error("Can't send statistics", ex);
+            LOGGER.error("Can't send statistics", ex); //NOI18N
           }
         }
-      }, "SCIARETO_STATISTIC_SEND");
+      }, "SCIARETO_STATISTIC_SEND"); //NOI18N
       thread.setDaemon(true);
       thread.start();
   }
   
   public void sendStatistics() {
     if (this.enabled.get()) {
-      LOGGER.info("Starting statistics send");
+      LOGGER.info("Starting statistics send"); //NOI18N
       final Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
           try {
             doAction();
           } catch (Exception ex) {
-            LOGGER.error("Can't send statistics", ex);
+            LOGGER.error("Can't send statistics", ex); //NOI18N
           }
         }
-      }, "SCIARETO_STATISTIC_SEND");
+      }, "SCIARETO_STATISTIC_SEND"); //NOI18N
       thread.setDaemon(true);
       thread.start();
     } else {
-      LOGGER.info("Ignored statistics because disabled");
+      LOGGER.info("Ignored statistics because disabled"); //NOI18N
     }
   }
 
@@ -92,13 +92,13 @@ public class MetricsService {
 
       final JSONObject statistics = new JSONObject();
       
-      statistics.put("os.name", System.getProperty("os.name","unknown"));
-      statistics.put("os.arch", System.getProperty("os.arch","unknown"));
-      statistics.put("os.version", System.getProperty("os.version","unknown"));
-      statistics.put("java.vendor", System.getProperty("java.vendor","unknown"));
-      statistics.put("java.version", System.getProperty("java.version","unknown"));
+      statistics.put("os.name", System.getProperty("os.name","unknown")); //NOI18N
+      statistics.put("os.arch", System.getProperty("os.arch","unknown")); //NOI18N
+      statistics.put("os.version", System.getProperty("os.version","unknown")); //NOI18N
+      statistics.put("java.vendor", System.getProperty("java.vendor","unknown")); //NOI18N
+      statistics.put("java.version", System.getProperty("java.version","unknown")); //NOI18N
       
-      final JSONObject event = messageBuilder.event(installationUUID, "FirstStart", statistics);
+      final JSONObject event = messageBuilder.event(installationUUID, "FirstStart", statistics); //NOI18N
 
       final ClientDelivery delivery = new ClientDelivery();
       delivery.addMessage(event);
@@ -120,7 +120,7 @@ public class MetricsService {
       final JSONObject statistics = new JSONObject();
       statistics.put(Main.PROPERTY_TOTAL_UPSTART, PreferencesManager.getInstance().getPreferences().getLong(Main.PROPERTY_TOTAL_UPSTART, 0L));
 
-      final JSONObject event = messageBuilder.event(installationUUID, "Statistics", statistics);
+      final JSONObject event = messageBuilder.event(installationUUID, "Statistics", statistics); //NOI18N
 
       final ClientDelivery delivery = new ClientDelivery();
       delivery.addMessage(event);

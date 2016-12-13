@@ -43,7 +43,7 @@ public class NodeProject extends NodeFileOrFolder {
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
     super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
-    this.knowledgeFolderPresented = new File(folder,".projectKnowledge").isDirectory();
+    this.knowledgeFolderPresented = new File(folder,".projectKnowledge").isDirectory(); //NOI18N
     reloadSubtree();
   }
 
@@ -70,7 +70,7 @@ public class NodeProject extends NodeFileOrFolder {
   }
 
   public void setFolder(@Nonnull final File folder) {
-    Assertions.assertTrue("Must be directory", folder.isDirectory());
+    Assertions.assertTrue("Must be directory", folder.isDirectory()); //NOI18N
     this.folder = folder;
     reloadSubtree();
   }
@@ -87,14 +87,14 @@ public class NodeProject extends NodeFileOrFolder {
     final boolean folder = changedFile.isDirectory();
     
     final List<File> result = new ArrayList<>();
-    for (final File mindMapFile : FileUtils.listFiles(baseFolder, new String[]{"mmd", "MMD"}, true)) {
+    for (final File mindMapFile : FileUtils.listFiles(baseFolder, new String[]{"mmd", "MMD"}, true)) { //NOI18N
       try {
-        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8")));
+        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8"))); //NOI18N
         if (!MapUtils.findTopicsRelatedToFile(baseFolder, changedFile, map).isEmpty()) {
           result.add(mindMapFile);
         }
       } catch (IOException ex) {
-        LOGGER.error("Can't process mind map file", ex);
+        LOGGER.error("Can't process mind map file", ex); //NOI18N
       }
     }
     return result;
@@ -111,13 +111,13 @@ public class NodeProject extends NodeFileOrFolder {
     for (final File file : listOfFilesToProcess) {
       if (file.isFile()) {
         try {
-          final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
+          final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
           if (map.deleteAllLinksToFile(baseFolder, fileURI)) {
             SystemUtils.saveUTFText(file, map.packToString());
             affectedFiles.add(file);
           }
         } catch (IOException ex) {
-          LOGGER.error("Can't process mind map file", ex);
+          LOGGER.error("Can't process mind map file", ex); //NOI18N
         }
       }
     }
@@ -128,7 +128,7 @@ public class NodeProject extends NodeFileOrFolder {
   @Override
   public void reloadSubtree() {
     super.reloadSubtree();
-    this.knowledgeFolderPresented = new File(this.folder,".projectKnowledge").isDirectory();
+    this.knowledgeFolderPresented = new File(this.folder,".projectKnowledge").isDirectory(); //NOI18N
   }
 
   @Nonnull
@@ -143,13 +143,13 @@ public class NodeProject extends NodeFileOrFolder {
     for (final File file : listOfFilesToProcess) {
       if (file.isFile()) {
         try {
-          final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
+          final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
           if (map.replaceAllLinksToFile(baseFolder, oldFileURI, newFileURI)) {
             SystemUtils.saveUTFText(file, map.packToString());
             affectedFiles.add(file);
           }
         } catch (IOException ex) {
-          LOGGER.error("Can't process mind map file", ex);
+          LOGGER.error("Can't process mind map file", ex); //NOI18N
         }
       }
     }

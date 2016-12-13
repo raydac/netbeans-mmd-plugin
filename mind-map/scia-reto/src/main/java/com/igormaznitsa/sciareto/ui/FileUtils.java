@@ -39,9 +39,9 @@ public final class FileUtils {
     if (!result) {
       final String path = FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath());
       if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS) {
-        result = path.length() == 3 && path.endsWith(":\\");
+        result = path.length() == 3 && path.endsWith(":\\"); //NOI18N
       } else {
-        result = path.equals("/");
+        result = path.equals("/"); //NOI18N
       }
     }
 

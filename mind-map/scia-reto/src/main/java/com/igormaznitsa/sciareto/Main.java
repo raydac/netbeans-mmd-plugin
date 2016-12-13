@@ -95,13 +95,13 @@ public class Main {
 
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 0L}, null);
+  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 0L}, null); //NOI18N
 
   public static final Random RND = new Random();
 
-  private static final String PROPERTY = "nbmmd.plugin.folder";
-  public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel";
-  public static final String PROPERTY_TOTAL_UPSTART = "time.total.upstart";
+  private static final String PROPERTY = "nbmmd.plugin.folder"; //NOI18N
+  public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel"; //NOI18N
+  public static final String PROPERTY_TOTAL_UPSTART = "time.total.upstart"; //NOI18N
 
   private static final long STATISTICS_DELAY = 7L * 24L * 3600L * 1000L;
 
@@ -115,7 +115,7 @@ public class Main {
     @Override
     @Nonnull
     public String getDescription() {
-      return "";
+      return ""; //NOI18N
     }
   
   }
@@ -125,25 +125,25 @@ public class Main {
     @Override
     @Nullable
     public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-      final File fileToImport = dialogProvider.msgOpenFileDialog("", "", null, true, new FakeFileFilter(), "");
-      return new MindMap(null, new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8")));
+      final File fileToImport = dialogProvider.msgOpenFileDialog("", "", null, true, new FakeFileFilter(), ""); //NOI18N
+      return new MindMap(null, new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
     }
 
     @Override
     @Nonnull
     public String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-      return "MMDImporter";
+      return "MMDImporter"; //NOI18N
     }
 
     @Override
     @Nonnull
     public String getReference(final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-      return "MMDImporter";
+      return "MMDImporter"; //NOI18N
     }
 
     @Override
     public String getMnemonic() {
-      return "mmd";
+      return "mmd"; //NOI18N
     }
 
     @Override
@@ -164,19 +164,19 @@ public class Main {
     @Override
     public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
       final MindMap map = panel.getModel();
-      IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8");
+      IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
     }
 
     @Nonnull
     @Override
     public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
-      return "MMDExporter";
+      return "MMDExporter"; //NOI18N
     }
 
     @Nonnull
     @Override
     public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
-      return "MMDExporter";
+      return "MMDExporter"; //NOI18N
     }
 
     @Nonnull
@@ -188,7 +188,7 @@ public class Main {
     @Override
     @Nullable
     public String getMnemonic() {
-      return "mmd";
+      return "mmd"; //NOI18N
     }
 
     @Override
@@ -207,13 +207,13 @@ public class Main {
     if (pluginFolder != null) {
       final File folder = new File(pluginFolder);
       if (folder.isDirectory()) {
-        LOGGER.info("Loading plugins from folder : " + folder);
+        LOGGER.info("Loading plugins from folder : " + folder); //NOI18N
         new ExternalPlugins(folder).init();
       } else {
-        LOGGER.error("Can't find plugin folder : " + folder);
+        LOGGER.error("Can't find plugin folder : " + folder); //NOI18N
       }
     } else {
-      LOGGER.info("Property " + PROPERTY + " is not defined");
+      LOGGER.info("Property " + PROPERTY + " is not defined"); //NOI18N
     }
   }
 
@@ -224,11 +224,11 @@ public class Main {
 
     final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, PlatformProvider.getPlatform().getDefaultLFClassName());
 
-    LOGGER.info("java.vendor = " + System.getProperty("java.vendor", "unknown"));
-    LOGGER.info("java.version = " + System.getProperty("java.version", "unknown"));
-    LOGGER.info("os.name = " + System.getProperty("os.name", "unknown"));
-    LOGGER.info("os.arch = " + System.getProperty("os.arch", "unknown"));
-    LOGGER.info("os.version = " + System.getProperty("os.version", "unknown"));
+    LOGGER.info("java.vendor = " + System.getProperty("java.vendor", "unknown")); //NOI18N
+    LOGGER.info("java.version = " + System.getProperty("java.version", "unknown")); //NOI18N
+    LOGGER.info("os.name = " + System.getProperty("os.name", "unknown")); //NOI18N
+    LOGGER.info("os.arch = " + System.getProperty("os.arch", "unknown")); //NOI18N
+    LOGGER.info("os.version = " + System.getProperty("os.version", "unknown")); //NOI18N
 
     final AtomicReference<SplashScreen> splash = new AtomicReference<>();
 
@@ -237,7 +237,7 @@ public class Main {
     if (args.length == 0) {
       final long splashTimerStart = System.currentTimeMillis();
       try {
-        final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png"));
+        final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
         
         SwingUtilities.invokeAndWait(new Runnable() {
           @Override
@@ -247,7 +247,7 @@ public class Main {
               splash.get().setVisible(true);
             }
             catch (Exception ex) {
-              LOGGER.error("Splash can't be shown", ex);
+              LOGGER.error("Splash can't be shown", ex); //NOI18N
               if (splash.get() != null) {
                 splash.get().dispose();
                 splash.set(null);
@@ -257,7 +257,7 @@ public class Main {
         });
       }
       catch (final Exception ex) {
-        LOGGER.error("Error during splash processing", ex);
+        LOGGER.error("Error during splash processing", ex); //NOI18N
       }
       timeTakenBySplashStart = System.currentTimeMillis() - splashTimerStart;
     } else {
@@ -265,7 +265,7 @@ public class Main {
     }
 
     if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences().getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis() + STATISTICS_DELAY)) >= STATISTICS_DELAY) {
-      LOGGER.info("Statistics scheduled");
+      LOGGER.info("Statistics scheduled"); //NOI18N
 
       final Timer timer = new Timer(45000, new ActionListener() {
         @Override
@@ -300,7 +300,7 @@ public class Main {
       }
     }
     catch (Exception e) {
-      LOGGER.error("Can't set L&F", e);
+      LOGGER.error("Can't set L&F", e); //NOI18N
     }
 
     loadPlugins();
@@ -308,7 +308,7 @@ public class Main {
     boolean doShowGUI = true;
 
     if (args.length > 0) {
-      if ("--help".equalsIgnoreCase(args[0]) || "--?".equals(args[0])) {
+      if ("--help".equalsIgnoreCase(args[0]) || "--?".equals(args[0])) { //NOI18N
         doShowGUI = false;
         
         MindMapPluginRegistry.getInstance().registerPlugin(new LocalMMDExporter());
@@ -317,29 +317,29 @@ public class Main {
         printCliHelp(System.out);
         System.exit(0);
       } else 
-      if ("--importsettings".equalsIgnoreCase(args[0])) {
+      if ("--importsettings".equalsIgnoreCase(args[0])) { //NOI18N
         doShowGUI = false;
         final File file = args.length > 1 ? new File(args[1]) : null;
 
         if (file == null) {
-          LOGGER.error("Settings file not provided");
+          LOGGER.error("Settings file not provided"); //NOI18N
           System.exit(1);
         }
         if (!importSettings(file)) {
           System.exit(1);
         }
-      } else if ("--exportsettings".equalsIgnoreCase(args[0])) {
+      } else if ("--exportsettings".equalsIgnoreCase(args[0])) { //NOI18N
         doShowGUI = false;
 
-        final File file = args.length > 1 ? new File(args[1]) : new File("sciaretosettings.properties");
+        final File file = args.length > 1 ? new File(args[1]) : new File("sciaretosettings.properties"); //NOI18N
 
         if (!exportSettings(file)) {
           System.exit(1);
         }
-      } else if ("--convert".equalsIgnoreCase(args[0])) {
+      } else if ("--convert".equalsIgnoreCase(args[0])) { //NOI18N
         doShowGUI = false;
         if (!convertData(args)) {
-          LOGGER.error("Conversion failed for error");
+          LOGGER.error("Conversion failed for error"); //NOI18N
           printConversionHelp(System.out);
           System.exit(1);
         }
@@ -392,7 +392,7 @@ public class Main {
                 UiUtils.browseURI(new URI(link), false);
               }
               catch (URISyntaxException ex) {
-                LOGGER.error("Can't make URI", ex);
+                LOGGER.error("Can't make URI", ex); //NOI18N
               }
             }
           });
@@ -418,9 +418,9 @@ public class Main {
     final int SETTINGS = 4;
     final int OPTION = 5;
 
-    params[IN_TYPE] = "mmd";
-    params[OUT_TYPE] = "mmd";
-    params[SETTINGS] = "";
+    params[IN_TYPE] = "mmd"; //NOI18N
+    params[OUT_TYPE] = "mmd"; //NOI18N
+    params[SETTINGS] = ""; //NOI18N
 
     int detected = -1;
 
@@ -429,9 +429,9 @@ public class Main {
       if (detected >= 0) {
         if (detected == OPTION) {
           final String text = args[i];
-          final String[] splitted = text.split("\\=");
+          final String[] splitted = text.split("\\="); //NOI18N
           if (splitted.length < 2) {
-            options.put(splitted[0], "true");
+            options.put(splitted[0], "true"); //NOI18N
           } else {
             options.put(splitted[0], splitted[1]);
           }
@@ -440,20 +440,20 @@ public class Main {
         }
         detected = -1;
       } else {
-        if ("--in".equalsIgnoreCase(args[i])) {
+        if ("--in".equalsIgnoreCase(args[i])) { //NOI18N
           detected = IN_FILE;
-        } else if ("--out".equalsIgnoreCase(args[i])) {
+        } else if ("--out".equalsIgnoreCase(args[i])) { //NOI18N
           detected = OUT_FILE;
-        } else if ("--from".equalsIgnoreCase(args[i])) {
+        } else if ("--from".equalsIgnoreCase(args[i])) { //NOI18N
           detected = IN_TYPE;
-        } else if ("--to".equalsIgnoreCase(args[i])) {
+        } else if ("--to".equalsIgnoreCase(args[i])) { //NOI18N
           detected = OUT_TYPE;
-        } else if ("--settings".equalsIgnoreCase(args[i])) {
+        } else if ("--settings".equalsIgnoreCase(args[i])) { //NOI18N
           detected = SETTINGS;
-        } else if ("--option".equalsIgnoreCase(args[i])) {
+        } else if ("--option".equalsIgnoreCase(args[i])) { //NOI18N
           detected = OPTION;
         } else {
-          LOGGER.error("Unexpected argument : " + args[i]);
+          LOGGER.error("Unexpected argument : " + args[i]); //NOI18N
           allOk = false;
           break;
         }
@@ -463,7 +463,7 @@ public class Main {
     if (allOk) {
       for (final String s : params) {
         if (s == null) {
-          LOGGER.error("Not provided required parameter");
+          LOGGER.error("Not provided required parameter"); //NOI18N
           allOk = true;
           break;
         }
@@ -476,10 +476,10 @@ public class Main {
         final AbstractExporter exporter = MindMapPluginRegistry.getInstance().findExporterForMnemonic(params[OUT_TYPE]);
 
         if (importer == null) {
-          LOGGER.error("Unknown importer : " + params[IN_TYPE]);
+          LOGGER.error("Unknown importer : " + params[IN_TYPE]); //NOI18N
           allOk = false;
         } else if (exporter == null) {
-          LOGGER.error("Unknown exporter : " + params[OUT_TYPE]);
+          LOGGER.error("Unknown exporter : " + params[OUT_TYPE]); //NOI18N
           allOk = false;
         }
 
@@ -491,7 +491,7 @@ public class Main {
               config.loadFrom(new PropertiesPreferences(FileUtils.readFileToString(settingsFile)));
             }
             catch (IOException ex) {
-              LOGGER.error("Can't load settings file : " + settingsFile, ex);
+              LOGGER.error("Can't load settings file : " + settingsFile, ex); //NOI18N
               allOk = false;
             }
           }
@@ -503,7 +503,7 @@ public class Main {
               if (ex instanceof IllegalArgumentException) {
                 LOGGER.error(ex.getMessage());
               } else {
-                LOGGER.error("Unexpected error during conversion", ex);
+                LOGGER.error("Unexpected error during conversion", ex); //NOI18N
               }
               allOk = false;
             }
@@ -521,14 +521,14 @@ public class Main {
     final MindMapPanelConfig config = new MindMapPanelConfig();
     config.loadFrom(PreferencesManager.getInstance().getPreferences());
 
-    final PropertiesPreferences prefs = new PropertiesPreferences("Exported configuration for SciaReto editor https://github.com/raydac/netbeans-mmd-plugin");
+    final PropertiesPreferences prefs = new PropertiesPreferences("Exported configuration for SciaReto editor https://github.com/raydac/netbeans-mmd-plugin"); //NOI18N
     config.saveTo(prefs);
 
     try {
       FileUtils.write(settingsFile, prefs.toString());
     }
     catch (final Exception ex) {
-      LOGGER.error("Can't export settings for error", ex);
+      LOGGER.error("Can't export settings for error", ex); //NOI18N
       result = false;
     }
 
@@ -543,10 +543,10 @@ public class Main {
       config.loadFrom(prefs);
       config.saveTo(PreferencesManager.getInstance().getPreferences());
       PreferencesManager.getInstance().flush();
-      LOGGER.info("Settings imported from file : " + settingsFile);
+      LOGGER.info("Settings imported from file : " + settingsFile); //NOI18N
     }
     catch (final Exception ex) {
-      LOGGER.error("Error during import from file : " + settingsFile, ex);
+      LOGGER.error("Error during import from file : " + settingsFile, ex); //NOI18N
       result = false;
     }
     return result;
@@ -576,22 +576,22 @@ public class Main {
 
             @Override
             public boolean msgConfirmOkCancel(@Nonnull final String title, @Nonnull final String question) {
-              throw new UnsupportedOperationException("Not supported yet.");
+              throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
             public boolean msgOkCancel(@Nonnull final String title, @Nonnull final JComponent component) {
-              throw new UnsupportedOperationException("Not supported yet.");
+              throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
             public boolean msgConfirmYesNo(@Nonnull final String title, @Nonnull final String question) {
-              throw new UnsupportedOperationException("Not supported yet.");
+              throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
             public Boolean msgConfirmYesNoCancel(@Nonnull final String title, @Nonnull final String question) {
-              throw new UnsupportedOperationException("Not supported yet.");
+              throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
@@ -687,11 +687,11 @@ public class Main {
                 if (optionable.doesSupportKey(k)) {
                   optionable.setOption(k, options.getProperty(k));
                 } else {
-                  throw new IllegalArgumentException("Exporter " + toFormat.getMnemonic() + " doesn't support option '" + k + "\', it provides options " + Arrays.toString(optionable.getOptionKeys()));
+                  throw new IllegalArgumentException("Exporter " + toFormat.getMnemonic() + " doesn't support option '" + k + "\', it provides options " + Arrays.toString(optionable.getOptionKeys())); //NOI18N
                 }
               }
             } else {
-              throw new IllegalArgumentException("Exporter " + toFormat.getMnemonic() + " doesn't support options");
+              throw new IllegalArgumentException("Exporter " + toFormat.getMnemonic() + " doesn't support options"); //NOI18N
             }
           }
 
@@ -733,10 +733,10 @@ public class Main {
 
   private static void printCliHelp(@Nonnull final PrintStream out) {
     out.println(IDE_VERSION.toString());
-    out.println("Project page : https://github.com/raydac/netbeans-mmd-plugin");
+    out.println("Project page : https://github.com/raydac/netbeans-mmd-plugin"); //NOI18N
     out.println();
-    out.println("Usage from command line:");
-    out.println("   java -jar sciatreto.jar [--help|--importsettings FILE|--exportsettings FILE|--convert <>]|[FILE FILE ... FILE]");
+    out.println("Usage from command line:"); //NOI18N
+    out.println("   java -jar sciatreto.jar [--help|--importsettings FILE|--exportsettings FILE|--convert <>]|[FILE FILE ... FILE]"); //NOI18N
     out.println();
     printConversionHelp(out);
   }
@@ -745,16 +745,16 @@ public class Main {
     final String allowedFormatsFrom = makeMnemonicList(MindMapPluginRegistry.getInstance().findFor(AbstractImporter.class));
     final String allowedFormatsTo = makeMnemonicList(MindMapPluginRegistry.getInstance().findFor(AbstractExporter.class));
     out.println();
-    out.println("Usage in converter mode:");
-    out.println(String.format(" --convert --in IN_FILE [--from (%s)] --out OUT_FILE [--to (%s)] [--settings FILE] [--option NAME=VALUE...]", allowedFormatsFrom, allowedFormatsTo));
+    out.println("Usage in converter mode:"); //NOI18N
+    out.println(String.format(" --convert --in IN_FILE [--from (%s)] --out OUT_FILE [--to (%s)] [--settings FILE] [--option NAME=VALUE...]", allowedFormatsFrom, allowedFormatsTo)); //NOI18N
     out.println();
-    out.println("   --convert - command to make conversion, must be the first argument");
-    out.println("   --in FILE - file to be converted");
-    out.println("   --from FORMAT - type of source format, be default 'mmd' (allowed " + allowedFormatsFrom + ')');
-    out.println("   --out FILE - destination file, if file exists it will be overrided");
-    out.println("   --to FORMAT - type of destination format, bye default 'mmd' (allowed " + allowedFormatsTo + ')');
-    out.println("   --settings FILE - use graphic settings defined in Java property file");
-    out.println("   --option NAME=VALUE - an option to tune export process, specific for each exporter, see documentation");
+    out.println("   --convert - command to make conversion, must be the first argument"); //NOI18N
+    out.println("   --in FILE - file to be converted"); //NOI18N
+    out.println("   --from FORMAT - type of source format, be default 'mmd' (allowed " + allowedFormatsFrom + ')'); //NOI18N
+    out.println("   --out FILE - destination file, if file exists it will be overrided"); //NOI18N
+    out.println("   --to FORMAT - type of destination format, bye default 'mmd' (allowed " + allowedFormatsTo + ')'); //NOI18N
+    out.println("   --settings FILE - use graphic settings defined in Java property file"); //NOI18N
+    out.println("   --option NAME=VALUE - an option to tune export process, specific for each exporter, see documentation"); //NOI18N
     out.println();
   }
 }

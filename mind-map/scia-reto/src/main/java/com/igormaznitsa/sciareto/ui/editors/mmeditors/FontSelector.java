@@ -35,12 +35,12 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
     this.comboBoxName.setModel(modelName);
     this.comboBoxName.setSelectedItem(initial.getName());
 
-    final ComboBoxModel<String> modelStyle = new DefaultComboBoxModel<>(new String[]{"Plain", "Bold", "Italic", "Bold+Italic"});
+    final ComboBoxModel<String> modelStyle = new DefaultComboBoxModel<>(new String[]{"Plain", "Bold", "Italic", "Bold+Italic"}); //NOI18N
     this.comboBoxStyle.setModel(modelStyle);
 
     this.textArea.setWrapStyleWord(true);
     this.textArea.setLineWrap(true);
-    this.textArea.setText("Sed ut perspiciatis unde omnis iste natus error. Sit voluptatem accusantium doloremque laudantium. Totam rem aperiam, eaque ipsa quae ab illo.");
+    this.textArea.setText("Sed ut perspiciatis unde omnis iste natus error. Sit voluptatem accusantium doloremque laudantium. Totam rem aperiam, eaque ipsa quae ab illo."); //NOI18N
     this.textArea.setEditable(false);
 
     selectForStyle(initial.getStyle());

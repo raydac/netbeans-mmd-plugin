@@ -34,7 +34,7 @@ public final class PrefUtils {
   @Nullable
   public static Font str2font(@Nullable final String text, @Nullable final Font defaultFont){
     if (text == null) return defaultFont;
-    final String [] fields = text.split("\\|");
+    final String [] fields = text.split("\\|"); //NOI18N
     if (fields.length!=3) return defaultFont;
     try{
       return new Font(fields[0], Integer.parseInt(fields[1]),Integer.parseInt(fields[2]));

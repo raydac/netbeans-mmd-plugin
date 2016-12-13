@@ -32,7 +32,7 @@ class PlatformDefault implements Platform {
   @Override
   @Nonnull
   public String getDefaultLFClassName() {
-    return "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+    return "javax.swing.plaf.nimbus.NimbusLookAndFeel"; //NOI18N
   }
 
   @Override
@@ -43,6 +43,6 @@ class PlatformDefault implements Platform {
   @Override
   @Nonnull
   public String getName() {
-    return "Default";
+    return "Default"; //NOI18N
   }
 }

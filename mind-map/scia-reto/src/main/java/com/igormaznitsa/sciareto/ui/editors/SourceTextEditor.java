@@ -80,37 +80,37 @@ public final class SourceTextEditor extends AbstractEditor {
   private static final String ALLEXTENSIONS;
 
   static {
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, Arrays.asList("as"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, Arrays.asList("c","h"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CLOJURE, Arrays.asList("clj", "cljs", "cljc", "edn"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS, Arrays.asList("cc", "cpp", "cxx", "c++","hpp"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSHARP, Arrays.asList("cs"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSS, Arrays.asList("css"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DELPHI, Arrays.asList("pas"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DTD, Arrays.asList("dtd"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_FORTRAN, Arrays.asList("f", "for", "f90", "f95"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GROOVY, Arrays.asList("groovy"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTML, Arrays.asList("htm", "html"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVA, Arrays.asList("java"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT, Arrays.asList("js"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSON, Arrays.asList("json"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSP, Arrays.asList("jsp"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LATEX, Arrays.asList("tex"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LISP, Arrays.asList("lisp", "lsp"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LUA, Arrays.asList("lua"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MXML, Arrays.asList("mxml"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PERL, Arrays.asList("pl"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PHP, Arrays.asList("php"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE, Arrays.asList("properties"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PYTHON, Arrays.asList("py"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_RUBY, Arrays.asList("rb"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SCALA, Arrays.asList("scala", "sc"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SQL, Arrays.asList("sql"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TCL, Arrays.asList("tcl"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL, Arrays.asList("sh"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC, Arrays.asList("vb"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH, Arrays.asList("bat", "cmd"));
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_XML, Arrays.asList("xml"));
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, Arrays.asList("as")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, Arrays.asList("c","h")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CLOJURE, Arrays.asList("clj", "cljs", "cljc", "edn")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS, Arrays.asList("cc", "cpp", "cxx", "c++","hpp")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSHARP, Arrays.asList("cs")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSS, Arrays.asList("css")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DELPHI, Arrays.asList("pas")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DTD, Arrays.asList("dtd")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_FORTRAN, Arrays.asList("f", "for", "f90", "f95")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GROOVY, Arrays.asList("groovy")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTML, Arrays.asList("htm", "html")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVA, Arrays.asList("java")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT, Arrays.asList("js")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSON, Arrays.asList("json")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSP, Arrays.asList("jsp")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LATEX, Arrays.asList("tex")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LISP, Arrays.asList("lisp", "lsp")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LUA, Arrays.asList("lua")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MXML, Arrays.asList("mxml")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PERL, Arrays.asList("pl")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PHP, Arrays.asList("php")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE, Arrays.asList("properties")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PYTHON, Arrays.asList("py")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_RUBY, Arrays.asList("rb")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SCALA, Arrays.asList("scala", "sc")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SQL, Arrays.asList("sql")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TCL, Arrays.asList("tcl")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL, Arrays.asList("sh")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC, Arrays.asList("vb")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH, Arrays.asList("bat", "cmd")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_XML, Arrays.asList("xml")); //NOI18N
 
     final StringBuilder acc = new StringBuilder();
 
@@ -120,12 +120,12 @@ public final class SourceTextEditor extends AbstractEditor {
       final String type = e.getKey();
       for (final String s : e.getValue()) {
         if (MAP_EXTENSION2TYPE.put(s, type) != null) {
-          throw new Error("Detected duplicated extension : " + s);
+          throw new Error("Detected duplicated extension : " + s); //NOI18N
         }
         if (acc.length() > 0) {
           acc.append(',');
         }
-        acc.append("*.").append(s);
+        acc.append("*.").append(s); //NOI18N
         allEtensinsions.add(s);
       }
     }
@@ -146,7 +146,7 @@ public final class SourceTextEditor extends AbstractEditor {
     @Override
     @Nonnull
     public String getDescription() {
-      return "Sources (" + ALLEXTENSIONS + ')';
+      return "Source files";
     }
   };
 
@@ -280,7 +280,7 @@ public final class SourceTextEditor extends AbstractEditor {
     this.ignoreChange = true;
     try {
       if (file != null) {
-        this.editor.setText(FileUtils.readFileToString(file, "UTF-8"));
+        this.editor.setText(FileUtils.readFileToString(file, "UTF-8")); //NOI18N
         this.editor.setCaretPosition(0);
       }
     }
@@ -431,7 +431,7 @@ public final class SourceTextEditor extends AbstractEditor {
     if (selected != null && !selected.isEmpty()) {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       clipboard.setContents(new StringSelection(selected), null);
-      this.editor.replaceSelection("");
+      this.editor.replaceSelection(""); //NOI18N
     }
 
     return result;
@@ -449,7 +449,7 @@ public final class SourceTextEditor extends AbstractEditor {
       }
     }
     catch (Exception ex) {
-      LOGGER.warn("Can't get data from clipboard : " + ex.getMessage());
+      LOGGER.warn("Can't get data from clipboard : " + ex.getMessage()); //NOI18N
     }
     if (text != null) {
       this.editor.replaceSelection(text);

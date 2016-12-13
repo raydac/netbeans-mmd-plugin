@@ -13,7 +13,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 public class DonateButton extends JButton {
   private static final long serialVersionUID = -6096783678529379785L;
 
-  private static final URI LINK = URI.create("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2");
+  private static final URI LINK = URI.create("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2"); //NOI18N
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
   private static final ActionListener LISTENER = new ActionListener() {

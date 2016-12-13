@@ -32,14 +32,14 @@ public final class UriEditPanel extends javax.swing.JPanel  {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
 
-  private static final ImageIcon IMAGE_OK = new ImageIcon(UiUtils.loadIcon("tick16.png"));
-  private static final ImageIcon IMAGE_BAD = new ImageIcon(UiUtils.loadIcon("cancel.png"));
-  private static final ImageIcon IMAGE_QUESTION = new ImageIcon(UiUtils.loadIcon("question16.png"));
+  private static final ImageIcon IMAGE_OK = new ImageIcon(UiUtils.loadIcon("tick16.png")); //NOI18N
+  private static final ImageIcon IMAGE_BAD = new ImageIcon(UiUtils.loadIcon("cancel.png")); //NOI18N
+  private static final ImageIcon IMAGE_QUESTION = new ImageIcon(UiUtils.loadIcon("question16.png")); //NOI18N
 
   public UriEditPanel(final String uri) {
     initComponents();
 
-    this.textFieldURI.setText(uri == null ? "" : uri);
+    this.textFieldURI.setText(uri == null ? "" : uri); //NOI18N
 
     this.textFieldURI.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -70,7 +70,7 @@ public final class UriEditPanel extends javax.swing.JPanel  {
 
   private void validateUri() {
     final String text = this.textFieldURI.getText().trim();
-    this.labelValidator.setText("");
+    this.labelValidator.setText(""); //NOI18N
     if (text.isEmpty()) {
       this.labelValidator.setIcon(IMAGE_QUESTION);
     }
@@ -155,14 +155,14 @@ public final class UriEditPanel extends javax.swing.JPanel  {
         UiUtils.browseURI(new URI(this.getText().trim()), false);
       }
       catch (URISyntaxException ex) {
-        LOGGER.error("Can't start browser for URI syntax error", ex);
+        LOGGER.error("Can't start browser for URI syntax error", ex); //NOI18N
         Toolkit.getDefaultToolkit().beep();
       }
     }
   }//GEN-LAST:event_labelBrowseCurrentLinkMouseClicked
 
   private void butonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butonResetActionPerformed
-    this.textFieldURI.setText("");
+    this.textFieldURI.setText(""); //NOI18N
   }//GEN-LAST:event_butonResetActionPerformed
 
 

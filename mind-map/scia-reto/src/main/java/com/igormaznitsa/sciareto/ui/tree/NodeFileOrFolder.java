@@ -80,7 +80,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   public boolean isProjectKnowledgeFolder() {
-    return !this.isLeaf() && ".projectKnowledge".equals(this.name);
+    return !this.isLeaf() && ".projectKnowledge".equals(this.name); //NOI18N
   }
 
   @Nullable
@@ -108,7 +108,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   @Nonnull
   public NodeFileOrFolder addFile(@Nonnull final File file) {
-    Assertions.assertTrue("Unexpected state!", this.folderFlag && file.getParentFile().equals(this.makeFileForNode()));
+    Assertions.assertTrue("Unexpected state!", this.folderFlag && file.getParentFile().equals(this.makeFileForNode())); //NOI18N
     final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
     this.children.add(0, result);
     Collections.sort(this.children, this);
@@ -290,7 +290,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   public boolean isMindMapFile(){
-    return !this.folderFlag && this.name.endsWith(".mmd");
+    return !this.folderFlag && this.name.endsWith(".mmd"); //NOI18N
   }
   
   @Override

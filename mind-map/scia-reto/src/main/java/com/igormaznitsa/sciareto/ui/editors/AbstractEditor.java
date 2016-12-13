@@ -25,8 +25,6 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 
 public abstract class AbstractEditor implements TabProvider,Disposable {
-
-  private static final long serialVersionUID = -6865229547826910048L;
   
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   

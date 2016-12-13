@@ -140,7 +140,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
     @Override
     public boolean accept(@Nonnull final File f) {
-      return f.isDirectory() || f.getName().endsWith(".mmd");
+      return f.isDirectory() || f.getName().endsWith(".mmd"); //NOI18N
     }
 
     @Override
@@ -182,7 +182,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     if (file == null) {
       map = new MindMap(this, true);
     } else {
-      map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
+      map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
     }
 
     this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
@@ -286,7 +286,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     if (file == null) {
       map = new MindMap(this, true);
     } else {
-      map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8")));
+      map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
     }
     this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
 
@@ -309,7 +309,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
           return result;
         }
       }
-      FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false);
+      FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false); //NOI18N
       this.title.setChanged(false);
       result = true;
       this.undoStorage.setFlagThatSomeStateLost();
@@ -336,12 +336,12 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
-    return PreferencesManager.getInstance().getPreferences().getBoolean("unfoldCollapsedTarget", true);
+    return PreferencesManager.getInstance().getPreferences().getBoolean("unfoldCollapsedTarget", true); //NOI18N
   }
 
   @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull final MindMapPanel source) {
-    return PreferencesManager.getInstance().getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true);
+    return PreferencesManager.getInstance().getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true); //NOI18N
   }
 
   @Override
@@ -432,7 +432,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
         }
         catch (IOException ex) {
-          LOGGER.error("Can't redo mind map", ex);
+          LOGGER.error("Can't redo mind map", ex); //NOI18N
         }
         finally {
           this.preventAddUndo = false;
@@ -454,7 +454,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
         }
         catch (IOException ex) {
-          LOGGER.error("Can't redo mind map", ex);
+          LOGGER.error("Can't redo mind map", ex); //NOI18N
         }
         finally {
           this.preventAddUndo = false;
@@ -643,7 +643,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
           break;
         }
         catch (final Exception ex) {
-          LOGGER.error("Can't extract file from DnD", ex);
+          LOGGER.error("Can't extract file from DnD", ex); //NOI18N
         }
       }
     }
@@ -676,7 +676,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       dtde.dropComplete(true);
       
     }catch(final Exception ex){
-      LOGGER.error("Error during DnD processing", ex);
+      LOGGER.error("Error during DnD processing", ex); //NOI18N
       dtde.dropComplete(false);
       return;
     }
@@ -741,7 +741,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       if (PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true)) { //NOI18N
         final File projectFolder = getProjectFolder();
         if (theFile.equals(projectFolder)) {
-          theURI = new MMapURI(projectFolder, new File("."), null);
+          theURI = new MMapURI(projectFolder, new File("."), null); //NOI18N
         } else {
           theURI = new MMapURI(projectFolder, theFile, null);
         }

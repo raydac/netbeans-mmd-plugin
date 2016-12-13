@@ -38,7 +38,7 @@ public final class NodeListRenderer extends DefaultListCellRenderer {
 
   public NodeListRenderer() {
     super();
-    final Color defaultBackground = UIManager.getLookAndFeelDefaults().getColor("List.background");
+    final Color defaultBackground = UIManager.getLookAndFeelDefaults().getColor("List.background"); //NOI18N
     if (defaultBackground == null) {
       COLOR_ROW_EVEN = null;
       COLOR_ROW_ODD = null;
@@ -81,7 +81,7 @@ public final class NodeListRenderer extends DefaultListCellRenderer {
 
     if (node instanceof NodeProject || !node.isLeaf()) {
       this.setIcon(TreeCellRenderer.DEFAULT_FOLDER_CLOSED);
-    } else if (ext.equals("mmd")) {
+    } else if (ext.equals("mmd")) { //NOI18N
       this.setIcon(Icons.DOCUMENT.getIcon());
     } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
       this.setIcon(TreeCellRenderer.ICON_IMAGE);

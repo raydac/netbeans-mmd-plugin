@@ -41,7 +41,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
 
-  private static final Image ICON_PRINTER = UiUtils.loadIcon("printer.png");
+  private static final Image ICON_PRINTER = UiUtils.loadIcon("printer.png"); //NOI18N
   
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterPlugin.class);
   
@@ -92,7 +92,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
 
   @Override
   public void startBackgroundTask(@Nonnull final MMDPrintPanel source, @Nonnull final String name, @Nonnull final Runnable task) {
-    LOGGER.info("Starting print task : "+name);
+    LOGGER.info("Starting print task : "+name); //NOI18N
     final Thread thread = new Thread(task,name);
     thread.setDaemon(true);
     thread.start();

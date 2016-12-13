@@ -82,7 +82,7 @@ public final class UiUtils {
     catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
     }
-    final Color color = UIManager.getColor("Panel.background");
+    final Color color = UIManager.getColor("Panel.background"); //NOI18N
     if (color == null) {
       DARK_THEME = false;
     } else {
@@ -155,7 +155,7 @@ public final class UiUtils {
       }
     }
     catch (final Exception e) {
-      LOGGER.error("Can't get point", e);
+      LOGGER.error("Can't get point", e); //NOI18N
     }
     
     final Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -233,7 +233,7 @@ public final class UiUtils {
 
   @Nullable
   public static Image loadIcon(@Nonnull final String name) {
-    final InputStream inStream = UiUtils.class.getClassLoader().getResourceAsStream("icons/" + name);
+    final InputStream inStream = UiUtils.class.getClassLoader().getResourceAsStream("icons/" + name); //NOI18N
     Image result = null;
     if (inStream != null) {
       try {
@@ -337,7 +337,7 @@ public final class UiUtils {
               ok = true;
             }
             catch (Throwable ex) {
-              LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
+              LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N //NOI18N
             }
           }
         }
@@ -356,7 +356,7 @@ public final class UiUtils {
     thr.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
       @Override
       public void uncaughtException(final Thread t, final Throwable e) {
-        LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e);
+        LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e); //NOI18N
       }
     });
 
@@ -376,23 +376,23 @@ public final class UiUtils {
           desktop.browse(url.toURI());
         }
         catch (Exception x) {
-          LOGGER.error("Can't browse URL in Desktop", x);
+          LOGGER.error("Can't browse URL in Desktop", x); //NOI18N
         }
       } else if (SystemUtils.IS_OS_LINUX) {
         final Runtime runtime = Runtime.getRuntime();
         try {
-          runtime.exec("xdg-open " + url);
+          runtime.exec("xdg-open " + url); //NOI18N
         }
         catch (IOException e) {
-          LOGGER.error("Can't browse URL under Linux", e);
+          LOGGER.error("Can't browse URL under Linux", e); //NOI18N
         }
       } else if (SystemUtils.IS_OS_MAC) {
         final Runtime runtime = Runtime.getRuntime();
         try {
-          runtime.exec("open " + url);
+          runtime.exec("open " + url); //NOI18N
         }
         catch (IOException e) {
-          LOGGER.error("Can't browse URL on MAC", e);
+          LOGGER.error("Can't browse URL on MAC", e); //NOI18N
         }
       }
     }

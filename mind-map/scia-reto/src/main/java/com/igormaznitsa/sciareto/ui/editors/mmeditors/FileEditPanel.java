@@ -31,7 +31,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
     private final boolean showWithSystemTool;
 
     public DataContainer(@Nullable final String path, final boolean showWithSystemTool) {
-      this.path = path == null ? "" : path;
+      this.path = path == null ? "" : path; //NOI18N
       this.showWithSystemTool = showWithSystemTool;
     }
 
@@ -65,7 +65,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
   public FileEditPanel(@Nullable final File projectFolder, @Nullable final DataContainer initialData) {
     initComponents();
     this.projectFolder = projectFolder;
-    this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath());
+    this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath()); //NOI18N
     this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
     new Focuser(this.textFieldFilePath);
   }
@@ -174,7 +174,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonChooseFileActionPerformed
 
   private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
-    this.textFieldFilePath.setText("");
+    this.textFieldFilePath.setText(""); //NOI18N
   }//GEN-LAST:event_buttonResetActionPerformed
 
 

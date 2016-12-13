@@ -77,16 +77,16 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
   private static final Color COLOR_ARROW = Color.ORANGE.darker();
   private static final Color COLOR_LABELS = Color.BLACK;
   
-  private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png"));
+  private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png")); //NOI18N
   
   public enum FileVertexType {
-    FOLDER("folder.png","Folder"), DOCUMENT("document.png","Document"), MINDMAP("mindmap.png","Mind Map"), UNKNOWN("unknown.png","Unknown"), NOTFOUND("notfound.png","Not found");
+    FOLDER("folder.png","Folder"), DOCUMENT("document.png","Document"), MINDMAP("mindmap.png","Mind Map"), UNKNOWN("unknown.png","Unknown"), NOTFOUND("notfound.png","Not found"); //NOI18N
 
     private final Icon icon;
     private final String text;
 
     private FileVertexType(@Nonnull final String icon, @Nonnull final String text) {
-      this.icon = new ImageIcon(UiUtils.loadIcon("graph/" + icon));
+      this.icon = new ImageIcon(UiUtils.loadIcon("graph/" + icon)); //NOI18N
       this.text = text;
     }
 
@@ -111,7 +111,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     public FileVertex(@Nonnull final File file, @Nonnull final FileVertexType type) {
       this.type = type;
       this.text = file.getName();
-      this.tooltip = "<html><b>"+type.toString()+"</b><br>"+StringEscapeUtils.unescapeHtml(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath()))+"</html>";
+      this.tooltip = "<html><b>"+type.toString()+"</b><br>"+StringEscapeUtils.unescapeHtml(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath()))+"</html>"; //NOI18N
       this.file = file;
     }
 
@@ -164,7 +164,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     if (startMindMap != null) {
       addMindMapAndFillByItsLinks(null, result, projectFolder, startMindMap, edgeCounter, mapFilesInProcessing);
     } else if (projectFolder != null) {
-      final Iterator<File> iterator = FileUtils.iterateFiles(projectFolder, new String[]{"mmd"}, true);
+      final Iterator<File> iterator = FileUtils.iterateFiles(projectFolder, new String[]{"mmd"}, true); //NOI18N
       while (iterator.hasNext()) {
         final File mmdFile = iterator.next();
         if (mmdFile.isFile()) {
@@ -186,7 +186,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     try {
 
       thisVertex = new FileVertex(mindMapFile, FileVertexType.MINDMAP);
-      map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8")));
+      map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8"))); //NOI18N
 
       if (parent != null) {
         for (final MMapURI fileUri : MapUtils.extractAllFileLinks(map)) {
@@ -201,7 +201,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
       }
     }
     catch (final Exception ex) {
-      LOGGER.error("Can't load mind map : " + mindMapFile, ex);
+      LOGGER.error("Can't load mind map : " + mindMapFile, ex); //NOI18N
       thisVertex = new FileVertex(mindMapFile, FileVertexType.UNKNOWN);
       map = null;
     }
@@ -222,7 +222,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
           that = new FileVertex(convertedFile, FileVertexType.FOLDER);
         } else if (convertedFile.isFile()) {
 
-          if (convertedFile.getName().endsWith(".mmd")) {
+          if (convertedFile.getName().endsWith(".mmd")) { //NOI18N
             if (convertedFile.equals(mindMapFile)) {
               that = thisVertex;
             } else {

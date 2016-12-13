@@ -65,8 +65,8 @@ public class FindUsagesPanel extends javax.swing.JPanel {
     final File asfile = itemToFind.makeFileForNode();
 
     if (asfile == null) {
-      LOGGER.error("Can't get file for node " + itemToFind);
-      throw new IllegalArgumentException("Can't get file for node");
+      LOGGER.error("Can't get file for node " + itemToFind); //NOI18N
+      throw new IllegalArgumentException("Can't get file for node"); //NOI18N
     }
 
     this.fullNormalizedPath = FilenameUtils.normalize(asfile.getAbsolutePath());
@@ -156,22 +156,22 @@ public class FindUsagesPanel extends javax.swing.JPanel {
           final NodeProject project = file.findProject();
           if (project != null) {
             final String extension = FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH);
-            if ("mmd".equals(extension)) {
+            if ("mmd".equals(extension)) { //NOI18N
               Reader reader = null;
               try {
-                reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8")); //NOI18N
                 final MindMap map = new MindMap(null, reader);
                 if (!MapUtils.findTopicsRelatedToFile(project.getFolder(), nodeFileToSearch, map).isEmpty()) {
                   addFileIntoList(file);
                 }
               } catch (Exception ex) {
-                LOGGER.error("Can't parse map", ex);
+                LOGGER.error("Can't parse map", ex); //NOI18N
               } finally {
                 IOUtils.closeQuietly(reader);
               }
             } else if (findEverywhere){
               try {
-                final LineIterator lineIterator = org.apache.commons.io.FileUtils.lineIterator(f, "UTF-8");
+                final LineIterator lineIterator = org.apache.commons.io.FileUtils.lineIterator(f, "UTF-8"); //NOI18N
                 try {
                   while (lineIterator.hasNext()) {
                     if (Thread.currentThread().isInterrupted()) {
@@ -187,7 +187,7 @@ public class FindUsagesPanel extends javax.swing.JPanel {
                   LineIterator.closeQuietly(lineIterator);
                 }
               } catch (Exception ex) {
-                LOGGER.error("Error during text search in file : " + f);
+                LOGGER.error("Error during text search in file : " + f); //NOI18N
               }
             }
           }
@@ -229,7 +229,7 @@ public class FindUsagesPanel extends javax.swing.JPanel {
         }
       };
 
-      final Thread thread = new Thread(runnable, "SciaRetoSearchUsage");
+      final Thread thread = new Thread(runnable, "SciaRetoSearchUsage"); //NOI18N
       thread.setDaemon(true);
 
       final Thread oldThread = this.searchingThread.getAndSet(thread);
@@ -238,7 +238,7 @@ public class FindUsagesPanel extends javax.swing.JPanel {
         try {
           oldThread.join(1000L);
         } catch (InterruptedException ex) {
-          LOGGER.error("Exception during waiting of search thread interruption", ex);
+          LOGGER.error("Exception during waiting of search thread interruption", ex); //NOI18N
         }
       }
 

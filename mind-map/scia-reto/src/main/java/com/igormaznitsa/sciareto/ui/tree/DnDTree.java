@@ -172,7 +172,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
           final NodeFileOrFolder node = (NodeFileOrFolder) dropTargetNode;
           if (!node.isLeaf()) {
            //TODO processing of file drag in tree
-           System.out.println("Not implemented yet!");
+           System.out.println("Not implemented yet!"); //NOI18N
           } else {
             dtde.rejectDrop();
           }

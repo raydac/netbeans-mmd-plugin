@@ -166,7 +166,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
               title.save();
             }
             catch (IOException ex) {
-              LOGGER.error("Can't save file", ex);
+              LOGGER.error("Can't save file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
             }
           }
@@ -183,7 +183,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
               title.saveAs();
             }
             catch (IOException ex) {
-              LOGGER.error("Can't save file", ex);
+              LOGGER.error("Can't save file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
             }
           }
@@ -279,7 +279,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
   }
   
   public void createTab(@Nonnull final TabProvider panel) {
-    super.addTab("...", panel.getEditor().getContainerToShow());
+    super.addTab("...", panel.getEditor().getContainerToShow()); //NOI18N
     final int count = this.getTabCount() - 1;
     final TabTitle tabTitle = panel.getTabTitle();
     this.setTabComponentAt(count, tabTitle);

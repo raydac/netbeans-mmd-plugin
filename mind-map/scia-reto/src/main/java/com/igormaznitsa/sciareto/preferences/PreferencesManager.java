@@ -37,7 +37,7 @@ public class PreferencesManager {
   private final Preferences prefs;
   private final UUID installationUUID;
 
-  private static final String PROPERTY_UUID = "installation.uuid";
+  private static final String PROPERTY_UUID = "installation.uuid"; //NOI18N
 
   private final Map<String, Object> localCache = new HashMap<>();
 
@@ -47,33 +47,33 @@ public class PreferencesManager {
     if (packedUuid == null) {
       try {
         final UUID newUUID = UUID.randomUUID();
-        packedUuid = Base64.encodeBase64String(IOUtils.packData(newUUID.toString().getBytes("UTF-8")));
+        packedUuid = Base64.encodeBase64String(IOUtils.packData(newUUID.toString().getBytes("UTF-8"))); //NOI18N
         this.prefs.put(PROPERTY_UUID, packedUuid);
         this.prefs.flush();
-        LOGGER.info("Generated new installation UUID : " + newUUID.toString());
+        LOGGER.info("Generated new installation UUID : " + newUUID.toString()); //NOI18N
 
         final Thread thread = new Thread(new Runnable() {
           @Override
           public void run() {
-            LOGGER.info("Send first start metrics");
+            LOGGER.info("Send first start metrics"); //NOI18N
             com.igormaznitsa.sciareto.metrics.MetricsService.getInstance().onFirstStart();
           }
-        }, "SCIARETO_FIRST_START_METRICS");
+        }, "SCIARETO_FIRST_START_METRICS"); //NOI18N
         thread.setDaemon(true);
         thread.start();
 
       }
       catch (Exception ex) {
-        LOGGER.error("Can't generate UUID", ex);
+        LOGGER.error("Can't generate UUID", ex); //NOI18N
       }
     }
     try {
-      this.installationUUID = UUID.fromString(new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), "UTF-8"));
-      LOGGER.info("Installation UUID : " + this.installationUUID.toString());
+      this.installationUUID = UUID.fromString(new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), "UTF-8")); //NOI18N
+      LOGGER.info("Installation UUID : " + this.installationUUID.toString()); //NOI18N
     }
     catch (UnsupportedEncodingException ex) {
-      LOGGER.error("Can't decode UUID", ex);
-      throw new Error("Unexpected error", ex);
+      LOGGER.error("Can't decode UUID", ex); //NOI18N
+      throw new Error("Unexpected error", ex); //NOI18N
     }
   }
 
@@ -124,7 +124,7 @@ public class PreferencesManager {
       this.prefs.flush();
     }
     catch (BackingStoreException ex) {
-      LOGGER.error("Can't flush preferences", ex);
+      LOGGER.error("Can't flush preferences", ex); //NOI18N
     }
   }
 

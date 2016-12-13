@@ -52,19 +52,19 @@ public class SciaRetoBridge implements IDEBridge {
     final NotificationManager.Type msgtype;
     switch (type) {
       case INFO:
-        LOGGER.info("IDENotification : (" + title + ") " + message);
+        LOGGER.info("IDENotification : (" + title + ") " + message); //NOI18N
         msgtype = NotificationManager.Type.INFO;
         break;
       case WARNING:
-        LOGGER.warn("IDENotification : (" + title + ") " + message);
+        LOGGER.warn("IDENotification : (" + title + ") " + message); //NOI18N
         msgtype = NotificationManager.Type.WARN;
         break;
       case ERROR:
-        LOGGER.error("IDENotification : (" + title + ") " + message);
+        LOGGER.error("IDENotification : (" + title + ") " + message); //NOI18N
         msgtype = NotificationManager.Type.ERROR;
         break;
       default: {
-        LOGGER.warn("*IDENotification : (" + title + ") " + message);
+        LOGGER.warn("*IDENotification : (" + title + ") " + message); //NOI18N
         msgtype = NotificationManager.Type.WARN;
       }
     }
@@ -85,7 +85,7 @@ public class SciaRetoBridge implements IDEBridge {
   @Nonnull
   private static String removeStartSlash(@Nonnull final String path) {
     String result = path;
-    if (path.startsWith("/") || path.startsWith("\\")) {
+    if (path.startsWith("/") || path.startsWith("\\")) { //NOI18N
       result = result.substring(1);
     }
     return result;
@@ -98,14 +98,14 @@ public class SciaRetoBridge implements IDEBridge {
     synchronized (IMAGE_CACHE) {
       image = IMAGE_CACHE.get(path);
       if (image == null) {
-        final InputStream in = klazz.getClassLoader().getResourceAsStream(Assertions.assertNotNull("Icon path must not be null", removeStartSlash(path)));
+        final InputStream in = klazz.getClassLoader().getResourceAsStream(Assertions.assertNotNull("Icon path must not be null", removeStartSlash(path))); //NOI18N
         if (in == null) {
-          throw new IllegalArgumentException("Can't find icon resource : " + path);
+          throw new IllegalArgumentException("Can't find icon resource : " + path); //NOI18N
         }
         try {
           image = ImageIO.read(in);
         } catch (IOException ex) {
-          throw new IllegalArgumentException("Can't load icon resource : " + path, ex);
+          throw new IllegalArgumentException("Can't load icon resource : " + path, ex); //NOI18N
         }
         IMAGE_CACHE.put(path, image);
       }

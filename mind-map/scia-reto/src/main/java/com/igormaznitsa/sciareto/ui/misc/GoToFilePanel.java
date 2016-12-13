@@ -137,20 +137,20 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
           buffer.append('.');
           break;
         case '*':
-          buffer.append(".*");
+          buffer.append(".*"); //NOI18N
           break;
         default: {
           if (Character.isWhitespace(c) || Character.isISOControl(c)) {
-            buffer.append("\\s");
+            buffer.append("\\s"); //NOI18N
           } else {
             final String code = Integer.toHexString(c).toUpperCase(Locale.ENGLISH);
-            buffer.append("\\u").append("0000", 0, 4 - code.length()).append(code);
+            buffer.append("\\u").append("0000", 0, 4 - code.length()).append(code); //NOI18N
           }
         }
         break;
       }
     }
-    buffer.append(".*");
+    buffer.append(".*"); //NOI18N
     return Pattern.compile(buffer.toString(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 

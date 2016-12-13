@@ -45,12 +45,12 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   protected final List<TreeModelListener> listeners = new CopyOnWriteArrayList<>();
   private final Context context;
 
-  public static final Pattern FILE_NAME = Pattern.compile("^[^\\+\\*\\?\\{\\}\\&\\|\\;\\:\\\\\\/]+$");
+  public static final Pattern FILE_NAME = Pattern.compile("^[^\\+\\*\\?\\{\\}\\&\\|\\;\\:\\\\\\/]+$"); //NOI18N
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProjectGroup.class);
 
   public NodeProjectGroup(@Nonnull final Context context, @Nonnull final String name) {
-    super(null, true, ".", false);
+    super(null, true, ".", false); //NOI18N
     this.groupName = name;
     this.context = context;
   }
@@ -139,7 +139,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
           
           if (!oldExtension.equals(newExtension)){
             if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Changed extension", String.format("You have changed extension! Restore old extension '%s'?",oldExtension))){
-              newFileName = FilenameUtils.getBaseName(newFileName)+(oldExtension.isEmpty() ? "" : '.'+oldExtension);
+              newFileName = FilenameUtils.getBaseName(newFileName)+(oldExtension.isEmpty() ? "" : '.'+oldExtension); //NOI18N
             }
           }
           
@@ -178,7 +178,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
                 this.context.notifyFileRenamed(affectedFiles, origFile, newFile);
               }
             } catch (IOException ex) {
-              LOGGER.error("Can't rename file", ex);
+              LOGGER.error("Can't rename file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider().msgError("Can't rename file to '" + newValue + "\'");
             }
           }

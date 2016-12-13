@@ -41,9 +41,9 @@ public final class MapUtils {
     final StringBuilder result = new StringBuilder();
     
     for(final char c : text.toCharArray()){
-      result.append("\\u");
+      result.append("\\u"); //NOI18N
       final String code = Integer.toHexString(c).toUpperCase(Locale.ENGLISH);
-      result.append("0000",0,4-code.length()).append(code);
+      result.append("0000",0,4-code.length()).append(code); //NOI18N
     }
     
     return Pattern.compile(result.toString(), patternFlags);

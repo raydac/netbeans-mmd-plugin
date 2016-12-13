@@ -75,7 +75,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
     
     this.context = context;
 
-    this.textFieldSearchText.setText(text == null ? "": text);
+    this.textFieldSearchText.setText(text == null ? "": text); //NOI18N
   
     this.textFieldSearchText.setFocusTraversalPolicy(new FocusTraversalPolicy() {
       @Override

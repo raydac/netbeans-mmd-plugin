@@ -22,7 +22,7 @@ public class SciaRetoLoggerService extends JavaLoggerServiceImpl {
 
   public SciaRetoLoggerService() {
     super();
-    final java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
+    final java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger(""); //NOI18N
     rootLogger.setLevel(Level.WARNING);
   }
 }

@@ -164,9 +164,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     glassPanel.setVisible(false);
 
-    this.setTitle("Scia Reto");
+    this.setTitle("Scia Reto"); //NOI18N
 
-    setIconImage(UiUtils.loadIcon("logo256x256.png"));
+    setIconImage(UiUtils.loadIcon("logo256x256.png")); //NOI18N
 
     this.stateless = args.length > 0;
 
@@ -293,7 +293,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             PreferencesManager.getInstance().flush();
           }
           catch (Exception ex) {
-            LOGGER.error("Can't change LF", ex);
+            LOGGER.error("Can't change LF", ex); //NOI18N
           }
         }
       });
@@ -404,7 +404,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     boolean handled = false;
     switch (event) {
       case ABOUT: {
-        this.menuAboutActionPerformed(new ActionEvent(this, 0, "about"));
+        this.menuAboutActionPerformed(new ActionEvent(this, 0, "about")); //NOI18N
         handled = true;
       }
       break;
@@ -499,7 +499,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     }
     catch (IOException ex) {
-      LOGGER.error("Can't restore state", ex);
+      LOGGER.error("Can't restore state", ex); //NOI18N
     }
   }
 
@@ -524,7 +524,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       FileHistoryManager.getInstance().saveActiveFiles(files.toArray(new File[files.size()]));
     }
     catch (IOException ex) {
-      LOGGER.error("Can't save state", ex);
+      LOGGER.error("Can't save state", ex); //NOI18N
     }
   }
 
@@ -536,14 +536,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         result = true;
       } else {
         final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
-        if (ext.equals("mmd")) {
+        if (ext.equals("mmd")) { //NOI18N
           try {
             final MMDEditor panel = new MMDEditor(this, file);
             this.tabPane.createTab(panel);
             result = true;
           }
           catch (IOException ex) {
-            LOGGER.error("Can't load mind map", ex);
+            LOGGER.error("Can't load mind map", ex); //NOI18N
           }
         } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
           try {
@@ -552,7 +552,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             result = true;
           }
           catch (IOException ex) {
-            LOGGER.error("Can't load file as image", ex);
+            LOGGER.error("Can't load file as image", ex); //NOI18N
           }
         } else if (SourceTextEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
           try {
@@ -561,7 +561,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             result = true;
           }
           catch (IOException ex) {
-            LOGGER.error("Can't load file as sources", ex);
+            LOGGER.error("Can't load file as sources", ex); //NOI18N
           }
           finally {
             processTabChange();
@@ -577,7 +577,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             result = true;
           }
           catch (IOException ex) {
-            LOGGER.error("Can't load file as text", ex);
+            LOGGER.error("Can't load file as text", ex); //NOI18N
           }
           finally {
             processTabChange();
@@ -590,7 +590,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         FileHistoryManager.getInstance().registerOpenedFile(file);
       }
       catch (IOException x) {
-        LOGGER.error("Can't register last opened file", x);
+        LOGGER.error("Can't register last opened file", x); //NOI18N
       }
       finally {
         this.tabPane.focusToFile(file);
@@ -1103,10 +1103,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       @Override
       public Icon getIcon(final File f) {
         if (f.isDirectory()) {
-          final File knowledge = new File(f, ".projectKnowledge");
+          final File knowledge = new File(f, ".projectKnowledge"); //NOI18N
           if (knowledge.isDirectory()) {
             if (KNOWLEDGE_FOLDER_ICO == null) {
-              final Icon icon = UIManager.getIcon("FileView.directoryIcon");
+              final Icon icon = UIManager.getIcon("FileView.directoryIcon"); //NOI18N
               if (icon != null) {
                 KNOWLEDGE_FOLDER_ICO = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(fileChooser, icon), Icons.MMDBADGE.getIcon().getImage()));
               }
@@ -1115,7 +1115,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           } else {
             return super.getIcon(f);
           }
-        } else if (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mmd")) {
+        } else if (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mmd")) { //NOI18N
           return Icons.DOCUMENT.getIcon();
         } else {
           return super.getIcon(f);
@@ -1146,14 +1146,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           FileHistoryManager.getInstance().registerOpenedProject(folder);
         }
         catch (IOException ex) {
-          LOGGER.error("Can't register last opened project", ex);
+          LOGGER.error("Can't register last opened project", ex); //NOI18N
         }
       } else {
         this.focusInTree(folder);
       }
       result = true;
     } else {
-      LOGGER.error("Can't find folder : " + folder);
+      LOGGER.error("Can't find folder : " + folder); //NOI18N
       DialogProviderManager.getInstance().getDialogProvider().msgError("Can't find project folder!");
     }
     return result;
@@ -1177,7 +1177,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         t.save();
       }
       catch (IOException ex) {
-        LOGGER.error("Can't save file", ex);
+        LOGGER.error("Can't save file", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
       }
     }
@@ -1201,7 +1201,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           });
         }
         catch (IOException ex) {
-          LOGGER.error("Can't register last opened file", ex);
+          LOGGER.error("Can't register last opened file", ex); //NOI18N
         }
       }
     }
@@ -1231,7 +1231,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         ((TabTitle) this.tabPane.getTabComponentAt(index)).save();
       }
       catch (IOException ex) {
-        LOGGER.error("Can't save file", ex);
+        LOGGER.error("Can't save file", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
       }
     }
@@ -1244,7 +1244,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         ((TabTitle) this.tabPane.getTabComponentAt(index)).saveAs();
       }
       catch (IOException ex) {
-        LOGGER.error("Can't save file", ex);
+        LOGGER.error("Can't save file", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
       }
     }
@@ -1259,11 +1259,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private boolean createKnowledgeFolder(@Nonnull final File folder) {
     boolean result = false;
     if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true)) {
-      final File knowledgeFolder = new File(folder, ".projectKnowledge");
+      final File knowledgeFolder = new File(folder, ".projectKnowledge"); //NOI18N
       if (knowledgeFolder.mkdirs()) {
         result = true;
       } else {
-        LOGGER.warn("Can't create .projectKnowledge folder");
+        LOGGER.warn("Can't create .projectKnowledge folder"); //NOI18N
       }
     }
     return result;
@@ -1297,7 +1297,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       } else if (file.mkdirs()) {
         prepareAndOpenProjectFolder(file);
       } else {
-        LOGGER.error("Can't create folder : " + file);
+        LOGGER.error("Can't create folder : " + file); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create folder: " + file);
       }
     }
@@ -1351,22 +1351,22 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                 device.setFullScreenWindow(window);
               }
               catch (Exception ex) {
-                LOGGER.error("Can't turn on full screen", ex);
+                LOGGER.error("Can't turn on full screen", ex); //NOI18N
                 endFullScreenIfActive();
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
               }
             } else {
-              LOGGER.error("Unexpected state, processor is not null!");
+              LOGGER.error("Unexpected state, processor is not null!"); //NOI18N
             }
           } else {
-            LOGGER.warn("Attempt to full screen device which already in full screen!");
+            LOGGER.warn("Attempt to full screen device which already in full screen!"); //NOI18N
           }
         } else {
-          LOGGER.warn("Device doesn's support full screen");
+          LOGGER.warn("Device doesn's support full screen"); //NOI18N
           DialogProviderManager.getInstance().getDialogProvider().msgWarn("The Device doesn't support full-screen mode!");
         }
       } else {
-        LOGGER.warn("Can't find graphics config for the frame");
+        LOGGER.warn("Can't find graphics config for the frame"); //NOI18N
       }
     }
   }//GEN-LAST:event_menuFullScreenActionPerformed
@@ -1411,7 +1411,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuRedoActionPerformed
 
   private void menuFindTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFindTextActionPerformed
-    showFindTextPane("");
+    showFindTextPane(""); //NOI18N
   }//GEN-LAST:event_menuFindTextActionPerformed
 
   private void menuEditMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuEditMenuSelected
@@ -1578,8 +1578,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     if (chooser.showSaveDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       File file = chooser.getSelectedFile();
-      if (!file.getName().endsWith(".mmd")) {
-        file = new File(file.getAbsolutePath() + ".mmd");
+      if (!file.getName().endsWith(".mmd")) { //NOI18N
+        file = new File(file.getAbsolutePath() + ".mmd"); //NOI18N
       }
 
       if (file.exists()) {

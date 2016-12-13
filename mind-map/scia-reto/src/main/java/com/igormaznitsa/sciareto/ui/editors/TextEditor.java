@@ -47,8 +47,6 @@ import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
 public final class TextEditor extends AbstractEditor {
 
-  private static final long serialVersionUID = -8551212562825517869L;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(TextEditor.class);
 
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
@@ -66,7 +64,7 @@ public final class TextEditor extends AbstractEditor {
 
     @Override
     public boolean accept(@Nonnull final File f) {
-      return f.isDirectory() || f.getName().endsWith(".txt");
+      return f.isDirectory() || f.getName().endsWith(".txt"); //NOI18N
     }
 
     @Override
@@ -185,7 +183,7 @@ public final class TextEditor extends AbstractEditor {
     this.ignoreChange = true;
     try {
       if (file != null) {
-        this.editor.setText(FileUtils.readFileToString(file, "UTF-8"));
+        this.editor.setText(FileUtils.readFileToString(file, "UTF-8")); //NOI18N
         this.editor.setCaretPosition(0);
       }
     }
@@ -335,7 +333,7 @@ public final class TextEditor extends AbstractEditor {
     if (selected != null && !selected.isEmpty()) {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       clipboard.setContents(new StringSelection(selected), null);
-      this.editor.replaceSelection("");
+      this.editor.replaceSelection(""); //NOI18N
     }
 
     return result;
@@ -353,7 +351,7 @@ public final class TextEditor extends AbstractEditor {
       }
     }
     catch (Exception ex) {
-      LOGGER.warn("Can't get data from clipboard : " + ex.getMessage());
+      LOGGER.warn("Can't get data from clipboard : " + ex.getMessage()); //NOI18N
     }
     if (text != null) {
       this.editor.replaceSelection(text);

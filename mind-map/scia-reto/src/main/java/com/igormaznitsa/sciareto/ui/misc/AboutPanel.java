@@ -37,10 +37,10 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     final String formatVersion = MindMap.FORMAT_VERSION;
 
     final Properties props = new Properties();
-    props.setProperty("plugin.api", pluginAPIVersion);
-    props.setProperty("format.version", formatVersion);
-    props.setProperty("ideversion", Main.IDE_VERSION.toString());
-    props.setProperty("ideversion", Main.IDE_VERSION.toString());
+    props.setProperty("plugin.api", pluginAPIVersion); //NOI18N
+    props.setProperty("format.version", formatVersion); //NOI18N
+    props.setProperty("ideversion", Main.IDE_VERSION.toString()); //NOI18N
+    props.setProperty("ideversion", Main.IDE_VERSION.toString()); //NOI18N
 
     this.textLabel.replaceMacroses(props);
     this.textLabel.addLinkListener(this);
@@ -52,7 +52,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     try{
       UiUtils.browseURI(new URI(href), false);
     }catch(Exception ex){
-      LOGGER.error("Can't process link in 'About'", ex);
+      LOGGER.error("Can't process link in 'About'", ex); //NOI18N
     }
   }
 

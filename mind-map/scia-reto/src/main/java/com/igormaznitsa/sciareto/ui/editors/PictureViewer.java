@@ -49,13 +49,11 @@ import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
 public final class PictureViewer extends AbstractEditor {
 
-  private static final long serialVersionUID = 4262835444678960206L;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(PictureViewer.class);
 
   private final TabTitle title;
   private transient BufferedImage image;
-  public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif")));
+  public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif"))); //NOI18N
 
   private final JScrollPane scrollPane = new JScrollPane();
   
@@ -187,7 +185,7 @@ public final class PictureViewer extends AbstractEditor {
       try {
         loaded = ImageIO.read(file);
       } catch (Exception ex) {
-        LOGGER.error("Can't load image", ex);
+        LOGGER.error("Can't load image", ex); //NOI18N
         loaded = null;
       }
     }
@@ -213,18 +211,18 @@ public final class PictureViewer extends AbstractEditor {
           if (ex instanceof IOException) {
             throw (IOException) ex;
           }
-          throw new IOException("Can't write image", ex);
+          throw new IOException("Can't write image", ex); //NOI18N
         }
       } else {
         try {
-          LOGGER.warn("unsupported image format, will be saved as png : " + ext);
-          ImageIO.write(this.image, "png", docFile);
+          LOGGER.warn("unsupported image format, will be saved as png : " + ext); //NOI18N
+          ImageIO.write(this.image, "png", docFile); //NOI18N
           result = true;
         } catch (Exception ex) {
           if (ex instanceof IOException) {
             throw (IOException) ex;
           }
-          throw new IOException("Can't write image", ex);
+          throw new IOException("Can't write image", ex); //NOI18N
         }
       }
     }

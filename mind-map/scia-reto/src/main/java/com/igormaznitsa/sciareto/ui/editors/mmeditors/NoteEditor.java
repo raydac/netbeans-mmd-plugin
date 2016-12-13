@@ -75,9 +75,9 @@ public final class NoteEditor extends javax.swing.JPanel {
   
   private enum Wrapping {
 
-    NONE("none", "off"),
-    CHAR_WRAP("char", "char"),
-    WORD_WRAP("word", "word");
+    NONE("none", "off"), //NOI18N
+    CHAR_WRAP("char", "char"), //NOI18N
+    WORD_WRAP("word", "word"); //NOI18N
 
     private final String value;
     private final String display;
@@ -159,8 +159,8 @@ public final class NoteEditor extends javax.swing.JPanel {
   public NoteEditor(@Nonnull final String text) {
     initComponents();
 
-    this.buttonRedo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK), "do-redo");
-    this.buttonRedo.getActionMap().put("do-redo", new AbstractAction(){
+    this.buttonRedo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK), "do-redo"); //NOI18N
+    this.buttonRedo.getActionMap().put("do-redo", new AbstractAction(){ //NOI18N
       private static final long serialVersionUID = -5644390861803492172L;
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -168,8 +168,8 @@ public final class NoteEditor extends javax.swing.JPanel {
       }
     });
     
-    this.buttonUndo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"do-undo");
-    this.buttonUndo.getActionMap().put("do-undo", new AbstractAction() {
+    this.buttonUndo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"do-undo"); //NOI18N
+    this.buttonUndo.getActionMap().put("do-undo", new AbstractAction() { //NOI18N
       private static final long serialVersionUID = -5644390861803492172L;
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -179,7 +179,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     
     this.editorPane.getActionMap().put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
       private static final long serialVersionUID = -6477916799997545798L;
-      private final Action start = new TextAction("wordStart") {
+      private final Action start = new TextAction("wordStart") { //NOI18N
         private static final long serialVersionUID = 4377386270269629176L;
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -206,7 +206,7 @@ public final class NoteEditor extends javax.swing.JPanel {
           }
         }
       };
-      private final Action end = new TextAction("wordEnd") {
+      private final Action end = new TextAction("wordEnd") { //NOI18N
         private static final long serialVersionUID = 4377386270269629176L;
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -288,7 +288,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     final int pos = this.editorPane.getCaretPosition();
     final int col = getColumn(pos, this.editorPane);
     final int row = getRow(pos, this.editorPane);
-    this.labelCursorPos.setText(row + ":" + col);
+    this.labelCursorPos.setText(row + ":" + col); //NOI18N
 
     final String selectedText = this.editorPane.getSelectedText();
     if (StringUtils.isEmpty(selectedText)) {
@@ -314,7 +314,7 @@ public final class NoteEditor extends javax.swing.JPanel {
         rn++;
       }
     } catch (BadLocationException e) {
-      LOGGER.error("Bad location", e);
+      LOGGER.error("Bad location", e); //NOI18N
     }
     return rn;
   }
@@ -323,7 +323,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     try {
       return pos - Utilities.getRowStart(editor, pos) + 1;
     } catch (BadLocationException e) {
-      LOGGER.error("Bad location", e);
+      LOGGER.error("Bad location", e); //NOI18N
     }
     return -1;
   }
@@ -551,7 +551,7 @@ public final class NoteEditor extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonImportActionPerformed
 
   private void buttonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportActionPerformed
-    final File toSave = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null, true, TEXT_FILE_FILTER, "Save");
+    final File toSave = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null, true, TEXT_FILE_FILTER, "Save"); //NOI18N
     if (toSave != null) {
       try {
         final String text = getText();
@@ -581,7 +581,7 @@ public final class NoteEditor extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonPasteActionPerformed
 
   private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
-    this.editorPane.setText("");
+    this.editorPane.setText(""); //NOI18N
   }//GEN-LAST:event_buttonClearActionPerformed
 
   private void buttonBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBrowseActionPerformed
@@ -589,7 +589,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     try {
       UiUtils.browseURI(URI.create(selectedText), false);
     } catch (Exception ex) {
-      LOGGER.error("Can't open link : " + selectedText);
+      LOGGER.error("Can't open link : " + selectedText); //NOI18N
       DialogProviderManager.getInstance().getDialogProvider().msgError("Can't browse link : " + selectedText);
     }
   }//GEN-LAST:event_buttonBrowseActionPerformed

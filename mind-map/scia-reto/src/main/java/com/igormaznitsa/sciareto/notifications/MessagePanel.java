@@ -46,7 +46,7 @@ final class MessagePanel extends JPanel implements ActionListener {
 
   private static final long serialVersionUID = 4382438833881000822L;
 
-  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png"));
+  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png")); //NOI18N
 
   private static final AtomicInteger ACTIVE_MESSAGES = new AtomicInteger();
   
@@ -57,7 +57,7 @@ final class MessagePanel extends JPanel implements ActionListener {
 
     final GridBagConstraints constraints = new GridBagConstraints();
 
-    final JLabel labelTitle = new JLabel(title == null ? "" : title, icon == null ? null : new ImageIcon(icon),SwingConstants.CENTER);
+    final JLabel labelTitle = new JLabel(title == null ? "" : title, icon == null ? null : new ImageIcon(icon),SwingConstants.CENTER); //NOI18N
     labelTitle.setForeground(Color.black);
     constraints.gridx = 0;
     constraints.gridy = 0;

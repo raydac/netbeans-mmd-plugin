@@ -61,7 +61,7 @@ public final class TabTitle extends JPanel {
 
   private boolean visited;
 
-  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png"));
+  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png")); //NOI18N
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TabTitle.class);
   
@@ -98,7 +98,7 @@ public final class TabTitle extends JPanel {
     };
     this.add(this.titleLabel, constraints);
 
-    final Icon uiCloseIcon = UIManager.getIcon("InternalFrameTitlePane.closeIcon");
+    final Icon uiCloseIcon = UIManager.getIcon("InternalFrameTitlePane.closeIcon"); //NOI18N
 
     this.closeButton = new JButton(uiCloseIcon == null ? NIMBUS_CLOSE_ICON : uiCloseIcon) {
       private static final long serialVersionUID = -8005282815756047979L;
@@ -244,7 +244,7 @@ public final class TabTitle extends JPanel {
         this.parent.loadContent(file);
         reloaded = true;
       }catch(IOException ex){
-        LOGGER.error("Can't reload file :"+file, ex);
+        LOGGER.error("Can't reload file :"+file, ex); //NOI18N
       }
     }
     return reloaded;
@@ -258,14 +258,14 @@ public final class TabTitle extends JPanel {
   @Nonnull
   private String makeName() {
     final File file = this.associatedFile;
-    return file == null ? "Untitled" : file.getName();
+    return file == null ? "Untitled" : file.getName(); //NOI18N
   }
 
   private void updateView() {
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
-        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml(makeName()) + (changed ? "</u></b>" : "") + "</html>");
+        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml(makeName()) + (changed ? "</u></b>" : "") + "</html>"); //NOI18N
         revalidate();
       }
     });

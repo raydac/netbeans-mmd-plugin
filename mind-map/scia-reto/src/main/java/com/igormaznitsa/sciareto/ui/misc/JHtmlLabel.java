@@ -153,7 +153,7 @@ public class JHtmlLabel extends JLabel {
   }
 
   public JHtmlLabel() {
-    this("", null, LEADING);
+    this("", null, LEADING); //NOI18N
   }
 
   public int getMinClickCountToActivateLink(){
@@ -188,20 +188,21 @@ public class JHtmlLabel extends JLabel {
   public void replaceMacroses(@Nonnull final Properties properties) {
     String text = this.getText();
     for (final String k : properties.stringPropertyNames()) {
-      text = text.replace("${" + k + "}", properties.getProperty(k));
+      text = text.replace("${" + k + "}", properties.getProperty(k)); //NOI18N
     }
     this.setText(text);
   }
 
   @Override
   public void setText(@Nonnull final String text) {
-    super.setText(text.toLowerCase(Locale.ENGLISH).trim().startsWith("<html>") ? text : "<html>" + text + "</html>");
+    super.setText(text.toLowerCase(Locale.ENGLISH).trim().startsWith("<html>") ?  //NOI18N
+        text : "<html>" + text + "</html>"); //NOI18N
     this.linkCache = null;
   }
 
   private void cacheLinkElements() {
     this.linkCache = new ArrayList<>();
-    final View view = (View) this.getClientProperty("html");
+    final View view = (View) this.getClientProperty("html"); //NOI18N
     if (view != null) {
       final HTMLDocument doc = (HTMLDocument) view.getDocument();
       final HTMLDocument.Iterator it = doc.getIterator(HTML.Tag.A);

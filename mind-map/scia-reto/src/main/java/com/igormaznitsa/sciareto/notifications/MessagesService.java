@@ -31,7 +31,7 @@ public class MessagesService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MessagesService.class);
 
-  private static final String PROPERTY_OFFER_TO_DONATE_WAS_SHOWN = "message.shown.offer.donate";
+  private static final String PROPERTY_OFFER_TO_DONATE_WAS_SHOWN = "message.shown.offer.donate"; //NOI18N
 
   public MessagesService() {
   }
@@ -42,7 +42,7 @@ public class MessagesService {
       public void run() {
         doAction();
       }
-    }, "SR_MessageService");
+    }, "SR_MessageService"); //NOI18N
     thread.setDaemon(true);
     thread.start();
   }

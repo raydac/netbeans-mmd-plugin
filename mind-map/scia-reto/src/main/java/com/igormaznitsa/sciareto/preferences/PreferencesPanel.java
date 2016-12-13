@@ -56,7 +56,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     @Override
     public boolean accept(@Nonnull final File f) {
-      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
+      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties"); //NOI18N
     }
 
     @Override
@@ -70,8 +70,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private final Context context;
 
-  public static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
-  public static final String PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED = "knowledgeFolderGenerationAllowed";
+  public static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge"; //NOI18N
+  public static final String PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED = "knowledgeFolderGenerationAllowed"; //NOI18N
 
   private boolean changed;
 
@@ -993,12 +993,12 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private void updateFontButton(@Nonnull final JButton button, @Nonnull final Font font) {
     final String strStyle;
     if (font.isBold()) {
-      strStyle = font.isItalic() ? "bolditalic" : "bold";
+      strStyle = font.isItalic() ? "bolditalic" : "bold"; //NOI18N
     } else {
-      strStyle = font.isItalic() ? "italic" : "plain";
+      strStyle = font.isItalic() ? "italic" : "plain"; //NOI18N
     }
 
-    button.setText(font.getName() + ", " + strStyle + ", " + font.getSize());
+    button.setText(font.getName() + ", " + strStyle + ", " + font.getSize()); //NOI18N
   }
 
   private void buttonFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontActionPerformed
@@ -1193,11 +1193,11 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private void buttonExportToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportToFileActionPerformed
     File file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("exportProperties", "Export settings", null, true, new PropertiesFileFilter(), "Save");
     if (file != null) {
-      if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")){
+      if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")){ //NOI18N
         final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel("Add extension", "Add '.properties' extension?");
         if (addExt == null) return;
         if (addExt){
-          file = new File(file.getAbsolutePath()+".properties");
+          file = new File(file.getAbsolutePath()+".properties"); //NOI18N
         }
       }
       
@@ -1212,8 +1212,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         FileUtils.write(file, prefs.toString());
       }
       catch (final Exception ex) {
-        LOGGER.error("Can't export settings", ex);
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't export settings [" + ex.getMessage() + ']');
+        LOGGER.error("Can't export settings", ex); //NOI18N
+        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't export settings [" + ex.getMessage() + ']'); //NOI18N
       }
     }
   }//GEN-LAST:event_buttonExportToFileActionPerformed
@@ -1225,7 +1225,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file)));
       }
       catch (final Exception ex) {
-        LOGGER.error("Can't import settings", ex);
+        LOGGER.error("Can't import settings", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError("Can't import settings [" + ex.getMessage() + ']');
       }
     }
@@ -1237,10 +1237,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     this.changeNotificationAllowed = false;
     try {
       // Common behaviour options
-      this.checkboxUseInsideBrowser.setSelected(preferences.getBoolean("useInsideBrowser", false));
-      this.checkboxRelativePathsForFilesInTheProject.setSelected(preferences.getBoolean("makeRelativePathToProject", true));
-      this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true));
-      this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true));
+      this.checkboxUseInsideBrowser.setSelected(preferences.getBoolean("useInsideBrowser", false)); //NOI18N
+      this.checkboxRelativePathsForFilesInTheProject.setSelected(preferences.getBoolean("makeRelativePathToProject", true)); //NOI18N
+      this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true)); //NOI18N
+      this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true)); //NOI18N
       this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true));
 
       // Metrics
@@ -1348,10 +1348,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     config.saveTo(preferences);
 
     // Common behaviour options
-    preferences.putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected());
-    preferences.putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
-    preferences.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
-    preferences.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
+    preferences.putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected()); //NOI18N
+    preferences.putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected()); //NOI18N
+    preferences.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected()); //NOI18N
+    preferences.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected()); //NOI18N
     preferences.putBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
     PreferencesManager.getInstance().setFont(preferences, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, fontTextEditor);
 

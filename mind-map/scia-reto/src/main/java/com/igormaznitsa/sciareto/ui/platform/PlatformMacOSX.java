@@ -62,9 +62,9 @@ class PlatformMacOSX implements Platform, ApplicationListener {
 
   @Override
   public void init() {
-    System.setProperty("apple.awt.fileDialogForDirectories", "true");
-    System.setProperty("apple.laf.useScreenMenuBar", "true");
-    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SciaReto");
+    System.setProperty("apple.awt.fileDialogForDirectories", "true"); //NOI18N
+    System.setProperty("apple.laf.useScreenMenuBar", "true"); //NOI18N
+    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SciaReto"); //NOI18N
   }
 
   @Override
@@ -81,10 +81,10 @@ class PlatformMacOSX implements Platform, ApplicationListener {
     final PlatformMenuAction action = this.actions.get(event);
     boolean handled = false;
     if (action == null) {
-      LOGGER.info("No registered menu event handler : " + event);      
+      LOGGER.info("No registered menu event handler : " + event);       //NOI18N
     }else {
       handled = action.doPlatformMenuAction(event, args);
-      LOGGER.info("Processed menu event : " + event);
+      LOGGER.info("Processed menu event : " + event); //NOI18N
     }
     return handled;
   }
@@ -126,6 +126,6 @@ class PlatformMacOSX implements Platform, ApplicationListener {
   @Override
   @Nonnull
   public String getName() {
-    return "MAC OSX";
+    return "MAC OSX"; //NOI18N
   }
 }

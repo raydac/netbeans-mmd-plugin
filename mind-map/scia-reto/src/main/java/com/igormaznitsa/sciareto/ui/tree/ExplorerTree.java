@@ -86,7 +86,7 @@ public final class ExplorerTree extends JScrollPane {
     ToolTipManager.sharedInstance().registerComponent(this.projectTree);
 
     this.projectTree.setCellRenderer(new TreeCellRenderer());
-    this.projectTree.setModel(new NodeProjectGroup(context, "."));
+    this.projectTree.setModel(new NodeProjectGroup(context, ".")); //NOI18N
     this.projectTree.setRootVisible(false);
     this.setViewportView(this.projectTree);
 
@@ -247,7 +247,7 @@ public final class ExplorerTree extends JScrollPane {
       item.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          addChildTo(node, "mmd");
+          addChildTo(node, "mmd"); //NOI18N
         }
       });
       makeNew.add(item);
@@ -256,7 +256,7 @@ public final class ExplorerTree extends JScrollPane {
       item.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          addChildTo(node, "txt");
+          addChildTo(node, "txt"); //NOI18N
         }
       });
       makeNew.add(item);
@@ -329,7 +329,7 @@ public final class ExplorerTree extends JScrollPane {
               getCurrentGroup().refreshProjectFolder(theProject);
               context.focusInTree(knowledgeFolder);
             } else {
-              LOGGER.error("Can't create knowledge folder : " + knowledgeFolder);
+              LOGGER.error("Can't create knowledge folder : " + knowledgeFolder); //NOI18N
             }
           }
         });
@@ -518,43 +518,43 @@ public final class ExplorerTree extends JScrollPane {
 
         if (extension == null) {
           if (!file.mkdirs()) {
-            LOGGER.error("Can't create folder");
+            LOGGER.error("Can't create folder"); //NOI18N
             DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create folder '" + fileName + "'!");
           } else {
             ok = true;
           }
         } else {
           switch (extension) {
-            case "mmd": {
+            case "mmd": { //NOI18N
               final MindMap model = new MindMap(null, true);
-              model.setAttribute("showJumps", "true");
+              model.setAttribute("showJumps", "true"); //NOI18N
               final Topic root = model.getRoot();
               if (root != null) {
-                root.setText("Root");
+                root.setText("Root"); //NOI18N
               }
               try {
-                FileUtils.write(file, model.write(new StringWriter()).toString(), "UTF-8");
+                FileUtils.write(file, model.write(new StringWriter()).toString(), "UTF-8"); //NOI18N
                 ok = true;
               }
               catch (IOException ex) {
-                LOGGER.error("Can't create MMD file", ex);
+                LOGGER.error("Can't create MMD file", ex); //NOI18N
                 DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create mind map '" + fileName + "'!");
               }
             }
             break;
-            case "txt": {
+            case "txt": { //NOI18N
               try {
-                FileUtils.write(file, "", "UTF-8");
+                FileUtils.write(file, "", "UTF-8"); //NOI18N
                 ok = true;
               }
               catch (IOException ex) {
-                LOGGER.error("Can't create TXT file", ex);
+                LOGGER.error("Can't create TXT file", ex); //NOI18N
                 DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create txt file '" + fileName + "'!");
               }
             }
             break;
             default:
-              throw new Error("Unexpected extension : " + extension);
+              throw new Error("Unexpected extension : " + extension); //NOI18N
           }
         }
 

@@ -30,7 +30,7 @@ public final class SystemUtils {
   }
 
   public static void setDebugLevelForJavaLogger(@Nonnull final Level newLevel) {
-    final java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
+    final java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger(""); //NOI18N
     final java.util.logging.Handler[] handlers = rootLogger.getHandlers();
     rootLogger.setLevel(newLevel);
     for (final java.util.logging.Handler h : handlers) {
@@ -43,25 +43,25 @@ public final class SystemUtils {
     boolean result = false;
     
     if (fileUtils.hasTrash() && moveToTrashIfPossible){
-      LOGGER.info("Moving file to trash : " + file);
+      LOGGER.info("Moving file to trash : " + file); //NOI18N
       try{
         fileUtils.moveToTrash(new File[]{file});
         result = true;
       }catch(IOException ex){
-        LOGGER.error("Can't move file to trash : "+file, ex);
+        LOGGER.error("Can't move file to trash : "+file, ex); //NOI18N
       }
     } else {
-      LOGGER.info("Permanently deleting file : "+file);
+      LOGGER.info("Permanently deleting file : "+file); //NOI18N
       if (file.isDirectory()){
         try{
           org.apache.commons.io.FileUtils.deleteDirectory(file);
           result = true;
         }catch(IOException ex){
-          LOGGER.error("Can't delete directory : "+file, ex);
+          LOGGER.error("Can't delete directory : "+file, ex); //NOI18N
         }
       } else if (file.isFile()){
         if (!file.delete()){
-          LOGGER.error("Can't delete file : " + file);
+          LOGGER.error("Can't delete file : " + file); //NOI18N
         } else {
           result = true;
         }
@@ -71,6 +71,6 @@ public final class SystemUtils {
   }
   
   public static void saveUTFText(@Nonnull final File file, @Nonnull final CharSequence text) throws IOException {
-    org.apache.commons.io.FileUtils.write(file, text, "UTF-8",false);
+    org.apache.commons.io.FileUtils.write(file, text, "UTF-8",false); //NOI18N
   }
 }

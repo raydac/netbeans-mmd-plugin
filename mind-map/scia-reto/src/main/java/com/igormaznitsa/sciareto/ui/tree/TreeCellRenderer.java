@@ -35,15 +35,15 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
 
   private static final long serialVersionUID = -6283018126496160094L;
 
-  private static final Image PROJECT_BADGE = UiUtils.loadIcon("project_badge.png");
-  private static final Image KF_BADGE = UiUtils.loadIcon("mmdbadge.png");
-  private static final Image READONLY_BADGE = UiUtils.loadIcon("ro.png");
+  private static final Image PROJECT_BADGE = UiUtils.loadIcon("project_badge.png"); //NOI18N
+  private static final Image KF_BADGE = UiUtils.loadIcon("mmdbadge.png"); //NOI18N
+  private static final Image READONLY_BADGE = UiUtils.loadIcon("ro.png"); //NOI18N
   private static final Icon ICON_IMAGE_RO;
 
-  public static final Icon ICON_IMAGE = new ImageIcon(UiUtils.loadIcon("image16.png"));
-  public static final Icon DEFAULT_FOLDER_CLOSED = new ImageIcon(UiUtils.loadIcon("folder16.gif"));
-  public static final Icon DEFAULT_FOLDER_OPENED = new ImageIcon(UiUtils.loadIcon("folderOpen16.gif"));
-  public static final Icon DEFAULT_FILE = new ImageIcon(UiUtils.loadIcon("document_empty16.png"));
+  public static final Icon ICON_IMAGE = new ImageIcon(UiUtils.loadIcon("image16.png")); //NOI18N
+  public static final Icon DEFAULT_FOLDER_CLOSED = new ImageIcon(UiUtils.loadIcon("folder16.gif")); //NOI18N
+  public static final Icon DEFAULT_FOLDER_OPENED = new ImageIcon(UiUtils.loadIcon("folderOpen16.gif")); //NOI18N
+  public static final Icon DEFAULT_FILE = new ImageIcon(UiUtils.loadIcon("document_empty16.png")); //NOI18N
 
   static {
     ICON_IMAGE_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) ICON_IMAGE).getImage(), READONLY_BADGE));
@@ -80,37 +80,37 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
 
   private void ensureIcons(@Nonnull final JTree tree) {
     if (PROJECT_CLOSED == null) {
-      PROJECT_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED)), PROJECT_BADGE));
+      PROJECT_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED)), PROJECT_BADGE)); //NOI18N
       PROJECT_CLOSED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) PROJECT_CLOSED).getImage(), READONLY_BADGE));
     }
 
     if (PROJECT_OPENED == null) {
-      PROJECT_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED)), PROJECT_BADGE));
+      PROJECT_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED)), PROJECT_BADGE)); //NOI18N
       PROJECT_OPENED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) PROJECT_OPENED).getImage(), READONLY_BADGE));
     }
 
     if (FOLDER_CLOSED == null) {
-      FOLDER_CLOSED = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED)));
+      FOLDER_CLOSED = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED))); //NOI18N
       FOLDER_CLOSED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_CLOSED).getImage(), READONLY_BADGE));
     }
 
     if (FOLDER_OPENED == null) {
-      FOLDER_OPENED = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED)));
+      FOLDER_OPENED = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED))); //NOI18N
       FOLDER_OPENED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_OPENED).getImage(), READONLY_BADGE));
     }
 
     if (FOLDER_KF_CLOSED == null) {
-      FOLDER_KF_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED)), KF_BADGE));
+      FOLDER_KF_CLOSED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.closedIcon"), DEFAULT_FOLDER_CLOSED)), KF_BADGE)); //NOI18N
       FOLDER_KF_CLOSED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_KF_CLOSED).getImage(), READONLY_BADGE));
     }
 
     if (FOLDER_KF_OPENED == null) {
-      FOLDER_KF_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED)), KF_BADGE));
+      FOLDER_KF_OPENED = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.openIcon"), DEFAULT_FOLDER_OPENED)), KF_BADGE)); //NOI18N
       FOLDER_KF_OPENED_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) FOLDER_KF_OPENED).getImage(), READONLY_BADGE));
     }
 
     if (LEAF == null) {
-      LEAF = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.leafIcon"), DEFAULT_FILE)));
+      LEAF = new ImageIcon(UiUtils.iconToImage(tree, GetUtils.ensureNonNull(UIManager.getIcon("Tree.leafIcon"), DEFAULT_FILE))); //NOI18N
       LEAF_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) LEAF).getImage(), READONLY_BADGE));
     }
 
@@ -136,7 +136,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
           }
         } else if (node.isLeaf()) {
           final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
-          if (ext.equals("mmd")) {
+          if (ext.equals("mmd")) { //NOI18N
             this.setIcon(node.isReadOnly() ? LEAF_MINDMAP_RO : LEAF_MINDMAP);
           } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
             this.setIcon(node.isReadOnly() ? ICON_IMAGE_RO : ICON_IMAGE);

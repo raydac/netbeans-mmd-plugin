@@ -95,9 +95,9 @@ public class FileListPanel extends javax.swing.JPanel implements TableModel {
   @Nonnull
   public String getColumnName(final int columnIndex) {
     switch(columnIndex){
-      case 0 : return "...";
+      case 0 : return "..."; //NOI18N
       case 1 : return "File";
-      default : throw new Error("Unexpected index");
+      default : throw new Error("Unexpected index"); //NOI18N
     }
   }
 
@@ -119,7 +119,7 @@ public class FileListPanel extends javax.swing.JPanel implements TableModel {
     switch(columnIndex){
       case 0 : return selector.isSelected();
       case 1 : return selector.getFile().getName();
-      default: throw new Error("unexpected column");
+      default: throw new Error("unexpected column"); //NOI18N
     }
   }
 
@@ -128,7 +128,7 @@ public class FileListPanel extends javax.swing.JPanel implements TableModel {
     final FileSelector selector = this.files.get(rowIndex);
     switch (columnIndex) {
       case 0: selector.setSelected((Boolean)aValue);break;
-      default: throw new Error("unexpected column index");
+      default: throw new Error("unexpected column index"); //NOI18N
     }
     final TableModelEvent event = new TableModelEvent(this, rowIndex,rowIndex,columnIndex);
     for(final TableModelListener l : this.listeners){

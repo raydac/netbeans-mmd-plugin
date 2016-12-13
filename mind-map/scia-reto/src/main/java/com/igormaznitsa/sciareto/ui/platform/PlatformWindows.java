@@ -44,6 +44,6 @@ class PlatformWindows implements Platform {
   @Override
   @Nonnull
   public String getName() {
-    return "Windows";
+    return "Windows"; //NOI18N
   }
 }

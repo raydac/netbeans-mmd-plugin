@@ -34,10 +34,10 @@ public final class FileHistoryManager {
 
   private static final FileHistoryManager INSTANCE = new FileHistoryManager();
 
-  private static final String LAST_OPENED_PROJECTS = "last.projects.opened";
-  private static final String LAST_OPENED_FILES = "last.files.opened";
-  private static final String ACTIVE_PROJECTS = "projects.active";
-  private static final String ACTIVE_FILES = "files.active";
+  private static final String LAST_OPENED_PROJECTS = "last.projects.opened"; //NOI18N
+  private static final String LAST_OPENED_FILES = "last.files.opened"; //NOI18N
+  private static final String ACTIVE_PROJECTS = "projects.active"; //NOI18N
+  private static final String ACTIVE_FILES = "files.active"; //NOI18N
 
   private final List<File> lastOpenedProjects = new ArrayList<>();
   private final List<File> lastOpenedFiles = new ArrayList<>();
@@ -49,12 +49,12 @@ public final class FileHistoryManager {
     final String projectsStr = PreferencesManager.getInstance().getPreferences().get(LAST_OPENED_PROJECTS, null);
     final String filesStr = PreferencesManager.getInstance().getPreferences().get(LAST_OPENED_FILES, null);
     try {
-      final String[] folders = projectsStr == null ? new String[0] : decodeString(projectsStr).split("\\" + File.pathSeparatorChar);
-      final String[] files = filesStr == null ? new String[0] : decodeString(filesStr).split("\\" + File.pathSeparatorChar);
+      final String[] folders = projectsStr == null ? new String[0] : decodeString(projectsStr).split("\\" + File.pathSeparatorChar); //NOI18N
+      final String[] files = filesStr == null ? new String[0] : decodeString(filesStr).split("\\" + File.pathSeparatorChar); //NOI18N
       fillList(folders, this.lastOpenedProjects);
       fillList(files, this.lastOpenedFiles);
     } catch (Exception ex) {
-      throw new Error("Can't init module", ex);
+      throw new Error("Can't init module", ex); //NOI18N
     }
   }
 
@@ -67,7 +67,7 @@ public final class FileHistoryManager {
       result = new File[0];
     } else {
       final List<File> list = new ArrayList<>();
-      fillList(decodeString(activeProjectsStr).split("\\"+File.pathSeparatorChar), list);
+      fillList(decodeString(activeProjectsStr).split("\\"+File.pathSeparatorChar), list); //NOI18N
       result = list.toArray(new File[list.size()]);
     }
     return result;
@@ -82,7 +82,7 @@ public final class FileHistoryManager {
       result = new File[0];
     } else {
       final List<File> list = new ArrayList<>();
-      fillList(decodeString(activeProjectsStr).split("\\"+File.pathSeparatorChar), list);
+      fillList(decodeString(activeProjectsStr).split("\\"+File.pathSeparatorChar), list); //NOI18N
       result = list.toArray(new File[list.size()]);
     }
     return result;
@@ -100,12 +100,12 @@ public final class FileHistoryManager {
   
   @Nonnull
   private String encodeString(@Nonnull final String str) throws IOException {
-    return Base64.encodeBase64String(IOUtils.packData(str.getBytes("UTF-8")));
+    return Base64.encodeBase64String(IOUtils.packData(str.getBytes("UTF-8"))); //NOI18N
   }
 
   @Nonnull
   private String decodeString(@Nonnull final String str) throws IOException {
-    return new String(IOUtils.unpackData(Base64.decodeBase64(str)), "UTF-8");
+    return new String(IOUtils.unpackData(Base64.decodeBase64(str)), "UTF-8"); //NOI18N
   }
 
   @Nonnull

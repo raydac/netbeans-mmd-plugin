@@ -61,7 +61,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
       public void mouseClicked(final MouseEvent e) {
         if (!e.isPopupTrigger() && e.getClickCount() > 1) {
           if (listener != null) {
-            listener.actionPerformed(new ActionEvent(this, 0, "doubleClick"));
+            listener.actionPerformed(new ActionEvent(this, 0, "doubleClick")); //NOI18N
           }
         }
       }
