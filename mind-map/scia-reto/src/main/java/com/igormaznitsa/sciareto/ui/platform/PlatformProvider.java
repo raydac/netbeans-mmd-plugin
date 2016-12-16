@@ -30,21 +30,21 @@ public final class PlatformProvider {
     if (SystemUtils.IS_OS_MAC_OSX){
       try{
         detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformMacOSX").newInstance(); //NOI18N
-      }catch(Exception ex){
+      }catch(Throwable ex){
         LOGGER.error("Can't init MACOSX platform specific part",ex); //NOI18N
         detected = null;
       }
     } else if (SystemUtils.IS_OS_WINDOWS) {
       try {
         detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformWindows").newInstance(); //NOI18N
-      } catch (Exception ex) {
+      } catch (Throwable ex) {
         LOGGER.error("Can't init WINDOWS platform specific part", ex); //NOI18N
         detected = null;
       }
     }
     
     INSTANCE = detected == null ? new PlatformDefault() : detected;
-    LOGGER.info("Detected platform : "+INSTANCE.getName()); //NOI18N
+    LOGGER.info("Platform features provider is '"+INSTANCE.getName()+'\''); //NOI18N
   }
   
   private PlatformProvider(){
