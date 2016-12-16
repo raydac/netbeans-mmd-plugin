@@ -180,12 +180,12 @@
           <plugin>
             <groupId>sh.tak.appbundler</groupId>
             <artifactId>appbundle-maven-plugin</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.0</version>
             <configuration>
               <bundleName>${app.name}</bundleName>
               <diskImageFile>${project.build.directory}/${project.build.finalName}_OSX.dmg</diskImageFile>
               <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
-              <iconFile>${basedir}/logo.icns</iconFile>
+              <iconFile>logo.icns</iconFile>
               <bundleName>Scia-Reto Editor</bundleName>
               <generateDiskImageFile>true</generateDiskImageFile>
               <includeApplicationsSymlink>true</includeApplicationsSymlink>
