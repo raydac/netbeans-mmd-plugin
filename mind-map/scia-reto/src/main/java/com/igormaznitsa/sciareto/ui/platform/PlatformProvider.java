@@ -24,15 +24,20 @@ public final class PlatformProvider {
   private static final Platform INSTANCE;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PlatformProvider.class);
+  private static final boolean detectedErrorDuringProviderInitialisation;
   
   static {
     Platform detected = null;
+
+    boolean detectedError = false;
+    
     if (SystemUtils.IS_OS_MAC_OSX){
       try{
         detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformMacOSX").newInstance(); //NOI18N
       }catch(Throwable ex){
         LOGGER.error("Can't init MACOSX platform specific part",ex); //NOI18N
         detected = null;
+        detectedError = true;
       }
     } else if (SystemUtils.IS_OS_WINDOWS) {
       try {
@@ -40,11 +45,14 @@ public final class PlatformProvider {
       } catch (Throwable ex) {
         LOGGER.error("Can't init WINDOWS platform specific part", ex); //NOI18N
         detected = null;
+        detectedError = true;
       }
     }
     
     INSTANCE = detected == null ? new PlatformDefault() : detected;
     LOGGER.info("Platform features provider is '"+INSTANCE.getName()+'\''); //NOI18N
+  
+    detectedErrorDuringProviderInitialisation = detectedError;
   }
   
   private PlatformProvider(){
@@ -52,7 +60,11 @@ public final class PlatformProvider {
   }
   
   @Nonnull
-  public static final Platform getPlatform(){
+  public static Platform getPlatform(){
     return INSTANCE;
+  }
+
+  public static boolean isErrorDetected(){
+    return detectedErrorDuringProviderInitialisation;
   }
 }

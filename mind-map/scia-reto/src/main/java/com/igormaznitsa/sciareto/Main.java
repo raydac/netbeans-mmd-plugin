@@ -45,6 +45,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -117,9 +118,9 @@ public class Main {
     public String getDescription() {
       return ""; //NOI18N
     }
-  
+
   }
-  
+
   private static final class LocalMMDImporter extends AbstractImporter {
 
     @Override
@@ -238,7 +239,7 @@ public class Main {
       final long splashTimerStart = System.currentTimeMillis();
       try {
         final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
-        
+
         SwingUtilities.invokeAndWait(new Runnable() {
           @Override
           public void run() {
@@ -310,14 +311,13 @@ public class Main {
     if (args.length > 0) {
       if ("--help".equalsIgnoreCase(args[0]) || "--?".equals(args[0])) { //NOI18N
         doShowGUI = false;
-        
+
         MindMapPluginRegistry.getInstance().registerPlugin(new LocalMMDExporter());
         MindMapPluginRegistry.getInstance().registerPlugin(new LocalMMDImporter());
 
         printCliHelp(System.out);
         System.exit(0);
-      } else 
-      if ("--importsettings".equalsIgnoreCase(args[0])) { //NOI18N
+      } else if ("--importsettings".equalsIgnoreCase(args[0])) { //NOI18N
         doShowGUI = false;
         final File file = args.length > 1 ? new File(args[1]) : null;
 
@@ -359,6 +359,11 @@ public class Main {
           final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
           final int width = gd.getDisplayMode().getWidth();
           final int height = gd.getDisplayMode().getHeight();
+
+          if (PlatformProvider.isErrorDetected()) {
+            JOptionPane.showMessageDialog(null, "Can't init the Platform dependent part, the default one will be used.\n"
+                + "Check that you have installed Java correctly", "Warning", JOptionPane.WARNING_MESSAGE);
+          }
 
           MAIN_FRAME = new MainFrame(args);
           MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
@@ -495,7 +500,7 @@ public class Main {
               allOk = false;
             }
           }
-          if (allOk && importer!=null && exporter!=null) {
+          if (allOk && importer != null && exporter != null) {
             try {
               makeConversion(inFile, importer, outFile, exporter, config, options);
             }
@@ -668,16 +673,17 @@ public class Main {
 
           MindMap map = new MindMap(new MindMapController() {
             private static final long serialVersionUID = -5276000656494506314L;
+
             @Override
             public boolean canBeDeletedSilently(@Nonnull final MindMap map, @Nonnull final Topic topic) {
               return true;
             }
           }, false);
           panel.setModel(map);
-          
+
           map = fromFormat.doImport(panel, dialog, null, new Topic[0]);
           panel.setModel(map);
-          
+
           final JComponent optionsComponent = toFormat.makeOptions();
 
           if (!options.isEmpty()) {
@@ -740,7 +746,7 @@ public class Main {
     out.println();
     printConversionHelp(out);
   }
-  
+
   private static void printConversionHelp(@Nonnull final PrintStream out) {
     final String allowedFormatsFrom = makeMnemonicList(MindMapPluginRegistry.getInstance().findFor(AbstractImporter.class));
     final String allowedFormatsTo = makeMnemonicList(MindMapPluginRegistry.getInstance().findFor(AbstractExporter.class));
