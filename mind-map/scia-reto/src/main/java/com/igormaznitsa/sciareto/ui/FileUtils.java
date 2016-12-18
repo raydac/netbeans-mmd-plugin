@@ -38,7 +38,9 @@ public final class FileUtils {
 
     if (!result) {
       final String path = FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath());
-      if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS) {
+      if (path.isEmpty()) {
+        result = true;
+      } else if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS) {
         result = path.length() == 3 && path.endsWith(":\\"); //NOI18N
       } else {
         result = path.equals("/"); //NOI18N
@@ -52,15 +54,23 @@ public final class FileUtils {
   public static File removeLastElementInPath(@Nonnull final File file) {
     final String path = FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath());
 
-    final int indexUnix = path.lastIndexOf('/');
-    final int indexWindows = path.lastIndexOf('\\');
-    final int index = Math.max(indexUnix, indexWindows);
+    final int lastIndexUnix = path.lastIndexOf('/');
+    final int lastIndexWindows = path.lastIndexOf('\\');
+    final int lastIndex = Math.max(lastIndexUnix, lastIndexWindows);
+
+    final int firstIndexUnix = path.indexOf('/');
+    final int firstIndexWindows = path.indexOf('\\');
+    final int firstIndex = Math.max(firstIndexUnix, firstIndexWindows);
 
     final File result;
-    if (index > 0) {
-      result = new File(path.substring(0, index));
+    if (lastIndex == firstIndex) {
+      result = new File(path.substring(0, lastIndex + 1));
     } else {
-      result = file;
+      if (lastIndex > firstIndex) {
+        result = new File(path.substring(0, lastIndex));
+      } else {
+        result = file;
+      }
     }
     return result;
   }

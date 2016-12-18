@@ -9,7 +9,10 @@
     <requiredProperty key="author">
     </requiredProperty>
     <requiredProperty key="pluginApi">
-      <defaultValue>1.3.0</defaultValue>
+      <defaultValue>1.4.0</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="mmdModel">
+      <defaultValue>1.2.2</defaultValue>
     </requiredProperty>
   </requiredProperties>
 

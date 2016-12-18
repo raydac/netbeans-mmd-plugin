@@ -78,13 +78,15 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public enum IdeaUtils {
-  ;
+public final class IdeaUtils {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(IdeaUtils.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   public static final MMapURI EMPTY_URI;
   public static final String PROJECT_KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
+
+  private static final boolean ALLOWS_TRANSACTION_GUARD = true;
 
   static {
     try {
@@ -143,40 +145,54 @@ public enum IdeaUtils {
   }
 
   public static void executeWriteAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
-    if (submitTransactionLater(new Runnable() {
+    final Runnable wrapper = new Runnable() {
       @Override
       public void run() {
-        ApplicationManager.getApplication().runWriteAction(action);
+        CommandProcessor.getInstance().executeCommand(project, new Runnable() {
+          @Override
+          public void run() {
+            ApplicationManager.getApplication().runWriteAction(action);
+          }
+        }, "MMD.executeWriteAction", null, document);
+      }
+    };
+
+    if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(new Runnable() {
+      @Override
+      public void run() {
+        wrapper.run();
       }
     })) {
       LOGGER.info("Using TransactionGuard for write action");
     } else {
       LOGGER.info("Using CommandProcessor for write action");
-      CommandProcessor.getInstance().executeCommand(project, new Runnable() {
-        @Override
-        public void run() {
-          ApplicationManager.getApplication().runWriteAction(action);
-        }
-      },"MMD.executeWriteAction",null,document);
+      wrapper.run();
     }
   }
 
   public static void executeReadAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
-    if (submitTransactionLater(new Runnable() {
+    final Runnable wrapper = new Runnable() {
       @Override
       public void run() {
-        ApplicationManager.getApplication().runReadAction(action);
+        CommandProcessor.getInstance().executeCommand(project, new Runnable() {
+          @Override
+          public void run() {
+            ApplicationManager.getApplication().runReadAction(action);
+          }
+        }, "MMD>executeReadAction", null, document);
+      }
+    };
+
+    if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(new Runnable() {
+      @Override
+      public void run() {
+        wrapper.run();
       }
     })) {
       LOGGER.info("Using TransactionGuard for read action");
     } else {
       LOGGER.info("Using CommandProcessor for read action");
-      CommandProcessor.getInstance().executeCommand(project, new Runnable() {
-        @Override
-        public void run() {
-          ApplicationManager.getApplication().runReadAction(action);
-        }
-      },"MMD>executeReadAction",null,document);
+      wrapper.run();
     }
   }
 

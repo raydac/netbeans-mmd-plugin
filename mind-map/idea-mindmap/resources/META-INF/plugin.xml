@@ -11,14 +11,14 @@
       <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshotIdeaThumb.jpg"><br>
       IDE-integrated mind map editor, it is ported version of <a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">the NetBeans Mind Map editor</a>. It allows to create and edit mind maps represented by MMD files. The Editor allows to keep simple text notes, web links and links to files just in mind map topics.<br>
       <ul>
-        <li><a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">The Project home page</a></li>
+        <li><a href="http://www.sciareto.org/">The Project home page</a></li>
         <li><a href="https://github.com/raydac/netbeans-mmd-plugin">The Github project sources</a></li>
         <li><a href="https://www.youtube.com/watch?v=7TUU25dsOfM">The Screencast about the NetBeans version</a></li>
       </ul>
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.4.0 (under development)</p>
+        <p>1.4.0 (18-dec-2016)</p>
         <ul>
           <li>plugin adapted for compatibility with 14.0.5 (139.1803)</li>
           <li>added importers for Mindmup, Freemind, Novamind, Coggle and XMind formats</li>

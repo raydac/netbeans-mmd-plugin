@@ -1,4 +1,4 @@
-1.4.0 (under development)
+1.4.0 (18-dec-2016)
 - IJ: plugin adapted for compatibility with 14.0.5 (139.1803)
 - ALL: added importers for Mindmup, Freemind, Novamind, Coggle and XMind formats
 - NB:  disabled watching of file changes by default, added options flag to enable that

@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   
@@ -15,8 +15,6 @@
 
   <name>NetBeans Mind Map Editor plugin</name>
   <description>NetBeans editor plugin to create and edit mind maps within NetBeans IDE projects.</description>
-
-  <url>http://www.igormaznitsa.com/netbeans-mmd-plugin/</url>
 
   <properties>
     <nb.platform>RELEASE80</nb.platform>
@@ -96,13 +94,13 @@
         <configuration>
           <encoding>UTF-8</encoding>
           <author>Igor Maznitsa</author>
-          <homePageUrl>https://github.com/raydac/netbeans-mmd-plugin</homePageUrl>
+          <homePageUrl>http://www.sciareto.org</homePageUrl>
           <moduleType>normal</moduleType>
           <licenseName>License Agreement for NB Mind Map</licenseName>
           <licenseFile>src/main/nbm/LICENSE-2.0.txt</licenseFile>
           <codeNameBase>com.igormaznitsa.nbmindmap/1</codeNameBase>
           <requiresRestart>true</requiresRestart>
-          <keystore>../private/keystore.jks</keystore>
+          <keystore>${project.build.directory}/../../private/keystore.jks</keystore>
           <keystorealias>iam</keystorealias>
         </configuration>
       </plugin>

@@ -14,7 +14,7 @@
   <properties>
     <meta.version>1.1.2</meta.version>
     <plugin.api>${pluginApi}</plugin.api>
-    <mmd.model>1.2.1</mmd.model>
+    <mmd.model>${mmdModel}</mmd.model>
   </properties>
 
   <contributors>

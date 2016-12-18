@@ -175,11 +175,16 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   private void startOptionsEdit() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override public void run() {
+    final Runnable action = new Runnable() {
+      @Override
+      public void run() {
         ShowSettingsUtil.getInstance().showSettingsDialog(editor.getProject(), MindMapSettingsComponent.DISPLAY_NAME);
       }
-    });
+    };
+
+    if (!IdeaUtils.submitTransactionLater(action)){
+      SwingUtilities.invokeLater(action);
+    }
   }
 
   private void editLinkForTopic(final Topic topic) {
