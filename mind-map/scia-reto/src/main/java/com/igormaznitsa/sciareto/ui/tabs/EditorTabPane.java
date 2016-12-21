@@ -272,7 +272,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     final int selected = this.getSelectedIndex();
     
     if (selected>=0){
-      result = ((TabTitle)this.getSelectedComponent()).getProvider().getEditor();
+      result = ((TabTitle)this.getTabComponentAt(selected)).getProvider().getEditor();
     }
     
     return result;

@@ -10,7 +10,7 @@
     
   <artifactId>scia-reto</artifactId>
   <packaging>jar</packaging>
-  <version>${main.version}</version>
+  <version>${main.version}.1</version>
   
   <name>SciaReto Mind Map Editor</name>
   <description>Standalone editor to create and edit mind maps</description>
@@ -41,12 +41,12 @@
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-ide-common</artifactId>
-      <version>${project.version}</version>
+      <version>${main.version}</version>
     </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-swing-panel</artifactId>
-      <version>${project.version}</version>
+      <version>${main.version}</version>
     </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
