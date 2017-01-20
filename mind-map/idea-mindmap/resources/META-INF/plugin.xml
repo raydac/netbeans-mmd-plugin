@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -18,6 +18,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.4.1 (under development)</p>
+        <ul>
+            <li>fixed issue "Project Project (Disposed) test already disposed" #25</li>
+        </ul>
         <p>1.4.0 (18-dec-2016)</p>
         <ul>
           <li>plugin adapted for compatibility with 14.0.5 (139.1803)</li>

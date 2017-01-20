@@ -48,6 +48,7 @@ import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -98,7 +99,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private final MindMapPanelControllerImpl panelController;
   private final UndoHelper undoHelper;
   private boolean firstLayouting = true;
-
+  private final DocumentListener documentListener;
 
   public MindMapDocumentEditor(final Project project, final VirtualFile file) {
     this.project = project;
@@ -133,12 +134,13 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.undoHelper = new UndoHelper(this.project, this);
     this.undoHelper.addWatchedDocument(getDocument());
 
-    this.getDocument().addDocumentListener(new DocumentAdapter() {
+    this.documentListener = new DocumentAdapter() {
       @Override
       public void documentChanged(DocumentEvent e) {
         loadMindMapFromDocument();
       }
-    });
+    };
+    this.getDocument().addDocumentListener(this.documentListener);
 
     DataManager.registerDataProvider(this.mainScrollPane, this);
 
@@ -368,7 +370,12 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   @Override
   public void dispose() {
-    this.mindMapPanel.dispose();
+    try {
+      this.mindMapPanel.dispose();
+    }finally {
+      this.getDocument().removeDocumentListener(this.documentListener);
+      DataManager.removeDataProvider(this.mainScrollPane);
+    }
   }
 
   @Nullable
