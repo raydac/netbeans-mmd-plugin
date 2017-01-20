@@ -1,4 +1,6 @@
 target/
+nbactions.xml
+nbactions-publish.xml
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -19,3 +21,6 @@ buildNumber.properties
 /mind-map/mind-map-swing-panel/nbproject/
 /mind-map/nb-mind-map/nbproject/
 /mind-map/scia-reto/nbproject/
+/mind-map/mind-map-ide-common/nbproject/
+/mind-map/idea-mindmap/downloaded/
+/mind-map/private/
