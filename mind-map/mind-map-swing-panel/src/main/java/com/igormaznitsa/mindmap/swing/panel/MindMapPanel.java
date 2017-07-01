@@ -477,7 +477,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
       @Override
       public void mouseMoved(@Nonnull final MouseEvent e) {
-        if (lockIfNotDisposed()) {
+        if (!e.isConsumed() && lockIfNotDisposed()) {
           try {
             if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
               return;
@@ -536,7 +536,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
       @Override
       public void mousePressed(@Nonnull final MouseEvent e) {
-        if (lockIfNotDisposed()) {
+        if (!e.isConsumed() && lockIfNotDisposed()) {
           try {
             if (!controller.isMouseClickProcessingAllowed(theInstance)) {
               return;
@@ -566,7 +566,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
       @Override
       public void mouseReleased(@Nonnull final MouseEvent e) {
-        if (lockIfNotDisposed()) {
+        if (!e.isConsumed() && lockIfNotDisposed()) {
           try {
             if (!controller.isMouseClickProcessingAllowed(theInstance)) {
               return;
@@ -624,7 +624,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
       @Override
       public void mouseDragged(@Nonnull final MouseEvent e) {
-        if (lockIfNotDisposed()) {
+        if (!e.isConsumed() && lockIfNotDisposed()) {
           try {
             if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
               return;
@@ -682,7 +682,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
       @Override
       public void mouseWheelMoved(@Nonnull final MouseWheelEvent e) {
-        if (lockIfNotDisposed()) {
+        if (!e.isConsumed() && lockIfNotDisposed()) {
           try {
             if (controller.isMouseWheelProcessingAllowed(theInstance)) {
               mouseDragSelection = null;
@@ -718,7 +718,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
       @Override
       public void mouseClicked(@Nonnull final MouseEvent e) {
-        if (lockIfNotDisposed()) {
+        if (!e.isConsumed() && lockIfNotDisposed()) {
           try {
             if (!controller.isMouseClickProcessingAllowed(theInstance)) {
               return;
