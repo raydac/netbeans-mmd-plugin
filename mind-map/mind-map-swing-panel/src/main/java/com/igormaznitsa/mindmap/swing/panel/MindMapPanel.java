@@ -718,7 +718,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
       @Override
       public void mouseClicked(@Nonnull final MouseEvent e) {
-        if (!e.isConsumed() && lockIfNotDisposed()) {
+        if (!e.isConsumed() && lockIfNotDisposed() && !popupMenuActive) {
           try {
             if (!controller.isMouseClickProcessingAllowed(theInstance)) {
               return;
