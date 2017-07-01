@@ -1,22 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.igormaznitsa</groupId>
-    <artifactId>mind-map</artifactId>
-    <version>1.4.0</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
-    
+
+  <groupId>com.igormaznitsa</groupId>
   <artifactId>mind-map-model</artifactId>
-  <version>1.2.2</version>
+  <version>1.2.3-SNAPSHOT</version>
   <!--<version>${mindmap.model.version}</version>-->
   <packaging>jar</packaging>
     
   <name>NB Mind Map model</name>
   <description>Abstract mind map model</description>
     
+  <developers>
+    <developer>
+      <id>raydac</id>
+      <name>Igor Maznitsa</name>
+      <email>rrg4400@gmail.com</email>
+      <url>http://www.igormaznitsa.com</url>
+      <timezone>+3</timezone>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <url>http://www.sciareto.org</url>
+  
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/raydac/netbeans-mmd-plugin/issues</url>
+  </issueManagement>
+  
+  <scm>
+    <url>https://github.com/raydac/netbeans-mmd-plugin</url>
+    <connection>scm:git:git://github.com/raydac/netbeans-mmd-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:raydac/netbeans-mmd-plugin.git</developerConnection>
+  </scm>
+  
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+  <organization>
+    <name>Igor Maznitsa</name>
+    <url>http://www.igormaznitsa.com</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.5</version>
+        <configuration>
+          <detail>true</detail>
+          <aggregate>true</aggregate>
+          <format>html</format>
+          <verbose>true</verbose>
+          <printFailingErrors>true</printFailingErrors>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+  
   <profiles>
+    <profile>
+      <id>localrepo</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>local-oss-git-repo</id>
+          <url>file:///home/igorm/Projects_PET/iam-oss-mvn-snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
     <profile>
       <id>coverageMeasurement</id>
       <build>
@@ -150,11 +219,6 @@
     
   <dependencies>
     <dependency>
-      <groupId>com.igormaznitsa</groupId>
-      <artifactId>meta-annotations</artifactId>
-      <version>${meta.version}</version>
-    </dependency>
-    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.5</version>
@@ -163,6 +227,28 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-annotations</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-utils</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.10.19</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   

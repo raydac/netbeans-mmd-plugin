@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
     
   <artifactId>scia-reto</artifactId>
   <packaging>jar</packaging>
-  <version>${main.version}.1</version>
+  <version>${main.version.raw}.2-SNAPSHOT</version>
   
   <name>SciaReto Mind Map Editor</name>
   <description>Standalone editor to create and edit mind maps</description>
