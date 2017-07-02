@@ -103,7 +103,12 @@ public final class KeyShortcut {
   private int getKeyCode(char keyChar) {
     final int result;
     switch (keyChar) {
+      // non-breakable space as space
+      case 0xA0: {
+        result = KeyEvent.VK_SPACE;
+      }
       // Character '+' is 0x2b but VK_PLUS is 0x0209
+      break;
       case '+': {
         result = KeyEvent.VK_PLUS;
       }
