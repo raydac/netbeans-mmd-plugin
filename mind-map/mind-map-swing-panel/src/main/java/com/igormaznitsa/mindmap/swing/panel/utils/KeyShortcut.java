@@ -143,11 +143,13 @@ public final class KeyShortcut {
   public String toString() {
     final String modifierText = KeyEvent.getKeyModifiersText(this.modifiers);
     final String keyText = KeyEvent.getKeyText(this.keyCode);
-    final StringBuilder builder = new StringBuilder();
-    builder.append(keyText);
-    if (!modifierText.isEmpty()) {
-      builder.append('+').append(modifierText);
+
+    final StringBuilder builder = new StringBuilder(modifierText);
+    
+    if (builder.length()>0 && !keyText.isEmpty()) {
+      builder.append('+');
     }
+    builder.append(keyText);
 
     return builder.toString();
   }
