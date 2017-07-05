@@ -285,7 +285,7 @@ public final class IdeaUtils {
 
     if (file == null) {
       LOGGER.error("Can't find file to open, null provided");
-      dialogProvider.msgError("Can't find file to open");
+      dialogProvider.msgError(null, "Can't find file to open");
     } else {
       final Runnable startEdit = new Runnable() {
         @Override
@@ -306,7 +306,7 @@ public final class IdeaUtils {
             SwingUtilities.invokeLater(new Runnable() {
               @Override
               public void run() {
-                dialogProvider.msgError("Can't open file in system viewer! See the log!");//NOI18N
+                dialogProvider.msgError(null, "Can't open file in system viewer! See the log!");//NOI18N
                 Toolkit.getDefaultToolkit().beep();
               }
             });
@@ -480,7 +480,7 @@ public final class IdeaUtils {
         return new MMapURI(text.trim());
       } catch (URISyntaxException ex) {
         editor.getDialogProvider()
-                .msgError(String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+                .msgError(null, String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     } else {

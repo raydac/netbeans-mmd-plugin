@@ -1003,7 +1003,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private void buttonFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontActionPerformed
     final FontSelector fontSelector = new FontSelector(this.config.getFont());
 
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Select font", fontSelector)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Select font", fontSelector)) {
       final Font selectedFont = fontSelector.getValue();
       this.config.setFont(selectedFont);
       this.fontMindMapEditor = selectedFont;
@@ -1036,7 +1036,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       list.add(e.getValue());
     }
     final KeyShortCutEditPanel panel = new KeyShortCutEditPanel(list);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Edit shortcuts", panel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Edit shortcuts", panel)) {
       for (final KeyShortcut s : panel.getResult()) {
         this.mapKeyShortCuts.put(s.getID(), s);
       }
@@ -1180,7 +1180,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private void buttonFontForEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontForEditorActionPerformed
     final FontSelector fontSelector = new FontSelector(this.fontTextEditor);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Select Text editor font", fontSelector)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Select Text editor font", fontSelector)) {
       this.fontTextEditor = fontSelector.getValue();
       updateFontButton(this.buttonFontForEditor, fontSelector.getValue());
       if (this.changeNotificationAllowed) {
@@ -1190,17 +1190,17 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonFontForEditorActionPerformed
 
   private void buttonExportToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportToFileActionPerformed
-    File file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("exportProperties", "Export settings", null, true, new PropertiesFileFilter(), "Save");
+    File file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "exportProperties", "Export settings", null, true, new PropertiesFileFilter(), "Save");
     if (file != null) {
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")){ //NOI18N
-        final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel("Add extension", "Add '.properties' extension?");
+        final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel(null, "Add extension", "Add '.properties' extension?");
         if (addExt == null) return;
         if (addExt){
           file = new File(file.getAbsolutePath()+".properties"); //NOI18N
         }
       }
       
-      if (file.exists() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Override file", String.format("File %s exists, to override it?",file.getName()))){
+      if (file.exists() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Override file", String.format("File %s exists, to override it?",file.getName()))){
         return;
       }
       
@@ -1212,20 +1212,20 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       }
       catch (final Exception ex) {
         LOGGER.error("Can't export settings", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't export settings [" + ex.getMessage() + ']'); //NOI18N
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't export settings [" + ex.getMessage() + ']'); //NOI18N
       }
     }
   }//GEN-LAST:event_buttonExportToFileActionPerformed
 
   private void buttonImportFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportFromFileActionPerformed
-    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("importProperties", "Import settings", null, true, new PropertiesFileFilter(), "Open");
+    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog(null, "importProperties", "Import settings", null, true, new PropertiesFileFilter(), "Open");
     if (file != null) {
       try {
         load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file)));
       }
       catch (final Exception ex) {
         LOGGER.error("Can't import settings", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't import settings [" + ex.getMessage() + ']');
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't import settings [" + ex.getMessage() + ']');
       }
     }
   }//GEN-LAST:event_buttonImportFromFileActionPerformed

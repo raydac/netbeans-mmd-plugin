@@ -83,7 +83,7 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
             }
           } catch (Exception ex) {
             LOGGER.error("Error during map import", ex); //NOI18N
-            dialogProvider.msgError(Texts.getString("MMDGraphEditor.makePopUp.errMsgCantImport"));
+            dialogProvider.msgError(null,Texts.getString("MMDGraphEditor.makePopUp.errMsgCantImport"));
           }
         }
       });

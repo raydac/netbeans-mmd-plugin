@@ -54,7 +54,7 @@ public final class ColorChooserButton extends JButton {
         final PropertyEditor editor = PropertyEditorManager.findEditor(Color.class);
         if (editor == null) {
           LOGGER.error("Can't find registered color editor");
-          NbUtils.msgError("Can't find color editor! unexpected state! Contact developer!");
+          NbUtils.msgError(null, "Can't find color editor! unexpected state! Contact developer!");
           return;
         }
 

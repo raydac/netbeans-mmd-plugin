@@ -297,7 +297,7 @@ public final class ExplorerTree extends JScrollPane {
     delete.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Delete", "Do you really want to delete \"" + node + "\"?")) {
+        if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, "Delete", "Do you really want to delete \"" + node + "\"?")) {
           context.deleteTreeNode(node);
         }
       }
@@ -366,12 +366,12 @@ public final class ExplorerTree extends JScrollPane {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
 
-        if (context.hasUnsavedDocument() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected unsaved documents", "Unsaved content will not be processed!")) {
+        if (context.hasUnsavedDocument() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Detected unsaved documents", "Unsaved content will not be processed!")) {
           return;
         }
 
         final FindUsagesPanel panel = new FindUsagesPanel(context, node, false);
-        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Find usages in all opened projects", panel)) {
+        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Find usages in all opened projects", panel)) {
           final NodeFileOrFolder selected = panel.getSelected();
           panel.dispose();
           if (selected != null) {
@@ -421,7 +421,7 @@ public final class ExplorerTree extends JScrollPane {
 
     if (project != null) {
       if (node.findProject() != project) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Different projects", "Opened Map file from another project. File paths will not be relative ones.")) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Different projects", "Opened Map file from another project. File paths will not be relative ones.")) {
           return;
         }
       }
@@ -430,12 +430,12 @@ public final class ExplorerTree extends JScrollPane {
     final List<Topic> targetTopics = new ArrayList<>(Arrays.asList(editor.getMindMapPanel().getSelectedTopics()));
 
     if (targetTopics.size() > 1) {
-      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Multiple selection detected", "New children will be generated for all focused topics.")) {
+      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Multiple selection detected", "New children will be generated for all focused topics.")) {
         return;
       }
     } else {
       if (targetTopics.isEmpty() && editor.getMindMapPanel().getModel().getRoot() != null) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("No selected parent", "There is not selected topic. The Root will be used as the parent.")) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "No selected parent", "There is not selected topic. The Root will be used as the parent.")) {
           return;
         }
         targetTopics.add(editor.getMindMapPanel().getModel().getRoot());
@@ -509,7 +509,7 @@ public final class ExplorerTree extends JScrollPane {
         }
         final File file = new File(folder.makeFileForNode(), fileName);
         if (file.exists()) {
-          DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + fileName + "' already exists!");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(null, "File '" + fileName + "' already exists!");
           return;
         }
 
@@ -518,7 +518,7 @@ public final class ExplorerTree extends JScrollPane {
         if (extension == null) {
           if (!file.mkdirs()) {
             LOGGER.error("Can't create folder"); //NOI18N
-            DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create folder '" + fileName + "'!");
+            DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create folder '" + fileName + "'!");
           } else {
             ok = true;
           }
@@ -537,7 +537,7 @@ public final class ExplorerTree extends JScrollPane {
               }
               catch (IOException ex) {
                 LOGGER.error("Can't create MMD file", ex); //NOI18N
-                DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create mind map '" + fileName + "'!");
+                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create mind map '" + fileName + "'!");
               }
             }
             break;
@@ -548,7 +548,7 @@ public final class ExplorerTree extends JScrollPane {
               }
               catch (IOException ex) {
                 LOGGER.error("Can't create TXT file", ex); //NOI18N
-                DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create txt file '" + fileName + "'!");
+                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create txt file '" + fileName + "'!");
               }
             }
             break;
@@ -563,7 +563,7 @@ public final class ExplorerTree extends JScrollPane {
           context.focusInTree(file);
         }
       } else {
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Illegal file name!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Illegal file name!");
       }
     }
   }

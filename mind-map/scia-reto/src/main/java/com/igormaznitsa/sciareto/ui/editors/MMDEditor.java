@@ -304,7 +304,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("mmd-editor-document", "Save Mind Map", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "mmd-editor-document", "Save Mind Map", null, true, getFileFilter(), "Save");
         if (file == null) {
           return result;
         }
@@ -547,7 +547,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
           Main.getApplicationFrame().endFullScreenIfActive();
           final MMapURI uri = ((ExtraLink) extra).getValue();
           if (!UiUtils.browseURI(uri.asURI(), PreferencesManager.getInstance().getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
-            DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+            DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
           }
         }
         break;
@@ -559,7 +559,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
           final Topic theTopic = source.getModel().findTopicForLink((ExtraTopic) extra);
           if (theTopic == null) {
             // not presented
-            DialogProviderManager.getInstance().getDialogProvider().msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+            DialogProviderManager.getInstance().getDialogProvider().msgWarn(null, BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
           } else {
             // detected
             this.mindMapPanel.focusTo(theTopic);
@@ -590,7 +590,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     if (topicsNotImportant) {
       result = true;
     } else {
-      result = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
+      result = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
   }
@@ -707,7 +707,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       final Topic topic = element.getModel();
       final MMapURI mmapUri = new MMapURI(uri);
       if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
           return;
         }
       }
@@ -722,7 +722,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     if (element != null) {
       final Topic topic = element.getModel();
       if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
           return;
         }
       }
@@ -750,7 +750,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       }
 
       if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
           return;
         }
       }
@@ -900,7 +900,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
             topic.setExtra(new ExtraFile(fileUri));
             valueChanged = true;
           } else {
-            DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
+            DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
             valueChanged = false;
           }
         }
@@ -924,7 +924,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
       if (link == null) {
         final MindMapTreePanel treePanel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
-        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
+        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
           final Topic selected = treePanel.getSelectedTopic();
           treePanel.dispose();
           if (selected != null) {
@@ -935,7 +935,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         }
       } else {
         final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
-        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
           final Topic selected = panel.getSelectedTopic();
           if (selected != null) {
             result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
@@ -988,7 +988,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     final Color textColor = UiUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
 
     final ColorAttributePanel panel = new ColorAttributePanel(borderColor, fillColor, textColor);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
       ColorAttributePanel.Result result = panel.getResult();
 
       if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
@@ -1026,7 +1026,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     boolean result = false;
     if (draggedTopic != null && destinationTopic != null && draggedTopic != destinationTopic) {
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
           return result;
         }
       }

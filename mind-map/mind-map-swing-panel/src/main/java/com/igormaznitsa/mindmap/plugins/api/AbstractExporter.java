@@ -61,7 +61,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
         try {
           if (processor == null) {
             final JComponent options = makeOptions();
-            if (options != null && !dialogProvider.msgOkCancel(getName(panel, actionTopic, selectedTopics), options)) {
+            if (options != null && !dialogProvider.msgOkCancel(null,getName(panel, actionTopic, selectedTopics), options)) {
               return;
             }
             doExport(panel, options, null);
@@ -70,7 +70,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
           }
         } catch (Exception ex) {
           LOGGER.error("Error during map export", ex); //NOI18N
-          dialogProvider.msgError(Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
+          dialogProvider.msgError(null,Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
         }
       }
     });

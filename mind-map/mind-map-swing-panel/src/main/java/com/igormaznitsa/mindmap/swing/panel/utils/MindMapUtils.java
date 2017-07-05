@@ -204,7 +204,7 @@ public final class MindMapUtils {
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
-    return panel.getController().getDialogProvider(panel).msgSaveFileDialog("user-dir", title, home, true, new FileFilter() { //NOI18N
+    return panel.getController().getDialogProvider(panel).msgSaveFileDialog(null,"user-dir", title, home, true, new FileFilter() { //NOI18N
       @Override
       public boolean accept(@Nonnull final File f) {
         return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
@@ -224,7 +224,7 @@ public final class MindMapUtils {
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
-    return panel.getController().getDialogProvider(panel).msgOpenFileDialog("user-dir", title, home, true, new FileFilter() { //NOI18N
+    return panel.getController().getDialogProvider(panel).msgOpenFileDialog(null,"user-dir", title, home, true, new FileFilter() { //NOI18N
       @Override
       public boolean accept(@Nonnull final File f) {
         return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
@@ -244,15 +244,15 @@ public final class MindMapUtils {
       return null;
     }
     if (file.isDirectory()) {
-      panel.getController().getDialogProvider(panel).msgError(String.format(Texts.getString("AbstractMindMapExporter.msgErrorItIsDirectory"), file.getAbsolutePath()));
+      panel.getController().getDialogProvider(panel).msgError(null, String.format(Texts.getString("AbstractMindMapExporter.msgErrorItIsDirectory"), file.getAbsolutePath()));
       return null;
     }
     if (file.isFile()) {
-      if (!panel.getController().getDialogProvider(panel).msgConfirmOkCancel(Texts.getString("AbstractMindMapExporter.titleSaveAs"), String.format(Texts.getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"), file.getAbsolutePath()))) {
+      if (!panel.getController().getDialogProvider(panel).msgConfirmOkCancel(null, Texts.getString("AbstractMindMapExporter.titleSaveAs"), String.format(Texts.getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"), file.getAbsolutePath()))) {
         return null;
       }
     } else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
-      if (panel.getController().getDialogProvider(panel).msgConfirmYesNo(Texts.getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(Texts.getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
+      if (panel.getController().getDialogProvider(panel).msgConfirmYesNo(null, Texts.getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(Texts.getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
         return new File(file.getParent(), file.getName() + dottedExtension);
       }
     }

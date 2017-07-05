@@ -30,6 +30,7 @@ import com.igormaznitsa.nbmindmap.nb.explorer.MMKnowledgeSources;
 import com.igormaznitsa.nbmindmap.nb.options.MMDCfgOptionsPanelController;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -248,32 +249,32 @@ public final class NbUtils {
     return NbPreferences.forModule(MMDCfgOptionsPanelController.class);
   }
 
-  public static void msgError (@Nonnull final String text) {
+  public static void msgError (@Nullable Component parentComponent, @Nonnull final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.ERROR_MESSAGE));
   }
 
-  public static void msgInfo (@Nonnull final String text) {
+  public static void msgInfo (@Nullable Component parentComponent,@Nonnull final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.INFORMATION_MESSAGE));
   }
 
-  public static void msgWarn (@Nonnull final String text) {
+  public static void msgWarn (@Nullable Component parentComponent,@Nonnull final String text) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(text, NotifyDescriptor.WARNING_MESSAGE));
   }
 
-  public static boolean msgConfirmOkCancel (@Nonnull final String title, @Nonnull final String query) {
+  public static boolean msgConfirmOkCancel (@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.OK_CANCEL_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     return NotifyDescriptor.OK_OPTION.equals(obj);
   }
 
-  public static boolean msgConfirmYesNo (@Nonnull final String title, @Nonnull final String query) {
+  public static boolean msgConfirmYesNo (@Nullable Component parentComponent,@Nonnull final String title, @Nonnull final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
   @Nullable
-  public static Boolean msgConfirmYesNoCancel (@Nonnull final String title, @Nonnull final String query) {
+  public static Boolean msgConfirmYesNoCancel (@Nullable Component parentComponent,@Nonnull final String title, @Nonnull final String query) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(query, title, NotifyDescriptor.YES_NO_CANCEL_OPTION);
     final Object obj = DialogDisplayer.getDefault().notify(desc);
     if (NotifyDescriptor.CANCEL_OPTION.equals(obj)) {
@@ -282,31 +283,31 @@ public final class NbUtils {
     return NotifyDescriptor.YES_OPTION.equals(obj);
   }
 
-  public static boolean msgComponentOkCancel (@Nonnull final String title, @Nonnull final JComponent component) {
+  public static boolean msgComponentOkCancel (@Nullable Component parentComponent,@Nonnull final String title, @Nonnull final JComponent component) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(component, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
 
-  public static void msgInfo (@Nonnull final JComponent component) {
+  public static void msgInfo (@Nullable Component parentComponent,@Nonnull final JComponent component) {
     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(component, NotifyDescriptor.INFORMATION_MESSAGE));
   }
 
-  public static boolean plainMessageOkCancel (@Nonnull final String title, @Nonnull final JComponent compo) {
+  public static boolean plainMessageOkCancel (@Nullable Component parentComponent,@Nonnull final String title, @Nonnull final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(compo, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
 
-  public static void plainMessageOk (@Nonnull final String title, @Nonnull final JComponent compo) {
+  public static void plainMessageOk (@Nullable Component parentComponent,@Nonnull final String title, @Nonnull final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Message(compo, NotifyDescriptor.PLAIN_MESSAGE);
     desc.setTitle(title);
     DialogDisplayer.getDefault().notify(desc);
   }
 
   @Nullable
-  public static String editText (@Nonnull final String title, @Nonnull final String text) {
+  public static String editText (@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final String text) {
     final PlainTextEditor textEditor = new PlainTextEditor(text);
     try {
-      if (plainMessageOkCancel(title, textEditor)) {
+      if (plainMessageOkCancel(parentComponent, title, textEditor)) {
         return textEditor.getText();
       }
       else {
@@ -319,7 +320,7 @@ public final class NbUtils {
   }
 
   @Nullable
-  public static MMapURI editURI (@Nonnull final String title, @Nullable final MMapURI uri) {
+  public static MMapURI editURI (@Nullable Component parentComponent, @Nonnull final String title, @Nullable final MMapURI uri) {
     final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
 
     textEditor.doLayout();
@@ -335,7 +336,7 @@ public final class NbUtils {
         return new MMapURI(text.trim());
       }
       catch (URISyntaxException ex) {
-        msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
+        msgError(parentComponent, String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     }
@@ -345,7 +346,7 @@ public final class NbUtils {
   }
 
   @Nullable
-  public static FileEditPanel.DataContainer editFilePath (@Nonnull final String title, @Nullable final File projectFolder, @Nullable final FileEditPanel.DataContainer data) {
+  public static FileEditPanel.DataContainer editFilePath (@Nullable Component parentComponent, @Nonnull final String title, @Nullable final File projectFolder, @Nullable final FileEditPanel.DataContainer data) {
     final FileEditPanel filePathEditor = new FileEditPanel(projectFolder, data);
 
     filePathEditor.doLayout();
@@ -356,7 +357,7 @@ public final class NbUtils {
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
-        NbUtils.msgError(String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
+        NbUtils.msgError(parentComponent, String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
         result = null;
       }
     }
@@ -379,7 +380,7 @@ public final class NbUtils {
     }
   }
 
-  public static void openInSystemViewer (@Nonnull final File file) {
+  public static void openInSystemViewer (@Nullable final Component parentComponent, @Nonnull final File file) {
     final Runnable startEdit = new Runnable() {
       @Override
       public void run () {
@@ -400,7 +401,7 @@ public final class NbUtils {
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run () {
-              NbUtils.msgError("Can't open file in system viewer! See the log!");//NOI18N
+              NbUtils.msgError(parentComponent, "Can't open file in system viewer! See the log!");//NOI18N
               Toolkit.getDefaultToolkit().beep();
             }
           });

@@ -301,7 +301,7 @@ public final class SourceTextEditor extends AbstractEditor {
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("sources-editor", "Save sources", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null,"sources-editor", "Save sources", null, true, getFileFilter(), "Save");
         if (file == null) {
           return result;
         }

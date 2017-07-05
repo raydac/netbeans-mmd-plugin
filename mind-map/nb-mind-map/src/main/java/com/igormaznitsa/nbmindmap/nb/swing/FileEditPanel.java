@@ -150,7 +150,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBrowseCurrentLinkMouseClicked
     if (evt.getClickCount() > 1) {
       final File file = new File(this.textFieldFilePath.getText().trim());
-      NbUtils.openInSystemViewer(file);
+      NbUtils.openInSystemViewer(null, file);
     }
   }//GEN-LAST:event_labelBrowseCurrentLinkMouseClicked
 

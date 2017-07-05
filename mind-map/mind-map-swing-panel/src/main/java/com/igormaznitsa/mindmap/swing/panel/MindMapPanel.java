@@ -759,7 +759,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                           }
                         } catch (Exception ex) {
                           LOGGER.error("Error during visual attribute processing", ex);
-                          controller.getDialogProvider(theInstance).msgError("Detectd critical error! See log!");
+                          controller.getDialogProvider(theInstance).msgError(null,"Detectd critical error! See log!");
                         }
                       }
                     }

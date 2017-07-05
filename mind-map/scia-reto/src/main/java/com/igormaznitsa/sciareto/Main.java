@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto;
 
+import java.awt.Component;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -126,7 +127,7 @@ public class Main {
     @Override
     @Nullable
     public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-      final File fileToImport = dialogProvider.msgOpenFileDialog("", "", null, true, new FakeFileFilter(), ""); //NOI18N
+      final File fileToImport = dialogProvider.msgOpenFileDialog(null, "", "", null, true, new FakeFileFilter(), ""); //NOI18N
       return new MindMap(null, new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
     }
 
@@ -565,47 +566,47 @@ public class Main {
         try {
           final DialogProvider dialog = new DialogProvider() {
             @Override
-            public void msgError(@Nonnull final String text) {
+            public void msgError(@Nullable final Component parentComponent, @Nonnull final String text) {
               LOGGER.error(text);
             }
 
             @Override
-            public void msgInfo(@Nonnull final String text) {
+            public void msgInfo(@Nullable final Component parentComponent, @Nonnull final String text) {
               LOGGER.info(text);
             }
 
             @Override
-            public void msgWarn(@Nonnull final String text) {
+            public void msgWarn(@Nullable final Component parentComponent, @Nonnull final String text) {
               LOGGER.warn(text);
             }
 
             @Override
-            public boolean msgConfirmOkCancel(@Nonnull final String title, @Nonnull final String question) {
+            public boolean msgConfirmOkCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
               throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
-            public boolean msgOkCancel(@Nonnull final String title, @Nonnull final JComponent component) {
+            public boolean msgOkCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final JComponent component) {
               throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
-            public boolean msgConfirmYesNo(@Nonnull final String title, @Nonnull final String question) {
+            public boolean msgConfirmYesNo(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
               throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
-            public Boolean msgConfirmYesNoCancel(@Nonnull final String title, @Nonnull final String question) {
+            public Boolean msgConfirmYesNoCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
               throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
-            public File msgSaveFileDialog(@Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
+            public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
               return to;
             }
 
             @Override
-            public File msgOpenFileDialog(@Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
+            public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
               return from;
             }
           };

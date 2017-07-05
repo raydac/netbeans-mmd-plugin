@@ -462,7 +462,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
 
     if (hasUnsaved) {
-      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected non-saved documents", "Detected unsaved documents! Close application?")) {
+      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Detected non-saved documents", "Detected unsaved documents! Close application?")) {
         return false;
       }
     }
@@ -498,7 +498,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     }
 
-    if (changed && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Confirmation", "Some changed file will be affected! To close them?")) {
+    if (changed && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null,"Confirmation", "Some changed file will be affected! To close them?")) {
       return false;
     }
 
@@ -591,7 +591,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             processTabChange();
           }
         } else {
-          if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("Very big file", "It is a very big file! Are you sure to open it?")) {
+          if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, "Very big file", "It is a very big file! Are you sure to open it?")) {
             return true;
           }
 
@@ -723,7 +723,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         hasUnsaved |= t.isChanged();
       }
 
-      if (hasUnsaved && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Confirmation", "Are you sure to delete changed unsaved file?")) {
+      if (hasUnsaved && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Confirmation", "Are you sure to delete changed unsaved file?")) {
         return false;
       }
 
@@ -753,12 +753,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         if (SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH)) {
           ok = true;
         } else {
-          DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete directory, see the log!");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't delete directory, see the log!");
         }
       } else {
         ok = SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH);
         if (!ok) {
-          DialogProviderManager.getInstance().getDialogProvider().msgError("Can't delete file!");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't delete file!");
         }
       }
 
@@ -1174,7 +1174,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       result = true;
     } else {
       LOGGER.error("Can't find folder : " + folder); //NOI18N
-      DialogProviderManager.getInstance().getDialogProvider().msgError("Can't find project folder!");
+      DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't find project folder!");
     }
     return result;
   }
@@ -1183,7 +1183,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public void editPreferences() {
     final PreferencesPanel configPanel = new PreferencesPanel(this);
     configPanel.load(PreferencesManager.getInstance().getPreferences());
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Preferences", configPanel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Preferences", configPanel)) {
       configPanel.save();
       for (final TabTitle t : this.tabPane) {
         t.getProvider().updateConfiguration();
@@ -1198,7 +1198,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
       catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
       }
     }
   }//GEN-LAST:event_menuSaveAllActionPerformed
@@ -1208,7 +1208,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuPreferencesActionPerformed
 
   private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
-    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("open-file", "Open file", null, true, MMDEditor.MMD_FILE_FILTER, "Open");
+    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog(null, "open-file", "Open file", null, true, MMDEditor.MMD_FILE_FILTER, "Open");
     if (file != null) {
       if (openFileAsTab(file)) {
         try {
@@ -1252,7 +1252,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
       catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
       }
     }
   }//GEN-LAST:event_menuSaveActionPerformed
@@ -1265,7 +1265,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
       catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
       }
     }
   }//GEN-LAST:event_menuSaveAsActionPerformed
@@ -1310,7 +1310,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       final File file = folderChooser.getSelectedFile();
       if (file.isDirectory()) {
         if (file.list().length > 0) {
-          DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file.getName() + "' already exists and non-empty!");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(null, "File '" + file.getName() + "' already exists and non-empty!");
         } else {
           prepareAndOpenProjectFolder(file);
         }
@@ -1318,7 +1318,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         prepareAndOpenProjectFolder(file);
       } else {
         LOGGER.error("Can't create folder : " + file); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't create folder: " + file);
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create folder: " + file);
       }
     }
   }//GEN-LAST:event_menuNewProjectActionPerformed
@@ -1383,7 +1383,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           }
         } else {
           LOGGER.warn("Device doesn's support full screen"); //NOI18N
-          DialogProviderManager.getInstance().getDialogProvider().msgWarn("The Device doesn't support full-screen mode!");
+          DialogProviderManager.getInstance().getDialogProvider().msgWarn(null, "The Device doesn't support full-screen mode!");
         }
       } else {
         LOGGER.warn("Can't find graphics config for the frame"); //NOI18N
@@ -1397,7 +1397,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuGoToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuGoToFileActionPerformed
     final GoToFilePanel panel = new GoToFilePanel(this.explorerTree);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Go To File", panel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Go To File", panel)) {
       final NodeFileOrFolder selected = panel.getSelected();
       if (selected != null) {
         final File file = selected.makeFileForNode();
@@ -1520,7 +1520,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           }
         }
         if (cantFind) {
-          DialogProviderManager.getInstance().getDialogProvider().msgWarn("Can't open file \'" + fileToOpen.getAbsolutePath() + "\'!");
+          DialogProviderManager.getInstance().getDialogProvider().msgWarn(null, "Can't open file \'" + fileToOpen.getAbsolutePath() + "\'!");
           result = false;
         }
       }
@@ -1603,7 +1603,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
 
       if (file.exists()) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError("File '" + file + "' already exists!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "File '" + file + "' already exists!");
       } else {
         try {
           final MindMap mindMap = new MindMap(null, true);
@@ -1612,7 +1612,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           result = file;
         }
         catch (IOException ex) {
-          DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save mind map into file '" + file.getName() + "'");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save mind map into file '" + file.getName() + "'");
         }
       }
     }

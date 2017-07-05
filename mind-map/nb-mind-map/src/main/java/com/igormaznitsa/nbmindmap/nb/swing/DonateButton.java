@@ -21,7 +21,7 @@ public class DonateButton extends JButton {
         NbUtils.browseURI(LINK, false);
       }
       catch (Exception ex) {
-        NbUtils.msgError("Can't open link! You can try to open it manually:\n" + LINK.toASCIIString());
+        NbUtils.msgError(null, "Can't open link! You can try to open it manually:\n" + LINK.toASCIIString());
       }
     }
   };

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import java.awt.Component;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.sciareto.Main;
 
@@ -34,39 +36,41 @@ public final class DialogProviderManager {
   
   private static final DialogProviderManager INSTANCE = new DialogProviderManager();
   private static final DialogProvider PROVIDER = new DialogProvider() {
+
+    
     @Override
-    public void msgError(@Nonnull final String text) {
-      JOptionPane.showMessageDialog(Main.getApplicationFrame(), text, "Error!", JOptionPane.ERROR_MESSAGE);
+    public void msgError(@Nullable final Component parentComponent, @Nonnull final String text) {
+      JOptionPane.showMessageDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), text, "Error!", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
-    public void msgInfo(@Nonnull final String text) {
+    public void msgInfo(@Nullable final Component parentComponent, @Nonnull final String text) {
       JOptionPane.showMessageDialog(Main.getApplicationFrame(), text, "Info", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
-    public void msgWarn(@Nonnull final String text) {
+    public void msgWarn(@Nullable Component parentComponent, @Nonnull final String text) {
       JOptionPane.showMessageDialog(Main.getApplicationFrame(), text, "Warning!", JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
-    public boolean msgConfirmOkCancel(@Nonnull final String title, @Nonnull final String question) {
+    public boolean msgConfirmOkCancel(@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
       return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), question, title, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
 
     @Override
-    public boolean msgOkCancel(@Nonnull final String title, @Nonnull final JComponent component) {
+    public boolean msgOkCancel(@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final JComponent component) {
       return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), component, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,null) == JOptionPane.OK_OPTION;
     }
 
     @Override
-    public boolean msgConfirmYesNo(@Nonnull final String title, @Nonnull final String question) {
+    public boolean msgConfirmYesNo(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
       return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 
     @Override
     @Nullable
-    public Boolean msgConfirmYesNoCancel(@Nonnull final String title, @Nonnull final String question) {
+    public Boolean msgConfirmYesNoCancel(@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
       final int result = JOptionPane.showConfirmDialog(Main.getApplicationFrame(), question, title, JOptionPane.YES_NO_CANCEL_OPTION);
       if (result == JOptionPane.CANCEL_OPTION) {
         return null;
@@ -77,7 +81,7 @@ public final class DialogProviderManager {
 
     @Override
     @Nullable
-    public File msgSaveFileDialog(@Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
+    public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
       final File folderToUse;
       if (defaultFolder == null){
         folderToUse = CACHE_ID_FILE.get(id);
@@ -106,7 +110,7 @@ public final class DialogProviderManager {
 
     @Override
     @Nullable
-    public File msgOpenFileDialog(@Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText) {
+    public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText) {
       final File folderToUse;
       if (defaultFolder == null) {
         folderToUse = CACHE_ID_FILE.get(id);

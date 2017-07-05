@@ -41,7 +41,7 @@ public class QuickSearchProvider implements SearchProvider {
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                  NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
+                  NbUtils.plainMessageOk(null, java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
                 }
               });
             }

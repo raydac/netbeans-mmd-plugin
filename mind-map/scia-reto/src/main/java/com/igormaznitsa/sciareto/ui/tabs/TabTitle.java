@@ -199,7 +199,7 @@ public final class TabTitle extends JPanel {
   }
 
   public void doSafeClose() {
-    final boolean close = !this.changed || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Non saved file", "Close unsaved document '" + makeName() + "\'?");
+    final boolean close = !this.changed || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Non saved file", "Close unsaved document '" + makeName() + "\'?");
     if (close) {
       this.context.closeTab(this);
     }
@@ -234,7 +234,7 @@ public final class TabTitle extends JPanel {
   public boolean reload(final boolean askUserConfirmationIfChanged) {
     boolean reloaded = false;
   
-    if (askUserConfirmationIfChanged && isChanged() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo("File changed", String.format("File '%s' is changed, reload?", (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
+    if (askUserConfirmationIfChanged && isChanged() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, "File changed", String.format("File '%s' is changed, reload?", (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
       return reloaded;
     }
     

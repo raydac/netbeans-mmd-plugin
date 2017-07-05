@@ -503,7 +503,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
           if (theFile == null) {
             // file not found
             LOGGER.warn("Can't find FileObject for " + fileURI);
-            getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI.toString()));
+            getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI.toString()));
           } else if (VfsUtilCore.isAncestor(rootFolder, theFile, false)) {
             // inside project
             if (flagOpenFileLinkInSystemViewer) {
@@ -524,7 +524,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         case LINK: {
           final MMapURI uri = ((ExtraLink) extra).getValue();
           if (!IdeaUtils.browseURI(uri.asURI(), isUseInsideBrowser())) { //NOI18N
-            getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+            getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
           }
         }
         break;
@@ -536,7 +536,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
           final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic) extra);
           if (theTopic == null) {
             // not presented
-            getDialogProvider().msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+            getDialogProvider().msgWarn(null, BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
           } else {
             // detected
             this.mindMapPanel.focusTo(theTopic);
@@ -588,7 +588,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     if (topicsNotImportant) {
       result = true;
     } else {
-      result = this.getDialogProvider().msgConfirmYesNo(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"),
+      result = this.getDialogProvider().msgConfirmYesNo(null, BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"),
               String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
@@ -733,7 +733,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       final Topic topic = element.getModel();
       final MMapURI mmapUri = new MMapURI(uri);
       if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
-        if (!getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
+        if (!getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
           return;
         }
       }
@@ -748,7 +748,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     if (element != null) {
       final Topic topic = element.getModel();
       if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
-        if (!getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
+        if (!getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
           return;
         }
       }
@@ -775,7 +775,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
         if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
           if (!getDialogProvider()
-                  .msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+                  .msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
             return;
           }
         }

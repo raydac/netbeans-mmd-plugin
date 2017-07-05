@@ -1073,7 +1073,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     final PropertyEditor editor = PropertyEditorManager.findEditor(Font.class);
     if (editor == null) {
       LOGGER.error("Can't find any font editor");
-      NbUtils.msgError("Can't find editor! Unexpected state! Contact developer!");
+      NbUtils.msgError(null, "Can't find editor! Unexpected state! Contact developer!");
       return;
     }
     editor.setValue(this.config.getFont());
@@ -1094,7 +1094,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonFontActionPerformed
 
   private void buttonAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAboutActionPerformed
-    NbUtils.plainMessageOk(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
+    NbUtils.plainMessageOk(null, java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
   }//GEN-LAST:event_buttonAboutActionPerformed
 
   private void checkboxUseInsideBrowserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxUseInsideBrowserActionPerformed
@@ -1151,7 +1151,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       list.add(e.getValue());
     }
     final KeyShortCutEditPanel panel = new KeyShortCutEditPanel(list);
-    if (NbUtils.plainMessageOkCancel("Edit shortcuts", panel)) {
+    if (NbUtils.plainMessageOkCancel(null, "Edit shortcuts", panel)) {
       for (final KeyShortcut s : panel.getResult()) {
         this.mapKeyShortCuts.put(s.getID(), s);
       }
@@ -1190,11 +1190,11 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonResetSettingsActionPerformed
 
   private void buttonExportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportSettingsActionPerformed
-    File file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("exportSettings", "Export settings", lastExportedSettingsFile, true, new PropertiesFileFilter(), "Save");
+    File file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new PropertiesFileFilter(), "Save");
     if (file != null) {
       lastExportedSettingsFile = file;
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
-        final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel("Add extension", "Add '.properties' extension?");
+        final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel(null, "Add extension", "Add '.properties' extension?");
         if (addExt == null) {
           return;
         }
@@ -1203,7 +1203,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
         }
       }
 
-      if (file.exists() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Override file", String.format("File %s exists, to override it?", file.getName()))) {
+      if (file.exists() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Override file", String.format("File %s exists, to override it?", file.getName()))) {
         return;
       }
 
@@ -1215,13 +1215,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
       catch (final Exception ex) {
         LOGGER.error("Can't export settings", ex);
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't export settings [" + ex.getMessage() + ']');
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't export settings [" + ex.getMessage() + ']');
       }
     }
   }//GEN-LAST:event_buttonExportSettingsActionPerformed
 
   private void buttonImportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportSettingsActionPerformed
-    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("importSettings", "Import settings", lastImportedSettingsFile, true, new PropertiesFileFilter(), "Open");
+    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog(null, "importSettings", "Import settings", lastImportedSettingsFile, true, new PropertiesFileFilter(), "Open");
     if (file != null) {
       lastImportedSettingsFile = file;
       try {
@@ -1231,7 +1231,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
       catch (final Exception ex) {
         LOGGER.error("Can't import settings", ex);
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't import settings [" + ex.getMessage() + ']');
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't import settings [" + ex.getMessage() + ']');
       }
     }
   }//GEN-LAST:event_buttonImportSettingsActionPerformed

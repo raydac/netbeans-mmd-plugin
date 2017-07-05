@@ -63,7 +63,7 @@ public class ColorChooserButton extends JButton {
         if (editor == null) {
           LOGGER.error("Can't find registered color editor");
           if (dialogProvider != null)
-            dialogProvider.msgError("Can't find color editor! unexpected state! Contact developer!");
+            dialogProvider.msgError(null, "Can't find color editor! unexpected state! Contact developer!");
           return;
         }
 

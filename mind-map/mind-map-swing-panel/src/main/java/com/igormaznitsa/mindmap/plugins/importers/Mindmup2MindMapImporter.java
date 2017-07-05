@@ -104,7 +104,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
 
     final Number formatVersion = parsedJson.getNumber("formatVersion");
     if (formatVersion == null) {
-      dialogProvider.msgError(Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
+      dialogProvider.msgError(null,Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
     } else {
       resultedMap = new MindMap(null, true);
       resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");

@@ -166,7 +166,7 @@ public final class UiUtils {
   @MustNotContainNull
   public static List<File> showSelectAffectedFiles(@Nonnull @MustNotContainNull final List<File> files) {
     final FileListPanel panel = new FileListPanel(files);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel("Affected files", panel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Affected files", panel)) {
       return panel.getSelectedFiles();
     }
     return null;
@@ -256,7 +256,7 @@ public final class UiUtils {
     textEditor.doLayout();
     textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));
 
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(title, textEditor)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, title, textEditor)) {
       final String text = textEditor.getText();
       if (text.isEmpty()) {
         return EMPTY_URI;
@@ -265,7 +265,7 @@ public final class UiUtils {
         return new MMapURI(text.trim());
       }
       catch (URISyntaxException ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     } else {
@@ -299,10 +299,10 @@ public final class UiUtils {
     filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
 
     FileEditPanel.DataContainer result = null;
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(title, filePathEditor)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, title, filePathEditor)) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
         result = null;
       }
     }
@@ -313,7 +313,7 @@ public final class UiUtils {
   public static String editText(@Nonnull final String title, @Nonnull final String text) {
     final NoteEditor textEditor = new NoteEditor(text);
     try {
-      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(title, textEditor)) {
+      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, title, textEditor)) {
         return textEditor.getText();
       } else {
         return null;
@@ -345,7 +345,7 @@ public final class UiUtils {
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-              DialogProviderManager.getInstance().getDialogProvider().msgError("Can't open file in system viewer! See the log!");//NOI18N
+              DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't open file in system viewer! See the log!");//NOI18N
               Toolkit.getDefaultToolkit().beep();
             }
           });

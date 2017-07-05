@@ -167,7 +167,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
             }
             catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+              DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
             }
           }
         });
@@ -184,7 +184,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
             }
             catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError("Can't save document, may be it is read-only! See log!");
+              DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
             }
           }
         });
@@ -260,7 +260,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     for (final TabTitle t : titles) {
       foundUnsaved |= t.isChanged();
     }
-    if (!foundUnsaved || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel("Detected unsaved", "Detected unsaved documents! Close anyway?")) {
+    if (!foundUnsaved || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Detected unsaved", "Detected unsaved documents! Close anyway?")) {
       this.context.closeTab(titles);
     }
   }

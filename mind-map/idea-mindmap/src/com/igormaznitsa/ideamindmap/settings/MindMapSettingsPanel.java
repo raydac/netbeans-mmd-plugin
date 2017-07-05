@@ -166,7 +166,7 @@ public class MindMapSettingsPanel {
     buttonImportSettings.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final File file = controller.getDialogProvider().msgOpenFileDialog("importSettings", "Import settings", lastImportedSettingsFile, true, new PropertiesFileFilter(), "Open");
+        final File file = controller.getDialogProvider().msgOpenFileDialog(null, "importSettings", "Import settings", lastImportedSettingsFile, true, new PropertiesFileFilter(), "Open");
         if (file != null) {
           lastImportedSettingsFile = file;
           try {
@@ -177,7 +177,7 @@ public class MindMapSettingsPanel {
           }
           catch (final Exception ex) {
             LOGGER.error("Can't import settings", ex);
-            controller.getDialogProvider().msgError("Can't import settings [" + ex.getMessage() + ']');
+            controller.getDialogProvider().msgError(null, "Can't import settings [" + ex.getMessage() + ']');
           }
         }
       }
@@ -186,11 +186,11 @@ public class MindMapSettingsPanel {
     buttonExportSettings.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        File file = controller.getDialogProvider().msgSaveFileDialog("exportSettings", "Export settings", lastExportedSettingsFile, true, new PropertiesFileFilter(), "Save");
+        File file = controller.getDialogProvider().msgSaveFileDialog(null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new PropertiesFileFilter(), "Save");
         if (file != null) {
           lastExportedSettingsFile = file;
           if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
-            final Boolean addExt = controller.getDialogProvider().msgConfirmYesNoCancel("Add extension", "Add '.properties' extension?");
+            final Boolean addExt = controller.getDialogProvider().msgConfirmYesNoCancel(null, "Add extension", "Add '.properties' extension?");
             if (addExt == null) {
               return;
             }
@@ -199,7 +199,7 @@ public class MindMapSettingsPanel {
             }
           }
 
-          if (file.exists() && !controller.getDialogProvider().msgConfirmOkCancel("Override file", String.format("File %s exists, to override it?", file.getName()))) {
+          if (file.exists() && !controller.getDialogProvider().msgConfirmOkCancel(null, "Override file", String.format("File %s exists, to override it?", file.getName()))) {
             return;
           }
 
@@ -211,7 +211,7 @@ public class MindMapSettingsPanel {
           }
           catch (final Exception ex) {
             LOGGER.error("Can't export settings", ex);
-            controller.getDialogProvider().msgError("Can't export settings [" + ex.getMessage() + ']');
+            controller.getDialogProvider().msgError(null, "Can't export settings [" + ex.getMessage() + ']');
           }
         }
 

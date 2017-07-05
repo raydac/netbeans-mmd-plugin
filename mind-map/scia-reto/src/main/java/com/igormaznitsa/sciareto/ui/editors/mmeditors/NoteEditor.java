@@ -537,28 +537,28 @@ public final class NoteEditor extends javax.swing.JPanel {
   }
 
   private void buttonImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
-    final File toOpen = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog("note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true, TEXT_FILE_FILTER, "Open"); //NOI18N
+    final File toOpen = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog(null, "note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true, TEXT_FILE_FILTER, "Open"); //NOI18N
     if (toOpen != null) {
       try {
         final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
         this.editorPane.setText(text);
       } catch (Exception ex) {
         LOGGER.error("Error during text file loading", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
 
   }//GEN-LAST:event_buttonImportActionPerformed
 
   private void buttonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportActionPerformed
-    final File toSave = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null, true, TEXT_FILE_FILTER, "Save"); //NOI18N
+    final File toSave = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null, true, TEXT_FILE_FILTER, "Save"); //NOI18N
     if (toSave != null) {
       try {
         final String text = getText();
         FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
       } catch (Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
 
@@ -590,7 +590,7 @@ public final class NoteEditor extends javax.swing.JPanel {
       UiUtils.browseURI(URI.create(selectedText), false);
     } catch (Exception ex) {
       LOGGER.error("Can't open link : " + selectedText); //NOI18N
-      DialogProviderManager.getInstance().getDialogProvider().msgError("Can't browse link : " + selectedText);
+      DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't browse link : " + selectedText);
     }
   }//GEN-LAST:event_buttonBrowseActionPerformed
 

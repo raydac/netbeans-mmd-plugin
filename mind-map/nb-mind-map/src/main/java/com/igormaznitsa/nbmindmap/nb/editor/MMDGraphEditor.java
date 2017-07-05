@@ -446,7 +446,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     if (topicsNotImportant) {
       result = true;
     } else {
-      result = NbUtils.msgConfirmYesNo(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
+      result = NbUtils.msgConfirmYesNo(null, BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
   }
@@ -577,22 +577,22 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
             if (fileObj == null) {
               LOGGER.warn("Can't find FileObject for " + theFile);
               if (theFile.exists()) {
-                NbUtils.openInSystemViewer(theFile);
+                NbUtils.openInSystemViewer(null, theFile);
               } else {
-                NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), theFile.getAbsolutePath()));
+                NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), theFile.getAbsolutePath()));
               }
               return;
             }
           }
           catch (Exception ex) {
             LOGGER.error("onClickExtra#FILE", ex); //NOI18N
-            NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), uri.toString()));
+            NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), uri.toString()));
             return;
           }
 
           try {
             if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
-              NbUtils.openInSystemViewer(theFile);
+              NbUtils.openInSystemViewer(null, theFile);
             } else {
               Project projectOwner;
               if (fileObj.isFolder()) {
@@ -646,7 +646,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
                 }
 
                 if (!selector.select(this, fileObj)) {
-                  NbUtils.openInSystemViewer(theFile);
+                  NbUtils.openInSystemViewer(null, theFile);
                 }
               } else {
                 final DataObject dobj = DataObject.find(fileObj);
@@ -660,14 +660,14 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
           }
           catch (Exception ex) {
             LOGGER.error("Cant't find or open data object", ex); //NOI18N
-            NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.cantFindFileObj"), uri.toString()));
+            NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.cantFindFileObj"), uri.toString()));
           }
         }
         break;
         case LINK: {
           final MMapURI uri = ((ExtraLink) extra).getValue();
           if (!NbUtils.browseURI(uri.asURI(), NbUtils.getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
-            NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+            NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
           }
         }
         break;
@@ -679,7 +679,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
           final Topic theTopic = this.mindMapPanel.getModel().findTopicForLink((ExtraTopic) extra);
           if (theTopic == null) {
             // not presented
-            NbUtils.msgWarn(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+            NbUtils.msgWarn(null, BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
           } else {
             // detected
             this.mindMapPanel.focusTo(theTopic);
@@ -771,7 +771,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     boolean result = false;
     if (draggedTopic != null && destinationTopic != null && draggedTopic != destinationTopic) {
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
-        if (!NbUtils.msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
+        if (!NbUtils.msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
           return result;
         }
       }
@@ -789,7 +789,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       final Topic topic = element.getModel();
       final MMapURI mmapUri = new MMapURI(uri);
       if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
           return;
         }
       }
@@ -804,7 +804,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     if (element != null) {
       final Topic topic = element.getModel();
       if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
           return;
         }
       }
@@ -832,7 +832,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       }
 
       if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
-        if (!NbUtils.msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+        if (!NbUtils.msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
           return;
         }
       }
@@ -1035,7 +1035,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
     final File projectFolder = getProjectFolder();
     if (file == null) {
-      path = NbUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
+      path = NbUtils.editFilePath(null, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
     } else {
       final MMapURI uri = file.getValue();
       final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
@@ -1044,12 +1044,12 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       if (uri.isAbsolute()) {
         origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getAbsolutePath(), flagOpenInSystem);
       } else if (projectFolder == null) {
-        NbUtils.msgWarn(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
+        NbUtils.msgWarn(null, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
         origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getPath(), flagOpenInSystem);
       } else {
         origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
       }
-      path = NbUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
+      path = NbUtils.editFilePath(null, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
     }
 
     if (path != null) {
@@ -1069,7 +1069,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
           topic.setExtra(new ExtraFile(fileUri));
           changed = true;
         } else {
-          NbUtils.msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
+          NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
           changed = false;
         }
       }
@@ -1091,7 +1091,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
     if (link == null) {
       final MindMapTreePanel treePanel = new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
-      if (NbUtils.plainMessageOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
+      if (NbUtils.plainMessageOkCancel(null, BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
         final Topic selected = treePanel.getSelectedTopic();
         treePanel.dispose();
         if (selected != null) {
@@ -1102,7 +1102,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       }
     } else {
       final MindMapTreePanel panel = new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
-      if (NbUtils.plainMessageOkCancel(BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+      if (NbUtils.plainMessageOkCancel(null, BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
@@ -1129,10 +1129,10 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     final MMapURI result;
     if (link == null) {
       // create new
-      result = NbUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
+      result = NbUtils.editURI(null, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
     } else {
       // edit
-      result = NbUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
+      result = NbUtils.editURI(null, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
     }
     if (result != null) {
       if (result == NbUtils.EMPTY_URI) {
@@ -1151,10 +1151,10 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     final String result;
     if (note == null) {
       // create new
-      result = NbUtils.editText(String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
+      result = NbUtils.editText(null, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
     } else {
       // edit
-      result = NbUtils.editText(String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), note.getValue());
+      result = NbUtils.editText(null, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), note.getValue());
     }
     if (result != null) {
       if (result.isEmpty()) {
@@ -1278,7 +1278,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       this.customProcessors.put(AboutPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          NbUtils.plainMessageOk(BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
+          NbUtils.plainMessageOk(null, BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
         }
       });
       this.customProcessors.put(OptionsPlugin.class, new CustomJob() {
@@ -1302,7 +1302,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     final Color textColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
 
     final ColorAttributePanel panel = new ColorAttributePanel(borderColor, fillColor, textColor);
-    if (NbUtils.plainMessageOkCancel(String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
+    if (NbUtils.plainMessageOkCancel(null, String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
       ColorAttributePanel.Result result = panel.getResult();
 
       if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {

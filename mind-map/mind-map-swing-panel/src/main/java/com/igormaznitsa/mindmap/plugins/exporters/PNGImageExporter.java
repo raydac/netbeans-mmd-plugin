@@ -197,7 +197,7 @@ public final class PNGImageExporter extends AbstractExporter {
     if (image == null) {
       if (out == null) {
         LOGGER.error("Can't render map as image");
-        panel.getController().getDialogProvider(panel).msgError(Texts.getString("PNGImageExporter.msgErrorDuringRendering"));
+        panel.getController().getDialogProvider(panel).msgError(null,Texts.getString("PNGImageExporter.msgErrorDuringRendering"));
         return;
       } else {
         throw new IOException("Can't render image");

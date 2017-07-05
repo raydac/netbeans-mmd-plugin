@@ -84,7 +84,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
       result.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          if (dialogProvider.msgConfirmYesNo(BUNDLE.getString("Images.Plugin.Remove.Dialog.Title"), BUNDLE.getString("Images.Plugin.Remove.Dialog.Text"))) {//NOI18N
+          if (dialogProvider.msgConfirmYesNo(null,BUNDLE.getString("Images.Plugin.Remove.Dialog.Title"), BUNDLE.getString("Images.Plugin.Remove.Dialog.Text"))) {//NOI18N
             setAttribute(null, topic, selectedTopics);
             ImageVisualAttributePlugin.clearCachedImages();
             panel.notifyModelChanged();
@@ -107,7 +107,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
             final AtomicInteger selectedItem = new AtomicInteger(-1);
 
-            if (dialogProvider.msgOkCancel(BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[]{BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
+            if (dialogProvider.msgOkCancel(null,BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[]{BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
               lastSelectedImportIndex = selectedItem.get();
 
               if (selectedItem.get() == 0) {
@@ -116,11 +116,11 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
                   panel.notifyModelChanged();
                 }
                 catch (final IllegalArgumentException ex) {
-                  dialogProvider.msgError(BUNDLE.getString("Images.Plugin.Error"));
+                  dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                   LOGGER.error("Can't import from clipboard image", ex); //NOI18N
                 }
                 catch (final Exception ex) {
-                  dialogProvider.msgError(BUNDLE.getString("Images.Plugin.Error"));
+                  dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                   LOGGER.error("Unexpected error during image import from clipboard", ex); //NOI18N
                 }
                 loadFromFile = false;
@@ -131,7 +131,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
           }
 
           if (loadFromFile) {
-            final File selected = dialogProvider.msgOpenFileDialog("select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, IMAGE_FILE_FILTER, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
+            final File selected = dialogProvider.msgOpenFileDialog(null, "select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, IMAGE_FILE_FILTER, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
             if (selected != null) {
               lastSelectedFile = selected;
               try {
@@ -139,11 +139,11 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
                 panel.notifyModelChanged();
               }
               catch (final IllegalArgumentException ex) {
-                dialogProvider.msgError(BUNDLE.getString("Images.Plugin.Error"));
+                dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                 LOGGER.warn("Can't load image file : " + selected); //NOI18N
               }
               catch (final Exception ex) {
-                dialogProvider.msgError(BUNDLE.getString("Images.Plugin.Error"));
+                dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                 LOGGER.error("Unexpected error during loading of image file : " + selected, ex); //NOI18N
               }
             }

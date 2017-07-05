@@ -328,7 +328,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       }
       catch (Exception ex) {
         LOGGER.error("Error during text file loading", ex); //NOI18N
-        NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
+        NbUtils.msgError(null, java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
   }//GEN-LAST:event_buttonLoadActionPerformed
@@ -348,7 +348,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
       }
       catch (Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
-        NbUtils.msgError(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
+        NbUtils.msgError(null, java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
   }//GEN-LAST:event_buttonSaveActionPerformed

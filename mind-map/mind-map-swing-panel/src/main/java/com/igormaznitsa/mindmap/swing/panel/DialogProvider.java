@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.swing.panel;
 
+import java.awt.Component;
 import java.io.File;
 
 import javax.annotation.Nonnull;
@@ -23,16 +24,25 @@ import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 
 public interface DialogProvider {
-  void msgError(@Nonnull String text);
-  void msgInfo(@Nonnull String text);
-  void msgWarn(@Nonnull String text);
-  boolean msgConfirmOkCancel(@Nonnull String title, @Nonnull String question);
-  boolean msgOkCancel(@Nonnull String title, @Nonnull JComponent component);
-  boolean msgConfirmYesNo(@Nonnull String title, @Nonnull String question);
+
+  void msgError(@Nullable Component parentComponent, @Nonnull String text);
+
+  void msgInfo(@Nullable Component parentComponent, @Nonnull String text);
+
+  void msgWarn(@Nullable Component parentComponent, @Nonnull String text);
+
+  boolean msgConfirmOkCancel(@Nullable Component parentComponent, @Nonnull String title, @Nonnull String question);
+
+  boolean msgOkCancel(@Nullable Component parentComponent, @Nonnull String title, @Nonnull JComponent component);
+
+  boolean msgConfirmYesNo(@Nullable Component parentComponent, @Nonnull String title, @Nonnull String question);
+
   @Nullable
-  Boolean msgConfirmYesNoCancel(@Nonnull String title, @Nonnull final String question);
+  Boolean msgConfirmYesNoCancel(@Nullable Component parentComponent, @Nonnull String title, @Nonnull final String question);
+
   @Nullable
-  File msgSaveFileDialog(@Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText);
+  File msgSaveFileDialog(@Nullable Component parentComponent, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText);
+
   @Nullable
-  File msgOpenFileDialog(@Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText);
+  File msgOpenFileDialog(@Nullable Component parentComponent, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull FileFilter fileFilter, @Nonnull String approveButtonText);
 }

@@ -23,7 +23,7 @@ public class DonateButton extends JButton {
         UiUtils.browseURI(LINK, false);
       }
       catch (Exception ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError("Can't open link! You can try to open it manually:\n" + LINK.toASCIIString());
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't open link! You can try to open it manually:\n" + LINK.toASCIIString());
       }
     }
   };

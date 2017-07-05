@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import java.awt.Component;
 import java.io.File;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
@@ -28,47 +29,47 @@ public final class DialogProviderManager  {
   private static final class DialogProviderImpl implements DialogProvider {
 
     @Override
-    public void msgError(final String text) {
-      NbUtils.msgError(text);
+    public void msgError(final Component parentComponent, final String text) {
+      NbUtils.msgError(parentComponent, text);
     }
 
     @Override
-    public void msgInfo(final String text) {
-      NbUtils.msgInfo(text);
+    public void msgInfo(final Component parentComponent, final String text) {
+      NbUtils.msgInfo(parentComponent, text);
     }
 
     @Override
-    public void msgWarn(final String text) {
-      NbUtils.msgWarn(text);
+    public void msgWarn(final Component parentComponent, final String text) {
+      NbUtils.msgWarn(parentComponent, text);
     }
 
     @Override
-    public boolean msgOkCancel(String title, JComponent component) {
-      return NbUtils.msgComponentOkCancel(title, component);
+    public boolean msgOkCancel(final Component parentComponent, String title, JComponent component) {
+      return NbUtils.msgComponentOkCancel(parentComponent, title, component);
     }
 
     @Override
-    public boolean msgConfirmOkCancel(String title, String question) {
-      return NbUtils.msgConfirmOkCancel(title, question);
+    public boolean msgConfirmOkCancel(final Component parentComponent, String title, String question) {
+      return NbUtils.msgConfirmOkCancel(parentComponent, title, question);
     }
 
     @Override
-    public boolean msgConfirmYesNo(String title, String question) {
-      return NbUtils.msgConfirmYesNo(title, question);
+    public boolean msgConfirmYesNo(final Component parentComponent, String title, String question) {
+      return NbUtils.msgConfirmYesNo(parentComponent, title, question);
     }
 
     @Override
-    public Boolean msgConfirmYesNoCancel(String title, String question) {
-      return NbUtils.msgConfirmYesNoCancel(title, question);
+    public Boolean msgConfirmYesNoCancel(final Component parentComponent, String title, String question) {
+      return NbUtils.msgConfirmYesNoCancel(parentComponent, title, question);
     }
 
     @Override
-    public File msgSaveFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
+    public File msgSaveFileDialog(final Component parentComponent, final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
       return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showSaveDialog();
     }
 
     @Override
-    public File msgOpenFileDialog(final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
+    public File msgOpenFileDialog(final Component parentComponent, final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
       return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showOpenDialog();
     }
     

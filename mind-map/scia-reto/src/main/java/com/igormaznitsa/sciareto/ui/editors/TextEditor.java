@@ -203,7 +203,7 @@ public final class TextEditor extends AbstractEditor {
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("text-editor", "Save Text document", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "text-editor", "Save Text document", null, true, getFileFilter(), "Save");
         if (file == null) {
           return result;
         }

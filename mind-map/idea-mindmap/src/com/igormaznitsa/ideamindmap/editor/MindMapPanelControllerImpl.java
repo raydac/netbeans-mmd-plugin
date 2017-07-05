@@ -270,7 +270,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
     if (projectFolder == null){
       LOGGER.error("Can't find root folder for project or module!");
-      dialogProvider.msgError("Can't find the project or module root folder!");
+      dialogProvider.msgError(null, "Can't find the project or module root folder!");
       return;
     }
 
@@ -305,7 +305,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
           changed = true;
         }
         else {
-          dialogProvider.msgError(String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
+          dialogProvider.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
           changed = false;
         }
       }
@@ -388,7 +388,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     if (draggedTopic != null && destinationTopic != null && draggedTopic != destinationTopic) {
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
         if (!getDialogProvider()
-          .msgConfirmOkCancel(BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
+          .msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
           return result;
         }
       }

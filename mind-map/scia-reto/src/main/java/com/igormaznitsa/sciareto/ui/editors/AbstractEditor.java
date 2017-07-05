@@ -39,7 +39,7 @@ public abstract class AbstractEditor implements TabProvider,Disposable {
   @Override
   public boolean saveDocumentAs() throws IOException {
     final File file = this.getTabTitle().getAssociatedFile();
-    final File fileToSave = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog("save-as", "Save as", file, true, getFileFilter(), "Save");
+    final File fileToSave = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "save-as", "Save as", file, true, getFileFilter(), "Save");
     if (fileToSave!=null){
       this.getTabTitle().setAssociatedFile(fileToSave);
       this.getTabTitle().setChanged(true);
