@@ -36,7 +36,6 @@ public final class DialogProviderManager {
   
   private static final DialogProviderManager INSTANCE = new DialogProviderManager();
   private static final DialogProvider PROVIDER = new DialogProvider() {
-
     
     @Override
     public void msgError(@Nullable final Component parentComponent, @Nonnull final String text) {
@@ -45,33 +44,33 @@ public final class DialogProviderManager {
 
     @Override
     public void msgInfo(@Nullable final Component parentComponent, @Nonnull final String text) {
-      JOptionPane.showMessageDialog(Main.getApplicationFrame(), text, "Info", JOptionPane.INFORMATION_MESSAGE);
+      JOptionPane.showMessageDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), text, "Info", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void msgWarn(@Nullable Component parentComponent, @Nonnull final String text) {
-      JOptionPane.showMessageDialog(Main.getApplicationFrame(), text, "Warning!", JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), text, "Warning!", JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
     public boolean msgConfirmOkCancel(@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
-      return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), question, title, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+      return JOptionPane.showConfirmDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), question, title, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
 
     @Override
     public boolean msgOkCancel(@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final JComponent component) {
-      return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), component, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,null) == JOptionPane.OK_OPTION;
+      return JOptionPane.showConfirmDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), component, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,null) == JOptionPane.OK_OPTION;
     }
 
     @Override
     public boolean msgConfirmYesNo(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
-      return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+      return JOptionPane.showConfirmDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 
     @Override
     @Nullable
     public Boolean msgConfirmYesNoCancel(@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
-      final int result = JOptionPane.showConfirmDialog(Main.getApplicationFrame(), question, title, JOptionPane.YES_NO_CANCEL_OPTION);
+      final int result = JOptionPane.showConfirmDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), question, title, JOptionPane.YES_NO_CANCEL_OPTION);
       if (result == JOptionPane.CANCEL_OPTION) {
         return null;
       } else {
@@ -98,7 +97,7 @@ public final class DialogProviderManager {
       fileChooser.setMultiSelectionEnabled(false);
       
       File result = null;
-      if (fileChooser.showDialog(Main.getApplicationFrame(), approveButtonText) == JFileChooser.APPROVE_OPTION){
+      if (fileChooser.showDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), approveButtonText) == JFileChooser.APPROVE_OPTION){
         result = fileChooser.getSelectedFile();
         if(result!=null){
           CACHE_ID_FILE.put(id, result);
@@ -127,7 +126,7 @@ public final class DialogProviderManager {
       fileChooser.setMultiSelectionEnabled(false);
 
       File result = null;
-      if (fileChooser.showDialog(Main.getApplicationFrame(), approveButtonText) == JFileChooser.APPROVE_OPTION) {
+      if (fileChooser.showDialog(GetUtils.ensureNonNull(parentComponent,Main.getApplicationFrame()), approveButtonText) == JFileChooser.APPROVE_OPTION) {
         result = fileChooser.getSelectedFile();
         if (result != null) {
           CACHE_ID_FILE.put(id, result);
