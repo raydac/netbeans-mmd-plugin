@@ -19,20 +19,15 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
-import java.awt.Dialog;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
-import javax.annotation.Nonnull;
 import javax.swing.DefaultButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import org.apache.commons.lang.SystemUtils;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 
@@ -62,24 +57,15 @@ public final class ColorChooserButton extends JButton {
           NbUtils.msgError("Can't find color editor! unexpected state! Contact developer!");
           return;
         }
+
         editor.setValue(value);
 
         final DialogDescriptor descriptor = new DialogDescriptor(
                 editor.getCustomEditor(),
                 String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("ColorChoosingButton.dialogTitle"), getText())
         );
-        descriptor.setModal(true);
-        
-        final Dialog dialog = DialogDisplayer.getDefault().createDialog(descriptor);
-        dialog.addWindowListener(new WindowAdapter() {
-          @Override
-          public void windowOpened(@Nonnull final WindowEvent e) {
-            dialog.toFront();
-            dialog.requestFocus();
-          }
-        });
-        dialog.setVisible(true);
-        
+
+        DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);
         if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {
           setValue((Color) editor.getValue());
           lastResultOk = true;
