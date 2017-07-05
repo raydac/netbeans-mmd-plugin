@@ -38,6 +38,10 @@ public final class SystemUtils {
     }
   }
   
+  public static boolean isMac(){
+    return org.apache.commons.lang.SystemUtils.IS_OS_MAC;
+  }
+  
   public static boolean deleteFile(@Nonnull final File file, final boolean moveToTrashIfPossible) {
     final com.sun.jna.platform.FileUtils fileUtils = com.sun.jna.platform.FileUtils.getInstance();
     boolean result = false;

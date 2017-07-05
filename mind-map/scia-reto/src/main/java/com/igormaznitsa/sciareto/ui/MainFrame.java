@@ -55,7 +55,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -300,19 +299,44 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuLookAndFeel.add(menuItem);
     }
 
-    this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
-    this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-
-    this.menuRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
-    this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    this.menuFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-
-    this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    this.menuEditCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-
-    this.menuEditShowContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
-
+    if (SystemUtils.isMac()) {
+      this.menuOpenProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); // ?
+      this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      
+      this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
+      this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      
+      this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuEditCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      
+      this.menuEditShowTreeContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,  KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
+      this.menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.CTRL_MASK));
+    
+    } else {
+    
+      this.menuOpenProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
+      this.menuOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_MASK));
+      
+      this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
+      this.menuRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
+      this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      
+      this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuEditCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      
+      this.menuEditShowTreeContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
+      this.menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
+    }
+    
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -783,7 +807,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     separatorExitSection = new javax.swing.JPopupMenu.Separator();
     menuExit = new javax.swing.JMenuItem();
     menuEdit = new javax.swing.JMenu();
-    menuEditShowContextMenu = new javax.swing.JMenuItem();
+    menuEditShowTreeContextMenu = new javax.swing.JMenuItem();
     jSeparator7 = new javax.swing.JPopupMenu.Separator();
     menuUndo = new javax.swing.JMenuItem();
     menuRedo = new javax.swing.JMenuItem();
@@ -834,7 +858,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuFile.add(menuNewProject);
     menuFile.add(jSeparator2);
 
-    menuOpenProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/open_folder.png"))); // NOI18N
     menuOpenProject.setMnemonic('e');
     menuOpenProject.setText("Open Project");
@@ -849,7 +872,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuOpenRecentProject.setText("Open Recent Project");
     menuFile.add(menuOpenRecentProject);
 
-    menuOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     menuOpenFile.setMnemonic('o');
     menuOpenFile.setText("Open File");
     menuOpenFile.addActionListener(new java.awt.event.ActionListener() {
@@ -895,7 +917,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuFile.add(menuSaveAll);
     menuFile.add(separatorExitSection);
 
-    menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
     menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/door_in.png"))); // NOI18N
     menuExit.setMnemonic('x');
     menuExit.setText("Exit");
@@ -922,15 +943,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     });
 
-    menuEditShowContextMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/tree_list16.png"))); // NOI18N
-    menuEditShowContextMenu.setMnemonic('t');
-    menuEditShowContextMenu.setText("Show Tree context menu");
-    menuEditShowContextMenu.addActionListener(new java.awt.event.ActionListener() {
+    menuEditShowTreeContextMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/tree_list16.png"))); // NOI18N
+    menuEditShowTreeContextMenu.setMnemonic('t');
+    menuEditShowTreeContextMenu.setText("Show Tree context menu");
+    menuEditShowTreeContextMenu.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        menuEditShowContextMenuActionPerformed(evt);
+        menuEditShowTreeContextMenuActionPerformed(evt);
       }
     });
-    menuEdit.add(menuEditShowContextMenu);
+    menuEdit.add(menuEditShowTreeContextMenu);
     menuEdit.add(jSeparator7);
 
     menuUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
@@ -1011,7 +1032,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuView.setMnemonic('v');
     menuView.setText("View");
 
-    menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
     menuFullScreen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/monitor.png"))); // NOI18N
     menuFullScreen.setText("Full screen");
     menuFullScreen.addActionListener(new java.awt.event.ActionListener() {
@@ -1417,7 +1437,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private void menuEditMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuEditMenuSelected
     final TabTitle title = this.getFocusedTab();
     updateMenuItemsForProvider(title == null ? null : title.getProvider());
-    this.menuEditShowContextMenu.setEnabled(this.explorerTree.hasSelectedItem());
+    this.menuEditShowTreeContextMenu.setEnabled(this.explorerTree.hasSelectedItem());
   }//GEN-LAST:event_menuEditMenuSelected
 
   private void menuEditMenuCanceled(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuEditMenuCanceled
@@ -1520,9 +1540,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.menuNavigateLinksGraph.setEnabled(title != null && title.getProvider().getEditor().getEditorContentType() == EditorContentType.MINDMAP);
   }//GEN-LAST:event_menuNavigateMenuSelected
 
-  private void menuEditShowContextMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditShowContextMenuActionPerformed
+  private void menuEditShowTreeContextMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditShowTreeContextMenuActionPerformed
     this.explorerTree.showPopUpForSelectedItem();
-  }//GEN-LAST:event_menuEditShowContextMenuActionPerformed
+  }//GEN-LAST:event_menuEditShowTreeContextMenuActionPerformed
 
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
@@ -1613,7 +1633,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenuItem menuEditCopy;
   private javax.swing.JMenuItem menuEditCut;
   private javax.swing.JMenuItem menuEditPaste;
-  private javax.swing.JMenuItem menuEditShowContextMenu;
+  private javax.swing.JMenuItem menuEditShowTreeContextMenu;
   private javax.swing.JMenuItem menuExit;
   private javax.swing.JMenu menuFile;
   private javax.swing.JMenuItem menuFindText;
