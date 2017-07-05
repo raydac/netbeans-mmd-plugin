@@ -18,8 +18,10 @@ package com.igormaznitsa.sciareto.ui.misc;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import javax.annotation.Nonnull;
@@ -28,6 +30,7 @@ import javax.swing.DefaultButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.SwingUtilities;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
@@ -46,12 +49,16 @@ public final class ColorChooserButton extends JButton {
   public ColorChooserButton() {
     super();
 
+    final ColorChooserButton theButtonInstance = this;
+    
     this.setModel(new DefaultButtonModel() {
       private static final long serialVersionUID = 3109256773218160485L;
 
       @Override
       protected void fireActionPerformed(ActionEvent e) {
-        final Color selectedColor = JColorChooser.showDialog(Main.getApplicationFrame(),String.format(UiUtils.BUNDLE.getString("ColorChoosingButton.dialogTitle"), getText()), value);
+        final Window ownerWindow = SwingUtilities.getWindowAncestor(theButtonInstance);
+        
+        final Color selectedColor = JColorChooser.showDialog(ownerWindow == null ? Main.getApplicationFrame() : ownerWindow, String.format(UiUtils.BUNDLE.getString("ColorChoosingButton.dialogTitle"), getText()), value);
         if (selectedColor!=null) {
           setValue(selectedColor);
           lastResultOk = true;
@@ -59,7 +66,7 @@ public final class ColorChooserButton extends JButton {
         else {
           lastResultOk = false;
         }
-
+        
         super.fireActionPerformed(e);
       }
     });
