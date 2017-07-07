@@ -30,6 +30,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -230,7 +231,10 @@ public final class ModelUtils {
     }
     final StringBuilder buffer = new StringBuilder();
 
-    for (final String k : properties.stringPropertyNames()) {
+    final List<String> orderedkeys = new ArrayList<String>(properties.stringPropertyNames());
+    Collections.sort(orderedkeys);
+    
+    for (final String k : orderedkeys) {
       try {
         final String encodedKey = URLEncoder.encode(k, "UTF-8"); //NOI18N
         final String encodedValue = URLEncoder.encode(properties.getProperty(k), "UTF-8"); //NOI18N
