@@ -1,0 +1,47 @@
+plugins {
+    id "org.jetbrains.intellij" version "0.2.16"
+}
+
+apply plugin: 'java'
+apply plugin: 'org.jetbrains.intellij'
+
+repositories {
+    mavenLocal()
+}
+
+version = PLUGIN_VERSION
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+dependencies {
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+    compile group: 'com.igormaznitsa', name: 'commons-version', version: '1.0.0'
+    compile group: 'com.igormaznitsa', name: 'meta-annotations', version: '1.1.2'
+    compile group: 'com.igormaznitsa', name: 'meta-utils', version: '1.1.2'
+    compile group: 'com.grack', name: 'nanojson', version: '1.0'
+
+    compile group: 'com.igormaznitsa', name: 'mind-map-model', version: MINDMAP_MODEL_VERSION
+    compile group: 'com.igormaznitsa', name: 'mind-map-ide-common', version: MIND_MAP_IDE_COMMON_VERSION
+    compile group: 'com.igormaznitsa', name: 'mind-map-swing-panel', version: MINDMAP_PANEL_VERSION
+
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['resources']
+        }
+    }
+}
+
+intellij {
+    version 'IC-139.1803.20'
+    type 'IC'
+    downloadSources false
+    updateSinceUntilBuild false
+}
