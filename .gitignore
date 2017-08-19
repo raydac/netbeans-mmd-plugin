@@ -25,3 +25,7 @@ buildNumber.properties
 /mind-map/idea-mindmap/downloaded/
 /mind-map/private/
 /mind-map/idea-mindmap/.gradle/
+/mind-map/idea-mindmap/build/
+/mind-map/idea-mindmap/gradle/
+/mind-map/idea-mindmap/gradlew
+/mind-map/idea-mindmap/gradlew.bat

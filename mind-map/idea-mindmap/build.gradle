@@ -1,31 +1,42 @@
 plugins {
+    id "java"
     id "org.jetbrains.intellij" version "0.2.16"
 }
 
-apply plugin: 'java'
-apply plugin: 'org.jetbrains.intellij'
-
 repositories {
+    mavenCentral()
     mavenLocal()
 }
 
-version = PLUGIN_VERSION
+version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.4.1-SNAPSHOT"
+
+intellij {
+    version 'IC-139.1803.20'
+    type 'IC'
+    downloadSources false
+    updateSinceUntilBuild false
+}
+
+def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.2.3-SNAPSHOT"
+def mindMapCommonVersion = project.hasProperty('mm_ide_common_version') ? project.getProperty('mm_ide_common_version') : project.version
+def mindMapPanelVersion = project.hasProperty('mm_panel_version') ? project.getProperty('mm_panel_version') : project.version
+
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+defaultTasks 'clean', 'build'
+
 dependencies {
-    compile group: 'commons-io', name: 'commons-io', version: '2.5'
-    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-    compile group: 'com.igormaznitsa', name: 'commons-version', version: '1.0.0'
-    compile group: 'com.igormaznitsa', name: 'meta-annotations', version: '1.1.2'
-    compile group: 'com.igormaznitsa', name: 'meta-utils', version: '1.1.2'
-    compile group: 'com.grack', name: 'nanojson', version: '1.0'
+    compile 'commons-io:commons-io:2.5'
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'com.igormaznitsa:commons-version:1.0.0'
+    compile 'com.igormaznitsa:meta-annotations:1.1.2'
+    compile 'com.igormaznitsa:meta-utils:1.1.2'
+    compile 'com.grack:nanojson:1.0'
 
-    compile group: 'com.igormaznitsa', name: 'mind-map-model', version: MINDMAP_MODEL_VERSION
-    compile group: 'com.igormaznitsa', name: 'mind-map-ide-common', version: MIND_MAP_IDE_COMMON_VERSION
-    compile group: 'com.igormaznitsa', name: 'mind-map-swing-panel', version: MINDMAP_PANEL_VERSION
-
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    compile 'com.igormaznitsa:mind-map-model:' + mindMapModelVersion
+    compile 'com.igormaznitsa:mind-map-ide-common:' + mindMapCommonVersion
+    compile 'com.igormaznitsa:mind-map-swing-panel:' + mindMapPanelVersion
 }
 
 sourceSets {
@@ -37,11 +48,4 @@ sourceSets {
             srcDirs = ['resources']
         }
     }
-}
-
-intellij {
-    version 'IC-139.1803.20'
-    type 'IC'
-    downloadSources false
-    updateSinceUntilBuild false
 }

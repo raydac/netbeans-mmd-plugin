@@ -5,7 +5,7 @@
   <artifactId>mind-map</artifactId>
   <version>1.4.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
   <inceptionYear>2015</inceptionYear>
 
   <properties>
@@ -24,6 +24,7 @@
     <module>mind-map-plugin-archetype</module>
     <module>mind-map-ide-common</module>
     <module>nb-mind-map</module>
+    <module>idea-mindmap</module>
     <module>scia-reto</module>
   </modules>
 
@@ -41,18 +42,18 @@
   </developers>
 
   <url>http://www.sciareto.org</url>
-  
+
   <issueManagement>
     <system>GitHub Issues</system>
     <url>https://github.com/raydac/netbeans-mmd-plugin/issues</url>
   </issueManagement>
-  
+
   <scm>
     <url>https://github.com/raydac/netbeans-mmd-plugin</url>
     <connection>scm:git:git://github.com/raydac/netbeans-mmd-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:raydac/netbeans-mmd-plugin.git</developerConnection>
   </scm>
-  
+
   <prerequisites>
     <maven>3.0</maven>
   </prerequisites>
@@ -91,7 +92,7 @@
       </plugin>
     </plugins>
   </reporting>
-  
+
   <profiles>
     <profile>
       <id>localrepo</id>
@@ -103,7 +104,7 @@
       </distributionManagement>
     </profile>
   </profiles>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
@@ -128,7 +129,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
