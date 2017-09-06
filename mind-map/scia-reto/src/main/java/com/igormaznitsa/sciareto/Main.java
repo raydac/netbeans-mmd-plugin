@@ -743,7 +743,7 @@ public class Main {
     out.println("Project page : https://github.com/raydac/netbeans-mmd-plugin"); //NOI18N
     out.println();
     out.println("Usage from command line:"); //NOI18N
-    out.println("   java -jar sciatreto.jar [--help|--importsettings FILE|--exportsettings FILE|--convert <>]|[FILE FILE ... FILE]"); //NOI18N
+    out.println("   java -jar sciareto.jar [--help|--importsettings FILE|--exportsettings FILE|--convert <>]|[FILE FILE ... FILE]"); //NOI18N
     out.println();
     printConversionHelp(out);
   }
