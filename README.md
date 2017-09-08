@@ -13,6 +13,9 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.1 (under development)__
+- Reworked processing of print preview, removed buffered image use
+- Changed default shortcuts for MacOS, fixed processing of space button
+- Fixed D'n'D processing of topics
 - IJ: fixed issue "Project Project (Disposed) test already disposed" [#25](https://github.com/raydac/netbeans-mmd-plugin/issues/25)
 
 __1.4.0-SNAPSHOT (18-dec-2016)__
@@ -35,37 +38,7 @@ __1.4.0-SNAPSHOT (18-dec-2016)__
 - IJ: added auto-positioning of root topic into center of view area just as document open
 - SCIARETO: added text search in map 
 
-__1.3.0 (01-sep-2016)__
-- added sorting of attributes in mind map model to keep their order
-- added plugin to add an image into a topic
-- changed Plugin API
-- fixed casual d'n'd topic operations through click over its fold-unfold icon
-- added export into SVG image format
-- published standalone editor "Scia Reto"
-- fixed issue [#22](https://github.com/raydac/netbeans-mmd-plugin/issues/22), added key short-cut into options to tune "next line char" for topic text editor, by default SHIFT+ENTER
-
-__1.2.0 (05-jun-2016)__
-- __IJ: Minimal supported API version changed to 143.2370__
-- fixed issue [#16](https://github.com/raydac/netbeans-mmd-plugin/issues/16), Added default key board shortcut to open popup context menu, CTRL+ALT+SPACE
-- Added loading of custom plugins from folder defined through __nbmmd.plugin.folder__ property
-- Added plugin "Emoticons"
-- Added importer from text files written in style [text2mindmap](https://www.text2mindmap.com/)
-- Added key board shortcuts to add focused items during focus move
-- Added key board shortcuts for zooming in, out and resetting zoom.
-- fixed issue [#10 "In Select topic dialog; Fold All only closes the root node"](https://github.com/raydac/netbeans-mmd-plugin/issues/10)
-- fixed issue [#9 "Cannot find configurable: com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"](https://github.com/raydac/netbeans-mmd-plugin/issues/9)
-- fixed issue [#11 "Can't create topic with hash char"](https://github.com/raydac/netbeans-mmd-plugin/issues/11)
-- reworked mind map format parser to make it compatible with PSI tree parser in IDEA
-- code refactoring, inside API reworked to plugin based one
-
-__1.1.4 (21-feb-2015)__
-- improved PNG exporter to save images without background and with all unfolded topics
-- added graphical print support into the IDEA plugin
-- added tuning of key modifiers to activate scaling with mouse wheel
-- fixed icons in color choosing buttons in IDEA version under Retina
-- improved panel, now clicking on '+' of a topic with pressed CTRL will open only 1th level children
-- improvements of stability in work with DnD operations
-- refactoring of both plug-ins, improved stability of work
+[Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
 # Implementation
 Because my main programming tool is [NetBeans IDE](https://netbeans.org/), I have developed plugin for the IDE. It is compatible with Java 1.7+ and NetBeans 7.4+.  
