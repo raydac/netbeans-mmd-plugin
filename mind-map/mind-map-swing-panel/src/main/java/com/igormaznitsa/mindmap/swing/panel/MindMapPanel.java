@@ -2389,16 +2389,22 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
   }
 
   @Nullable
-  public static Dimension2D calculateSizeOfMapInPixels(@Nonnull final MindMap model, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll) {
+  public static Dimension2D calculateSizeOfMapInPixels(@Nonnull final MindMap model, @Nullable final Graphics2D graphicsContext, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll) {
     final MindMap workMap = new MindMap(model, null);
     workMap.resetPayload();
 
-    BufferedImage img = new BufferedImage(32, 32, cfg.isDrawBackground() ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
-    Dimension2D blockSize = null;
-    final Graphics2D g = img.createGraphics();
+    Graphics2D g = graphicsContext;
+    
+    if (g == null) {
+      BufferedImage img = new BufferedImage(32, 32, cfg.isDrawBackground() ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
+      g = img.createGraphics();
+    }
     final MMGraphics gfx = new MMGraphics2DWrapper(g);
+    Utils.prepareGraphicsForQuality(g);
+    
+    Dimension2D blockSize = null;
     try {
-      Utils.prepareGraphicsForQuality(g);
+      
       if (calculateElementSizes(gfx, workMap, cfg)) {
         if (expandAll) {
           final AbstractElement root = assertNotNull((AbstractElement) assertNotNull(workMap.getRoot()).getPayload());
@@ -2424,7 +2430,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       MindMapUtils.removeCollapseAttr(workMap);
     }
 
-    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, cfg, expandAll);
+    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, cfg, expandAll);
     if (blockSize == null) {
       return null;
     }
