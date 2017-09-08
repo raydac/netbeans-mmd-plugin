@@ -219,10 +219,10 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     }
 
     final String[] scales = scalesList.toArray(new String[scalesList.size()]);
-    this.pageZoomFactor = 1.0d;
     final JComboBox comboBoxScale = UI_COMPO_FACTORY.makeComboBox();
     comboBoxScale.setModel(new DefaultComboBoxModel(scales));
-    comboBoxScale.setSelectedIndex(4);
+    comboBoxScale.setSelectedItem("100 %");
+    this.pageZoomFactor = 1.0d;
     comboBoxScale.setEditable(false);
 
     comboBoxScale.addActionListener(new ActionListener() {
