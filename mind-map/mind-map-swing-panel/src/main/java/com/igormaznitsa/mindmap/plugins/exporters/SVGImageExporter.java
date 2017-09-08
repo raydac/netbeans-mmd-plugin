@@ -560,7 +560,7 @@ public class SVGImageExporter extends AbstractExporter {
     newConfig.setDrawBackground(this.flagDrawBackground);
     newConfig.setScale(1.0f);
 
-    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, newConfig, flagExpandAllNodes);
+    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, newConfig, flagExpandAllNodes);
     if (blockSize == null) {
       return;
     }
