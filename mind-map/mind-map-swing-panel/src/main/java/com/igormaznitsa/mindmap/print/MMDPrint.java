@@ -15,6 +15,8 @@
  */
 package com.igormaznitsa.mindmap.print;
 
+import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.calculateSizeOfMapInPixels;
+import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.drawOnGraphicsForConfiguration;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -25,31 +27,29 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
 
 import javax.annotation.Nonnull;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.GetUtils;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 
 public class MMDPrint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDPrint.class);
 
+  private static final PrintPage [][] NO_PAGES = new PrintPage[0][0];
+  
   private final PrintPage[][] pages;
 
-  private static final double SMALL_SCALING_THRESHOLD = 0.20d;
-  private static final double SCALE_RATIO_THRESHOLD = 0.20d;
-
-  private static final BufferedImage EMPTY_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-  
-  public MMDPrint (@Nonnull final MindMapPanel panel, final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
+  public MMDPrint(@Nonnull final MindMapPanel panel, final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
     LOGGER.info(String.format("Request to prepare print pages for %dx%d with scale %f", paperWidthInPixels, paperHeightInPixels, pageZoomFactor));
 
-    if (paperWidthInPixels <= 0 || paperHeightInPixels <= 0) {
-      this.pages = new PrintPage[0][0];
-    }
-    else {
+    PrintPage [][] pgs = NO_PAGES;
+    
+    if (paperWidthInPixels > 0 && paperHeightInPixels > 0) {
       final MindMapPanelConfig cfg = new MindMapPanelConfig(panel.getConfiguration(), false);
       cfg.setDrawBackground(false);
       cfg.setDropShadow(false);
@@ -69,75 +69,41 @@ public class MMDPrint {
       cfg.setCollapsatorBorderWidth(1.0f);
       cfg.setConnectorWidth(2.0f);
 
-      cfg.setScale(pageZoomFactor);
+      cfg.setPaperMargins(2);
+      
+      cfg.setScale(1.0d);
 
       final MindMap theModel = new MindMap(panel.getModel(), null);
 
-      BufferedImage renderedMap = GetUtils.ensureNonNull(MindMapPanel.renderMindMapAsImage(theModel, cfg, false),EMPTY_IMAGE);
+      final Dimension2D modelImageSize = calculateSizeOfMapInPixels(theModel, null, cfg, false);
 
-      if (renderedMap.getWidth() > paperWidthInPixels || renderedMap.getHeight() > paperHeightInPixels) {
-        // split to pages
-        int pagesHorz = Math.max(1, renderedMap.getWidth() / paperWidthInPixels + (renderedMap.getWidth() % paperWidthInPixels != 0 ? 1 : 0));
-        int pagesVert = Math.max(1, renderedMap.getHeight() / paperHeightInPixels + (renderedMap.getHeight() % paperHeightInPixels != 0 ? 1 : 0));
+      if (theModel.getRoot() != null && modelImageSize != null) {
+        final int modelWidth = (int) Math.round(modelImageSize.getWidth());
+        final int modelHeight = (int) Math.round(modelImageSize.getHeight());
+        int pagesHorz = 1 + modelWidth / paperWidthInPixels;
+        int pagesVert = 1 + modelHeight / paperHeightInPixels;
 
-        final boolean couldBeScaledForX = (renderedMap.getWidth() % paperWidthInPixels) <= Math.round(paperWidthInPixels * SMALL_SCALING_THRESHOLD);
-        final boolean couldBeScaledForY = (renderedMap.getHeight() % paperHeightInPixels) <= Math.round(paperHeightInPixels * SMALL_SCALING_THRESHOLD);
-
-        if (couldBeScaledForX || couldBeScaledForY) {
-          final double currentRatio = (double) Math.min(renderedMap.getWidth(), renderedMap.getHeight()) / (double) Math.max(renderedMap.getWidth(), renderedMap.getHeight());
-
-          final int potentialPageWidth = Math.min(renderedMap.getWidth(), Math.max(1, pagesHorz - (couldBeScaledForX ? 1 : 0)) * paperWidthInPixels);
-          final int potentialPageHeight = Math.min(renderedMap.getHeight(), Math.max(1, pagesVert - (couldBeScaledForY ? 1 : 0)) * paperHeightInPixels);
-
-          final double possibleRatio = (double) Math.min(potentialPageWidth, potentialPageHeight) / (double) Math.max(potentialPageWidth, potentialPageHeight);
-
-          if (Math.abs(currentRatio - possibleRatio) <= SCALE_RATIO_THRESHOLD) {
-            final BufferedImage scaledImage = new BufferedImage(potentialPageWidth, potentialPageHeight, BufferedImage.TYPE_INT_ARGB);
-            final Graphics2D sigfx = scaledImage.createGraphics();
-            Utils.prepareGraphicsForQuality(sigfx);
-            try {
-              sigfx.drawImage(renderedMap, 0, 0, scaledImage.getWidth(), scaledImage.getHeight(), null);
-            }
-            finally {
-              sigfx.dispose();
-            }
-            renderedMap = scaledImage;
-            pagesHorz = Math.max(1, renderedMap.getWidth() / paperWidthInPixels + (renderedMap.getWidth() % paperWidthInPixels == 0 ? 0 : 1));
-            pagesVert = Math.max(1, renderedMap.getHeight() / paperHeightInPixels + (renderedMap.getHeight() % paperHeightInPixels == 0 ? 0 : 1));
-          }
-        }
-
-        final boolean centerX = pagesHorz == 1;
-        final boolean centerY = pagesVert == 1;
-
-        this.pages = new PrintPage[pagesVert][pagesHorz];
+        pgs = new PrintPage[pagesVert][pagesHorz];
         for (int y = 0; y < pagesVert; y++) {
           for (int x = 0; x < pagesHorz; x++) {
             final int pageX = x;
             final int pageY = y;
 
-            final BufferedImage theImage = renderedMap;
-
-            this.pages[pageY][pageX] = new PrintPage() {
+            pgs[pageY][pageX] = new PrintPage() {
               @Override
-              public void print (@Nonnull final Graphics g) {
+              public void print(@Nonnull final Graphics g) {
+                final Topic root = theModel.getRoot();
+                if (root == null) {
+                  return;
+                }
+
                 final Graphics2D gfx = (Graphics2D) g.create();
                 Utils.prepareGraphicsForQuality(gfx);
+                MindMapPanel.layoutFullDiagramWithCenteringToPaper(new MMGraphics2DWrapper(gfx), theModel, cfg, modelImageSize);
+                
+                gfx.translate(-pageX * paperWidthInPixels, -pageY * paperHeightInPixels);
                 try {
-                  final int xoffset = paperWidthInPixels * pageX;
-                  final int yoffset = paperHeightInPixels * pageY;
-
-                  int drawx = -xoffset;
-                  int drawy = -yoffset;
-
-                  if (centerX) {
-                    drawx = (paperWidthInPixels - theImage.getWidth()) / 2;
-                  }
-
-                  if (centerY) {
-                    drawy = (paperHeightInPixels - theImage.getHeight()) / 2;
-                  }
-                  gfx.drawImage(theImage, drawx, drawy, null);
+                  drawOnGraphicsForConfiguration(new MMGraphics2DWrapper(gfx), cfg, theModel, false, null);
                 }
                 finally {
                   gfx.dispose();
@@ -147,37 +113,13 @@ public class MMDPrint {
           }
         }
       }
-      else {
-        // fill single page
-        final double scaleX = (double) paperWidthInPixels / (double) renderedMap.getWidth();
-        final double scaleY = (double) paperHeightInPixels / (double) renderedMap.getHeight();
-        cfg.setScale(Math.min(scaleX, scaleY));
-        final BufferedImage theImage = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
-        this.pages = new PrintPage[][]{{
-          new PrintPage() {
-            @Override
-            public void print (@Nonnull final Graphics g) {
-              final Graphics2D gfx = (Graphics2D) g.create();
-              Utils.prepareGraphicsForQuality(gfx);
-              try {
-                if (theImage != null) {
-                  gfx.translate(((double) paperWidthInPixels - theImage.getWidth()) / 2, ((double) paperHeightInPixels - theImage.getHeight()) / 2);
-                  gfx.drawImage(theImage, 0, 0, null);
-                }
-              }
-              finally {
-                gfx.dispose();
-              }
-            }
-          }
-        }};
-      }
     }
+    this.pages = pgs;
   }
 
   @Nonnull
   @MustNotContainNull
-  public PrintPage[][] getPages () {
+  public PrintPage[][] getPages() {
     return this.pages.clone();
   }
 }
