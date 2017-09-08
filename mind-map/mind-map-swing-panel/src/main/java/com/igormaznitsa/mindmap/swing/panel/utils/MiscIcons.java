@@ -39,7 +39,7 @@ public class MiscIcons {
   static {
     final InputStream iconListReadStream = MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icon.lst");
     try {
-      final List<String> lines = IOUtils.readLines(iconListReadStream);
+      final List<String> lines = IOUtils.readLines(iconListReadStream, "UTF-8");
       ICON_NAMES = lines.toArray(new String[lines.size()]);
     } catch (Exception ex) {
       throw new Error("Can't read list of icons", ex);
