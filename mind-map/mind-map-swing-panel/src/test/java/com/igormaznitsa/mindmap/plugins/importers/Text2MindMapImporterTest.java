@@ -72,7 +72,7 @@ public class Text2MindMapImporterTest {
   public void testImportFromFile() throws Exception {
     final File file = new File(Text2MindMapImporter.class.getResource("tabbedtext.txt").getFile());
     assertTrue(file.isFile());
-    final List<String> lines = FileUtils.readLines(file);
+    final List<String> lines = FileUtils.readLines(file,"UTF-8");
     final MindMap result = INSTANCE.makeFromLines(lines, null);
     assertEquals(5,result.getRoot().getChildren().size());
   }
