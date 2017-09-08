@@ -17,6 +17,7 @@ package com.igormaznitsa.mindmap.plugins.importers;
 
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -40,7 +41,7 @@ public class Text2MindMapImporter extends AbstractImporter {
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_TXT2MM);
 
   private static final int TAB_POSITIONS = 16;
-
+  
   private static final class TopicData {
 
     private final int offset;
@@ -59,7 +60,7 @@ public class Text2MindMapImporter extends AbstractImporter {
     final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), "txt", "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
     MindMap result = null;
     if (file != null) {
-      final List<String> lines = FileUtils.readLines(file);
+      final List<String> lines = FileUtils.readLines(file, "UTF-8");
       result = makeFromLines(lines, panel.getModel().getController());
     }
     return result;
