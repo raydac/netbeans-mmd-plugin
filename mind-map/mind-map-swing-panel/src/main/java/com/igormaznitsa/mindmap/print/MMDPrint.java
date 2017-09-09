@@ -70,7 +70,7 @@ public class MMDPrint {
 
       cfg.setPaperMargins(2);
       
-      cfg.setScale(1.0d);
+      cfg.setScale(0.3d);
 
       final MindMap theModel = new MindMap(panel.getModel(), null);
 
