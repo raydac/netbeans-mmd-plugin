@@ -13,12 +13,12 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.1 (under development)__
-- Reworked processing of print preview, removed buffered image use
-- Changed default shortcuts for MacOS, fixed processing of space button
-- Fixed D'n'D processing of topics
-- IJ: fixed issue "Project Project (Disposed) test already disposed" [#25](https://github.com/raydac/netbeans-mmd-plugin/issues/25)
+- ALL: Reworked processing of print preview, removed buffered image use
+- ALL: Changed default shortcuts for MacOS, fixed processing of space button
+- ALL: Fixed D'n'D processing of topics
+- IJ:  fixed issue "Project Project (Disposed) test already disposed" [#25](https://github.com/raydac/netbeans-mmd-plugin/issues/25)
 
-__1.4.0-SNAPSHOT (18-dec-2016)__
+__1.4.0 (18-dec-2016)__
 - IJ: plugin adapted for compatibility with 14.0.5 (139.1803)
 - ALL: added importers for Mindmup, Freemind, Novamind, Coggle and XMind formats
 - NB:  disabled watching of file changes by default, added options flag to enable that
@@ -111,21 +111,3 @@ Mainly you can keep short texts in your mind maps as topic names but sometime it
 -  **Transition** - link to another topic in the same mind map, it allows to make some navigation in very big mind maps
 
 You can add and edit new topic content through the mind map pop-up menu and if you want remove some content then just open editor for the content and remove all text information.
-
-# Public snapshot repository for project libraries
-To make accessible the snapshot version of the libraries during development, I have tuned public maven snapshot repository which can be added into project with snippet
-```xml
-<repositories>
- <repository>
-  <id>coldcore.ru-snapshots</id>
-  <name>ColdCore.RU Mvn Snapshots</name>
-  <url>http://coldcore.ru/m2</url>
-  <snapshots>
-   <enabled>true</enabled>
-  </snapshots>
-  <releases>
-   <enabled>false</enabled>
-  </releases>
- </repository>
-</repositories>
-```

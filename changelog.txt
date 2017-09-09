@@ -1,8 +1,8 @@
 1.4.1 (under development)
-- Reworked processing of print preview, removed buffered image use
-- Changed default shortcuts for MacOS, fixed processing of space button
-- Fixed D'n'D processing of topics
-- IJ: fixed issue "Project Project (Disposed) test already disposed" [#25](https://github.com/raydac/netbeans-mmd-plugin/issues/25)
+- ALL: Reworked processing of print preview, removed buffered image use
+- ALL: Changed default shortcuts for MacOS, fixed processing of space button
+- ALL: Fixed D'n'D processing of topics
+- IJ:  fixed issue "Project Project (Disposed) test already disposed" [#25](https://github.com/raydac/netbeans-mmd-plugin/issues/25)
 
 1.4.0 (18-dec-2016)
 - IJ: plugin adapted for compatibility with 14.0.5 (139.1803)
