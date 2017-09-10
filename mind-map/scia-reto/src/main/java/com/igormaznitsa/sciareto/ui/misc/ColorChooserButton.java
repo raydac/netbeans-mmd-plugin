@@ -18,7 +18,6 @@ package com.igormaznitsa.sciareto.ui.misc;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.awt.Color;
-import java.awt.Dialog;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Window;
