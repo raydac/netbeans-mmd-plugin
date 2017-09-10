@@ -59,6 +59,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.FindFilesForTextPanel;
 import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
@@ -361,7 +362,7 @@ public final class ExplorerTree extends JScrollPane {
 
     final List<JMenuItem> optional = new ArrayList<>();
 
-    final JMenuItem menuSearchUsage = new JMenuItem("Find usages in maps");
+    final JMenuItem menuSearchUsage = new JMenuItem("Find in maps");
     menuSearchUsage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -392,6 +393,37 @@ public final class ExplorerTree extends JScrollPane {
       }
     });
     optional.add(menuSearchUsage);
+
+    if (!node.isLeaf()) {
+      final JMenuItem menuSearchFilesForText = new JMenuItem("Find files for text");
+      menuSearchFilesForText.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          final FindFilesForTextPanel panel = new FindFilesForTextPanel(context, node);
+
+          if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Find files for text in '"+node.name+'\'', panel)) {
+            final NodeFileOrFolder selected = panel.getSelected();
+            panel.dispose();
+            if (selected != null) {
+              final File file = selected.makeFileForNode();
+              if (file != null) {
+                context.focusInTree(file);
+                SwingUtilities.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                    requestFocus();
+                  }
+                });
+              }
+            }
+          } else {
+            panel.dispose();
+          }
+        }
+      });
+
+      optional.add(menuSearchFilesForText);
+    }
 
     final TabTitle editingTab = this.context.getFocusedTab();
     if (editingTab != null && editingTab.getType() == EditorContentType.MINDMAP) {

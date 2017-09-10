@@ -101,11 +101,11 @@ public class FindUsagesPanel extends javax.swing.JPanel {
 
     final List<NodeProject> scope = new ArrayList<>();
 
-    final NodeProject project = itemToFind.findProject();
     for (final NodeFileOrFolder p : context.getCurrentGroup()) {
       scope.add((NodeProject) p);
     }
 
+    UiUtils.makeOwningDialogResizable(this);
     startSearchThread(scope, itemToFind);
   }
 

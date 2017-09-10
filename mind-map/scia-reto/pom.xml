@@ -279,6 +279,7 @@
             <ignore>*.PreferencesPanel</ignore>
             <ignore>*.GoToFilePanel</ignore>
             <ignore>*.FindTextPanel</ignore>
+            <ignore>*.FindFilesForTextPanel</ignore>
           </ignoreClasses>
         </configuration>
         <executions>
