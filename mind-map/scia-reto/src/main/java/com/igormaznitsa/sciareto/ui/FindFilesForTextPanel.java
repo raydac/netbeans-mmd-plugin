@@ -15,20 +15,18 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,6 +43,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.misc.FileExaminator;
 import com.igormaznitsa.sciareto.ui.misc.NodeListRenderer;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 
@@ -62,9 +61,47 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
 
   private final NodeFileOrFolder folder;
 
-  private static volatile String CHARSET = "UTF-8"; 
+  private static volatile String CHARSET = "UTF-8";
+  
+  private static final class TheLocale implements Comparable<TheLocale> {
+    private final Locale locale;
+
+    public TheLocale(final Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public int hashCode(){
+      return this.locale.hashCode();
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+      if (obj == null) return false;
+      if (obj instanceof Locale) {
+        return this.locale.equals(obj);
+      } else if (obj instanceof TheLocale) {
+        return this.locale.equals(((TheLocale)obj).locale);
+      }
+      return false;
+    }
+    
+    @Override
+    public String toString() {
+      return this.locale.getDisplayName();
+    }
+
+    @Override
+    public int compareTo(final TheLocale o) {
+      if (o == this || o.locale == this.locale) return 0;
+      return this.locale.getDisplayName().compareTo(o.locale.getDisplayName());
+    }
+  }
+
+  private static volatile TheLocale LOCALE = new TheLocale(Locale.ENGLISH);
   
   public FindFilesForTextPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind) {
+    super();
     initComponents();
     this.folder = itemToFind;
 
@@ -129,6 +166,19 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     final ComboBoxModel<String> charsets = new DefaultComboBoxModel<>(Charset.availableCharsets().keySet().toArray(new String[0]));
     this.comboCharsets.setModel(charsets);
     this.comboCharsets.setSelectedItem(CHARSET);
+    this.comboCharsets.revalidate();
+    
+    final Locale [] allLocales = Locale.getAvailableLocales();
+    final TheLocale[] theLocales = new TheLocale[allLocales.length];
+    for(int i= 0;i<allLocales.length;i++) {
+      theLocales[i] = new TheLocale(allLocales[i]);
+    }
+    Arrays.sort(theLocales);
+    
+    final ComboBoxModel<TheLocale> locales = new DefaultComboBoxModel<>(theLocales);
+    this.comboLocale.setModel(locales);
+    this.comboLocale.setSelectedItem(LOCALE);
+    
     this.comboCharsets.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -136,8 +186,20 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
       }
     });
 
-    new Focuser(this.fieldText);    
+    this.comboLocale.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        LOCALE = (TheLocale)comboLocale.getSelectedItem();
+      }
+    });
+
+    this.comboLocale.revalidate();
+    
+    new Focuser(this.fieldText);
     UiUtils.makeOwningDialogResizable(this);
+    
+    revalidate();
+    doLayout();
   }
 
   private void updateStateForText() {
@@ -151,7 +213,7 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
 
   @Nullable
   public NodeFileOrFolder getSelected() {
-    return null;
+    return this.listOfFoundElements.getSelectedValue();
   }
 
   public void dispose() {
@@ -180,49 +242,28 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     });
   }
 
-  private static boolean doesContain(@Nonnull final byte[] tosearch, @Nonnull final java.nio.file.Path file) throws IOException {
-    final int MAPSIZE = 4 * 1024; // 4K - make this * 1024 to 4MB in a real system.
-
-    try (final FileChannel channel = FileChannel.open(file, StandardOpenOption.READ)) {
-      final long length = channel.size();
-      int pos = 0;
-
-      while (pos < length) {
-        long remaining = length - pos;
-
-        int trymap = MAPSIZE + tosearch.length;
-        int tomap = (int) Math.min(trymap, remaining);
-        int limit = trymap == tomap ? MAPSIZE : (tomap - tosearch.length);
-
-        final MappedByteBuffer buffer = channel.map(MapMode.READ_ONLY, pos, tomap);
-        pos += (trymap == tomap) ? MAPSIZE : tomap;
-
-        for (int i = 0; i < limit; i++) {
-          final byte b = buffer.get(i);
-        }
-      }
-    }
-    return false;
-  }
-
-  private void startSearchThread(@Nonnull @MustNotContainNull final List<NodeFileOrFolder> scope, @Nonnull final byte[] dataToFind) {
+  private void startSearchThread(@Nonnull @MustNotContainNull final List<NodeFileOrFolder> scope, @Nonnull final byte[] dataToFindVariant1, @Nonnull final byte[] dataToFindVariant2) {
     int size = 0;
     for (final NodeFileOrFolder p : scope) {
       size += p.size();
     }
 
+    final byte[] fileOpBuffer = new byte[1024 * 1024];
+
     final Runnable runnable = new Runnable() {
       int value = 0;
+
       private void processFile(final NodeFileOrFolder file) {
         value++;
         final File f = file.makeFileForNode();
+
         try {
-          if (f != null && doesContain(dataToFind, f.toPath())) {
+          if (new FileExaminator(f).doesContainData(fileOpBuffer, dataToFindVariant1, dataToFindVariant2)) {
             addFileIntoList(file);
           }
         }
-        catch (IOException ex) {
-          LOGGER.error("Error during text search '" + f + "'", ex);
+        catch (Exception ex) {
+          LOGGER.error("Error during text search in '" + f + '\'', ex);
         }
 
         if (!Thread.currentThread().isInterrupted()) {
@@ -265,6 +306,7 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
             buttonFind.setEnabled(true);
             fieldText.setEnabled(true);
             comboCharsets.setEnabled(true);
+            comboLocale.setEnabled(true);
             fieldText.requestFocus();
           }
         });
@@ -331,12 +373,14 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
     jLabel2 = new javax.swing.JLabel();
     comboCharsets = new javax.swing.JComboBox();
+    jLabel3 = new javax.swing.JLabel();
+    comboLocale = new javax.swing.JComboBox<>();
+    filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 32767));
     jPanel2 = new javax.swing.JPanel();
     progressBarSearch = new javax.swing.JProgressBar();
     jScrollPane1 = new javax.swing.JScrollPane();
     listOfFoundElements = new javax.swing.JList<>();
 
-    setPreferredSize(new java.awt.Dimension(450, 450));
     setLayout(new java.awt.BorderLayout());
 
     jPanel1.setLayout(new java.awt.BorderLayout());
@@ -358,7 +402,7 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 1, 3, 1));
     jPanel3.setLayout(new java.awt.GridBagLayout());
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridx = 5;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.weightx = 1000.0;
     jPanel3.add(filler1, gridBagConstraints);
@@ -369,11 +413,26 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     gridBagConstraints.gridy = 0;
     jPanel3.add(jLabel2, gridBagConstraints);
 
-    comboCharsets.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
     jPanel3.add(comboCharsets, gridBagConstraints);
+
+    jLabel3.setText("Locale:");
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 3;
+    gridBagConstraints.gridy = 0;
+    jPanel3.add(jLabel3, gridBagConstraints);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 4;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.weighty = 100.0;
+    jPanel3.add(comboLocale, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 0;
+    jPanel3.add(filler2, gridBagConstraints);
 
     jPanel1.add(jPanel3, java.awt.BorderLayout.PAGE_END);
 
@@ -394,14 +453,22 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     this.fieldText.setEnabled(false);
     this.buttonFind.setEnabled(false);
     this.comboCharsets.setEnabled(false);
+    this.comboLocale.setEnabled(false);
 
     this.listOfFoundElements.clearSelection();
+    this.foundFiles.clear();
+    this.listOfFoundElements.revalidate();
+    this.listOfFoundElements.repaint();
     
     final List<NodeFileOrFolder> folders = new ArrayList<>();
     folders.add(this.folder);
 
+    final Locale selectedLocale = ((TheLocale)this.comboLocale.getSelectedItem()).locale;
+    
     try {
-      startSearchThread(folders, this.fieldText.getText().getBytes(this.comboCharsets.getSelectedItem().toString()));
+      final byte[] str1 = this.fieldText.getText().toLowerCase(selectedLocale).getBytes(this.comboCharsets.getSelectedItem().toString());
+      final byte[] str2 = this.fieldText.getText().toUpperCase(selectedLocale).getBytes(this.comboCharsets.getSelectedItem().toString());
+      startSearchThread(folders, str1, str2);
     }
     catch (UnsupportedEncodingException ex) {
       JOptionPane.showMessageDialog(this, ex, "Error", JOptionPane.ERROR_MESSAGE);
@@ -412,10 +479,13 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonFind;
   private javax.swing.JComboBox comboCharsets;
+  private javax.swing.JComboBox<TheLocale> comboLocale;
   private javax.swing.JTextField fieldText;
   private javax.swing.Box.Filler filler1;
+  private javax.swing.Box.Filler filler2;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
