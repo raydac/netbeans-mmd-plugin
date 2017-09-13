@@ -32,6 +32,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import com.igormaznitsa.sciareto.ui.Focuser;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 
@@ -44,14 +45,17 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
   private final transient List<NodeFileOrFolder> foundNodeList = new ArrayList<>();
   private final transient List<ListDataListener> listeners = new ArrayList<>();
 
+  private final Object dialogOkObject;
+  
   @Override
   public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
     return o1.toString().compareTo(o2.toString());
   }
 
-  public GoToFilePanel(@Nonnull final ExplorerTree tree) {
+  public GoToFilePanel(@Nonnull final ExplorerTree tree, @Nullable final Object dialogOkObject) {
+    super();
     this.tree = tree;
-
+    this.dialogOkObject = dialogOkObject;
     initComponents();
 
     this.listFoundFiles.setCellRenderer(new NodeListRenderer());
@@ -197,6 +201,11 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
         listFoundFilesMouseMoved(evt);
       }
     });
+    listFoundFiles.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        listFoundFilesMouseClicked(evt);
+      }
+    });
     jScrollPane1.setViewportView(listFoundFiles);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -254,6 +263,12 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
 
     }
   }//GEN-LAST:event_textFieldMaskKeyPressed
+
+  private void listFoundFilesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFoundFilesMouseClicked
+    if (evt.getClickCount()>1 && !evt.isPopupTrigger() && this.listFoundFiles.getSelectedIndex()>=0) {
+      UiUtils.closeCurrentDialogWithResult(this, this.dialogOkObject);
+    }
+  }//GEN-LAST:event_listFoundFilesMouseClicked
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -15,7 +15,6 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -62,8 +61,9 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
   private final NodeFileOrFolder folder;
 
   private static volatile String CHARSET = "UTF-8";
-  
+
   private static final class TheLocale implements Comparable<TheLocale> {
+
     private final Locale locale;
 
     public TheLocale(final Locale locale) {
@@ -71,21 +71,23 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
       return this.locale.hashCode();
     }
-    
+
     @Override
     public boolean equals(final Object obj) {
-      if (obj == null) return false;
+      if (obj == null) {
+        return false;
+      }
       if (obj instanceof Locale) {
         return this.locale.equals(obj);
       } else if (obj instanceof TheLocale) {
-        return this.locale.equals(((TheLocale)obj).locale);
+        return this.locale.equals(((TheLocale) obj).locale);
       }
       return false;
     }
-    
+
     @Override
     public String toString() {
       return this.locale.getDisplayName();
@@ -93,16 +95,23 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
 
     @Override
     public int compareTo(final TheLocale o) {
-      if (o == this || o.locale == this.locale) return 0;
+      if (o == this || o.locale == this.locale) {
+        return 0;
+      }
       return this.locale.getDisplayName().compareTo(o.locale.getDisplayName());
     }
   }
 
   private static volatile TheLocale LOCALE = new TheLocale(Locale.ENGLISH);
+  private final Object okDialogExit; 
   
-  public FindFilesForTextPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind) {
+  
+  public FindFilesForTextPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind, @Nullable final Object okDialogExit) {
     super();
     initComponents();
+    
+    this.okDialogExit = okDialogExit;
+
     this.folder = itemToFind;
 
     this.fieldText.setText("");
@@ -167,18 +176,18 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     this.comboCharsets.setModel(charsets);
     this.comboCharsets.setSelectedItem(CHARSET);
     this.comboCharsets.revalidate();
-    
-    final Locale [] allLocales = Locale.getAvailableLocales();
+
+    final Locale[] allLocales = Locale.getAvailableLocales();
     final TheLocale[] theLocales = new TheLocale[allLocales.length];
-    for(int i= 0;i<allLocales.length;i++) {
+    for (int i = 0; i < allLocales.length; i++) {
       theLocales[i] = new TheLocale(allLocales[i]);
     }
     Arrays.sort(theLocales);
-    
+
     final ComboBoxModel<TheLocale> locales = new DefaultComboBoxModel<>(theLocales);
     this.comboLocale.setModel(locales);
     this.comboLocale.setSelectedItem(LOCALE);
-    
+
     this.comboCharsets.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -189,15 +198,15 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     this.comboLocale.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        LOCALE = (TheLocale)comboLocale.getSelectedItem();
+        LOCALE = (TheLocale) comboLocale.getSelectedItem();
       }
     });
 
     this.comboLocale.revalidate();
-    
+
     new Focuser(this.fieldText);
     UiUtils.makeOwningDialogResizable(this);
-    
+
     revalidate();
     doLayout();
   }
@@ -307,7 +316,11 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
             fieldText.setEnabled(true);
             comboCharsets.setEnabled(true);
             comboLocale.setEnabled(true);
-            fieldText.requestFocus();
+            if (foundFiles.isEmpty()) {
+              fieldText.requestFocus();
+            } else {
+              listOfFoundElements.requestFocus();
+            }
           }
         });
       }
@@ -442,6 +455,16 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     jPanel2.add(progressBarSearch, java.awt.BorderLayout.NORTH);
 
     listOfFoundElements.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    listOfFoundElements.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+      public void mouseMoved(java.awt.event.MouseEvent evt) {
+        listOfFoundElementsMouseMoved(evt);
+      }
+    });
+    listOfFoundElements.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        listOfFoundElementsMouseClicked(evt);
+      }
+    });
     jScrollPane1.setViewportView(listOfFoundElements);
 
     jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -459,12 +482,12 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
     this.foundFiles.clear();
     this.listOfFoundElements.revalidate();
     this.listOfFoundElements.repaint();
-    
+
     final List<NodeFileOrFolder> folders = new ArrayList<>();
     folders.add(this.folder);
 
-    final Locale selectedLocale = ((TheLocale)this.comboLocale.getSelectedItem()).locale;
-    
+    final Locale selectedLocale = ((TheLocale) this.comboLocale.getSelectedItem()).locale;
+
     try {
       final byte[] str1 = this.fieldText.getText().toLowerCase(selectedLocale).getBytes(this.comboCharsets.getSelectedItem().toString());
       final byte[] str2 = this.fieldText.getText().toUpperCase(selectedLocale).getBytes(this.comboCharsets.getSelectedItem().toString());
@@ -474,6 +497,23 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
       JOptionPane.showMessageDialog(this, ex, "Error", JOptionPane.ERROR_MESSAGE);
     }
   }//GEN-LAST:event_buttonFindActionPerformed
+
+  private void listOfFoundElementsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listOfFoundElementsMouseClicked
+    if (evt.getClickCount()>1 && !evt.isPopupTrigger() && this.listOfFoundElements.getSelectedIndex()>=0) {
+      UiUtils.closeCurrentDialogWithResult(this, this.okDialogExit);
+    }
+  }//GEN-LAST:event_listOfFoundElementsMouseClicked
+
+  private void listOfFoundElementsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listOfFoundElementsMouseMoved
+    final ListModel model = this.listOfFoundElements.getModel();
+    final int index = this.listOfFoundElements.locationToIndex(evt.getPoint());
+    if (index < 0) {
+      this.listOfFoundElements.setToolTipText(null);
+    } else {
+      final File file = ((NodeFileOrFolder) model.getElementAt(index)).makeFileForNode();
+      this.listOfFoundElements.setToolTipText(file == null ? null : file.getAbsolutePath());
+    }
+  }//GEN-LAST:event_listOfFoundElementsMouseMoved
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

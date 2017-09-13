@@ -23,6 +23,7 @@ import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -52,9 +53,12 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -99,7 +103,7 @@ public final class UiUtils {
     public SplashScreen(@Nonnull final Image image) {
       super();
       this.setAlwaysOnTop(true);
-      
+
       this.image = image;
       final JLabel label = new JLabel(new ImageIcon(this.image));
       final JPanel root = new JPanel(new BorderLayout(0, 0));
@@ -116,8 +120,43 @@ public final class UiUtils {
   private UiUtils() {
   }
 
-  public static void makeOwningDialogResizable(@Nonnull final Component component, @Nonnull @MustNotContainNull final Runnable ... extraActions) {
-    final HierarchyListener listener =  new HierarchyListener() {
+  @Nullable
+  public static <T> T findComponent(@Nonnull final Container compo, @Nonnull final Class<T> klazz) {
+    for (int i = 0; i < compo.getComponentCount(); i++) {
+      final Component ch = compo.getComponent(i);
+      if (klazz.isAssignableFrom(ch.getClass())) {
+        return klazz.cast(ch);
+      }
+    }
+    for (int i = 0; i < compo.getComponentCount(); i++) {
+      final Component ch = compo.getComponent(i);
+      if (ch instanceof Container) {
+        final T result = findComponent((Container) ch, klazz);
+        if (result != null) {
+          return result;
+        }
+      }
+    }
+    return null;
+  }
+
+  public static boolean closeCurrentDialogWithResult(@Nonnull final Component component, @Nullable final Object exitOption) {
+    boolean result = false;
+    final Window w = SwingUtilities.getWindowAncestor(component);
+    if (w instanceof JDialog) {
+      final JDialog d = (JDialog) w;
+      final JOptionPane optpane = findComponent(d, JOptionPane.class);
+      if (optpane!=null){
+        optpane.setValue(exitOption);
+        w.setVisible(false);
+        result = true;
+      }
+    }
+    return result;
+  }
+
+  public static void makeOwningDialogResizable(@Nonnull final Component component, @Nonnull @MustNotContainNull final Runnable... extraActions) {
+    final HierarchyListener listener = new HierarchyListener() {
       @Override
       public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
         final Window window = SwingUtilities.getWindowAncestor(component);
@@ -126,8 +165,8 @@ public final class UiUtils {
           if (!dialog.isResizable()) {
             dialog.setResizable(true);
             component.removeHierarchyListener(this);
-            
-            for(final Runnable r : extraActions){
+
+            for (final Runnable r : extraActions) {
               r.run();
             }
           }
@@ -136,7 +175,7 @@ public final class UiUtils {
     };
     component.addHierarchyListener(listener);
   }
-  
+
   @Nonnull
   public static Point getPointForCentering(@Nonnull final Window window) {
     try {
@@ -157,9 +196,9 @@ public final class UiUtils {
     catch (final Exception e) {
       LOGGER.error("Can't get point", e); //NOI18N
     }
-    
+
     final Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
-    return new Point((scrSize.width-window.getWidth())/2,(scrSize.height-window.getHeight())/2);
+    return new Point((scrSize.width - window.getWidth()) / 2, (scrSize.height - window.getHeight()) / 2);
   }
 
   @Nullable

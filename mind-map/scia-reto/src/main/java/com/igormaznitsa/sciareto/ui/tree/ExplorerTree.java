@@ -399,7 +399,7 @@ public final class ExplorerTree extends JScrollPane {
       menuSearchFilesForText.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          final FindFilesForTextPanel panel = new FindFilesForTextPanel(context, node);
+          final FindFilesForTextPanel panel = new FindFilesForTextPanel(context, node, JOptionPane.OK_OPTION);
 
           if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Find files for text in '"+node.name+'\'', panel)) {
             final NodeFileOrFolder selected = panel.getSelected();
