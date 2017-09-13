@@ -280,10 +280,13 @@ public final class ExplorerTree extends JScrollPane {
       close.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          сloseProject((NodeProject) node);
+          if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(Main.getApplicationFrame(), "Close '" + node + '\'', "Do you really want close '" + node + "\'?\nIt will be just removed from the tree.")) {
+            сloseProject((NodeProject) node);
+          }
         }
       });
       result.add(close);
+
       final JMenuItem refresh = new JMenuItem("Reload");
       refresh.addActionListener(new ActionListener() {
         @Override
@@ -401,7 +404,7 @@ public final class ExplorerTree extends JScrollPane {
         public void actionPerformed(ActionEvent e) {
           final FindFilesForTextPanel panel = new FindFilesForTextPanel(context, node, JOptionPane.OK_OPTION);
 
-          if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Find files for text in '"+node.name+'\'', panel)) {
+          if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Find files for text in '" + node.name + '\'', panel)) {
             final NodeFileOrFolder selected = panel.getSelected();
             panel.dispose();
             if (selected != null) {
