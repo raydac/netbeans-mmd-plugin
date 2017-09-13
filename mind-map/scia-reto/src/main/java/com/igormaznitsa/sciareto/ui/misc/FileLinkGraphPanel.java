@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -76,11 +77,11 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
   private static final Color COLOR_BACKGROUND = Color.WHITE;
   private static final Color COLOR_ARROW = Color.ORANGE.darker();
   private static final Color COLOR_LABELS = Color.BLACK;
-  
+
   private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png")); //NOI18N
-  
+
   public enum FileVertexType {
-    FOLDER("folder.png","Folder"), DOCUMENT("document.png","Document"), MINDMAP("mindmap.png","Mind Map"), UNKNOWN("unknown.png","Unknown"), NOTFOUND("notfound.png","Not found"); //NOI18N
+    FOLDER("folder.png", "Folder"), DOCUMENT("document.png", "Document"), MINDMAP("mindmap.png", "Mind Map"), UNKNOWN("unknown.png", "Unknown"), NOTFOUND("notfound.png", "Not found"); //NOI18N
 
     private final Icon icon;
     private final String text;
@@ -91,10 +92,10 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
       return text;
     }
-    
+
     @Nonnull
     public Icon getIcon() {
       return this.icon;
@@ -111,7 +112,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     public FileVertex(@Nonnull final File file, @Nonnull final FileVertexType type) {
       this.type = type;
       this.text = file.getName();
-      this.tooltip = "<html><b>"+type.toString()+"</b><br>"+StringEscapeUtils.unescapeHtml(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath()))+"</html>"; //NOI18N
+      this.tooltip = "<html><b>" + type.toString() + "</b><br>" + StringEscapeUtils.unescapeHtml(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
       this.file = file;
     }
 
@@ -250,7 +251,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     File result = uri.asFile(baseFolder);
 
     if (!uri.isAbsolute() && !result.exists()) {
-      File basePath =  com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(containingMindMap);
+      File basePath = com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(containingMindMap);
       do {
         result = uri.asFile(basePath);
         if (result.exists()) {
@@ -258,7 +259,8 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
         }
         result = null;
         basePath = com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(basePath);
-      }while(!com.igormaznitsa.sciareto.ui.FileUtils.isRootFile(basePath));
+      }
+      while (!com.igormaznitsa.sciareto.ui.FileUtils.isRootFile(basePath));
     }
 
     return result;
@@ -270,103 +272,109 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     final Dimension SCROLL_COMPONENT_SIZE = new Dimension(600, 450);
 
     final Graph<FileVertex, Number> graph = makeGraph(projectFolder, startMindMap);
+
+    if (graph.getVertexCount() == 0) {
     
-    final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<FileVertex, Number>(graph);
+      this.add(new JLabel("There is not any Mind map in the project!"), BorderLayout.CENTER);
     
-    final VisualizationModel<FileVertex, Number> viewModel = new DefaultVisualizationModel<FileVertex, Number>(graphLayout, new Dimension(2000, 2000));
-    final VisualizationViewer<FileVertex, Number> graphViewer = new VisualizationViewer<FileVertex, Number>(viewModel,new Dimension(800, 800));
+    } else {
+      final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<FileVertex, Number>(graph);
 
-    final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse() {
-      @Override
-      protected void loadPlugins() {
-        this.scalingPlugin = new ScalingGraphMousePlugin(new ViewScalingControl(), 0);
-        this.pickingPlugin = new PickingGraphMousePlugin();
-        add(this.scalingPlugin);
-        add(this.pickingPlugin);
-        setMode(Mode.PICKING);
-      }
+      final VisualizationModel<FileVertex, Number> viewModel = new DefaultVisualizationModel<FileVertex, Number>(graphLayout, new Dimension(2000, 2000));
+      final VisualizationViewer<FileVertex, Number> graphViewer = new VisualizationViewer<FileVertex, Number>(viewModel, new Dimension(800, 800));
 
-    };
-    graphViewer.setGraphMouse(graphMouse);
+      final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse() {
+        @Override
+        protected void loadPlugins() {
+          this.scalingPlugin = new ScalingGraphMousePlugin(new ViewScalingControl(), 0);
+          this.pickingPlugin = new PickingGraphMousePlugin();
+          add(this.scalingPlugin);
+          add(this.pickingPlugin);
+          setMode(Mode.PICKING);
+        }
 
-    graphViewer.getRenderContext().setVertexIconTransformer(new Function<FileVertex, Icon>() {
-      @Override
-      public Icon apply(@Nonnull final FileVertex f) {
-        return f.getType().getIcon();
-      }
-    });
+      };
+      graphViewer.setGraphMouse(graphMouse);
 
-    graphViewer.setBackground(COLOR_BACKGROUND);
-    graphViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+      graphViewer.getRenderContext().setVertexIconTransformer(new Function<FileVertex, Icon>() {
+        @Override
+        public Icon apply(@Nonnull final FileVertex f) {
+          return f.getType().getIcon();
+        }
+      });
 
-    final DefaultVertexLabelRenderer labelRenderer = new DefaultVertexLabelRenderer(COLOR_LABELS);
+      graphViewer.setBackground(COLOR_BACKGROUND);
+      graphViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
 
-    graphViewer.getRenderContext().setVertexLabelRenderer(labelRenderer);
-    graphViewer.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
+      final DefaultVertexLabelRenderer labelRenderer = new DefaultVertexLabelRenderer(COLOR_LABELS);
 
-    final Function<Number, Paint> edgePaintTransformer = new Function<Number, Paint>() {
-      @Override
-      public Paint apply(@Nonnull final Number input) {
-        return COLOR_ARROW;
-      }
-    };
+      graphViewer.getRenderContext().setVertexLabelRenderer(labelRenderer);
+      graphViewer.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
 
-    graphViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
-    graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer);
-    graphViewer.getRenderContext().setArrowDrawPaintTransformer(edgePaintTransformer);
+      final Function<Number, Paint> edgePaintTransformer = new Function<Number, Paint>() {
+        @Override
+        public Paint apply(@Nonnull final Number input) {
+          return COLOR_ARROW;
+        }
+      };
 
-    graphViewer.setVertexToolTipTransformer(new Function<FileVertex, String>() {
-      @Override
-      @Nonnull
-      public String apply(@Nonnull final FileVertex f) {
-        return f.getTooltip();
-      }
-    });
+      graphViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
+      graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer);
+      graphViewer.getRenderContext().setArrowDrawPaintTransformer(edgePaintTransformer);
 
-    graphViewer.addGraphMouseListener(new GraphMouseListener<FileVertex>() {
-      @Override
-      public void graphClicked(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
-        if (!me.isPopupTrigger() && me.getClickCount() > 1 && v.getType() != FileVertexType.NOTFOUND) {
-          selectedVertex = v;
-          final Window window = SwingUtilities.getWindowAncestor(graphViewer);
-          if (window != null) {
-            window.setVisible(false);
+      graphViewer.setVertexToolTipTransformer(new Function<FileVertex, String>() {
+        @Override
+        @Nonnull
+        public String apply(@Nonnull final FileVertex f) {
+          return f.getTooltip();
+        }
+      });
+
+      graphViewer.addGraphMouseListener(new GraphMouseListener<FileVertex>() {
+        @Override
+        public void graphClicked(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
+          if (!me.isPopupTrigger() && me.getClickCount() > 1 && v.getType() != FileVertexType.NOTFOUND) {
+            selectedVertex = v;
+            final Window window = SwingUtilities.getWindowAncestor(graphViewer);
+            if (window != null) {
+              window.setVisible(false);
+            }
           }
         }
-      }
 
-      @Override
-      public void graphPressed(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
-      }
+        @Override
+        public void graphPressed(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
+        }
 
-      @Override
-      public void graphReleased(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
-      }
-    });
+        @Override
+        public void graphReleased(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
+        }
+      });
 
-    final GraphZoomScrollPane scroll = new GraphZoomScrollPane(graphViewer);
-    scroll.setPreferredSize(SCROLL_COMPONENT_SIZE);
+      final GraphZoomScrollPane scroll = new GraphZoomScrollPane(graphViewer);
+      scroll.setPreferredSize(SCROLL_COMPONENT_SIZE);
 
-    UiUtils.makeOwningDialogResizable(this);
+      UiUtils.makeOwningDialogResizable(this);
 
-    graphViewer.scaleToLayout(new LayoutScalingControl());
+      graphViewer.scaleToLayout(new LayoutScalingControl());
 
-    final JButton layoutButton = new JButton(RELAYOUT_ICON);
-    layoutButton.setToolTipText("Relayout graph");
-    layoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    layoutButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-       final Rectangle visible = scroll.getVisibleRect();
-       graphViewer.getGraphLayout().reset();
-       graphViewer.getGraphLayout().setSize(new Dimension(visible.width,visible.height));
-       graphViewer.repaint();
-      }
-    });
-    
-    scroll.setCorner(layoutButton);
-    
-    this.add(scroll, BorderLayout.CENTER);
+      final JButton layoutButton = new JButton(RELAYOUT_ICON);
+      layoutButton.setToolTipText("Relayout graph");
+      layoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      layoutButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          final Rectangle visible = scroll.getVisibleRect();
+          graphViewer.getGraphLayout().reset();
+          graphViewer.getGraphLayout().setSize(new Dimension(visible.width, visible.height));
+          graphViewer.repaint();
+        }
+      });
+
+      scroll.setCorner(layoutButton);
+
+      this.add(scroll, BorderLayout.CENTER);
+    }
   }
 
   @Nullable
