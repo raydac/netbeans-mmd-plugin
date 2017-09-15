@@ -83,6 +83,7 @@ import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import net.iharder.Base64;
 
 public final class Utils {
 
@@ -110,6 +111,7 @@ public final class Utils {
 
   /**
    * Get input stream for resource in zip file.
+   *
    * @param zipFile zip file
    * @param resourcePath path to resource
    * @return input stream for resource or null if not found or directory
@@ -130,6 +132,7 @@ public final class Utils {
 
   /**
    * Read who;e zip item into byte array.
+   *
    * @param zipFile zip file
    * @param path path to resource
    * @return byte array or null if not found
@@ -153,8 +156,6 @@ public final class Utils {
     return result;
   }
 
-  
-  
   /**
    * Load and parse XML document from input stream.
    *
@@ -631,24 +632,28 @@ public final class Utils {
     return null;
   }
 
-  @Nonnull
+  @Nullable
   public static Image scaleImage(@Nonnull final Image src, final double baseScaleX, final double baseScaleY, final double scale) {
     final int imgw = src.getWidth(null);
     final int imgh = src.getHeight(null);
+
     final int scaledW = (int) Math.round(imgw * baseScaleX * scale);
     final int scaledH = (int) Math.round(imgh * baseScaleY * scale);
 
-    final BufferedImage result = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
-    final Graphics2D g = (Graphics2D) result.getGraphics();
+    BufferedImage result = null;
+    if (scaledH > 0 && scaledW > 0) {
+      result = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
+      final Graphics2D g = (Graphics2D) result.getGraphics();
 
-    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 
-    g.drawImage(src, 0, 0, scaledW, scaledH, null);
-    g.dispose();
+      g.drawImage(src, 0, 0, scaledW, scaledH, null);
+      g.dispose();
 
+    }
     return result;
   }
 
@@ -816,42 +821,14 @@ public final class Utils {
     return result;
   }
 
-  private static final char[] BASE64_TABLE = {
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-    'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-    'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-    'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
-
+  @Nonnull
+  public static byte [] base64decode(@Nonnull final String text) throws IOException {
+    return Base64.decode(text);
+  }
+  
   @Nonnull
   public static String base64encode(@Nonnull final byte[] data) {
-
-    final StringBuilder buffer = new StringBuilder(data.length << 1);
-    int pad = 0;
-    for (int i = 0; i < data.length; i += 3) {
-
-      int b = ((data[i] & 0xFF) << 16) & 0xFFFFFF;
-      if (i + 1 < data.length) {
-        b |= (data[i + 1] & 0xFF) << 8;
-      } else {
-        pad++;
-      }
-      if (i + 2 < data.length) {
-        b |= (data[i + 2] & 0xFF);
-      } else {
-        pad++;
-      }
-
-      for (int j = 0; j < 4 - pad; j++) {
-        int c = (b & 0xFC0000) >> 18;
-        buffer.append(BASE64_TABLE[c]);
-        b <<= 6;
-      }
-    }
-    for (int j = 0; j < pad; j++) {
-      buffer.append("=");
-    }
-
-    return buffer.toString();
+    return Base64.encodeBytes(data);
   }
 
 }
