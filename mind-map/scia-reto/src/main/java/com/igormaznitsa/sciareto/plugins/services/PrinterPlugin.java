@@ -42,23 +42,23 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
 
   private static final Image ICON_PRINTER = UiUtils.loadIcon("printer.png"); //NOI18N
-  
+
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterPlugin.class);
-  
+
   @Nullable
   @Override
-  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel mindMapPanel, @Nonnull DialogProvider dialogProvider, @Nullable Topic topic,
-      @Nullable @MustNotContainNull Topic[] topics, @Nullable CustomJob mindMapPopUpItemCustomProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic,
+      @Nullable @MustNotContainNull final Topic[] topics, @Nullable final CustomJob mindMapPopUpItemCustomProcessor) {
 
     final MMDPrintPanel.Adaptor adaptor = this;
-    
+
     final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), new ImageIcon(ICON_PRINTER));
     printAction.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        final MMDPrintPanel panel = new MMDPrintPanel(adaptor, mindMapPanel);
+        final MMDPrintPanel panel = new MMDPrintPanel(dialogProvider, adaptor, mindMapPanel);
         UiUtils.makeOwningDialogResizable(panel);
-        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(mindMapPanel), panel, "Print mind map",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(mindMapPanel), panel, "Print mind map", JOptionPane.PLAIN_MESSAGE);
       }
     });
     return printAction;
@@ -92,8 +92,8 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
 
   @Override
   public void startBackgroundTask(@Nonnull final MMDPrintPanel source, @Nonnull final String name, @Nonnull final Runnable task) {
-    LOGGER.info("Starting print task : "+name); //NOI18N
-    final Thread thread = new Thread(task,name);
+    LOGGER.info("Starting print task : " + name); //NOI18N
+    final Thread thread = new Thread(task, name);
     thread.setDaemon(true);
     thread.start();
   }
