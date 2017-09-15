@@ -33,6 +33,15 @@ public class MMGraphics2DWrapper implements MMGraphics {
   private final Graphics2D wrapped;
   private StrokeType strokeType = StrokeType.SOLID;
   private float strokeWidth = 1.0f;
+  private Stroke strokeForLines = NO_STROKE;
+
+  private static final Stroke NO_STROKE = new Stroke() {
+    @Override
+    @Nullable
+    public Shape createStrokedShape(@Nullable final Shape p) {
+      return new Rectangle2D.Double();
+    }
+  };
 
   public MMGraphics2DWrapper(@Nonnull final Graphics2D wrapped) {
     this.wrapped = wrapped;
@@ -58,7 +67,15 @@ public class MMGraphics2DWrapper implements MMGraphics {
 
     if (border != null) {
       this.wrapped.setColor(border);
-      this.wrapped.drawRect(x, y, width, height);
+      if (this.wrapped.getStroke() == NO_STROKE) {
+        this.wrapped.setStroke(this.strokeForLines);
+        if (fill == null) {
+          this.wrapped.drawRect(x, y, width, height);
+        }
+        this.wrapped.setStroke(NO_STROKE);
+      } else {
+        this.wrapped.drawRect(x, y, width, height);
+      }
     }
   }
 
@@ -108,7 +125,8 @@ public class MMGraphics2DWrapper implements MMGraphics {
         default:
           throw new Error("Unexpected stroke type : " + type);
       }
-      this.wrapped.setStroke(stroke);
+      this.strokeForLines = stroke;
+      this.wrapped.setStroke(width < 0.5f ? NO_STROKE : stroke);
     }
   }
 
@@ -116,7 +134,13 @@ public class MMGraphics2DWrapper implements MMGraphics {
   public void drawLine(final int startX, final int startY, final int endX, final int endY, @Nullable final Color color) {
     if (color != null) {
       this.wrapped.setColor(color);
-      this.wrapped.drawLine(startX, startY, endX, endY);
+      if (this.wrapped.getStroke() == NO_STROKE) {
+        this.wrapped.setStroke(this.strokeForLines);
+        this.wrapped.drawLine(startX, startY, endX, endY);
+        this.wrapped.setStroke(NO_STROKE);
+      } else {
+        this.wrapped.drawLine(startX, startY, endX, endY);
+      }
     }
   }
 
@@ -129,7 +153,15 @@ public class MMGraphics2DWrapper implements MMGraphics {
 
     if (border != null) {
       this.wrapped.setColor(border);
-      this.wrapped.draw(shape);
+      if (this.wrapped.getStroke() == NO_STROKE) {
+        this.wrapped.setStroke(this.strokeForLines);
+        if (fill == null) {
+          this.wrapped.draw(shape);
+        }
+        this.wrapped.setStroke(NO_STROKE);
+      } else {
+        this.wrapped.draw(shape);
+      }
     }
   }
 
@@ -141,7 +173,14 @@ public class MMGraphics2DWrapper implements MMGraphics {
     if (color != null) {
       this.wrapped.setColor(color);
     }
-    this.wrapped.draw(path);
+
+    if (this.wrapped.getStroke() == NO_STROKE) {
+      this.wrapped.setStroke(this.strokeForLines);
+      this.wrapped.draw(path);
+      this.wrapped.setStroke(NO_STROKE);
+    } else {
+      this.wrapped.draw(path);
+    }
   }
 
   @Override
@@ -153,13 +192,23 @@ public class MMGraphics2DWrapper implements MMGraphics {
 
     if (border != null) {
       this.wrapped.setColor(border);
-      this.wrapped.drawOval(x, y, w, h);
+      if (this.wrapped.getStroke() == NO_STROKE) {
+        this.wrapped.setStroke(this.strokeForLines);
+        if (fill == null) {
+          this.wrapped.drawOval(x, y, w, h);
+        }
+        this.wrapped.setStroke(NO_STROKE);
+      } else {
+        this.wrapped.drawOval(x, y, w, h);
+      }
     }
   }
 
   @Override
-  public void drawImage(@Nonnull final Image image, final int x, final int y) {
-    this.wrapped.drawImage(image, x, y, null);
+  public void drawImage(@Nullable final Image image, final int x, final int y) {
+    if (image != null) {
+      this.wrapped.drawImage(image, x, y, null);
+    }
   }
 
   @Override
@@ -180,7 +229,7 @@ public class MMGraphics2DWrapper implements MMGraphics {
 
   @Override
   public void drawString(@Nonnull final String text, final int x, final int y, @Nullable Color color) {
-    if (color != null) {
+    if (color != null && this.wrapped.getFont().getSize2D() > 1.0f) {
       this.wrapped.setColor(color);
       this.wrapped.drawString(text, x, y);
     }

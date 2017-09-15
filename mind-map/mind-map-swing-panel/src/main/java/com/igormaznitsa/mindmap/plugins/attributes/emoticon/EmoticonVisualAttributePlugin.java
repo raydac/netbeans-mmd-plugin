@@ -35,7 +35,7 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   static final String ATTR_KEY = "mmd.emoticon";
 
   private final Map<String, ScaledImage> SCALED_IMAGE_CACHE = new HashMap<String, ScaledImage>();
-  
+
   private static final class ScaledImage {
 
     private static final int ICON_SIZE = 32;
@@ -66,8 +66,14 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
         result = this.scaledImage;
       } else {
         this.scale = scale;
-        this.scaledImage = new RenderableImage(Utils.scaleImage(this.baseImage, BASE_SCALE_X, BASE_SCALE_Y, scale));
-        result = this.scaledImage;
+        final Image scaled = Utils.scaleImage(this.baseImage, BASE_SCALE_X, BASE_SCALE_Y, scale);
+        if (scaled == null) {
+          result = null;
+          this.scaledImage = null;
+        } else {
+          this.scaledImage = new RenderableImage(scaled);
+          result = this.scaledImage;
+        }
       }
       return result;
     }

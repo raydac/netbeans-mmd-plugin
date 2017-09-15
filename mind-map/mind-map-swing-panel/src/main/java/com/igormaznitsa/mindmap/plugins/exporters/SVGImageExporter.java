@@ -451,24 +451,26 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void drawImage(@Nonnull final Image image, final int x, final int y) {
-      if (image instanceof RenderedImage) {
-        final RenderedImage ri = (RenderedImage) image;
-        final ByteArrayOutputStream imageBuffer = new ByteArrayOutputStream(1024);
-        try {
-          if (ImageIO.write(ri, "png", imageBuffer)) {
-            this.buffer.append("<image width=\"").append(ri.getWidth()).append("\" height=\"").append(ri.getHeight()).append("\" x=\"").append(dbl2str(this.translateX + x)).append("\" y=\"").append(dbl2str(this.translateY + y)).append("\" xlink:href=\"data:image/png;base64,");
-            this.buffer.append(Utils.base64encode(imageBuffer.toByteArray()));
-            this.buffer.append("\"/>").append(NEXT_LINE);
-          } else {
-            LOGGER.warn("Can't place image because PNG writer is not found");
+    public void drawImage(@Nullable final Image image, final int x, final int y) {
+      if (image != null) {
+        if (image instanceof RenderedImage) {
+          final RenderedImage ri = (RenderedImage) image;
+          final ByteArrayOutputStream imageBuffer = new ByteArrayOutputStream(1024);
+          try {
+            if (ImageIO.write(ri, "png", imageBuffer)) {
+              this.buffer.append("<image width=\"").append(ri.getWidth()).append("\" height=\"").append(ri.getHeight()).append("\" x=\"").append(dbl2str(this.translateX + x)).append("\" y=\"").append(dbl2str(this.translateY + y)).append("\" xlink:href=\"data:image/png;base64,");
+              this.buffer.append(Utils.base64encode(imageBuffer.toByteArray()));
+              this.buffer.append("\"/>").append(NEXT_LINE);
+            } else {
+              LOGGER.warn("Can't place image because PNG writer is not found");
+            }
           }
+          catch (IOException ex) {
+            LOGGER.error("Can't place image for error", ex);
+          }
+        } else {
+          LOGGER.warn("Can't place image because it is not rendered one : " + image.getClass().getName());
         }
-        catch (IOException ex) {
-          LOGGER.error("Can't place image for error", ex);
-        }
-      } else {
-        LOGGER.warn("Can't place image because it is not rendered one : " + image.getClass().getName());
       }
     }
 

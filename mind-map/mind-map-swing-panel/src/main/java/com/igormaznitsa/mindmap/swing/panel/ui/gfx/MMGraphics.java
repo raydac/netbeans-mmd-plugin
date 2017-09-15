@@ -47,7 +47,7 @@ public interface MMGraphics {
 
   void drawOval(int x, int y, int w, int h, @Nullable Color border, @Nullable Color fill);
 
-  public void drawImage(@Nonnull Image image, int x, int y);
+  public void drawImage(@Nullable Image image, int x, int y);
 
   void setFont(@Nonnull Font font);
 

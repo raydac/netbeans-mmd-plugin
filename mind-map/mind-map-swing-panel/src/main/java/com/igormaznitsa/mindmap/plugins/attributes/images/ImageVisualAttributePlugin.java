@@ -22,7 +22,6 @@ import java.util.WeakHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -31,6 +30,7 @@ import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.plugins.api.Renderable;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
@@ -60,7 +60,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
     final String encoded = topic.getAttribute(ATTR_KEY);
     if (encoded != null) {
       try {
-        result = ImageIO.read(new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(encoded)));
+        result = ImageIO.read(new ByteArrayInputStream(Utils.base64decode(encoded)));
       } catch (Exception ex) {
         LOGGER.error("Can't extract image", ex);
       }
