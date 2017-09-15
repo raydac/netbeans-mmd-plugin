@@ -129,6 +129,7 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+import com.igormaznitsa.mindmap.print.MMDPrintOptions;
 import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
@@ -1199,7 +1200,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   @Override
   public PrintPage[][] getPages(final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
-    final com.igormaznitsa.mindmap.print.PrintPage[][] pages = new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, 1.0d).getPages();
+    final com.igormaznitsa.mindmap.print.PrintPage[][] pages = new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, new MMDPrintOptions()).getPages();
     final PrintPage[][] result = new PrintPage[pages.length][];
     for (int i = 0; i < pages.length; i++) {
       result[i] = new PrintPage[pages[i].length];
