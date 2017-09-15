@@ -101,6 +101,216 @@
          inkscape:export-xdpi="23.807428"
          inkscape:export-ydpi="23.807428" />
     </clipPath>
+    <filter
+       inkscape:label="Wax Print"
+       inkscape:menu="Textures"
+       inkscape:menu-tooltip="Wax print on tissue texture"
+       height="1.4"
+       y="-0.2"
+       width="1.4"
+       x="-0.2"
+       style="color-interpolation-filters:sRGB;"
+       id="filter5015">
+      <feGaussianBlur
+         result="result1"
+         in="SourceGraphic"
+         stdDeviation="2"
+         id="feGaussianBlur5017" />
+      <feTurbulence
+         result="result0"
+         numOctaves="5"
+         baseFrequency="0.05"
+         type="fractalNoise"
+         id="feTurbulence5019" />
+      <feDisplacementMap
+         result="result2"
+         scale="10"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="result1"
+         in2="result0"
+         id="feDisplacementMap5021" />
+      <feColorMatrix
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 10 0 "
+         result="result3"
+         id="feColorMatrix5023" />
+      <feBlend
+         mode="multiply"
+         in="result2"
+         result="result5"
+         in2="result3"
+         id="feBlend5025" />
+      <feGaussianBlur
+         result="result4"
+         in="result3"
+         stdDeviation="5"
+         id="feGaussianBlur5027" />
+      <feComposite
+         k1="0.5"
+         k3="1.5"
+         k2="0.15"
+         in="result4"
+         in2="result5"
+         operator="arithmetic"
+         result="result6"
+         id="feComposite5029" />
+      <feComposite
+         operator="in"
+         in="result6"
+         in2="result4"
+         id="feComposite5031" />
+    </filter>
+    <filter
+       inkscape:label="Eroded Metal"
+       inkscape:menu="Materials"
+       inkscape:menu-tooltip="Eroded metal texture with ridges, grooves, holes and bumps"
+       style="color-interpolation-filters:sRGB;"
+       id="filter5576">
+      <feTurbulence
+         result="result1"
+         baseFrequency="0.064"
+         numOctaves="4"
+         type="fractalNoise"
+         id="feTurbulence5578" />
+      <feGaussianBlur
+         in="SourceAlpha"
+         stdDeviation="4.9"
+         result="result91"
+         id="feGaussianBlur5580" />
+      <feComposite
+         operator="out"
+         in="SourceAlpha"
+         in2="result91"
+         id="feComposite5582" />
+      <feComposite
+         in2="result1"
+         id="feComposite5584" />
+      <feColorMatrix
+         result="result1"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -9"
+         id="feColorMatrix5586" />
+      <feComposite
+         result="result1"
+         operator="in"
+         in="SourceGraphic"
+         in2="result1"
+         id="feComposite5588" />
+      <feTurbulence
+         baseFrequency="0.032"
+         numOctaves="1"
+         result="result92"
+         id="feTurbulence5590" />
+      <feDisplacementMap
+         scale="4.1"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="result1"
+         in2="result92"
+         id="feDisplacementMap5592"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4409" />
+      <feMorphology
+         id="feMorphology4411"
+         radius="2"
+         in="fbSourceGraphic"
+         result="result0" />
+      <feTurbulence
+         id="feTurbulence4413"
+         numOctaves="1"
+         baseFrequency="0.078"
+         result="result91" />
+      <feDisplacementMap
+         id="feDisplacementMap4415"
+         in2="result91"
+         in="result0"
+         scale="6.3"
+         xChannelSelector="R"
+         yChannelSelector="G"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4417" />
+      <feGaussianBlur
+         id="feGaussianBlur4419"
+         result="result0"
+         in="fbSourceGraphic"
+         stdDeviation="1" />
+      <feTurbulence
+         id="feTurbulence4421"
+         type="turbulence"
+         baseFrequency="0.057"
+         seed="4"
+         numOctaves="4"
+         result="result1" />
+      <feDisplacementMap
+         id="feDisplacementMap4423"
+         in2="result1"
+         xChannelSelector="R"
+         result="result91" />
+      <feComposite
+         id="feComposite4425"
+         in2="result91"
+         result="result2"
+         operator="out"
+         in="result0" />
+      <feComposite
+         id="feComposite4427"
+         in2="result2"
+         k1="0.1"
+         k3="1.2"
+         in="fbSourceGraphicAlpha"
+         operator="arithmetic"
+         result="result5" />
+      <feBlend
+         id="feBlend4429"
+         in2="result5"
+         result="fbSourceGraphic"
+         mode="multiply" />
+      <feGaussianBlur
+         id="feGaussianBlur4431"
+         stdDeviation="3"
+         in="fbSourceGraphic"
+         result="result0" />
+      <feSpecularLighting
+         id="feSpecularLighting4433"
+         in="result0"
+         result="result1"
+         lighting-color="rgb(254,230,93)"
+         surfaceScale="3"
+         specularConstant="0.4"
+         specularExponent="15">
+        <fePointLight
+           id="fePointLight4435"
+           x="-5000"
+           y="-10000"
+           z="20000" />
+      </feSpecularLighting>
+      <feComposite
+         id="feComposite4437"
+         in2="fbSourceGraphic"
+         in="result1"
+         result="result2"
+         operator="in" />
+      <feComposite
+         id="feComposite4439"
+         in2="result2"
+         k1="-1"
+         in="fbSourceGraphic"
+         result="result4"
+         operator="arithmetic"
+         k2="2.5"
+         k3="3.5" />
+      <feBlend
+         id="feBlend4441"
+         in2="result4"
+         mode="multiply" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -109,9 +319,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="1267.8273"
-     inkscape:cy="425.56591"
+     inkscape:zoom="0.7"
+     inkscape:cx="1246.6325"
+     inkscape:cy="619.95739"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -322,10 +532,10 @@
          x="1074.3152"
          y="985.11218"
          id="tspan4209"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">© 2016 Igor A. Maznitsa</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">© 2017 Igor A. Maznitsa</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:415.39056396px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="font-style:normal;font-weight:normal;font-size:415.39056396px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#aa0000;fill-opacity:1;stroke:#800000;stroke-width:8.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5576);stroke-miterlimit:4;stroke-dasharray:none"
        x="180.84721"
        y="255.45003"
        id="text3501"
@@ -334,11 +544,11 @@
          id="tspan3503"
          x="180.84721"
          y="255.45003"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:eufm10;-inkscape-font-specification:eufm10">Scia</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:eufm10;-inkscape-font-specification:eufm10;fill:#aa0000;stroke:#800000;stroke-width:8.8;stroke-miterlimit:4;stroke-dasharray:none">Scia</tspan><tspan
          sodipodi:role="line"
          x="180.84721"
          y="672.97479"
          id="tspan3505"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:eufm10;-inkscape-font-specification:eufm10">Reto</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:eufm10;-inkscape-font-specification:eufm10;fill:#aa0000;stroke:#800000;stroke-width:8.8;stroke-miterlimit:4;stroke-dasharray:none">Reto</tspan></text>
   </g>
 </svg>

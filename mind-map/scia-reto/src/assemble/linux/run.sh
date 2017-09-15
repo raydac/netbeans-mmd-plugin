@@ -7,7 +7,7 @@ SCIARETO_PLUGINS=$SCIARETO_HOME/plugins
 # uncomment the line below if graphics works slowly
 # JAVA_EXTRA_GFX_FLAGS="-Dsun.java2d.opengl=true"
 
-JAVA_FLAGS="-client -Dsun.java2d.dpiaware=true -Dswing.aatext=true -Dawt.useSystemAAFontSettings=on"
+JAVA_FLAGS="-client -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED -Dsun.java2d.dpiaware=true -Dswing.aatext=true -Dawt.useSystemAAFontSettings=on"
 
 if [ -z $JAVA_HOME ]; then
     echo \$JAVA_HOME is undefined &>$LOG_FILE
