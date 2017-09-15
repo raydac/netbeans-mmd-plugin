@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.1 (under development)__
+- SR,LJ: Improved print preview panel
 - ALL: Reworked processing of print preview, removed buffered image use
 - ALL: Changed default shortcuts for MacOS, fixed processing of space button
 - ALL: Fixed D'n'D processing of topics
@@ -23,20 +24,20 @@ __1.4.0 (18-dec-2016)__
 - ALL: added importers for Mindmup, Freemind, Novamind, Coggle and XMind formats
 - NB:  disabled watching of file changes by default, added options flag to enable that
 - NB:  added option to turn off "where used" refactoring actions for mind maps
-- SCIARETO: added graph generator for file links in mind maps of project
+- SR: added graph generator for file links in mind maps of project
 - ALL: added support of Cut-Copy-Paste actions over Mind Maps
 - ALL: added reset button into URI edit dialog
 - ALL: added processing of dragged links and texts from external web browsers
-- SCIARETO: fixed 'New Project' under MacOSX
+- SR: fixed 'New Project' under MacOSX
 - ALL: improved image plugin to import images from clipboard and max edge size inceased up to 350 pixels
 - ALL: improved mind-map options panel, added functions to reset, import and export settings.
-- SCIARETO: added CLI interface to convert data
+- SR: added CLI interface to convert data
 - ALL: export into [Org-Mode](http://orgmode.org/) format [#24](https://github.com/raydac/netbeans-mmd-plugin/issues/24)
 - IJ,NB: by default disabled autocreation of .projectKnowledge folder [#23](https://github.com/raydac/netbeans-mmd-plugin/issues/23)
 - ALL: added keyboard shortcuts to fold and unfold topics (`-` and `=`) [#18](https://github.com/raydac/netbeans-mmd-plugin/issues/18)
 - ALL: added attribute in mind map templates to show jumps by default
 - IJ: added auto-positioning of root topic into center of view area just as document open
-- SCIARETO: added text search in map 
+- SR: added text search in map 
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
