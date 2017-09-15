@@ -25,14 +25,14 @@ import java.util.ResourceBundle;
 public class PrinterPlugin extends AbstractPopupMenuItem {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
-  @Nullable @Override public JMenuItem makeMenuItem(@Nonnull final MindMapPanel mindMapPanel, @Nonnull DialogProvider dialogProvider, @Nullable Topic topic,
+  @Nullable @Override public JMenuItem makeMenuItem(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final DialogProvider dialogProvider, @Nullable Topic topic,
     @Nullable @MustNotContainNull Topic[] topics, @Nullable CustomJob mindMapPopUpItemCustomProcessor) {
 
     final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), AllIcons.PopUp.PRINTER);
     final Project project = (Project)assertNotNull(mindMapPanel.findTmpObject("project"));
     printAction.addActionListener(new ActionListener() {
       @Override public void actionPerformed(ActionEvent e) {
-        final MMDPrintPanel panel = new MMDPrintPanel(new IdeaMMDPrintPanelAdaptor(project), mindMapPanel);
+        final MMDPrintPanel panel = new MMDPrintPanel(dialogProvider, new IdeaMMDPrintPanelAdaptor(project), mindMapPanel);
         IdeaUtils.plainMessageClose(project,"Print mind map",panel);
       }
     });
