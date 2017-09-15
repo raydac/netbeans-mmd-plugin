@@ -32,6 +32,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -44,6 +45,8 @@ public interface UIComponentFactory {
   JPanel makePanelWithOptions(@Nonnull HasOptions optionsProcessor);
   @Nonnull
   JComboBox makeComboBox();
+  @Nonnull
+  JSpinner makeSpinner();
   @Nonnull
   JButton makeButton();
   @Nonnull

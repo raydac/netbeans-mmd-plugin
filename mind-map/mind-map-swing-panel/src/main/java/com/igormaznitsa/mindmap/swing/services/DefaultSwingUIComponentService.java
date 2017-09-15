@@ -32,6 +32,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -96,6 +97,12 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
   @Nonnull
   public JComboBox makeComboBox () {
     return new JComboBox();
+  }
+
+  @Override
+  @Nonnull
+  public JSpinner makeSpinner () {
+    return new JSpinner();
   }
 
   @Override
