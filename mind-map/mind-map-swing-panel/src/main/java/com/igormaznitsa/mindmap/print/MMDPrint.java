@@ -80,7 +80,7 @@ public class MMDPrint {
 
       final Image scaledSinglePageAsImage;
 
-      final double SCALE_STEP = 0.02d;
+      final double SCALE_STEP = 0.01d;
       switch (options.getScaleType()) {
         case FIT_HEIGHT_TO_PAGES: {
           scaledSinglePageAsImage = null;
@@ -89,13 +89,13 @@ public class MMDPrint {
           scale = (double) (options.getPagesInColumn() * paperHeightInPixels) / (int) Math.round(calculatedSize.getHeight());
           cfg.setScale(scale);
           calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-          int pv = 1 + (int) Math.round(calculatedSize.getHeight()) / paperHeightInPixels;
+          int pv = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
 
           while (pv > options.getPagesInColumn() && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
             calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-            pv = 1 + (int) Math.round(calculatedSize.getHeight()) / paperHeightInPixels;
+            pv = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
           }
         }
         break;
@@ -106,13 +106,13 @@ public class MMDPrint {
           scale = (double) (options.getPagesInRow() * paperWidthInPixels) / (int) Math.round(calculatedSize.getWidth());
           cfg.setScale(scale);
           calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-          int ph = 1 + (int) Math.round(calculatedSize.getWidth()) / paperWidthInPixels;
+          int ph = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
 
           while (ph > options.getPagesInRow() && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
             calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-            ph = 1 + (int) Math.round(calculatedSize.getWidth()) / paperWidthInPixels;
+            ph = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
           }
         }
         break;
@@ -122,15 +122,15 @@ public class MMDPrint {
           scale = Math.min(scale, (double) (options.getPagesInColumn() * paperHeightInPixels) / (int) Math.round(calculatedSize.getHeight()));
           cfg.setScale(scale);
           calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-          int ph = 1 + (int) Math.round(calculatedSize.getWidth()) / paperWidthInPixels;
-          int pv = 1 + (int) Math.round(calculatedSize.getHeight()) / paperHeightInPixels;
+          int ph = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
+          int pv = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
 
           while ((ph > 1 || pv > 1) && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
             calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-            ph = 1 + (int) Math.round(calculatedSize.getWidth()) / paperWidthInPixels;
-            pv = 1 + (int) Math.round(calculatedSize.getHeight()) / paperHeightInPixels;
+            ph = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
+            pv = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
           }
 
           if (ph > 1 || pv > 1) {
@@ -181,8 +181,8 @@ public class MMDPrint {
         if (theModel.getRoot() != null && modelImageSize != null) {
           final int modelWidth = (int) Math.round(modelImageSize.getWidth());
           final int modelHeight = (int) Math.round(modelImageSize.getHeight());
-          int pagesHorz = 1 + modelWidth / paperWidthInPixels;
-          int pagesVert = 1 + modelHeight / paperHeightInPixels;
+          int pagesHorz = 1 + modelWidth / (paperWidthInPixels + 1);
+          int pagesVert = 1 + modelHeight / (paperHeightInPixels + 1);
 
           pgs = new PrintPage[pagesVert][pagesHorz];
           for (int y = 0; y < pagesVert; y++) {
