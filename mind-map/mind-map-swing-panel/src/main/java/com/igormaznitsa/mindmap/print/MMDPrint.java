@@ -111,7 +111,7 @@ public class MMDPrint {
           while (ph > options.getPagesInRow() && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
-            calculatedSize = calculateSizeOfMapInPixels(theModel, null, cfg, false);
+            calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
             ph = 1 + (int) Math.round(calculatedSize.getWidth()) / paperWidthInPixels;
           }
         }
@@ -138,9 +138,9 @@ public class MMDPrint {
             final BufferedImage image = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
             if (image != null) {
               if (ph > 1) {
-                scaledSinglePageAsImage = image.getScaledInstance(paperWidthInPixels * image.getHeight()/image.getWidth(), paperHeightInPixels, Image.SCALE_SMOOTH);
+                scaledSinglePageAsImage = image.getScaledInstance(paperWidthInPixels * image.getHeight() / image.getWidth(), paperHeightInPixels, Image.SCALE_SMOOTH);
               } else {
-                scaledSinglePageAsImage = image.getScaledInstance(paperWidthInPixels, paperHeightInPixels * image.getWidth()/image.getHeight(), Image.SCALE_SMOOTH);
+                scaledSinglePageAsImage = image.getScaledInstance(paperWidthInPixels, paperHeightInPixels * image.getWidth() / image.getHeight(), Image.SCALE_SMOOTH);
               }
             } else {
               scaledSinglePageAsImage = null;
