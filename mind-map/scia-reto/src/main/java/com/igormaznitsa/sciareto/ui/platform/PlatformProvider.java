@@ -24,7 +24,7 @@ public final class PlatformProvider {
   private static final Platform INSTANCE;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PlatformProvider.class);
-  private static final boolean detectedErrorDuringProviderInitialisation;
+  private static final boolean DETECTED_ERROR_DURING_PROVIDER_INIT;
   
   static {
     Platform detected = null;
@@ -52,7 +52,7 @@ public final class PlatformProvider {
     INSTANCE = detected == null ? new PlatformDefault() : detected;
     LOGGER.info("Platform features provider is '"+INSTANCE.getName()+'\''); //NOI18N
   
-    detectedErrorDuringProviderInitialisation = detectedError;
+    DETECTED_ERROR_DURING_PROVIDER_INIT = detectedError;
   }
   
   private PlatformProvider(){
@@ -65,6 +65,6 @@ public final class PlatformProvider {
   }
 
   public static boolean isErrorDetected(){
-    return detectedErrorDuringProviderInitialisation;
+    return DETECTED_ERROR_DURING_PROVIDER_INIT;
   }
 }

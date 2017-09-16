@@ -239,7 +239,7 @@ public final class TabTitle extends JPanel {
     }
     
     final File file = getAssociatedFile();
-    if (file.isFile()){
+    if (file != null && file.isFile()){
       try{
         this.parent.loadContent(file);
         reloaded = true;

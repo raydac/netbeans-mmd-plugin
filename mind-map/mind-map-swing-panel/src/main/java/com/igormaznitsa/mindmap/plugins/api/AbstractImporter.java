@@ -121,6 +121,7 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   }
   
   @Nullable
+  @Override
   public String getMnemonic(){
     return null;
   }

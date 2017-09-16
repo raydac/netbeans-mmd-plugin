@@ -683,7 +683,11 @@ public class Main {
           panel.setModel(map);
 
           map = fromFormat.doImport(panel, dialog, null, new Topic[0]);
-          panel.setModel(map);
+          if (map != null) {
+            panel.setModel(map);
+          } else {
+            dialog.msgError(MAIN_FRAME, "Can't import map");
+          }
 
           final JComponent optionsComponent = toFormat.makeOptions();
 

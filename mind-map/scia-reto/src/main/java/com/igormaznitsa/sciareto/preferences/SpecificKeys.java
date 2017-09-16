@@ -16,5 +16,5 @@
 package com.igormaznitsa.sciareto.preferences;
 
 public interface SpecificKeys {
-  static final String PROPERTY_TEXT_EDITOR_FONT = "sr.sk.text.editor.font"; //NOI18N
+  static String PROPERTY_TEXT_EDITOR_FONT = "sr.sk.text.editor.font"; //NOI18N
 }
