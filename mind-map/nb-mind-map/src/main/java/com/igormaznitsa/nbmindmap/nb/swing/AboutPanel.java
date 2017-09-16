@@ -85,7 +85,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
         .addContainerGap()
         .addComponent(labelIcon)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
+        .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -93,7 +93,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
+          .addComponent(textLabel)
           .addGroup(layout.createSequentialGroup()
             .addComponent(labelIcon)
             .addGap(0, 0, Short.MAX_VALUE)))

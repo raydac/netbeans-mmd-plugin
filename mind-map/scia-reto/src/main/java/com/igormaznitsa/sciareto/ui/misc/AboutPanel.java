@@ -68,7 +68,6 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
     labelIcon = new javax.swing.JLabel();
     textLabel = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
-    donateButton1 = new com.igormaznitsa.sciareto.ui.misc.DonateButton();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -91,17 +90,10 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(0, 16, 16, 16);
     add(textLabel, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    add(donateButton1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private com.igormaznitsa.sciareto.ui.misc.DonateButton donateButton1;
   private javax.swing.JLabel labelIcon;
   private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel textLabel;
   // End of variables declaration//GEN-END:variables
