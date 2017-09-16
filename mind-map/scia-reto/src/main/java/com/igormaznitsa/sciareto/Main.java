@@ -97,7 +97,7 @@ public class Main {
 
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 0L}, null); //NOI18N
+  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 1L}, null); //NOI18N
 
   public static final Random RND = new Random();
 
