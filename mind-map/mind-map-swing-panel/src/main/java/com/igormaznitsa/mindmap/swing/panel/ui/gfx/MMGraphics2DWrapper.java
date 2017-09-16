@@ -56,7 +56,10 @@ public class MMGraphics2DWrapper implements MMGraphics {
       this.wrapped.fillRect(x, y, width, height);
     }
 
-    this.wrapped.drawRect(x, y, width, height);
+    if (border != null) {
+      this.wrapped.setColor(border);
+      this.wrapped.drawRect(x, y, width, height);
+    }
   }
 
   @Override
