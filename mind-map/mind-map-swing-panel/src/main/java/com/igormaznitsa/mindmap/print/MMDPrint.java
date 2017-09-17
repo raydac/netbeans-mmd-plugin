@@ -25,9 +25,11 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.geom.Dimension2D;
 
 import java.awt.image.BufferedImage;
@@ -45,6 +47,22 @@ public class MMDPrint {
   private static final PrintPage[][] NO_PAGES = new PrintPage[0][0];
 
   private final PrintPage[][] pages;
+
+  @Nonnull
+  private static Point calcOffsetImage(final int pagesHorz, final int pagesVert, final int paperWidthInPixels, final int paperHeighInPixels, @Nonnull final Dimension2D calculatedSize) {
+    int x = 0;
+    int y = 0;
+
+    if (pagesHorz == 1) {
+      x = Math.max(0, (paperWidthInPixels - (int) Math.round(calculatedSize.getWidth())) / 2);
+    }
+
+    if (pagesVert == 1) {
+      y = Math.max(0, (paperHeighInPixels - (int) Math.round(calculatedSize.getHeight())) / 2);
+    }
+
+    return new Point(x, y);
+  }
 
   public MMDPrint(@Nonnull final MindMapPanel panel, final int paperWidthInPixels, final int paperHeightInPixels, @Nonnull final MMDPrintOptions options) {
     LOGGER.info(String.format("Request to prepare print pages for %dx%d", paperWidthInPixels, paperHeightInPixels));
@@ -81,6 +99,9 @@ public class MMDPrint {
       final Image scaledSinglePageAsImage;
 
       final double SCALE_STEP = 0.01d;
+
+      final Point offsetOfImage;
+
       switch (options.getScaleType()) {
         case FIT_HEIGHT_TO_PAGES: {
           scaledSinglePageAsImage = null;
@@ -89,14 +110,17 @@ public class MMDPrint {
           scale = (double) (options.getPagesInColumn() * paperHeightInPixels) / (int) Math.round(calculatedSize.getHeight());
           cfg.setScale(scale);
           calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-          int pv = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
+          int pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
 
-          while (pv > options.getPagesInColumn() && scale > SCALE_STEP) {
+          while (pvert > options.getPagesInColumn() && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
             calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-            pv = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
+            pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
           }
+
+          final int phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
+          offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
         }
         break;
         case FIT_WIDTH_TO_PAGES: {
@@ -106,14 +130,17 @@ public class MMDPrint {
           scale = (double) (options.getPagesInRow() * paperWidthInPixels) / (int) Math.round(calculatedSize.getWidth());
           cfg.setScale(scale);
           calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-          int ph = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
+          int phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
 
-          while (ph > options.getPagesInRow() && scale > SCALE_STEP) {
+          while (phorz > options.getPagesInRow() && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
             calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-            ph = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
+            phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
           }
+
+          final int pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
+          offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
         }
         break;
         case FIT_TO_SINGLE_PAGE: {
@@ -122,37 +149,45 @@ public class MMDPrint {
           scale = Math.min(scale, (double) (options.getPagesInColumn() * paperHeightInPixels) / (int) Math.round(calculatedSize.getHeight()));
           cfg.setScale(scale);
           calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-          int ph = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
-          int pv = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
+          int phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
+          int pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
 
-          while ((ph > 1 || pv > 1) && scale > SCALE_STEP) {
+          while ((phorz > 1 || pvert > 1) && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
             calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
-            ph = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
-            pv = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
+            phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
+            pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
           }
 
-          if (ph > 1 || pv > 1) {
+          if (phorz > 1 || pvert > 1) {
             // we have to scale to fit only page
             final BufferedImage image = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
             if (image != null) {
-              if (ph > 1) {
+              if (phorz > 1) {
                 scaledSinglePageAsImage = image.getScaledInstance(paperWidthInPixels * image.getHeight() / image.getWidth(), paperHeightInPixels, Image.SCALE_SMOOTH);
               } else {
                 scaledSinglePageAsImage = image.getScaledInstance(paperWidthInPixels, paperHeightInPixels * image.getWidth() / image.getHeight(), Image.SCALE_SMOOTH);
               }
+              offsetOfImage = new Point(Math.max(0, (paperWidthInPixels - scaledSinglePageAsImage.getWidth(null)) / 2), Math.max(0, (paperHeightInPixels - scaledSinglePageAsImage.getHeight(null)) / 2));
             } else {
               scaledSinglePageAsImage = null;
+              offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
             }
           } else {
             scaledSinglePageAsImage = null;
+            offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
           }
         }
         break;
         case ZOOM: {
           scaledSinglePageAsImage = null;
           scale = options.getScale();
+          cfg.setScale(scale);
+          final Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+          final int phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
+          final int pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
+          offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
         }
         break;
         default:
@@ -167,7 +202,7 @@ public class MMDPrint {
               public void print(@Nonnull final Graphics g) {
                 final Graphics2D gfx = (Graphics2D) g.create();
                 Utils.prepareGraphicsForQuality(gfx);
-                gfx.drawImage(scaledSinglePageAsImage, 0, 0, null);
+                gfx.drawImage(scaledSinglePageAsImage, offsetOfImage.x, offsetOfImage.y, null);
               }
             }
           }
@@ -202,7 +237,7 @@ public class MMDPrint {
                   Utils.prepareGraphicsForQuality(gfx);
                   MindMapPanel.layoutFullDiagramWithCenteringToPaper(new MMGraphics2DWrapper(gfx), theModel, cfg, modelImageSize);
 
-                  gfx.translate(-pageX * paperWidthInPixels, -pageY * paperHeightInPixels);
+                  gfx.translate(offsetOfImage.x - pageX * paperWidthInPixels, offsetOfImage.y - pageY * paperHeightInPixels);
                   try {
                     drawOnGraphicsForConfiguration(new MMGraphics2DWrapper(gfx), cfg, theModel, false, null);
                   }
