@@ -119,7 +119,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
     printerJob.setJobName("Mind map print job");
-
+    
     final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
     toolBar.setOrientation(JToolBar.HORIZONTAL);
     toolBar.setFloatable(false);
