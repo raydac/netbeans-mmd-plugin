@@ -23,7 +23,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
-            <version>2.4.3</version>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <phase>package</phase>
@@ -59,7 +59,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.5.5</version>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <id>make-distributive</id>
@@ -112,7 +112,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>2.4</version>
+            <version>3.0.1</version>
             <executions>
               <execution>
                 <id>generate-sources</id>
@@ -126,7 +126,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9</version>
+            <version>3.0.0-M1</version>
             <executions>
               <execution>
                 <id>generate-javadoc</id>
@@ -141,7 +141,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.4</version>
+            <version>1.6</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>

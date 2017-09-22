@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.io.FileUtils;
 import com.grack.nanojson.JsonArray;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -229,7 +228,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       final String[] data = iconUrl.split("\\,");
       if (data.length == 2 && data[0].startsWith("data:image/") && data[0].endsWith("base64")) {
         try {
-          final String encoded = Utils.rescaleImageAndEncodeAsBase64(new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(data[1].trim())), -1);
+          final String encoded = Utils.rescaleImageAndEncodeAsBase64(new ByteArrayInputStream(Utils.base64decode(data[1].trim())), -1);
           if (encoded == null) {
             LOGGER.warn("Can't convert image : "+iconUrl);
           } else {

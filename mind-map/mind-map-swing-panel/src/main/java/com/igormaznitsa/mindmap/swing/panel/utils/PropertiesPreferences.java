@@ -30,7 +30,6 @@ import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.DatatypeConverter;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.GetUtils;
 
@@ -154,7 +153,11 @@ public class PropertiesPreferences extends Preferences {
   @Nullable
   public byte[] getByteArray(@Nonnull final String key, @Nullable final byte[] def) {
     final String found = this.storage.getProperty(key);
-    return found == null ? def : DatatypeConverter.parseBase64Binary(found);
+    try{
+      return found == null ? def : Utils.base64decode(found);
+    }catch(final IOException ex) {
+      throw new RuntimeException("Error during BASE64 decode",ex);
+    }
   }
 
   @Override

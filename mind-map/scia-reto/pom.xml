@@ -191,6 +191,10 @@
               <includeApplicationsSymlink>true</includeApplicationsSymlink>
               <diskImageInternetEnable>true</diskImageInternetEnable>
               <jvmVersion>1.7+</jvmVersion>
+              <jvmOptions>
+                <option>-XX:+IgnoreUnrecognizedVMOptions</option>
+                <option>-XaddExports:java.desktop/com.apple.eawt=ALL-UNNAMED</option>
+              </jvmOptions>
             </configuration>
             <executions>
               <execution>

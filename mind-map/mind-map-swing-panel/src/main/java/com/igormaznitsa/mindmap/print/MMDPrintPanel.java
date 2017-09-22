@@ -100,12 +100,12 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   private final MindMapPanel mmdPanel;
   private final Adaptor theAdaptor;
   private final JCheckBox checkBoxDrawBorder;
+  private final JCheckBox checkBoxDrawAsImage;
   private PrintPage[][] pages;
   private final DialogProvider dialogProvider;
-  
+
   private MMDPrintOptions options = new MMDPrintOptions();
-  
-  
+
   public MMDPrintPanel(@Nonnull final DialogProvider dialogProvider, @Nullable final Adaptor adaptor, @Nonnull final MindMapPanel mindMapPanel) {
     super(new BorderLayout());
     this.dialogProvider = dialogProvider;
@@ -114,16 +114,14 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     this.theAdaptor = adaptor == null ? new DefaultMMDPrintPanelAdaptor() : adaptor;
     this.mmdPanel = mindMapPanel;
 
-    super.setPreferredSize(this.theAdaptor.getPreferredSizeOfPanel(this));
-
     final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
     printerJob.setJobName("Mind map print job");
-    
+
     final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
     toolBar.setOrientation(JToolBar.HORIZONTAL);
     toolBar.setFloatable(false);
-    
+
     final JButton buttonPrint = UI_COMPO_FACTORY.makeButton();
     buttonPrint.setText(BUNDLE.getString("MMDPrintPanel.PrintPages"));
     buttonPrint.setIcon(ICO_PRINTER);
@@ -239,7 +237,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
       }
     });
     toolBar.add(buttonPrintOptions);
-    
+
     final List<String> scalesList = new ArrayList<String>();
     scalesList.add("10 %");
     for (int i = 25; i < 225; i += 25) {
@@ -269,6 +267,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.add(comboBoxScale);
 
     toolBar.addSeparator();
+
     this.checkBoxDrawBorder = UI_COMPO_FACTORY.makeCheckBox();
     this.checkBoxDrawBorder.setSelected(true);
     this.checkBoxDrawBorder.setText(BUNDLE.getString("MMDPrintPanel.DrawBorder"));
@@ -280,6 +279,21 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     });
     toolBar.add(this.checkBoxDrawBorder);
 
+    this.checkBoxDrawAsImage = UI_COMPO_FACTORY.makeCheckBox();
+    this.checkBoxDrawAsImage.setSelected(this.options.isDrawAsImage());
+    this.checkBoxDrawAsImage.setText(BUNDLE.getString("MMDPrintPanel.DrawAsImage"));
+    this.checkBoxDrawAsImage.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull ActionEvent e) {
+        options.setDrawAsImage(checkBoxDrawAsImage.isSelected());
+        splitToPagesForCurrentFormat();
+        scrollPane.revalidate();
+        scrollPane.getViewport().revalidate();
+        scrollPane.repaint();
+      }
+    });
+    toolBar.add(this.checkBoxDrawAsImage);
+
     this.add(toolBar, BorderLayout.NORTH);
 
     this.pageFormat = printerJob.defaultPage();
@@ -290,6 +304,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     this.preferredFocusedComponent = scrollPane;
 
     this.add(scrollPane, BorderLayout.CENTER);
+    
+    doLayout();
+    super.setPreferredSize(this.theAdaptor.getPreferredSizeOfPanel(this));
   }
 
   @Override

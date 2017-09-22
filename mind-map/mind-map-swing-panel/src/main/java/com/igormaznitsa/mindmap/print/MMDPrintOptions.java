@@ -25,6 +25,7 @@ import com.igormaznitsa.meta.common.utils.Assertions;
  * @since 1.4.1
  */
 public class MMDPrintOptions {
+
   public enum ScaleType {
     ZOOM,
     FIT_WIDTH_TO_PAGES,
@@ -36,6 +37,7 @@ public class MMDPrintOptions {
   private int horzPages = 1;
   private int vertPages = 1;
   private double scale = 1.0d;
+  private boolean drawAsImage = false;
 
   public MMDPrintOptions() {
   }
@@ -45,10 +47,33 @@ public class MMDPrintOptions {
     this.horzPages = that.horzPages;
     this.vertPages = that.vertPages;
     this.scale = that.scale;
+    this.drawAsImage = that.drawAsImage;
+  }
+
+  /**
+   * Should be printed as image instead of direct drawing.
+   *
+   * @return true if to print as image, false otherwise
+   */
+  public boolean isDrawAsImage() {
+    return this.drawAsImage;
+  }
+
+  /**
+   * Set flag to print as image instead of direct drawing.
+   *
+   * @param flag true if to print as image, false otherwise
+   * @return this instance
+   */
+  @Nonnull
+  public MMDPrintOptions setDrawAsImage(final boolean flag) {
+    this.drawAsImage = flag;
+    return this;
   }
 
   /**
    * Get scale, must not be 0.
+   *
    * @return the scale, must be great than zero.
    */
   public double getScale() {
@@ -57,16 +82,17 @@ public class MMDPrintOptions {
 
   /**
    * Set scale.
+   *
    * @param value new scale, must be great than zero.
    * @return this instance
    */
   @Nonnull
   public MMDPrintOptions setScale(final double value) {
-    Assertions.assertTrue("Must be >0.0d",value > 0.0d);
+    Assertions.assertTrue("Must be >0.0d", value > 0.0d);
     this.scale = value;
     return this;
   }
-  
+
   /**
    * Get number of pages in column.
    *
@@ -87,15 +113,17 @@ public class MMDPrintOptions {
 
   /**
    * Get selected scale option.
+   *
    * @return the selected scale option, must not be null.
    */
   @Nonnull
   public ScaleType getScaleType() {
     return this.scaleOption;
   }
-  
+
   /**
    * Set the selected scale option.
+   *
    * @param scaleOption option, must not be null
    * @return this instance
    */
@@ -104,7 +132,7 @@ public class MMDPrintOptions {
     this.scaleOption = Assertions.assertNotNull(scaleOption);
     return this;
   }
-  
+
   /**
    * Set maximum vertical pages
    *
