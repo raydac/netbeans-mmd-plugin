@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.1 (under development)__
+- ALL: Removed use of javax.xml.bind.DatatypeConverter to make compatible with Java 9
 - SR,LJ: Improved print preview panel
 - ALL: Reworked processing of print preview, removed buffered image use
 - ALL: Changed default shortcuts for MacOS, fixed processing of space button
