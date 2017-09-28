@@ -213,6 +213,8 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
 
+    this.putClientProperty("print.size", new Dimension(500, 500));
+    
     this.editorSupport = support;
 
     this.mainScrollPane = UI_COMPO_FACTORY.makeScrollPane();
@@ -232,7 +234,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     this.mindMapPanel.addComponentListener(new ComponentAdapter() {
       @Override
       public void componentResized(final ComponentEvent e) {
-        processEditorResizing(mindMapPanel);
+        processEditorResizing();
       }
     });
     updateName();
@@ -700,9 +702,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     this.actionPaste.setEnabled(currentSelectedTopics.length != 0 && NbUtils.findClipboard().isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR));
   }
 
-  private static void processEditorResizing(final MindMapPanel panel) {
-    panel.updateView(false);
-    panel.updateEditorAfterResizing();
+  private void processEditorResizing() {
+    this.mindMapPanel.updateView(false);
+    this.mindMapPanel.updateEditorAfterResizing();
   }
 
   public void updateView() {
@@ -1200,8 +1202,22 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   @Override
   public PrintPage[][] getPages(final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
-    final com.igormaznitsa.mindmap.print.PrintPage[][] pages = new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, new MMDPrintOptions()).getPages();
+    final MMDPrintOptions printOptions = new MMDPrintOptions();
+ 
+    if (pageZoomFactor < 0.1d) {
+      printOptions.setScaleType(MMDPrintOptions.ScaleType.FIT_TO_SINGLE_PAGE);
+    } else if (pageZoomFactor > 20.0d) {
+      printOptions.setScaleType(MMDPrintOptions.ScaleType.ZOOM);
+      printOptions.setScale(1.0d);
+    } else {
+      printOptions.setScaleType(MMDPrintOptions.ScaleType.ZOOM);
+      printOptions.setScale(pageZoomFactor);
+    }
+    
+    final com.igormaznitsa.mindmap.print.PrintPage[][] pages = new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, printOptions).getPages();
+    
     final PrintPage[][] result = new PrintPage[pages.length][];
+    
     for (int i = 0; i < pages.length; i++) {
       result[i] = new PrintPage[pages[i].length];
       for (int p = 0; p < pages[i].length; p++) {
