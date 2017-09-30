@@ -131,6 +131,9 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         if (imageFile != null) {
           try {
             result = Utils.rescaleImageAndEncodeAsBase64(new ByteArrayInputStream(imageFile),-1);
+            if (result == null) {
+              LOGGER.warn("Impossible to read image: " + resource.getUrl());
+            }
           }
           catch (Exception ex) {
             LOGGER.error("Can't find or convert image resource : " + resource.getUrl(), ex);
