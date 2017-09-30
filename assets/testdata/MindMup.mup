@@ -1,0 +1,92 @@
+{
+  "formatVersion": 3,
+  "id": "root",
+  "ideas": {
+    "1": {
+      "title": "root panel",
+      "id": 1,
+      "ideas": {
+        "1": {
+          "title": "hello",
+          "id": 2,
+          "ideas": {
+            "1": {
+              "title": "world",
+              "id": 3,
+              "attr": {
+                "style": {
+                  "background": "#FFFF00"
+                }
+              }
+            },
+            "2": {
+              "title": "some",
+              "id": 4,
+              "attr": {
+                "style": {
+                  "background": "#FFFF00"
+                }
+              }
+            },
+            "3": {
+              "title": "text",
+              "id": 5,
+              "attr": {
+                "style": {
+                  "background": "#FFFF00"
+                }
+              }
+            }
+          },
+          "attr": {
+            "style": {
+              "background": "#FFFF00"
+            }
+          }
+        },
+        "-1": {
+          "title": "one",
+          "id": 6,
+          "ideas": {
+            "1": {
+              "title": "chunga",
+              "id": 10,
+              "attr": {
+                "style": {
+                  "background": "#FF0000"
+                }
+              }
+            },
+            "2": {
+              "title": "changa",
+              "id": 11,
+              "attr": {
+                "style": {
+                  "background": "#FF0000"
+                }
+              }
+            }
+          },
+          "attr": {
+            "style": {
+              "background": "#FF0000"
+            }
+          }
+        },
+        "-11": {
+          "title": "two",
+          "id": 7
+        },
+        "-21": {
+          "title": "three",
+          "id": 8
+        },
+        "-31": {
+          "title": "four",
+          "id": 9
+        }
+      }
+    }
+  },
+  "title": "root panel"
+}

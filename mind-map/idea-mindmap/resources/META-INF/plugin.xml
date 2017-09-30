@@ -18,9 +18,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.4.1 (under development)</p>
+        <p>1.4.1 (30-sep-2017)</p>
         <ul>
-            <li>fixed issue "Project Project (Disposed) test already disposed" #25</li>
+          <li>Removed use of javax.xml.bind.DatatypeConverter to make compatible with Java 9</li>
+          <li>Improved print preview panel</li>
+          <li>Reworked processing of print preview, removed buffered image use</li>
+          <li>Changed default shortcuts for MacOS, fixed processing of space button</li>
+          <li>Fixed D'n'D processing of topics</li>
+          <li>fixed issue "Project Project (Disposed) test already disposed" #25</li>
         </ul>
         <p>1.4.0 (18-dec-2016)</p>
         <ul>
