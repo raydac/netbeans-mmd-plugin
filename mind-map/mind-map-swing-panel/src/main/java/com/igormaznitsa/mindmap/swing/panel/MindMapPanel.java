@@ -2617,4 +2617,134 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       }
     }
   }
+
+//  public static void main(@MustNotContainNull @Nonnull final String... args) {
+//    final javax.swing.JFrame frame = new javax.swing.JFrame("Test");
+//    frame.setSize(new Dimension(400,400));
+//    
+//    final MindMapPanelConfig config = new MindMapPanelConfig();
+//
+//    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+//
+//    final DialogProvider dialog = new DialogProvider() {
+//      @Override
+//      public void msgError(@Nullable final java.awt.Component parentComponent, @Nonnull final String text) {
+//        LOGGER.error(text);
+//      }
+//
+//      @Override
+//      public void msgInfo(@Nullable final java.awt.Component parentComponent, @Nonnull final String text) {
+//        LOGGER.info(text);
+//      }
+//
+//      @Override
+//      public void msgWarn(@Nullable final java.awt.Component parentComponent, @Nonnull final String text) {
+//        LOGGER.warn(text);
+//      }
+//
+//      @Override
+//      public boolean msgConfirmOkCancel(@Nullable final java.awt.Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
+//        throw new UnsupportedOperationException("Not supported yet."); //NOI18N
+//      }
+//
+//      @Override
+//      public boolean msgOkCancel(@Nullable final java.awt.Component parentComponent, @Nonnull final String title, @Nonnull final javax.swing.JComponent component) {
+//        throw new UnsupportedOperationException("Not supported yet."); //NOI18N
+//      }
+//
+//      @Override
+//      public boolean msgConfirmYesNo(@Nullable final java.awt.Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
+//        throw new UnsupportedOperationException("Not supported yet."); //NOI18N
+//      }
+//
+//      @Override
+//      @Nonnull
+//      public Boolean msgConfirmYesNoCancel(@Nullable final java.awt.Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
+//        throw new UnsupportedOperationException("Not supported yet."); //NOI18N
+//      }
+//
+//      @Override
+//      @Nullable
+//      public java.io.File msgSaveFileDialog(@Nullable final java.awt.Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final java.io.File defaultFolder, final boolean filesOnly, @Nonnull final javax.swing.filechooser.FileFilter fileFilter, @Nonnull final String approveButtonText) {
+//        return null;
+//      }
+//
+//      @Override
+//      @Nullable
+//      public java.io.File msgOpenFileDialog(@Nullable final java.awt.Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final java.io.File defaultFolder, final boolean filesOnly, @Nonnull final javax.swing.filechooser.FileFilter fileFilter, @Nonnull final String approveButtonText) {
+//        return null;
+//      }
+//
+//    };
+//
+//    final MindMapPanel panel = new MindMapPanel(new MindMapPanelController() {
+//      @Override
+//      public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
+//        return true;
+//      }
+//
+//      @Override
+//      public boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull final MindMapPanel source) {
+//        return true;
+//      }
+//
+//      @Override
+//      public boolean isSelectionAllowed(@Nonnull final MindMapPanel source) {
+//        return true;
+//      }
+//
+//      @Override
+//      public boolean isElementDragAllowed(@Nonnull final MindMapPanel source) {
+//        return true;
+//      }
+//
+//      @Override
+//      public boolean isMouseMoveProcessingAllowed(@Nonnull final MindMapPanel source) {
+//        return true;
+//      }
+//
+//      @Override
+//      public boolean isMouseWheelProcessingAllowed(@Nonnull final MindMapPanel source) {
+//        return true;
+//      }
+//
+//      @Override
+//      public boolean isMouseClickProcessingAllowed(@Nonnull final MindMapPanel source) {
+//        return true;
+//      }
+//
+//      @Override
+//      @Nonnull
+//      public MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull final MindMapPanel source) {
+//        return config;
+//      }
+//
+//      @Override
+//      @Nullable
+//      public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement elementUnderMouse, @Nullable final ElementPart elementPartUnderMouse) {
+//        return null;
+//      }
+//
+//      @Override
+//      @Nonnull
+//      public DialogProvider getDialogProvider(@Nonnull final MindMapPanel source) {
+//        return dialog;
+//      }
+//
+//      @Override
+//      public boolean processDropTopicToAnotherTopic(@Nonnull final MindMapPanel source, @Nonnull final Point dropPoint, @Nonnull final Topic draggedTopic, @Nonnull final Topic destinationTopic) {
+//        return false;
+//      }
+//
+//    });
+//
+//    final javax.swing.JScrollPane spanel = new javax.swing.JScrollPane(panel);
+//    
+//    panel.setModel(new MindMap(null, true));
+//    
+//    frame.setContentPane(spanel);
+//    
+//    frame.setVisible(true);
+//  
+//  }
 }
