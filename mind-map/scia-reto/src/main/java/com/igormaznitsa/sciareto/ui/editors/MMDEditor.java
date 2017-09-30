@@ -466,8 +466,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
   @Override
   public void onMindMapModelRealigned(@Nonnull final MindMapPanel source, @Nonnull final Dimension coveredAreaSize) {
-    this.scrollPane.getViewport().revalidate();
-    this.scrollPane.repaint();
   }
 
   @Override
