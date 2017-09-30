@@ -642,16 +642,22 @@ public final class Utils {
 
     BufferedImage result = null;
     if (scaledH > 0 && scaledW > 0) {
-      result = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
-      final Graphics2D g = (Graphics2D) result.getGraphics();
+      try {
+        result = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = (Graphics2D) result.getGraphics();
 
-      g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 
-      g.drawImage(src, 0, 0, scaledW, scaledH, null);
-      g.dispose();
+        g.drawImage(src, 0, 0, scaledW, scaledH, null);
+        g.dispose();
+      }
+      catch (OutOfMemoryError e) {
+        LOGGER.error("OutOfmemoryError in scaleImage (" + baseScaleX + ',' + baseScaleY + ',' + scale + ')', e);
+        throw e;
+      }
 
     }
     return result;
