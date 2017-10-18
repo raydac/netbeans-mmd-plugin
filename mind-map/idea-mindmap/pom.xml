@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
-        <version>1.4.1</version>
+        <version>1.4.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -85,7 +85,7 @@
                 <artifactId>gradle-maven-plugin</artifactId>
                 <version>1.0.8</version>
                 <configuration>
-                    <gradleVersion>4.1</gradleVersion>
+                    <gradleVersion>4.2</gradleVersion>
                     <tasks>
                         <task>clean</task>
                         <task>build</task>

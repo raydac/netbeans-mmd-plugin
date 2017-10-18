@@ -34,6 +34,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
@@ -65,6 +66,8 @@ public interface UIComponentFactory {
   JPopupMenu makePopupMenu();
   @Nonnull
   JTextArea makeTextArea ();
+  @Nonnull
+  JTextField makeTextField ();
   @Nonnull
   JEditorPane makeEditorPane ();
   @Nonnull

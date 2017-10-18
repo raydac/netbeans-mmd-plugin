@@ -169,4 +169,10 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
     public JSlider makeSlider() {
         return new JSlider();
     }
+
+    @Nonnull
+    @Override
+    public JTextField makeTextField() {
+        return new JBTextField();
+    }
 }

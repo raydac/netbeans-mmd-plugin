@@ -17,9 +17,12 @@ package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -34,6 +37,8 @@ import java.util.ResourceBundle;
 public final class UriEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
   private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
 
   private static final long serialVersionUID = -6683682013891751388L;
 
@@ -98,9 +103,10 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
   private void initComponents() {
     java.awt.GridBagConstraints gridBagConstraints;
 
-    labelBrowseCurrentLink = new javax.swing.JLabel();
-    textFieldURI = new javax.swing.JTextField();
-    labelValidator = new javax.swing.JLabel();
+    labelBrowseCurrentLink = UI_COMPO_FACTORY.makeLabel();
+    textFieldURI = UI_COMPO_FACTORY.makeTextField();
+    textFieldURI.setComponentPopupMenu(SwingUtils.addTextActions(UI_COMPO_FACTORY.makePopupMenu()));
+    labelValidator = UI_COMPO_FACTORY.makeLabel();
 
     setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
     setLayout(new java.awt.GridBagLayout());

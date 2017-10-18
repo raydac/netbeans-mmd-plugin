@@ -25,11 +25,14 @@ import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.openide.util.ImageUtilities;
+import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
 public final class UriEditPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -6683682013891751388L;
-
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
 
   private static final ImageIcon IMAGE_OK = new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/tick16.png"));
@@ -40,7 +43,8 @@ public final class UriEditPanel extends javax.swing.JPanel {
     initComponents();
 
     this.textFieldURI.setText(uri == null ? "" : uri);
-
+    this.textFieldURI.setComponentPopupMenu(SwingUtils.addTextActions(UI_COMPO_FACTORY.makePopupMenu()));
+    
     this.textFieldURI.getDocument().addDocumentListener(new DocumentListener() {
 
       @Override

@@ -20,17 +20,23 @@ import java.util.ResourceBundle;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.ui.UI;
 
 import javax.swing.JComponent;
 
 public final class FileEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileEditPanel.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
 
   public static final class DataContainer {
 
@@ -89,12 +95,13 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
   private void initComponents() {
     java.awt.GridBagConstraints gridBagConstraints;
 
-    labelBrowseCurrentLink = new javax.swing.JLabel();
-    textFieldFilePath = new javax.swing.JTextField();
-    buttonChooseFile = new javax.swing.JButton();
-    buttonReset = new javax.swing.JButton();
-    optionPanel = new javax.swing.JPanel();
-    checkBoxShowFileInSystem = new javax.swing.JCheckBox();
+    labelBrowseCurrentLink = UI_COMPO_FACTORY.makeLabel();
+    textFieldFilePath = UI_COMPO_FACTORY.makeTextField();
+    textFieldFilePath.setComponentPopupMenu(SwingUtils.addTextActions(UI_COMPO_FACTORY.makePopupMenu()));
+    buttonChooseFile = UI_COMPO_FACTORY.makeButton();
+    buttonReset = UI_COMPO_FACTORY.makeButton();
+    optionPanel = UI_COMPO_FACTORY.makePanel();
+    checkBoxShowFileInSystem = UI_COMPO_FACTORY.makeCheckBox();
 
     setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 1, 10));
     setLayout(new java.awt.GridBagLayout());

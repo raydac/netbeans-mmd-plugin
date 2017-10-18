@@ -21,6 +21,8 @@ import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JFileChooser;
+import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.ui.Focuser;
 
 public final class FileEditPanel extends javax.swing.JPanel {
@@ -67,6 +69,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
     this.projectFolder = projectFolder;
     this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath()); //NOI18N
     this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
+    this.textFieldFilePath.setComponentPopupMenu(SwingUtils.addTextActions(UIComponentFactoryProvider.findInstance().makePopupMenu()));
     new Focuser(this.textFieldFilePath);
   }
 

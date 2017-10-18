@@ -22,9 +22,14 @@ import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JFileChooser;
+import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
 public final class FileEditPanel extends javax.swing.JPanel {
 
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
+  
   public static final class DataContainer {
 
     private final String path;
@@ -66,6 +71,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
     initComponents();
     this.projectFolder = projectFolder;
     this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath());
+    this.textFieldFilePath.setComponentPopupMenu(SwingUtils.addTextActions(UI_COMPO_FACTORY.makePopupMenu()));
     this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
   }
 

@@ -49,8 +49,10 @@ import javax.swing.text.Utilities;
 import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -176,6 +178,8 @@ public final class NoteEditor extends javax.swing.JPanel {
         doUndo();
       }
     });
+    
+    this.editorPane.setComponentPopupMenu(SwingUtils.addTextActions(UIComponentFactoryProvider.findInstance().makePopupMenu()));
     
     this.editorPane.getActionMap().put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
       private static final long serialVersionUID = -6477916799997545798L;

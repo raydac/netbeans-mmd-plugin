@@ -34,6 +34,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -189,6 +190,12 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
     return new JEditorPane();
   }
 
+  @Override
+  @Nonnull
+  public JTextField makeTextField() {
+    return new JTextField();
+  }
+  
   @Override
   @Nonnull
   public JSlider makeSlider () {

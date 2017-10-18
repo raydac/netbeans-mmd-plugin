@@ -24,6 +24,8 @@ import java.net.URISyntaxException;
 import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.ui.Focuser;
 
 public final class UriEditPanel extends javax.swing.JPanel  {
@@ -40,7 +42,8 @@ public final class UriEditPanel extends javax.swing.JPanel  {
     initComponents();
 
     this.textFieldURI.setText(uri == null ? "" : uri); //NOI18N
-
+    this.textFieldURI.setComponentPopupMenu(SwingUtils.addTextActions(UIComponentFactoryProvider.findInstance().makePopupMenu()));
+    
     this.textFieldURI.getDocument().addDocumentListener(new DocumentListener() {
 
       @Override
