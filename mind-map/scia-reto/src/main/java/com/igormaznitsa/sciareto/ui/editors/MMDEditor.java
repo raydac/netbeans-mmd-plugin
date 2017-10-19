@@ -66,6 +66,7 @@ import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
+import com.igormaznitsa.mindmap.ide.commons.Misc;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -865,40 +866,49 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
   private void editFileLinkForTopic(@Nullable final Topic topic) {
     if (topic != null) {
-      final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+      final ExtraFile currentFilePath = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
-      final FileEditPanel.DataContainer path;
+      final FileEditPanel.DataContainer dataContainer;
 
       final File projectFolder = getProjectFolder();
-      if (file == null) {
-        path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
+      if (currentFilePath == null) {
+        final FileEditPanel.DataContainer prefilled = new FileEditPanel.DataContainer(null, this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
+        dataContainer = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
+            this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
+            prefilled);
+        if (dataContainer != null) {
+          this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, dataContainer.isShowWithSystemTool());
+        }
       } else {
-        final MMapURI uri = file.getValue();
+        final MMapURI uri = currentFilePath.getValue();
         final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
 
         final FileEditPanel.DataContainer origPath;
         origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
-        path = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
+        dataContainer = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
       }
 
-      if (path != null) {
+      if (dataContainer != null) {
         final boolean valueChanged;
-        if (path.isEmpty()) {
+        if (dataContainer.isEmpty()) {
           valueChanged = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
           final Properties props = new Properties();
-          if (path.isShowWithSystemTool()) {
+          if (dataContainer.isShowWithSystemTool()) {
             props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
           }
-          final MMapURI fileUri = MMapURI.makeFromFilePath(PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, path.getPath(), props); //NOI18N
+          final MMapURI fileUri = MMapURI.makeFromFilePath(PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, dataContainer.getPath(), props); //NOI18N
           final File theFile = fileUri.asFile(projectFolder);
-          LOGGER.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
+          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getPath(), fileUri.asString(false, true))); //NOI18N
 
           if (theFile.exists()) {
+            if (currentFilePath == null) {
+              this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, theFile.getParentFile());
+            }
             topic.setExtra(new ExtraFile(fileUri));
             valueChanged = true;
           } else {
-            DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
+            DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPath()));
             valueChanged = false;
           }
         }

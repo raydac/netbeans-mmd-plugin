@@ -21,6 +21,7 @@ import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.*;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.ide.commons.Misc;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -261,60 +262,70 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     }
   }
 
-  private void editFileLinkForTopic(final Topic topic) {
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+  private void editFileLinkForTopic(@Nullable final Topic topic) {
+    if (topic!=null) {
+      final ExtraFile currentFilePath = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
-    final FileEditPanel.DataContainer path;
+      final FileEditPanel.DataContainer dataContainer;
 
-    final File projectFolder = IdeaUtils.vfile2iofile(this.editor.findRootFolderForEditedFile());
+      final File projectFolder = IdeaUtils.vfile2iofile(this.editor.findRootFolderForEditedFile());
 
-    if (projectFolder == null){
-      LOGGER.error("Can't find root folder for project or module!");
-      dialogProvider.msgError(null, "Can't find the project or module root folder!");
-      return;
-    }
-
-    if (file == null) {
-      path = IdeaUtils.editFilePath(this.editor, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"), projectFolder, null);
-    }
-    else {
-      final MMapURI uri = file.getValue();
-      final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
-
-      final FileEditPanel.DataContainer origPath;
-      origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
-      path = IdeaUtils.editFilePath(this.editor, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
-    }
-
-    if (path != null) {
-      final boolean changed;
-      if (path.isEmpty()) {
-        changed = topic.removeExtra(Extra.ExtraType.FILE);
-      }
-      else {
-        final Properties props = new Properties();
-        if (path.isShowWithSystemTool()) {
-          props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
-        }
-        final MMapURI fileUri = MMapURI.makeFromFilePath(this.editor.isMakeRelativePath() ? projectFolder : null, path.getPath(), props); //NOI18N
-        final File theFile = fileUri.asFile(projectFolder);
-        LOGGER.info(String.format("Path %s converted to uri: %s", path.getPath(), fileUri.asString(false, true))); //NOI18N
-
-        if (theFile.exists()) {
-          topic.setExtra(new ExtraFile(fileUri));
-          changed = true;
-        }
-        else {
-          dialogProvider.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), path.getPath()));
-          changed = false;
-        }
+      if (projectFolder == null) {
+        LOGGER.error("Can't find root folder for project or module!");
+        dialogProvider.msgError(null, "Can't find the project or module root folder!");
+        return;
       }
 
-      if (changed) {
-        final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
-        mindMapPanel.invalidate();
-        mindMapPanel.repaint();
-        this.editor.onMindMapModelChanged(mindMapPanel);
+      if (currentFilePath == null) {
+        final FileEditPanel.DataContainer prefilled = new FileEditPanel.DataContainer(null, this.editor.getMindMapPanel().getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
+
+        dataContainer = IdeaUtils.editFilePath(this.editor,
+                BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
+                this.editor.getMindMapPanel().getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
+                prefilled);
+        if (dataContainer != null) {
+          this.editor.getMindMapPanel().putSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, dataContainer.isShowWithSystemTool());
+        }
+      } else {
+        final MMapURI uri = currentFilePath.getValue();
+        final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
+
+        final FileEditPanel.DataContainer origPath;
+        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
+        dataContainer = IdeaUtils.editFilePath(this.editor, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
+      }
+
+      if (dataContainer != null) {
+        final boolean changed;
+        if (dataContainer.isEmpty()) {
+          changed = topic.removeExtra(Extra.ExtraType.FILE);
+        } else {
+          final Properties props = new Properties();
+          if (dataContainer.isShowWithSystemTool()) {
+            props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
+          }
+          final MMapURI fileUri = MMapURI.makeFromFilePath(this.editor.isMakeRelativePath() ? projectFolder : null, dataContainer.getPath(), props); //NOI18N
+          final File theFile = fileUri.asFile(projectFolder);
+          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getPath(), fileUri.asString(false, true))); //NOI18N
+
+          if (theFile.exists()) {
+            if (currentFilePath == null) {
+              this.editor.getMindMapPanel().putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, theFile.getParentFile());
+            }
+            topic.setExtra(new ExtraFile(fileUri));
+            changed = true;
+          } else {
+            dialogProvider.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPath()));
+            changed = false;
+          }
+        }
+
+        if (changed) {
+          final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
+          mindMapPanel.invalidate();
+          mindMapPanel.repaint();
+          this.editor.onMindMapModelChanged(mindMapPanel);
+        }
       }
     }
   }
