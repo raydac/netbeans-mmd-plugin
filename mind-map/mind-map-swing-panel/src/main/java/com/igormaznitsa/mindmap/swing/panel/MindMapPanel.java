@@ -88,6 +88,7 @@ import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispat
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
+import java.util.HashMap;
 import javax.swing.JViewport;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 
@@ -124,6 +125,8 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
   private final AtomicBoolean disposed = new AtomicBoolean();
   private final ReentrantLock panelLocker = new ReentrantLock();
 
+  private final Map<String,Object> sessionObjects = new HashMap<String,Object>();
+  
   public static class DraggedElement {
 
     public enum Modifier {
@@ -855,6 +858,48 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     repaint();
   }
 
+  /**
+   * Get saved session object. Object is presented and saved only for the current panel and only in memory.
+   * @param <T> type of object
+   * @param key key of object, must not be null
+   * @param klazz object type, must not be null
+   * @param def default value will be returned as result if object not presented, can be null
+   * @return null if object is not found, the found object otherwise
+   * @throws ClassCastException if object type is wrong for saved object
+   * @since 1.4.2
+   */
+  @Nullable
+  public <T> T getSessionObject(@Nonnull final String key, @Nonnull final Class<T> klazz, @Nullable final T def) {
+    this.lock();
+    try {
+      T result = klazz.cast(this.sessionObjects.get(key));
+      return result == null ? def : result;
+    }
+    finally {
+      this.unlock();
+    }
+  }
+
+  /**
+   * Put session object for key.
+   * @param key key of he object, must not be null
+   * @param obj object to be placed, if null then object will be removed
+   * @since 1.4.2
+   */
+  public void putSessionObject(@Nonnull final String key, @Nullable final Object obj) {
+    this.lock();
+    try {
+      if (obj == null) {
+        this.sessionObjects.remove(key);
+      } else {
+        this.sessionObjects.put(key, obj);
+      }
+    }
+    finally {
+      this.unlock();
+    }
+  }
+  
   @Nullable
   public Object findTmpObject(@Nonnull final Object key) {
     this.lock();
