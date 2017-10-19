@@ -12,6 +12,12 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
+__1.4.2 (SNAPSHOT)__
+1.4.2 (under development)
+- ALL: [#30](https://github.com/raydac/netbeans-mmd-plugin/issues/30) Remember setting in "add file"
+- ALL: [#29](https://github.com/raydac/netbeans-mmd-plugin/issues/29) Remember per session last used directory for files
+- ALL: Added standard text pop-up menu into text fields of both File dialog and URI dialog.
+
 __1.4.1 (30-sep-2017)__
 - SR:  Fixed too high CPU utilization
 - ALL: Removed use of javax.xml.bind.DatatypeConverter to make compatible with Java 9
@@ -20,26 +26,6 @@ __1.4.1 (30-sep-2017)__
 - ALL: Changed default shortcuts for MacOS, fixed processing of space button
 - ALL: Fixed D'n'D processing of topics
 - IJ:  fixed issue "Project Project (Disposed) test already disposed" [#25](https://github.com/raydac/netbeans-mmd-plugin/issues/25)
-
-__1.4.0 (18-dec-2016)__
-- IJ: plugin adapted for compatibility with 14.0.5 (139.1803)
-- ALL: added importers for Mindmup, Freemind, Novamind, Coggle and XMind formats
-- NB:  disabled watching of file changes by default, added options flag to enable that
-- NB:  added option to turn off "where used" refactoring actions for mind maps
-- SR: added graph generator for file links in mind maps of project
-- ALL: added support of Cut-Copy-Paste actions over Mind Maps
-- ALL: added reset button into URI edit dialog
-- ALL: added processing of dragged links and texts from external web browsers
-- SR: fixed 'New Project' under MacOSX
-- ALL: improved image plugin to import images from clipboard and max edge size inceased up to 350 pixels
-- ALL: improved mind-map options panel, added functions to reset, import and export settings.
-- SR: added CLI interface to convert data
-- ALL: export into [Org-Mode](http://orgmode.org/) format [#24](https://github.com/raydac/netbeans-mmd-plugin/issues/24)
-- IJ,NB: by default disabled autocreation of .projectKnowledge folder [#23](https://github.com/raydac/netbeans-mmd-plugin/issues/23)
-- ALL: added keyboard shortcuts to fold and unfold topics (`-` and `=`) [#18](https://github.com/raydac/netbeans-mmd-plugin/issues/18)
-- ALL: added attribute in mind map templates to show jumps by default
-- IJ: added auto-positioning of root topic into center of view area just as document open
-- SR: added text search in map 
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
