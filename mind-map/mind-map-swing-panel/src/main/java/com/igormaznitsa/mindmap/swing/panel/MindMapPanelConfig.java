@@ -301,9 +301,9 @@ public final class MindMapPanelConfig implements Serializable {
           if (k.startsWith("mapShortCut.")) {
 //            final int dotIndex = k.indexOf('.');
 //            final String id = k.substring(dotIndex + 1);
-            final String packedValue = prefs.get(k, null);
-            if (packedValue == null) {
-              throw new Error("Unexpected situation, short cut value is null [" + k + ']');
+            final String packedValue = prefs.get(k, "");
+            if (packedValue.isEmpty()) {
+              throw new Error("Unexpected situation, short cut value is empty [" + k + ']');
             }
             final KeyShortcut unpacked = new KeyShortcut(packedValue);
             this.mapShortCut.put(unpacked.getID(), unpacked);

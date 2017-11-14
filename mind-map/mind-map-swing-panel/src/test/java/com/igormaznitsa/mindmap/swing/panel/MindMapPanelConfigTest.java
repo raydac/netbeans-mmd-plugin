@@ -108,8 +108,8 @@ public class MindMapPanelConfigTest {
     doAnswer(new Answer() {
       @Override
       public Object answer (final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final String value = invocation.getArgumentAt(1, String.class);
+        final String key = invocation.getArgument(0);
+        final String value = invocation.getArgument(1);
         storage.put(key, value);
         return null;
       }
@@ -118,8 +118,8 @@ public class MindMapPanelConfigTest {
     doAnswer(new Answer() {
       @Override
       public Object answer (final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final Integer value = invocation.getArgumentAt(1, Integer.class);
+        final String key = invocation.getArgument(0);
+        final Integer value = invocation.getArgument(1);
         storage.put(key, value);
         return null;
       }
@@ -128,8 +128,8 @@ public class MindMapPanelConfigTest {
     doAnswer(new Answer() {
       @Override
       public Object answer (final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final Boolean value = invocation.getArgumentAt(1, Boolean.class);
+        final String key = invocation.getArgument(0);
+        final Boolean value = invocation.getArgument(1);
         storage.put(key, value);
         return null;
       }
@@ -138,8 +138,8 @@ public class MindMapPanelConfigTest {
     doAnswer(new Answer() {
       @Override
       public Object answer (final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final Float value = invocation.getArgumentAt(1, Float.class);
+        final String key = invocation.getArgument(0);
+        final Float value = invocation.getArgument(1);
         storage.put(key, value);
         return null;
       }
@@ -148,8 +148,8 @@ public class MindMapPanelConfigTest {
     doAnswer(new Answer() {
       @Override
       public Object answer (final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final Double value = invocation.getArgumentAt(1, Double.class);
+        final String key = invocation.getArgument(0);
+        final Double value = invocation.getArgument(1);
         storage.put(key, value);
         return null;
       }
@@ -158,8 +158,8 @@ public class MindMapPanelConfigTest {
     when(prefs.get(anyString(), anyString())).thenAnswer(new Answer<String>() {
       @Override
       public String answer (InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final String def = invocation.getArgumentAt(1, String.class);
+        final String key = invocation.getArgument(0);
+        final String def = invocation.getArgument(1);
         return storage.containsKey(key) ? (String) storage.get(key) : def;
       }
     });
@@ -167,8 +167,8 @@ public class MindMapPanelConfigTest {
     when(prefs.getBoolean(anyString(), anyBoolean())).thenAnswer(new Answer<Boolean>() {
       @Override
       public Boolean answer (InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final Boolean def = invocation.getArgumentAt(1, Boolean.class);
+        final String key = invocation.getArgument(0);
+        final Boolean def = invocation.getArgument(1);
         return storage.containsKey(key) ? (Boolean) storage.get(key) : def;
       }
     });
@@ -176,8 +176,8 @@ public class MindMapPanelConfigTest {
     when(prefs.getInt(anyString(), anyInt())).thenAnswer(new Answer<Integer>() {
       @Override
       public Integer answer (InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final Integer def = invocation.getArgumentAt(1, Integer.class);
+        final String key = invocation.getArgument(0);
+        final Integer def = invocation.getArgument(1);
         return storage.containsKey(key) ? (Integer) storage.get(key) : def;
       }
     });
@@ -185,8 +185,8 @@ public class MindMapPanelConfigTest {
     when(prefs.getFloat(anyString(), anyFloat())).thenAnswer(new Answer<Float>() {
       @Override
       public Float answer (InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final Float def = invocation.getArgumentAt(1, Float.class);
+        final String key = invocation.getArgument(0);
+        final Float def = invocation.getArgument(1);
         return storage.containsKey(key) ? (Float) storage.get(key) : def;
       }
     });
@@ -194,8 +194,8 @@ public class MindMapPanelConfigTest {
     when(prefs.getDouble(anyString(), anyDouble())).thenAnswer(new Answer<Double>() {
       @Override
       public Double answer (InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgumentAt(0, String.class);
-        final Double def = invocation.getArgumentAt(1, Double.class);
+        final String key = invocation.getArgument(0);
+        final Double def = invocation.getArgument(1);
         return storage.containsKey(key) ? (Double) storage.get(key) : def;
       }
     });
