@@ -28,8 +28,8 @@ public class KeyShortcutTest {
   public void testIsEvent(){
     final KeyShortcut shortcut = new KeyShortcut("some", KeyEvent.VK_UP, 0);
     
-    final KeyEvent eventShift = new KeyEvent(Mockito.mock(Component.class), 1, 0L, KeyEvent.SHIFT_MASK, KeyEvent.VK_UP);
-    final KeyEvent eventShiftCtrl = new KeyEvent(Mockito.mock(Component.class), 1, 0L, KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK, KeyEvent.VK_UP);
+    final KeyEvent eventShift = new KeyEvent(Mockito.mock(Component.class), 1, 0L, KeyEvent.SHIFT_MASK, KeyEvent.VK_UP, ' ');
+    final KeyEvent eventShiftCtrl = new KeyEvent(Mockito.mock(Component.class), 1, 0L, KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK, KeyEvent.VK_UP, ' ');
     
     assertFalse(shortcut.isEvent(eventShift));
     assertFalse(shortcut.isEvent(eventShift,KeyShortcut.ALL_MODIFIERS_MASK ^ KeyEvent.CTRL_MASK));
