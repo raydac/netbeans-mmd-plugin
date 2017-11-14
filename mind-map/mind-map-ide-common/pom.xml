@@ -1,25 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.igormaznitsa</groupId>
-        <artifactId>mind-map</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.igormaznitsa</groupId>
+    <artifactId>mind-map</artifactId>
+    <version>1.4.2-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-    <artifactId>mind-map-ide-common</artifactId>
-    <version>${main.version}</version>
+  <artifactId>mind-map-ide-common</artifactId>
+  <version>${main.version}</version>
     
-    <name>MindMap IDE Common</name>
-    <description>Aggregator of common code for IDE plugins</description>
-    <packaging>jar</packaging>
+  <name>MindMap IDE Common</name>
+  <description>Aggregator of common code for IDE plugins</description>
+  <packaging>jar</packaging>
     
-    <dependencies>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>mind-map-model</artifactId>
-        <version>${mindmap.model.version}</version>
-      </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mind-map-model</artifactId>
+      <version>${mindmap.model.version}</version>
+    </dependency>
+  </dependencies>
+    
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>igormaznitsa.mmd.ide.common</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

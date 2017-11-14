@@ -157,6 +157,18 @@
             </executions>
           </plugin>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.0.2</version>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Automatic-Module-Name>igormaznitsa.mmd.model</Automatic-Module-Name>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+          <plugin>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>uber-pom</artifactId>
             <version>${uber.pom}</version>
