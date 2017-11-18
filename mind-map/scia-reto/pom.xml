@@ -218,9 +218,11 @@
         <version>3.0.2</version>
         <configuration>
           <archive>
-            <manifestEntries>
+            <manifest>
               <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+            <manifestEntries>
               <Automatic-Module-Name>igormaznitsa.sciareto</Automatic-Module-Name>
             </manifestEntries>            
           </archive>
