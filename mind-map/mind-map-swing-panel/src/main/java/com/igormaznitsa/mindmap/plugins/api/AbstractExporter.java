@@ -19,6 +19,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -36,11 +39,15 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
 
 /**
  * Abstract auxiliary class automates way to implement an abstract exporter.
+ *
  * @since 1.2
  */
 public abstract class AbstractExporter extends AbstractPopupMenuItem implements HasMnemonic {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporter.class);
+
+  protected static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+  protected static final Format TIME_FORMAT = new SimpleDateFormat("HH:mm:ss z");
 
   @Override
   @Nullable
@@ -61,16 +68,17 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
         try {
           if (processor == null) {
             final JComponent options = makeOptions();
-            if (options != null && !dialogProvider.msgOkCancel(null,getName(panel, actionTopic, selectedTopics), options)) {
+            if (options != null && !dialogProvider.msgOkCancel(null, getName(panel, actionTopic, selectedTopics), options)) {
               return;
             }
             doExport(panel, options, null);
           } else {
             processor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
           }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
           LOGGER.error("Error during map export", ex); //NOI18N
-          dialogProvider.msgError(null,Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
+          dialogProvider.msgError(null, Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
         }
       }
     });
