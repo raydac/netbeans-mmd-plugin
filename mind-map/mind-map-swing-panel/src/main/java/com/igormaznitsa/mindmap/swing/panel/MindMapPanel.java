@@ -736,6 +736,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
             }
 
             final boolean isCtrlDown = e.isControlDown();
+            final boolean isShiftDown = e.isShiftDown();
 
             if (element != null) {
               final ElementPart part = element.findPartForPoint(e.getPoint());
@@ -778,11 +779,16 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                     }
                     break;
                   default:
-                    // only
-                    removeAllSelection();
-                    select(element.getModel(), false);
-                    if (e.getClickCount() > 1) {
-                      startEdit(element);
+                    if (isShiftDown) {
+                      // diapasone
+                      selectSiblingDiapasone(element);
+                    } else {
+                      // only
+                      removeAllSelection();
+                      select(element.getModel(), false);
+                      if (e.getClickCount() > 1) {
+                        startEdit(element);
+                      }
                     }
                     break;
                 }
@@ -839,6 +845,39 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     });
   }
 
+  private void selectSiblingDiapasone(@Nonnull AbstractElement element) {
+    final AbstractElement parent = element.getParent();
+    Topic selectedSibling = null;
+
+    if (parent != null) {
+      for (Topic e : this.selectedTopics) {
+        if (e != element.getModel() && parent.getModel() == e.getParent() && element.isLeftDirection() == AbstractCollapsableElement.isLeftSidedTopic(e)) {
+          selectedSibling = e;
+          break;
+        }
+      }
+    }
+
+    if (selectedSibling != null) {
+      select(selectedSibling, false);
+
+      boolean select = false;
+      for (final Topic t : parent.getModel().getChildren()) {
+        if (select && element.isLeftDirection() == AbstractCollapsableElement.isLeftSidedTopic(t)) {
+          select(t, false);
+        }
+
+        if (t == element.getModel() || t == selectedSibling) {
+          select = !select;
+          if (!select) {
+            break;
+          }
+        }
+      }
+    }
+    select(element.getModel(), false);
+  }
+  
   private void doFoldOrUnfoldTopic(@Nonnull final AbstractElement element, final boolean unfold, final boolean onlyFirstLevel) {
     if (unfold) {
       ((AbstractCollapsableElement) element).setCollapse(false);
