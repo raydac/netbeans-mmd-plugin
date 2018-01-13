@@ -859,8 +859,6 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
 
     if (selectedSibling != null) {
-      select(selectedSibling, false);
-
       boolean select = false;
       for (final Topic t : parent.getModel().getChildren()) {
         if (select && element.isLeftDirection() == AbstractCollapsableElement.isLeftSidedTopic(t)) {
