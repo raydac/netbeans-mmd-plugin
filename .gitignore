@@ -29,3 +29,4 @@ buildNumber.properties
 /mind-map/idea-mindmap/gradle/
 /mind-map/idea-mindmap/gradlew
 /mind-map/idea-mindmap/gradlew.bat
+/mind-map/nb-configuration.xml

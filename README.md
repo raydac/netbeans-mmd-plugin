@@ -18,6 +18,7 @@ __1.4.2 (UNDER DEVELOPMENT)__
 - ALL: [#30](https://github.com/raydac/netbeans-mmd-plugin/issues/30) Remember setting in "add file"
 - ALL: [#29](https://github.com/raydac/netbeans-mmd-plugin/issues/29) Remember per session last used directory for files
 - ALL: Added standard text pop-up menu into text fields of both File dialog and URI dialog.
+- ALL: added select mode with pressed SHIFT
 
 __1.4.1 (30-sep-2017)__
 - SR:  Fixed too high CPU utilization
