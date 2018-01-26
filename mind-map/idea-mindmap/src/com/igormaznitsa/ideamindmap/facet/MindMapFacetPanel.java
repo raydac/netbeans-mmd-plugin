@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 public class MindMapFacetPanel {
   private JCheckBox checkBoxUseInternalBrowser;
   private JCheckBox checkBoxMakeRelativePath;
+  private JCheckBox checkBoxTrimTopicTextBeforeSet;
   private JPanel mainPanel;
   private JCheckBox checkBoxCopyColorInfoFromParent;
   private JCheckBox checkBoxUnfoldCollapsedDropTarget;
@@ -51,6 +52,7 @@ public class MindMapFacetPanel {
     boolean result = false;
 
     result |= this.controller.getConfiguration().isUseInsideBrowser() ^ this.checkBoxUseInternalBrowser.isSelected();
+    result |= this.controller.getConfiguration().isTrimTopicTextBeforeSet() ^ this.checkBoxTrimTopicTextBeforeSet.isSelected();
     result |= this.controller.getConfiguration().isMakeRelativePath() ^ this.checkBoxMakeRelativePath.isSelected();
     result |= this.controller.getConfiguration().isCopyColorInformationFromParent() ^ this.checkBoxCopyColorInfoFromParent.isSelected();
     result |= this.controller.getConfiguration().isUnfoldTopicWhenItIsDropTarget() ^ this.checkBoxUnfoldCollapsedDropTarget.isSelected();
@@ -61,6 +63,7 @@ public class MindMapFacetPanel {
 
   public void save(){
     this.controller.getConfiguration().setMakeRelativePath(this.checkBoxMakeRelativePath.isSelected());
+    this.controller.getConfiguration().setTrimTopicTextBeforeSet(this.checkBoxTrimTopicTextBeforeSet.isSelected());
     this.controller.getConfiguration().setUseInsideBrowser(this.checkBoxUseInternalBrowser.isSelected());
     this.controller.getConfiguration().setCopyColorInformationFromParent(this.checkBoxCopyColorInfoFromParent.isSelected());
     this.controller.getConfiguration().setUnfoldTopicWhenItIsDropTarget(this.checkBoxUnfoldCollapsedDropTarget.isSelected());
@@ -69,6 +72,7 @@ public class MindMapFacetPanel {
 
   public void reset(){
     this.checkBoxUseInternalBrowser.setSelected(this.controller.getConfiguration().isUseInsideBrowser());
+    this.checkBoxTrimTopicTextBeforeSet.setSelected(this.controller.getConfiguration().isTrimTopicTextBeforeSet());
     this.checkBoxMakeRelativePath.setSelected(this.controller.getConfiguration().isMakeRelativePath());
     this.checkBoxCopyColorInfoFromParent.setSelected(this.controller.getConfiguration().isCopyColorInformationFromParent());
     this.checkBoxUnfoldCollapsedDropTarget.setSelected(this.controller.getConfiguration().isUnfoldTopicWhenItIsDropTarget());

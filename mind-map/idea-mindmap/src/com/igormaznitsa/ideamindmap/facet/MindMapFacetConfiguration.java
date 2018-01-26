@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.facet;
 
 import com.intellij.facet.FacetConfiguration;
@@ -31,83 +32,94 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
 
   private static final String KEY_USE_INSIDE_BROWSER = "useInsideBrowser";
   private static final String KEY_MAKE_RELATIVE_PATH = "makeRelativePath";
-  private static final String KEY_COPY_COLOR_INFO_FROM_PARENT= "copyParentColorInfoInNew";
-  private static final String KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET= "unfoldCollapsedTopicInDrop";
-  private static final String KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION= "disableAutocreateProjectKnowledgeFolder";
+  private static final String KEY_TRIM_TOPIC_TEXT_BEFORE_SET = "trimTopicText";
+  private static final String KEY_COPY_COLOR_INFO_FROM_PARENT = "copyParentColorInfoInNew";
+  private static final String KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET = "unfoldCollapsedTopicInDrop";
+  private static final String KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION = "disableAutocreateProjectKnowledgeFolder";
 
   public MindMapFacetConfiguration() {
   }
 
-  @Override public FacetEditorTab[] createEditorTabs(FacetEditorContext editorContext, FacetValidatorsManager validatorsManager) {
-    return new FacetEditorTab[] { new MindMapFacetEditorTab(this) };
+  @Override
+  public FacetEditorTab[] createEditorTabs(FacetEditorContext editorContext, FacetValidatorsManager validatorsManager) {
+    return new FacetEditorTab[] {new MindMapFacetEditorTab(this)};
   }
 
-  @Override public void readExternal(final Element element) throws InvalidDataException {
+  @Override
+  public void readExternal(final Element element) throws InvalidDataException {
     final List<Element> elements = element.getChildren();
     try {
       this.preferences.clear();
       for (final Element e : elements) {
         this.preferences.put(e.getName(), e.getText());
       }
-    }
-    catch (Exception ex) {
-      throw new InvalidDataException("Can't read preferences",ex);
+    } catch (Exception ex) {
+      throw new InvalidDataException("Can't read preferences", ex);
     }
   }
 
-  @Override public void writeExternal(final Element element) throws WriteExternalException {
+  @Override
+  public void writeExternal(final Element element) throws WriteExternalException {
     try {
       for (final String key : this.preferences.keys()) {
         Element el = element.getChild(key);
-        if (el == null){
+        if (el == null) {
           el = new Element(key);
           element.addContent(el);
         }
-        el.setText(this.preferences.get(key,null));
+        el.setText(this.preferences.get(key, null));
       }
-    }catch(Exception ex){
-      throw new WriteExternalException("Can't write preferences",ex);
+    } catch (Exception ex) {
+      throw new WriteExternalException("Can't write preferences", ex);
     }
   }
 
+  public boolean isTrimTopicTextBeforeSet() {
+    return this.preferences.getBoolean(KEY_TRIM_TOPIC_TEXT_BEFORE_SET, false);
+  }
+
+  public void setTrimTopicTextBeforeSet(final boolean flag) {
+    this.preferences.putBoolean(KEY_TRIM_TOPIC_TEXT_BEFORE_SET, flag);
+  }
+
   public boolean isUseInsideBrowser() {
-    return this.preferences.getBoolean(KEY_USE_INSIDE_BROWSER,false);
+    return this.preferences.getBoolean(KEY_USE_INSIDE_BROWSER, false);
   }
 
   public boolean isCopyColorInformationFromParent() {
-    return this.preferences.getBoolean(KEY_COPY_COLOR_INFO_FROM_PARENT,true);
+    return this.preferences.getBoolean(KEY_COPY_COLOR_INFO_FROM_PARENT, true);
   }
 
   public void setCopyColorInformationFromParent(final boolean flag) {
-    this.preferences.putBoolean(KEY_COPY_COLOR_INFO_FROM_PARENT,flag);
+    this.preferences.putBoolean(KEY_COPY_COLOR_INFO_FROM_PARENT, flag);
   }
 
   public boolean isUnfoldTopicWhenItIsDropTarget() {
-    return this.preferences.getBoolean(KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET,true);
+    return this.preferences.getBoolean(KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET, true);
   }
 
   public void setUnfoldTopicWhenItIsDropTarget(final boolean flag) {
-    this.preferences.putBoolean(KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET,flag);
+    this.preferences.putBoolean(KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET, flag);
   }
 
   public void setUseInsideBrowser(final boolean flag) {
-    this.preferences.putBoolean(KEY_USE_INSIDE_BROWSER,flag);
+    this.preferences.putBoolean(KEY_USE_INSIDE_BROWSER, flag);
   }
 
   public boolean isMakeRelativePath() {
-    return this.preferences.getBoolean(KEY_MAKE_RELATIVE_PATH,true);
+    return this.preferences.getBoolean(KEY_MAKE_RELATIVE_PATH, true);
   }
 
   public void setMakeRelativePath(final boolean flag) {
-    this.preferences.putBoolean(KEY_MAKE_RELATIVE_PATH,flag);
+    this.preferences.putBoolean(KEY_MAKE_RELATIVE_PATH, flag);
   }
 
   public boolean isDisableAutoCreateProjectKnowledgeFolder() {
-    return this.preferences.getBoolean(KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION,true);
+    return this.preferences.getBoolean(KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION, true);
   }
 
   public void setDisableAutoCreateProjectKnowledgeFolder(final boolean flag) {
-    this.preferences.putBoolean(KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION,flag);
+    this.preferences.putBoolean(KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION, flag);
   }
 
 }

@@ -31,6 +31,8 @@ public interface MindMapPanelController {
 
   boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull MindMapPanel source);
 
+  boolean isTrimTopicTextBeforeSet(@Nonnull MindMapPanel source);
+  
   boolean isSelectionAllowed(@Nonnull MindMapPanel source);
 
   boolean isElementDragAllowed(@Nonnull MindMapPanel source);

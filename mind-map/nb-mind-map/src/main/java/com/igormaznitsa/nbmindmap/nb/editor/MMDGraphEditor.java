@@ -1249,6 +1249,11 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   }
 
   @Override
+  public boolean isTrimTopicTextBeforeSet(MindMapPanel source) {
+    return NbUtils.getPreferences().getBoolean("trimTopicText", false);
+  }
+
+  @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source) {
     return NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true); //NOI18N
   }

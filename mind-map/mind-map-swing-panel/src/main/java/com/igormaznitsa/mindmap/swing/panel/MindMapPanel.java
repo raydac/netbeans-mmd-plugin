@@ -1569,7 +1569,12 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
           final Topic editedTopic = this.elementUnderEdit.getModel();
 
           final String oldText = editedElement.getText();
-          final String newText = this.textEditor.getText();
+          String newText = this.textEditor.getText();
+          
+          if (this.controller.isTrimTopicTextBeforeSet(this)) {
+            newText = newText.trim();
+          }
+          
           if (!oldText.equals(newText)) {
             editedElement.setText(newText);
           }

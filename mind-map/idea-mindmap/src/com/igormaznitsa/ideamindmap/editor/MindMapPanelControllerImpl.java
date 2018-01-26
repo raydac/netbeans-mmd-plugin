@@ -79,6 +79,12 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   @Override
+  public boolean isTrimTopicTextBeforeSet(MindMapPanel source) {
+    final MindMapFacet facet = this.editor.findFacet();
+    return facet != null && facet.getConfiguration().isTrimTopicTextBeforeSet();
+  }
+
+  @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull final MindMapPanel mindMapPanel) {
     final MindMapFacet facet = this.editor.findFacet();
     return facet == null || facet.getConfiguration().isCopyColorInformationFromParent();

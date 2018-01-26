@@ -623,6 +623,11 @@ public class Main {
             }
 
             @Override
+            public boolean isTrimTopicTextBeforeSet(@Nonnull final MindMapPanel source) {
+              return false;
+            }
+
+            @Override
             public boolean isSelectionAllowed(@Nonnull final MindMapPanel source) {
               return false;
             }

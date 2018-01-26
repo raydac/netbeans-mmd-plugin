@@ -880,6 +880,7 @@
                               <Component id="checkBoxWatchFileRefactoring" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="checkBoxIgnoreWhereUsedRequests" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="labelMiscNeedsReloading" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkboxTrimTopicText" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace pref="54" max="32767" attributes="0"/>
                       </Group>
@@ -888,6 +889,8 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
+                          <Component id="checkboxTrimTopicText" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="checkboxUseInsideBrowser" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="checkboxRelativePathsForFilesInTheProject" min="-2" max="-2" attributes="0"/>
@@ -981,6 +984,16 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="IDE should be reloaded for effect" noResource="true"/>
                   </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="checkboxTrimTopicText">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.checkboxTrimTopicText.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkboxTrimTopicTextActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

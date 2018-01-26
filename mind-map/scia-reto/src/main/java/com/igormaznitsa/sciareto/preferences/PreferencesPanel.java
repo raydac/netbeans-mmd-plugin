@@ -164,6 +164,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     checkBoxScalingSHIFT = new javax.swing.JCheckBox();
     checkBoxScalingMETA = new javax.swing.JCheckBox();
     checkboxMetricsAllowed = new javax.swing.JCheckBox();
+    checkboxTrimTopicText = new javax.swing.JCheckBox();
     jPanel9 = new javax.swing.JPanel();
     buttonAbout = new javax.swing.JButton();
     donateButton1 = new com.igormaznitsa.sciareto.ui.misc.DonateButton();
@@ -706,7 +707,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkboxUseInsideBrowser, gridBagConstraints);
 
@@ -718,7 +719,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkboxRelativePathsForFilesInTheProject, gridBagConstraints);
 
@@ -730,7 +731,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkBoxUnfoldCollapsedTarget, gridBagConstraints);
 
@@ -742,7 +743,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkBoxCopyColorInfoToNewAllowed, gridBagConstraints);
 
@@ -754,7 +755,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkBoxKnowledgeFolderAutogenerationAllowed, gridBagConstraints);
 
@@ -771,7 +772,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     jPanel1.add(jPanel7, gridBagConstraints);
 
@@ -826,17 +827,29 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 8;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel1.add(jPanel8, gridBagConstraints);
 
     checkboxMetricsAllowed.setText("Enable metrics upload");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkboxMetricsAllowed, gridBagConstraints);
+
+    checkboxTrimTopicText.setText("Trim topic text before set"); // NOI18N
+    checkboxTrimTopicText.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkboxTrimTopicTextActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    jPanel1.add(checkboxTrimTopicText, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -1207,7 +1220,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       final MindMapPanelConfig cfg = fillBySettings(new MindMapPanelConfig(),prefs);
       cfg.saveTo(prefs);
       try {
-        FileUtils.write(file, prefs.toString());
+        FileUtils.write(file, prefs.toString(), "UTF-8");
       }
       catch (final Exception ex) {
         LOGGER.error("Can't export settings", ex); //NOI18N
@@ -1220,7 +1233,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog(this, "importProperties", "Import settings", null, true, new PropertiesFileFilter(), "Open");
     if (file != null) {
       try {
-        load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file)));
+        load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file, "UTF-8")));
       }
       catch (final Exception ex) {
         LOGGER.error("Can't import settings", ex); //NOI18N
@@ -1229,12 +1242,19 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_buttonImportFromFileActionPerformed
 
+  private void checkboxTrimTopicTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxTrimTopicTextActionPerformed
+    if (this.changeNotificationAllowed) {
+      this.changed = true;
+    }
+  }//GEN-LAST:event_checkboxTrimTopicTextActionPerformed
+
   public void load(@Nonnull final Preferences preferences) {
     this.config.loadFrom(preferences);
     loadFrom(this.config,preferences);
     this.changeNotificationAllowed = false;
     try {
       // Common behaviour options
+      this.checkboxTrimTopicText.setSelected(preferences.getBoolean("trimTopicText", false)); //NOI18N
       this.checkboxUseInsideBrowser.setSelected(preferences.getBoolean("useInsideBrowser", false)); //NOI18N
       this.checkboxRelativePathsForFilesInTheProject.setSelected(preferences.getBoolean("makeRelativePathToProject", true)); //NOI18N
       this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true)); //NOI18N
@@ -1347,6 +1367,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     // Common behaviour options
     preferences.putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected()); //NOI18N
+    preferences.putBoolean("trimTopicText", this.checkboxTrimTopicText.isSelected()); //NOI18N
     preferences.putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected()); //NOI18N
     preferences.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected()); //NOI18N
     preferences.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected()); //NOI18N
@@ -1406,6 +1427,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
   private javax.swing.JCheckBox checkboxMetricsAllowed;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
+  private javax.swing.JCheckBox checkboxTrimTopicText;
   private javax.swing.JCheckBox checkboxUseInsideBrowser;
   private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooser1stBackground;
   private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooser1stText;

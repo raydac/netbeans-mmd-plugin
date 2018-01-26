@@ -148,6 +148,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     checkBoxWatchFileRefactoring = new javax.swing.JCheckBox();
     checkBoxIgnoreWhereUsedRequests = new javax.swing.JCheckBox();
     labelMiscNeedsReloading = new javax.swing.JLabel();
+    checkboxTrimTopicText = new javax.swing.JCheckBox();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
     jLabel3 = new javax.swing.JLabel();
@@ -740,6 +741,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     labelMiscNeedsReloading.setForeground(java.awt.Color.red);
     labelMiscNeedsReloading.setText("IDE should be reloaded for effect"); // NOI18N
 
+    checkboxTrimTopicText.setText(bundle.getString("MMDCfgPanel.checkboxTrimTopicText.text")); // NOI18N
+    checkboxTrimTopicText.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkboxTrimTopicTextActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
@@ -754,12 +762,15 @@ final class MMDCfgPanel extends javax.swing.JPanel {
           .addComponent(checkBoxKnowledgeFolderAutogenerationAllowed)
           .addComponent(checkBoxWatchFileRefactoring)
           .addComponent(checkBoxIgnoreWhereUsedRequests)
-          .addComponent(labelMiscNeedsReloading))
+          .addComponent(labelMiscNeedsReloading)
+          .addComponent(checkboxTrimTopicText))
         .addContainerGap(54, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
+        .addComponent(checkboxTrimTopicText)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(checkboxUseInsideBrowser)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(checkboxRelativePathsForFilesInTheProject)
@@ -1248,6 +1259,12 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_checkBoxIgnoreWhereUsedRequestsActionPerformed
 
+  private void checkboxTrimTopicTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxTrimTopicTextActionPerformed
+    if (this.changeNotificationAllowed) {
+      showNeedsReloadingNotification();
+    }
+  }//GEN-LAST:event_checkboxTrimTopicTextActionPerformed
+
   private void showNeedsReloadingNotification() {
     this.labelMiscNeedsReloading.setVisible(true);
   }
@@ -1305,6 +1322,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
       // Common behaviour options
       this.checkboxUseInsideBrowser.setSelected(preferences.getBoolean("useInsideBrowser", false));
+      this.checkboxTrimTopicText.setSelected(preferences.getBoolean("trimTopicText", false));
       this.checkboxRelativePathsForFilesInTheProject.setSelected(preferences.getBoolean("makeRelativePathToProject", true));
       this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true));
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true));
@@ -1361,6 +1379,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
       // Common behaviour options
       prefs.putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected());
+      prefs.putBoolean("trimTopicText", this.checkboxTrimTopicText.isSelected());
       prefs.putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected());
       prefs.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected());
       prefs.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected());
@@ -1418,6 +1437,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
   private javax.swing.JCheckBox checkBoxWatchFileRefactoring;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
+  private javax.swing.JCheckBox checkboxTrimTopicText;
   private javax.swing.JCheckBox checkboxUseInsideBrowser;
   private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooser1stBackground;
   private com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton colorChooser1stText;

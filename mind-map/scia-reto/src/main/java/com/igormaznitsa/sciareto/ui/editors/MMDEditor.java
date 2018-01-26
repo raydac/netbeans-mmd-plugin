@@ -334,6 +334,11 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       });
     }
   }  
+
+  @Override
+  public boolean isTrimTopicTextBeforeSet(@Nonnull final MindMapPanel source) {
+    return PreferencesManager.getInstance().getPreferences().getBoolean("trimTopicText", false); //NOI18N
+  }
   
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
