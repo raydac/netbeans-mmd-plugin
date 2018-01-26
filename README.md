@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.2 (UNDER DEVELOPMENT)__
+- ALL: [#33](https://github.com/raydac/netbeans-mmd-plugin/issues/33) added configuration flag to trim entered topic text, `Trim topic text before set`
 - ALL: added exporter for AsciiDoc
 - ALL: [#31](https://github.com/raydac/netbeans-mmd-plugin/issues/31) Imrpoved FreeMind compatibility to support 1.0.1 FreeMind format
 - ALL: [#30](https://github.com/raydac/netbeans-mmd-plugin/issues/30) Remember setting in "add file"
