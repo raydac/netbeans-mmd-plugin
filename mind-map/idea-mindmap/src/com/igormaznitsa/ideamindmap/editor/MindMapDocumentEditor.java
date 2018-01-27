@@ -227,7 +227,33 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         });
       }
     }
+  }
 
+  private Runnable makeRunnableSetDocumenttextAction(@Nonnull final MindMapDocumentEditor editorIstance, @Nonnull final String documentText) {
+    return new Runnable() {
+      @Override
+      public void run() {
+          safeSwing(new Runnable() {
+          @Override
+          public void run() {
+            if (!mindMapPanel.isDisposed()) {
+              try {
+                if (documentText.isEmpty()) {
+                  LOGGER.warn("Detected empty text document, default mind-map will be created");
+                  mindMapPanel.setModel(new MindMap(editorIstance, true));
+                } else {
+                  mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
+                }
+              }
+              catch (Exception ex) {
+                LOGGER.error("Can't parse MindMap text", ex);
+                editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
+              }
+            }
+          }
+        });
+      }
+    };
   }
 
   private void loadMindMapFromDocument() {
@@ -238,23 +264,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         final Document document = getDocument();
 
         if (document != null) {
+
           IdeaUtils.executeReadAction(getProject(), getDocument(), new Runnable() {
             @Override
             public void run() {
-              final String documentText = document.getText();
-              safeSwing(new Runnable() {
-                @Override
-                public void run() {
-                  if (!mindMapPanel.isDisposed()) {
-                    try {
-                      mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
-                    } catch (Exception ex) {
-                      LOGGER.error("Can't parse MindMap text", ex);
-                      editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
-                    }
-                  }
-                }
-              });
+              safeSwing(makeRunnableSetDocumenttextAction(editorIstance, document.getText()));
             }
           });
 
@@ -264,20 +278,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
               ApplicationManager.getApplication().runReadAction(new Runnable() {
                 @Override
                 public void run() {
-                  final String documentText = document.getText();
-                  safeSwing(new Runnable() {
-                    @Override
-                    public void run() {
-                      if (!mindMapPanel.isDisposed()) {
-                        try {
-                          mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
-                        } catch (Exception ex) {
-                          LOGGER.error("Can't parse MindMap text", ex);
-                          editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
-                        }
-                      }
-                    }
-                  });
+                  safeSwing(makeRunnableSetDocumenttextAction(editorIstance, document.getText()));
                 }
               });
             }

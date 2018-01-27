@@ -414,13 +414,16 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantLoadDocument"));
       } else {
         try {
-          this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)), false);
-        }
-        catch (IllegalArgumentException ex) {
+          if (text.isEmpty()) {
+            LOGGER.warn("Detected empty text document as mind map, the default mind map will be created");
+            this.mindMapPanel.setModel(new MindMap(this, true), false);
+          } else {
+            this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)), false);
+          }
+        } catch (IllegalArgumentException ex) {
           LOGGER.warn("Can't detect mind map"); //NOI18N
           this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantDetectMMap"));
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
           LOGGER.error("Can't parse mind map text", ex); //NOI18N
           this.mindMapPanel.setErrorText(BUNDLE.getString("MMDGraphEditor.updateModel.cantParseDoc"));
         }

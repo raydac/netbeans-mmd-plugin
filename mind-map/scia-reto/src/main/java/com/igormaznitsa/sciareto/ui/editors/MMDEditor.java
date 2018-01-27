@@ -180,7 +180,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
     final MindMap map;
-    if (file == null) {
+    if (file == null || file.length() == 0L) {
       map = new MindMap(this, true);
     } else {
       map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
@@ -284,7 +284,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   @Override
   public void loadContent(@Nullable File file) throws IOException {
     final MindMap map;
-    if (file == null) {
+    if (file == null || file.length() == 0L) {
       map = new MindMap(this, true);
     } else {
       map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
