@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
@@ -157,7 +158,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       this.customProcessors.put(ChangeColorPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nullable @MustNotContainNull final Topic[] selectedTopics) {
-          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
+          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[] {topic});
         }
       });
       this.customProcessors.put(AboutPlugin.class, new CustomJob() {
@@ -189,7 +190,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       }
     };
 
-    if (!IdeaUtils.submitTransactionLater(action)){
+    if (!IdeaUtils.submitTransactionLater(action)) {
       SwingUtilities.invokeLater(action);
     }
   }
@@ -200,16 +201,14 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     if (link == null) {
       // create new
       result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
-    }
-    else {
+    } else {
       // edit
       result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
     }
     if (result != null) {
       if (result == IdeaUtils.EMPTY_URI) {
         topic.removeExtra(Extra.ExtraType.LINK);
-      }
-      else {
+      } else {
         topic.setExtra(new ExtraLink(result));
       }
 
@@ -236,20 +235,17 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         treePanel.dispose();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(mindMapPanel.getModel(), selected);
-        }
-        else {
+        } else {
           result = remove;
         }
       }
-    }
-    else {
+    } else {
       final MindMapTreePanel panel = new MindMapTreePanel(mindMapPanel.getModel(), link, true, null);
       if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(mindMapPanel.getModel(), selected);
-        }
-        else {
+        } else {
           result = remove;
         }
       }
@@ -258,8 +254,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     if (result != null) {
       if (result == remove) {
         topic.removeExtra(Extra.ExtraType.TOPIC);
-      }
-      else {
+      } else {
         topic.setExtra(result);
       }
       mindMapPanel.invalidate();
@@ -269,7 +264,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   private void editFileLinkForTopic(@Nullable final Topic topic) {
-    if (topic!=null) {
+    if (topic != null) {
       final ExtraFile currentFilePath = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
 
       final FileEditPanel.DataContainer dataContainer;
@@ -286,9 +281,9 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         final FileEditPanel.DataContainer prefilled = new FileEditPanel.DataContainer(null, this.editor.getMindMapPanel().getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
 
         dataContainer = IdeaUtils.editFilePath(this.editor,
-                BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
-                this.editor.getMindMapPanel().getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
-                prefilled);
+            BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
+            this.editor.getMindMapPanel().getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
+            prefilled);
         if (dataContainer != null) {
           this.editor.getMindMapPanel().putSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, dataContainer.isShowWithSystemTool());
         }
@@ -367,20 +362,18 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     if (note == null) {
       // create new
       result = IdeaUtils
-        .editText(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
-          ""); //NOI18N
-    }
-    else {
+          .editText(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
+              ""); //NOI18N
+    } else {
       // edit
       result = IdeaUtils
-        .editText(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
-          note.getValue());
+          .editText(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
+              note.getValue());
     }
     if (result != null) {
       if (result.isEmpty()) {
         topic.removeExtra(Extra.ExtraType.NOTE);
-      }
-      else {
+      } else {
         topic.setExtra(new ExtraNote(result));
       }
       this.editor.getMindMapPanel().invalidate();
@@ -405,7 +398,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     if (draggedTopic != null && destinationTopic != null && draggedTopic != destinationTopic) {
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
         if (!getDialogProvider()
-          .msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
+            .msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
           return result;
         }
       }
@@ -419,7 +412,8 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
   }
 
-  @Override public void onConfigurationPropertyChanged(@Nonnull final MindMapPanelConfig mindMapPanelConfig) {
+  @Override
+  public void onConfigurationPropertyChanged(@Nonnull final MindMapPanelConfig mindMapPanelConfig) {
     this.editor.refreshConfiguration();
   }
 }

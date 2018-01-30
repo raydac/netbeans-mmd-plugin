@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.2 (UNDER DEVELOPMENT)__
+- IJ:  [#35](https://github.com/raydac/netbeans-mmd-plugin/issues/35) added `Use Project base folder as relative path root` option to facet (by default it uses Module folder)
 - ALL: [#34](https://github.com/raydac/netbeans-mmd-plugin/issues/34) added logic to interpret zero-length MMD file as an empty mind map file with root.
 - ALL: [#33](https://github.com/raydac/netbeans-mmd-plugin/issues/33) added configuration flag to trim entered topic text, `Trim topic text before set`
 - ALL: added exporter for AsciiDoc

@@ -31,6 +31,7 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
   private final InMemoryPreferenceNode preferences = new InMemoryPreferenceNode();
 
   private static final String KEY_USE_INSIDE_BROWSER = "useInsideBrowser";
+  private static final String KEY_USE_PROJECT_BASE_FOLDER_AS_ROOT = "useProjectBaseFolderAsRoot";
   private static final String KEY_MAKE_RELATIVE_PATH = "makeRelativePath";
   private static final String KEY_TRIM_TOPIC_TEXT_BEFORE_SET = "trimTopicText";
   private static final String KEY_COPY_COLOR_INFO_FROM_PARENT = "copyParentColorInfoInNew";
@@ -80,6 +81,14 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
 
   public void setTrimTopicTextBeforeSet(final boolean flag) {
     this.preferences.putBoolean(KEY_TRIM_TOPIC_TEXT_BEFORE_SET, flag);
+  }
+
+  public boolean isUseProjectBaseFolderAsRoot() {
+    return this.preferences.getBoolean(KEY_USE_PROJECT_BASE_FOLDER_AS_ROOT, false);
+  }
+
+  public void setUseProjectBaseFolderAsRoot(final boolean flag) {
+    this.preferences.putBoolean(KEY_USE_PROJECT_BASE_FOLDER_AS_ROOT, flag);
   }
 
   public boolean isUseInsideBrowser() {

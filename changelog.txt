@@ -1,4 +1,5 @@
 1.4.2 (under development)
+- IJ:  [#35](https://github.com/raydac/netbeans-mmd-plugin/issues/35) added `Use Project base folder as relative path root` option to facet (by default it uses Module folder)
 - ALL: [#34](https://github.com/raydac/netbeans-mmd-plugin/issues/34) added logic to interpret zero-length MMD file as an empty mind map file with root.
 - ALL: [#33](https://github.com/raydac/netbeans-mmd-plugin/issues/33) added configuration flag to trim entered topic text, `Trim topic text before set`
 - ALL: added exporter for AsciiDoc
@@ -35,7 +36,7 @@
 - ALL: added keyboard shortcuts to fold and unfold topics (`-` and `=`) [#18](https://github.com/raydac/netbeans-mmd-plugin/issues/18)
 - ALL: added attribute in mind map templates to show jumps by default
 - IJ: added auto-positioning of root topic into center of view area just as document open
-- SR: added text search in map 
+- SR: added text search in map
 
 1.3.0 (01-sep-2016)
 - added sorting of attributes before mind map saving

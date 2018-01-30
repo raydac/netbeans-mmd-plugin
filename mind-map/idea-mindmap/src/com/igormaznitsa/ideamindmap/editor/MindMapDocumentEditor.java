@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
@@ -125,7 +126,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
     final Document document = FileDocumentManager.getInstance().getDocument(this.file);
 
-    this.documents = new Document[]{document};
+    this.documents = new Document[] {document};
 
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
@@ -233,7 +234,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     return new Runnable() {
       @Override
       public void run() {
-          safeSwing(new Runnable() {
+        safeSwing(new Runnable() {
           @Override
           public void run() {
             if (!mindMapPanel.isDisposed()) {
@@ -244,8 +245,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
                 } else {
                   mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
                 }
-              }
-              catch (Exception ex) {
+              } catch (Exception ex) {
                 LOGGER.error("Can't parse MindMap text", ex);
                 editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
               }
@@ -373,7 +373,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   public void dispose() {
     try {
       this.mindMapPanel.dispose();
-    }finally {
+    } finally {
       this.getDocument().removeDocumentListener(this.documentListener);
       DataManager.removeDataProvider(this.mainScrollPane);
     }
@@ -393,9 +393,9 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
     if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-            || e.getKeyCode() == KeyEvent.VK_LEFT
-            || e.getKeyCode() == KeyEvent.VK_RIGHT
-            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+        || e.getKeyCode() == KeyEvent.VK_LEFT
+        || e.getKeyCode() == KeyEvent.VK_RIGHT
+        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
       e.consume();
     }
   }
@@ -479,9 +479,9 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   @Nullable
   public VirtualFile findRootFolderForEditedFile() {
     final Module module = IdeaUtils.findModuleForFile(this.project, this.file);
-
     final VirtualFile rootFolder;
-    if (module == null) {
+
+    if (module == null || isUseProjectBaseFolderAsRoot()) {
       rootFolder = this.project.getBaseDir();
     } else {
       rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
@@ -555,6 +555,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     return MindMapFacet.getInstance(IdeaUtils.findModuleForFile(this.project, this.file));
   }
 
+  boolean isUseProjectBaseFolderAsRoot() {
+    final MindMapFacet facet = findFacet();
+    return facet == null || facet.getConfiguration().isUseProjectBaseFolderAsRoot();
+  }
+
   boolean isUseInsideBrowser() {
     final MindMapFacet facet = findFacet();
     return facet != null && facet.getConfiguration().isUseInsideBrowser();
@@ -590,7 +595,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       result = true;
     } else {
       result = this.getDialogProvider().msgConfirmYesNo(null, BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"),
-              String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
+          String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
   }
@@ -601,12 +606,12 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     if (note == null) {
       // create new
       result = IdeaUtils
-              .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
+          .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
     } else {
       // edit
       result = IdeaUtils
-              .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
-                      note.getValue());
+          .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
+              note.getValue());
     }
     if (result != null) {
       if (result.isEmpty()) {
@@ -771,12 +776,12 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         final File theFileIo = IdeaUtils.vfile2iofile(theFile);
 
         final MMapURI theURI = isMakeRelativePath() ?
-                new MMapURI(rootFolder, theFileIo, null) :
-                new MMapURI(null, theFileIo, null); //NOI18N
+            new MMapURI(rootFolder, theFileIo, null) :
+            new MMapURI(null, theFileIo, null); //NOI18N
 
         if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
           if (!getDialogProvider()
-                  .msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+              .msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
             return;
           }
         }
