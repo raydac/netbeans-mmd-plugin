@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.sciareto;
 
 import java.awt.Component;
@@ -39,7 +40,9 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
+
 import com.igormaznitsa.sciareto.ui.MainFrame;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -53,6 +56,7 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.filechooser.FileFilter;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import com.igormaznitsa.commons.version.Version;
@@ -97,7 +101,7 @@ public class Main {
 
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 2L}, null); //NOI18N
+  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 4L, 2L}, null); //NOI18N
 
   public static final Random RND = new Random();
 
@@ -247,8 +251,7 @@ public class Main {
             try {
               splash.set(new SplashScreen(splashImage));
               splash.get().setVisible(true);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
               LOGGER.error("Splash can't be shown", ex); //NOI18N
               if (splash.get() != null) {
                 splash.get().dispose();
@@ -257,8 +260,7 @@ public class Main {
             }
           }
         });
-      }
-      catch (final Exception ex) {
+      } catch (final Exception ex) {
         LOGGER.error("Error during splash processing", ex); //NOI18N
       }
       timeTakenBySplashStart = System.currentTimeMillis() - splashTimerStart;
@@ -286,8 +288,7 @@ public class Main {
           final Preferences prefs = PreferencesManager.getInstance().getPreferences();
           prefs.putLong(PROPERTY_TOTAL_UPSTART, prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (System.currentTimeMillis() - UPSTART));
           PreferencesManager.getInstance().flush();
-        }
-        finally {
+        } finally {
           PlatformProvider.getPlatform().dispose();
         }
       }
@@ -300,8 +301,7 @@ public class Main {
           break;
         }
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       LOGGER.error("Can't set L&F", e); //NOI18N
     }
 
@@ -396,8 +396,7 @@ public class Main {
             public void onLinkActivated(@Nonnull final JHtmlLabel source, @Nonnull final String link) {
               try {
                 UiUtils.browseURI(new URI(link), false);
-              }
-              catch (URISyntaxException ex) {
+              } catch (URISyntaxException ex) {
                 LOGGER.error("Can't make URI", ex); //NOI18N
               }
             }
@@ -494,9 +493,8 @@ public class Main {
           final MindMapPanelConfig config = new MindMapPanelConfig();
           if (settingsFile != null) {
             try {
-              config.loadFrom(new PropertiesPreferences(FileUtils.readFileToString(settingsFile)));
-            }
-            catch (IOException ex) {
+              config.loadFrom(new PropertiesPreferences(FileUtils.readFileToString(settingsFile, "UTF-8")));
+            } catch (IOException ex) {
               LOGGER.error("Can't load settings file : " + settingsFile, ex); //NOI18N
               allOk = false;
             }
@@ -504,8 +502,7 @@ public class Main {
           if (allOk && importer != null && exporter != null) {
             try {
               makeConversion(inFile, importer, outFile, exporter, config, options);
-            }
-            catch (final Exception ex) {
+            } catch (final Exception ex) {
               if (ex instanceof IllegalArgumentException) {
                 LOGGER.error(ex.getMessage());
               } else {
@@ -531,9 +528,8 @@ public class Main {
     config.saveTo(prefs);
 
     try {
-      FileUtils.write(settingsFile, prefs.toString());
-    }
-    catch (final Exception ex) {
+      FileUtils.write(settingsFile, prefs.toString(), "UTF-8");
+    } catch (final Exception ex) {
       LOGGER.error("Can't export settings for error", ex); //NOI18N
       result = false;
     }
@@ -544,14 +540,13 @@ public class Main {
   private static boolean importSettings(@Nonnull final File settingsFile) {
     boolean result = true;
     try {
-      final PropertiesPreferences prefs = new PropertiesPreferences(FileUtils.readFileToString(settingsFile));
+      final PropertiesPreferences prefs = new PropertiesPreferences(FileUtils.readFileToString(settingsFile, "UTF-8"));
       final MindMapPanelConfig config = new MindMapPanelConfig();
       config.loadFrom(prefs);
       config.saveTo(PreferencesManager.getInstance().getPreferences());
       PreferencesManager.getInstance().flush();
       LOGGER.info("Settings imported from file : " + settingsFile); //NOI18N
-    }
-    catch (final Exception ex) {
+    } catch (final Exception ex) {
       LOGGER.error("Error during import from file : " + settingsFile, ex); //NOI18N
       result = false;
     }
@@ -715,12 +710,10 @@ public class Main {
           try {
             toFormat.doExport(panel, optionsComponent, result);
             result.flush();
-          }
-          finally {
+          } finally {
             IOUtils.closeQuietly(result);
           }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
           error.set(ex);
         }
       }
