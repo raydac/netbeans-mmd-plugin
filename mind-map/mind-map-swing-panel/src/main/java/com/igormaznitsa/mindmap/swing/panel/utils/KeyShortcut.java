@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import java.awt.event.KeyEvent;
-import java.util.Locale;
+package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.KeyStroke;
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.util.Locale;
 
 public final class KeyShortcut {
 
+  public static final int ALL_MODIFIERS_MASK = KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
   private final String id;
   private final int modifiers;
   private final int keyCode;
-
-  public static final int ALL_MODIFIERS_MASK = KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
 
   public KeyShortcut(@Nonnull final String packed) {
     final String[] split = packed.split("\\*");
@@ -36,6 +35,35 @@ public final class KeyShortcut {
     final long code = Long.parseLong(split[1], 16);
     this.keyCode = (int) (code >>> 32);
     this.modifiers = (int) code;
+  }
+
+  public KeyShortcut(@Nonnull final String id, final int keyCode, final int modifiers) {
+    if (id.contains("*")) {
+      throw new IllegalArgumentException("ID can't contain '*'");
+    }
+    this.id = id;
+    this.modifiers = modifiers;
+    this.keyCode = keyCode;
+  }
+
+  private static int preprocessCharKeyCode(final int modifiers, char keyChar) {
+    final int result;
+    switch (keyChar) {
+      case 0xA0: {
+        // non-breakable space as space
+        result = KeyEvent.VK_SPACE;
+      }
+      break;
+      case 0x0D: {
+        // Decode CR as ENTER
+        result = KeyEvent.VK_ENTER;
+      }
+      break;
+      default: {
+        result = keyChar;
+      }
+    }
+    return result;
   }
 
   public boolean isCtrl() {
@@ -52,15 +80,6 @@ public final class KeyShortcut {
 
   public boolean isMeta() {
     return (this.modifiers & KeyEvent.META_MASK) != 0;
-  }
-
-  public KeyShortcut(@Nonnull final String id, final int keyCode, final int modifiers) {
-    if (id.contains("*")) {
-      throw new IllegalArgumentException("ID can't contain '*'");
-    }
-    this.id = id;
-    this.modifiers = modifiers;
-    this.keyCode = keyCode;
   }
 
   /**
@@ -91,33 +110,13 @@ public final class KeyShortcut {
     return this.id;
   }
 
-  public boolean isEvent(@Nonnull final KeyEvent event){
+  public boolean isEvent(@Nonnull final KeyEvent event) {
     return this.isEvent(event, ALL_MODIFIERS_MASK);
   }
-  
-  public boolean isEvent(@Nonnull final KeyEvent event, final int modifiersPlayingRole) {
-    final int code = event.getKeyCode() == 0 ? getKeyCode(event.getKeyChar()) : event.getKeyCode();
-    return code == this.keyCode && (event.getModifiers() & modifiersPlayingRole) == (this.modifiers & modifiersPlayingRole);
-  }
 
-  private int getKeyCode(char keyChar) {
-    final int result;
-    switch (keyChar) {
-      // non-breakable space as space
-      case 0xA0: {
-        result = KeyEvent.VK_SPACE;
-      }
-      // Character '+' is 0x2b but VK_PLUS is 0x0209
-      break;
-      case '+': {
-        result = KeyEvent.VK_PLUS;
-      }
-      break;
-      default: {
-        result = keyChar;
-      }
-    }
-    return result;
+  public boolean isEvent(@Nonnull final KeyEvent event, final int modifiersPlayingRole) {
+    final int code = event.getKeyCode() == 0 ? preprocessCharKeyCode(event.getModifiers(), event.getKeyChar()) : event.getKeyCode();
+    return code == this.keyCode && (event.getModifiers() & modifiersPlayingRole) == (this.modifiers & modifiersPlayingRole);
   }
 
   @Override
@@ -150,8 +149,8 @@ public final class KeyShortcut {
     final String keyText = KeyEvent.getKeyText(this.keyCode);
 
     final StringBuilder builder = new StringBuilder(modifierText);
-    
-    if (builder.length()>0 && !keyText.isEmpty()) {
+
+    if (builder.length() > 0 && !keyText.isEmpty()) {
       builder.append('+');
     }
     builder.append(keyText);
@@ -162,11 +161,11 @@ public final class KeyShortcut {
   public boolean doesConflictWith(@Nullable final KeyStroke stroke) {
     boolean result = false;
     if (stroke != null) {
-      result = stroke.getKeyCode() == this.keyCode && (this.modifiers & stroke.getModifiers())==this.modifiers;
+      result = stroke.getKeyCode() == this.keyCode && (this.modifiers & stroke.getModifiers()) == this.modifiers;
     }
     return result;
   }
-  
+
   @Nonnull
   public String getKeyCodeName() {
     return KeyEvent.getKeyText(this.keyCode);

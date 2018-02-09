@@ -13,25 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
-import com.igormaznitsa.mindmap.swing.panel.ui.MouseSelectedArea;
-import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
-import com.igormaznitsa.mindmap.swing.panel.ui.ElementRoot;
-import com.igormaznitsa.mindmap.swing.panel.ui.ElementLevelFirst;
-import com.igormaznitsa.mindmap.swing.panel.ui.ElementLevelOther;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.ModelUtils;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.TopicChecker;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
+import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
+import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import com.igormaznitsa.mindmap.swing.panel.ui.ElementLevelFirst;
+import com.igormaznitsa.mindmap.swing.panel.ui.ElementLevelOther;
+import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.ui.ElementRoot;
+import com.igormaznitsa.mindmap.swing.panel.ui.MouseSelectedArea;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import org.apache.commons.lang.StringEscapeUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -42,189 +73,55 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-
-import org.apache.commons.lang.StringEscapeUtils;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
-import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
-
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.WeakHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
-import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
-
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.Transferable;
-import java.util.HashMap;
-import javax.swing.JViewport;
-import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 
 public class MindMapPanel extends JPanel implements ClipboardOwner {
 
   public static final long serialVersionUID = 2783412123454232L;
-
-
-  /**
-   * Some Job over mind map model.
-   *
-   * @since 1.3.1
-   * @see MindMapPanel#executeModelJobs(com.igormaznitsa.mindmap.swing.panel.MindMapPanel.ModelJob...)
-   */
-  public interface ModelJob {
-
-    /**
-     * Execute the job.
-     *
-     * @param model model to be processed
-     * @return true if to continue job sequence, false if to interrupt
-     */
-    boolean doChangeModel(@Nonnull MindMap model);
-  }
-
   public static final String ATTR_SHOW_JUMPS = "showJumps";
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanel.class);
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
-  private final MindMapPanelController controller;
-
   private static final int ALL_SUPPORTED_MODIFIERS = KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
-
-  private final Map<Object, WeakReference<?>> weakTable = new WeakHashMap<Object, WeakReference<?>>();
-  private final AtomicBoolean disposed = new AtomicBoolean();
-  private final ReentrantLock panelLocker = new ReentrantLock();
-
-  private final Map<String,Object> sessionObjects = new HashMap<String,Object>();
-  
-  public static class DraggedElement {
-
-    public enum Modifier {
-
-      NONE,
-      MAKE_JUMP;
-    }
-
-    @Nonnull
-    private final AbstractElement element;
-    private final Image prerenderedImage;
-    private final Point mousePointerOffset;
-    private final Point currentPosition;
-    private final DraggedElement.Modifier modifier;
-
-    public DraggedElement(@Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Point mousePointerOffset, @Nonnull final DraggedElement.Modifier modifier) {
-      this.element = element;
-      this.prerenderedImage = Utils.renderWithTransparency(0.55f, element, cfg);
-      this.mousePointerOffset = mousePointerOffset;
-      this.currentPosition = new Point();
-      this.modifier = modifier;
-    }
-
-    @Nonnull
-    public DraggedElement.Modifier getModifier() {
-      return this.modifier;
-    }
-
-    public boolean isPositionInside() {
-      return this.element.getBounds().contains(this.currentPosition);
-    }
-
-    @Nonnull
-    public AbstractElement getElement() {
-      return this.element;
-    }
-
-    public void updatePosition(@Nonnull final Point point) {
-      this.currentPosition.setLocation(point);
-    }
-
-    @Nonnull
-    public Point getPosition() {
-      return this.currentPosition;
-    }
-
-    @Nonnull
-    public Point getMousePointerOffset() {
-      return this.mousePointerOffset;
-    }
-
-    public int getDrawPositionX() {
-      return this.currentPosition.x - this.mousePointerOffset.x;
-    }
-
-    public int getDrawPositionY() {
-      return this.currentPosition.y - this.mousePointerOffset.y;
-    }
-
-    @Nonnull
-    public Image getImage() {
-      return this.prerenderedImage;
-    }
-
-    public void draw(@Nonnull final Graphics2D gfx) {
-      final int x = getDrawPositionX();
-      final int y = getDrawPositionY();
-      gfx.drawImage(this.prerenderedImage, x, y, null);
-    }
-  }
-
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
-
-  private volatile MindMap model;
-  private volatile String errorText;
-
-  private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
-
   private static final double SCALE_STEP = 0.2d;
   private static final double SCALE_MINIMUM = 0.3d;
   private static final double SCALE_MAXIMUM = 10.0d;
-
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
-
+  private static final int DRAG_POSITION_UNKNOWN = -1;
+  private static final int DRAG_POSITION_LEFT = 1;
+  private static final int DRAG_POSITION_TOP = 2;
+  private static final int DRAG_POSITION_BOTTOM = 3;
+  private static final int DRAG_POSITION_RIGHT = 4;
+  private final MindMapPanelController controller;
+  private final Map<Object, WeakReference<?>> weakTable = new WeakHashMap<Object, WeakReference<?>>();
+  private final AtomicBoolean disposed = new AtomicBoolean();
+  private final ReentrantLock panelLocker = new ReentrantLock();
+  private final Map<String, Object> sessionObjects = new HashMap<String, Object>();
+  private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<MindMapListener>();
   private final JTextArea textEditor = UI_COMPO_FACTORY.makeTextArea();
   private final JPanel textEditorPanel = UI_COMPO_FACTORY.makePanel();
+  private final List<Topic> selectedTopics = new ArrayList<Topic>();
+  private final MindMapPanelConfig config;
+  private volatile MindMap model;
+  private volatile String errorText;
   private transient AbstractElement elementUnderEdit = null;
   private transient int[] pathToPrevTopicBeforeEdit = null;
-
-  private final List<Topic> selectedTopics = new ArrayList<Topic>();
-
   private transient MouseSelectedArea mouseDragSelection = null;
   private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
-
   private volatile boolean popupMenuActive = false;
-
-  private final MindMapPanelConfig config;
 
   public MindMapPanel(@Nonnull final MindMapPanelController controller) {
     super(null);
@@ -362,17 +259,17 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     final KeyAdapter keyAdapter = new KeyAdapter() {
       @Override
       public void keyPressed(@Nonnull final KeyEvent e) {
-        if (lockIfNotDisposed()){
-          try{
+        if (lockIfNotDisposed()) {
+          try {
             if (!e.isConsumed()) {
-              fireNotificationNonConsumedKeyEvent(e,KeyEventType.PRESSED);
+              fireNotificationNonConsumedKeyEvent(e, KeyEventType.PRESSED);
             }
-          }finally{
+          } finally {
             unlock();
           }
         }
       }
-      
+
       @Override
       public void keyTyped(@Nonnull final KeyEvent e) {
         if (lockIfNotDisposed()) {
@@ -396,9 +293,9 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                 startEdit((AbstractElement) selectedTopics.get(0).getPayload());
               }
             }
-            
+
             if (!e.isConsumed()) {
-              fireNotificationNonConsumedKeyEvent(e,KeyEventType.TYPED);
+              fireNotificationNonConsumedKeyEvent(e, KeyEventType.TYPED);
             }
           } finally {
             unlock();
@@ -439,8 +336,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
               e.consume();
               setScale(1.0);
               updateView(false);
-            }
-            else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)) {
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)) {
               e.consume();
               final Topic[] selectedTopics = getSelectedTopics();
               final AbstractElement elementToProcess = selectedTopics.length == 1 ? (AbstractElement) selectedTopics[0].getPayload() : null;
@@ -457,10 +353,9 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
             }
 
             if (!e.isConsumed()) {
-              fireNotificationNonConsumedKeyEvent(e,KeyEventType.RELEASED);
+              fireNotificationNonConsumedKeyEvent(e, KeyEventType.RELEASED);
             }
-          }
-          finally {
+          } finally {
             unlock();
           }
         }
@@ -695,19 +590,19 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
               if (!e.isConsumed() && (theConfig != null && ((e.getModifiers() & theConfig.getScaleModifiers()) == theConfig.getScaleModifiers()))) {
                 endEdit(elementUnderEdit != null);
-                
+
                 final double oldScale = getScale();
                 final double newScale = Math.max(SCALE_MINIMUM, Math.min(oldScale + (SCALE_STEP * -e.getWheelRotation()), SCALE_MAXIMUM));
 
                 fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, true);
-                
+
                 setScale(newScale);
                 updateElementsAndSizeForCurrentGraphics(true, false);
-                
+
                 fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, false);
-                
+
                 e.consume();
-                
+
                 repaint();
               } else {
                 sendToParent(e);
@@ -741,13 +636,13 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
             if (element != null) {
               final ElementPart part = element.findPartForPoint(e.getPoint());
               if (part == ElementPart.COLLAPSATOR) {
-                fireNotificationTopicCollapsatorClick(element.getModel(),true);
+                fireNotificationTopicCollapsatorClick(element.getModel(), true);
                 doFoldOrUnfoldTopic(element, element.isCollapsed(), isCtrlDown);
                 if (selectedTopics.isEmpty() || selectedTopics.size() == 1) {
                   removeAllSelection();
                   select(element.getModel(), false);
                 }
-                fireNotificationTopicCollapsatorClick(element.getModel(),false);
+                fireNotificationTopicCollapsatorClick(element.getModel(), false);
               } else if (!isCtrlDown) {
                 switch (part) {
                   case VISUAL_ATTRIBUTES:
@@ -763,7 +658,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                           }
                         } catch (Exception ex) {
                           LOGGER.error("Error during visual attribute processing", ex);
-                          controller.getDialogProvider(theInstance).msgError(null,"Detectd critical error! See log!");
+                          controller.getDialogProvider(theInstance).msgError(null, "Detectd critical error! See log!");
                         }
                       }
                     }
@@ -780,7 +675,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                     break;
                   default:
                     if (isShiftDown) {
-                      // diapasone
+                      // diapason
                       selectSiblingDiapasone(element);
                     } else {
                       // only
@@ -792,8 +687,8 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                     }
                     break;
                 }
-              } else // group
-              {
+              } else {
+                // group
                 if (selectedTopics.isEmpty()) {
                   select(element.getModel(), false);
                 } else {
@@ -845,6 +740,403 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     });
   }
 
+  private static void drawBackground(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg) {
+    final Rectangle clipBounds = g.getClipBounds();
+
+    if (cfg.isDrawBackground()) {
+      if (clipBounds == null) {
+        LOGGER.warn("Can't draw background because clip bounds is not provided!");
+      } else {
+        g.drawRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, null, cfg.getPaperColor());
+
+        if (cfg.isShowGrid()) {
+          final double scaledGridStep = cfg.getGridStep() * cfg.getScale();
+
+          final float minX = clipBounds.x;
+          final float minY = clipBounds.y;
+          final float maxX = clipBounds.x + clipBounds.width;
+          final float maxY = clipBounds.y + clipBounds.height;
+
+          final Color gridColor = cfg.getGridColor();
+
+          for (float x = 0.0f; x < maxX; x += scaledGridStep) {
+            if (x < minX) {
+              continue;
+            }
+            final int intx = Math.round(x);
+            g.drawLine(intx, (int) minY, intx, (int) maxY, gridColor);
+          }
+
+          for (float y = 0.0f; y < maxY; y += scaledGridStep) {
+            if (y < minY) {
+              continue;
+            }
+            final int inty = Math.round(y);
+            g.drawLine((int) minX, inty, (int) maxX, inty, gridColor);
+          }
+        }
+      }
+    }
+  }
+
+  private static boolean isModelValid(@Nullable final MindMap map) {
+    boolean result = true;
+    if (map != null) {
+      final Topic root = map.getRoot();
+      if (root != null) {
+        result = root.getPayload() != null;
+      }
+    }
+    return result;
+  }
+
+  public static void drawOnGraphicsForConfiguration(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig config, @Nonnull final MindMap map, final boolean drawSelection, @Nullable @MustNotContainNull final List<Topic> selectedTopics) {
+    drawBackground(g, config);
+    drawTopics(g, config, map);
+    if (drawSelection && selectedTopics != null && !selectedTopics.isEmpty()) {
+      drawSelection(g, config, selectedTopics);
+    }
+  }
+
+  private static void drawSelection(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, @Nullable @MustNotContainNull final List<Topic> selectedTopics) {
+    if (selectedTopics != null && !selectedTopics.isEmpty()) {
+      final Color selectLineColor = cfg.getSelectLineColor();
+      g.setStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(), 0.1f), StrokeType.DASHES);
+      final double selectLineGap = (double) cfg.safeScaleFloatValue(cfg.getSelectLineGap(), 0.05f);
+      final double selectLineGapX2 = selectLineGap + selectLineGap;
+
+      for (final Topic s : selectedTopics) {
+        final AbstractElement e = (AbstractElement) s.getPayload();
+        if (e != null) {
+          final int x = (int) Math.round(e.getBounds().getX() - selectLineGap);
+          final int y = (int) Math.round(e.getBounds().getY() - selectLineGap);
+          final int w = (int) Math.round(e.getBounds().getWidth() + selectLineGapX2);
+          final int h = (int) Math.round(e.getBounds().getHeight() + selectLineGapX2);
+          g.drawRect(x, y, w, h, selectLineColor, null);
+        }
+      }
+    }
+  }
+
+  private static void drawTopics(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, @Nullable final MindMap map) {
+    if (map != null) {
+      if (Boolean.parseBoolean(map.getAttribute(ATTR_SHOW_JUMPS))) {
+        drawJumps(g, map, cfg);
+      }
+
+      final Topic root = map.getRoot();
+      if (root != null) {
+        drawTopicTree(g, root, cfg);
+      }
+    }
+  }
+
+  private static double findLineAngle(final double sx, final double sy, final double ex, final double ey) {
+    final double deltax = ex - sx;
+    if (deltax == 0.0d) {
+      return Math.PI / 2;
+    }
+    return Math.atan((ey - sy) / deltax) + (ex < sx ? Math.PI : 0);
+  }
+
+  private static void drawJumps(@Nonnull final MMGraphics gfx, @Nonnull final MindMap map, @Nonnull final MindMapPanelConfig cfg) {
+    final List<Topic> allTopicsWithJumps = map.findAllTopicsForExtraType(Extra.ExtraType.TOPIC);
+
+    final float scaledSize = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
+
+    final float lineWidth = scaledSize;
+    final float arrowWidth = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth() * 1.0f, 0.3f);
+
+    final Color jumpLinkColor = cfg.getJumpLinkColor();
+
+    final float arrowSize = cfg.safeScaleFloatValue(10.0f * cfg.getJumpLinkWidth(), 0.2f);
+
+    for (Topic src : allTopicsWithJumps) {
+      final ExtraTopic extra = (ExtraTopic) assertNotNull(assertNotNull(src).getExtras()).get(Extra.ExtraType.TOPIC);
+
+      src = MindMapUtils.isHidden(src) ? MindMapUtils.findFirstVisibleAncestor(src) : src;
+
+      if (extra != null) {
+        Topic dst = map.findTopicForLink(extra);
+        if (dst != null) {
+          if (MindMapUtils.isHidden(dst)) {
+            dst = MindMapUtils.findFirstVisibleAncestor(dst);
+            if (dst == src) {
+              dst = null;
+            }
+          }
+
+          if (dst != null) {
+            final AbstractElement dstElement = (AbstractElement) dst.getPayload();
+            if (!MindMapUtils.isHidden(dst) && dstElement != null) {
+              final AbstractElement srcElement = assertNotNull((AbstractElement) assertNotNull(src).getPayload());
+              final Rectangle2D srcRect = srcElement.getBounds();
+              final Rectangle2D dstRect = dstElement.getBounds();
+              drawArrowToDestination(gfx, srcRect, dstRect, lineWidth, arrowWidth, arrowSize, jumpLinkColor);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private static void drawArrowToDestination(@Nonnull final MMGraphics gfx, @Nonnull final Rectangle2D start, @Nonnull final Rectangle2D destination, @Nonnull final float lineWidth, @Nonnull final float arrowWidth, final float arrowSize, @Nonnull final Color color) {
+
+    final double startx = start.getCenterX();
+    final double starty = start.getCenterY();
+
+    final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startx, starty);
+
+    if (arrowPoint != null) {
+      gfx.setStroke(lineWidth, StrokeType.SOLID);
+
+      double angle = findLineAngle(arrowPoint.getX(), arrowPoint.getY(), startx, starty);
+
+      final double arrowAngle = Math.PI / 12.0d;
+
+      final double x1 = arrowSize * Math.cos(angle - arrowAngle);
+      final double y1 = arrowSize * Math.sin(angle - arrowAngle);
+      final double x2 = arrowSize * Math.cos(angle + arrowAngle);
+      final double y2 = arrowSize * Math.sin(angle + arrowAngle);
+
+      final double cx = (arrowSize / 2.0f) * Math.cos(angle);
+      final double cy = (arrowSize / 2.0f) * Math.sin(angle);
+
+      final GeneralPath polygon = new GeneralPath();
+      polygon.moveTo(arrowPoint.getX(), arrowPoint.getY());
+      polygon.lineTo(arrowPoint.getX() + x1, arrowPoint.getY() + y1);
+      polygon.lineTo(arrowPoint.getX() + x2, arrowPoint.getY() + y2);
+      polygon.closePath();
+      gfx.draw(polygon, null, color);
+
+      gfx.setStroke(lineWidth, StrokeType.DOTS);
+      gfx.drawLine((int) startx, (int) starty, (int) (arrowPoint.getX() + cx), (int) (arrowPoint.getY() + cy), color);
+    }
+  }
+
+  private static void drawTopicTree(@Nonnull final MMGraphics gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
+    paintTopic(gfx, topic, cfg);
+    final AbstractElement w = assertNotNull((AbstractElement) topic.getPayload());
+    if (w.isCollapsed()) {
+      return;
+    }
+    for (final Topic t : topic.getChildren()) {
+      drawTopicTree(gfx, t, cfg);
+    }
+  }
+
+  private static void paintTopic(@Nonnull final MMGraphics gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
+    final AbstractElement element = (AbstractElement) topic.getPayload();
+    if (element != null) {
+      element.doPaint(gfx, cfg, true);
+
+// -------------- DRAW BORDERS ABOUND COMPONENT AREAS ---------------------------
+//
+//      final Dimension2D elementAreaSize = element.getBlockSize();
+//      final Rectangle2D elementPosition = element.getBounds();
+//
+//      if (element instanceof ElementRoot) {
+//        final ElementRoot root = (ElementRoot) element;
+//        final Dimension2D leftSubblock = root.getLeftBlockSize();
+//        final Dimension2D rightSubblock = root.getRightBlockSize();
+//
+//        if (leftSubblock.getWidth()>0) {
+//          gfx.draw(new Rectangle2D.Double(elementPosition.getX() - leftSubblock.getWidth(), elementPosition.getY() - (leftSubblock.getHeight() - elementPosition.getHeight()) / 2d, leftSubblock.getWidth(), leftSubblock.getHeight()), Color.RED, null);
+//        }
+//
+//        if (rightSubblock.getWidth()>0) {
+//          gfx.draw(new Rectangle2D.Double(elementPosition.getX() + elementPosition.getWidth(), elementPosition.getY() - (rightSubblock.getHeight() - elementPosition.getHeight()) / 2d, rightSubblock.getWidth(), rightSubblock.getHeight()), Color.RED, null);
+//        }
+//
+//        gfx.draw(new Rectangle2D.Double(elementPosition.getX() - leftSubblock.getWidth(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.CYAN, null);
+//
+//      }else
+//      if (element.isLeftDirection()){
+//        gfx.draw(new Rectangle2D.Double(elementPosition.getX()-(elementAreaSize.getWidth()-elementPosition.getWidth()),elementPosition.getY()-(elementAreaSize.getHeight()-elementPosition.getHeight())/2d,elementAreaSize.getWidth(),elementAreaSize.getHeight()), Color.GREEN, null);
+//      } else {
+//        gfx.draw(new Rectangle2D.Double(elementPosition.getX(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.YELLOW, null);
+//      }
+// ------------------------------------------------------------------------------
+
+    }
+  }
+
+  private static void setElementSizesForElementAndChildren(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic, final int level) {
+    AbstractElement widget = (AbstractElement) topic.getPayload();
+    if (widget == null) {
+      switch (level) {
+        case 0:
+          widget = new ElementRoot(topic);
+          break;
+        case 1:
+          widget = new ElementLevelFirst(topic);
+          break;
+        default:
+          widget = new ElementLevelOther(topic);
+          break;
+      }
+      topic.setPayload(widget);
+    }
+
+    widget.updateElementBounds(gfx, cfg);
+    for (final Topic t : topic.getChildren()) {
+      setElementSizesForElementAndChildren(gfx, cfg, t, level + 1);
+    }
+    widget.updateBlockSize(cfg);
+  }
+
+  public static boolean calculateElementSizes(@Nonnull final MMGraphics gfx, @Nullable final MindMap model, @Nonnull final MindMapPanelConfig cfg) {
+    boolean result = false;
+
+    final Topic root = model == null ? null : model.getRoot();
+    if (root != null && model != null) {
+      model.resetPayload();
+      setElementSizesForElementAndChildren(gfx, cfg, root, 0);
+      result = true;
+    }
+    return result;
+  }
+
+  @Nullable
+  public static Dimension2D layoutModelElements(@Nullable final MindMap model, @Nonnull final MindMapPanelConfig cfg) {
+    Dimension2D result = null;
+    if (model != null) {
+      final Topic rootTopic = model.getRoot();
+      if (rootTopic != null) {
+        final AbstractElement root = (AbstractElement) rootTopic.getPayload();
+        if (root != null) {
+          root.alignElementAndChildren(cfg, true, 0, 0);
+          result = root.getBlockSize();
+        }
+      }
+    }
+    return result;
+  }
+
+  protected static void moveDiagram(@Nullable final MindMap model, final double deltaX, final double deltaY) {
+    if (model != null) {
+      final Topic root = model.getRoot();
+      if (root != null) {
+        final AbstractElement element = (AbstractElement) root.getPayload();
+        if (element != null) {
+          element.moveWholeTreeBranchCoordinates(deltaX, deltaY);
+        }
+      }
+    }
+  }
+
+  @Nullable
+  public static Dimension layoutFullDiagramWithCenteringToPaper(@Nonnull final MMGraphics gfx, @Nonnull final MindMap map, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Dimension2D paperSize) {
+    Dimension resultSize = null;
+    if (calculateElementSizes(gfx, map, cfg)) {
+      Dimension2D rootBlockSize = layoutModelElements(map, cfg);
+      final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
+
+      if (rootBlockSize != null) {
+        final ElementRoot rootElement = assertNotNull((ElementRoot) assertNotNull(map.getRoot()).getPayload());
+
+        double rootOffsetXInBlock = rootElement.getLeftBlockSize().getWidth();
+        double rootOffsetYInBlock = (rootBlockSize.getHeight() - rootElement.getBounds().getHeight()) / 2;
+
+        rootOffsetXInBlock += (paperSize.getWidth() - rootBlockSize.getWidth()) <= paperMargin ? paperMargin : (paperSize.getWidth() - rootBlockSize.getWidth()) / 2;
+        rootOffsetYInBlock += (paperSize.getHeight() - rootBlockSize.getHeight()) <= paperMargin ? paperMargin : (paperSize.getHeight() - rootBlockSize.getHeight()) / 2;
+
+        moveDiagram(map, rootOffsetXInBlock, rootOffsetYInBlock);
+        resultSize = new Dimension((int) Math.round(rootBlockSize.getWidth() + paperMargin * 2), (int) Math.round(rootBlockSize.getHeight() + paperMargin * 2));
+      }
+    }
+
+    return resultSize;
+  }
+
+  private static void drawErrorText(@Nonnull final Graphics2D gfx, @Nonnull final Dimension fullSize, @Nonnull final String error) {
+    final Font font = new Font(Font.DIALOG, Font.BOLD, 24);
+    final FontMetrics metrics = gfx.getFontMetrics(font);
+    final Rectangle2D textBounds = metrics.getStringBounds(error, gfx);
+    gfx.setFont(font);
+    gfx.setColor(Color.DARK_GRAY);
+    gfx.fillRect(0, 0, fullSize.width, fullSize.height);
+    final int x = (int) (fullSize.width - textBounds.getWidth()) / 2;
+    final int y = (int) (fullSize.height - textBounds.getHeight()) / 2;
+    gfx.setColor(Color.BLACK);
+    gfx.drawString(error, x + 5, y + 5);
+    gfx.setColor(Color.RED.brighter());
+    gfx.drawString(error, x, y);
+  }
+
+  @Nullable
+  public static Dimension2D calculateSizeOfMapInPixels(@Nonnull final MindMap model, @Nullable final Graphics2D graphicsContext, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll) {
+    final MindMap workMap = new MindMap(model, null);
+    workMap.resetPayload();
+
+    Graphics2D g = graphicsContext;
+
+    if (g == null) {
+      BufferedImage img = new BufferedImage(32, 32, cfg.isDrawBackground() ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
+      g = img.createGraphics();
+    }
+    final MMGraphics gfx = new MMGraphics2DWrapper(g);
+    Utils.prepareGraphicsForQuality(g);
+
+    Dimension2D blockSize = null;
+    try {
+
+      if (calculateElementSizes(gfx, workMap, cfg)) {
+        if (expandAll) {
+          final AbstractElement root = assertNotNull((AbstractElement) assertNotNull(workMap.getRoot()).getPayload());
+          root.collapseOrExpandAllChildren(false);
+          calculateElementSizes(gfx, workMap, cfg);
+        }
+        blockSize = assertNotNull(layoutModelElements(workMap, cfg));
+        final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
+        blockSize.setSize(blockSize.getWidth() + paperMargin * 2, blockSize.getHeight() + paperMargin * 2);
+      }
+    } finally {
+      gfx.dispose();
+    }
+    return blockSize;
+  }
+
+  @Nullable
+  public static BufferedImage renderMindMapAsImage(@Nonnull final MindMap model, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll) {
+    final MindMap workMap = new MindMap(model, null);
+    workMap.resetPayload();
+
+    if (expandAll) {
+      MindMapUtils.removeCollapseAttr(workMap);
+    }
+
+    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, cfg, expandAll);
+    if (blockSize == null) {
+      return null;
+    }
+
+    final BufferedImage img = new BufferedImage((int) blockSize.getWidth(), (int) blockSize.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    final Graphics2D g = img.createGraphics();
+    final MMGraphics gfx = new MMGraphics2DWrapper(g);
+    try {
+      Utils.prepareGraphicsForQuality(g);
+      gfx.setClip(0, 0, img.getWidth(), img.getHeight());
+      layoutFullDiagramWithCenteringToPaper(gfx, workMap, cfg, blockSize);
+      drawOnGraphicsForConfiguration(gfx, cfg, workMap, false, null);
+    } finally {
+      gfx.dispose();
+    }
+    return img;
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  private static Topic[] ensureNoRootInArray(@Nonnull @MustNotContainNull final Topic... topics) {
+    final List<Topic> buffer = new ArrayList<Topic>(topics.length);
+    for (final Topic t : topics) {
+      if (!t.isRoot()) {
+        buffer.add(t);
+      }
+    }
+    return buffer.toArray(new Topic[buffer.size()]);
+  }
+
   private void selectSiblingDiapasone(@Nonnull AbstractElement element) {
     final AbstractElement parent = element.getParent();
     Topic selectedSibling = null;
@@ -875,7 +1167,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
     select(element.getModel(), false);
   }
-  
+
   private void doFoldOrUnfoldTopic(@Nonnull final AbstractElement element, final boolean unfold, final boolean onlyFirstLevel) {
     if (unfold) {
       ((AbstractCollapsableElement) element).setCollapse(false);
@@ -897,10 +1189,11 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
   /**
    * Get saved session object. Object is presented and saved only for the current panel and only in memory.
-   * @param <T> type of object
-   * @param key key of object, must not be null
+   *
+   * @param <T>   type of object
+   * @param key   key of object, must not be null
    * @param klazz object type, must not be null
-   * @param def default value will be returned as result if object not presented, can be null
+   * @param def   default value will be returned as result if object not presented, can be null
    * @return null if object is not found, the found object otherwise
    * @throws ClassCastException if object type is wrong for saved object
    * @since 1.4.2
@@ -911,14 +1204,14 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     try {
       T result = klazz.cast(this.sessionObjects.get(key));
       return result == null ? def : result;
-    }
-    finally {
+    } finally {
       this.unlock();
     }
   }
 
   /**
    * Put session object for key.
+   *
    * @param key key of he object, must not be null
    * @param obj object to be placed, if null then object will be removed
    * @since 1.4.2
@@ -931,12 +1224,11 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       } else {
         this.sessionObjects.put(key, obj);
       }
-    }
-    finally {
+    } finally {
       this.unlock();
     }
   }
-  
+
   @Nullable
   public Object findTmpObject(@Nonnull final Object key) {
     this.lock();
@@ -1015,12 +1307,6 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       }
     }
   }
-
-  private static final int DRAG_POSITION_UNKNOWN = -1;
-  private static final int DRAG_POSITION_LEFT = 1;
-  private static final int DRAG_POSITION_TOP = 2;
-  private static final int DRAG_POSITION_BOTTOM = 3;
-  private static final int DRAG_POSITION_RIGHT = 4;
 
   private int calcDropPosition(@Nonnull final AbstractElement destination, @Nonnull final Point dropPoint) {
     final int result;
@@ -1213,7 +1499,6 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
    * Safe Swing thread execution sequence of some jobs over model with model changed notification in the end
    *
    * @param jobs sequence of jobs to be executed
-   *
    * @since 1.3.1
    */
   public void executeModelJobs(@Nonnull @MustNotContainNull final ModelJob... jobs) {
@@ -1358,7 +1643,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
   protected void fireNotificationComponentElementsLayouted(@Nonnull final Graphics2D graphics) {
     for (final MindMapListener l : this.mindMapListeners) {
-      l.onComponentElementsLayouted(this,graphics);
+      l.onComponentElementsLayouted(this, graphics);
     }
   }
 
@@ -1388,7 +1673,9 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
   protected void fireNotificationNonConsumedKeyEvent(@Nonnull final KeyEvent keyEvent, @Nonnull final KeyEventType type) {
     for (final MindMapListener l : this.mindMapListeners) {
-      if (keyEvent.isConsumed()) break;
+      if (keyEvent.isConsumed()) {
+        break;
+      }
       l.onNonConsumedKeyEvent(this, keyEvent, type);
     }
   }
@@ -1570,11 +1857,11 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
           final String oldText = editedElement.getText();
           String newText = this.textEditor.getText();
-          
+
           if (this.controller.isTrimTopicTextBeforeSet(this)) {
             newText = newText.trim();
           }
-          
+
           if (!oldText.equals(newText)) {
             editedElement.setText(newText);
           }
@@ -1723,14 +2010,10 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
   }
 
-  public void setModel(@Nonnull final MindMap model) {
-    this.setModel(model, false);
-  }
-
   /**
    * Set model for the panel, allows to notify listeners optionally.
    *
-   * @param model model to be set
+   * @param model                      model to be set
    * @param notifyModelChangeListeners true if to notify model change listeners, false otherwise
    * @since 1.3.0
    */
@@ -1792,7 +2075,20 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
   public MindMap getModel() {
     this.lock();
     try {
-      return Assertions.assertNotNull("Model is not provided, it must not be null!",this.model);
+      return Assertions.assertNotNull("Model is not provided, it must not be null!", this.model);
+    } finally {
+      this.unlock();
+    }
+  }
+
+  public void setModel(@Nonnull final MindMap model) {
+    this.setModel(model, false);
+  }
+
+  public double getScale() {
+    this.lock();
+    try {
+      return this.config.getScale();
     } finally {
       this.unlock();
     }
@@ -1805,73 +2101,6 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       } finally {
         this.unlock();
       }
-    }
-  }
-
-  public double getScale() {
-    this.lock();
-    try {
-      return this.config.getScale();
-    } finally {
-      this.unlock();
-    }
-  }
-
-  private static void drawBackground(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg) {
-    final Rectangle clipBounds = g.getClipBounds();
-
-    if (cfg.isDrawBackground()) {
-      if (clipBounds == null) {
-        LOGGER.warn("Can't draw background because clip bounds is not provided!");
-      } else {
-        g.drawRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, null, cfg.getPaperColor());
-
-        if (cfg.isShowGrid()) {
-          final double scaledGridStep = cfg.getGridStep() * cfg.getScale();
-
-          final float minX = clipBounds.x;
-          final float minY = clipBounds.y;
-          final float maxX = clipBounds.x + clipBounds.width;
-          final float maxY = clipBounds.y + clipBounds.height;
-
-          final Color gridColor = cfg.getGridColor();
-
-          for (float x = 0.0f; x < maxX; x += scaledGridStep) {
-            if (x < minX) {
-              continue;
-            }
-            final int intx = Math.round(x);
-            g.drawLine(intx, (int) minY, intx, (int) maxY, gridColor);
-          }
-
-          for (float y = 0.0f; y < maxY; y += scaledGridStep) {
-            if (y < minY) {
-              continue;
-            }
-            final int inty = Math.round(y);
-            g.drawLine((int) minX, inty, (int) maxX, inty, gridColor);
-          }
-        }
-      }
-    }
-  }
-
-  private static boolean isModelValid(@Nullable final MindMap map) {
-    boolean result = true;
-    if (map != null) {
-      final Topic root = map.getRoot();
-      if (root != null) {
-        result = root.getPayload() != null;
-      }
-    }
-    return result;
-  }
-
-  public static void drawOnGraphicsForConfiguration(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig config, @Nonnull final MindMap map, final boolean drawSelection, @Nullable @MustNotContainNull final List<Topic> selectedTopics) {
-    drawBackground(g, config);
-    drawTopics(g, config, map);
-    if (drawSelection && selectedTopics != null && !selectedTopics.isEmpty()) {
-      drawSelection(g, config, selectedTopics);
     }
   }
 
@@ -1927,269 +2156,18 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
   }
 
-  private static void drawSelection(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, @Nullable @MustNotContainNull final List<Topic> selectedTopics) {
-    if (selectedTopics != null && !selectedTopics.isEmpty()) {
-      final Color selectLineColor = cfg.getSelectLineColor();
-      g.setStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(), 0.1f), StrokeType.DASHES);
-      final double selectLineGap = (double) cfg.safeScaleFloatValue(cfg.getSelectLineGap(), 0.05f);
-      final double selectLineGapX2 = selectLineGap + selectLineGap;
-
-      for (final Topic s : selectedTopics) {
-        final AbstractElement e = (AbstractElement) s.getPayload();
-        if (e != null) {
-          final int x = (int) Math.round(e.getBounds().getX() - selectLineGap);
-          final int y = (int) Math.round(e.getBounds().getY() - selectLineGap);
-          final int w = (int) Math.round(e.getBounds().getWidth() + selectLineGapX2);
-          final int h = (int) Math.round(e.getBounds().getHeight() + selectLineGapX2);
-          g.drawRect(x, y, w, h, selectLineColor, null);
-        }
-      }
-    }
-  }
-
-  private static void drawTopics(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, @Nullable final MindMap map) {
-    if (map != null) {
-      if (Boolean.parseBoolean(map.getAttribute(ATTR_SHOW_JUMPS))) {
-        drawJumps(g, map, cfg);
-      }
-
-      final Topic root = map.getRoot();
-      if (root != null) {
-        drawTopicTree(g, root, cfg);
-      }
-    }
-  }
-
-  private static double findLineAngle(final double sx, final double sy, final double ex, final double ey) {
-    final double deltax = ex - sx;
-    if (deltax == 0.0d) {
-      return Math.PI / 2;
-    }
-    return Math.atan((ey - sy) / deltax) + (ex < sx ? Math.PI : 0);
-  }
-
-  private static void drawJumps(@Nonnull final MMGraphics gfx, @Nonnull final MindMap map, @Nonnull final MindMapPanelConfig cfg) {
-    final List<Topic> allTopicsWithJumps = map.findAllTopicsForExtraType(Extra.ExtraType.TOPIC);
-
-    final float scaledSize = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
-
-    final float lineWidth = scaledSize;
-    final float arrowWidth = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth() * 1.0f, 0.3f);
-
-    final Color jumpLinkColor = cfg.getJumpLinkColor();
-
-    final float arrowSize = cfg.safeScaleFloatValue(10.0f * cfg.getJumpLinkWidth(), 0.2f);
-
-    for (Topic src : allTopicsWithJumps) {
-      final ExtraTopic extra = (ExtraTopic) assertNotNull(assertNotNull(src).getExtras()).get(Extra.ExtraType.TOPIC);
-
-      src = MindMapUtils.isHidden(src) ? MindMapUtils.findFirstVisibleAncestor(src) : src;
-
-      if (extra != null) {
-        Topic dst = map.findTopicForLink(extra);
-        if (dst != null) {
-          if (MindMapUtils.isHidden(dst)) {
-            dst = MindMapUtils.findFirstVisibleAncestor(dst);
-            if (dst == src) {
-              dst = null;
-            }
-          }
-
-          if (dst != null) {
-            final AbstractElement dstElement = (AbstractElement) dst.getPayload();
-            if (!MindMapUtils.isHidden(dst) && dstElement != null) {
-              final AbstractElement srcElement = assertNotNull((AbstractElement) assertNotNull(src).getPayload());
-              final Rectangle2D srcRect = srcElement.getBounds();
-              final Rectangle2D dstRect = dstElement.getBounds();
-              drawArrowToDestination(gfx, srcRect, dstRect, lineWidth, arrowWidth, arrowSize, jumpLinkColor);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private static void drawArrowToDestination(@Nonnull final MMGraphics gfx, @Nonnull final Rectangle2D start, @Nonnull final Rectangle2D destination, @Nonnull final float lineWidth, @Nonnull final float arrowWidth, final float arrowSize, @Nonnull final Color color) {
-
-    final double startx = start.getCenterX();
-    final double starty = start.getCenterY();
-
-    final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startx, starty);
-
-    if (arrowPoint != null) {
-      gfx.setStroke(lineWidth, StrokeType.SOLID);
-
-      double angle = findLineAngle(arrowPoint.getX(), arrowPoint.getY(), startx, starty);
-
-      final double arrowAngle = Math.PI / 12.0d;
-
-      final double x1 = arrowSize * Math.cos(angle - arrowAngle);
-      final double y1 = arrowSize * Math.sin(angle - arrowAngle);
-      final double x2 = arrowSize * Math.cos(angle + arrowAngle);
-      final double y2 = arrowSize * Math.sin(angle + arrowAngle);
-
-      final double cx = (arrowSize / 2.0f) * Math.cos(angle);
-      final double cy = (arrowSize / 2.0f) * Math.sin(angle);
-
-      final GeneralPath polygon = new GeneralPath();
-      polygon.moveTo(arrowPoint.getX(), arrowPoint.getY());
-      polygon.lineTo(arrowPoint.getX() + x1, arrowPoint.getY() + y1);
-      polygon.lineTo(arrowPoint.getX() + x2, arrowPoint.getY() + y2);
-      polygon.closePath();
-      gfx.draw(polygon, null, color);
-
-      gfx.setStroke(lineWidth, StrokeType.DOTS);
-      gfx.drawLine((int) startx, (int) starty, (int) (arrowPoint.getX() + cx), (int) (arrowPoint.getY() + cy), color);
-    }
-  }
-
-  private static void drawTopicTree(@Nonnull final MMGraphics gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
-    paintTopic(gfx, topic, cfg);
-    final AbstractElement w = assertNotNull((AbstractElement) topic.getPayload());
-    if (w.isCollapsed()) {
-      return;
-    }
-    for (final Topic t : topic.getChildren()) {
-      drawTopicTree(gfx, t, cfg);
-    }
-  }
-
-  private static void paintTopic(@Nonnull final MMGraphics gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
-    final AbstractElement element = (AbstractElement) topic.getPayload();
-    if (element != null) {
-      element.doPaint(gfx, cfg, true);
-
-// -------------- DRAW BORDERS ABOUND COMPONENT AREAS ---------------------------
-//      
-//      final Dimension2D elementAreaSize = element.getBlockSize();
-//      final Rectangle2D elementPosition = element.getBounds();
-//      
-//      if (element instanceof ElementRoot) {
-//        final ElementRoot root = (ElementRoot) element;
-//        final Dimension2D leftSubblock = root.getLeftBlockSize();
-//        final Dimension2D rightSubblock = root.getRightBlockSize();
-//        
-//        if (leftSubblock.getWidth()>0) {
-//          gfx.draw(new Rectangle2D.Double(elementPosition.getX() - leftSubblock.getWidth(), elementPosition.getY() - (leftSubblock.getHeight() - elementPosition.getHeight()) / 2d, leftSubblock.getWidth(), leftSubblock.getHeight()), Color.RED, null);
-//        }
-//        
-//        if (rightSubblock.getWidth()>0) {
-//          gfx.draw(new Rectangle2D.Double(elementPosition.getX() + elementPosition.getWidth(), elementPosition.getY() - (rightSubblock.getHeight() - elementPosition.getHeight()) / 2d, rightSubblock.getWidth(), rightSubblock.getHeight()), Color.RED, null);
-//        }
-//        
-//        gfx.draw(new Rectangle2D.Double(elementPosition.getX() - leftSubblock.getWidth(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.CYAN, null);
-//        
-//      }else 
-//      if (element.isLeftDirection()){
-//        gfx.draw(new Rectangle2D.Double(elementPosition.getX()-(elementAreaSize.getWidth()-elementPosition.getWidth()),elementPosition.getY()-(elementAreaSize.getHeight()-elementPosition.getHeight())/2d,elementAreaSize.getWidth(),elementAreaSize.getHeight()), Color.GREEN, null);
-//      } else {
-//        gfx.draw(new Rectangle2D.Double(elementPosition.getX(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.YELLOW, null);
-//      }
-// ------------------------------------------------------------------------------
-
-    }
-  }
-
-  private static void setElementSizesForElementAndChildren(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic, final int level) {
-    AbstractElement widget = (AbstractElement) topic.getPayload();
-    if (widget == null) {
-      switch (level) {
-        case 0:
-          widget = new ElementRoot(topic);
-          break;
-        case 1:
-          widget = new ElementLevelFirst(topic);
-          break;
-        default:
-          widget = new ElementLevelOther(topic);
-          break;
-      }
-      topic.setPayload(widget);
-    }
-
-    widget.updateElementBounds(gfx, cfg);
-    for (final Topic t : topic.getChildren()) {
-      setElementSizesForElementAndChildren(gfx, cfg, t, level + 1);
-    }
-    widget.updateBlockSize(cfg);
-  }
-
-  public static boolean calculateElementSizes(@Nonnull final MMGraphics gfx, @Nullable final MindMap model, @Nonnull final MindMapPanelConfig cfg) {
-    boolean result = false;
-
-    final Topic root = model == null ? null : model.getRoot();
-    if (root != null && model != null) {
-      model.resetPayload();
-      setElementSizesForElementAndChildren(gfx, cfg, root, 0);
-      result = true;
-    }
-    return result;
-  }
-
-  @Nullable
-  public static Dimension2D layoutModelElements(@Nullable final MindMap model, @Nonnull final MindMapPanelConfig cfg) {
-    Dimension2D result = null;
-    if (model != null) {
-      final Topic rootTopic = model.getRoot();
-      if (rootTopic != null) {
-        final AbstractElement root = (AbstractElement) rootTopic.getPayload();
-        if (root != null) {
-          root.alignElementAndChildren(cfg, true, 0, 0);
-          result = root.getBlockSize();
-        }
-      }
-    }
-    return result;
-  }
-
-  protected static void moveDiagram(@Nullable final MindMap model, final double deltaX, final double deltaY) {
-    if (model != null) {
-      final Topic root = model.getRoot();
-      if (root != null) {
-        final AbstractElement element = (AbstractElement) root.getPayload();
-        if (element != null) {
-          element.moveWholeTreeBranchCoordinates(deltaX, deltaY);
-        }
-      }
-    }
-  }
-
   private void changeSizeOfComponent(@Nullable final Dimension size, final boolean doNotificationThatRealigned) {
     if (size != null) {
-      
+
       setMinimumSize(size);
       setPreferredSize(size);
-      
+
       if (doNotificationThatRealigned) {
         for (final MindMapListener l : this.mindMapListeners) {
           l.onMindMapModelRealigned(this, size);
         }
       }
     }
-  }
-
-  @Nullable
-  public static Dimension layoutFullDiagramWithCenteringToPaper(@Nonnull final MMGraphics gfx, @Nonnull final MindMap map, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Dimension2D paperSize) {
-    Dimension resultSize = null;
-    if (calculateElementSizes(gfx, map, cfg)) {
-      Dimension2D rootBlockSize = layoutModelElements(map, cfg);
-      final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
-
-      if (rootBlockSize != null) {
-        final ElementRoot rootElement = assertNotNull((ElementRoot) assertNotNull(map.getRoot()).getPayload());
-
-        double rootOffsetXInBlock = rootElement.getLeftBlockSize().getWidth();
-        double rootOffsetYInBlock = (rootBlockSize.getHeight() - rootElement.getBounds().getHeight()) / 2;
-
-        rootOffsetXInBlock += (paperSize.getWidth() - rootBlockSize.getWidth()) <= paperMargin ? paperMargin : (paperSize.getWidth() - rootBlockSize.getWidth()) / 2;
-        rootOffsetYInBlock += (paperSize.getHeight() - rootBlockSize.getHeight()) <= paperMargin ? paperMargin : (paperSize.getHeight() - rootBlockSize.getHeight()) / 2;
-
-        moveDiagram(map, rootOffsetXInBlock, rootOffsetYInBlock);
-        resultSize = new Dimension((int) Math.round(rootBlockSize.getWidth() + paperMargin * 2), (int) Math.round(rootBlockSize.getHeight() + paperMargin * 2));
-      }
-    }
-
-    return resultSize;
   }
 
   public void updateView(final boolean structureWasChanged) {
@@ -2233,15 +2211,14 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
               fireNotificationComponentElementsLayouted(graph);
             }
           }
-        }
-        finally {
+        } finally {
           unlock();
         }
       }
     }
     return result;
   }
-  
+
   @Override
   public void revalidate() {
     final Runnable runnable = new Runnable() {
@@ -2257,6 +2234,11 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
   }
 
+  @Nullable
+  public String getErrorText() {
+    return this.errorText;
+  }
+
   public void setErrorText(@Nullable final String text) {
     if (this.lockIfNotDisposed()) {
       try {
@@ -2266,11 +2248,6 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
         this.unlock();
       }
     }
-  }
-
-  @Nullable
-  public String getErrorText() {
-    return this.errorText;
   }
 
   @Override
@@ -2302,21 +2279,6 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
         this.unlock();
       }
     }
-  }
-
-  private static void drawErrorText(@Nonnull final Graphics2D gfx, @Nonnull final Dimension fullSize, @Nonnull final String error) {
-    final Font font = new Font(Font.DIALOG, Font.BOLD, 24);
-    final FontMetrics metrics = gfx.getFontMetrics(font);
-    final Rectangle2D textBounds = metrics.getStringBounds(error, gfx);
-    gfx.setFont(font);
-    gfx.setColor(Color.DARK_GRAY);
-    gfx.fillRect(0, 0, fullSize.width, fullSize.height);
-    final int x = (int) (fullSize.width - textBounds.getWidth()) / 2;
-    final int y = (int) (fullSize.height - textBounds.getHeight()) / 2;
-    gfx.setColor(Color.BLACK);
-    gfx.drawString(error, x + 5, y + 5);
-    gfx.setColor(Color.RED.brighter());
-    gfx.drawString(error, x, y);
   }
 
   @Override
@@ -2475,67 +2437,6 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
   }
 
-  @Nullable
-  public static Dimension2D calculateSizeOfMapInPixels(@Nonnull final MindMap model, @Nullable final Graphics2D graphicsContext, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll) {
-    final MindMap workMap = new MindMap(model, null);
-    workMap.resetPayload();
-
-    Graphics2D g = graphicsContext;
-    
-    if (g == null) {
-      BufferedImage img = new BufferedImage(32, 32, cfg.isDrawBackground() ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB);
-      g = img.createGraphics();
-    }
-    final MMGraphics gfx = new MMGraphics2DWrapper(g);
-    Utils.prepareGraphicsForQuality(g);
-    
-    Dimension2D blockSize = null;
-    try {
-      
-      if (calculateElementSizes(gfx, workMap, cfg)) {
-        if (expandAll) {
-          final AbstractElement root = assertNotNull((AbstractElement) assertNotNull(workMap.getRoot()).getPayload());
-          root.collapseOrExpandAllChildren(false);
-          calculateElementSizes(gfx, workMap, cfg);
-        }
-        blockSize = assertNotNull(layoutModelElements(workMap, cfg));
-        final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
-        blockSize.setSize(blockSize.getWidth() + paperMargin * 2, blockSize.getHeight() + paperMargin * 2);
-      }
-    } finally {
-      gfx.dispose();
-    }
-    return blockSize;
-  }
-
-  @Nullable
-  public static BufferedImage renderMindMapAsImage(@Nonnull final MindMap model, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll) {
-    final MindMap workMap = new MindMap(model, null);
-    workMap.resetPayload();
-
-    if (expandAll) {
-      MindMapUtils.removeCollapseAttr(workMap);
-    }
-
-    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, cfg, expandAll);
-    if (blockSize == null) {
-      return null;
-    }
-
-    final BufferedImage img = new BufferedImage((int) blockSize.getWidth(), (int) blockSize.getHeight(), BufferedImage.TYPE_INT_ARGB);
-    final Graphics2D g = img.createGraphics();
-    final MMGraphics gfx = new MMGraphics2DWrapper(g);
-    try {
-      Utils.prepareGraphicsForQuality(g);
-      gfx.setClip(0, 0, img.getWidth(), img.getHeight());
-      layoutFullDiagramWithCenteringToPaper(gfx, workMap, cfg, blockSize);
-      drawOnGraphicsForConfiguration(gfx, cfg, workMap, false, null);
-    } finally {
-      gfx.dispose();
-    }
-    return img;
-  }
-
   public boolean isLocked() {
     return this.panelLocker == null ? false : this.panelLocker.isLocked();
   }
@@ -2590,99 +2491,86 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 
   @Override
   public void lostOwnership(@Nonnull final Clipboard clipboard, @Nonnull final Transferable contents) {
- 
-  }  
-  
+
+  }
+
   /**
    * Create transferable topic list in system clipboard.
-   * 
-   * @param cut true shows that remove topics after placing into clipboard
+   *
+   * @param cut    true shows that remove topics after placing into clipboard
    * @param topics topics to be placed into clipboard, if there are successors and ancestors then successors will be removed
    * @return true if topic array is not empty and operation completed successfully, false otherwise
-   * 
    * @since 1.3.1
    */
-  public boolean copyTopicsToClipboard(final boolean cut, @Nonnull @MustNotContainNull final Topic ... topics){
+  public boolean copyTopicsToClipboard(final boolean cut, @Nonnull @MustNotContainNull final Topic... topics) {
     boolean result = false;
-    
+
     if (this.lockIfNotDisposed()) {
       try {
-        if (topics.length>0){
+        if (topics.length > 0) {
           final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
           clipboard.setContents(new MMDTopicsTransferable(topics), this);
-          
-          if (cut){
-              deleteTopics(true, ensureNoRootInArray(topics));
+
+          if (cut) {
+            deleteTopics(true, ensureNoRootInArray(topics));
           }
-          
+
           result = true;
         }
-      }
-      finally {
+      } finally {
         this.unlock();
       }
     }
-    
+
     return result;
   }
-  
-  @Nonnull
-  @MustNotContainNull
-  private static Topic [] ensureNoRootInArray(@Nonnull @MustNotContainNull final Topic ... topics) {
-    final List<Topic> buffer = new ArrayList<Topic>(topics.length);
-    for(final Topic t : topics){
-      if (!t.isRoot()) buffer.add(t);
-    }
-    return buffer.toArray(new Topic[buffer.size()]);
-  }
-  
+
   /**
    * Paste topics from clipboard to currently selected ones.
-   * 
+   *
    * @return true if there detected topic list in clipboard and these topics added to selected ones, false otherwise
    * @since 1.3.1
    */
   public boolean pasteTopicsFromClipboard() {
     boolean result = false;
-    
+
     if (this.lockIfNotDisposed()) {
       try {
         final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR)){
-          try{
-            final NBMindMapTopicsContainer container  = (NBMindMapTopicsContainer) clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
-            if (container!=null && !container.isEmpty()){
-              
-              final Topic [] selected = this.getSelectedTopics();
-              
-              if (selected.length>0){
-                for(final Topic s : selected){
-                  for(final Topic t : container.getTopics()) {
-                    final Topic newTopic = new Topic(this.model,t,true);
+        if (clipboard.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR)) {
+          try {
+            final NBMindMapTopicsContainer container = (NBMindMapTopicsContainer) clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+            if (container != null && !container.isEmpty()) {
+
+              final Topic[] selected = this.getSelectedTopics();
+
+              if (selected.length > 0) {
+                for (final Topic s : selected) {
+                  for (final Topic t : container.getTopics()) {
+                    final Topic newTopic = new Topic(this.model, t, true);
                     newTopic.removeExtra(Extra.ExtraType.TOPIC);
                     newTopic.moveToNewParent(s);
                     MindMapUtils.ensureVisibility(newTopic);
                   }
                 }
               }
-              
+
               fireNotificationMindMapChanged();
-              
+
               invalidate();
               repaint();
             }
-          }catch(final Exception ex){
+          } catch (final Exception ex) {
             LOGGER.error("Can't get clipboard data", ex);
           }
         }
-      }
-      finally {
+      } finally {
         this.unlock();
       }
     }
     return result;
   }
-  
+
   public boolean isDisposed() {
     return this.disposed.get();
   }
@@ -2702,6 +2590,93 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       } finally {
         this.unlock();
       }
+    }
+  }
+
+  /**
+   * Some Job over mind map model.
+   *
+   * @see MindMapPanel#executeModelJobs(com.igormaznitsa.mindmap.swing.panel.MindMapPanel.ModelJob...)
+   * @since 1.3.1
+   */
+  public interface ModelJob {
+
+    /**
+     * Execute the job.
+     *
+     * @param model model to be processed
+     * @return true if to continue job sequence, false if to interrupt
+     */
+    boolean doChangeModel(@Nonnull MindMap model);
+  }
+
+  public static class DraggedElement {
+
+    @Nonnull
+    private final AbstractElement element;
+    private final Image prerenderedImage;
+    private final Point mousePointerOffset;
+    private final Point currentPosition;
+    private final DraggedElement.Modifier modifier;
+    public DraggedElement(@Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Point mousePointerOffset, @Nonnull final DraggedElement.Modifier modifier) {
+      this.element = element;
+      this.prerenderedImage = Utils.renderWithTransparency(0.55f, element, cfg);
+      this.mousePointerOffset = mousePointerOffset;
+      this.currentPosition = new Point();
+      this.modifier = modifier;
+    }
+
+    @Nonnull
+    public DraggedElement.Modifier getModifier() {
+      return this.modifier;
+    }
+
+    public boolean isPositionInside() {
+      return this.element.getBounds().contains(this.currentPosition);
+    }
+
+    @Nonnull
+    public AbstractElement getElement() {
+      return this.element;
+    }
+
+    public void updatePosition(@Nonnull final Point point) {
+      this.currentPosition.setLocation(point);
+    }
+
+    @Nonnull
+    public Point getPosition() {
+      return this.currentPosition;
+    }
+
+    @Nonnull
+    public Point getMousePointerOffset() {
+      return this.mousePointerOffset;
+    }
+
+    public int getDrawPositionX() {
+      return this.currentPosition.x - this.mousePointerOffset.x;
+    }
+
+    public int getDrawPositionY() {
+      return this.currentPosition.y - this.mousePointerOffset.y;
+    }
+
+    @Nonnull
+    public Image getImage() {
+      return this.prerenderedImage;
+    }
+
+    public void draw(@Nonnull final Graphics2D gfx) {
+      final int x = getDrawPositionX();
+      final int y = getDrawPositionY();
+      gfx.drawImage(this.prerenderedImage, x, y, null);
+    }
+
+    public enum Modifier {
+
+      NONE,
+      MAKE_JUMP;
     }
   }
 

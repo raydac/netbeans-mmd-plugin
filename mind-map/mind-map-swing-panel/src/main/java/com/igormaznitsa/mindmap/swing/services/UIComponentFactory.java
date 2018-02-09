@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.services;
 
 import javax.annotation.Nonnull;
@@ -37,47 +38,67 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 
 public interface UIComponentFactory {
   @Nonnull
   JPanel makePanel();
+
   @Nonnull
   JPanel makePanelWithOptions(@Nonnull HasOptions optionsProcessor);
+
   @Nonnull
   JComboBox makeComboBox();
+
   @Nonnull
   JSpinner makeSpinner();
+
   @Nonnull
   JButton makeButton();
+
   @Nonnull
   JToggleButton makeToggleButton();
+
   @Nonnull
   JRadioButton makeRadioButton();
+
   @Nonnull
   JToolBar makeToolBar();
+
   @Nonnull
   JScrollPane makeScrollPane();
+
   @Nonnull
   JCheckBox makeCheckBox();
+
   @Nonnull
   JLabel makeLabel();
+
   @Nonnull
   JPopupMenu makePopupMenu();
+
   @Nonnull
-  JTextArea makeTextArea ();
+  JTextArea makeTextArea();
+
   @Nonnull
-  JTextField makeTextField ();
+  JTextField makeTextField();
+
   @Nonnull
-  JEditorPane makeEditorPane ();
+  JEditorPane makeEditorPane();
+
   @Nonnull
-  JMenuItem makeMenuItem (@Nonnull String text, @Nullable Icon icon);
+  JMenuItem makeMenuItem(@Nonnull String text, @Nullable Icon icon);
+
   @Nonnull
-  JCheckBoxMenuItem makeCheckboxMenuItem (@Nonnull String text, @Nullable Icon icon, boolean selected);
+  JCheckBoxMenuItem makeCheckboxMenuItem(@Nonnull String text, @Nullable Icon icon, boolean selected);
+
   @Nonnull
-  JSeparator makeMenuSeparator (); 
+  JSeparator makeMenuSeparator();
+
   @Nonnull
-  JMenu makeMenu (@Nonnull String text); 
+  JMenu makeMenu(@Nonnull String text);
+
   @Nonnull
-  JSlider makeSlider (); 
+  JSlider makeSlider();
 }
