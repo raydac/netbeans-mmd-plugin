@@ -54,9 +54,9 @@ public final class KeyShortcut {
         result = KeyEvent.VK_SPACE;
       }
       break;
-      case 0x0D: {
-        // Decode CR as ENTER
-        result = KeyEvent.VK_ENTER;
+      case '+': {
+        // Character '+' is 0x2b but VK_PLUS is 0x0209
+        result = KeyEvent.VK_PLUS;
       }
       break;
       default: {
