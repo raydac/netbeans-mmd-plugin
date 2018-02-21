@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
@@ -192,7 +193,7 @@ public final class PNGImageExporter extends AbstractExporter {
     newConfig.setDrawBackground(this.flagDrawBackground);
     newConfig.setScale(1.0f);
 
-    final RenderedImage image = MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, flagExpandAllNodes);
+    final RenderedImage image = MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, flagExpandAllNodes, RenderQuality.QUALITY);
 
     if (image == null) {
       if (out == null) {

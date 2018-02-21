@@ -17,6 +17,7 @@
 package com.igormaznitsa.mindmap.swing.panel;
 
 
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 
 import java.awt.Color;
@@ -43,6 +44,7 @@ import javax.swing.KeyStroke;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import org.apache.commons.lang.SystemUtils;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 
@@ -68,6 +70,7 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_ZOOM_OUT = "zoomOut";
   public static final String KEY_ZOOM_RESET = "zoomReset";
   public static final String KEY_SHOW_POPUP = "showPopupMenu";
+
   private static final long serialVersionUID = -4273687011484460064L;
   @MustNotContainNull
   private transient final List<WeakReference<MindMapConfigListener>> listeners = new ArrayList<WeakReference<MindMapConfigListener>>();
@@ -109,6 +112,7 @@ public final class MindMapPanelConfig implements Serializable {
   private Font font = new Font(Font.DIALOG, Font.BOLD, 18); //NOI18N
   private double scale = 1.0d;
   private boolean dropShadow = true;
+  private RenderQuality renderQuality = RenderQuality.DEFAULT;
   private transient volatile boolean notificationEnabled = true;
 
   public MindMapPanelConfig(@Nonnull final MindMapPanelConfig cfg, final boolean copyListeners) {
@@ -260,6 +264,8 @@ public final class MindMapPanelConfig implements Serializable {
             prefs.putInt(fieldName, ((Color) f.get(this)).getRGB());
           } else if (fieldClass == String.class) {
             prefs.put(fieldName, (String) f.get(this));
+          } else if (fieldClass == RenderQuality.class) {
+            prefs.put(fieldName, ((RenderQuality) f.get(this)).name());
           } else {
             throw new Error("Unexpected field type " + fieldClass.getName());
           }
@@ -314,6 +320,9 @@ public final class MindMapPanelConfig implements Serializable {
             f.set(this, new Color(argb, true));
           } else if (fieldClass == String.class) {
             f.set(this, prefs.get(fieldName, (String) f.get(etalon)));
+          } else if (fieldClass == RenderQuality.class) {
+            final String name = prefs.get(fieldName, ((RenderQuality)f.get(etalon)).name());
+            f.set(this, RenderQuality.valueOf(name));
           } else {
             throw new Error("Unexpected field type " + fieldClass.getName());
           }
@@ -769,6 +778,16 @@ public final class MindMapPanelConfig implements Serializable {
 
   public void setDropShadow(final boolean value) {
     this.dropShadow = value;
+    notifyCfgListenersAboutChange();
+  }
+
+  @Nonnull
+  public RenderQuality getRenderQuality() {
+    return this.renderQuality;
+  }
+
+  public void setRenderQuality(@Nullable final RenderQuality value) {
+    this.renderQuality = GetUtils.ensureNonNull(value, RenderQuality.DEFAULT);
     notifyCfgListenersAboutChange();
   }
 

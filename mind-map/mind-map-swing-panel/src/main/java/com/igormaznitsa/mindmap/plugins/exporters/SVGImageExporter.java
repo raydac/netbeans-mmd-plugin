@@ -54,6 +54,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -562,7 +563,7 @@ public class SVGImageExporter extends AbstractExporter {
     newConfig.setDrawBackground(this.flagDrawBackground);
     newConfig.setScale(1.0f);
 
-    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, newConfig, flagExpandAllNodes);
+    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, newConfig, flagExpandAllNodes, RenderQuality.DEFAULT);
     if (blockSize == null) {
       return;
     }

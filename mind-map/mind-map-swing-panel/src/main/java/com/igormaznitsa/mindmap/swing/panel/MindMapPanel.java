@@ -45,6 +45,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
@@ -87,7 +88,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
-public class MindMapPanel extends JPanel implements ClipboardOwner {
+public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   public static final long serialVersionUID = 2783412123454232L;
   public static final String ATTR_SHOW_JUMPS = "showJumps";
@@ -124,7 +125,8 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
   private volatile boolean popupMenuActive = false;
 
   public MindMapPanel(@Nonnull final MindMapPanelController controller) {
-    super(null);
+    super();
+
     final MindMapPanelConfig panelConfig = controller.provideConfigForMindMapPanel(this);
 
     this.textEditorPanel.setLayout(new BorderLayout(0, 0));
@@ -545,7 +547,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                     selectedTopics.clear();
 
                     final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
-                    draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE);
+                    draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset, e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP : DraggedElement.Modifier.NONE, getConfiguration().getRenderQuality());
                     draggedElement.updatePosition(e.getPoint());
                     findDestinationElementForDragged();
                   } else {
@@ -597,7 +599,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
                 fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, true);
 
                 setScale(newScale);
-                updateElementsAndSizeForCurrentGraphics(true, false);
+                invalidate();
 
                 fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, false);
 
@@ -1065,7 +1067,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
   }
 
   @Nullable
-  public static Dimension2D calculateSizeOfMapInPixels(@Nonnull final MindMap model, @Nullable final Graphics2D graphicsContext, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll) {
+  public static Dimension2D calculateSizeOfMapInPixels(@Nonnull final MindMap model, @Nullable final Graphics2D graphicsContext, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll, @Nonnull final RenderQuality quality) {
     final MindMap workMap = new MindMap(model, null);
     workMap.resetPayload();
 
@@ -1076,7 +1078,8 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       g = img.createGraphics();
     }
     final MMGraphics gfx = new MMGraphics2DWrapper(g);
-    Utils.prepareGraphicsForQuality(g);
+
+    quality.prepare(g);
 
     Dimension2D blockSize = null;
     try {
@@ -1098,7 +1101,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
   }
 
   @Nullable
-  public static BufferedImage renderMindMapAsImage(@Nonnull final MindMap model, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll) {
+  public static BufferedImage renderMindMapAsImage(@Nonnull final MindMap model, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll, @Nonnull final RenderQuality quality) {
     final MindMap workMap = new MindMap(model, null);
     workMap.resetPayload();
 
@@ -1106,7 +1109,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       MindMapUtils.removeCollapseAttr(workMap);
     }
 
-    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, cfg, expandAll);
+    final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, cfg, expandAll, quality);
     if (blockSize == null) {
       return null;
     }
@@ -1115,7 +1118,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     final Graphics2D g = img.createGraphics();
     final MMGraphics gfx = new MMGraphics2DWrapper(g);
     try {
-      Utils.prepareGraphicsForQuality(g);
+      quality.prepare(g);
       gfx.setClip(0, 0, img.getWidth(), img.getHeight());
       layoutFullDiagramWithCenteringToPaper(gfx, workMap, cfg, blockSize);
       drawOnGraphicsForConfiguration(gfx, cfg, workMap, false, null);
@@ -2185,14 +2188,11 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     }
   }
 
-  public boolean updateElementsAndSizeForCurrentGraphics(final boolean enforce, final boolean doListenerNotification) {
-    assertSwingDispatchThread();
-
+  public boolean updateElementsAndSizeForGraphics(@Nullable final Graphics2D graph, final boolean enforce, final boolean doListenerNotification) {
     boolean result = true;
     if (enforce || !isValid()) {
       if (lockIfNotDisposed()) {
         try {
-          final Graphics2D graph = (Graphics2D) getGraphics();
           if (graph != null) {
             final MMGraphics gfx = new MMGraphics2DWrapper(graph);
             if (calculateElementSizes(gfx, this.model, this.config)) {
@@ -2217,6 +2217,11 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
       }
     }
     return result;
+  }
+
+  public boolean updateElementsAndSizeForCurrentGraphics(final boolean enforce, final boolean doListenerNotification) {
+    assertSwingDispatchThread();
+    return updateElementsAndSizeForGraphics((Graphics2D) getGraphics(), enforce, doListenerNotification);
   }
 
   @Override
@@ -2284,18 +2289,20 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
   @Override
   @SuppressWarnings("unchecked")
   public void paintComponent(@Nonnull final Graphics g) {
-    super.paintComponent(g);
     if (this.lockIfNotDisposed()) {
       try {
         final Graphics2D gfx = (Graphics2D) g.create();
         try {
           final String error = this.errorText;
 
-          Utils.prepareGraphicsForQuality(gfx);
+          this.getConfiguration().getRenderQuality().prepare(gfx);
+
           if (error != null) {
             drawErrorText(gfx, this.getSize(), error);
           } else {
-            revalidate();
+            if (this.model.getRoot().getPayload() == null) {
+              updateElementsAndSizeForGraphics(gfx,true, true);
+            }
             drawOnGraphicsForConfiguration(new MMGraphics2DWrapper(gfx), this.config, this.model, true, this.selectedTopics);
             drawDestinationElement(gfx, this.config);
           }
@@ -2618,9 +2625,10 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
     private final Point mousePointerOffset;
     private final Point currentPosition;
     private final DraggedElement.Modifier modifier;
-    public DraggedElement(@Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Point mousePointerOffset, @Nonnull final DraggedElement.Modifier modifier) {
+
+    public DraggedElement(@Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Point mousePointerOffset, @Nonnull final DraggedElement.Modifier modifier, @Nonnull final RenderQuality quality) {
       this.element = element;
-      this.prerenderedImage = Utils.renderWithTransparency(0.55f, element, cfg);
+      this.prerenderedImage = Utils.renderWithTransparency(0.55f, element, cfg, quality);
       this.mousePointerOffset = mousePointerOffset;
       this.currentPosition = new Point();
       this.modifier = modifier;
@@ -2683,7 +2691,7 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 //  public static void main(@MustNotContainNull @Nonnull final String... args) {
 //    final javax.swing.JFrame frame = new javax.swing.JFrame("Test");
 //    frame.setSize(new Dimension(400,400));
-//    
+//
 //    final MindMapPanelConfig config = new MindMapPanelConfig();
 //
 //    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
@@ -2740,6 +2748,11 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 //    };
 //
 //    final MindMapPanel panel = new MindMapPanel(new MindMapPanelController() {
+//      @Override
+//      public boolean isTrimTopicTextBeforeSet(@Nonnull MindMapPanel source) {
+//        return false;
+//      }
+//
 //      @Override
 //      public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
 //        return true;
@@ -2801,12 +2814,12 @@ public class MindMapPanel extends JPanel implements ClipboardOwner {
 //    });
 //
 //    final javax.swing.JScrollPane spanel = new javax.swing.JScrollPane(panel);
-//    
+//
 //    panel.setModel(new MindMap(null, true));
-//    
+//
 //    frame.setContentPane(spanel);
-//    
+//
 //    frame.setVisible(true);
-//  
+//
 //  }
 }

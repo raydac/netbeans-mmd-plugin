@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import java.awt.Color;
@@ -104,21 +105,21 @@ public class MMDPrint {
 
       switch (options.getScaleType()) {
         case FIT_HEIGHT_TO_PAGES: {
-          Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+          Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
           scale = (double) (options.getPagesInColumn() * paperHeightInPixels) / (int) Math.round(calculatedSize.getHeight());
           cfg.setScale(scale);
-          calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+          calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
           int pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
 
           while (pvert > options.getPagesInColumn() && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
-            calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+            calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
             pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
           }
 
           if (options.isDrawAsImage()) {
-            diagramAsImage = Assertions.assertNotNull("Can't raster map as image", MindMapPanel.renderMindMapAsImage(theModel, cfg, false));
+            diagramAsImage = Assertions.assertNotNull("Can't raster map as image", MindMapPanel.renderMindMapAsImage(theModel, cfg, false, RenderQuality.QUALITY));
             int phorz = 1 + diagramAsImage.getWidth(null) / (paperWidthInPixels + 1);
             pvert = 1 + diagramAsImage.getHeight(null) / (paperHeightInPixels + 1);
             offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(diagramAsImage.getWidth(null), diagramAsImage.getHeight(null)));
@@ -130,21 +131,21 @@ public class MMDPrint {
         }
         break;
         case FIT_WIDTH_TO_PAGES: {
-          Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+          Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
           scale = (double) (options.getPagesInRow() * paperWidthInPixels) / (int) Math.round(calculatedSize.getWidth());
           cfg.setScale(scale);
-          calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+          calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
           int phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
 
           while (phorz > options.getPagesInRow() && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
-            calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+            calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
             phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
           }
 
           if (options.isDrawAsImage()) {
-            diagramAsImage = Assertions.assertNotNull("Can't raster map as image", MindMapPanel.renderMindMapAsImage(theModel, cfg, false));
+            diagramAsImage = Assertions.assertNotNull("Can't raster map as image", MindMapPanel.renderMindMapAsImage(theModel, cfg, false, RenderQuality.QUALITY));
             int pvert = 1 + diagramAsImage.getHeight(null) / (paperHeightInPixels + 1);
             phorz = 1 + diagramAsImage.getWidth(null) / (paperWidthInPixels + 1);
             offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(diagramAsImage.getWidth(null), diagramAsImage.getHeight(null)));
@@ -156,25 +157,25 @@ public class MMDPrint {
         }
         break;
         case FIT_TO_SINGLE_PAGE: {
-          Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+          Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
           scale = (double) (options.getPagesInRow() * paperWidthInPixels) / (int) Math.round(calculatedSize.getWidth());
           scale = Math.min(scale, (double) (options.getPagesInColumn() * paperHeightInPixels) / (int) Math.round(calculatedSize.getHeight()));
           cfg.setScale(scale);
-          calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+          calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
           int phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
           int pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
 
           while ((phorz > 1 || pvert > 1) && scale > SCALE_STEP) {
             scale -= SCALE_STEP;
             cfg.setScale(scale);
-            calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+            calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
             phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
             pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
           }
 
           if (phorz > 1 || pvert > 1) {
             // we have to scale to fit only page
-            final BufferedImage image = MindMapPanel.renderMindMapAsImage(theModel, cfg, false);
+            final BufferedImage image = MindMapPanel.renderMindMapAsImage(theModel, cfg, false, RenderQuality.QUALITY);
             if (image != null) {
               if (phorz > 1) {
                 diagramAsImage = image.getScaledInstance(paperWidthInPixels * image.getHeight() / image.getWidth(), paperHeightInPixels, Image.SCALE_SMOOTH);
@@ -188,7 +189,7 @@ public class MMDPrint {
             }
           } else {
             if (options.isDrawAsImage()) {
-              diagramAsImage = Assertions.assertNotNull("Can't raster map as image", MindMapPanel.renderMindMapAsImage(theModel, cfg, false));
+              diagramAsImage = Assertions.assertNotNull("Can't raster map as image", MindMapPanel.renderMindMapAsImage(theModel, cfg, false, RenderQuality.QUALITY));
               offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(diagramAsImage.getWidth(null), diagramAsImage.getHeight(null)));
             } else {
               diagramAsImage = null;
@@ -200,12 +201,12 @@ public class MMDPrint {
         case ZOOM: {
           scale = options.getScale();
           cfg.setScale(scale);
-          final Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false));
+          final Dimension2D calculatedSize = Assertions.assertNotNull("Must not be null", calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY));
           final int phorz = 1 + (int) Math.round(calculatedSize.getWidth()) / (paperWidthInPixels + 1);
           final int pvert = 1 + (int) Math.round(calculatedSize.getHeight()) / (paperHeightInPixels + 1);
 
           if (options.isDrawAsImage()) {
-            diagramAsImage = Assertions.assertNotNull("Can't raster map as image", MindMapPanel.renderMindMapAsImage(theModel, cfg, false));
+            diagramAsImage = Assertions.assertNotNull("Can't raster map as image", MindMapPanel.renderMindMapAsImage(theModel, cfg, false, RenderQuality.QUALITY));
             offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(diagramAsImage.getWidth(null), diagramAsImage.getHeight(null)));
           } else {
             diagramAsImage = null;
@@ -230,7 +231,7 @@ public class MMDPrint {
               @Override
               public void print(@Nonnull final Graphics g) {
                 final Graphics2D gfx = (Graphics2D) g.create();
-                Utils.prepareGraphicsForQuality(gfx);
+                RenderQuality.QUALITY.prepare(gfx);
                 gfx.translate(offsetOfImage.x - pageX * paperWidthInPixels, offsetOfImage.y - pageY * paperHeightInPixels);
                 gfx.drawImage(diagramAsImage, 0, 0, null);
               }
@@ -241,7 +242,7 @@ public class MMDPrint {
 
         cfg.setScale(scale);
 
-        final Dimension2D modelImageSize = calculateSizeOfMapInPixels(theModel, null, cfg, false);
+        final Dimension2D modelImageSize = calculateSizeOfMapInPixels(theModel, null, cfg, false, RenderQuality.QUALITY);
 
         if (theModel.getRoot() != null && modelImageSize != null) {
           final int modelWidth = (int) Math.round(modelImageSize.getWidth());
@@ -264,7 +265,8 @@ public class MMDPrint {
                   }
 
                   final Graphics2D gfx = (Graphics2D) g.create();
-                  Utils.prepareGraphicsForQuality(gfx);
+                  RenderQuality.QUALITY.prepare(gfx);
+
                   MindMapPanel.layoutFullDiagramWithCenteringToPaper(new MMGraphics2DWrapper(gfx), theModel, cfg, modelImageSize);
 
                   gfx.translate(offsetOfImage.x - pageX * paperWidthInPixels, offsetOfImage.y - pageY * paperHeightInPixels);

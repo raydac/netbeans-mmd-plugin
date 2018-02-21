@@ -22,10 +22,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -94,17 +91,6 @@ public final class Utils {
   public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size"; //NOI18N
 
   private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
-
-  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
-
-  static {
-    RENDERING_HINTS.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-    RENDERING_HINTS.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    RENDERING_HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    RENDERING_HINTS.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-    RENDERING_HINTS.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-    RENDERING_HINTS.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-  }
 
   private Utils() {
   }
@@ -371,10 +357,6 @@ public final class Utils {
     } else {
       return calculateColorBrightness(panelBack) < 150;
     }
-  }
-
-  public static void prepareGraphicsForQuality(@Nonnull final Graphics2D gfx) {
-    gfx.setRenderingHints(RENDERING_HINTS);
   }
 
   @Nonnull
@@ -646,10 +628,7 @@ public final class Utils {
         result = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g = (Graphics2D) result.getGraphics();
 
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        RenderQuality.QUALITY.prepare(g);
 
         g.drawImage(src, 0, 0, scaledW, scaledH, null);
         g.dispose();
@@ -664,7 +643,7 @@ public final class Utils {
   }
 
   @Nonnull
-  public static Image renderWithTransparency(final float opacity, @Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig config) {
+  public static Image renderWithTransparency(final float opacity, @Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig config, @Nonnull final RenderQuality quality) {
     final AbstractElement cloned = element.makeCopy();
     final Rectangle2D bounds = cloned.getBounds();
 
@@ -685,7 +664,7 @@ public final class Utils {
     final Graphics2D g = result.createGraphics();
     final MMGraphics gfx = new MMGraphics2DWrapper(g);
     try {
-      prepareGraphicsForQuality(g);
+      quality.prepare(g);
       cloned.doPaint(gfx, config, false);
     }
     finally {
