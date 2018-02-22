@@ -34,10 +34,18 @@ class PlatformMacOSX implements Platform {
     this.application = Application.getApplication();
     Object macListener = null;
     try {
-      final Class<?> klazz = Class.forName("com.igormaznitsa.sciareto.ui.platform.MacOSXAppListener");//NOI18N
+      final Class<?> klazz = Class.forName("com.igormaznitsa.sciareto.ui.platform.MacOSXAppHandlerOld");//NOI18N
       macListener = klazz.getConstructor(Application.class).newInstance(this.application);
-    } catch (Exception ex) {
+      LOGGER.info("Legacy version of MACOSX AWT has been detected and in use");
+    } catch (Throwable ex) {
       LOGGER.error("Can't register application listener, may be newest JDK with removed deprecated methods", ex);//NOI18N
+      try{
+          final Class<?> klazz = Class.forName("com.igormaznitsa.sciareto.ui.platform.MacOSXAppHandler");//NOI18N
+          macListener = klazz.getConstructor(Application.class).newInstance(this.application);
+          LOGGER.info("Newer version of MACOSX AWT has been detected and in use");
+      }catch(Throwable exx) {
+          LOGGER.error("Can't register newer MACOSX handler, contact dveloper!", exx);//NOI18N
+      }
     } finally {
       this.macOsxAppListener = macListener;
     }
@@ -59,9 +67,6 @@ class PlatformMacOSX implements Platform {
 
   @Override
   public void init() {
-    System.setProperty("apple.awt.fileDialogForDirectories", "true"); //NOI18N
-    System.setProperty("apple.laf.useScreenMenuBar", "true"); //NOI18N
-    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SciaReto"); //NOI18N
   }
 
   @Override

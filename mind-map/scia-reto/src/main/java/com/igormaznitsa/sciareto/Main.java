@@ -224,6 +224,12 @@ public class Main {
   }
 
   public static void main(@Nonnull @MustNotContainNull final String... args) {
+    // -- Properties for MAC OSX --  
+    System.setProperty("apple.awt.fileDialogForDirectories", "true"); //NOI18N
+    System.setProperty("apple.laf.useScreenMenuBar", "true"); //NOI18N
+    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SciaReto"); //NOI18N
+    // ----------------------------
+    
     SystemUtils.setDebugLevelForJavaLogger(Level.WARNING);
 
     PlatformProvider.getPlatform().init();

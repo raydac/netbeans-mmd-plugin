@@ -15,31 +15,83 @@
  */
 package com.igormaznitsa.sciareto.ui.platform;
 
+import com.apple.eawt.AboutHandler;
+import com.apple.eawt.AppEvent;
 import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationEvent;
-import com.apple.eawt.ApplicationListener;
+import com.apple.eawt.OpenFilesHandler;
+import com.apple.eawt.PreferencesHandler;
+import com.apple.eawt.PrintFilesHandler;
+import com.apple.eawt.QuitHandler;
+import com.apple.eawt.QuitResponse;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.Warning;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import java.io.File;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 @Warning("It is accessible through Class.forName(), don't rename it!")
-public final class MacOSXAppListener implements ApplicationListener, Platform {
+public final class MacOSXAppHandler implements Platform {
 
-  private final Logger LOGGER = LoggerFactory.getLogger(MacOSXAppListener.class);
+  private final Logger LOGGER = LoggerFactory.getLogger(MacOSXAppHandler.class);
   private final Map<PlatformMenuEvent, PlatformMenuAction> actions = Collections.synchronizedMap(new EnumMap<PlatformMenuEvent, PlatformMenuAction>(PlatformMenuEvent.class));
   private final Application application;
 
-  public MacOSXAppListener(@Nonnull final Application application) {
+  public MacOSXAppHandler(@Nonnull final Application application) {
     this.application = application;
-    application.addApplicationListener(this);
+    application.setAboutHandler(new AboutHandler() {
+        @Override
+        public void handleAbout(AppEvent.AboutEvent ae) {
+            processMenuEvent(PlatformMenuEvent.ABOUT);
+        }
+    });
+
+    application.setPreferencesHandler(new PreferencesHandler() {
+        @Override
+        public void handlePreferences(AppEvent.PreferencesEvent pe) {
+            processMenuEvent(PlatformMenuEvent.PREFERENCES);
+        }
+    });
+
+    application.setOpenFileHandler(new OpenFilesHandler() {
+        @Override
+        public void openFiles(AppEvent.OpenFilesEvent ofe) {
+            final List<File> files = ofe.getFiles();
+            if (files!=null) {
+                for(final File f : files) {
+                    processMenuEvent(PlatformMenuEvent.OPEN_FILE, f.getAbsolutePath());
+                }
+            }
+        }
+    });
+    
+    application.setPrintFileHandler(new PrintFilesHandler() {
+        @Override
+        public void printFiles(AppEvent.PrintFilesEvent pfe) {
+            final List<File> files = pfe.getFiles();
+            if (files != null) {
+                for (final File f : files) {
+                    processMenuEvent(PlatformMenuEvent.PRINT_FILE, f.getAbsolutePath());
+                }
+            }
+        }
+    });
+
+    application.setQuitHandler(new QuitHandler() {
+        @Override
+        public void handleQuitRequestWith(AppEvent.QuitEvent qe, QuitResponse qr) {
+            if (processMenuEvent(PlatformMenuEvent.QUIT)){
+                qr.performQuit();
+            }
+        }
+    });
   }
 
   private boolean processMenuEvent(@Nonnull final PlatformMenuEvent event, @Nullable @MayContainNull final Object... args) {
@@ -71,18 +123,6 @@ public final class MacOSXAppListener implements ApplicationListener, Platform {
   @Override
   public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event, @Nonnull final PlatformMenuAction action) {
     this.actions.put(event, Assertions.assertNotNull(action));
-
-    switch (event) {
-      case ABOUT: {
-        this.application.setEnabledAboutMenu(true);
-      }
-      break;
-      case PREFERENCES: {
-        this.application.setEnabledPreferencesMenu(true);
-      }
-      break;
-    }
-
     return true;
   }
 
@@ -90,40 +130,6 @@ public final class MacOSXAppListener implements ApplicationListener, Platform {
   @Override
   public String getName() {
     return "";
-  }
-
-  @Override
-  public void handleAbout(@Nonnull final ApplicationEvent ae) {
-    ae.setHandled(processMenuEvent(PlatformMenuEvent.ABOUT));
-  }
-
-  @Override
-  public void handleOpenApplication(@Nonnull final ApplicationEvent ae) {
-  }
-
-  @Override
-  public void handleOpenFile(@Nonnull final ApplicationEvent ae) {
-    ae.setHandled(processMenuEvent(PlatformMenuEvent.OPEN_FILE, ae.getFilename()));
-  }
-
-  @Override
-  public void handlePreferences(@Nonnull final ApplicationEvent ae) {
-    ae.setHandled(processMenuEvent(PlatformMenuEvent.PREFERENCES));
-  }
-
-  @Override
-  public void handlePrintFile(@Nonnull final ApplicationEvent ae) {
-    ae.setHandled(processMenuEvent(PlatformMenuEvent.PRINT_FILE, ae.getFilename()));
-  }
-
-  @Override
-  public void handleQuit(@Nonnull final ApplicationEvent ae) {
-    ae.setHandled(processMenuEvent(PlatformMenuEvent.QUIT));
-  }
-
-  @Override
-  public void handleReOpenApplication(@Nonnull final ApplicationEvent ae) {
-    ae.setHandled(processMenuEvent(PlatformMenuEvent.REOPEN_APPLICATION));
   }
 
 }
