@@ -17,7 +17,7 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="scia_reto_title.svg"
-   inkscape:export-filename="/home/igorm/Projects_PET/MindMap/mind-map/scia-reto/src/main/resources/icons/splash.png"
+   inkscape:export-filename="/home2/igorm/Projects/Projects_PET/MindMap/mind-map/scia-reto/src/main/resources/icons/splash.png"
    inkscape:export-xdpi="27.860001"
    inkscape:export-ydpi="27.860001">
   <defs
@@ -311,6 +311,65 @@
          in2="result4"
          mode="multiply" />
     </filter>
+    <filter
+       inkscape:label="Wax Print"
+       inkscape:menu="Textures"
+       inkscape:menu-tooltip="Wax print on tissue texture"
+       height="1.4"
+       y="-0.2"
+       width="1.4"
+       x="-0.2"
+       style="color-interpolation-filters:sRGB;"
+       id="filter3575">
+      <feGaussianBlur
+         result="result1"
+         in="SourceGraphic"
+         stdDeviation="2"
+         id="feGaussianBlur3577" />
+      <feTurbulence
+         result="result0"
+         numOctaves="5"
+         baseFrequency="0.05"
+         type="fractalNoise"
+         id="feTurbulence3579" />
+      <feDisplacementMap
+         result="result2"
+         scale="10"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="result1"
+         in2="result0"
+         id="feDisplacementMap3581" />
+      <feColorMatrix
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 10 0 "
+         result="result3"
+         id="feColorMatrix3583" />
+      <feBlend
+         mode="multiply"
+         in="result2"
+         result="result5"
+         in2="result3"
+         id="feBlend3585" />
+      <feGaussianBlur
+         result="result4"
+         in="result3"
+         stdDeviation="5"
+         id="feGaussianBlur3587" />
+      <feComposite
+         k1="0.5"
+         k3="1.5"
+         k2="0.15"
+         in="result4"
+         in2="result5"
+         operator="arithmetic"
+         result="result6"
+         id="feComposite3589" />
+      <feComposite
+         operator="in"
+         in="result6"
+         in2="result4"
+         id="feComposite3591" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -320,8 +379,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.49497475"
-     inkscape:cx="1019.5707"
-     inkscape:cy="641.34936"
+     inkscape:cx="1069.0124"
+     inkscape:cy="318.10055"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -330,7 +389,7 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:window-width="1920"
-     inkscape:window-height="1009"
+     inkscape:window-height="999"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -543,7 +602,7 @@
          x="1074.3152"
          y="985.11218"
          id="tspan4209"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">© 2016-2017 Igor A. Maznitsa</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">© 2016-2018 Igor A. Maznitsa</tspan></text>
     <g
        id="g4466"
        transform="translate(14,0)">
@@ -594,15 +653,15 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:120.44460297px;line-height:125%;font-family:Saab;-inkscape-font-specification:Saab;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="532.62433"
-       y="801.3689"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:120.44460297px;line-height:125%;font-family:Saab;-inkscape-font-specification:Saab;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3575)"
+       x="560.62433"
+       y="837.3689"
        id="text4474"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4476"
-         x="532.62433"
-         y="801.3689"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:240.88920593px;font-family:eufm10;-inkscape-font-specification:eufm10">1.4.2</tspan></text>
+         x="560.62433"
+         y="837.3689"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:240.88920593px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:'Nimbus Roman No9 L'">1.4.2</tspan></text>
   </g>
 </svg>
