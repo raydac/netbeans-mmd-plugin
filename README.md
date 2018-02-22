@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.2 (UNDER DEVELOPMENT)__
+- ALL: Added paper render quality option
 - ALL: [#36](https://github.com/raydac/netbeans-mmd-plugin/issues/36) fixed line break processing in topic title editor under Mac OS
 - SR:  [#37](https://github.com/raydac/netbeans-mmd-plugin/issues/37) fixed start of SciaReto under Oracle JDK-9 in MacOS
 - IJ:  [#35](https://github.com/raydac/netbeans-mmd-plugin/issues/35) added `Use Project base folder as relative path root` option to facet (by default it uses Module folder)
