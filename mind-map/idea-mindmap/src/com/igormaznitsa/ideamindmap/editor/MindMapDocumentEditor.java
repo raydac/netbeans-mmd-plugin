@@ -429,9 +429,9 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
       final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
 
-      viewport.doLayout();
       viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0, newMouseY - dy)));
     }
+    this.mainScrollPane.repaint();
   }
 
   @Override
