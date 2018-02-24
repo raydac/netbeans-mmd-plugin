@@ -153,6 +153,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel12 = new javax.swing.JPanel();
         spinnerElementBorderWidth = new javax.swing.JSpinner();
         labelBorderWidth = new javax.swing.JLabel();
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         jPanel1 = new javax.swing.JPanel();
         checkboxUseInsideBrowser = new javax.swing.JCheckBox();
         checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -170,6 +171,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         checkBoxScalingMETA = new javax.swing.JCheckBox();
         checkboxMetricsAllowed = new javax.swing.JCheckBox();
         checkboxTrimTopicText = new javax.swing.JCheckBox();
+        checkBoxShowHiddenFiles = new javax.swing.JCheckBox();
         jPanel9 = new javax.swing.JPanel();
         buttonAbout = new javax.swing.JButton();
         donateButton1 = new com.igormaznitsa.sciareto.ui.misc.DonateButton();
@@ -710,6 +712,12 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
         jPanel2.add(jPanel11, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.weighty = 1000.0;
+        jPanel2.add(filler4, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -873,6 +881,19 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkboxTrimTopicText, gridBagConstraints);
+
+        checkBoxShowHiddenFiles.setText("Show hidden files (needs folder reload)");
+        checkBoxShowHiddenFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBoxShowHiddenFilesActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel1.add(checkBoxShowHiddenFiles, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1277,12 +1298,19 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_comboBoxRenderQualityActionPerformed
 
+    private void checkBoxShowHiddenFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxShowHiddenFilesActionPerformed
+        if (this.changeNotificationAllowed) {
+            this.changed = true;
+        }
+    }//GEN-LAST:event_checkBoxShowHiddenFilesActionPerformed
+
   public void load(@Nonnull final Preferences preferences) {
     this.config.loadFrom(preferences);
     loadFrom(this.config,preferences);
     this.changeNotificationAllowed = false;
     try {
       // Common behaviour options
+      this.checkBoxShowHiddenFiles.setSelected(preferences.getBoolean("showHiddenFiles", true)); //NOI18N
       this.checkboxTrimTopicText.setSelected(preferences.getBoolean("trimTopicText", false)); //NOI18N
       this.checkboxUseInsideBrowser.setSelected(preferences.getBoolean("useInsideBrowser", false)); //NOI18N
       this.checkboxRelativePathsForFilesInTheProject.setSelected(preferences.getBoolean("makeRelativePathToProject", true)); //NOI18N
@@ -1401,6 +1429,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     // Common behaviour options
     preferences.putBoolean("useInsideBrowser", this.checkboxUseInsideBrowser.isSelected()); //NOI18N
     preferences.putBoolean("trimTopicText", this.checkboxTrimTopicText.isSelected()); //NOI18N
+    preferences.putBoolean("showHiddenFiles", this.checkBoxShowHiddenFiles.isSelected()); //NOI18N
     preferences.putBoolean("makeRelativePathToProject", this.checkboxRelativePathsForFilesInTheProject.isSelected()); //NOI18N
     preferences.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected()); //NOI18N
     preferences.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected()); //NOI18N
@@ -1457,6 +1486,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JCheckBox checkBoxScalingMETA;
     private javax.swing.JCheckBox checkBoxScalingSHIFT;
     private javax.swing.JCheckBox checkBoxShowGrid;
+    private javax.swing.JCheckBox checkBoxShowHiddenFiles;
     private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
     private javax.swing.JCheckBox checkboxMetricsAllowed;
     private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
@@ -1480,6 +1510,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
+    private javax.swing.Box.Filler filler4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -24,6 +24,10 @@ public final class PrefUtils {
     
   }
   
+  public static boolean isShowHiddenFilesAndFolders() {
+      return PreferencesManager.getInstance().getPreferences().getBoolean("showHiddenFiles", true);
+  }
+  
   @Nonnull
   public static String font2str(@Nonnull final Font font){
     final StringBuilder buffer = new StringBuilder();

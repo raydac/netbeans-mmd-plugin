@@ -44,6 +44,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
@@ -167,7 +168,7 @@ public final class TabTitle extends JPanel {
       result = true;
       final NodeProject project = this.context.findProjectForFile(this.associatedFile);
       if (project != null) {
-        project.getGroup().refreshProjectFolder(project);
+        project.getGroup().refreshProjectFolder(project, PrefUtils.isShowHiddenFilesAndFolders());
         this.context.focusInTree(this);
       }
     }

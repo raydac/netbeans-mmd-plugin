@@ -36,6 +36,8 @@ import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
@@ -47,7 +49,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   protected volatile String name;
 
   private final boolean readonly;
-
+  
   public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean readOnly) {
     this.parent = parent;
     this.name = name;
@@ -55,7 +57,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     if (folder) {
       this.children = new ArrayList<>();
       this.folderFlag = true;
-      reloadSubtree();
+      reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
     } else {
       this.children = Collections.EMPTY_LIST;
       this.folderFlag = false;
@@ -126,16 +128,18 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   public void setName(@Nonnull final String name) {
     this.name = name;
-    reloadSubtree();
+    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
   }
 
-  public void reloadSubtree() {
+  public void reloadSubtree(final boolean addHiddenFilesAndFolders) {
     if (this.folderFlag) {
       this.children.clear();
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
         for (final File f : generatedFile.listFiles()) {
-          this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(), !Files.isWritable(f.toPath())));
+            if (addHiddenFilesAndFolders || !f.isHidden()) {
+                this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(), !Files.isWritable(f.toPath())));
+            }
         }
         Collections.sort(this.children, this);
       }

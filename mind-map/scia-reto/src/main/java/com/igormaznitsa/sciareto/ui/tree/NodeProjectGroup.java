@@ -232,10 +232,10 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     return path;
   }
 
-  public void refreshProjectFolder(@Nonnull final NodeProject nodeProject) {
+  public void refreshProjectFolder(@Nonnull final NodeProject nodeProject, final boolean showHiddenFiles) {
     final int index = this.getIndex(nodeProject);
     if (index >= 0) {
-      nodeProject.reloadSubtree();
+      nodeProject.reloadSubtree(showHiddenFiles);
       nodeProject.fireNotifySubtreeChanged(this, this.listeners);
     }
   }

@@ -58,6 +58,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindFilesForTextPanel;
 import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
@@ -291,7 +292,7 @@ public final class ExplorerTree extends JScrollPane {
       refresh.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          getCurrentGroup().refreshProjectFolder((NodeProject) node);
+          getCurrentGroup().refreshProjectFolder((NodeProject) node, PrefUtils.isShowHiddenFilesAndFolders());
         }
       });
       result.add(refresh);
@@ -329,7 +330,7 @@ public final class ExplorerTree extends JScrollPane {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
             if (knowledgeFolder.mkdirs()) {
-              getCurrentGroup().refreshProjectFolder(theProject);
+              getCurrentGroup().refreshProjectFolder(theProject, PrefUtils.isShowHiddenFilesAndFolders());
               context.focusInTree(knowledgeFolder);
             } else {
               LOGGER.error("Can't create knowledge folder : " + knowledgeFolder); //NOI18N

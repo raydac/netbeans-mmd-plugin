@@ -31,6 +31,7 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 
@@ -45,7 +46,7 @@ public class NodeProject extends NodeFileOrFolder {
     super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
     this.knowledgeFolderPresented = new File(folder,Context.KNOWLEDGE_FOLDER).isDirectory();
-    reloadSubtree();
+    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
   }
 
   public boolean hasKnowledgeFolder(){
@@ -56,7 +57,7 @@ public class NodeProject extends NodeFileOrFolder {
   public void setName(@Nonnull final String name) {
     this.name = name;
     this.folder = new File(folder.getParentFile(), name);
-    reloadSubtree();
+    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
   }
 
   @Override
@@ -73,7 +74,7 @@ public class NodeProject extends NodeFileOrFolder {
   public void setFolder(@Nonnull final File folder) {
     Assertions.assertTrue("Must be directory", folder.isDirectory()); //NOI18N
     this.folder = folder;
-    reloadSubtree();
+    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
   }
 
   @Nonnull
@@ -127,8 +128,8 @@ public class NodeProject extends NodeFileOrFolder {
   }
 
   @Override
-  public void reloadSubtree() {
-    super.reloadSubtree();
+  public void reloadSubtree(final boolean showHiddenFiles) {
+    super.reloadSubtree(showHiddenFiles);
     this.knowledgeFolderPresented = new File(this.folder,Context.KNOWLEDGE_FOLDER).isDirectory();
   }
 
