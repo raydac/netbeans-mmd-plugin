@@ -34,6 +34,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
+import java.util.Collections;
 
 public class NodeProject extends NodeFileOrFolder {
 
@@ -130,7 +131,23 @@ public class NodeProject extends NodeFileOrFolder {
   @Override
   public void reloadSubtree(final boolean showHiddenFiles) {
     super.reloadSubtree(showHiddenFiles);
-    this.knowledgeFolderPresented = new File(this.folder,Context.KNOWLEDGE_FOLDER).isDirectory();
+    final File knowledgeFolder = new File(this.folder, Context.KNOWLEDGE_FOLDER);
+    this.knowledgeFolderPresented = knowledgeFolder.isDirectory();
+    if (!showHiddenFiles && this.knowledgeFolderPresented) {
+        boolean knowledgeFolderAdded = false;
+        
+        for(final NodeFileOrFolder f : this.children) {
+            if (f.isProjectKnowledgeFolder()) {
+                knowledgeFolderAdded = true;
+                break;
+            }
+        }
+        
+        if (!knowledgeFolderAdded) {
+            this.children.add(new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), !Files.isWritable(knowledgeFolder.toPath())));
+            Collections.sort(this.children, this);
+        }
+    }
   }
 
   @Nonnull

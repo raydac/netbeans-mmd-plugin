@@ -37,7 +37,6 @@ import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
