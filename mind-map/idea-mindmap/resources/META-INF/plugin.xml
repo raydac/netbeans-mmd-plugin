@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -18,6 +18,20 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.4.2 (25-feb-2018)</p>
+        <ul>
+          <li>Added paper render quality option</li>
+          <li>#36 fixed line break processing in topic title editor under Mac OS</li>
+          <li>#35 added `Use Project base folder as relative path root` option to facet (by default it uses Module folder)</li>
+          <li>#34 added logic to interpret zero-length MMD file as an empty mind map file with root.</li>
+          <li>#33 added configuration flag to trim entered topic text, "Trim topic text before set`"</li>
+          <li>added exporter for AsciiDoc</li>
+          <li>#31 Imrpoved FreeMind compatibility to support 1.0.1 FreeMind format</li>
+          <li>#30 Remember setting in "add file"</li>
+          <li>#29 Remember per session last used directory for files</li>
+          <li>Added standard text pop-up menu into text fields of both File dialog and URI dialog.</li>
+          <li>Added select mode with pressed SHIFT</li>
+        </ul>
         <p>1.4.1 (30-sep-2017)</p>
         <ul>
           <li>Removed use of javax.xml.bind.DatatypeConverter to make compatible with Java 9</li>
