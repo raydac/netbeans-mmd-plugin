@@ -40,10 +40,12 @@ public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
 
     if (!this.getConfiguration().isDisableAutoCreateProjectKnowledgeFolder()) {
       ApplicationManager.getApplication().invokeLater(new Runnable() {
+
         @Override
         public void run() {
           IdeaUtils.findKnowledgeFolderForModule(module, true);
         }
+
       });
     }
   }
