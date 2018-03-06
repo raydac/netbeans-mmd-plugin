@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.facet;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
@@ -22,6 +23,7 @@ import com.intellij.facet.Facet;
 import com.intellij.facet.FacetManager;
 import com.intellij.facet.FacetType;
 import com.intellij.facet.FacetTypeId;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 
 import javax.annotation.Nonnull;
@@ -32,10 +34,18 @@ public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
 
   public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<MindMapFacet>("NBMindMap");
 
-  public MindMapFacet(@Nonnull FacetType facetType, @Nonnull Module module,
-    @Nonnull String name, @Nonnull MindMapFacetConfiguration configuration, Facet underlyingFacet) {
+  public MindMapFacet(@Nonnull final FacetType facetType, @Nonnull final Module module,
+                      @Nonnull final String name, @Nonnull final MindMapFacetConfiguration configuration, final Facet underlyingFacet) {
     super(facetType, module, name, configuration, underlyingFacet);
-    IdeaUtils.findKnowledgeFolderForModule(module,!this.getConfiguration().isDisableAutoCreateProjectKnowledgeFolder());
+
+    if (!this.getConfiguration().isDisableAutoCreateProjectKnowledgeFolder()) {
+      ApplicationManager.getApplication().invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          IdeaUtils.findKnowledgeFolderForModule(module, true);
+        }
+      });
+    }
   }
 
   @Nullable
