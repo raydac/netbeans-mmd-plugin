@@ -31,6 +31,8 @@ public final class ScalableIcon {
   public static final ScalableIcon FILE_WARN = new ScalableIcon("extra_file_warn.png"); //NOI18N
   public static final ScalableIcon FILE_MMD = new ScalableIcon("extra_mmd.png"); //NOI18N
   public static final ScalableIcon FILE_MMD_WARN = new ScalableIcon("extra_mmd_warn.png"); //NOI18N
+  public static final ScalableIcon FILE_PLANTUML = new ScalableIcon("extra_plantuml.png"); //NOI18N
+  public static final ScalableIcon FILE_PLANTUML_WARN = new ScalableIcon("extra_plantuml_warn.png"); //NOI18N
   public static final ScalableIcon TOPIC = new ScalableIcon("extra_topic.png"); //NOI18N
   public static final ScalableIcon TEXT = new ScalableIcon("extra_note.png"); //NOI18N
   public static final ScalableIcon LINK = new ScalableIcon("extra_uri.png"); //NOI18N

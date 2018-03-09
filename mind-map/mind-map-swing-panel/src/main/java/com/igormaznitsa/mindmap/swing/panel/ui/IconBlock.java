@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 import com.igormaznitsa.mindmap.model.Extra;
-
-import static com.igormaznitsa.mindmap.model.Extra.ExtraType.FILE;
-import static com.igormaznitsa.mindmap.model.Extra.ExtraType.LINK;
-import static com.igormaznitsa.mindmap.model.Extra.ExtraType.NOTE;
-import static com.igormaznitsa.mindmap.model.Extra.ExtraType.TOPIC;
-
-import java.awt.Image;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.Topic;
-
-import java.awt.geom.Rectangle2D;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import java.awt.geom.Rectangle2D;
 
 public class IconBlock {
 
@@ -92,12 +85,7 @@ public class IconBlock {
         final ScalableIcon ico;
         switch (e.getType()) {
           case FILE:
-            final ExtraFile theFileLink = (ExtraFile) e;
-            if (theFileLink.isAbsolute()) {
-              ico = ((ExtraFile) e).isMMDFile() ? ScalableIcon.FILE_MMD_WARN : ScalableIcon.FILE_WARN;
-            } else {
-              ico = ((ExtraFile) e).isMMDFile() ? ScalableIcon.FILE_MMD : ScalableIcon.FILE;
-            }
+            ico = findIconForFileType((ExtraFile) e);
             break;
           case LINK:
             ico = ScalableIcon.LINK;
@@ -117,6 +105,19 @@ public class IconBlock {
         }
       }
     }
+  }
+
+  @Nonnull
+  public ScalableIcon findIconForFileType(@Nonnull final ExtraFile theFileLink) {
+    final ScalableIcon result;
+    if (theFileLink.isMMDFile()) {
+      result = theFileLink.isAbsolute() ? ScalableIcon.FILE_MMD_WARN : ScalableIcon.FILE_MMD;
+    } else if ("plantuml".equals(theFileLink.getLCFileExtension())) {
+      result = theFileLink.isAbsolute() ? ScalableIcon.FILE_PLANTUML_WARN : ScalableIcon.FILE_PLANTUML;
+    } else {
+      result = theFileLink.isAbsolute() ? ScalableIcon.FILE_WARN : ScalableIcon.FILE;
+    }
+    return result;
   }
 
   @Nullable
