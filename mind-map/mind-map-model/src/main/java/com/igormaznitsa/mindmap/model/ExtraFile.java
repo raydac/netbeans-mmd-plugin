@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.model;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
@@ -33,10 +34,12 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   private volatile String cachedString;
 
   private final boolean mmdFileFlag;
+  private final String lowerCasedFileExtension;
 
   public ExtraFile(@Nonnull final MMapURI file) {
     this.fileUri = file;
-    this.mmdFileFlag = this.fileUri.getExtension().equalsIgnoreCase("mmd"); //NOI18N
+    this.lowerCasedFileExtension = file.getExtension().toLowerCase(Locale.ENGLISH);
+    this.mmdFileFlag = this.lowerCasedFileExtension.equals("mmd"); //NOI18N
   }
 
   public ExtraFile(@Nonnull final String text) throws URISyntaxException {
@@ -51,6 +54,11 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
   public boolean isMMDFile() {
     return this.mmdFileFlag;
+  }
+
+  @Nonnull
+  public String getLCFileExtension() {
+    return this.lowerCasedFileExtension;
   }
 
   @Override
