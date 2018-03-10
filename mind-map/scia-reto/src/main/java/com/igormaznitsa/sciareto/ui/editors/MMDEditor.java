@@ -61,6 +61,7 @@ import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import com.igormaznitsa.sciareto.ui.MainFrame;
 import org.apache.commons.io.FileUtils;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -800,6 +801,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
           if (topic != null) {
+            Main.getApplicationFrame().endFullScreenIfActive();
             editTextForTopic(topic);
             panel.requestFocus();
           }
@@ -808,6 +810,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ExtraFilePlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          Main.getApplicationFrame().endFullScreenIfActive();
           editFileLinkForTopic(topic);
           panel.requestFocus();
         }
@@ -815,6 +818,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ExtraURIPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          Main.getApplicationFrame().endFullScreenIfActive();
           editLinkForTopic(topic);
           panel.requestFocus();
         }
@@ -822,6 +826,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ExtraJumpPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          Main.getApplicationFrame().endFullScreenIfActive();
           editTopicLinkForTopic(topic);
           panel.requestFocus();
         }
@@ -829,6 +834,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ChangeColorPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+          Main.getApplicationFrame().endFullScreenIfActive();
           processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
         }
       });

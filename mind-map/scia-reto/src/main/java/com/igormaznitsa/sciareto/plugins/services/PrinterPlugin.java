@@ -37,6 +37,7 @@ import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
@@ -56,6 +57,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
     printAction.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
+        Main.getApplicationFrame().endFullScreenIfActive();
         final MMDPrintPanel panel = new MMDPrintPanel(dialogProvider, adaptor, mindMapPanel);
         UiUtils.makeOwningDialogResizable(panel);
         JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(mindMapPanel), panel, "Print mind map", JOptionPane.PLAIN_MESSAGE);
