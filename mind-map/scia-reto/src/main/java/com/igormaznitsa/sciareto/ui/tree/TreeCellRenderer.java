@@ -17,6 +17,7 @@
 package com.igormaznitsa.sciareto.ui.tree;
 
 import com.igormaznitsa.meta.common.utils.GetUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.ui.Icons;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
@@ -143,7 +144,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
           }
         } else if (node.isLeaf()) {
           final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
-          if (ext.equals("plantuml")) {
+          if (Utils.isPlantUmlFileExtension(ext)) {
             this.setIcon(node.isReadOnly() ? LEAF_PLANTUML_RO : LEAF_PLANTUML);
           } else if (ext.equals("mmd")) { //NOI18N
             this.setIcon(node.isReadOnly() ? LEAF_MINDMAP_RO : LEAF_MINDMAP);

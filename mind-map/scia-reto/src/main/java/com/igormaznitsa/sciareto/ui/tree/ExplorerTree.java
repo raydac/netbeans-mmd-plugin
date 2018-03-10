@@ -44,6 +44,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -258,6 +260,15 @@ public final class ExplorerTree extends JScrollPane {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
           addChildTo(node, "txt"); //NOI18N
+        }
+      });
+      makeNew.add(item);
+
+      item = new JMenuItem("PlantUML");
+      item.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          addChildTo(node, "puml"); //NOI18N
         }
       });
       makeNew.add(item);
@@ -574,6 +585,19 @@ public final class ExplorerTree extends JScrollPane {
               catch (IOException ex) {
                 LOGGER.error("Can't create MMD file", ex); //NOI18N
                 DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create mind map '" + fileName + "'!");
+              }
+            }
+            break;
+            case "puml": { //NOI18N
+              final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"),"\n");
+              final String text = "@startuml"+nextLine+nextLine+"@enduml";
+              try {
+                FileUtils.write(file, text, "UTF-8"); //NOI18N
+                ok = true;
+              }
+              catch (IOException ex) {
+                LOGGER.error("Can't create PUML file", ex); //NOI18N
+                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create puml file '" + fileName + "'!");
               }
             }
             break;

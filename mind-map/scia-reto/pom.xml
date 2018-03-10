@@ -80,6 +80,11 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/mac-ui.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>1.2018.1</version>
+        </dependency>
     </dependencies>
 
     <profiles>
