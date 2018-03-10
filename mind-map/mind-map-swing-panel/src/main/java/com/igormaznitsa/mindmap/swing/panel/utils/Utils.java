@@ -13,15 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
+import com.igormaznitsa.meta.annotation.ImplementationNote;
+import com.igormaznitsa.meta.annotation.MayContainNull;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
+import com.igormaznitsa.mindmap.swing.services.*;
+import net.iharder.Base64;
+import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
@@ -29,58 +57,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import java.util.ResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import com.igormaznitsa.meta.annotation.ImplementationNote;
-import com.igormaznitsa.meta.annotation.MayContainNull;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
-import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.services.IconID;
-import com.igormaznitsa.mindmap.swing.services.ImageIconService;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import net.iharder.Base64;
 
 public final class Utils {
 
@@ -98,7 +79,7 @@ public final class Utils {
   /**
    * Get input stream for resource in zip file.
    *
-   * @param zipFile zip file
+   * @param zipFile      zip file
    * @param resourcePath path to resource
    * @return input stream for resource or null if not found or directory
    * @throws IOException if there is any transport error
@@ -120,7 +101,7 @@ public final class Utils {
    * Read who;e zip item into byte array.
    *
    * @param zipFile zip file
-   * @param path path to resource
+   * @param path    path to resource
    * @return byte array or null if not found
    * @throws IOException thrown if there is any transport error
    */
@@ -133,8 +114,7 @@ public final class Utils {
     if (in != null) {
       try {
         result = IOUtils.toByteArray(in);
-      }
-      finally {
+      } finally {
         IOUtils.closeQuietly(in);
       }
     }
@@ -145,13 +125,12 @@ public final class Utils {
   /**
    * Load and parse XML document from input stream.
    *
-   * @param inStream stream to read document
+   * @param inStream  stream to read document
    * @param autoClose true if stream must be closed, false otherwise
    * @return parsed document
    * @throws IOException
    * @throws ParserConfigurationException
    * @throws SAXException
-   *
    * @since 1.4.0
    */
   @Nonnull
@@ -172,8 +151,7 @@ public final class Utils {
         stream = new ByteArrayInputStream(IOUtils.toString(inStream, charset).getBytes("UTF-8"));
       }
       document = builder.parse(stream);
-    }
-    finally {
+    } finally {
       if (autoClose) {
         IOUtils.closeQuietly(inStream);
       }
@@ -185,10 +163,9 @@ public final class Utils {
   /**
    * Get first direct child for name.
    *
-   * @param node element to find children
+   * @param node        element to find children
    * @param elementName name of child element
    * @return found first child or null if not found
-   *
    * @since 1.4.0
    */
   @Nullable
@@ -204,10 +181,9 @@ public final class Utils {
   /**
    * Find all direct children with defined name.
    *
-   * @param element parent element
+   * @param element          parent element
    * @param childElementname child element name
    * @return list of found elements
-   *
    * @since 1.4.0
    */
   @Nonnull
@@ -229,7 +205,6 @@ public final class Utils {
    * Get max image size.
    *
    * @return max image size
-   *
    * @see #MAX_IMAGE_SIDE_SIZE_IN_PIXELS
    * @see #PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE
    */
@@ -241,8 +216,7 @@ public final class Utils {
         LOGGER.info("Detected redefined max size for embedded image side : " + defined); //NOI18N
         result = Math.max(8, Integer.parseInt(defined.trim()));
       }
-    }
-    catch (NumberFormatException ex) {
+    } catch (NumberFormatException ex) {
       LOGGER.error("Error during image size decoding : ", ex); //NOI18N
     }
     return result;
@@ -251,12 +225,11 @@ public final class Utils {
   /**
    * Load and encode image into Base64.
    *
-   * @param in stream to read image
+   * @param in      stream to read image
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return null if it was impossible to load image for its format, loaded
    * prepared image
    * @throws IOException if any error during conversion or loading
-   *
    * @since 1.4.0
    */
   @Nullable
@@ -272,11 +245,10 @@ public final class Utils {
   /**
    * Load and encode image into Base64 from file.
    *
-   * @param file image file
+   * @param file    image file
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return image
    * @throws IOException if any error during conversion or loading
-   *
    * @since 1.4.0
    */
   @Nonnull
@@ -291,11 +263,10 @@ public final class Utils {
   /**
    * Rescale image and encode into Base64.
    *
-   * @param image image to rescale and encode
+   * @param image   image to rescale and encode
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return scaled and encoded image
    * @throws IOException if it was impossible to encode image
-   *
    * @since 1.4.0
    */
   @Nonnull
@@ -339,8 +310,7 @@ public final class Utils {
       if (!ImageIO.write((RenderedImage) image, "png", bos)) {
         throw new IOException("Can't encode image as PNG");
       }
-    }
-    finally {
+    } finally {
       IOUtils.closeQuietly(bos);
     }
     return Utils.base64encode(bos.toByteArray());
@@ -430,8 +400,7 @@ public final class Utils {
           final int b = Integer.parseInt(color.charAt(2) + "0", 16);
           result = new Color(r, g, b);
         }
-      }
-      catch (NumberFormatException ex) {
+      } catch (NumberFormatException ex) {
         LOGGER.warn(String.format("Can't convert %s to color", str));
       }
     }
@@ -449,9 +418,9 @@ public final class Utils {
       final int[] components;
 
       if (hasAlpha) {
-        components = new int[]{color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[] {color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
       } else {
-        components = new int[]{color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[] {color.getRed(), color.getGreen(), color.getBlue()};
       }
 
       for (final int c : components) {
@@ -494,8 +463,7 @@ public final class Utils {
     } else {
       try {
         SwingUtilities.invokeAndWait(runnable);
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         throw new RuntimeException("Detected exception during SwingUtilities.invokeAndWait", ex);
       }
     }
@@ -614,6 +582,14 @@ public final class Utils {
     return null;
   }
 
+  public static boolean isPlantUmlFileExtension(@Nonnull final String lowerCasedTrimmedExtension) {
+    boolean result = false;
+    if (lowerCasedTrimmedExtension.length() > 1 && lowerCasedTrimmedExtension.charAt(0) == 'p') {
+      result = "pu".equals(lowerCasedTrimmedExtension) || "puml".equals(lowerCasedTrimmedExtension) || "plantuml".equals(lowerCasedTrimmedExtension);
+    }
+    return result;
+  }
+
   @Nullable
   public static Image scaleImage(@Nonnull final Image src, final double baseScaleX, final double baseScaleY, final double scale) {
     final int imgw = src.getWidth(null);
@@ -632,8 +608,7 @@ public final class Utils {
 
         g.drawImage(src, 0, 0, scaledW, scaledH, null);
         g.dispose();
-      }
-      catch (OutOfMemoryError e) {
+      } catch (OutOfMemoryError e) {
         LOGGER.error("OutOfmemoryError in scaleImage (" + baseScaleX + ',' + baseScaleY + ',' + scale + ')', e);
         throw e;
       }
@@ -666,8 +641,7 @@ public final class Utils {
     try {
       quality.prepare(g);
       cloned.doPaint(gfx, config, false);
-    }
-    finally {
+    } finally {
       gfx.dispose();
     }
 
@@ -807,10 +781,10 @@ public final class Utils {
   }
 
   @Nonnull
-  public static byte [] base64decode(@Nonnull final String text) throws IOException {
+  public static byte[] base64decode(@Nonnull final String text) throws IOException {
     return Base64.decode(text);
   }
-  
+
   @Nonnull
   public static String base64encode(@Nonnull final byte[] data) {
     return Base64.encodeBytes(data);

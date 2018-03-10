@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -112,7 +113,7 @@ public class IconBlock {
     final ScalableIcon result;
     if (theFileLink.isMMDFile()) {
       result = theFileLink.isAbsolute() ? ScalableIcon.FILE_MMD_WARN : ScalableIcon.FILE_MMD;
-    } else if ("plantuml".equals(theFileLink.getLCFileExtension())) {
+    } else if (Utils.isPlantUmlFileExtension(theFileLink.getLCFileExtension())) {
       result = theFileLink.isAbsolute() ? ScalableIcon.FILE_PLANTUML_WARN : ScalableIcon.FILE_PLANTUML;
     } else {
       result = theFileLink.isAbsolute() ? ScalableIcon.FILE_WARN : ScalableIcon.FILE;
