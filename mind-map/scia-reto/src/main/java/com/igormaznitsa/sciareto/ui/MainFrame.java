@@ -15,14 +15,12 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import com.igormaznitsa.sciareto.ui.editors.*;
 import com.igormaznitsa.sciareto.ui.tabs.EditorTabPane;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
-import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
-import com.igormaznitsa.sciareto.ui.editors.TextEditor;
-import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -84,9 +82,6 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
-import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
-import com.igormaznitsa.sciareto.ui.editors.SourceTextEditor;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.FileLinkGraphPanel;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
@@ -586,6 +581,18 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           }
           catch (IOException ex) {
             LOGGER.error("Can't load file as sources", ex); //NOI18N
+          }
+          finally {
+            processTabChange();
+          }
+        } else if (PlantUmlTextEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
+          try {
+            final PlantUmlTextEditor panel = new PlantUmlTextEditor(this, file);
+            this.tabPane.createTab(panel);
+            result = true;
+          }
+          catch (IOException ex) {
+            LOGGER.error("Can't load file as plant uml text", ex); //NOI18N
           }
           finally {
             processTabChange();
