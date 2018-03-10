@@ -77,8 +77,6 @@ public final class SourceTextEditor extends AbstractEditor {
 
   public static final Set<String> SUPPORTED_EXTENSIONS;
 
-  private static final String ALLEXTENSIONS;
-
   static {
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, Arrays.asList("as")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, Arrays.asList("c","h")); //NOI18N
@@ -130,7 +128,6 @@ public final class SourceTextEditor extends AbstractEditor {
       }
     }
     SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(allEtensinsions);
-    ALLEXTENSIONS = acc.toString();
   }
 
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
