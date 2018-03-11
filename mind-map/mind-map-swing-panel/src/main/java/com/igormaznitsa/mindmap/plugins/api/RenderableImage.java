@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
-import java.awt.Image;
-import javax.annotation.Nonnull;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
+import javax.annotation.Nonnull;
+import java.awt.*;
+
 public class RenderableImage implements Renderable {
   private final Image image;
-  
-  public RenderableImage(@Nonnull final Image image){
+
+  public RenderableImage(@Nonnull final Image image) {
     this.image = image;
   }
 
@@ -38,7 +40,7 @@ public class RenderableImage implements Renderable {
   }
 
   @Override
-  public void renderAt(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig config,final int x, final int y) {
+  public void renderAt(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig config, final int x, final int y) {
     gfx.drawImage(this.image, x, y);
   }
 

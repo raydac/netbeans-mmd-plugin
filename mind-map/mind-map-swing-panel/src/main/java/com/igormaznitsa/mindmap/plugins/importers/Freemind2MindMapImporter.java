@@ -13,29 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
-import java.awt.Color;
-import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -43,16 +23,34 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
+import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
-import com.igormaznitsa.mindmap.swing.services.IconID;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URI;
+import java.util.*;
+import java.util.List;
+
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 
 public class Freemind2MindMapImporter extends AbstractImporter {
 
@@ -62,144 +60,10 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
   private static final Set<String> TOKEN_NEEDS_NEXT_LINE = new HashSet<String>(Arrays.asList("br", "div", "p", "li"));
 
-  private enum RichContentType {
-    NODE, NOTE
-  }
-
-  private static final class RichContent {
-
-    private final RichContentType type;
-    private final String text;
-    private final String[] imageUrls;
-
-    private RichContent(@Nonnull final RichContentType type, @Nonnull final String text, @Nonnull @MustNotContainNull final List<String> foundImageUrls) {
-      this.type = type;
-      this.text = text;
-      this.imageUrls = foundImageUrls.toArray(new String[foundImageUrls.size()]);
-    }
-
-    @Nonnull
-    @MustNotContainNull
-    private String[] getFoundImageURLs() {
-      return this.imageUrls;
-    }
-
-    @Nonnull
-    private RichContentType getType() {
-      return this.type;
-    }
-
-    @Nonnull
-    private String getText() {
-      return this.text;
-    }
-  }
-
-  @Override
-  @Nullable
-  public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-    final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.Freemind2MindMap.openDialogTitle"), "mm", "Freemind files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
-
-    if (file == null) {
-      return null;
-    }
-
-    final Document document = Utils.loadXmlDocument(new FileInputStream(file), "UTF-8", true);
-
-    final Element rootElement = document.getDocumentElement();
-    if (!rootElement.getTagName().equals("map")) {
-      throw new IllegalArgumentException("Not Freemind file");
-    }
-
-    final Map<String, Topic> idTopicMap = new HashMap<String, Topic>();
-    final Map<String, String> linksMap = new HashMap<String, String>();
-    final MindMap resultedMap = new MindMap(null, true);
-    resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
-
-    final List<Element> list = Utils.findDirectChildrenForName(rootElement, "node");
-    if (list.isEmpty()) {
-      Assertions.assertNotNull(resultedMap.getRoot()).setText("Empty");
-    } else {
-      parseTopic(file.getParentFile(), resultedMap, null, resultedMap.getRoot(), list.get(0), idTopicMap, linksMap);
-    }
-
-    for (final Map.Entry<String, String> l : linksMap.entrySet()) {
-      final Topic start = idTopicMap.get(l.getKey());
-      final Topic end = idTopicMap.get(l.getValue());
-      if (start != null && end != null) {
-        start.setExtra(ExtraTopic.makeLinkTo(resultedMap, end));
-      }
-    }
-
-    return resultedMap;
-  }
-
   @Nonnull
   private static String findArrowlinkDestination(@Nonnull final Element element) {
     final List<Element> arrows = Utils.findDirectChildrenForName(element, "arrowlink");
     return arrows.isEmpty() ? "" : arrows.get(0).getAttribute("DESTINATION");
-  }
-
-  private void parseTopic(@Nonnull final File rootFolder, @Nonnull final MindMap map, @Nullable Topic parent, @Nullable Topic preGeneratedTopic, @Nonnull Element element, @Nonnull final Map<String, Topic> idTopicMap, @Nonnull final Map<String, String> linksMap) {
-
-    final String text = element.getAttribute("TEXT");
-    final String id = element.getAttribute("ID");
-    final String position = element.getAttribute("POSITION");
-    final String arrowDestination = findArrowlinkDestination(element);
-    final String color = element.getAttribute("COLOR");
-
-    final List<RichContent> foundRichContent = extractRichContent(element);
-
-    final Topic topicToProcess;
-    if (preGeneratedTopic == null) {
-      topicToProcess = Assertions.assertNotNull(parent).makeChild(text, null);
-      if (Assertions.assertNotNull(parent).isRoot()) {
-        if ("left".equalsIgnoreCase(position)) {
-          AbstractCollapsableElement.makeTopicLeftSided(topicToProcess, true);
-        }
-      }
-    } else {
-      topicToProcess = preGeneratedTopic;
-    }
-
-    if (!color.isEmpty()) {
-      final Color converted = Utils.html2color(color, false);
-      if (converted != null) {
-        topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(converted, false));
-        topicToProcess.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(converted), false));
-      }
-    }
-
-    topicToProcess.setText(text);
-
-    for (final RichContent r : foundRichContent) {
-      switch (r.getType()) {
-        case NODE: {
-          if (!r.getText().isEmpty()) {
-            topicToProcess.setText(r.getText().trim());
-          }
-        }
-        break;
-        case NOTE: {
-          if (!r.getText().isEmpty()) {
-            topicToProcess.setExtra(new ExtraNote(r.getText().trim()));
-          }
-        }
-        break;
-      }
-      processImageLinkForTopic(rootFolder, topicToProcess, r.getFoundImageURLs());
-    }
-
-    if (!id.isEmpty()) {
-      idTopicMap.put(id, topicToProcess);
-      if (!arrowDestination.isEmpty()) {
-        linksMap.put(id, arrowDestination);
-      }
-    }
-
-    for (final Element e : Utils.findDirectChildrenForName(element, "node")) {
-      parseTopic(rootFolder, map, topicToProcess, null, e, idTopicMap, linksMap);
-    }
   }
 
   private static void processImageLinkForTopic(@Nonnull final File rootFolder, @Nonnull final Topic topic, @Nonnull @MustNotContainNull final String[] imageUrls) {
@@ -218,8 +82,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
           topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, Utils.rescaleImageAndEncodeAsBase64(file, -1));
           break;
         }
-      }
-      catch (final Exception ex) {
+      } catch (final Exception ex) {
         LOGGER.warn("Can't decode or load image for URI : " + s);
       }
     }
@@ -285,13 +148,113 @@ public class Freemind2MindMapImporter extends AbstractImporter {
         final RichContentType type = RichContentType.valueOf(textType);
         final String text = extractTextFromHtmlElement(e, new StringBuilder(), foundImageUrls).toString().replace("\r", "");
         result.add(new RichContent(type, text, foundImageUrls));
-      }
-      catch (IllegalArgumentException ex) {
+      } catch (IllegalArgumentException ex) {
         LOGGER.warn("Unknown node type : " + textType);
       }
     }
 
     return result;
+  }
+
+  @Override
+  @Nullable
+  public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
+    final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.Freemind2MindMap.openDialogTitle"), "mm", "Freemind files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
+
+    if (file == null) {
+      return null;
+    }
+
+    final Document document = Utils.loadXmlDocument(new FileInputStream(file), "UTF-8", true);
+
+    final Element rootElement = document.getDocumentElement();
+    if (!rootElement.getTagName().equals("map")) {
+      throw new IllegalArgumentException("Not Freemind file");
+    }
+
+    final Map<String, Topic> idTopicMap = new HashMap<String, Topic>();
+    final Map<String, String> linksMap = new HashMap<String, String>();
+    final MindMap resultedMap = new MindMap(null, true);
+    resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
+
+    final List<Element> list = Utils.findDirectChildrenForName(rootElement, "node");
+    if (list.isEmpty()) {
+      Assertions.assertNotNull(resultedMap.getRoot()).setText("Empty");
+    } else {
+      parseTopic(file.getParentFile(), resultedMap, null, resultedMap.getRoot(), list.get(0), idTopicMap, linksMap);
+    }
+
+    for (final Map.Entry<String, String> l : linksMap.entrySet()) {
+      final Topic start = idTopicMap.get(l.getKey());
+      final Topic end = idTopicMap.get(l.getValue());
+      if (start != null && end != null) {
+        start.setExtra(ExtraTopic.makeLinkTo(resultedMap, end));
+      }
+    }
+
+    return resultedMap;
+  }
+
+  private void parseTopic(@Nonnull final File rootFolder, @Nonnull final MindMap map, @Nullable Topic parent, @Nullable Topic preGeneratedTopic, @Nonnull Element element, @Nonnull final Map<String, Topic> idTopicMap, @Nonnull final Map<String, String> linksMap) {
+
+    final String text = element.getAttribute("TEXT");
+    final String id = element.getAttribute("ID");
+    final String position = element.getAttribute("POSITION");
+    final String arrowDestination = findArrowlinkDestination(element);
+    final String color = element.getAttribute("COLOR");
+
+    final List<RichContent> foundRichContent = extractRichContent(element);
+
+    final Topic topicToProcess;
+    if (preGeneratedTopic == null) {
+      topicToProcess = Assertions.assertNotNull(parent).makeChild(text, null);
+      if (Assertions.assertNotNull(parent).isRoot()) {
+        if ("left".equalsIgnoreCase(position)) {
+          AbstractCollapsableElement.makeTopicLeftSided(topicToProcess, true);
+        }
+      }
+    } else {
+      topicToProcess = preGeneratedTopic;
+    }
+
+    if (!color.isEmpty()) {
+      final Color converted = Utils.html2color(color, false);
+      if (converted != null) {
+        topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(converted, false));
+        topicToProcess.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(converted), false));
+      }
+    }
+
+    topicToProcess.setText(text);
+
+    for (final RichContent r : foundRichContent) {
+      switch (r.getType()) {
+        case NODE: {
+          if (!r.getText().isEmpty()) {
+            topicToProcess.setText(r.getText().trim());
+          }
+        }
+        break;
+        case NOTE: {
+          if (!r.getText().isEmpty()) {
+            topicToProcess.setExtra(new ExtraNote(r.getText().trim()));
+          }
+        }
+        break;
+      }
+      processImageLinkForTopic(rootFolder, topicToProcess, r.getFoundImageURLs());
+    }
+
+    if (!id.isEmpty()) {
+      idTopicMap.put(id, topicToProcess);
+      if (!arrowDestination.isEmpty()) {
+        linksMap.put(id, arrowDestination);
+      }
+    }
+
+    for (final Element e : Utils.findDirectChildrenForName(element, "node")) {
+      parseTopic(rootFolder, map, topicToProcess, null, e, idTopicMap, linksMap);
+    }
   }
 
   @Override
@@ -321,5 +284,43 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   @Override
   public int getOrder() {
     return 3;
+  }
+
+  @Override
+  public boolean isCompatibleWithFullScreenMode() {
+    return false;
+  }
+
+  private enum RichContentType {
+    NODE, NOTE
+  }
+
+  private static final class RichContent {
+
+    private final RichContentType type;
+    private final String text;
+    private final String[] imageUrls;
+
+    private RichContent(@Nonnull final RichContentType type, @Nonnull final String text, @Nonnull @MustNotContainNull final List<String> foundImageUrls) {
+      this.type = type;
+      this.text = text;
+      this.imageUrls = foundImageUrls.toArray(new String[foundImageUrls.size()]);
+    }
+
+    @Nonnull
+    @MustNotContainNull
+    private String[] getFoundImageURLs() {
+      return this.imageUrls;
+    }
+
+    @Nonnull
+    private RichContentType getType() {
+      return this.type;
+    }
+
+    @Nonnull
+    private String getText() {
+      return this.text;
+    }
   }
 }

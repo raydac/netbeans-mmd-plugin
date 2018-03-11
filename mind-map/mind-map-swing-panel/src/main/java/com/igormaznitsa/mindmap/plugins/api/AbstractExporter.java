@@ -13,20 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -37,6 +26,16 @@ import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+
 /**
  * Abstract auxiliary class automates way to implement an abstract exporter.
  *
@@ -44,10 +43,9 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
  */
 public abstract class AbstractExporter extends AbstractPopupMenuItem implements HasMnemonic {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporter.class);
-
   protected static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
   protected static final Format TIME_FORMAT = new SimpleDateFormat("HH:mm:ss z");
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporter.class);
 
   @Override
   @Nullable
@@ -75,8 +73,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
           } else {
             processor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
           }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
           LOGGER.error("Error during map export", ex); //NOI18N
           dialogProvider.msgError(null, Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
         }

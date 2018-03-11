@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
-import java.awt.GridLayout;
-import java.util.Enumeration;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Enumeration;
 
 public final class IconPanel extends JPanel {
 

@@ -13,46 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import org.apache.commons.io.FileUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.io.File;
 import java.util.ArrayList;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
+import java.util.Iterator;
+import java.util.List;
 
 public class Text2MindMapImporter extends AbstractImporter {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_TXT2MM);
 
   private static final int TAB_POSITIONS = 16;
-  
-  private static final class TopicData {
-
-    private final int offset;
-    private final Topic topic;
-
-    public TopicData(final int offset, @Nonnull final Topic topic) {
-      this.offset = offset;
-      this.topic = topic;
-    }
-
-  }
 
   @Override
   @Nullable
@@ -169,7 +158,7 @@ public class Text2MindMapImporter extends AbstractImporter {
   public String getMnemonic() {
     return "tabtext";
   }
-  
+
   @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
@@ -191,5 +180,17 @@ public class Text2MindMapImporter extends AbstractImporter {
   @Override
   public int getOrder() {
     return 1;
+  }
+
+  private static final class TopicData {
+
+    private final int offset;
+    private final Topic topic;
+
+    public TopicData(final int offset, @Nonnull final Topic topic) {
+      this.offset = offset;
+      this.topic = topic;
+    }
+
   }
 }

@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import javax.swing.JMenuItem;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
+import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class CollapseAllPlugin extends AbstractPopupMenuItem {
 
@@ -39,7 +40,7 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
   @Override
   @Nullable
   public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
-    final JMenuItem result= UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"), ICO);
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"), ICO);
     result.setEnabled(panel.getModel().getRoot() != null);
     result.addActionListener(new ActionListener() {
       @Override
@@ -55,7 +56,7 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
   public PopUpSection getSection() {
     return PopUpSection.MANIPULATORS;
   }
-  
+
   @Override
   public boolean needsTopicUnderMouse() {
     return false;
@@ -71,4 +72,8 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
     return 2;
   }
 
+  @Override
+  public boolean isCompatibleWithFullScreenMode() {
+    return true;
+  }
 }

@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.processors;
 
-import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
-import javax.annotation.Nonnull;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.Icon;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import javax.swing.*;
 
 public class ExtraFilePlugin extends AbstractFocusedTopicPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_FILE);
-  
+
   @Override
   public int getOrder() {
     return 2;
@@ -47,15 +49,17 @@ public class ExtraFilePlugin extends AbstractFocusedTopicPlugin {
   @Override
   @Nonnull
   protected String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    if (actionTopic == null) return "...";
-    return  actionTopic.getExtras().containsKey(Extra.ExtraType.FILE) ? Texts.getString("MMDGraphEditor.makePopUp.miEditFile") 
+    if (actionTopic == null) {
+      return "...";
+    }
+    return actionTopic.getExtras().containsKey(Extra.ExtraType.FILE) ? Texts.getString("MMDGraphEditor.makePopUp.miEditFile")
         : Texts.getString("MMDGraphEditor.makePopUp.miAddFile");
   }
 
   @Override
   protected void doActionForTopic(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
   }
-  
+
   @Override
   @Nonnull
   public PopUpSection getSection() {

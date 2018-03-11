@@ -1330,7 +1330,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   @Override
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
-    return Utils.makePopUp(source, DialogProviderManager.getInstance().getDialogProvider(), element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
+    return Utils.makePopUp(source, false, DialogProviderManager.getInstance().getDialogProvider(), element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
   }
 
   private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {

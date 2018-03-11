@@ -13,75 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.Timestamp;
-
-import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-
-import org.apache.commons.io.IOUtils;
-
-import org.apache.commons.lang.StringUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.io.*;
+import java.sql.Timestamp;
+import java.util.Map;
 
 public class TextExporter extends AbstractExporter {
 
   private static final int SHIFT_STEP = 1;
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_TEXT);
-
-  private static class State {
-
-    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
-    private final StringBuilder buffer = new StringBuilder(16384);
-
-    @Nonnull
-    public State append(final char ch) {
-      this.buffer.append(ch);
-      return this;
-    }
-
-    @Nonnull
-    public State append(@Nonnull final String str) {
-      this.buffer.append(str);
-      return this;
-    }
-
-    @Nonnull
-    public State nextLine() {
-      this.buffer.append(NEXT_LINE);
-      return this;
-    }
-
-    @Override
-    @Nonnull
-    public String toString() {
-      return this.buffer.toString();
-    }
-
-  }
 
   @Nonnull
   @MustNotContainNull
@@ -103,8 +60,7 @@ public class TextExporter extends AbstractExporter {
     for (final String s : lines) {
       if (nofirst) {
         builder.append(State.NEXT_LINE);
-      }
-      else {
+      } else {
         nofirst = true;
       }
       builder.append(line).append(s);
@@ -128,8 +84,7 @@ public class TextExporter extends AbstractExporter {
     for (final char c : text.toCharArray()) {
       if (Character.isISOControl(c)) {
         result.append(' ');
-      }
-      else {
+      } else {
         result.append(c);
       }
     }
@@ -186,26 +141,26 @@ public class TextExporter extends AbstractExporter {
       }
       state.append(shiftString(note.getValue(), ' ', shift)).nextLine();
     }
-    
-    final Map<String,String> codeSnippets = topic.getCodeSnippets();
+
+    final Map<String, String> codeSnippets = topic.getCodeSnippets();
     if (!codeSnippets.isEmpty()) {
       boolean first = true;
-      for(final Map.Entry<String,String> e : codeSnippets.entrySet()) {
+      for (final Map.Entry<String, String> e : codeSnippets.entrySet()) {
         final String lang = e.getKey();
-        
+
         if (!first) {
           state.nextLine();
         } else {
           first = false;
         }
-        
-        state.append(shiftString("====BEGIN SOURCE ("+lang+')',' ',shift)).nextLine();
-        
+
+        state.append(shiftString("====BEGIN SOURCE (" + lang + ')', ' ', shift)).nextLine();
+
         final String body = e.getValue();
-        for(final String s : StringUtils.split(body,'\n')){
-          state.append(shiftString(Utils.removeAllISOControlsButTabs(s),' ',shift)).nextLine();
+        for (final String s : StringUtils.split(body, '\n')) {
+          state.append(shiftString(Utils.removeAllISOControlsButTabs(s), ' ', shift)).nextLine();
         }
-        
+
         state.append(shiftString("====END SOURCE", ' ', shift)).nextLine();
       }
     }
@@ -264,8 +219,7 @@ public class TextExporter extends AbstractExporter {
     if (theOut != null) {
       try {
         IOUtils.write(text, theOut, "UTF-8");
-      }
-      finally {
+      } finally {
         if (fileToSaveMap != null) {
           IOUtils.closeQuietly(theOut);
         }
@@ -278,7 +232,7 @@ public class TextExporter extends AbstractExporter {
   public String getMnemonic() {
     return "text";
   }
-  
+
   @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
@@ -296,10 +250,41 @@ public class TextExporter extends AbstractExporter {
   public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
     return ICO;
   }
-  
+
   @Override
   public int getOrder() {
     return 6;
+  }
+
+  private static class State {
+
+    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
+    private final StringBuilder buffer = new StringBuilder(16384);
+
+    @Nonnull
+    public State append(final char ch) {
+      this.buffer.append(ch);
+      return this;
+    }
+
+    @Nonnull
+    public State append(@Nonnull final String str) {
+      this.buffer.append(str);
+      return this;
+    }
+
+    @Nonnull
+    public State nextLine() {
+      this.buffer.append(NEXT_LINE);
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public String toString() {
+      return this.buffer.toString();
+    }
+
   }
 
 }

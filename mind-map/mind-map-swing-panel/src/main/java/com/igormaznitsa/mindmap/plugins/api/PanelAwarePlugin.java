@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Interface for plug-in to be aware for operations over panels.
- * 
+ *
  * @since 1.2
  */
 public interface PanelAwarePlugin extends MindMapPlugin {
   void onPanelCreate(@Nonnull MindMapPanel panel);
+
   void onPanelModelChange(@Nonnull MindMapPanel panel, @Nullable MindMap oldModel, @Nonnull MindMap newModel);
+
   void onPanelDispose(@Nonnull MindMapPanel panel);
 }

@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
-import java.awt.Image;
-import java.io.ByteArrayInputStream;
-import java.util.Map;
-import java.util.WeakHashMap;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
+import com.igormaznitsa.mindmap.plugins.api.Renderable;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.plugins.api.Renderable;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 

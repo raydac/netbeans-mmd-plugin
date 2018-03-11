@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
-import javax.annotation.Nonnull;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
+import javax.annotation.Nonnull;
+
 public interface Renderable {
   int getWidth(@Nonnull double scale);
+
   int getHeight(@Nonnull double scale);
+
   void renderAt(@Nonnull MMGraphics gfx, @Nonnull MindMapPanelConfig config, int x, int y);
 }

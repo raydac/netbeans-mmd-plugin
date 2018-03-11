@@ -179,7 +179,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
   @Override
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
-    return Utils.makePopUp(source, this.dialogProvider, element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
+    return Utils.makePopUp(source, false, this.dialogProvider,  element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
   }
 
   private void startOptionsEdit() {

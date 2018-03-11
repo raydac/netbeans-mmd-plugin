@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.external;
 
 import javax.annotation.Nonnull;
 
 public enum Attribute {
-  API("api"), 
-  TITLE("title"), 
-  AUTHOR("author"), 
-  COMPATIBLE("compatible"), 
-  VERSION("version"), 
-  REFERENCE("reference"), 
+  API("api"),
+  TITLE("title"),
+  AUTHOR("author"),
+  COMPATIBLE("compatible"),
+  VERSION("version"),
+  REFERENCE("reference"),
   PLUGINS("plugins");
-  
+
   private final String attrname;
 
   private Attribute(@Nonnull final String attrname) {

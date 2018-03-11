@@ -13,86 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.ModelUtils;
-import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JComponent;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
-import com.igormaznitsa.mindmap.swing.services.IconID;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import javax.swing.Icon;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import javax.swing.*;
+import java.io.*;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MDExporter extends AbstractExporter {
 
   private static final int STARTING_INDEX_FOR_NUMERATION = 5;
-
-  private static class State {
-
-    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
-    private final StringBuilder buffer = new StringBuilder(16384);
-
-    @Nonnull
-    public State append(final char ch) {
-      this.buffer.append(ch);
-      return this;
-    }
-
-    @Nonnull
-    public State nextStringMarker() {
-      this.buffer.append("  ");//NOI18N
-      return this;
-    }
-
-    @Nonnull
-    public State append(@Nonnull final String str) {
-      this.buffer.append(str);
-      return this;
-    }
-
-    @Nonnull
-    public State nextLine() {
-      this.buffer.append(NEXT_LINE);
-      return this;
-    }
-
-    @Override
-    @Nonnull
-    public String toString() {
-      return this.buffer.toString();
-    }
-
-  }
-
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MARKDOWN);
 
-  
   @Nonnull
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
@@ -109,8 +58,7 @@ public class MDExporter extends AbstractExporter {
     for (final char c : text.toCharArray()) {
       if (Character.isISOControl(c)) {
         result.append(' ');
-      }
-      else {
+      } else {
         result.append(c);
       }
     }
@@ -136,8 +84,7 @@ public class MDExporter extends AbstractExporter {
     if (level < STARTING_INDEX_FOR_NUMERATION) {
       final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);//NOI18N
       state.append(headerPrefix).append(' ').append(ModelUtils.escapeMarkdownStr(topic.getText())).nextLine();
-    }
-    else {
+    } else {
       final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION + 1);//NOI18N
       state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ').append(ModelUtils.escapeMarkdownStr(topic.getText())).nextLine();
     }
@@ -201,19 +148,19 @@ public class MDExporter extends AbstractExporter {
           .append("</pre>")//NOI18N
           .nextLine();
     }
-    
-    final Map<String,String> codeSnippets = topic.getCodeSnippets();
+
+    final Map<String, String> codeSnippets = topic.getCodeSnippets();
     if (!codeSnippets.isEmpty()) {
-      for(final Map.Entry<String,String> e : codeSnippets.entrySet()) {
+      for (final Map.Entry<String, String> e : codeSnippets.entrySet()) {
         final String lang = e.getKey();
-        
+
         state.append("```").append(lang).nextLine();
-        
+
         final String body = e.getValue();
-        for(final String s : StringUtils.split(body,'\n')){
+        for (final String s : StringUtils.split(body, '\n')) {
           state.append(Utils.removeAllISOControlsButTabs(s)).nextLine();
         }
-        
+
         state.append("```").nextLine();
       }
     }
@@ -228,8 +175,7 @@ public class MDExporter extends AbstractExporter {
     final String prefix;
     if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
       prefix = topicListNumStr + Integer.toString(topicIndex + 1) + '.';//NOI18N
-    }
-    else {
+    } else {
       prefix = "";//NOI18N
     }
     writeTopic(t, prefix, state);
@@ -276,8 +222,7 @@ public class MDExporter extends AbstractExporter {
     if (theOut != null) {
       try {
         IOUtils.write(text, theOut, "UTF-8");
-      }
-      finally {
+      } finally {
         if (fileToSaveMap != null) {
           IOUtils.closeQuietly(theOut);
         }
@@ -290,7 +235,7 @@ public class MDExporter extends AbstractExporter {
   public String getMnemonic() {
     return "markdown";
   }
-  
+
   @Override
   @Nonnull
   public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
@@ -313,5 +258,42 @@ public class MDExporter extends AbstractExporter {
   public int getOrder() {
     return 3;
   }
-  
+
+  private static class State {
+
+    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
+    private final StringBuilder buffer = new StringBuilder(16384);
+
+    @Nonnull
+    public State append(final char ch) {
+      this.buffer.append(ch);
+      return this;
+    }
+
+    @Nonnull
+    public State nextStringMarker() {
+      this.buffer.append("  ");//NOI18N
+      return this;
+    }
+
+    @Nonnull
+    public State append(@Nonnull final String str) {
+      this.buffer.append(str);
+      return this;
+    }
+
+    @Nonnull
+    public State nextLine() {
+      this.buffer.append(NEXT_LINE);
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public String toString() {
+      return this.buffer.toString();
+    }
+
+  }
+
 }

@@ -13,162 +13,73 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.grack.nanojson.JsonStringWriter;
 import com.grack.nanojson.JsonWriter;
-
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
-import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
-import com.igormaznitsa.mindmap.swing.services.IconID;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public class MindmupExporter extends AbstractExporter {
 
+  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
   private static int idCounter = 1;
 
-  private static class TopicData {
-
-    private final int uid;
-    private final int id;
-    private final Topic topic;
-
-    public TopicData (final int uid, final int id, @Nonnull final Topic topic) {
-      this.uid = uid;
-      this.id = id;
-      this.topic = topic;
-    }
-
-    public int getUID () {
-      return this.uid;
-    }
-
-    public int getID () {
-      return id;
-    }
-
-    @Nonnull
-    public Topic getTopic () {
-      return this.topic;
-    }
-  }
-
-  private static class State {
-
-    private JsonStringWriter json = JsonWriter.string();
-    private final Map<String, TopicData> topicsWithId = new HashMap<String, TopicData>();
-    private final List<TopicData> topicsContainsJump = new ArrayList<TopicData>();
-
-    public State () {
-    }
-
-    public void processTopic (final int uid, final int id, @Nonnull final Topic topic) {
-      final String topicUID = getTopicUid(topic);
-      if (topicUID != null) {
-        topicsWithId.put(topicUID, new TopicData(uid, id, topic));
-      }
-
-      final ExtraTopic linkto = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
-      if (linkto != null) {
-        this.topicsContainsJump.add(new TopicData(uid, id, topic));
-      }
-    }
-
-    @Nonnull
-    @MustNotContainNull
-    public List<TopicData> getTopicsContainingJump () {
-      return this.topicsContainsJump;
-    }
-
-    @Nullable
-    public TopicData findTopic (@Nonnull final ExtraTopic link) {
-      return topicsWithId.get(link.getValue());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public State startObj (@Nonnull final String key) {
-      this.json = this.json.object(key);
-      return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public State startObj () {
-      this.json = this.json.object();
-      return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public State startArray (@Nonnull final String key) {
-      this.json = this.json.array(key);
-      return this;
-    }
-
-    @Nonnull
-    public State set (@Nonnull final String key, @Nonnull final String value) {
-      this.json.value(key, value);
-      return this;
-    }
-
-    @Nonnull
-    public State set (@Nonnull final String key, final int value) {
-      this.json.value(key, value);
-      return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public State end () {
-      this.json = json.end();
-      return this;
-    }
-
-    @Override
-    @Nonnull
-    public String toString () {
-      return json.done();
-    }
-  }
-
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
-  
   @Nullable
-  private static String getTopicUid (@Nonnull final Topic topic) {
+  private static String getTopicUid(@Nonnull final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
+  }
+
+  @Nullable
+  private static String makeHtmlFromExtras(@Nonnull final Topic topic) {
+    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
+    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
+
+    if (file == null && link == null && note == null) {
+      return null;
+    }
+
+    final StringBuilder result = new StringBuilder();
+
+    if (file != null) {
+      final String uri = file.getValue().asString(true, false);
+      result.append("FILE: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
+    }
+    if (link != null) {
+      final String uri = link.getValue().asString(true, true);
+      result.append("LINK: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
+    }
+    if (note != null) {
+      if (file != null || link != null) {
+        result.append("<br>"); //NOI18N
+      }
+      result.append("<pre>").append(StringEscapeUtils.escapeHtml(note.getValue())).append("</pre>"); //NOI18N
+    }
+    return result.toString();
   }
 
   @Override
@@ -177,7 +88,7 @@ public class MindmupExporter extends AbstractExporter {
     return "mindmup";
   }
 
-  private int writeTopic (@Nonnull final State state, int id, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
+  private int writeTopic(@Nonnull final State state, int id, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
     state.startObj(Integer.toString(idCounter));
 
     state.processTopic(idCounter, id, topic);
@@ -213,42 +124,12 @@ public class MindmupExporter extends AbstractExporter {
     return id;
   }
 
-  @Nullable
-  private static String makeHtmlFromExtras (@Nonnull final Topic topic) {
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-
-    if (file == null && link == null && note == null) {
-      return null;
-    }
-
-    final StringBuilder result = new StringBuilder();
-
-    if (file != null) {
-      final String uri = file.getValue().asString(true, false);
-      result.append("FILE: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
-    }
-    if (link != null) {
-      final String uri = link.getValue().asString(true, true);
-      result.append("LINK: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
-    }
-    if (note != null) {
-      if (file != null || link != null) {
-        result.append("<br>"); //NOI18N
-      }
-      result.append("<pre>").append(StringEscapeUtils.escapeHtml(note.getValue())).append("</pre>"); //NOI18N
-    }
-    return result.toString();
-  }
-
-  private void writeRoot (@Nonnull final State state, @Nonnull final MindMapPanelConfig cfg, @Nullable final Topic root) {
+  private void writeRoot(@Nonnull final State state, @Nonnull final MindMapPanelConfig cfg, @Nullable final Topic root) {
     state.startObj();
 
     if (root == null) {
       state.set("title", ""); //NOI18N
-    }
-    else {
+    } else {
       state.set("title", root.getText()); //NOI18N
     }
     state.set("id", 1); //NOI18N
@@ -261,8 +142,7 @@ public class MindmupExporter extends AbstractExporter {
       for (final Topic t : root.getChildren()) {
         if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
           leftChildren.add(t);
-        }
-        else {
+        } else {
           rightChildren.add(t);
         }
       }
@@ -285,11 +165,11 @@ public class MindmupExporter extends AbstractExporter {
     state.end();
 
     if (root != null) {
-    state.startObj("attr"); //NOI18N
-    state.startObj("style")
-        .set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, root), false)))//NOI18N
-        .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, root), false)))//NOI18N
-        .end(); //NOI18N
+      state.startObj("attr"); //NOI18N
+      state.startObj("style")
+          .set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, root), false)))//NOI18N
+          .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, root), false)))//NOI18N
+          .end(); //NOI18N
     }
 
     final String attachment = root == null ? null : makeHtmlFromExtras(root);
@@ -321,14 +201,16 @@ public class MindmupExporter extends AbstractExporter {
       }
       state.end();
     }
-    
-    if (root!=null) state.end();
+
+    if (root != null) {
+      state.end();
+    }
   }
 
   @Override
-  public void doExport (@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
     final State state = new State();
-    
+
     writeRoot(state, panel.getConfiguration(), panel.getModel().getRoot());
 
     final String text = state.toString();
@@ -343,8 +225,7 @@ public class MindmupExporter extends AbstractExporter {
     if (theOut != null) {
       try {
         IOUtils.write(text, theOut, "UTF-8");
-      }
-      finally {
+      } finally {
         if (fileToSaveMap != null) {
           IOUtils.closeQuietly(theOut);
         }
@@ -354,25 +235,130 @@ public class MindmupExporter extends AbstractExporter {
 
   @Override
   @Nonnull
-  public String getName (@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
     return Texts.getString("MindmupExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference (@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
     return Texts.getString("MindmupExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public Icon getIcon (@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
     return ICO;
   }
 
   @Override
   public int getOrder() {
     return 2;
+  }
+
+  private static class TopicData {
+
+    private final int uid;
+    private final int id;
+    private final Topic topic;
+
+    public TopicData(final int uid, final int id, @Nonnull final Topic topic) {
+      this.uid = uid;
+      this.id = id;
+      this.topic = topic;
+    }
+
+    public int getUID() {
+      return this.uid;
+    }
+
+    public int getID() {
+      return id;
+    }
+
+    @Nonnull
+    public Topic getTopic() {
+      return this.topic;
+    }
+  }
+
+  private static class State {
+
+    private final Map<String, TopicData> topicsWithId = new HashMap<String, TopicData>();
+    private final List<TopicData> topicsContainsJump = new ArrayList<TopicData>();
+    private JsonStringWriter json = JsonWriter.string();
+
+    public State() {
+    }
+
+    public void processTopic(final int uid, final int id, @Nonnull final Topic topic) {
+      final String topicUID = getTopicUid(topic);
+      if (topicUID != null) {
+        topicsWithId.put(topicUID, new TopicData(uid, id, topic));
+      }
+
+      final ExtraTopic linkto = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+      if (linkto != null) {
+        this.topicsContainsJump.add(new TopicData(uid, id, topic));
+      }
+    }
+
+    @Nonnull
+    @MustNotContainNull
+    public List<TopicData> getTopicsContainingJump() {
+      return this.topicsContainsJump;
+    }
+
+    @Nullable
+    public TopicData findTopic(@Nonnull final ExtraTopic link) {
+      return topicsWithId.get(link.getValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public State startObj(@Nonnull final String key) {
+      this.json = this.json.object(key);
+      return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public State startObj() {
+      this.json = this.json.object();
+      return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public State startArray(@Nonnull final String key) {
+      this.json = this.json.array(key);
+      return this;
+    }
+
+    @Nonnull
+    public State set(@Nonnull final String key, @Nonnull final String value) {
+      this.json.value(key, value);
+      return this;
+    }
+
+    @Nonnull
+    public State set(@Nonnull final String key, final int value) {
+      this.json.value(key, value);
+      return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public State end() {
+      this.json = json.end();
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public String toString() {
+      return json.done();
+    }
   }
 
 }

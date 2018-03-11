@@ -13,26 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
-import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
+import com.igormaznitsa.mindmap.ide.commons.Misc;
+import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
+import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
+import com.igormaznitsa.mindmap.swing.panel.*;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
+import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
+import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
+import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import org.apache.commons.io.FileUtils;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.*;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
@@ -43,73 +69,13 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
-
-import com.igormaznitsa.sciareto.ui.MainFrame;
-import org.apache.commons.io.FileUtils;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
-import com.igormaznitsa.mindmap.ide.commons.Misc;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.MindMapController;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
-import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
-import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
-import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
-import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
-import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
-import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
-import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
-import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
-import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import com.igormaznitsa.sciareto.ui.UiUtils;
-import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
-import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 
 public final class MMDEditor extends AbstractEditor implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
 
@@ -131,9 +97,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   private String currentModelState;
 
   private boolean firstLayouting = true;
-  
+
   private final JScrollPane scrollPane;
-  
+
   public void refreshConfig() {
     this.mindMapPanel.refreshConfiguration();
   }
@@ -164,7 +130,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     this.title = new TabTitle(context, this, file);
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
-    
+
     this.scrollPane = new JScrollPane(this.mindMapPanel);
 
     final AdjustmentListener listener = new AdjustmentListener() {
@@ -177,7 +143,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     this.scrollPane.getHorizontalScrollBar().addAdjustmentListener(listener);
     this.scrollPane.getVerticalScrollBar().addAdjustmentListener(listener);
 
-    
+
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
     final MindMap map;
@@ -237,7 +203,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     }
   }
 
-  
+
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
     if (!beforeAction) {
@@ -334,13 +300,13 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         }
       });
     }
-  }  
+  }
 
   @Override
   public boolean isTrimTopicTextBeforeSet(@Nonnull final MindMapPanel source) {
     return PreferencesManager.getInstance().getPreferences().getBoolean("trimTopicText", false); //NOI18N
   }
-  
+
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
     return PreferencesManager.getInstance().getPreferences().getBoolean("unfoldCollapsedTarget", true); //NOI18N
@@ -421,8 +387,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.title.setChanged(true);
       this.scrollPane.revalidate();
       this.scrollPane.repaint();
-    }
-    finally {
+    } finally {
       this.context.notifyUpdateRedoUndo();
     }
   }
@@ -437,11 +402,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         try {
           this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
           LOGGER.error("Can't redo mind map", ex); //NOI18N
-        }
-        finally {
+        } finally {
           this.preventAddUndo = false;
         }
       }
@@ -459,11 +422,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         try {
           this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
           LOGGER.error("Can't redo mind map", ex); //NOI18N
-        }
-        finally {
+        } finally {
           this.preventAddUndo = false;
         }
       }
@@ -646,8 +607,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
             result = (File) list.get(0);
           }
           break;
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
           LOGGER.error("Can't extract file from DnD", ex); //NOI18N
         }
       }
@@ -663,24 +623,24 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     String detectedLink;
     String detectedNote;
     URI decodedLink;
-    
-    try{
+
+    try {
       detectedFile = extractDropFile(dtde);
       detectedLink = DnDUtils.extractDropLink(dtde);
       detectedNote = DnDUtils.extractDropNote(dtde);
-      
-      decodedLink  = null;
-      if (detectedLink!=null){
-        try{
+
+      decodedLink = null;
+      if (detectedLink != null) {
+        try {
           decodedLink = new URI(detectedLink);
-        }catch(final URISyntaxException ex){
+        } catch (final URISyntaxException ex) {
           decodedLink = null;
         }
       }
 
       dtde.dropComplete(true);
-      
-    }catch(final Exception ex){
+
+    } catch (final Exception ex) {
       LOGGER.error("Error during DnD processing", ex); //NOI18N
       dtde.dropComplete(false);
       return;
@@ -690,7 +650,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
     if (detectedFile != null) {
       decodedLink = DnDUtils.extractUrlLinkFromFile(detectedFile);
-      if (decodedLink!=null){
+      if (decodedLink != null) {
         addURItoElement(decodedLink, element);
       } else {
         addFileToElement(detectedFile, element);
@@ -801,7 +761,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
           if (topic != null) {
-            Main.getApplicationFrame().endFullScreenIfActive();
             editTextForTopic(topic);
             panel.requestFocus();
           }
@@ -810,7 +769,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ExtraFilePlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          Main.getApplicationFrame().endFullScreenIfActive();
           editFileLinkForTopic(topic);
           panel.requestFocus();
         }
@@ -818,7 +776,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ExtraURIPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          Main.getApplicationFrame().endFullScreenIfActive();
           editLinkForTopic(topic);
           panel.requestFocus();
         }
@@ -826,7 +783,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ExtraJumpPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          Main.getApplicationFrame().endFullScreenIfActive();
           editTopicLinkForTopic(topic);
           panel.requestFocus();
         }
@@ -834,8 +790,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ChangeColorPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          Main.getApplicationFrame().endFullScreenIfActive();
-          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
+          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[] {topic});
         }
       });
     }
@@ -1031,7 +986,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   @Override
   @Nonnull
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement elementUnderMouse, @Nullable final ElementPart elementPartUnderMouse) {
-    return Utils.makePopUp(source, DialogProviderManager.getInstance().getDialogProvider(), elementUnderMouse == null ? null : elementUnderMouse.getModel(), source.getSelectedTopics(), getCustomProcessors());
+    return Utils.makePopUp(source, Main.getApplicationFrame().isFullScreenActive(), DialogProviderManager.getInstance().getDialogProvider(), elementUnderMouse == null ? null : elementUnderMouse.getModel(), source.getSelectedTopics(), getCustomProcessors());
   }
 
   @Override
@@ -1153,10 +1108,10 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     assertSwingDispatchThread();
     return this.mindMapPanel.copyTopicsToClipboard(true, MindMapUtils.removeSuccessorsAndDuplications(this.mindMapPanel.getSelectedTopics()));
   }
-  
+
   @Override
   public boolean isCopyAllowed() {
-    return this.mindMapPanel.getSelectedTopics().length>0;
+    return this.mindMapPanel.getSelectedTopics().length > 0;
   }
 
   @Override
@@ -1177,5 +1132,4 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     return this.mindMapPanel.pasteTopicsFromClipboard();
   }
 
-  
 }

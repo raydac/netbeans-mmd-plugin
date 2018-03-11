@@ -681,6 +681,7 @@ public final class Utils {
   private static List<JMenuItem> findPopupMenuItems(
       @Nonnull final MindMapPanel panel,
       @Nonnull final PopUpSection section,
+      final boolean fullScreenModeActive,
       @Nonnull @MayContainNull final List<JMenuItem> list,
       @Nonnull DialogProvider dialogProvider,
       @Nullable final Topic topicUnderMouse,
@@ -691,6 +692,9 @@ public final class Utils {
     list.clear();
 
     for (final PopUpMenuItemPlugin p : pluginMenuItems) {
+      if (fullScreenModeActive && !p.isCompatibleWithFullScreenMode()) {
+        continue;
+      }
       if (p.getSection() == section) {
         if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
             || (p.needsTopicUnderMouse() && topicUnderMouse != null)
@@ -738,6 +742,7 @@ public final class Utils {
   @Nonnull
   public static JPopupMenu makePopUp(
       @Nonnull final MindMapPanel source,
+      final boolean fullScreenModeActive,
       @Nonnull final DialogProvider dialogProvider,
       @Nullable final Topic topicUnderMouse,
       @Nonnull @MustNotContainNull final Topic[] selectedTopics,
@@ -749,9 +754,9 @@ public final class Utils {
 
     final boolean isModelNotEmpty = source.getModel().getRoot() != null;
 
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MAIN, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MANIPULATORS, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.EXTRAS, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MAIN, fullScreenModeActive, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MANIPULATORS, fullScreenModeActive, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.EXTRAS, fullScreenModeActive, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
 
     final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDExporters.SubmenuName"));
     exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
@@ -759,13 +764,13 @@ public final class Utils {
     final JMenu importMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDImporters.SubmenuName"));
     importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
 
-    putAllItemsAsSection(result, importMenu, findPopupMenuItems(source, PopUpSection.IMPORT, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, importMenu, findPopupMenuItems(source, PopUpSection.IMPORT, fullScreenModeActive, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
     if (isModelNotEmpty) {
-      putAllItemsAsSection(result, exportMenu, findPopupMenuItems(source, PopUpSection.EXPORT, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+      putAllItemsAsSection(result, exportMenu, findPopupMenuItems(source, PopUpSection.EXPORT, fullScreenModeActive, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
     }
 
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.TOOLS, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
-    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MISC, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.TOOLS, fullScreenModeActive, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
+    putAllItemsAsSection(result, null, findPopupMenuItems(source, PopUpSection.MISC, fullScreenModeActive, tmpList, dialogProvider, topicUnderMouse, selectedTopics, pluginMenuItems, customProcessors));
 
     return result;
   }

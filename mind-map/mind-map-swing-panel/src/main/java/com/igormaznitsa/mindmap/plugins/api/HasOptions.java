@@ -13,24 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 /**
  * Interface allows to set and get properties.
+ *
  * @since 1.3.1
  */
 public interface HasOptions {
   boolean doesSupportKey(@Nonnull final String key);
+
   @Nonnull
   @MustNotContainNull
-  String [] getOptionKeys();
+  String[] getOptionKeys();
+
   @Nonnull
   String getOptionKeyDescription(@Nonnull String key);
+
   void setOption(@Nonnull String key, @Nullable String value);
+
   @Nullable
   String getOption(@Nonnull String key);
 }

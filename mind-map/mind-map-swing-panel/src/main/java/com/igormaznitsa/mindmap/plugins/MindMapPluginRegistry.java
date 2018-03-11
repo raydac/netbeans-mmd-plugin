@@ -13,66 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins;
 
-import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.plugins.exporters.FreeMindExporter;
-import com.igormaznitsa.mindmap.plugins.exporters.MDExporter;
-import com.igormaznitsa.mindmap.plugins.exporters.MindmupExporter;
-import com.igormaznitsa.mindmap.plugins.exporters.PNGImageExporter;
-import com.igormaznitsa.mindmap.plugins.exporters.TextExporter;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
-import java.util.HashMap;
-import java.util.Map;
-import com.igormaznitsa.mindmap.plugins.processors.AddChildPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.CloneTopicPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.EditTextPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.RemoveTopicPlugin;
-import com.igormaznitsa.mindmap.plugins.importers.Text2MindMapImporter;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
+import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
+import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonPopUpMenuPlugin;
+import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonVisualAttributePlugin;
+import com.igormaznitsa.mindmap.plugins.attributes.images.ImagePopUpMenuPlugin;
+import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
+import com.igormaznitsa.mindmap.plugins.exporters.*;
+import com.igormaznitsa.mindmap.plugins.importers.*;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.*;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.CollapseAllPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ShowJumpsPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.UnfoldAllPlugin;
-import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonPopUpMenuPlugin;
-import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonVisualAttributePlugin;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.*;
+
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
-import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
-import com.igormaznitsa.mindmap.plugins.attributes.images.ImagePopUpMenuPlugin;
-import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
-import com.igormaznitsa.mindmap.plugins.exporters.ASCIIDocExporter;
-import com.igormaznitsa.mindmap.plugins.exporters.ORGMODEExporter;
-import com.igormaznitsa.mindmap.plugins.importers.CoggleMM2MindMapImporter;
-import com.igormaznitsa.mindmap.plugins.importers.Freemind2MindMapImporter;
-import com.igormaznitsa.mindmap.plugins.importers.Mindmup2MindMapImporter;
-import com.igormaznitsa.mindmap.plugins.importers.Novamind2MindMapImporter;
-import com.igormaznitsa.mindmap.plugins.importers.XMind2MindMapImporter;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPluginRegistry.class);
-  
-  private final List<MindMapPlugin> pluginList = new ArrayList<MindMapPlugin>();
-
   private static final MindMapPluginRegistry INSTANCE = new MindMapPluginRegistry();
-
+  private final List<MindMapPlugin> pluginList = new ArrayList<MindMapPlugin>();
   private final Map<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>> FIND_CACHE = new HashMap<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>>();
 
   private MindMapPluginRegistry() {
@@ -102,19 +78,24 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new CollapseAllPlugin());
     registerPlugin(new UnfoldAllPlugin());
     registerPlugin(new ChangeColorPlugin());
-    
+
     registerPlugin(new Text2MindMapImporter());
     registerPlugin(new Mindmup2MindMapImporter());
     registerPlugin(new Freemind2MindMapImporter());
     registerPlugin(new XMind2MindMapImporter());
     registerPlugin(new CoggleMM2MindMapImporter());
     registerPlugin(new Novamind2MindMapImporter());
-    
+
     registerPlugin(new EmoticonPopUpMenuPlugin());
     registerPlugin(new EmoticonVisualAttributePlugin());
 
     registerPlugin(new ImagePopUpMenuPlugin());
     registerPlugin(new ImageVisualAttributePlugin());
+  }
+
+  @Nonnull
+  public static MindMapPluginRegistry getInstance() {
+    return INSTANCE;
   }
 
   public void registerPlugin(@Nonnull final MindMapPlugin plugin) {
@@ -127,18 +108,18 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   }
 
   public void unregisterPluginForClass(@Nonnull final Class<? extends MindMapPlugin> pluginClass) {
-    synchronized(FIND_CACHE){
+    synchronized (FIND_CACHE) {
       final Iterator<MindMapPlugin> iterator = this.pluginList.iterator();
-      while(iterator.hasNext()){
+      while (iterator.hasNext()) {
         final MindMapPlugin plugin = iterator.next();
-        if (pluginClass.isAssignableFrom(plugin.getClass())){
-          LOGGER.info("Unregistered plugin "+plugin.getClass().getName()+" for class "+pluginClass.getName());
+        if (pluginClass.isAssignableFrom(plugin.getClass())) {
+          LOGGER.info("Unregistered plugin " + plugin.getClass().getName() + " for class " + pluginClass.getName());
           iterator.remove();
         }
       }
     }
   }
-  
+
   public void unregisterPlugin(@Nonnull final MindMapPlugin plugin) {
     synchronized (FIND_CACHE) {
       if (this.pluginList.remove(assertNotNull(plugin))) {
@@ -150,13 +131,13 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   }
 
   public int size() {
-    synchronized(FIND_CACHE){
+    synchronized (FIND_CACHE) {
       return this.pluginList.size();
     }
   }
 
   public void clear() {
-    synchronized(FIND_CACHE){
+    synchronized (FIND_CACHE) {
       this.pluginList.clear();
       FIND_CACHE.clear();
     }
@@ -178,15 +159,15 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     }
     return result;
   }
-  
+
   @Nullable
   public AbstractImporter findImporterForMnemonic(@Nonnull final String mnemonic) {
     AbstractImporter result = null;
     synchronized (FIND_CACHE) {
-      for(final MindMapPlugin p : this.pluginList) {
-        if (p instanceof AbstractImporter){
+      for (final MindMapPlugin p : this.pluginList) {
+        if (p instanceof AbstractImporter) {
           final AbstractImporter importer = (AbstractImporter) p;
-          if (mnemonic.equals(importer.getMnemonic())){
+          if (mnemonic.equals(importer.getMnemonic())) {
             result = importer;
             break;
           }
@@ -195,7 +176,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     }
     return result;
   }
-  
+
   @Nonnull
   @MustNotContainNull
   public <T extends MindMapPlugin> List<T> findFor(@Nullable final Class<T> klazz) {
@@ -222,10 +203,5 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   @Nonnull
   public Iterator<MindMapPlugin> iterator() {
     return this.pluginList.iterator();
-  }
-
-  @Nonnull
-  public static MindMapPluginRegistry getInstance() {
-    return INSTANCE;
   }
 }

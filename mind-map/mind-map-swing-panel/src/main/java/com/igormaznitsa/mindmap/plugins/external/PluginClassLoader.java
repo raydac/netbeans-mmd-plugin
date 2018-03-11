@@ -13,8 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.external;
 
+import com.igormaznitsa.commons.version.Version;
+import com.igormaznitsa.commons.version.VersionValidator;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.lang.model.SourceVersion;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -25,29 +36,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.lang.model.SourceVersion;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.commons.version.Version;
-import com.igormaznitsa.commons.version.VersionValidator;
 
 public class PluginClassLoader extends URLClassLoader {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PluginClassLoader.class);
   private final JarURLConnection connection;
   private final File pluginFile;
   private final Map<String, String> attributes;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(PluginClassLoader.class);
-
   private final Version apiVersion;
   private VersionValidator compatibilityValidator;
 
   public PluginClassLoader(@Nonnull final File pluginFile) throws IOException {
-    super(new URL[]{Assertions.assertNotNull(pluginFile).toURI().toURL()},PluginClassLoader.class.getClassLoader());
+    super(new URL[] {Assertions.assertNotNull(pluginFile).toURI().toURL()}, PluginClassLoader.class.getClassLoader());
     this.pluginFile = pluginFile;
     this.connection = (JarURLConnection) new URL("jar", "", pluginFile.toURI() + "!/").openConnection();
 

@@ -13,79 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
-import java.awt.Color;
-import java.io.ByteArrayInputStream;
-import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import org.apache.commons.io.FileUtils;
 import com.grack.nanojson.JsonArray;
+import com.grack.nanojson.JsonObject;
+import com.grack.nanojson.JsonParser;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
+import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
-import com.igormaznitsa.mindmap.swing.services.IconID;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import com.grack.nanojson.JsonObject;
-import com.grack.nanojson.JsonParser;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import org.apache.commons.io.FileUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.List;
+
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 
 public class Mindmup2MindMapImporter extends AbstractImporter {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Mindmup2MindMapImporter.class);
-
-  private static final class OrderableIdea implements Comparable<OrderableIdea> {
-
-    private final double order;
-    private final JsonObject idea;
-
-    private OrderableIdea(final double order, @Nonnull final JsonObject idea) {
-      this.order = order;
-      this.idea = idea;
-    }
-
-    private boolean isLeftBranch() {
-      return this.order < 0.0d;
-    }
-
-    @Nonnull
-    private JsonObject getIdea() {
-      return this.idea;
-    }
-
-    @Override
-    public int compareTo(@Nonnull final OrderableIdea that) {
-      return Double.compare(this.order, that.order);
-    }
-
-  }
 
   @Override
   @Nullable
@@ -95,7 +62,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     if (file == null) {
       return null;
     }
-    
+
     final JsonObject parsedJson;
     parsedJson = JsonParser.object().from(FileUtils.readFileToString(file, "UTF-8"));
 
@@ -103,7 +70,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
 
     final Number formatVersion = parsedJson.getNumber("formatVersion");
     if (formatVersion == null) {
-      dialogProvider.msgError(null,Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
+      dialogProvider.msgError(null, Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
     } else {
       resultedMap = new MindMap(null, true);
       resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
@@ -136,8 +103,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
         if (fromTopic != null && toTopic != null) {
           fromTopic.setExtra(ExtraTopic.makeLinkTo(map, toTopic));
         }
-      }
-      catch (final Exception ex) {
+      } catch (final Exception ex) {
         LOGGER.error("Can't parse link", ex);
       }
     }
@@ -154,8 +120,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
           double order = 0.0d;
           try {
             order = Double.parseDouble(i.getKey().trim());
-          }
-          catch (final NumberFormatException ex) {
+          } catch (final NumberFormatException ex) {
             LOGGER.error("Detected unexpected number format in order", ex);
           }
           sortedIdeas.add(new OrderableIdea(order, idea));
@@ -230,20 +195,18 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
         try {
           final String encoded = Utils.rescaleImageAndEncodeAsBase64(new ByteArrayInputStream(Utils.base64decode(data[1].trim())), -1);
           if (encoded == null) {
-            LOGGER.warn("Can't convert image : "+iconUrl);
+            LOGGER.warn("Can't convert image : " + iconUrl);
           } else {
             topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, encoded);
           }
-        }
-        catch (final Exception ex) {
-          LOGGER.error("Can't load image : "+iconUrl, ex);
+        } catch (final Exception ex) {
+          LOGGER.error("Can't load image : " + iconUrl, ex);
         }
       }
     } else {
       try {
         topic.setExtra(new ExtraLink(iconUrl));
-      }
-      catch (final URISyntaxException ex) {
+      } catch (final URISyntaxException ex) {
         LOGGER.error("Can't parse URI : " + iconUrl);
       }
     }
@@ -255,7 +218,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       final Color color = Utils.html2color(background, false);
       if (color != null) {
         topic.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(color, false));
-        topic.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(color),false));
+        topic.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(color), false));
       }
     }
   }
@@ -287,5 +250,36 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
   @Override
   public int getOrder() {
     return 2;
+  }
+
+  @Override
+  public boolean isCompatibleWithFullScreenMode() {
+    return false;
+  }
+
+  private static final class OrderableIdea implements Comparable<OrderableIdea> {
+
+    private final double order;
+    private final JsonObject idea;
+
+    private OrderableIdea(final double order, @Nonnull final JsonObject idea) {
+      this.order = order;
+      this.idea = idea;
+    }
+
+    private boolean isLeftBranch() {
+      return this.order < 0.0d;
+    }
+
+    @Nonnull
+    private JsonObject getIdea() {
+      return this.idea;
+    }
+
+    @Override
+    public int compareTo(@Nonnull final OrderableIdea that) {
+      return Double.compare(this.order, that.order);
+    }
+
   }
 }

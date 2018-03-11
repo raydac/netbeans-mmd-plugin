@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import javax.swing.JMenuItem;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  * Auxiliary class to create plug-ins working with selected topic.
- * 
+ *
  * @since 1.2
  */
 public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
@@ -42,20 +43,20 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
       @Nonnull @MustNotContainNull final Topic[] selectedTopics,
       @Nullable final CustomJob customProcessor) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
-      result.setToolTipText(getReference());
+    result.setToolTipText(getReference());
 
-      final AbstractFocusedTopicPlugin theInstance = this;
+    final AbstractFocusedTopicPlugin theInstance = this;
 
-      result.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          if (customProcessor == null) {
-            doActionForTopic(panel, dialogProvider, actionTopic, selectedTopics);
-          } else {
-            customProcessor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
-          }
+    result.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        if (customProcessor == null) {
+          doActionForTopic(panel, dialogProvider, actionTopic, selectedTopics);
+        } else {
+          customProcessor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
         }
-      });
+      }
+    });
     return result;
   }
 

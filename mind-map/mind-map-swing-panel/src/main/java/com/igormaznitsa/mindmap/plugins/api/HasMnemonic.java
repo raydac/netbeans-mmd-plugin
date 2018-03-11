@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
 import javax.annotation.Nullable;
 
 /**
  * Shows that plug-in provides its mnemonic name.
+ *
  * @since 1.3.1
  */
 public interface HasMnemonic {
   /**
    * Returns mnemocode.
+   *
    * @return mnemocode which must be in lower-case, only Latin symbols and can't contain spaces or special chars, it can provide null.
    */
   @Nullable

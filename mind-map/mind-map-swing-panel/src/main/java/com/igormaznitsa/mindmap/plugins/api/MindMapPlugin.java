@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.commons.version.Version;
@@ -20,8 +21,9 @@ import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 
 /**
  * The Main interface for any plug-in to be provided for mind map panel.
- * @since 1.2
+ *
  * @see MindMapPluginRegistry
+ * @since 1.2
  */
 public interface MindMapPlugin extends Comparable<MindMapPlugin> {
   /**
@@ -32,10 +34,11 @@ public interface MindMapPlugin extends Comparable<MindMapPlugin> {
   /**
    * Version of the API.
    */
-  public static final Version API = new Version("1.4.0");
-  
+  public static final Version API = new Version("1.4.1");
+
   /**
    * Order of the plug-in among another plug-ins.
+   *
    * @return the order.
    */
   int getOrder();

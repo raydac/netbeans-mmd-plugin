@@ -1568,6 +1568,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }
 
+  public boolean isFullScreenActive() {
+    return this.taskToEndFullScreen.get() != null;
+  }
+
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {

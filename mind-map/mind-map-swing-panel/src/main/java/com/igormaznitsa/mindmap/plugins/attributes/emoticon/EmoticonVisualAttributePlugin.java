@@ -13,72 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
-import java.awt.Image;
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.plugins.api.RenderableImage;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
+import com.igormaznitsa.mindmap.plugins.api.Renderable;
+import com.igormaznitsa.mindmap.plugins.api.RenderableImage;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.mindmap.plugins.api.Renderable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
   static final String ATTR_KEY = "mmd.emoticon";
 
   private final Map<String, ScaledImage> SCALED_IMAGE_CACHE = new HashMap<String, ScaledImage>();
-
-  private static final class ScaledImage {
-
-    private static final int ICON_SIZE = 32;
-
-    private final double BASE_SCALE_X;
-    private final double BASE_SCALE_Y;
-
-    private double scale = -1.0d;
-    private final Image baseImage;
-    private Renderable scaledImage;
-
-    public ScaledImage(@Nonnull final String imageName, final double scale) {
-      this.baseImage = MiscIcons.findForName(imageName);
-      if (this.baseImage != null) {
-        this.BASE_SCALE_X = (double) ICON_SIZE / (double) this.baseImage.getWidth(null);
-        this.BASE_SCALE_Y = (double) ICON_SIZE / (double) this.baseImage.getHeight(null);
-      } else {
-        this.BASE_SCALE_X = 1.0d;
-        this.BASE_SCALE_Y = 1.0d;
-      }
-      getImage(scale);
-    }
-
-    @Nullable
-    public Renderable getImage(final double scale) {
-      final Renderable result;
-      if (this.baseImage == null || Double.compare(this.scale, scale) == 0) {
-        result = this.scaledImage;
-      } else {
-        this.scale = scale;
-        final Image scaled = Utils.scaleImage(this.baseImage, BASE_SCALE_X, BASE_SCALE_Y, scale);
-        if (scaled == null) {
-          result = null;
-          this.scaledImage = null;
-        } else {
-          this.scaledImage = new RenderableImage(scaled);
-          result = this.scaledImage;
-        }
-      }
-      return result;
-    }
-
-  }
 
   @Override
   @Nullable
@@ -132,6 +90,49 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
     } else {
       return 1;
     }
+  }
+
+  private static final class ScaledImage {
+
+    private static final int ICON_SIZE = 32;
+
+    private final double BASE_SCALE_X;
+    private final double BASE_SCALE_Y;
+    private final Image baseImage;
+    private double scale = -1.0d;
+    private Renderable scaledImage;
+
+    public ScaledImage(@Nonnull final String imageName, final double scale) {
+      this.baseImage = MiscIcons.findForName(imageName);
+      if (this.baseImage != null) {
+        this.BASE_SCALE_X = (double) ICON_SIZE / (double) this.baseImage.getWidth(null);
+        this.BASE_SCALE_Y = (double) ICON_SIZE / (double) this.baseImage.getHeight(null);
+      } else {
+        this.BASE_SCALE_X = 1.0d;
+        this.BASE_SCALE_Y = 1.0d;
+      }
+      getImage(scale);
+    }
+
+    @Nullable
+    public Renderable getImage(final double scale) {
+      final Renderable result;
+      if (this.baseImage == null || Double.compare(this.scale, scale) == 0) {
+        result = this.scaledImage;
+      } else {
+        this.scale = scale;
+        final Image scaled = Utils.scaleImage(this.baseImage, BASE_SCALE_X, BASE_SCALE_Y, scale);
+        if (scaled == null) {
+          result = null;
+          this.scaledImage = null;
+        } else {
+          this.scaledImage = new RenderableImage(scaled);
+          result = this.scaledImage;
+        }
+      }
+      return result;
+    }
+
   }
 
 }
