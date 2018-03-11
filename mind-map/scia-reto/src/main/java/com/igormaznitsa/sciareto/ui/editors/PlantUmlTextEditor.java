@@ -19,6 +19,7 @@ package com.igormaznitsa.sciareto.ui.editors;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -126,6 +127,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     buttonExportImage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        Main.getApplicationFrame().endFullScreenIfActive();
         exportAsFile();
       }
     });

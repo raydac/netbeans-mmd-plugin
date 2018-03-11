@@ -13,64 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.sciareto.ui;
-
-import com.igormaznitsa.sciareto.ui.editors.*;
-import com.igormaznitsa.sciareto.ui.tabs.EditorTabPane;
-import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
-import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
-import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSplitPane;
-import javax.swing.JWindow;
-import javax.swing.KeyStroke;
-import javax.swing.LookAndFeel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
-import javax.swing.filechooser.FileView;
-
-import org.apache.commons.io.FilenameUtils;
 
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -82,16 +26,39 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
+import com.igormaznitsa.sciareto.ui.editors.*;
+import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.FileLinkGraphPanel;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
+import com.igormaznitsa.sciareto.ui.tabs.EditorTabPane;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
+import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.filechooser.FileView;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
 
@@ -285,8 +252,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             SwingUtilities.updateComponentTreeUI(theInstance);
             PreferencesManager.getInstance().getPreferences().put(Main.PROPERTY_LOOKANDFEEL, info.getClassName());
             PreferencesManager.getInstance().flush();
-          }
-          catch (Exception ex) {
+          } catch (Exception ex) {
             LOGGER.error("Can't change LF", ex); //NOI18N
           }
         }
@@ -299,39 +265,39 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); // ?
       this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-      
+
       this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
       this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-      
+
       this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuEditCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-      
-      this.menuEditShowTreeContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,  KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
+
+      this.menuEditShowTreeContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
       this.menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.CTRL_MASK));
-    
+
     } else {
-    
+
       this.menuOpenProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
       this.menuOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuSaveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_MASK));
-      
+
       this.menuGoToFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
       this.menuRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
       this.menuUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuFindText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-      
+
       this.menuEditCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuEditCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
       this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-      
+
       this.menuEditShowTreeContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
       this.menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
     }
-    
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -493,7 +459,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     }
 
-    if (changed && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null,"Confirmation", "Some changed file will be affected! To close them?")) {
+    if (changed && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Confirmation", "Some changed file will be affected! To close them?")) {
       return false;
     }
 
@@ -516,8 +482,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           openFileAsTab(f);
         }
       }
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       LOGGER.error("Can't restore state", ex); //NOI18N
     }
   }
@@ -541,8 +506,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         }
       }
       FileHistoryManager.getInstance().saveActiveFiles(files.toArray(new File[files.size()]));
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       LOGGER.error("Can't save state", ex); //NOI18N
     }
   }
@@ -560,8 +524,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             final MMDEditor panel = new MMDEditor(this, file);
             this.tabPane.createTab(panel);
             result = true;
-          }
-          catch (IOException ex) {
+          } catch (IOException ex) {
             LOGGER.error("Can't load mind map", ex); //NOI18N
           }
         } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
@@ -569,8 +532,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             final PictureViewer panel = new PictureViewer(this, file);
             this.tabPane.createTab(panel);
             result = true;
-          }
-          catch (IOException ex) {
+          } catch (IOException ex) {
             LOGGER.error("Can't load file as image", ex); //NOI18N
           }
         } else if (SourceTextEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
@@ -578,11 +540,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             final SourceTextEditor panel = new SourceTextEditor(this, file);
             this.tabPane.createTab(panel);
             result = true;
-          }
-          catch (IOException ex) {
+          } catch (IOException ex) {
             LOGGER.error("Can't load file as sources", ex); //NOI18N
-          }
-          finally {
+          } finally {
             processTabChange();
           }
         } else if (PlantUmlTextEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
@@ -590,11 +550,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             final PlantUmlTextEditor panel = new PlantUmlTextEditor(this, file);
             this.tabPane.createTab(panel);
             result = true;
-          }
-          catch (IOException ex) {
+          } catch (IOException ex) {
             LOGGER.error("Can't load file as plant uml text", ex); //NOI18N
-          }
-          finally {
+          } finally {
             processTabChange();
           }
         } else {
@@ -606,11 +564,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             final TextEditor panel = new TextEditor(this, file);
             this.tabPane.createTab(panel);
             result = true;
-          }
-          catch (IOException ex) {
+          } catch (IOException ex) {
             LOGGER.error("Can't load file as text", ex); //NOI18N
-          }
-          finally {
+          } finally {
             processTabChange();
           }
         }
@@ -619,11 +575,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (result) {
       try {
         FileHistoryManager.getInstance().registerOpenedFile(file);
-      }
-      catch (IOException x) {
+      } catch (IOException x) {
         LOGGER.error("Can't register last opened file", x); //NOI18N
-      }
-      finally {
+      } finally {
         this.tabPane.focusToFile(file);
       }
     }
@@ -846,9 +800,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuFileMenuSelected(evt);
       }
+
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuFileMenuDeselected(evt);
       }
+
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
         menuFileMenuCanceled(evt);
       }
@@ -942,9 +898,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuEditMenuSelected(evt);
       }
+
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuEditMenuDeselected(evt);
       }
+
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
         menuEditMenuCanceled(evt);
       }
@@ -1060,8 +1018,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuNavigateMenuSelected(evt);
       }
+
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
       }
+
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
       }
     });
@@ -1171,8 +1131,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         }
         try {
           FileHistoryManager.getInstance().registerOpenedProject(folder);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
           LOGGER.error("Can't register last opened project", ex); //NOI18N
         }
       } else {
@@ -1202,8 +1161,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     for (final TabTitle t : this.tabPane) {
       try {
         t.save();
-      }
-      catch (IOException ex) {
+      } catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
       }
@@ -1226,8 +1184,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
               centerRootTopicIfFocusedMMD();
             }
           });
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
           LOGGER.error("Can't register last opened file", ex); //NOI18N
         }
       }
@@ -1256,8 +1213,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (index >= 0) {
       try {
         ((TabTitle) this.tabPane.getTabComponentAt(index)).save();
-      }
-      catch (IOException ex) {
+      } catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
       }
@@ -1269,8 +1225,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (index >= 0) {
       try {
         ((TabTitle) this.tabPane.getTabComponentAt(index)).saveAs();
-      }
-      catch (IOException ex) {
+      } catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
       }
@@ -1290,7 +1245,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       if (knowledgeFolder.mkdirs()) {
         result = true;
       } else {
-        LOGGER.warn("Can't create folder : "+Context.KNOWLEDGE_FOLDER); //NOI18N
+        LOGGER.warn("Can't create folder : " + Context.KNOWLEDGE_FOLDER); //NOI18N
       }
     }
     return result;
@@ -1365,8 +1320,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
               public void run() {
                 try {
                   window.dispose();
-                }
-                finally {
+                } finally {
                   tabPane.setComponentAt(tabIndex, selectedEditor.getContainerToShow());
                   device.setFullScreenWindow(null);
                   KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
@@ -1376,8 +1330,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
               try {
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(fullScreenEscCatcher);
                 device.setFullScreenWindow(window);
-              }
-              catch (Exception ex) {
+              } catch (Exception ex) {
                 LOGGER.error("Can't turn on full screen", ex); //NOI18N
                 endFullScreenIfActive();
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
@@ -1575,6 +1528,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public void endFullScreenIfActive() {
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {
+      final AbstractEditor editor = this.tabPane.getCurrentEditor();
+      if (editor != null && editor instanceof MMDEditor) {
+        final MMDEditor mmdeditor = (MMDEditor) editor;
+        mmdeditor.getMindMapPanel().endEdit(true);
+      }
       Utils.safeSwingCall(runnable);
     }
   }
@@ -1621,8 +1579,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           final String text = mindMap.write(new StringWriter()).toString();
           SystemUtils.saveUTFText(file, text);
           result = file;
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
           DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save mind map into file '" + file.getName() + "'");
         }
       }
