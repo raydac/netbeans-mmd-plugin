@@ -10,8 +10,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <main.version.raw>1.4.3-SNAPSHOT</main.version.raw>
-    <main.version>${main.version.raw}</main.version>
+    <main.version.raw>1.4.3</main.version.raw>
+    <main.version>${main.version.raw}-SNAPSHOT</main.version>
     <meta.version>1.1.2</meta.version>
     <uber.pom>1.0.1</uber.pom>
     <iam.commons.version>1.0.0</iam.commons.version>
