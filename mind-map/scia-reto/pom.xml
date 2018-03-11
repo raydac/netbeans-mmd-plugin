@@ -19,6 +19,9 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <jung.version>2.1.1</jung.version>
+        <batik.version>1.9.1</batik.version>
+        <jlatexmath.version>1.0.6</jlatexmath.version>
+        <plantuml.version>1.2018.2</plantuml.version>
     </properties>
 
     <dependencies>
@@ -69,8 +72,8 @@
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
-            <artifactId>platform</artifactId>
-            <version>3.5.2</version>
+            <artifactId>jna-platform</artifactId>
+            <version>4.5.1</version>
         </dependency>
         <dependency>
             <!-- downloaded from http://www.java2s.com/Code/JarDownload/mac/mac-ui.jar.zip -->
@@ -83,7 +86,22 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>1.2018.1</version>
+            <version>${plantuml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scilab.forge</groupId>
+            <artifactId>jlatexmath</artifactId>
+            <version>${jlatexmath.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-dom</artifactId>
+            <version>${batik.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-svggen</artifactId>
+            <version>${batik.version}</version>
         </dependency>
     </dependencies>
 
