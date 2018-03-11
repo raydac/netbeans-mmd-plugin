@@ -1,4 +1,5 @@
 target/
+nb-configuration.xml
 nbactions.xml
 nbactions-publish.xml
 pom.xml.tag
