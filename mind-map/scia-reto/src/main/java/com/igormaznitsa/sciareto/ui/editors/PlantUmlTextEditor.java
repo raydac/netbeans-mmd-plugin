@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -28,6 +29,7 @@ import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
+import net.sourceforge.plantuml.OptionFlags;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -90,6 +92,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
+    initPlantUml();
+
     this.editor = new RSyntaxTextArea();
     this.editor.setPopupMenu(null);
 
@@ -200,6 +204,10 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.undoManager.updateActions();
 
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
+  }
+
+  private void initPlantUml() {
+    OptionFlags.getInstance().setDotExecutable(PrefUtils.getPlantUmlDotPath());
   }
 
   @Nonnull
@@ -365,6 +373,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   @Override
   public void updateConfiguration() {
+    initPlantUml();
     this.imageComponent.updateConfig();
     this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.editor.revalidate();

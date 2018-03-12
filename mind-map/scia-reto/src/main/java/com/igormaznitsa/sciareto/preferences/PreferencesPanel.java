@@ -47,6 +47,9 @@ import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.editors.TextEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public final class PreferencesPanel extends javax.swing.JPanel {
 
@@ -90,6 +93,29 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   public PreferencesPanel(final Context context) {
     this.context = context;
     initComponents();
+    this.textFieldPathToGraphvizDot.getDocument().addDocumentListener(new DocumentListener() {
+     
+        private void onChange(){
+            if (changeNotificationAllowed) {
+                changed = true;
+            }
+        }
+        
+        @Override
+        public void insertUpdate(@Nonnull final DocumentEvent e) {
+            onChange();
+        }
+
+        @Override
+        public void removeUpdate(@Nonnull final DocumentEvent e) {
+            onChange();
+        }
+
+        @Override
+        public void changedUpdate(@Nonnull final DocumentEvent e) {
+            onChange();
+        }
+    });
   }
 
   public boolean isChanged() {
@@ -110,16 +136,17 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         spinnerConnectorWidth = new javax.swing.JSpinner();
-        colorChooserConnectorColor = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
-        colorChooserCollapsatorBorder = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
-        colorChooserCollapsatorBackground = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
         jLabel5 = new javax.swing.JLabel();
         spinnerCollapsatorSize = new javax.swing.JSpinner();
         jLabel6 = new javax.swing.JLabel();
         spinnerCollapsatorWidth = new javax.swing.JSpinner();
-        colorChooserJumpLink = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
         jLabel7 = new javax.swing.JLabel();
         spinnerJumpLinkWidth = new javax.swing.JSpinner();
+        jPanel15 = new javax.swing.JPanel();
+        colorChooserCollapsatorBackground = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
+        colorChooserCollapsatorBorder = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
+        colorChooserJumpLink = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
+        colorChooserConnectorColor = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
         jPanel4 = new javax.swing.JPanel();
         colorChooserPaperColor = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
         checkBoxShowGrid = new javax.swing.JCheckBox();
@@ -154,6 +181,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         spinnerElementBorderWidth = new javax.swing.JSpinner();
         labelBorderWidth = new javax.swing.JLabel();
         filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jPanel14 = new javax.swing.JPanel();
+        textFieldPathToGraphvizDot = new javax.swing.JTextField();
+        buttonGraphvizDotFile = new javax.swing.JButton();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         jPanel1 = new javax.swing.JPanel();
         checkboxUseInsideBrowser = new javax.swing.JCheckBox();
         checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -212,55 +243,11 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel3.add(spinnerConnectorWidth, gridBagConstraints);
 
-        colorChooserConnectorColor.setText("Connector color");
-        colorChooserConnectorColor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        colorChooserConnectorColor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                colorChooserConnectorColorActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        jPanel3.add(colorChooserConnectorColor, gridBagConstraints);
-
-        colorChooserCollapsatorBorder.setText("Collapsator border");
-        colorChooserCollapsatorBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        colorChooserCollapsatorBorder.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                colorChooserCollapsatorBorderActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        jPanel3.add(colorChooserCollapsatorBorder, gridBagConstraints);
-
-        colorChooserCollapsatorBackground.setText("Collapsator fill");
-        colorChooserCollapsatorBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        colorChooserCollapsatorBackground.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                colorChooserCollapsatorBackgroundActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        jPanel3.add(colorChooserCollapsatorBackground, gridBagConstraints);
-
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel5.setText("Collapsator size:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipady = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -275,7 +262,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel3.add(spinnerCollapsatorSize, gridBagConstraints);
@@ -284,7 +271,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jLabel6.setText("Collapsator width:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipady = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -294,24 +281,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         spinnerCollapsatorWidth.setMinimumSize(new java.awt.Dimension(80, 0));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel3.add(spinnerCollapsatorWidth, gridBagConstraints);
-
-        colorChooserJumpLink.setText("Jump link");
-        colorChooserJumpLink.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        colorChooserJumpLink.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                colorChooserJumpLinkActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        jPanel3.add(colorChooserJumpLink, gridBagConstraints);
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel7.setText("Jump link width:");
@@ -336,6 +309,52 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel3.add(spinnerJumpLinkWidth, gridBagConstraints);
 
+        jPanel15.setLayout(new java.awt.GridLayout(2, 2));
+
+        colorChooserCollapsatorBackground.setText("Collapsator fill");
+        colorChooserCollapsatorBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        colorChooserCollapsatorBackground.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                colorChooserCollapsatorBackgroundActionPerformed(evt);
+            }
+        });
+        jPanel15.add(colorChooserCollapsatorBackground);
+
+        colorChooserCollapsatorBorder.setText("Collapsator border");
+        colorChooserCollapsatorBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        colorChooserCollapsatorBorder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                colorChooserCollapsatorBorderActionPerformed(evt);
+            }
+        });
+        jPanel15.add(colorChooserCollapsatorBorder);
+
+        colorChooserJumpLink.setText("Jump link");
+        colorChooserJumpLink.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        colorChooserJumpLink.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                colorChooserJumpLinkActionPerformed(evt);
+            }
+        });
+        jPanel15.add(colorChooserJumpLink);
+
+        colorChooserConnectorColor.setText("Connector color");
+        colorChooserConnectorColor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        colorChooserConnectorColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                colorChooserConnectorColorActionPerformed(evt);
+            }
+        });
+        jPanel15.add(colorChooserConnectorColor);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1000.0;
+        jPanel3.add(jPanel15, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -356,6 +375,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         jPanel4.add(colorChooserPaperColor, gridBagConstraints);
@@ -423,6 +443,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1000.0;
         jPanel4.add(jPanel13, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -653,6 +674,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel2.add(jPanel5, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -716,8 +738,46 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 11;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weighty = 1000.0;
         jPanel2.add(filler4, gridBagConstraints);
+
+        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Graphviz DOT file (for PlantUML)"));
+        jPanel14.setLayout(new java.awt.GridBagLayout());
+
+        textFieldPathToGraphvizDot.setColumns(3);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1000.0;
+        jPanel14.add(textFieldPathToGraphvizDot, gridBagConstraints);
+
+        buttonGraphvizDotFile.setText("...");
+        buttonGraphvizDotFile.setToolTipText("select file");
+        buttonGraphvizDotFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonGraphvizDotFileActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        jPanel14.add(buttonGraphvizDotFile, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel2.add(jPanel14, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 1000.0;
+        jPanel2.add(filler5, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -805,6 +865,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1000.0;
         jPanel1.add(jPanel7, gridBagConstraints);
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
@@ -1304,6 +1365,21 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_checkBoxShowHiddenFilesActionPerformed
 
+    private void buttonGraphvizDotFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGraphvizDotFileActionPerformed
+        final JFileChooser fileChooser = new JFileChooser(this.textFieldPathToGraphvizDot.getText());
+        fileChooser.setDialogTitle("Select GraphViz dot executable file");
+        fileChooser.setApproveButtonText("Select");
+        fileChooser.setAcceptAllFileFilterUsed(true);
+        fileChooser.setMultiSelectionEnabled(false);
+        
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            final File file = fileChooser.getSelectedFile();
+            this.textFieldPathToGraphvizDot.setText(file.getAbsolutePath());
+        }
+    }//GEN-LAST:event_buttonGraphvizDotFileActionPerformed
+
   public void load(@Nonnull final Preferences preferences) {
     this.config.loadFrom(preferences);
     loadFrom(this.config,preferences);
@@ -1317,6 +1393,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true)); //NOI18N
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true)); //NOI18N
       this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true));
+
+      // third part options
+      final String pathToGraphViz = preferences.get("plantuml.dotpath", null);
+      this.textFieldPathToGraphvizDot.setText(pathToGraphViz == null ? "" : pathToGraphViz);
 
       // Metrics
       this.checkboxMetricsAllowed.setSelected(MetricsService.getInstance().isEnabled());
@@ -1434,6 +1514,14 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     preferences.putBoolean("unfoldCollapsedTarget", this.checkBoxUnfoldCollapsedTarget.isSelected()); //NOI18N
     preferences.putBoolean("copyColorInfoToNewChildAllowed", this.checkBoxCopyColorInfoToNewAllowed.isSelected()); //NOI18N
     preferences.putBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, this.checkBoxKnowledgeFolderAutogenerationAllowed.isSelected());
+    
+    final String pathToGraphVizDot = textFieldPathToGraphvizDot.getText();
+    if (pathToGraphVizDot.trim().isEmpty()) {
+        preferences.remove("plantuml.dotpath");
+    } else {
+        preferences.put("plantuml.dotpath", pathToGraphVizDot);
+    }
+    
     PreferencesManager.getInstance().setFont(preferences, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, fontTextEditor);
 
     // Metrics
@@ -1475,6 +1563,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JButton buttonExportToFile;
     private javax.swing.JButton buttonFont;
     private javax.swing.JButton buttonFontForEditor;
+    private javax.swing.JButton buttonGraphvizDotFile;
     private javax.swing.JButton buttonImportFromFile;
     private javax.swing.JButton buttonOpenShortcutEditor;
     private javax.swing.JButton buttonResetToDefault;
@@ -1511,6 +1600,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
     private javax.swing.Box.Filler filler4;
+    private javax.swing.Box.Filler filler5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -1523,6 +1613,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1546,5 +1638,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JSpinner spinnerJumpLinkWidth;
     private javax.swing.JSpinner spinnerSelectLineGap;
     private javax.swing.JSpinner spinnerSelectLineWidth;
+    private javax.swing.JTextField textFieldPathToGraphvizDot;
     // End of variables declaration//GEN-END:variables
 }

@@ -13,36 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.sciareto.preferences;
 
-import java.awt.Font;
+import org.apache.commons.lang.StringUtils;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 
 public final class PrefUtils {
-  private PrefUtils(){
-    
+  private PrefUtils() {
+
   }
-  
+
   public static boolean isShowHiddenFilesAndFolders() {
-      return PreferencesManager.getInstance().getPreferences().getBoolean("showHiddenFiles", true);
+    return PreferencesManager.getInstance().getPreferences().getBoolean("showHiddenFiles", true);
   }
-  
+
+  @Nullable
+  public static String getPlantUmlDotPath() {
+    final String result = PreferencesManager.getInstance().getPreferences().get("plantuml.dotpath", null);
+    return (result == null || result.trim().isEmpty()) ? null : result;
+  }
+
   @Nonnull
-  public static String font2str(@Nonnull final Font font){
+  public static String font2str(@Nonnull final Font font) {
     final StringBuilder buffer = new StringBuilder();
     buffer.append(font.getFontName()).append('|').append(font.getStyle()).append('|').append(font.getSize());
     return buffer.toString();
   }
 
   @Nullable
-  public static Font str2font(@Nullable final String text, @Nullable final Font defaultFont){
-    if (text == null) return defaultFont;
-    final String [] fields = text.split("\\|"); //NOI18N
-    if (fields.length!=3) return defaultFont;
-    try{
-      return new Font(fields[0], Integer.parseInt(fields[1]),Integer.parseInt(fields[2]));
-    }catch(NumberFormatException ex){
+  public static Font str2font(@Nullable final String text, @Nullable final Font defaultFont) {
+    if (text == null) {
+      return defaultFont;
+    }
+    final String[] fields = text.split("\\|"); //NOI18N
+    if (fields.length != 3) {
+      return defaultFont;
+    }
+    try {
+      return new Font(fields[0], Integer.parseInt(fields[1]), Integer.parseInt(fields[2]));
+    } catch (NumberFormatException ex) {
       return defaultFont;
     }
   }

@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.sciareto.preferences;
 
-import java.awt.Font;
+import com.igormaznitsa.meta.common.utils.IOUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import org.apache.commons.codec.binary.Base64;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.apache.commons.codec.binary.Base64;
-import com.igormaznitsa.meta.common.utils.IOUtils;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 
 public class PreferencesManager {
 
@@ -62,16 +64,14 @@ public class PreferencesManager {
         thread.setDaemon(true);
         thread.start();
 
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         LOGGER.error("Can't generate UUID", ex); //NOI18N
       }
     }
     try {
       this.installationUUID = UUID.fromString(new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), "UTF-8")); //NOI18N
       LOGGER.info("Installation UUID : " + this.installationUUID.toString()); //NOI18N
-    }
-    catch (UnsupportedEncodingException ex) {
+    } catch (UnsupportedEncodingException ex) {
       LOGGER.error("Can't decode UUID", ex); //NOI18N
       throw new Error("Unexpected error", ex); //NOI18N
     }
@@ -122,8 +122,7 @@ public class PreferencesManager {
   public synchronized void flush() {
     try {
       this.prefs.flush();
-    }
-    catch (BackingStoreException ex) {
+    } catch (BackingStoreException ex) {
       LOGGER.error("Can't flush preferences", ex); //NOI18N
     }
   }
