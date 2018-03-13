@@ -138,6 +138,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     this.scrollPane.getVerticalScrollBar().setBlockIncrement(128);
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
+    this.scrollPane.setWheelScrollingEnabled(true);
+    this.scrollPane.setAutoscrolls(true);
+
     final AdjustmentListener listener = new AdjustmentListener() {
       @Override
       public void adjustmentValueChanged(@Nonnull final AdjustmentEvent e) {

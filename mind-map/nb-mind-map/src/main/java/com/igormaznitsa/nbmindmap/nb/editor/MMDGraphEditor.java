@@ -226,6 +226,11 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
+    this.mainScrollPane.getHorizontalScrollBar().setBlockIncrement(128);
+    this.mainScrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+    this.mainScrollPane.getVerticalScrollBar().setBlockIncrement(128);
+    this.mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
     this.mainScrollPane.setViewportView(this.mindMapPanel);
     this.mainScrollPane.setWheelScrollingEnabled(true);
     this.mainScrollPane.setAutoscrolls(true);
