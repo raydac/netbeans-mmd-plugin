@@ -13,8 +13,10 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.3 (SNAPSHOT)__
-- IJ: [#40](https://github.com/raydac/netbeans-mmd-plugin/issues/40) Fixed exception if turn off option `disable .projectKnowledge folder autocreation` in proect facet
-- SR: added support for [PlantUML](http://plantuml.com/) script rendering (files `.pu`,`.puml` and `.plantuml`)
+- ALL: [#44](https://github.com/raydac/netbeans-mmd-plugin/issues/44) Improved emoticon panel to increase slected icon visibility 
+- ALL: [#43](https://github.com/raydac/netbeans-mmd-plugin/issues/43) Fixed non-processed exception "Clipboard is busy"
+- IJ:  [#40](https://github.com/raydac/netbeans-mmd-plugin/issues/40) Fixed exception if turn off option `disable .projectKnowledge folder autocreation` in proect facet
+- SR:  added support for [PlantUML](http://plantuml.com/) script rendering (files `.pu`,`.puml` and `.plantuml`)
 
 __1.4.2 (25-feb-2018)__
 - SR:  [#38](https://github.com/raydac/netbeans-mmd-plugin/issues/38) added option to not show hidden files and folders in proect tree
