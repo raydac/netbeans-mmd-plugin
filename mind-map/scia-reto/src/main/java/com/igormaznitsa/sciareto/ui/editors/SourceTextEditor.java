@@ -13,49 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.SpecificKeys;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.SystemUtils;
+import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
-import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.SystemUtils;
-import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SourceTextEditor extends AbstractEditor {
 
@@ -79,9 +72,9 @@ public final class SourceTextEditor extends AbstractEditor {
 
   static {
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, Arrays.asList("as")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, Arrays.asList("c","h")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, Arrays.asList("c", "h")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CLOJURE, Arrays.asList("clj", "cljs", "cljc", "edn")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS, Arrays.asList("cc", "cpp", "cxx", "c++","hpp")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS, Arrays.asList("cc", "cpp", "cxx", "c++", "hpp")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSHARP, Arrays.asList("cs")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSS, Arrays.asList("css")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DELPHI, Arrays.asList("pas")); //NOI18N
@@ -202,7 +195,7 @@ public final class SourceTextEditor extends AbstractEditor {
     });
 
     this.undoManager = new RUndoManager(this.editor);
-    
+
     loadContent(file);
 
     this.editor.discardAllEdits();
@@ -280,8 +273,7 @@ public final class SourceTextEditor extends AbstractEditor {
         this.editor.setText(FileUtils.readFileToString(file, "UTF-8")); //NOI18N
         this.editor.setCaretPosition(0);
       }
-    }
-    finally {
+    } finally {
       this.ignoreChange = false;
     }
 
@@ -298,7 +290,7 @@ public final class SourceTextEditor extends AbstractEditor {
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null,"sources-editor", "Save sources", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "sources-editor", "Save sources", null, true, getFileFilter(), "Save");
         if (file == null) {
           return result;
         }
@@ -441,11 +433,10 @@ public final class SourceTextEditor extends AbstractEditor {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     String text = null;
     try {
-      if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+      if (Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor)) {
         text = clipboard.getData(DataFlavor.stringFlavor).toString();
       }
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       LOGGER.warn("Can't get data from clipboard : " + ex.getMessage()); //NOI18N
     }
     if (text != null) {
@@ -464,7 +455,7 @@ public final class SourceTextEditor extends AbstractEditor {
   @Override
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    return clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor);
+    return Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor);
   }
 
 }

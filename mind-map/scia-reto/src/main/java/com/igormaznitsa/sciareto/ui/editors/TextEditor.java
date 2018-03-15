@@ -13,10 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
-import java.awt.Font;
-import java.awt.Toolkit;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.SpecificKeys;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.SystemUtils;
+import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import org.apache.commons.io.FileUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -24,26 +43,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.undo.UndoManager;
-import org.apache.commons.io.FileUtils;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
-import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.SystemUtils;
-import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 
 public final class TextEditor extends AbstractEditor {
 
@@ -59,7 +58,7 @@ public final class TextEditor extends AbstractEditor {
   private final UndoManager undoManager = new UndoManager();
 
   private final JScrollPane scrollPane;
-  
+
   public static final FileFilter TXT_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -186,8 +185,7 @@ public final class TextEditor extends AbstractEditor {
         this.editor.setText(FileUtils.readFileToString(file, "UTF-8")); //NOI18N
         this.editor.setCaretPosition(0);
       }
-    }
-    finally {
+    } finally {
       this.ignoreChange = false;
     }
 
@@ -346,11 +344,10 @@ public final class TextEditor extends AbstractEditor {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     String text = null;
     try {
-      if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+      if (Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor)) {
         text = clipboard.getData(DataFlavor.stringFlavor).toString();
       }
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       LOGGER.warn("Can't get data from clipboard : " + ex.getMessage()); //NOI18N
     }
     if (text != null) {
@@ -369,7 +366,7 @@ public final class TextEditor extends AbstractEditor {
   @Override
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    return clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor);
+    return Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor);
   }
 
 }

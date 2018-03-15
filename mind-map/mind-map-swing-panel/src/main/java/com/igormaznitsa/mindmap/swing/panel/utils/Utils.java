@@ -27,6 +27,7 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
@@ -51,6 +52,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -737,6 +740,16 @@ public final class Utils {
       }
     }
     return items;
+  }
+
+  public static boolean isDataFlavorAvailable(@Nonnull final Clipboard clipboard, @Nonnull final DataFlavor flavor) {
+    boolean result = false;
+    try {
+      result = clipboard.isDataFlavorAvailable(flavor);
+    } catch (final IllegalStateException ex) {
+      LOGGER.warn("Can't get access to clipboard : "+ ex.getMessage());
+    }
+    return result;
   }
 
   @Nonnull

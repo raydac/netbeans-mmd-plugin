@@ -1125,7 +1125,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   @Override
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    return this.mindMapPanel.hasSelectedTopics() && clipboard.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+    return this.mindMapPanel.hasSelectedTopics() && Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR);
   }
 
   @Override

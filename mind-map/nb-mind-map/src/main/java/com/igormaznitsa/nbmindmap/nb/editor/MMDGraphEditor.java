@@ -15,60 +15,35 @@
  */
 package com.igormaznitsa.nbmindmap.nb.editor;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
+import com.igormaznitsa.mindmap.ide.commons.Misc;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
+import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
+import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.print.MMDPrint;
-import com.igormaznitsa.nbmindmap.utils.NbUtils;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
-
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
-
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import com.igormaznitsa.mindmap.print.MMDPrintOptions;
+import com.igormaznitsa.mindmap.swing.panel.*;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.nbmindmap.nb.print.PrintPageAdapter;
-import com.igormaznitsa.nbmindmap.nb.swing.ColorAttributePanel;
-import com.igormaznitsa.nbmindmap.nb.swing.AboutPanel;
-import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
-import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
-import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.ResourceBundle;
-
-import javax.swing.*;
-
+import com.igormaznitsa.nbmindmap.nb.swing.*;
+import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import org.netbeans.api.actions.Openable;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.netbeans.api.project.FileOwnerQuery;
@@ -80,6 +55,9 @@ import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 import org.netbeans.spi.print.PrintPage;
 import org.netbeans.spi.print.PrintProvider;
+import org.openide.actions.CopyAction;
+import org.openide.actions.CutAction;
+import org.openide.actions.PasteAction;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataFolder;
@@ -89,52 +67,38 @@ import org.openide.text.CloneableEditor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.WeakSet;
-import org.openide.util.lookup.Lookups;
-import org.openide.util.lookup.ProxyLookup;
-import org.openide.windows.TopComponent;
-
-import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
-
-import java.awt.Graphics2D;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.FlavorEvent;
-import java.awt.datatransfer.FlavorListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.KeyEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import javax.swing.text.DefaultEditorKit;
-import org.openide.actions.CopyAction;
-import org.openide.actions.CutAction;
-import org.openide.actions.PasteAction;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.datatransfer.ClipboardEvent;
 import org.openide.util.datatransfer.ClipboardListener;
 import org.openide.util.datatransfer.ExClipboard;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
-import com.igormaznitsa.mindmap.ide.commons.Misc;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
-import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
-import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
-import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
-import com.igormaznitsa.mindmap.print.MMDPrintOptions;
-import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
-import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
-import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
+import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.ProxyLookup;
+import org.openide.windows.TopComponent;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.FlavorEvent;
+import java.awt.datatransfer.FlavorListener;
+import java.awt.dnd.*;
+import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.List;
+
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 @MultiViewElement.Registration(
     displayName = "#MMDGraphEditor.displayName",
@@ -307,7 +271,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   }
 
   private boolean processClipboardChange(@Nonnull final Clipboard clipboard) {
-    final boolean result = clipboard.isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+    final boolean result = Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR);
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
@@ -709,7 +673,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   public void onChangedSelection(final MindMapPanel source, final Topic[] currentSelectedTopics) {
     this.actionCopy.setEnabled(currentSelectedTopics.length != 0);
     this.actionCut.setEnabled(currentSelectedTopics.length != 0);
-    this.actionPaste.setEnabled(currentSelectedTopics.length != 0 && NbUtils.findClipboard().isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR));
+    this.actionPaste.setEnabled(currentSelectedTopics.length != 0 && Utils.isDataFlavorAvailable(NbUtils.findClipboard(), MMDTopicsTransferable.MMD_DATA_FLAVOR));
   }
 
   private void processEditorResizing() {

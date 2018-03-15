@@ -18,6 +18,7 @@ package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
@@ -565,7 +566,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     String text = null;
     try {
-      if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+      if (Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor)) {
         text = clipboard.getData(DataFlavor.stringFlavor).toString();
       }
     } catch (Exception ex) {
@@ -587,7 +588,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   @Override
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    return clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor);
+    return Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor);
   }
 
 }

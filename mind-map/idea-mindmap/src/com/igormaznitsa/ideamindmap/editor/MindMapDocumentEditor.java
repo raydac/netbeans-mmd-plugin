@@ -882,7 +882,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   public boolean isPasteEnabled(@NotNull DataContext dataContext) {
     boolean result = false;
     if (this.mindMapPanel.hasSelectedTopics()) {
-      result = Toolkit.getDefaultToolkit().getSystemClipboard().isDataFlavorAvailable(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+      result = Utils.isDataFlavorAvailable(Toolkit.getDefaultToolkit().getSystemClipboard(), MMDTopicsTransferable.MMD_DATA_FLAVOR);
     }
     return result;
   }
