@@ -55,17 +55,25 @@ public final class IconPanel extends JPanel {
   @Nonnull
   private JToggleButton makeIconButton(@Nonnull final ButtonGroup group, @Nonnull final String name) {
     final JToggleButton result = Utils.UI_COMPO_FACTORY.makeToggleButton();
+
+    final Color panelColor = this.getBackground();
+
     result.setUI(new MetalToggleButtonUI() {
       @Override
       @Nullable
       protected Color getSelectColor() {
-        return Color.GREEN;
+        return panelColor.brighter();
       }
     });
+
+    result.setBackground(panelColor.darker());
+
     result.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(3, 3, 3, 3)));
     result.setIcon(new ImageIcon(MiscIcons.findForName(name)));
     result.setName(name);
+    result.setFocusPainted(false);
     result.setToolTipText(name);
+
     group.add(result);
     return result;
   }
