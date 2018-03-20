@@ -97,6 +97,36 @@ public final class IdeaUtils {
   }
 
   @Nullable
+  @SuppressWarnings("unchecked")
+  public static VirtualFile findMavenProjectRootForFile(@Nonnull final Project mainProject, @Nonnull final VirtualFile targetFile) {
+    VirtualFile result = null;
+    try {
+      final Class<?> mavenProjectsManagerClass = Class.forName("org.jetbrains.idea.maven.project.MavenProjectsManager");
+      final Object mavenProjectsManagerInstance = mavenProjectsManagerClass.getMethod("getInstance", Project.class).invoke(null, mainProject);
+
+      final Method methodGetDirectoryFile = Class.forName("org.jetbrains.idea.maven.project.MavenProject").getMethod("getDirectoryFile");
+      final List<?> listOfRootMaveProjects = (List<?>) mavenProjectsManagerClass.getMethod("getRootProjects").invoke(mavenProjectsManagerInstance);
+
+      for (final Object mavenProject : listOfRootMaveProjects) {
+        final VirtualFile directory = (VirtualFile) methodGetDirectoryFile.invoke(mavenProject);
+        if (VfsUtil.isAncestor(directory, targetFile, false)) {
+          result = directory;
+          break;
+        }
+      }
+    } catch (ClassNotFoundException ex) {
+      LOGGER.info("can't find org...maven.project.MavenProjectsManager or org...maven.project.MavenProject in findMavenProjectRootForFile : "+ ex.getMessage());
+    } catch (NoSuchMethodException ex) {
+      LOGGER.error("NoSuchMethodException in findMavenProjectRootForFile", ex);
+      throw new Error("NoSuchMethodException in findMavenProjectRootForFile", ex);
+    } catch (Exception ex) {
+      LOGGER.error("Error in findMavenProjectRootForFile", ex);
+      throw new Error("Error in findMavenProjectRootForFile", ex);
+    }
+    return result;
+  }
+
+  @Nullable
   public static VirtualFile findPotentialRootFolderForModule(@Nullable final Module module) {
     VirtualFile moduleRoot = module == null ? null : module.getModuleFile();
     if (moduleRoot != null) {

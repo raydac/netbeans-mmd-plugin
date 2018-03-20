@@ -488,7 +488,13 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     final VirtualFile rootFolder;
 
     if (module == null || isUseProjectBaseFolderAsRoot()) {
-      rootFolder = this.project.getBaseDir();
+      final VirtualFile baseDir = this.project.getBaseDir();
+      if (module == null) {
+        rootFolder = baseDir;
+      } else {
+        final VirtualFile mavenProjectRoot = IdeaUtils.findMavenProjectRootForFile(this.project, this.file);
+        rootFolder = mavenProjectRoot == null ? baseDir : mavenProjectRoot;
+      }
     } else {
       rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
     }
