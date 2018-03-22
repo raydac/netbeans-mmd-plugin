@@ -55,7 +55,7 @@ public final class PictureViewer extends AbstractEditor {
   };
   private static final Logger LOGGER = LoggerFactory.getLogger(PictureViewer.class);
   private final TabTitle title;
-  private final JScrollPane scrollPane = new JScrollPane();
+  private final JScrollPane scrollPane = new EditorScrollPanel();
 
   private final ScalableImage imageViewer;
   private transient BufferedImage image;

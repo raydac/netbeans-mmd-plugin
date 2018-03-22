@@ -114,7 +114,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.renderedPanel = new JPanel(new BorderLayout());
     this.imageComponent = new ScalableImage();
-    this.renderedScrollPane = new JScrollPane(this.imageComponent);
+    this.renderedScrollPane = new EditorScrollPanel(this.imageComponent);
 
     final JToolBar menu = new JToolBar();
 

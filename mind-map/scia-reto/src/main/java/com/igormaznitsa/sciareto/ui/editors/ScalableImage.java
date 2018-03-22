@@ -7,8 +7,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 
 final class ScalableImage extends JComponent {
@@ -19,18 +20,94 @@ final class ScalableImage extends JComponent {
   private BufferedImage image;
   private float scale = 1.0f;
 
+  private Point dragOrigin;
+
   public ScalableImage() {
     super();
-    this.addMouseWheelListener(new MouseWheelListener() {
+
+    final ScalableImage theInstance = this;
+
+    final MouseAdapter adapter = new MouseAdapter() {
       @Override
       public void mouseWheelMoved(@Nonnull final MouseWheelEvent e) {
         if (!e.isConsumed() && ((e.getModifiers() & config.getScaleModifiers()) == config.getScaleModifiers())) {
+          e.consume();
           scale = Math.max(0.2f, Math.min(scale + (SCALE_STEP * -e.getWheelRotation()), 10.0f));
           revalidate();
           repaint();
         }
       }
-    });
+
+      @Override
+      public void mouseClicked(@Nonnull final MouseEvent e) {
+        sendEventToParent(e);
+      }
+
+      @Override
+      public void mousePressed(@Nonnull final MouseEvent e) {
+        if (!e.isConsumed()) {
+          e.consume();
+          dragOrigin = e.getPoint();
+        }
+        sendEventToParent(e);
+      }
+
+      @Override
+      public void mouseReleased(@Nonnull final MouseEvent e) {
+        if (!e.isConsumed()) {
+          e.consume();
+          dragOrigin = null;
+        }
+        sendEventToParent(e);
+      }
+
+      @Override
+      public void mouseEntered(@Nonnull final MouseEvent e) {
+        sendEventToParent(e);
+      }
+
+      @Override
+      public void mouseExited(@Nonnull final MouseEvent e) {
+        sendEventToParent(e);
+      }
+
+      @Override
+      public void mouseDragged(@Nonnull final MouseEvent e) {
+        if (!e.isConsumed() && dragOrigin != null) {
+          e.consume();
+          final JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, theInstance);
+          if (viewPort != null) {
+            int deltaX = dragOrigin.x - e.getX();
+            int deltaY = dragOrigin.y - e.getY();
+
+            final Rectangle view = viewPort.getViewRect();
+            view.x += deltaX;
+            view.y += deltaY;
+
+            final JComponent compo = (JComponent) viewPort.getView();
+            if (compo != null) {
+              compo.scrollRectToVisible(view);
+            }
+          }
+        }
+        sendEventToParent(e);
+      }
+
+      @Override
+      public void mouseMoved(@Nonnull final MouseEvent e) {
+        sendEventToParent(e);
+      }
+    };
+    this.addMouseWheelListener(adapter);
+    this.addMouseListener(adapter);
+    this.addMouseMotionListener(adapter);
+  }
+
+  private void sendEventToParent(@Nonnull final MouseEvent e) {
+    final Container parent = this.getParent();
+    if (parent != null) {
+      parent.dispatchEvent(e);
+    }
   }
 
   public void updateConfig() {
