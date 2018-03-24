@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.3 (SNAPSHOT)__
+- IJ:  [#42](https://github.com/raydac/netbeans-mmd-plugin/issues/42) Fixed processing of project root in maven multi-project workspace
 - ALL: [#44](https://github.com/raydac/netbeans-mmd-plugin/issues/44) Improved emoticon panel to increase slected icon visibility 
 - ALL: [#43](https://github.com/raydac/netbeans-mmd-plugin/issues/43) Fixed non-processed exception "Clipboard is busy"
 - IJ:  [#40](https://github.com/raydac/netbeans-mmd-plugin/issues/40) Fixed exception if turn off option `disable .projectKnowledge folder autocreation` in proect facet
