@@ -72,7 +72,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   private static final int ALL_SUPPORTED_MODIFIERS = KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
-  private static final double SCALE_STEP = 0.2d;
+  private static final double SCALE_STEP = 0.1d;
   private static final double SCALE_MINIMUM = 0.3d;
   private static final double SCALE_MAXIMUM = 10.0d;
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
