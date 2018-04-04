@@ -21,6 +21,7 @@ import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
@@ -84,18 +85,7 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
       this.labelValidator.setIcon(AllIcons.Buttons.QUESTION);
     }
     else {
-      try {
-        final URI uri = URI.create(text);
-        if (uri!=null && uri.getScheme()!=null && uri.getHost()!=null) {
-          this.labelValidator.setIcon(AllIcons.Buttons.TICK);
-        }
-        else {
-          throw new NullPointerException();
-        }
-      }
-      catch (Exception ex) {
-        this.labelValidator.setIcon(AllIcons.Buttons.CANCEL);
-      }
+      this.labelValidator.setIcon(Utils.isUriCorrect(text) ? AllIcons.Buttons.TICK : AllIcons.Buttons.CANCEL);
     }
   }
 

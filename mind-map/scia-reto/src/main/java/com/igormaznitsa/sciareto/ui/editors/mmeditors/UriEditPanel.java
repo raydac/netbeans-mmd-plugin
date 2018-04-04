@@ -25,6 +25,7 @@ import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.ui.Focuser;
 
@@ -78,18 +79,7 @@ public final class UriEditPanel extends javax.swing.JPanel  {
       this.labelValidator.setIcon(IMAGE_QUESTION);
     }
     else {
-      try {
-        final URI uri = URI.create(text);
-        if (uri.getScheme()!=null && uri.getHost()!=null) {
-          this.labelValidator.setIcon(IMAGE_OK);
-        }
-        else {
-          throw new NullPointerException();
-        }
-      }
-      catch (Exception ex) {
-        this.labelValidator.setIcon(IMAGE_BAD);
-      }
+      this.labelValidator.setIcon(Utils.isUriCorrect(text) ? IMAGE_OK : IMAGE_BAD);
     }
   }
 
