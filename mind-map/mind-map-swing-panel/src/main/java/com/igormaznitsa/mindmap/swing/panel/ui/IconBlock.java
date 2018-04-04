@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
@@ -89,7 +90,8 @@ public class IconBlock {
             ico = findIconForFileType((ExtraFile) e);
             break;
           case LINK:
-            ico = ScalableIcon.LINK;
+            final String uri = ((ExtraLink)e).getAsString();
+            ico = uri.startsWith("emailto:") ? ScalableIcon.LINK_EMAIL : ScalableIcon.LINK;
             break;
           case NOTE:
             ico = ScalableIcon.TEXT;

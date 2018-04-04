@@ -26,6 +26,7 @@ public class ScalableIconTest {
     assertNotNull(ScalableIcon.FILE.getImage(1.0f));
     assertNotNull(ScalableIcon.FILE_WARN.getImage(1.0f));
     assertNotNull(ScalableIcon.LINK.getImage(1.0f));
+    assertNotNull(ScalableIcon.LINK_EMAIL.getImage(1.0f));
     assertNotNull(ScalableIcon.TOPIC.getImage(1.0f));
     assertNotNull(ScalableIcon.TEXT.getImage(1.0f));
     assertNotNull(ScalableIcon.FILE_MMD.getImage(1.0f));
