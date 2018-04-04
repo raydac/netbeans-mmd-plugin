@@ -63,6 +63,7 @@ import java.awt.image.RenderedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -74,6 +75,8 @@ public final class Utils {
   public static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
   public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size"; //NOI18N
 
+  private static final Pattern URI_PATTERN = Pattern.compile("^(?:([^:\\s]+):)(?://(?:[^?/@\\s]*@)?([^/?\\s]*)/?)?([^?\\s]+)?(?:\\?([^#\\s]*))?(?:#\\S*)?$");
+  
   private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
 
   private Utils() {
@@ -204,6 +207,15 @@ public final class Utils {
     return resultList;
   }
 
+  /**
+   * Allows to check that some string has URI in appropriate format.
+   * @param uri string to be checked, must not be null
+   * @return true if the string contains correct uri, false otherwise
+   */
+  public static boolean isUriCorrect(@Nonnull final String uri) {
+    return URI_PATTERN.matcher(uri).matches();
+  }
+  
   /**
    * Get max image size.
    *

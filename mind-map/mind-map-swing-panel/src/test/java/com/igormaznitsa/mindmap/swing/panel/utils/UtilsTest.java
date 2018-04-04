@@ -23,6 +23,16 @@ import static org.junit.Assert.*;
 public class UtilsTest {
 
   @Test
+  public void testsUriCorrect() {
+    assertTrue(Utils.isUriCorrect("mailto:max@provider.com"));
+    assertTrue(Utils.isUriCorrect("http://huzzaa.com/jjj?sdsd=2323&weew=%443"));
+    assertFalse(Utils.isUriCorrect("helloworld"));
+    assertFalse(Utils.isUriCorrect(":helloworld:"));
+    assertFalse(Utils.isUriCorrect("://helloworld:"));
+    assertFalse(Utils.isUriCorrect(""));
+  }
+  
+  @Test
   public void testconvertCamelCasedToHumanForm(){
     assertEquals("Hello world and universe",Utils.convertCamelCasedToHumanForm("helloWorldAndUniverse", true));
     assertEquals("hello world and universe",Utils.convertCamelCasedToHumanForm("helloWorldAndUniverse", false));
