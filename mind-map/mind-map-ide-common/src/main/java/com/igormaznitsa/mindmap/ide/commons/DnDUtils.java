@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SystemUtils;
 
 public final class DnDUtils {
 
@@ -126,16 +127,16 @@ public final class DnDUtils {
   @Nullable
   public static URI extractUrlLinkFromFile(@Nonnull final File file) {
     URI result = null;
-    if (file.isFile() && file.getName().endsWith(".url")) {
-      try {
-        final String uri = new UrlFile(file).getURL();
-        result = new URI(uri);
-      }
-      catch(URISyntaxException ex){
-        result = null;
-      }
-      catch (IOException ex) {
-        result = null;
+    if (file.isFile()) {
+      if (file.getName().endsWith(".url") || (SystemUtils.IS_OS_WINDOWS && file.length() < 1024)) {
+        try {
+          final String uri = new UrlFile(file).getURL();
+          result = new URI(uri);
+        } catch (URISyntaxException ex) {
+          result = null;
+        } catch (IOException ex) {
+          result = null;
+        }
       }
     }
     return result;
