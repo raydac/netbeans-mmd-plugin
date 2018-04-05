@@ -91,7 +91,7 @@ public class IconBlock {
             break;
           case LINK:
             final String uri = ((ExtraLink)e).getAsString();
-            ico = uri.startsWith("emailto:") ? ScalableIcon.LINK_EMAIL : ScalableIcon.LINK;
+            ico = uri.startsWith("mailto:") ? ScalableIcon.LINK_EMAIL : ScalableIcon.LINK;
             break;
           case NOTE:
             ico = ScalableIcon.TEXT;
