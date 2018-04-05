@@ -29,8 +29,8 @@ public final class UrlFile {
 
   private final Map<String, Map<String, String>> sections = new HashMap<String, Map<String, String>>();
 
-  private static final Pattern SECTION_NAME = Pattern.compile("^\\s*\\[([^\\]]*?)\\]\\s*$");
-  private static final Pattern NAME_VALUE = Pattern.compile("^([^=\\s]+?)\\=(.*)$");
+  private static final Pattern SECTION_NAME = Pattern.compile("^\\s*\\[([^\\]]*?)\\]\\s*\\r?$");
+  private static final Pattern NAME_VALUE = Pattern.compile("^([^=\\s]+?)\\=(.*)\\r?$");
 
   private final int savedPairs;
   
@@ -43,7 +43,7 @@ public final class UrlFile {
     
     int counter = 0;
     
-    for (final String splittedLine : text.split("\\r\\n")) {
+    for (final String splittedLine : text.split("\\n")) {
       if (splittedLine.trim().isEmpty()) {
         continue;
       }

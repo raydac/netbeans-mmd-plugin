@@ -67,4 +67,17 @@ public class UrlFileTest {
     
     assertEquals("https://www.booboo.com/",file.getValue("InternetShortcut", "URL"));
   }
+
+  @Test
+  public void testExtractData_FirefoxWindows_NonLinuxLineEnd() throws Exception {
+    final UrlFile file = new UrlFile("[InternetShortcut]\n"
+            + "URL=https://www.booboo.com/\n"
+            + "IDList=\n"
+            + "HotKey=0\n"
+            + "IconFile=C:\\Users\\igor.maznitsa\\AppData\\Local\\Mozilla\\Firefox\\Profiles\\tdd6jn57.default\\shortcutCache\\Y6OjKTP4vJoIbLAQDxudiA==.ico\n"
+            + "IconIndex=0");
+    assertEquals(5,file.size());
+    
+    assertEquals("https://www.booboo.com/",file.getValue("InternetShortcut", "URL"));
+  }
 }
