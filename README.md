@@ -13,6 +13,9 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.3 (SNAPSHOT)__
+- ALL: increased step of scroll and decreased step of scale in panel
+- ALL: added special icon for `mailto` scheme in URI
+- ALL: fixed processing of drag'n'drop URL files from browsers under Windows
 - IJ:  [#42](https://github.com/raydac/netbeans-mmd-plugin/issues/42) Fixed processing of project root in maven multi-project workspace
 - ALL: [#44](https://github.com/raydac/netbeans-mmd-plugin/issues/44) Improved emoticon panel to increase slected icon visibility 
 - ALL: [#43](https://github.com/raydac/netbeans-mmd-plugin/issues/43) Fixed non-processed exception "Clipboard is busy"
