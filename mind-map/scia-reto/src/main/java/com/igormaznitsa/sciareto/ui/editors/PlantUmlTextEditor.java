@@ -113,13 +113,13 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     final Font mainFont = PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT);
     this.editor.setFont(mainFont);
-    
+
     final SyntaxScheme scheme = this.editor.getSyntaxScheme();
     scheme.getStyle(Token.RESERVED_WORD).font = mainFont.deriveFont(Font.BOLD);
     scheme.getStyle(Token.IDENTIFIER).font = mainFont.deriveFont(Font.ITALIC);
     scheme.getStyle(Token.COMMENT_EOL).foreground = Color.LIGHT_GRAY;
     this.editor.revalidate();
-    
+
     this.editor.getCaret().setSelectionVisible(true);
 
     this.mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);

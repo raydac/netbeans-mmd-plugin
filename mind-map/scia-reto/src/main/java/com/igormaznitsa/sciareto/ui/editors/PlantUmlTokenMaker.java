@@ -235,8 +235,9 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
             }
             break;
           }
-        }break;
-        
+        }
+        break;
+
         case Token.LITERAL_NUMBER_DECIMAL_INT: {
           switch (c) {
             case '"': {
@@ -277,7 +278,7 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
         }
         break;
         case Token.IDENTIFIER:
-        case Token.RESERVED_WORD:{
+        case Token.RESERVED_WORD: {
           if (RSyntaxUtilities.isWhitespace(c)) {
             final int value = wordsToHighlight.get(text, currentTokenStart, i - 1);
             if (value < 0) {
@@ -288,7 +289,8 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
             currentTokenStart = i;
             currentTokenType = Token.WHITESPACE;
           }
-        }break;
+        }
+        break;
         case Token.COMMENT_EOL: {
           if (c == '\n') {
             i = end - 1;
@@ -307,21 +309,23 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
         }
         break;
         default: {
-          throw fail("Should never hapen, state : "+currentTokenType);
+          throw fail("Should never hapen, state : " + currentTokenType);
         }
       }
     }
 
     switch (currentTokenType) {
       // Remember what token type to begin the next line with.
-      case Token.LITERAL_STRING_DOUBLE_QUOTE:{
+      case Token.LITERAL_STRING_DOUBLE_QUOTE: {
         addToken(text, currentTokenStart, end - 1, currentTokenType, newStartOffset + currentTokenStart);
-      }break;
-      case Token.NULL:{
+      }
+      break;
+      case Token.NULL: {
         addNullToken();
-      }break;
+      }
+      break;
       case Token.RESERVED_WORD:
-      case Token.IDENTIFIER:{
+      case Token.IDENTIFIER: {
         final int value = wordsToHighlight.get(text, currentTokenStart, end - 1);
         if (value < 0) {
           addToken(text, currentTokenStart, end - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
@@ -329,12 +333,14 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
           addToken(text, currentTokenStart, end - 1, value, newStartOffset + currentTokenStart);
         }
         addNullToken();
-      } break;
+      }
+      break;
       // All other token types don't continue to the next line...
-      default:{
+      default: {
         addToken(text, currentTokenStart, end - 1, currentTokenType, newStartOffset + currentTokenStart);
         addNullToken();
-      }break;
+      }
+      break;
     }
     return this.firstToken;
   }
