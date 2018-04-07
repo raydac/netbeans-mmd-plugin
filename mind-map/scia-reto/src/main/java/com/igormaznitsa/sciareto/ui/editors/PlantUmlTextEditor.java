@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -58,6 +57,12 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
+import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 
 public final class PlantUmlTextEditor extends AbstractEditor {
 
@@ -98,15 +103,24 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.editor = new RSyntaxTextArea();
     this.editor.setPopupMenu(null);
 
-    final String syntaxType = null;
+    final AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
+    atmf.putMapping("text/plantuml", "com.igormaznitsa.sciareto.ui.editors.PlantUmlTokenMaker");
 
-    this.editor.setSyntaxEditingStyle(syntaxType == null ? SyntaxConstants.SYNTAX_STYLE_NONE : syntaxType);
+    this.editor.setSyntaxEditingStyle("text/plantuml");
     this.editor.setAntiAliasingEnabled(true);
     this.editor.setBracketMatchingEnabled(true);
-    this.editor.setCodeFoldingEnabled(true);
+    this.editor.setCodeFoldingEnabled(false);
 
+    final Font mainFont = PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT);
+    this.editor.setFont(mainFont);
+    
+    final SyntaxScheme scheme = this.editor.getSyntaxScheme();
+    scheme.getStyle(Token.RESERVED_WORD).font = mainFont.deriveFont(Font.BOLD);
+    scheme.getStyle(Token.IDENTIFIER).font = mainFont.deriveFont(Font.ITALIC);
+    scheme.getStyle(Token.COMMENT_EOL).foreground = Color.LIGHT_GRAY;
+    this.editor.revalidate();
+    
     this.editor.getCaret().setSelectionVisible(true);
-    this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
 
     this.mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
@@ -343,7 +357,11 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   @Override
   public boolean redo() {
     if (this.undoManager.canRedo()) {
-      this.undoManager.redo();
+      try {
+        this.undoManager.redo();
+      } catch (final CannotRedoException ex) {
+        LOGGER.warn("Can't make redo in plantUML editor : " + ex.getMessage());
+      }
     }
     return this.undoManager.canRedo();
   }
@@ -351,7 +369,11 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   @Override
   public boolean undo() {
     if (this.undoManager.canUndo()) {
-      this.undoManager.undo();
+      try {
+        this.undoManager.undo();
+      } catch (final CannotUndoException ex) {
+        LOGGER.warn("Can't make undo in plantUML editor : " + ex.getMessage());
+      }
     }
     return this.undoManager.canUndo();
   }
