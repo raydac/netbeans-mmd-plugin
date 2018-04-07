@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.3 (SNAPSHOT)__
+- SR:  license changed to LGPL 2.1
 - ALL: increased step of scroll and decreased step of scale in panel
 - ALL: added special icon for `mailto` scheme in URI
 - ALL: fixed processing of drag'n'drop URL files from browsers under Windows
