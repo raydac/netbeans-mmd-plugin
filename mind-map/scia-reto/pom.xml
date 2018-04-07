@@ -14,6 +14,14 @@
     <name>SciaReto Mind Map Editor</name>
     <description>Standalone editor to create and edit mind maps</description>
 
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License 2.1</name>
+            <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <properties>
         <app.name>sciareto_${project.version}</app.name>
         <maven.compiler.source>1.7</maven.compiler.source>

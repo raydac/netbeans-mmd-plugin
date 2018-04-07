@@ -1,17 +1,20 @@
-/*
- * Copyright 2015-2018 Igor Maznitsa.
+/* 
+ * Copyright (C) 2018 Igor Maznitsa.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301  USA
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
@@ -23,12 +26,34 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 
 public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkListener {
 
   private static final long serialVersionUID = -3231534203788095969L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AboutPanel.class);
+  
+  private static class ThirdPartLicense {
+
+    private final String library;
+    private final String libraryUrl;
+    private final String license;
+    private final String licenseUrl;
+    
+    ThirdPartLicense(@Nonnull final String library, @Nonnull final String libraryUrl, @Nonnull final String license, @Nonnull final String licenseUrl) {
+      this.library = library;
+      this.license = license;
+      this.libraryUrl = libraryUrl;
+      this.licenseUrl = licenseUrl;
+    }
+  }
+
+  private final List<ThirdPartLicense> thirdParts = new ArrayList<ThirdPartLicense>();
   
   public AboutPanel() {
     initComponents();
@@ -40,11 +65,73 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     props.setProperty("plugin.api", pluginAPIVersion); //NOI18N
     props.setProperty("format.version", formatVersion); //NOI18N
     props.setProperty("ideversion", Main.IDE_VERSION.toString()); //NOI18N
-    props.setProperty("ideversion", Main.IDE_VERSION.toString()); //NOI18N
 
+    this.thirdParts.add(new ThirdPartLicense("FatCow Farm-Fresh Web Icons", "http://www.fatcow.com/free-icons",  "CC BY 3.0", "https://creativecommons.org/licenses/by/3.0/"));
+    this.thirdParts.add(new ThirdPartLicense("Java Universal Network/Graph Framework", "https://github.com/jrtom/jung", "BSD3", "https://raw.githubusercontent.com/jrtom/jung/master/LICENSE"));
+    this.thirdParts.add(new ThirdPartLicense("RSynaxTextArea", "https://github.com/bobbylight/RSyntaxTextArea", "modified BSD license", "https://raw.githubusercontent.com/bobbylight/RSyntaxTextArea/master/src/main/dist/RSyntaxTextArea.License.txt"));
+    
+    this.tableThirdPartLibraries.setModel(new TableModel() {
+      @Override
+      public int getRowCount() {
+        return thirdParts.size();
+      }
+
+      @Override
+      public int getColumnCount() {
+        return 2;
+      }
+
+      @Override
+      @Nonnull
+      public String getColumnName(final int columnIndex) {
+        switch(columnIndex) {
+          case 0 : return "Library";
+          case 1 : return "License";
+          default:return "<unknown>";
+        }
+      }
+
+      @Override
+      @Nonnull
+      public Class<?> getColumnClass(final int columnIndex) {
+        return String.class;
+      }
+
+      @Override
+      public boolean isCellEditable(final int rowIndex, final int columnIndex) {
+        return false;
+      }
+
+      @Override
+      @Nonnull
+      public Object getValueAt(final int rowIndex, final int columnIndex) {
+        final ThirdPartLicense lic = thirdParts.get(rowIndex);
+        switch(columnIndex){
+          case 0 : return lic.library;
+          case 1 : return lic.license;
+          default: return "...";
+        }
+      }
+
+      @Override
+      public void setValueAt(@Nonnull final Object aValue, final int rowIndex, final int columnIndex) {
+      }
+
+      @Override
+      public void addTableModelListener(@Nonnull final TableModelListener l) {
+      }
+
+      @Override
+      public void removeTableModelListener(@Nonnull final TableModelListener l) {
+      }
+    });
+    
+    
     this.textLabel.replaceMacroses(props);
     this.textLabel.addLinkListener(this);
     this.textLabel.setShowLinkAddressInTooltip(true);
+    
+    this.doLayout();
   }
 
   @Override
@@ -68,6 +155,8 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
     labelIcon = new javax.swing.JLabel();
     textLabel = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
+    scrollPanelThirdPartibs = new javax.swing.JScrollPane();
+    tableThirdPartLibraries = new javax.swing.JTable();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -90,11 +179,35 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(0, 16, 16, 16);
     add(textLabel, gridBagConstraints);
+
+    scrollPanelThirdPartibs.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("AboutPanel.scrollPanelThirdPartibs.border.title"))); // NOI18N
+
+    tableThirdPartLibraries.setModel(new javax.swing.table.DefaultTableModel(
+      new Object [][] {
+        {null, null, null, null},
+        {null, null, null, null},
+        {null, null, null, null},
+        {null, null, null, null}
+      },
+      new String [] {
+        "Title 1", "Title 2", "Title 3", "Title 4"
+      }
+    ));
+    scrollPanelThirdPartibs.setViewportView(tableThirdPartLibraries);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 16, 0);
+    add(scrollPanelThirdPartibs, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JLabel labelIcon;
+  private javax.swing.JScrollPane scrollPanelThirdPartibs;
+  private javax.swing.JTable tableThirdPartLibraries;
   private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel textLabel;
   // End of variables declaration//GEN-END:variables
 }
