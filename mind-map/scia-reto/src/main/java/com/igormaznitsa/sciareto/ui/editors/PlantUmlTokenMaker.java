@@ -56,6 +56,7 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     tokenMap.put("newpage", Token.RESERVED_WORD);
     tokenMap.put("alt", Token.RESERVED_WORD);
     tokenMap.put("if", Token.RESERVED_WORD);
+    tokenMap.put("then", Token.RESERVED_WORD);
     tokenMap.put("endif", Token.RESERVED_WORD);
     tokenMap.put("elseif", Token.RESERVED_WORD);
     tokenMap.put("repeat", Token.RESERVED_WORD);
@@ -88,6 +89,24 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     tokenMap.put("deactivate", Token.RESERVED_WORD);
     tokenMap.put("start", Token.RESERVED_WORD);
     tokenMap.put("stop", Token.RESERVED_WORD);
+    tokenMap.put("file", Token.RESERVED_WORD);
+    tokenMap.put("folder", Token.RESERVED_WORD);
+    tokenMap.put("frame", Token.RESERVED_WORD);
+    tokenMap.put("interface", Token.RESERVED_WORD);
+    tokenMap.put("class", Token.RESERVED_WORD);
+    tokenMap.put("namespace", Token.RESERVED_WORD);
+    tokenMap.put("page", Token.RESERVED_WORD);
+    tokenMap.put("node", Token.RESERVED_WORD);
+    tokenMap.put("package", Token.RESERVED_WORD);
+    tokenMap.put("queue", Token.RESERVED_WORD);
+    tokenMap.put("stack", Token.RESERVED_WORD);
+    tokenMap.put("rectangle", Token.RESERVED_WORD);
+    tokenMap.put("storage", Token.RESERVED_WORD);
+    tokenMap.put("card", Token.RESERVED_WORD);
+    tokenMap.put("cloud", Token.RESERVED_WORD);
+    tokenMap.put("component", Token.RESERVED_WORD);
+    tokenMap.put("agent", Token.RESERVED_WORD);
+    tokenMap.put("artifact", Token.RESERVED_WORD);
 
     return tokenMap;
   }
