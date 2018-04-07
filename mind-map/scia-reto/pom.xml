@@ -21,7 +21,7 @@
         <jung.version>2.1.1</jung.version>
         <batik.version>1.9.1</batik.version>
         <jlatexmath.version>1.0.6</jlatexmath.version>
-        <plantuml.version>1.2018.2</plantuml.version>
+        <plantuml.version>1.2018.3</plantuml.version>
     </properties>
 
     <dependencies>
