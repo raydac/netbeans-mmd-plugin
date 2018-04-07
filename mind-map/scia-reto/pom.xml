@@ -76,7 +76,7 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-            <version>4.5.0</version>
+            <version>4.5.1</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
@@ -121,7 +121,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.7.9</version>
+                        <version>0.8.1</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -194,10 +194,10 @@
                                         <jdkPreference>preferJre</jdkPreference>
                                     </jre>
                                     <versionInfo>
-                                        <fileVersion>1.4.0.0</fileVersion>
+                                        <fileVersion>1.4.3.0</fileVersion>
                                         <txtFileVersion>${project.version}</txtFileVersion>
                                         <fileDescription>SciaReto Mind Map editor</fileDescription>
-                                        <copyright>2016 Igor Maznitsa</copyright>
+                                        <copyright>2018 Igor Maznitsa</copyright>
                                         <productVersion>${main.version.raw}.0</productVersion>
                                         <txtProductVersion>${project.version}</txtProductVersion>
                                         <productName>${project.name}</productName>
