@@ -33,6 +33,11 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
   public TokenMap getWordsToHighlight() {
     final TokenMap tokenMap = new TokenMap();
 
+    tokenMap.put("@startgantt", Token.RESERVED_WORD);
+    tokenMap.put("@endgantt", Token.RESERVED_WORD);
+    tokenMap.put("@startdot", Token.RESERVED_WORD);
+    tokenMap.put("@enddot", Token.RESERVED_WORD);
+    tokenMap.put("@startuml", Token.RESERVED_WORD);
     tokenMap.put("@startuml", Token.RESERVED_WORD);
     tokenMap.put("@enduml", Token.RESERVED_WORD);
     tokenMap.put("header", Token.RESERVED_WORD);
@@ -43,6 +48,7 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     tokenMap.put("caption", Token.RESERVED_WORD);
     tokenMap.put("usecase", Token.RESERVED_WORD);
     tokenMap.put("as", Token.RESERVED_WORD);
+    tokenMap.put("is", Token.RESERVED_WORD);
     tokenMap.put("actor", Token.RESERVED_WORD);
     tokenMap.put("boundary", Token.RESERVED_WORD);
     tokenMap.put("control", Token.RESERVED_WORD);
