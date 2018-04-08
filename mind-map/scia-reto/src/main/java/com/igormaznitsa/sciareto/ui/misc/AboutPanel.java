@@ -25,7 +25,6 @@ import java.util.Properties;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
