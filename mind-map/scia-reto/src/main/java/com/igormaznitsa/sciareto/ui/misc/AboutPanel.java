@@ -25,10 +25,18 @@ import java.util.Properties;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
@@ -67,12 +75,13 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     props.setProperty("ideversion", Main.IDE_VERSION.toString()); //NOI18N
 
     this.thirdParts.add(new ThirdPartLicense("FatCow Farm-Fresh Web Icons", "http://www.fatcow.com/free-icons",  "CC BY 3.0", "https://creativecommons.org/licenses/by/3.0/"));
-    this.thirdParts.add(new ThirdPartLicense("Java Universal Network/Graph Framework", "https://github.com/jrtom/jung", "BSD3", "https://raw.githubusercontent.com/jrtom/jung/master/LICENSE"));
+    this.thirdParts.add(new ThirdPartLicense("Java Universal Network/Graph Framework", "https://github.com/jrtom/jung", "BSD 3", "https://raw.githubusercontent.com/jrtom/jung/master/LICENSE"));
     this.thirdParts.add(new ThirdPartLicense("RSynaxTextArea", "https://github.com/bobbylight/RSyntaxTextArea", "modified BSD license", "https://raw.githubusercontent.com/bobbylight/RSyntaxTextArea/master/src/main/dist/RSyntaxTextArea.License.txt"));
     this.thirdParts.add(new ThirdPartLicense("PlantUML", "http://plantuml.com/", "GPL License", "https://www.gnu.org/copyleft/gpl.html"));
     this.thirdParts.add(new ThirdPartLicense("JLaTeXMath Library", "https://github.com/opencollab/jlatexmath", "GPL License", "https://github.com/opencollab/jlatexmath/blob/master/LICENSE"));
-    this.thirdParts.add(new ThirdPartLicense("Apache Batik", "https://xmlgraphics.apache.org/batik/", " Apache License, Version 2.0", "https://xmlgraphics.apache.org/batik/license.html"));
+    this.thirdParts.add(new ThirdPartLicense("Apache Batik", "https://xmlgraphics.apache.org/batik/", "Apache License, Version 2.0", "https://xmlgraphics.apache.org/batik/license.html"));
     
+    this.tableThirdPartLibraries.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     this.tableThirdPartLibraries.setModel(new TableModel() {
       @Override
       public int getRowCount() {
@@ -129,6 +138,35 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
       }
     });
     
+    this.scrollPanelThirdPartibs.setPreferredSize(new Dimension(100,196));
+    
+    this.tableThirdPartLibraries.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(@Nonnull final MouseEvent e) {
+        if (!e.isConsumed() && e.getClickCount() > 1) {
+          e.consume();
+          openSelectedProductUrl();
+        }
+      }
+    });
+    
+    this.tableThirdPartLibraries.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyReleased(@Nonnull final KeyEvent e) {
+        if (!e.isConsumed() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+          e.consume();
+          openSelectedProductUrl();
+        }
+      }
+            
+      @Override
+      public void keyPressed(@Nonnull final KeyEvent e) {
+        if (!e.isConsumed() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+          e.consume();
+        }
+      }
+            
+    });
     
     this.textLabel.replaceMacroses(props);
     this.textLabel.addLinkListener(this);
@@ -137,6 +175,18 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     this.doLayout();
   }
 
+  private void openSelectedProductUrl() {
+    final int row = this.tableThirdPartLibraries.getSelectedRow();
+    if (row >= 0) {
+      final ThirdPartLicense rec = this.thirdParts.get(row);
+      try {
+        UiUtils.browseURI(new URI(rec.libraryUrl), false);
+      } catch (final URISyntaxException ex) {
+        LOGGER.warn("Can't open url " + rec.libraryUrl + " : " + ex.getMessage());
+      }
+    }
+  }
+  
   @Override
   public void onLinkActivated(final JHtmlLabel source, final String href) {
     try{
@@ -196,6 +246,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
         "Title 1", "Title 2", "Title 3", "Title 4"
       }
     ));
+    tableThirdPartLibraries.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     scrollPanelThirdPartibs.setViewportView(tableThirdPartLibraries);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
