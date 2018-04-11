@@ -29,6 +29,7 @@ import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
@@ -37,7 +38,6 @@ import net.sourceforge.plantuml.SourceStringReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
 
@@ -52,16 +52,22 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
@@ -71,6 +77,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
   public static final Set<String> SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList("pu", "puml", "plantuml")));
+  
+  private static final Icon ICON_WARNING = new ImageIcon(UiUtils.loadIcon("warning16.png"));
+
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -97,12 +106,13 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private final JSplitPane mainPanel;
   private final JPanel renderedPanel;
   private final JScrollPane renderedScrollPane;
+  private final JLabel labelWarningNoGraphwiz;
   private boolean ignoreChange;
-
+  
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     initPlantUml();
-
+    
     this.editor = new RSyntaxTextArea();
     this.editor.setPopupMenu(null);
 
@@ -170,10 +180,35 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
+    this.labelWarningNoGraphwiz = new JLabel("You should install Graphviz!", ICON_WARNING, JLabel.RIGHT);
+    final Font font = this.labelWarningNoGraphwiz.getFont().deriveFont(Font.BOLD);
+    final Map attributes = font.getAttributes();
+    attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+    this.labelWarningNoGraphwiz.setFont(font.deriveFont(attributes));
+    this.labelWarningNoGraphwiz.setForeground(UiUtils.DARK_THEME ? Color.YELLOW : Color.BLUE);
+    this.labelWarningNoGraphwiz.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    this.labelWarningNoGraphwiz.setToolTipText("Click to open download page");
+    this.labelWarningNoGraphwiz.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(@Nonnull final MouseEvent e) {
+        try{
+          UiUtils.browseURI(new URI("https://www.graphviz.org/download/"), false);
+        }catch(URISyntaxException ex){
+          // ignore
+        }
+      }
+    });
+    
+    
     menu.add(buttonRrefresh);
     menu.add(buttonClipboardImage);
     menu.add(buttonExportImage);
 
+    menu.add(Box.createHorizontalGlue());
+    
+    menu.add(this.labelWarningNoGraphwiz);
+    menu.add(Box.createHorizontalStrut(16));
+    
     this.renderedPanel.add(menu, BorderLayout.NORTH);
     this.renderedPanel.add(this.renderedScrollPane, BorderLayout.CENTER);
 
@@ -222,8 +257,21 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.undoManager.updateActions();
 
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
+    
+    updateGraphvizLabelVisibility();
   }
 
+  private void updateGraphvizLabelVisibility() {
+    boolean show = false;
+    try{
+      final File graphvizFile = GraphvizUtils.create(null, "png").getDotExe();
+      show = graphvizFile == null || !graphvizFile.isFile();
+    } catch(Exception ex){
+      show = false;
+    }
+    this.labelWarningNoGraphwiz.setVisible(show);
+  }
+  
   private void initPlantUml() {
     OptionFlags.getInstance().setDotExecutable(PrefUtils.getPlantUmlDotPath());
   }
@@ -400,6 +448,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   @Override
   public void updateConfiguration() {
     initPlantUml();
+    updateGraphvizLabelVisibility();
     this.imageComponent.updateConfig();
     this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.editor.revalidate();
