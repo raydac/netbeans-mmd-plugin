@@ -79,6 +79,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   public static final Set<String> SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList("pu", "puml", "plantuml")));
   
   private static final Icon ICON_WARNING = new ImageIcon(UiUtils.loadIcon("warning16.png"));
+  private static final Icon ICON_INFO = new ImageIcon(UiUtils.loadIcon("info16.png"));
 
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
@@ -180,25 +181,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
-    this.labelWarningNoGraphwiz = new JLabel("You should install Graphviz!", ICON_WARNING, JLabel.RIGHT);
-    final Font font = this.labelWarningNoGraphwiz.getFont().deriveFont(Font.BOLD);
-    final Map attributes = font.getAttributes();
-    attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-    this.labelWarningNoGraphwiz.setFont(font.deriveFont(attributes));
-    this.labelWarningNoGraphwiz.setForeground(UiUtils.DARK_THEME ? Color.YELLOW : Color.BLUE);
-    this.labelWarningNoGraphwiz.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    this.labelWarningNoGraphwiz.setToolTipText("Click to open download page");
-    this.labelWarningNoGraphwiz.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(@Nonnull final MouseEvent e) {
-        try{
-          UiUtils.browseURI(new URI("https://www.graphviz.org/download/"), false);
-        }catch(URISyntaxException ex){
-          // ignore
-        }
-      }
-    });
-    
+    this.labelWarningNoGraphwiz = makeLinkLabel("You should install Graphviz!", "https://www.graphviz.org/download/", "Open download page", ICON_WARNING);
     
     menu.add(buttonRrefresh);
     menu.add(buttonClipboardImage);
@@ -206,8 +189,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     menu.add(Box.createHorizontalGlue());
     
+    menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO));
     menu.add(this.labelWarningNoGraphwiz);
-    menu.add(Box.createHorizontalStrut(16));
     
     this.renderedPanel.add(menu, BorderLayout.NORTH);
     this.renderedPanel.add(this.renderedScrollPane, BorderLayout.CENTER);
@@ -261,6 +244,30 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     updateGraphvizLabelVisibility();
   }
 
+  @Nonnull
+  private JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final String uri, @Nonnull final String toolTip, @Nonnull final Icon icon) {
+    final JLabel result = new JLabel(text, icon, JLabel.RIGHT);
+    final Font font = result.getFont().deriveFont(Font.BOLD);
+    final Map attributes = font.getAttributes();
+    attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+    result.setFont(font.deriveFont(attributes));
+    result.setForeground(UiUtils.DARK_THEME ? Color.YELLOW : Color.BLUE);
+    result.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    result.setToolTipText(toolTip);
+    result.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(@Nonnull final MouseEvent e) {
+        try {
+          UiUtils.browseURI(new URI(uri), false);
+        } catch (URISyntaxException ex) {
+          LOGGER.error("Can't open URI", ex);
+        }
+      }
+    });
+    result.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
+    return result;
+  }
+  
   private void updateGraphvizLabelVisibility() {
     boolean show = false;
     try{
