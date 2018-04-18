@@ -138,8 +138,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.editor.setFont(mainFont);
 
     final SyntaxScheme scheme = this.editor.getSyntaxScheme();
-    scheme.getStyle(Token.RESERVED_WORD).font = mainFont.deriveFont(Font.BOLD);
-    scheme.getStyle(Token.IDENTIFIER).font = mainFont.deriveFont(Font.ITALIC);
+    
+    if (mainFont!=null) {
+      scheme.getStyle(Token.RESERVED_WORD).font = mainFont.deriveFont(Font.BOLD);
+      scheme.getStyle(Token.IDENTIFIER).font = mainFont.deriveFont(Font.ITALIC);
+    }
+    
     scheme.getStyle(Token.COMMENT_EOL).foreground = Color.LIGHT_GRAY;
     this.editor.revalidate();
 
@@ -150,10 +154,10 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
       @Override
       public void propertyChange(@Nonnull final PropertyChangeEvent evt) {
-        if (mainPanel.getDividerLocation() < 16) {
-          imageComponent.requestFocusInWindow();
-        } else {
+        if (isTextEditorVisible()) {
           editor.requestFocusInWindow();
+        } else {
+          imageComponent.requestFocusInWindow();
         }
       }
     });
@@ -488,9 +492,13 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     return this.undoManager.canUndo();
   }
 
+  private boolean isTextEditorVisible() {
+    return this.mainPanel.getDividerLocation() > 4;
+  }
+  
   @Override
   public boolean redo() {
-    if (this.undoManager.canRedo() && this.mainPanel.getDividerLocation() > 0) {
+    if (this.undoManager.canRedo() && isTextEditorVisible()) {
       try {
         this.undoManager.redo();
       } catch (final CannotRedoException ex) {
@@ -509,7 +517,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   @Override
   public boolean undo() {
-    if (this.undoManager.canUndo() && this.mainPanel.getDividerLocation() > 0) {
+    if (this.undoManager.canUndo() && isTextEditorVisible()) {
       try {
         this.undoManager.undo();
       } catch (final CannotUndoException ex) {
