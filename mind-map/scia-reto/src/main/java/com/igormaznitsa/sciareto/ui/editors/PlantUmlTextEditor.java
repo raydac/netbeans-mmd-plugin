@@ -83,6 +83,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private static final Icon ICON_WARNING = new ImageIcon(UiUtils.loadIcon("warning16.png"));
   private static final Icon ICON_INFO = new ImageIcon(UiUtils.loadIcon("info16.png"));
 
+  private static final Pattern NEWPAGE_PATTERN = Pattern.compile("^\\s*newpage($|\\s.*$)", Pattern.MULTILINE);
+  
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -115,7 +117,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private final JButton buttonPrevPage;
   private final JButton buttonNextPage;
   private final JLabel labelPageNumber;
-  private int pageNumberToRender = 1;
+  private int pageNumberToRender = 0;
   
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
@@ -287,6 +289,15 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     updateGraphvizLabelVisibility();
   }
 
+  private int countNewPages(@Nonnull final String text) {
+    int count = 1;
+    final Matcher matcher = NEWPAGE_PATTERN.matcher(text);
+    while (matcher.find()) {
+      count++;
+    }
+    return count;
+  }
+  
   @Nonnull
   private JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final String uri, @Nonnull final String toolTip, @Nonnull final Icon icon) {
     final JLabel result = new JLabel(text, icon, JLabel.RIGHT);
@@ -386,6 +397,19 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     };
 
+    final FileFilter fileFiterASC = new FileFilter() {
+      @Override
+      public boolean accept(@Nonnull final File f) {
+        return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".txt");
+      }
+
+      @Nonnull
+      @Override
+      public String getDescription() {
+        return "ASC text files (*.txt)";
+      }
+    };
+
     fileChooser.setApproveButtonText("Export");
     fileChooser.setDialogTitle("Export PlantUML image as File");
     fileChooser.setMultiSelectionEnabled(false);
@@ -393,6 +417,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     fileChooser.addChoosableFileFilter(fileFiterPNG);
     fileChooser.addChoosableFileFilter(fileFiterSVG);
     fileChooser.addChoosableFileFilter(fileFiterLTX);
+    fileChooser.addChoosableFileFilter(fileFiterASC);
 
     if (fileChooser.showSaveDialog(this.mainPanel) == JFileChooser.APPROVE_OPTION) {
       lastExportedFile = fileChooser.getSelectedFile();
@@ -414,6 +439,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       } else if (fileFilter == fileFiterLTX) {
         option = new FileFormatOption(FileFormat.LATEX);
         ext = ".tex";
+      } else if (fileFilter == fileFiterASC) {
+        option = new FileFormatOption(FileFormat.ATXT);
+        ext = ".txt";
       } else {
         throw new Error("Unexpected situation");
       }
@@ -423,13 +451,18 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         lastExportedFile = new File(lastExportedFile.getParent(), lastExportedFile.getName() + ext);
       }
 
-      try {
-        reader.outputImage(buffer, option);
-        FileUtils.writeByteArrayToFile(lastExportedFile, buffer.toByteArray());
-        LOGGER.info("Exported plant uml image as file : " + lastExportedFile);
-      } catch (Exception ex) {
-        LOGGER.error("Can't export plant uml image", ex);
-        JOptionPane.showMessageDialog(this.mainPanel, "Error during export, see log!", "Error", JOptionPane.ERROR_MESSAGE);
+      if (this.pageNumberToRender > 0) {
+        try {
+          reader.outputImage(buffer, this.pageNumberToRender - 1, option);
+          FileUtils.writeByteArrayToFile(lastExportedFile, buffer.toByteArray());
+          LOGGER.info("Exported plant uml image as file : " + lastExportedFile);
+        } catch (Exception ex) {
+          LOGGER.error("Can't export plant uml image", ex);
+          JOptionPane.showMessageDialog(this.mainPanel, "Can't export! May be the format is not supported by the diagram!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+      } else {
+        LOGGER.warn("Page number is <= 0");
+        JOptionPane.showMessageDialog(this.mainPanel, "Can't export! Page is not selected!", "Warning", JOptionPane.WARNING_MESSAGE);
       }
     }
 
@@ -457,7 +490,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   @Override
   public boolean redo() {
-    if (this.undoManager.canRedo()) {
+    if (this.undoManager.canRedo() && this.mainPanel.getDividerLocation() > 0) {
       try {
         this.undoManager.redo();
       } catch (final CannotRedoException ex) {
@@ -476,7 +509,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   @Override
   public boolean undo() {
-    if (this.undoManager.canUndo()) {
+    if (this.undoManager.canUndo() && this.mainPanel.getDividerLocation() > 0) {
       try {
         this.undoManager.undo();
       } catch (final CannotUndoException ex) {
@@ -590,11 +623,13 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     final SourceStringReader reader = new SourceStringReader(text, "UTF-8");
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
     try {
-      final int totalBlocks = reader.getBlocks().size();
-      final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalBlocks));
-      reader.outputImage(buffer, imageIndex, new FileFormatOption(FileFormat.PNG, false));
+      final int totalPages = Math.max(countNewPages(text), reader.getBlocks().size());
+      final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
+  
+      reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
       this.imageComponent.setImage(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
-      updatePageNumberInfo(imageIndex, reader.getBlocks().size());
+      updatePageNumberInfo(imageIndex, totalPages);
+      
       this.renderedScrollPane.revalidate();
     } catch (IOException e) {
       LOGGER.error("Can't render plant uml", e);
