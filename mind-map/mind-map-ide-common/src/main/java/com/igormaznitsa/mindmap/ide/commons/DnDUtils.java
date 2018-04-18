@@ -131,7 +131,7 @@ public final class DnDUtils {
       if (file.getName().endsWith(".url") || (SystemUtils.IS_OS_WINDOWS && file.length() < 1024)) {
         try {
           final String uri = new UrlFile(file).getURL();
-          result = new URI(uri);
+          result = uri == null ? null : new URI(uri);
         } catch (URISyntaxException ex) {
           result = null;
         } catch (IOException ex) {
