@@ -56,6 +56,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -138,6 +140,17 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
+    this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
+      @Override
+      public void propertyChange(@Nonnull final PropertyChangeEvent evt) {
+        if (mainPanel.getDividerLocation() < 16) {
+          imageComponent.requestFocusInWindow();
+        } else {
+          editor.requestFocusInWindow();
+        }
+      }
+    });
+    
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
 
     this.renderedPanel = new JPanel(new BorderLayout());
@@ -397,7 +410,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        editor.requestFocusInWindow();
+        imageComponent.requestFocusInWindow();
       }
     });
   }
@@ -419,6 +432,13 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         this.undoManager.redo();
       } catch (final CannotRedoException ex) {
         LOGGER.warn("Can't make redo in plantUML editor : " + ex.getMessage());
+      } finally {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            renderCurrentTextInPlantUml();
+          }
+        });
       }
     }
     return this.undoManager.canRedo();
@@ -431,6 +451,13 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         this.undoManager.undo();
       } catch (final CannotUndoException ex) {
         LOGGER.warn("Can't make undo in plantUML editor : " + ex.getMessage());
+      } finally {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            renderCurrentTextInPlantUml();
+          }
+        });
       }
     }
     return this.undoManager.canUndo();
