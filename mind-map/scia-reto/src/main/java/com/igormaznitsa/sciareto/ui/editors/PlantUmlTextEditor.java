@@ -112,6 +112,11 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private final JLabel labelWarningNoGraphwiz;
   private boolean ignoreChange;
   
+  private final JButton buttonPrevPage;
+  private final JButton buttonNextPage;
+  private final JLabel labelPageNumber;
+  private int pageNumberToRender = 1;
+  
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     initPlantUml();
@@ -194,11 +199,36 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
+    this.buttonPrevPage = new JButton(loadMenuIcon("resultset_previous"));
+    this.buttonPrevPage.setToolTipText("Previous page");
+    this.buttonPrevPage.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        pageNumberToRender --;
+        renderCurrentTextInPlantUml();
+      }
+    });
+
+    this.buttonNextPage = new JButton(loadMenuIcon("resultset_next"));
+    this.buttonNextPage.setToolTipText("Next page");
+    this.buttonNextPage.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        pageNumberToRender++;
+        renderCurrentTextInPlantUml();
+      }
+    });
+
+    this.labelPageNumber = new JLabel();
+    
     this.labelWarningNoGraphwiz = makeLinkLabel("You should install Graphviz!", "https://www.graphviz.org/download/", "Open download page", ICON_WARNING);
     
     menu.add(buttonRrefresh);
     menu.add(buttonClipboardImage);
     menu.add(buttonExportImage);
+    menu.add(this.buttonPrevPage);
+    menu.add(this.labelPageNumber);
+    menu.add(this.buttonNextPage);
 
     menu.add(Box.createHorizontalGlue());
     
@@ -560,15 +590,33 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     final SourceStringReader reader = new SourceStringReader(text, "UTF-8");
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
     try {
-      reader.outputImage(buffer, new FileFormatOption(FileFormat.PNG, false));
+      final int totalBlocks = reader.getBlocks().size();
+      final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalBlocks));
+      reader.outputImage(buffer, imageIndex, new FileFormatOption(FileFormat.PNG, false));
       this.imageComponent.setImage(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
+      updatePageNumberInfo(imageIndex, reader.getBlocks().size());
       this.renderedScrollPane.revalidate();
     } catch (IOException e) {
       LOGGER.error("Can't render plant uml", e);
       this.renderedScrollPane.setViewportView(new JLabel("Error during rendering"));
+      updatePageNumberInfo(-1, -1);
     }
   }
 
+  private void updatePageNumberInfo(final int pageNumber, final int totalPages) {
+    if (pageNumber < 0) {
+      this.pageNumberToRender = 1;
+      this.buttonNextPage.setEnabled(false);
+      this.buttonPrevPage.setEnabled(false);
+      this.labelPageNumber.setText("<html><b>--/--</b></html>");
+    } else {
+      this.pageNumberToRender = pageNumber;
+      this.buttonPrevPage.setEnabled(pageNumber > 1);
+      this.buttonNextPage.setEnabled(pageNumber < totalPages);
+      this.labelPageNumber.setText("<html><b>"+pageNumber+'/'+totalPages+"</b><html>");
+    }
+  }
+  
   private boolean searchSubstring(@Nonnull final Pattern pattern, final boolean next) {
     final String currentText = this.editor.getText();
     int cursorPos = this.editor.getCaretPosition();
