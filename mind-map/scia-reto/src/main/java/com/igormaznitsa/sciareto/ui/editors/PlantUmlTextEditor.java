@@ -69,6 +69,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import net.sourceforge.plantuml.core.DiagramDescription;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -79,12 +80,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
   public static final Set<String> SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList("pu", "puml", "plantuml")));
-  
+
   private static final Icon ICON_WARNING = new ImageIcon(UiUtils.loadIcon("warning16.png"));
   private static final Icon ICON_INFO = new ImageIcon(UiUtils.loadIcon("info16.png"));
 
   private static final Pattern NEWPAGE_PATTERN = Pattern.compile("^\\s*newpage($|\\s.*$)", Pattern.MULTILINE);
-  
+
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -113,16 +114,19 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private final JScrollPane renderedScrollPane;
   private final JLabel labelWarningNoGraphwiz;
   private boolean ignoreChange;
-  
+
   private final JButton buttonPrevPage;
   private final JButton buttonNextPage;
   private final JLabel labelPageNumber;
   private int pageNumberToRender = 0;
-  
+
+  private static final int UNIT_INCREMENT = 16;
+  private static final int BLOCK_INCREMENT = UNIT_INCREMENT * 8;
+
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     initPlantUml();
-    
+
     this.editor = new RSyntaxTextArea();
     this.editor.setPopupMenu(null);
 
@@ -138,12 +142,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.editor.setFont(mainFont);
 
     final SyntaxScheme scheme = this.editor.getSyntaxScheme();
-    
-    if (mainFont!=null) {
+
+    if (mainFont != null) {
       scheme.getStyle(Token.RESERVED_WORD).font = mainFont.deriveFont(Font.BOLD);
       scheme.getStyle(Token.IDENTIFIER).font = mainFont.deriveFont(Font.ITALIC);
     }
-    
+
     scheme.getStyle(Token.COMMENT_EOL).foreground = Color.LIGHT_GRAY;
     this.editor.revalidate();
 
@@ -161,16 +165,22 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         }
       }
     });
-    
+
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
 
     this.renderedPanel = new JPanel(new BorderLayout());
     this.imageComponent = new ScalableImage();
     this.renderedScrollPane = new EditorScrollPanel(this.imageComponent);
+    this.renderedScrollPane.setWheelScrollingEnabled(true);
+    this.renderedScrollPane.getVerticalScrollBar().setBlockIncrement(BLOCK_INCREMENT);
+    this.renderedScrollPane.getVerticalScrollBar().setUnitIncrement(UNIT_INCREMENT);
+    this.renderedScrollPane.getHorizontalScrollBar().setBlockIncrement(BLOCK_INCREMENT);
+    this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(UNIT_INCREMENT);
 
     final JToolBar menu = new JToolBar();
 
     final JButton buttonRrefresh = new JButton(loadMenuIcon("arrow_refresh"));
+    buttonRrefresh.setFocusPainted(false);
     buttonRrefresh.setToolTipText("Refresh image for text");
     buttonRrefresh.addActionListener(new ActionListener() {
       @Override
@@ -180,6 +190,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     });
 
     final JButton buttonExportImage = new JButton(loadMenuIcon("picture_save"));
+    buttonExportImage.setFocusPainted(false);
     buttonExportImage.setToolTipText("Export image as file");
     buttonExportImage.addActionListener(new ActionListener() {
       @Override
@@ -191,6 +202,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_sign"));
     buttonClipboardImage.setToolTipText("Copy image to clipboard");
+    buttonClipboardImage.setFocusPainted(false);
     buttonClipboardImage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -206,17 +218,19 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     });
 
     this.buttonPrevPage = new JButton(loadMenuIcon("resultset_previous"));
+    this.buttonPrevPage.setFocusPainted(false);
     this.buttonPrevPage.setToolTipText("Previous page");
     this.buttonPrevPage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        pageNumberToRender --;
+        pageNumberToRender--;
         renderCurrentTextInPlantUml();
       }
     });
 
     this.buttonNextPage = new JButton(loadMenuIcon("resultset_next"));
     this.buttonNextPage.setToolTipText("Next page");
+    this.buttonNextPage.setFocusPainted(false);
     this.buttonNextPage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -226,9 +240,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     });
 
     this.labelPageNumber = new JLabel();
-    
+
     this.labelWarningNoGraphwiz = makeLinkLabel("You should install Graphviz!", "https://www.graphviz.org/download/", "Open download page", ICON_WARNING);
-    
+
     menu.add(buttonRrefresh);
     menu.add(buttonClipboardImage);
     menu.add(buttonExportImage);
@@ -237,10 +251,10 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     menu.add(this.buttonNextPage);
 
     menu.add(Box.createHorizontalGlue());
-    
+
     menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO));
     menu.add(this.labelWarningNoGraphwiz);
-    
+
     this.renderedPanel.add(menu, BorderLayout.NORTH);
     this.renderedPanel.add(this.renderedScrollPane, BorderLayout.CENTER);
 
@@ -289,7 +303,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.undoManager.updateActions();
 
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
-    
+
     updateGraphvizLabelVisibility();
   }
 
@@ -301,7 +315,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     }
     return count;
   }
-  
+
   @Nonnull
   private JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final String uri, @Nonnull final String toolTip, @Nonnull final Icon icon) {
     final JLabel result = new JLabel(text, icon, JLabel.RIGHT);
@@ -325,18 +339,18 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     result.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
     return result;
   }
-  
+
   private void updateGraphvizLabelVisibility() {
     boolean show = false;
-    try{
+    try {
       final File graphvizFile = GraphvizUtils.create(null, "png").getDotExe();
       show = graphvizFile == null || !graphvizFile.isFile();
-    } catch(Exception ex){
+    } catch (Exception ex) {
       show = false;
     }
     this.labelWarningNoGraphwiz.setVisible(show);
   }
-  
+
   private void initPlantUml() {
     OptionFlags.getInstance().setDotExecutable(PrefUtils.getPlantUmlDotPath());
   }
@@ -458,11 +472,15 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       if (this.pageNumberToRender > 0) {
         try {
           reader.outputImage(buffer, this.pageNumberToRender - 1, option);
+          final byte[] bytearray = buffer.toByteArray();
+          if (bytearray.length < 10000 && new String(bytearray, "UTF-8").contains("java.lang.UnsupportedOperationException:")) {
+            throw new IOException("Detected exception footstep in generated file!");
+          }
           FileUtils.writeByteArrayToFile(lastExportedFile, buffer.toByteArray());
           LOGGER.info("Exported plant uml image as file : " + lastExportedFile);
-        } catch (Exception ex) {
+        } catch (IOException ex) {
           LOGGER.error("Can't export plant uml image", ex);
-          JOptionPane.showMessageDialog(this.mainPanel, "Can't export! May be the format is not supported by the diagram!", "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(this.mainPanel, "Can't export! May be the format is not supported by the diagram type!", "Error", JOptionPane.ERROR_MESSAGE);
         }
       } else {
         LOGGER.warn("Page number is <= 0");
@@ -495,7 +513,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private boolean isTextEditorVisible() {
     return this.mainPanel.getDividerLocation() > 4;
   }
-  
+
   @Override
   public boolean redo() {
     if (this.undoManager.canRedo() && isTextEditorVisible()) {
@@ -633,11 +651,11 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     try {
       final int totalPages = Math.max(countNewPages(text), reader.getBlocks().size());
       final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
-  
+
       reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
       this.imageComponent.setImage(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
       updatePageNumberInfo(imageIndex, totalPages);
-      
+
       this.renderedScrollPane.revalidate();
     } catch (IOException e) {
       LOGGER.error("Can't render plant uml", e);
@@ -656,10 +674,10 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       this.pageNumberToRender = pageNumber;
       this.buttonPrevPage.setEnabled(pageNumber > 1);
       this.buttonNextPage.setEnabled(pageNumber < totalPages);
-      this.labelPageNumber.setText("<html><b>"+pageNumber+'/'+totalPages+"</b><html>");
+      this.labelPageNumber.setText("<html><b>" + pageNumber + '/' + totalPages + "</b><html>");
     }
   }
-  
+
   private boolean searchSubstring(@Nonnull final Pattern pattern, final boolean next) {
     final String currentText = this.editor.getText();
     int cursorPos = this.editor.getCaretPosition();

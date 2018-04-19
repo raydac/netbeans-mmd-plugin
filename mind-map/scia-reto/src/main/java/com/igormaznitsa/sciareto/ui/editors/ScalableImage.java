@@ -54,6 +54,7 @@ final class ScalableImage extends JComponent {
           revalidate();
           repaint();
         }
+        sendEventToParent(e);
       }
 
       @Override
