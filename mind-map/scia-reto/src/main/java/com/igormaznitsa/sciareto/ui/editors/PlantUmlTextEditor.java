@@ -178,7 +178,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(UNIT_INCREMENT);
 
     final JToolBar menu = new JToolBar();
-
+    menu.setFloatable(false);
+    
     final JButton buttonRrefresh = new JButton(loadMenuIcon("arrow_refresh"));
     buttonRrefresh.setFocusPainted(false);
     buttonRrefresh.setToolTipText("Refresh image for text");
@@ -261,7 +262,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.mainPanel.add(scrollPane);
     this.mainPanel.add(this.renderedPanel);
 
-    this.mainPanel.setDividerLocation(0);
     this.mainPanel.setResizeWeight(0.0d);
     this.mainPanel.setOneTouchExpandable(true);
 
@@ -305,6 +305,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
 
     updateGraphvizLabelVisibility();
+    
+    this.mainPanel.setDividerLocation(0);
   }
 
   private int countNewPages(@Nonnull final String text) {
