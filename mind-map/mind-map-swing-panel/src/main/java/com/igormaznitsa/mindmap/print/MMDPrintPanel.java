@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.print;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
@@ -86,6 +85,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     Dimension getPreferredSizeOfPanel(@Nonnull MMDPrintPanel source);
   }
 
+  
   private static final long serialVersionUID = -2588424836865316862L;
 
   protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
@@ -97,7 +97,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   private double pageZoomFactor;
   private final JComponent preferredFocusedComponent;
 
-  private final MindMapPanel mmdPanel;
+  private final PrintableObject printableObject;
   private final Adaptor theAdaptor;
   private final JCheckBox checkBoxDrawBorder;
   private final JCheckBox checkBoxDrawAsImage;
@@ -106,13 +106,13 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   private MMDPrintOptions options = new MMDPrintOptions();
 
-  public MMDPrintPanel(@Nonnull final DialogProvider dialogProvider, @Nullable final Adaptor adaptor, @Nonnull final MindMapPanel mindMapPanel) {
+  public MMDPrintPanel(@Nonnull final DialogProvider dialogProvider, @Nullable final Adaptor adaptor, @Nonnull final PrintableObject printableObject) {
     super(new BorderLayout());
     this.dialogProvider = dialogProvider;
     final MMDPrintPanel theInstance = this;
 
     this.theAdaptor = adaptor == null ? new DefaultMMDPrintPanelAdaptor() : adaptor;
-    this.mmdPanel = mindMapPanel;
+    this.printableObject = printableObject;
 
     final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
@@ -280,7 +280,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.add(this.checkBoxDrawBorder);
 
     this.checkBoxDrawAsImage = UI_COMPO_FACTORY.makeCheckBox();
-    this.checkBoxDrawAsImage.setSelected(this.options.isDrawAsImage());
+    this.checkBoxDrawAsImage.setSelected(this.options.isDrawAsImage() || printableObject.isImage());
+    this.checkBoxDrawAsImage.setEnabled(!printableObject.isImage());
     this.checkBoxDrawAsImage.setText(BUNDLE.getString("MMDPrintPanel.DrawAsImage"));
     this.checkBoxDrawAsImage.addActionListener(new ActionListener() {
       @Override
@@ -353,7 +354,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   }
 
   private void splitToPagesForCurrentFormat() {
-    final MMDPrint printer = new MMDPrint(this.mmdPanel, (int) this.pageFormat.getImageableWidth(),
+    final MMDPrint printer = new MMDPrint(this.printableObject, (int) this.pageFormat.getImageableWidth(),
         (int) this.pageFormat.getImageableHeight(), this.options);
     this.pages = printer.getPages();
   }

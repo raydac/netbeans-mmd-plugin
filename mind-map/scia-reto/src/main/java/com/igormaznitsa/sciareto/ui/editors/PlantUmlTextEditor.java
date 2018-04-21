@@ -20,6 +20,8 @@ package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.print.MMDPrintPanel;
+import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
@@ -244,9 +246,24 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.labelWarningNoGraphwiz = makeLinkLabel("You should install Graphviz!", "https://www.graphviz.org/download/", "Open download page", ICON_WARNING);
 
+    final JButton buttonPrintImage = new JButton(loadMenuIcon("printer"));
+    buttonPrintImage.setToolTipText("Print current page");
+    buttonPrintImage.setFocusPainted(false);
+    buttonPrintImage.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        Main.getApplicationFrame().endFullScreenIfActive();
+        final MMDPrintPanel printPanel = new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null, PrintableObject.newBuild().image(imageComponent.getImage()).build());
+        UiUtils.makeOwningDialogResizable(printPanel);
+        JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image", JOptionPane.PLAIN_MESSAGE);
+      }
+    });
+    
+    
     menu.add(buttonRrefresh);
     menu.add(buttonClipboardImage);
     menu.add(buttonExportImage);
+    menu.add(buttonPrintImage);
     menu.add(this.buttonPrevPage);
     menu.add(this.labelPageNumber);
     menu.add(this.buttonNextPage);

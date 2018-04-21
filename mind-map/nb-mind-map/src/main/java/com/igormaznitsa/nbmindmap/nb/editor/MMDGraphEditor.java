@@ -32,6 +32,7 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.print.MMDPrint;
 import com.igormaznitsa.mindmap.print.MMDPrintOptions;
+import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.*;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
@@ -1198,7 +1199,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       printOptions.setScale(pageZoomFactor);
     }
     
-    final com.igormaznitsa.mindmap.print.PrintPage[][] pages = new MMDPrint(this.mindMapPanel, paperWidthInPixels, paperHeightInPixels, printOptions).getPages();
+    final com.igormaznitsa.mindmap.print.PrintPage[][] pages = new MMDPrint(PrintableObject.newBuild().mmdpanel(this.mindMapPanel).build(), paperWidthInPixels, paperHeightInPixels, printOptions).getPages();
     
     final PrintPage[][] result = new PrintPage[pages.length][];
     

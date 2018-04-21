@@ -11,6 +11,7 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
+import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.intellij.openapi.project.Project;
@@ -32,7 +33,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem {
     final Project project = (Project)assertNotNull(mindMapPanel.findTmpObject("project"));
     printAction.addActionListener(new ActionListener() {
       @Override public void actionPerformed(ActionEvent e) {
-        final MMDPrintPanel panel = new MMDPrintPanel(dialogProvider, new IdeaMMDPrintPanelAdaptor(project), mindMapPanel);
+        final MMDPrintPanel panel = new MMDPrintPanel(dialogProvider, new IdeaMMDPrintPanelAdaptor(project), PrintableObject.newBuild().mmdpanel(mindMapPanel).build());
         IdeaUtils.plainMessageClose(project,"Print mind map",panel);
       }
     });
