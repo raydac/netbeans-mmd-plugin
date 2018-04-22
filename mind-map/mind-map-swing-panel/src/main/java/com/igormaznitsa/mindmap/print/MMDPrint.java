@@ -180,7 +180,7 @@ public class MMDPrint {
               offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
             }
           } else if (printableObject.isImage()) {
-            final int neededWidth = options.getPagesInColumn() * paperWidthInPixels;
+            final int neededWidth = options.getPagesInRow()* paperWidthInPixels;
             imageToDraw = makeScaledInstance(printableObject.getImage(), (float)neededWidth / (float)printableObject.getImage().getWidth(null));
             final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
             final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
@@ -232,12 +232,15 @@ public class MMDPrint {
               }
             }
           } else if (printableObject.isImage()) {
-            final float maxScale = Math.min((float)paperWidthInPixels / (float)printableObject.getImage().getWidth(null), (float)paperHeightInPixels / (float)printableObject.getImage().getHeight(null));
-            if (Float.compare(maxScale, 1.0f) < 0) {
-              imageToDraw = makeScaledInstance(printableObject.getImage(), maxScale);
+            final float hrzrScale = (float) paperWidthInPixels / (float) printableObject.getImage().getWidth(null);
+            final float vertScale = (float) paperHeightInPixels / (float) printableObject.getImage().getHeight(null);
+
+            if ((vertScale < 1.0f && hrzrScale < 1.0f) || (vertScale > 1.0f || hrzrScale > 1.0f)) {
+              imageToDraw = makeScaledInstance(printableObject.getImage(), Math.min(vertScale, hrzrScale));
             } else {
               imageToDraw = printableObject.getImage();
             }
+            
             final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
             final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
             offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
