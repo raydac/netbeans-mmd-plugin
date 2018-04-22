@@ -35,6 +35,9 @@ public abstract class AbstractEditor implements TabProvider,Disposable {
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   private static final Map<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
 
+  protected static final int IMG_UNIT_INCREMENT = 16;
+  protected static final int IMG_BLOCK_INCREMENT = IMG_UNIT_INCREMENT * 8;
+
   public AbstractEditor(){
     super();
   }

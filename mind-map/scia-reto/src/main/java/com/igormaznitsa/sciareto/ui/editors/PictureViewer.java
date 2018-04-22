@@ -76,6 +76,10 @@ public final class PictureViewer extends AbstractEditor {
     this.title = new TabTitle(context, this, file);
     this.imageViewer = new ScalableImage();
     this.scrollPane.setWheelScrollingEnabled(true);
+    this.scrollPane.getVerticalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
+    this.scrollPane.getVerticalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
+    this.scrollPane.getHorizontalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
+    this.scrollPane.getHorizontalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
 
     final JToolBar toolbar = new JToolBar(JToolBar.HORIZONTAL);
     toolbar.setFloatable(false);

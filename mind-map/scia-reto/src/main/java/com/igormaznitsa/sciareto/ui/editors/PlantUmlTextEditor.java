@@ -120,9 +120,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private final JLabel labelPageNumber;
   private int pageNumberToRender = 0;
 
-  private static final int UNIT_INCREMENT = 16;
-  private static final int BLOCK_INCREMENT = UNIT_INCREMENT * 8;
-
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
     initPlantUml();
@@ -172,10 +169,10 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.imageComponent = new ScalableImage();
     this.renderedScrollPane = new EditorScrollPanel(this.imageComponent);
     this.renderedScrollPane.setWheelScrollingEnabled(true);
-    this.renderedScrollPane.getVerticalScrollBar().setBlockIncrement(BLOCK_INCREMENT);
-    this.renderedScrollPane.getVerticalScrollBar().setUnitIncrement(UNIT_INCREMENT);
-    this.renderedScrollPane.getHorizontalScrollBar().setBlockIncrement(BLOCK_INCREMENT);
-    this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(UNIT_INCREMENT);
+    this.renderedScrollPane.getVerticalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
+    this.renderedScrollPane.getVerticalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
+    this.renderedScrollPane.getHorizontalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
+    this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
 
     final JToolBar menu = new JToolBar();
     menu.setFloatable(false);
