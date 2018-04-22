@@ -23,7 +23,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -40,6 +39,10 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MMDPrint {
 
@@ -141,8 +144,11 @@ public class MMDPrint {
               offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
             }
           } else if (printableObject.isImage()) {
-             imageToDraw = printableObject.getImage();
-             offsetOfImage = new Point(0,0);
+            final int neededHeight = options.getPagesInColumn() * paperHeightInPixels;
+            imageToDraw = makeScaledInstance(printableObject.getImage(), (float)neededHeight / (float)printableObject.getImage().getHeight(null));
+            final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
+            final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
+            offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
           } else {
             throw new Error("Unexpected type");
           }
@@ -174,8 +180,11 @@ public class MMDPrint {
               offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
             }
           } else if (printableObject.isImage()) {
-            imageToDraw = printableObject.getImage();
-            offsetOfImage = new Point(0, 0);
+            final int neededWidth = options.getPagesInColumn() * paperWidthInPixels;
+            imageToDraw = makeScaledInstance(printableObject.getImage(), (float)neededWidth / (float)printableObject.getImage().getWidth(null));
+            final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
+            final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
+            offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
           } else {
             throw new Error("Unexpected type");
           }
@@ -223,8 +232,15 @@ public class MMDPrint {
               }
             }
           } else if (printableObject.isImage()) {
-            imageToDraw = printableObject.getImage();
-            offsetOfImage = new Point(0, 0);
+            final float maxScale = Math.min((float)paperWidthInPixels / (float)printableObject.getImage().getWidth(null), (float)paperHeightInPixels / (float)printableObject.getImage().getHeight(null));
+            if (Float.compare(maxScale, 1.0f) < 0) {
+              imageToDraw = makeScaledInstance(printableObject.getImage(), maxScale);
+            } else {
+              imageToDraw = printableObject.getImage();
+            }
+            final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
+            final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
+            offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
           } else {
             throw new Error("Unexpected type");
           }
@@ -246,8 +262,10 @@ public class MMDPrint {
               offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
             }
           } else if (printableObject.isImage()) {
-            imageToDraw = printableObject.getImage();
-            offsetOfImage = new Point(0, 0);
+            imageToDraw = makeScaledInstance(printableObject.getImage(), (float)scale);
+            final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
+            final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
+            offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
           } else {
             throw new Error("Unexpected type");
           }
@@ -324,6 +342,38 @@ public class MMDPrint {
     this.pages = pgs;
   }
 
+  @Nonnull
+  private Image makeScaledInstance(@Nonnull final Image image, final float scale) {
+    if (Float.compare(scale, 1.0f) == 0) {
+      return image;
+    }
+    
+    final int scaledWidth = Math.round(image.getWidth(null) * scale);
+    final int scaledHeight = Math.round(image.getHeight(null) * scale);
+
+    final BufferedImage result = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
+    final Graphics2D graphics = (Graphics2D) result.getGraphics();
+    try {
+      final Map rhints = new HashMap();
+      rhints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      rhints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      rhints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+      rhints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+      rhints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      rhints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+      final AffineTransform transform = new AffineTransform();
+      transform.setToScale(scale, scale);
+      graphics.setRenderingHints(rhints);
+      graphics.drawImage(image, transform, null);
+    } catch(Exception ex) {
+      LOGGER.error("Can't scale image", ex);
+      return image;
+    } finally {
+      graphics.dispose();
+    }
+    return result;
+  }
+  
   @Nonnull
   @MustNotContainNull
   public PrintPage[][] getPages() {
