@@ -26,11 +26,15 @@ import javax.swing.JComponent;
 import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.ImageIcon;
 
 public abstract class AbstractEditor implements TabProvider,Disposable {
   
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
-  
+  private static final Map<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
+
   public AbstractEditor(){
     super();
   }
@@ -71,5 +75,16 @@ public abstract class AbstractEditor implements TabProvider,Disposable {
   @Override
   public boolean isDisposed() {
     return this.disposeFlag.get();
+  }
+  
+  @Nonnull
+  protected static synchronized ImageIcon loadMenuIcon(@Nonnull final String name) {
+    if (iconCache.containsKey(name)) {
+      return iconCache.get(name);
+    } else {
+      final ImageIcon loaded = new javax.swing.ImageIcon(ClassLoader.getSystemResource("menu_icons/" + name + ".png"));
+      iconCache.put(name, loaded);
+      return loaded;
+    }
   }
 }

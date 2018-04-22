@@ -20,9 +20,17 @@ package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.print.MMDPrintPanel;
+import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.annotation.Nonnull;
@@ -57,8 +65,9 @@ public final class PictureViewer extends AbstractEditor {
   };
   private static final Logger LOGGER = LoggerFactory.getLogger(PictureViewer.class);
   private final TabTitle title;
+  private final JPanel mainPanel = new JPanel(new BorderLayout(0,0));
   private final JScrollPane scrollPane = new EditorScrollPanel();
-
+  
   private final ScalableImage imageViewer;
   private transient BufferedImage image;
 
@@ -66,7 +75,29 @@ public final class PictureViewer extends AbstractEditor {
     super();
     this.title = new TabTitle(context, this, file);
     this.imageViewer = new ScalableImage();
+    this.scrollPane.setWheelScrollingEnabled(true);
 
+    final JToolBar toolbar = new JToolBar(JToolBar.HORIZONTAL);
+    toolbar.setFloatable(false);
+    
+    final JButton buttonPrintImage = new JButton(loadMenuIcon("printer"));
+    buttonPrintImage.setToolTipText("Print image");
+    buttonPrintImage.setFocusPainted(false);
+    buttonPrintImage.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        Main.getApplicationFrame().endFullScreenIfActive();
+        final MMDPrintPanel printPanel = new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null, PrintableObject.newBuild().image(imageViewer.getImage()).build());
+        UiUtils.makeOwningDialogResizable(printPanel);
+        JOptionPane.showMessageDialog(mainPanel, printPanel, "Print image", JOptionPane.PLAIN_MESSAGE);
+      }
+    });
+
+    toolbar.add(buttonPrintImage);
+    
+    this.mainPanel.add(toolbar, BorderLayout.NORTH);
+    this.mainPanel.add(this.scrollPane, BorderLayout.CENTER);
+    
     loadContent(file);
   }
 
@@ -163,13 +194,13 @@ public final class PictureViewer extends AbstractEditor {
   @Override
   @Nonnull
   public JComponent getMainComponent() {
-    return this.imageViewer;
+    return this.mainPanel;
   }
 
   @Override
   @Nonnull
   public JComponent getContainerToShow() {
-    return this.scrollPane;
+    return this.mainPanel;
   }
 
   @Override

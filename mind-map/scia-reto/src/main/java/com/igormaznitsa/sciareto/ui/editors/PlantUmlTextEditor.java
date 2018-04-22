@@ -71,7 +71,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import net.sourceforge.plantuml.core.DiagramDescription;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -105,7 +104,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     }
   };
   private static final Logger LOGGER = LoggerFactory.getLogger(PlantUmlTextEditor.class);
-  private static final Map<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
   private static File lastExportedFile = null;
   private final RSyntaxTextArea editor;
   private final TabTitle title;
@@ -372,17 +370,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   private void initPlantUml() {
     OptionFlags.getInstance().setDotExecutable(PrefUtils.getPlantUmlDotPath());
-  }
-
-  @Nonnull
-  private static synchronized ImageIcon loadMenuIcon(@Nonnull final String name) {
-    if (iconCache.containsKey(name)) {
-      return iconCache.get(name);
-    } else {
-      final ImageIcon loaded = new javax.swing.ImageIcon(ClassLoader.getSystemResource("menu_icons/" + name + ".png"));
-      iconCache.put(name, loaded);
-      return loaded;
-    }
   }
 
   @Override
