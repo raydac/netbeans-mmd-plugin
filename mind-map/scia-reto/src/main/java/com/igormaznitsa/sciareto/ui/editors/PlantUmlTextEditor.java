@@ -318,7 +318,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     updateGraphvizLabelVisibility();
     
-    this.mainPanel.setDividerLocation(0);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        mainPanel.setDividerLocation(0);
+      }
+    });
   }
 
   private int countNewPages(@Nonnull final String text) {
