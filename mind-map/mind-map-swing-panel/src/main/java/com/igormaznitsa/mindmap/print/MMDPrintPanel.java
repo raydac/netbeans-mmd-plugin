@@ -106,6 +106,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   private MMDPrintOptions options = new MMDPrintOptions();
 
+  private final int SCROLL_UNIT = 16;
+  private final int SCROLL_BLOCK = SCROLL_UNIT * 8;
+  
   public MMDPrintPanel(@Nonnull final DialogProvider dialogProvider, @Nullable final Adaptor adaptor, @Nonnull final PrintableObject printableObject) {
     super(new BorderLayout());
     this.dialogProvider = dialogProvider;
@@ -115,6 +118,11 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     this.printableObject = printableObject;
 
     final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
+    scrollPane.getHorizontalScrollBar().setBlockIncrement(SCROLL_BLOCK);
+    scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLL_UNIT);
+    scrollPane.getVerticalScrollBar().setBlockIncrement(SCROLL_BLOCK);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLL_UNIT);
+    
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
     printerJob.setJobName("Mind map print job");
 
