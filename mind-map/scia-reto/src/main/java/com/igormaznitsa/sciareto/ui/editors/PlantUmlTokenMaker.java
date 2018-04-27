@@ -157,9 +157,6 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
               } else if (RSyntaxUtilities.isDigit(c)) {
                 currentTokenType = Token.LITERAL_NUMBER_DECIMAL_INT;
                 break;
-              } else if (c == ':') {
-                currentTokenType = Token.COMMENT_DOCUMENTATION;
-                break;
               } else {
                 currentTokenType = Token.IDENTIFIER;
               }
@@ -190,9 +187,6 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
                 if (RSyntaxUtilities.isDigit(c)) {
                   currentTokenType = Token.LITERAL_NUMBER_DECIMAL_INT;
                   break;
-                } else if (c == ':') {
-                  currentTokenType = Token.COMMENT_DOCUMENTATION;
-                  break;
                 } else {
                   currentTokenType = Token.IDENTIFIER;
                 }
@@ -202,42 +196,12 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
           }
         }
         break;
-        case Token.COMMENT_DOCUMENTATION: {
-          switch (c) {
-            case '"': {
-              addToken(text, currentTokenStart, i - 1, Token.COMMENT_DOCUMENTATION, newStartOffset + currentTokenStart);
-              currentTokenStart = i;
-              currentTokenType = Token.LITERAL_STRING_DOUBLE_QUOTE;
-            }
-            break;
-            case ';': {
-              addToken(text, currentTokenStart, i - 1, Token.COMMENT_DOCUMENTATION, newStartOffset + currentTokenStart);
-              currentTokenStart = i;
-              currentTokenType = Token.NULL;
-            }
-            break;
-            default: {
-              if (RSyntaxUtilities.isWhitespace(c)) {
-                // do nothing because can contain
-              }
-            }
-            break;
-          }
-        }
-        break;
-
         case Token.LITERAL_NUMBER_HEXADECIMAL: {
           switch (c) {
             case '"': {
               addToken(text, currentTokenStart, i - 1, Token.LITERAL_NUMBER_HEXADECIMAL, newStartOffset + currentTokenStart);
               currentTokenStart = i;
               currentTokenType = Token.LITERAL_STRING_DOUBLE_QUOTE;
-            }
-            break;
-            case ':': {
-              addToken(text, currentTokenStart, i - 1, Token.LITERAL_NUMBER_HEXADECIMAL, newStartOffset + currentTokenStart);
-              currentTokenStart = i;
-              currentTokenType = Token.COMMENT_DOCUMENTATION;
             }
             break;
             case '\'': {
@@ -272,12 +236,6 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
               addToken(text, currentTokenStart, i - 1, Token.LITERAL_NUMBER_DECIMAL_INT, newStartOffset + currentTokenStart);
               currentTokenStart = i;
               currentTokenType = Token.LITERAL_STRING_DOUBLE_QUOTE;
-            }
-            break;
-            case ':': {
-              addToken(text, currentTokenStart, i - 1, Token.LITERAL_NUMBER_DECIMAL_INT, newStartOffset + currentTokenStart);
-              currentTokenStart = i;
-              currentTokenType = Token.COMMENT_DOCUMENTATION;
             }
             break;
             case '\'': {
