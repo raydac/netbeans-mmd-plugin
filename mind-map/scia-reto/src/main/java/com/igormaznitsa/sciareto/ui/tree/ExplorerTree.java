@@ -593,7 +593,7 @@ public final class ExplorerTree extends JScrollPane {
             break;
             case "puml": { //NOI18N
               final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"),"\n");
-              final String text = "@startuml"+nextLine+nextLine+"@enduml";
+              final String text = "@startuml "+nextLine+nextLine+"@enduml";
               try {
                 FileUtils.write(file, text, "UTF-8"); //NOI18N
                 ok = true;
