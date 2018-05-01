@@ -1,4 +1,4 @@
-__1.4.3 (SNAPSHOT)__
+__1.4.3 (01-may-2018)__
 - SR:  license changed to LGPL 2.1
 - ALL: increased step of scroll and decreased step of scale in panel
 - ALL: added special icon for `mailto` scheme in URI

@@ -12,7 +12,7 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
-__1.4.3 (SNAPSHOT)__
+__1.4.3 (01-may-2018)__
 - SR:  license changed to LGPL 2.1
 - ALL: increased step of scroll and decreased step of scale in panel
 - ALL: added special icon for `mailto` scheme in URI
@@ -37,15 +37,6 @@ __1.4.2 (25-feb-2018)__
 - ALL: [#29](https://github.com/raydac/netbeans-mmd-plugin/issues/29) Remember per session last used directory for files
 - ALL: Added standard text pop-up menu into text fields of both File dialog and URI dialog.
 - ALL: added select mode with pressed SHIFT
-
-__1.4.1 (30-sep-2017)__
-- SR:  Fixed too high CPU utilization
-- ALL: Removed use of javax.xml.bind.DatatypeConverter to make compatible with Java 9
-- SR,LJ: Improved print preview panel
-- ALL: Reworked processing of print preview, removed buffered image use
-- ALL: Changed default shortcuts for MacOS, fixed processing of space button
-- ALL: Fixed D'n'D processing of topics
-- IJ:  fixed issue "Project Project (Disposed) test already disposed" [#25](https://github.com/raydac/netbeans-mmd-plugin/issues/25)
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 

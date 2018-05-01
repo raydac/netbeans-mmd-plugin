@@ -233,7 +233,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         }
       }
       if (!openedProject) {
-        //TODO try to hide project panel!
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            splitPane.setDividerLocation(0);
+          }
+        });
       }
     }
 
@@ -482,6 +487,18 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       for (final File f : activeFiles) {
         if (f.isFile()) {
           openFileAsTab(f);
+        }
+      }
+
+      for (int i = 0; i < this.tabPane.getTabCount(); i++) {
+        final TabTitle tab = (TabTitle) this.tabPane.getTabComponentAt(i);
+        if (tab.getType() == EditorContentType.PLANTUML) {
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              ((PlantUmlTextEditor) tab.getProvider()).hideTextPanel();
+            }
+          });
         }
       }
     } catch (IOException ex) {

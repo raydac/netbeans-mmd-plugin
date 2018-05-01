@@ -5,12 +5,12 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.3</version>
   </parent>
 
   <groupId>com.igormaznitsa</groupId>
   <artifactId>mind-map-model</artifactId>
-  <version>1.2.4-SNAPSHOT</version>
+  <version>1.2.4</version>
   <!--<version>${mindmap.model.version}</version>-->
   <packaging>jar</packaging>
     

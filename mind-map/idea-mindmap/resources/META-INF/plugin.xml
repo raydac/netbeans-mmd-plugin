@@ -18,6 +18,16 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.4.3 (01-may-2018)</p>
+        <ul>
+          <li>increased step of scroll and decreased step of scale in panel</li>
+          <li>added special icon for mailto scheme in URI</li>
+          <li>fixed processing of drag'n'drop URL files from browsers under Windows</li>
+          <li>Fixed processing of project root in maven multi-project workspace</li>
+          <li>Improved emoticon panel to increase slected icon visibility</li>
+          <li>Fixed non-processed exception "Clipboard is busy"</li>
+          <li>Fixed exception if turn off option disable .projectKnowledge folder autocreation in proect facet</li>
+        </ul>
         <p>1.4.2 (25-feb-2018)</p>
         <ul>
           <li>Added paper render quality option</li>

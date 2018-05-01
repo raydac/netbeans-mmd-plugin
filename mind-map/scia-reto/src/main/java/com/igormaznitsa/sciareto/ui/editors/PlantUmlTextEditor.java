@@ -54,6 +54,8 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
@@ -318,6 +320,10 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     updateGraphvizLabelVisibility();
     
+    this.hideTextPanel();
+  }
+
+  public void hideTextPanel() {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -325,7 +331,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
   }
-
+  
   private int countNewPages(@Nonnull final String text) {
     int count = 1;
     final Matcher matcher = NEWPAGE_PATTERN.matcher(text);
@@ -360,7 +366,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   }
 
   private void updateGraphvizLabelVisibility() {
-    boolean show = false;
+    boolean show;
     try {
       final File graphvizFile = GraphvizUtils.create(null, "png").getDotExe();
       show = graphvizFile == null || !graphvizFile.isFile();
@@ -636,7 +642,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   @Override
   @Nonnull
   public EditorContentType getEditorContentType() {
-    return EditorContentType.SOURCES;
+    return EditorContentType.PLANTUML;
   }
 
   @Override
