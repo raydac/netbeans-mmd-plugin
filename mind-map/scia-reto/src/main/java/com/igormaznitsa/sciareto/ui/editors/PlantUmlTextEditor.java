@@ -54,8 +54,6 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
@@ -265,7 +263,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     menu.add(this.labelPageNumber);
     menu.add(this.buttonNextPage);
 
-    menu.add(Box.createHorizontalGlue());
+    menu.add(new Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(Integer.MAX_VALUE, 0), new java.awt.Dimension(Integer.MAX_VALUE, 0)));
 
     menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO));
     menu.add(this.labelWarningNoGraphwiz);
@@ -683,12 +681,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       this.pageNumberToRender = 1;
       this.buttonNextPage.setEnabled(false);
       this.buttonPrevPage.setEnabled(false);
-      this.labelPageNumber.setText("<html><b>--/--</b></html>");
+      this.labelPageNumber.setText("<html><b>&nbsp;&nbsp;--/--&nbsp;&nbsp;</b></html>");
     } else {
       this.pageNumberToRender = pageNumber;
       this.buttonPrevPage.setEnabled(pageNumber > 1);
       this.buttonNextPage.setEnabled(pageNumber < totalPages);
-      this.labelPageNumber.setText("<html><b>" + pageNumber + '/' + totalPages + "</b><html>");
+      this.labelPageNumber.setText("<html><b>&nbsp;&nbsp;" + pageNumber + '/' + totalPages + "&nbsp;&nbsp;</b><html>");
     }
   }
 
