@@ -198,7 +198,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
-    final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_sign"));
+    final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
     buttonClipboardImage.setToolTipText("Copy image to clipboard");
     buttonClipboardImage.setFocusPainted(false);
     buttonClipboardImage.addActionListener(new ActionListener() {
@@ -206,12 +206,18 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       public void actionPerformed(ActionEvent e) {
         final BufferedImage image = imageComponent.getImage();
         if (image != null) {
-          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(image), new ClipboardOwner() {
-            @Override
-            public void lostOwnership(@Nonnull final Clipboard clipboard, @Nonnull final Transferable contents) {
-            }
-          });
+          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(image), null);
         }
+      }
+    });
+    
+    final JButton buttonClipboardText = new JButton(loadMenuIcon("clipboard_text"));
+    buttonClipboardText.setToolTipText("Copy script to clipboard");
+    buttonClipboardText.setFocusPainted(false);
+    buttonClipboardText.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(editor.getText()),null);
       }
     });
 
@@ -257,6 +263,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     
     menu.add(buttonRrefresh);
     menu.add(buttonClipboardImage);
+    menu.add(buttonClipboardText);
     menu.add(buttonExportImage);
     menu.add(buttonPrintImage);
     menu.add(this.buttonPrevPage);
