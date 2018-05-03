@@ -50,7 +50,11 @@ public class NodeProject extends NodeFileOrFolder {
     super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
     this.knowledgeFolderPresented = new File(folder,Context.KNOWLEDGE_FOLDER).isDirectory();
+    
+    final long startTime = System.currentTimeMillis();
     reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
+    final long spentTime = System.currentTimeMillis() - startTime;
+    LOGGER.info(String.format("Spent time to open project '%s' took %d ms", folder, spentTime));
   }
 
   public boolean hasKnowledgeFolder(){
@@ -132,7 +136,7 @@ public class NodeProject extends NodeFileOrFolder {
   }
 
   @Override
-  public void reloadSubtree(final boolean showHiddenFiles) {
+  public final void reloadSubtree(final boolean showHiddenFiles) {
     super.reloadSubtree(showHiddenFiles);
     final File knowledgeFolder = new File(this.folder, Context.KNOWLEDGE_FOLDER);
     this.knowledgeFolderPresented = knowledgeFolder.isDirectory();
