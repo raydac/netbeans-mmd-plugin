@@ -67,6 +67,7 @@ import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindFilesForTextPanel;
 import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
+import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
@@ -80,7 +81,7 @@ public final class ExplorerTree extends JScrollPane {
   private final DnDTree projectTree;
   private final Context context;
 
-  public ExplorerTree(@Nonnull final Context context) {
+  public ExplorerTree(@Nonnull final Context context) throws IOException {
     super();
     this.projectTree = new DnDTree();
     this.context = context;
@@ -306,7 +307,11 @@ public final class ExplorerTree extends JScrollPane {
       refresh.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          getCurrentGroup().refreshProjectFolder((NodeProject) node, PrefUtils.isShowHiddenFilesAndFolders());
+          try {
+            getCurrentGroup().refreshProjectFolder((NodeProject) node, PrefUtils.isShowHiddenFilesAndFolders());
+          } catch (IOException ex) {
+            MainFrame.showExceptionDialog(ex);
+          }
         }
       });
       result.add(refresh);
@@ -344,8 +349,12 @@ public final class ExplorerTree extends JScrollPane {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
             if (knowledgeFolder.mkdirs()) {
-              getCurrentGroup().refreshProjectFolder(theProject, PrefUtils.isShowHiddenFilesAndFolders());
-              context.focusInTree(knowledgeFolder);
+              try {
+                getCurrentGroup().refreshProjectFolder(theProject, PrefUtils.isShowHiddenFilesAndFolders());
+                context.focusInTree(knowledgeFolder);
+              } catch (IOException ex) {
+                MainFrame.showExceptionDialog(ex);
+              }
             } else {
               LOGGER.error("Can't create knowledge folder : " + knowledgeFolder); //NOI18N
             }
@@ -584,21 +593,19 @@ public final class ExplorerTree extends JScrollPane {
               try {
                 FileUtils.write(file, model.write(new StringWriter()).toString(), "UTF-8"); //NOI18N
                 ok = true;
-              }
-              catch (IOException ex) {
+              } catch (IOException ex) {
                 LOGGER.error("Can't create MMD file", ex); //NOI18N
                 DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create mind map '" + fileName + "'!");
               }
             }
             break;
             case "puml": { //NOI18N
-              final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"),"\n");
-              final String text = "@startuml "+nextLine+nextLine+"@enduml";
+              final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"), "\n");
+              final String text = "@startuml " + nextLine + nextLine + "@enduml";
               try {
                 FileUtils.write(file, text, "UTF-8"); //NOI18N
                 ok = true;
-              }
-              catch (IOException ex) {
+              } catch (IOException ex) {
                 LOGGER.error("Can't create PUML file", ex); //NOI18N
                 DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create puml file '" + fileName + "'!");
               }
@@ -608,8 +615,7 @@ public final class ExplorerTree extends JScrollPane {
               try {
                 FileUtils.write(file, "", "UTF-8"); //NOI18N
                 ok = true;
-              }
-              catch (IOException ex) {
+              } catch (IOException ex) {
                 LOGGER.error("Can't create TXT file", ex); //NOI18N
                 DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create txt file '" + fileName + "'!");
               }
@@ -621,9 +627,13 @@ public final class ExplorerTree extends JScrollPane {
         }
 
         if (ok) {
-          getCurrentGroup().addChild(folder, file);
-          context.openFileAsTab(file);
-          context.focusInTree(file);
+          try {
+            getCurrentGroup().addChild(folder, PrefUtils.isShowHiddenFilesAndFolders(), file);
+            context.openFileAsTab(file);
+            context.focusInTree(file);
+          } catch (IOException ex) {
+            MainFrame.showExceptionDialog(ex);
+          }
         }
       } else {
         DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Illegal file name!");

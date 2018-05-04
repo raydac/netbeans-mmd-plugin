@@ -46,8 +46,8 @@ public class NodeProject extends NodeFileOrFolder {
   private volatile File folder = null;
   private volatile boolean knowledgeFolderPresented;
   
-  public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) {
-    super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
+  public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) throws IOException {
+    super(group, true, folder.getName(), PrefUtils.isShowHiddenFilesAndFolders(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
     this.knowledgeFolderPresented = new File(folder,Context.KNOWLEDGE_FOLDER).isDirectory();
     
@@ -62,7 +62,7 @@ public class NodeProject extends NodeFileOrFolder {
   }
   
   @Override
-  public void setName(@Nonnull final String name) {
+  public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
     this.folder = new File(folder.getParentFile(), name);
     reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
@@ -79,7 +79,7 @@ public class NodeProject extends NodeFileOrFolder {
     return this.folder;
   }
 
-  public void setFolder(@Nonnull final File folder) {
+  public void setFolder(@Nonnull final File folder) throws IOException {
     Assertions.assertTrue("Must be directory", folder.isDirectory()); //NOI18N
     this.folder = folder;
     reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
@@ -136,7 +136,7 @@ public class NodeProject extends NodeFileOrFolder {
   }
 
   @Override
-  public final void reloadSubtree(final boolean showHiddenFiles) {
+  public final void reloadSubtree(final boolean showHiddenFiles) throws IOException {
     super.reloadSubtree(showHiddenFiles);
     final File knowledgeFolder = new File(this.folder, Context.KNOWLEDGE_FOLDER);
     this.knowledgeFolderPresented = knowledgeFolder.isDirectory();
@@ -151,7 +151,7 @@ public class NodeProject extends NodeFileOrFolder {
         }
         
         if (!knowledgeFolderAdded) {
-            this.children.add(new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), !Files.isWritable(knowledgeFolder.toPath())));
+            this.children.add(new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), showHiddenFiles, !Files.isWritable(knowledgeFolder.toPath())));
             Collections.sort(this.children, this);
         }
     }

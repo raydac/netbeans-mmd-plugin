@@ -40,6 +40,9 @@ import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Path;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
@@ -52,14 +55,14 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   private final boolean readonly;
   
-  public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean readOnly) {
+  public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean showHiddenFiles, final boolean readOnly) throws IOException {
     this.parent = parent;
     this.name = name;
 
     if (folder) {
       this.children = new ArrayList<>();
       this.folderFlag = true;
-      reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
+      reloadSubtree(showHiddenFiles);
     } else {
       this.children = Collections.EMPTY_LIST;
       this.folderFlag = false;
@@ -120,28 +123,30 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   @Nonnull
-  public NodeFileOrFolder addFile(@Nonnull final File file) {
+  public NodeFileOrFolder addFile(@Nonnull final File file, final boolean showHiddenFiles) throws IOException {
     Assertions.assertTrue("Unexpected state!", this.folderFlag && file.getParentFile().equals(this.makeFileForNode())); //NOI18N
-    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
+    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), showHiddenFiles, !Files.isWritable(file.toPath()));
     this.children.add(0, result);
     Collections.sort(this.children, this);
     return result;
   }
 
-  public void setName(@Nonnull final String name) {
+  public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
     reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
   }
 
-  public void reloadSubtree(final boolean addHiddenFilesAndFolders) {
+  public void reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
     if (this.folderFlag) {
       this.children.clear();
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
-        for (final File f : generatedFile.listFiles()) {
-            if (addHiddenFilesAndFolders || !f.isHidden()) {
-                this.children.add(new NodeFileOrFolder(this, f.isDirectory(), f.getName(), !Files.isWritable(f.toPath())));
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(generatedFile.toPath())) {
+          for (final Path p : stream) {
+            if (addHiddenFilesAndFolders || !Files.isHidden(p)) {
+              this.children.add(new NodeFileOrFolder(this, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
             }
+          }
         }
         Collections.sort(this.children, this);
       }

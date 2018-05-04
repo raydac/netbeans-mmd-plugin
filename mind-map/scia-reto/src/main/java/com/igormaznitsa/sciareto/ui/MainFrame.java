@@ -66,7 +66,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private static final long serialVersionUID = 3798040833406256900L;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
+  public static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
 
   private static final boolean DELETE_MOVING_FILE_TO_TRASH = true;
 
@@ -82,7 +82,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
 
-  public MainFrame(@Nonnull @MustNotContainNull final String... args) {
+  public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
     initComponents();
 
@@ -356,6 +356,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }
 
+  public static void showExceptionDialog(@Nonnull final Exception ex) {
+    MainFrame.LOGGER.error("Error", ex);
+    JOptionPane.showMessageDialog(Main.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+  }
+  
   public void processTabChanged(@Nullable final TabTitle title) {
     this.menuSaveAll.setEnabled(this.tabPane.hasEditableAndChangedDocument());
 
@@ -1144,7 +1149,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       final NodeProject alreadyOpened = findProjectForFile(folder);
       if (alreadyOpened == null || enforceSeparatedProject) {
         final boolean firstProject = this.explorerTree.getCurrentGroup().getChildCount() == 0;
-        final NodeProject node = this.explorerTree.getCurrentGroup().addProjectFolder(folder);
+
+        final NodeProject node;
+        try {
+          node = this.explorerTree.getCurrentGroup().addProjectFolder(folder);
+        } catch (final IOException ex) {
+          JOptionPane.showMessageDialog(this.rootPane, "Can't open project : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          LOGGER.error("Can't open project", ex);
+          return false;
+        }
+
         if (firstProject) {
           this.explorerTree.unfoldProject(node);
         }

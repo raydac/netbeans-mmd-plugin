@@ -39,6 +39,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
@@ -52,8 +53,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProjectGroup.class);
 
-  public NodeProjectGroup(@Nonnull final Context context, @Nonnull final String name) {
-    super(null, true, ".", false); //NOI18N
+  public NodeProjectGroup(@Nonnull final Context context, @Nonnull final String name) throws IOException {
+    super(null, true, ".", PrefUtils.isShowHiddenFilesAndFolders(), false); //NOI18N
     this.groupName = name;
     this.context = context;
   }
@@ -86,7 +87,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   }
 
   @Nonnull
-  public NodeProject addProjectFolder(@Nonnull final File folder) {
+  public NodeProject addProjectFolder(@Nonnull final File folder) throws IOException {
     NodeProject newProject = findForFolder(folder);
     if (newProject == null) {
       newProject = new NodeProject(this, folder);
@@ -235,7 +236,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     return path;
   }
 
-  public void refreshProjectFolder(@Nonnull final NodeProject nodeProject, final boolean showHiddenFiles) {
+  public void refreshProjectFolder(@Nonnull final NodeProject nodeProject, final boolean showHiddenFiles) throws IOException {
     final int index = this.getIndex(nodeProject);
     if (index >= 0) {
       nodeProject.reloadSubtree(showHiddenFiles);
@@ -257,8 +258,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     return false;
   }
 
-  public void addChild(@Nonnull final NodeFileOrFolder folder, @Nonnull final File childFile) {
-    final NodeFileOrFolder newNode = folder.addFile(childFile);
+  public void addChild(@Nonnull final NodeFileOrFolder folder, final boolean showHiddenFiles, @Nonnull final File childFile) throws IOException {
+    final NodeFileOrFolder newNode = folder.addFile(childFile, showHiddenFiles);
     final TreeModelEvent event = new TreeModelEvent(this, folder.makeTreePath(), new int[]{newNode.getIndexAtParent()}, new Object[]{newNode});
     for (final TreeModelListener l : this.listeners) {
       l.treeNodesInserted(event);

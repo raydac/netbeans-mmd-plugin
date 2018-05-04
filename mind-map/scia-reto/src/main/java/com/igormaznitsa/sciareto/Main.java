@@ -374,7 +374,13 @@ public class Main {
                 + "Check that you have installed Java correctly to avoid the warning", "Warning", JOptionPane.WARNING_MESSAGE);
           }
 
-          MAIN_FRAME = new MainFrame(args);
+          try{
+            MAIN_FRAME = new MainFrame(args);
+          } catch(IOException ex) {
+            LOGGER.error("Can't create frame", ex);
+            JOptionPane.showMessageDialog(null, "Can't create frame : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+          }
           MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
 
           if (splash.get() != null) {
