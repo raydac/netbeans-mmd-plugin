@@ -672,7 +672,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
 
       reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
-      this.imageComponent.setImage(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
+      this.imageComponent.setImage(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())), false);
       updatePageNumberInfo(imageIndex, totalPages);
 
       this.renderedScrollPane.revalidate();

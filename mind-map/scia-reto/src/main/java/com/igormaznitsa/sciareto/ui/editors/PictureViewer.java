@@ -129,7 +129,7 @@ public final class PictureViewer extends AbstractEditor {
 
     this.image = loaded;
 
-    this.imageViewer.setImage(this.image);
+    this.imageViewer.setImage(this.image, true);
     this.scrollPane.setViewportView(this.imageViewer);
     this.scrollPane.revalidate();
   }

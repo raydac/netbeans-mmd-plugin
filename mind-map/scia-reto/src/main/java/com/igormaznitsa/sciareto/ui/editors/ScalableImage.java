@@ -160,6 +160,10 @@ final class ScalableImage extends JComponent {
     }
   }
 
+  public float getScale(){
+    return this.scale;
+  }
+  
   @Override
   public void paintComponent(@Nonnull final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
@@ -185,9 +189,11 @@ final class ScalableImage extends JComponent {
     return this.image;
   }
 
-  public void setImage(@Nullable final BufferedImage image) {
+  public void setImage(@Nullable final BufferedImage image, final boolean resetZoom) {
     this.image = image;
-    this.scale = 1.0f;
+    if (resetZoom) {
+      this.scale = 1.0f;
+    }
     revalidate();
     repaint();
   }
