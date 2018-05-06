@@ -29,7 +29,7 @@
         <jung.version>2.1.1</jung.version>
         <batik.version>1.9.1</batik.version>
         <jlatexmath.version>1.0.6</jlatexmath.version>
-        <plantuml.version>1.2018.4</plantuml.version>
+        <plantuml.version>1.2018.5</plantuml.version>
         <rsyntax.version>2.6.1</rsyntax.version>
         <mixpanel.version>1.4.4</mixpanel.version>
         <jna.version>4.5.1</jna.version>
