@@ -45,7 +45,6 @@ import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
@@ -187,6 +186,8 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
           f.fork();
         }
 
+        Collections.reverse(forks);
+        
         for (final ForkedLoadNodeTask f : forks) {
           this.children.add(f.join());
         }
