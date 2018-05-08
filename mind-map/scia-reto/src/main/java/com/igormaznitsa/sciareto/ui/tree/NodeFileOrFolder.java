@@ -38,13 +38,46 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(NodeFileOrFolder.class);
+
+  protected static class ForkedLoadNodeTask extends RecursiveTask<NodeFileOrFolder> {
+
+    private final NodeFileOrFolder parent;
+    private final boolean isdir;
+    private final String name;
+    private final boolean addhidden;
+    private final boolean writable;
+
+    protected ForkedLoadNodeTask(@Nonnull final NodeFileOrFolder parent, final boolean isdir, @Nonnull final String name, final boolean addhidden, final boolean writable) {
+      this.parent = parent;
+      this.name = name;
+      this.addhidden = addhidden;
+      this.writable = writable;
+      this.isdir = isdir;
+    }
+
+    @Override
+    @Nonnull
+    protected NodeFileOrFolder compute() {
+      try {
+        return new NodeFileOrFolder(this.parent, this.isdir, this.name, this.addhidden, this.writable);
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+  }
 
   protected final NodeFileOrFolder parent;
 
@@ -54,7 +87,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   protected volatile String name;
 
   private final boolean readonly;
-  
+
   public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean showHiddenFiles, final boolean readOnly) throws IOException {
     this.parent = parent;
     this.name = name;
@@ -141,13 +174,23 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
       this.children.clear();
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
+        final List<ForkedLoadNodeTask> forks = new ArrayList<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(generatedFile.toPath())) {
           for (final Path p : stream) {
             if (addHiddenFilesAndFolders || !Files.isHidden(p)) {
-              this.children.add(new NodeFileOrFolder(this, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
+              forks.add(new ForkedLoadNodeTask(this, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
             }
           }
         }
+
+        for (final ForkedLoadNodeTask f : forks) {
+          f.fork();
+        }
+
+        for (final ForkedLoadNodeTask f : forks) {
+          this.children.add(f.join());
+        }
+
         Collections.sort(this.children, this);
       }
     }
