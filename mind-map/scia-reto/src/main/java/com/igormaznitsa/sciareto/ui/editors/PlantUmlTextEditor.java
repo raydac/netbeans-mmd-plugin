@@ -174,9 +174,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.renderedScrollPane.getHorizontalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
     this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
 
-    final JToolBar menu = new JToolBar();
-    menu.setFloatable(false);
-    
+    final JPanel menu = new JPanel(new GridBagLayout());
+    final GridBagConstraints gbdata = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+
     final JButton buttonRrefresh = new JButton(loadMenuIcon("arrow_refresh"));
     buttonRrefresh.setFocusPainted(false);
     buttonRrefresh.setToolTipText("Refresh image for text");
@@ -210,14 +210,14 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         }
       }
     });
-    
+
     final JButton buttonClipboardText = new JButton(loadMenuIcon("clipboard_text"));
     buttonClipboardText.setToolTipText("Copy script to clipboard");
     buttonClipboardText.setFocusPainted(false);
     buttonClipboardText.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(editor.getText()),null);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(editor.getText()), null);
       }
     });
 
@@ -259,21 +259,26 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image", JOptionPane.PLAIN_MESSAGE);
       }
     });
-    
-    
-    menu.add(buttonRrefresh);
-    menu.add(buttonClipboardImage);
-    menu.add(buttonClipboardText);
-    menu.add(buttonExportImage);
-    menu.add(buttonPrintImage);
-    menu.add(this.buttonPrevPage);
-    menu.add(this.labelPageNumber);
-    menu.add(this.buttonNextPage);
 
-    menu.add(new Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(Integer.MAX_VALUE, 0), new java.awt.Dimension(Integer.MAX_VALUE, 0)));
+    menu.add(buttonRrefresh, gbdata);
+    menu.add(buttonClipboardImage, gbdata);
+    menu.add(buttonClipboardText, gbdata);
+    menu.add(buttonExportImage, gbdata);
+    menu.add(buttonPrintImage, gbdata);
+    menu.add(Box.createHorizontalStrut(16), gbdata);
+    menu.add(this.buttonPrevPage, gbdata);
+    menu.add(this.labelPageNumber, gbdata);
+    menu.add(this.buttonNextPage, gbdata);
 
-    menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO));
-    menu.add(this.labelWarningNoGraphwiz);
+    gbdata.fill = GridBagConstraints.HORIZONTAL;
+    gbdata.weightx = 10000;
+    menu.add(Box.createHorizontalBox(), gbdata);
+    gbdata.weightx = 1;
+    gbdata.fill = GridBagConstraints.NONE;
+
+    menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO), gbdata);
+    menu.add(makeLinkLabel("AsciiMath Reference", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
+    menu.add(this.labelWarningNoGraphwiz, gbdata);
 
     this.renderedPanel.add(menu, BorderLayout.NORTH);
     this.renderedPanel.add(this.renderedScrollPane, BorderLayout.CENTER);
@@ -324,7 +329,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
 
     updateGraphvizLabelVisibility();
-    
+
     this.hideTextPanel();
   }
 
@@ -336,7 +341,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
   }
-  
+
   private int countNewPages(@Nonnull final String text) {
     int count = 1;
     final Matcher matcher = NEWPAGE_PATTERN.matcher(text);
