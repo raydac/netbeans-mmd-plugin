@@ -54,6 +54,8 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
@@ -177,10 +179,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     final JPanel menu = new JPanel(new GridBagLayout());
     final GridBagConstraints gbdata = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
 
-    final JButton buttonRrefresh = new JButton(loadMenuIcon("arrow_refresh"));
-    buttonRrefresh.setFocusPainted(false);
-    buttonRrefresh.setToolTipText("Refresh image for text");
-    buttonRrefresh.addActionListener(new ActionListener() {
+    final JButton buttonRefresh = new JButton(loadMenuIcon("arrow_refresh"));
+    buttonRefresh.setToolTipText("Refresh image for text");
+    buttonRefresh.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         renderCurrentTextInPlantUml();
@@ -188,7 +189,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     });
 
     final JButton buttonExportImage = new JButton(loadMenuIcon("picture_save"));
-    buttonExportImage.setFocusPainted(false);
     buttonExportImage.setToolTipText("Export image as file");
     buttonExportImage.addActionListener(new ActionListener() {
       @Override
@@ -200,7 +200,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
     buttonClipboardImage.setToolTipText("Copy image to clipboard");
-    buttonClipboardImage.setFocusPainted(false);
     buttonClipboardImage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -213,7 +212,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     final JButton buttonClipboardText = new JButton(loadMenuIcon("clipboard_text"));
     buttonClipboardText.setToolTipText("Copy script to clipboard");
-    buttonClipboardText.setFocusPainted(false);
     buttonClipboardText.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -222,7 +220,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     });
 
     this.buttonPrevPage = new JButton(loadMenuIcon("resultset_previous"));
-    this.buttonPrevPage.setFocusPainted(false);
     this.buttonPrevPage.setToolTipText("Previous page");
     this.buttonPrevPage.addActionListener(new ActionListener() {
       @Override
@@ -234,7 +231,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.buttonNextPage = new JButton(loadMenuIcon("resultset_next"));
     this.buttonNextPage.setToolTipText("Next page");
-    this.buttonNextPage.setFocusPainted(false);
     this.buttonNextPage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -249,7 +245,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     final JButton buttonPrintImage = new JButton(loadMenuIcon("printer"));
     buttonPrintImage.setToolTipText("Print current page");
-    buttonPrintImage.setFocusPainted(false);
     buttonPrintImage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -260,7 +255,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
-    menu.add(buttonRrefresh, gbdata);
+    menu.add(buttonRefresh, gbdata);
     menu.add(buttonClipboardImage, gbdata);
     menu.add(buttonClipboardText, gbdata);
     menu.add(buttonExportImage, gbdata);
@@ -317,6 +312,16 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
+    this.editor.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if (!isTextEditorVisible()) {
+          buttonRefresh.requestFocus();
+        }
+      }
+    });
+
+    
     this.undoManager = new RUndoManager(this.editor);
 
     loadContent(file);
