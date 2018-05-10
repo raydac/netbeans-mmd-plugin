@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -33,23 +33,6 @@ import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import net.sourceforge.plantuml.FileFormat;
-import net.sourceforge.plantuml.FileFormatOption;
-import net.sourceforge.plantuml.OptionFlags;
-import net.sourceforge.plantuml.SourceStringReader;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rtextarea.RTextScrollPane;
-import org.fife.ui.rtextarea.RUndoManager;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
@@ -74,16 +57,32 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import net.sourceforge.plantuml.FileFormat;
+import net.sourceforge.plantuml.FileFormatOption;
+import net.sourceforge.plantuml.OptionFlags;
+import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.UmlDiagram;
 import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
+import org.fife.ui.rtextarea.RTextScrollPane;
+import org.fife.ui.rtextarea.RUndoManager;
 
 public final class PlantUmlTextEditor extends AbstractEditor {
 
@@ -128,6 +127,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private final JButton buttonPrevPage;
   private final JButton buttonNextPage;
   private final JLabel labelPageNumber;
+  private final JCheckBox autoRefresh;
   private int pageNumberToRender = 0;
 
   private final AtomicReference<Timer> autoRefreshTimer = new AtomicReference<>();
@@ -265,6 +265,21 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
+    this.autoRefresh = new JCheckBox("Auto-refresh", true);
+    this.autoRefresh.setToolTipText("Refresh rendered image during typing");
+
+    this.autoRefresh.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        if (!autoRefresh.isSelected()) {
+          LOGGER.info("Auto-refresh is turned off");
+          stopAutoupdateTimer();
+        } else {
+          LOGGER.info("Auto-refresh is turned on");
+        }
+      }
+    });
+
     menu.add(buttonRefresh, gbdata);
     menu.add(buttonClipboardImage, gbdata);
     menu.add(buttonClipboardText, gbdata);
@@ -274,6 +289,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     menu.add(this.buttonPrevPage, gbdata);
     menu.add(this.labelPageNumber, gbdata);
     menu.add(this.buttonNextPage, gbdata);
+    menu.add(this.autoRefresh, gbdata);
 
     gbdata.fill = GridBagConstraints.HORIZONTAL;
     gbdata.weightx = 10000;
@@ -358,7 +374,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.editor.addKeyListener(new KeyAdapter() {
       @Override
       public void keyTyped(final @Nonnull KeyEvent e) {
-        if (autoRefreshTimer.get() == null) {
+        if (autoRefresh.isSelected() && autoRefreshTimer.get() == null) {
           final Timer oneTimeRefreshTimer = new Timer(AUTOUPDATE_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -369,7 +385,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
                 } else {
                   autoRefreshTimer.set(null);
                 }
-              } catch (final InterruptedException ex){
+              } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
               } catch (final Exception ex) {
                 LOGGER.error("Exception in auto-refresh processing", ex);
@@ -402,7 +418,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       refTimer.stop();
     }
   }
-  
+
   private int countNewPages(@Nonnull final String text) {
     int count = 1;
     final Matcher matcher = NEWPAGE_PATTERN.matcher(text);
@@ -741,7 +757,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   private void renderCurrentTextInPlantUml() {
     stopAutoupdateTimer();
-    
+
     final String text = this.editor.getText();
 
     final SourceStringReader reader = new SourceStringReader(text, "UTF-8");
