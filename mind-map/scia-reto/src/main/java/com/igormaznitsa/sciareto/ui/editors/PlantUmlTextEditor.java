@@ -56,6 +56,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
@@ -69,10 +71,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.Timer;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import net.sourceforge.plantuml.UmlDiagram;
+import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -88,6 +94,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private static final Icon ICON_INFO = new ImageIcon(UiUtils.loadIcon("info16.png"));
 
   private static final Pattern NEWPAGE_PATTERN = Pattern.compile("^\\s*newpage($|\\s.*$)", Pattern.MULTILINE);
+
+  private static final int AUTOUPDATE_DELAY = 5000;
 
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
@@ -121,6 +129,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private final JButton buttonNextPage;
   private final JLabel labelPageNumber;
   private int pageNumberToRender = 0;
+
+  private final AtomicReference<Timer> autoRefreshTimer = new AtomicReference<>();
 
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
@@ -321,7 +331,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
-    
     this.undoManager = new RUndoManager(this.editor);
 
     loadContent(file);
@@ -345,8 +354,55 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         mainPanel.setDividerLocation(0);
       }
     });
+
+    this.editor.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyTyped(final @Nonnull KeyEvent e) {
+        if (autoRefreshTimer.get() == null) {
+          final Timer oneTimeRefreshTimer = new Timer(AUTOUPDATE_DELAY, new ActionListener() {
+            @Override
+            public void actionPerformed(@Nonnull final ActionEvent e) {
+              try {
+                final String txt = editor.getText();
+                if (isSyntaxCorrect(txt)) {
+                  renderCurrentTextInPlantUml();
+                } else {
+                  autoRefreshTimer.set(null);
+                }
+              } catch (final InterruptedException ex){
+                Thread.currentThread().interrupt();
+              } catch (final Exception ex) {
+                LOGGER.error("Exception in auto-refresh processing", ex);
+              }
+            }
+          });
+          oneTimeRefreshTimer.setRepeats(false);
+          if (autoRefreshTimer.compareAndSet(null, oneTimeRefreshTimer)) {
+            oneTimeRefreshTimer.start();
+          }
+        }
+      }
+    });
   }
 
+  @Override
+  protected void doDispose() {
+    stopAutoupdateTimer();
+  }
+
+  @Override
+  public boolean saveDocumentAs() throws IOException {
+    stopAutoupdateTimer();
+    return super.saveDocumentAs();
+  }
+
+  private void stopAutoupdateTimer() {
+    final Timer refTimer = this.autoRefreshTimer.getAndSet(null);
+    if (refTimer != null) {
+      refTimer.stop();
+    }
+  }
+  
   private int countNewPages(@Nonnull final String text) {
     int count = 1;
     final Matcher matcher = NEWPAGE_PATTERN.matcher(text);
@@ -389,6 +445,17 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       show = false;
     }
     this.labelWarningNoGraphwiz.setVisible(show);
+  }
+
+  public static boolean isSyntaxCorrect(@Nonnull final String text) throws InterruptedException {
+    boolean result = false;
+    final SourceStringReader reader = new SourceStringReader(text);
+    reader.getBlocks();
+    final Diagram system = reader.getBlocks().get(0).getDiagram();
+    if (system instanceof UmlDiagram) {
+      result = true;
+    }
+    return result;
   }
 
   private void initPlantUml() {
@@ -673,6 +740,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   }
 
   private void renderCurrentTextInPlantUml() {
+    stopAutoupdateTimer();
+    
     final String text = this.editor.getText();
 
     final SourceStringReader reader = new SourceStringReader(text, "UTF-8");
