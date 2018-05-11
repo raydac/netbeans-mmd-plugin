@@ -467,9 +467,14 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     boolean result = false;
     final SourceStringReader reader = new SourceStringReader(text);
     reader.getBlocks();
-    final Diagram system = reader.getBlocks().get(0).getDiagram();
-    if (system instanceof UmlDiagram) {
-      result = true;
+    try {
+      final Diagram system = reader.getBlocks().get(0).getDiagram();
+      if (system instanceof UmlDiagram) {
+        result = true;
+      }
+    } catch (Exception ex) {
+      LOGGER.warn("Detected exception in syntax check : " + ex.getMessage());
+      result = false;
     }
     return result;
   }

@@ -153,6 +153,10 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
               currentTokenType = Token.COMMENT_EOL;
             }
             break;
+            case '/': {
+              currentTokenType = Token.COMMENT_KEYWORD;
+            }
+            break;
             default: {
               if (RSyntaxUtilities.isWhitespace(c)) {
                 currentTokenType = Token.WHITESPACE;
@@ -167,7 +171,26 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
           }
         }
         break;
-
+        case Token.COMMENT_MULTILINE: {
+          if (c == '/' && i > offset && array[i - 1] == '\'') {
+            addToken(text, currentTokenStart, i, Token.COMMENT_MULTILINE, newStartOffset + currentTokenStart);
+            currentTokenType = Token.NULL;
+          }
+        }
+        break;
+        case Token.COMMENT_KEYWORD: {
+          switch (c) {
+            case '\'': {
+              currentTokenType = Token.COMMENT_MULTILINE;
+            }
+            break;
+            default: {
+              currentTokenType = Token.IDENTIFIER;
+            }
+            break;
+          }
+        }
+        break;
         case Token.WHITESPACE: {
           switch (c) {
             case '"': {
@@ -304,6 +327,7 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
 
     switch (currentTokenType) {
       // Remember what token type to begin the next line with.
+      case Token.COMMENT_MULTILINE:
       case Token.LITERAL_STRING_DOUBLE_QUOTE: {
         addToken(text, currentTokenStart, end - 1, currentTokenType, newStartOffset + currentTokenStart);
       }
