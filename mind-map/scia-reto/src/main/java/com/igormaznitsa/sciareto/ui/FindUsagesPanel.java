@@ -240,7 +240,8 @@ public class FindUsagesPanel extends javax.swing.JPanel {
         oldThread.interrupt();
         try {
           oldThread.join(1000L);
-        } catch (InterruptedException ex) {
+        } catch (final InterruptedException ex) {
+          Thread.currentThread().interrupt();
           LOGGER.error("Exception during waiting of search thread interruption", ex); //NOI18N
         }
       }

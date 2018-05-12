@@ -339,6 +339,7 @@ public class FindFilesForTextPanel extends javax.swing.JPanel {
         oldThread.join(1000L);
       }
       catch (InterruptedException ex) {
+        Thread.currentThread().interrupt();
         LOGGER.error("Exception during waiting of search thread interruption", ex); //NOI18N
       }
     }
