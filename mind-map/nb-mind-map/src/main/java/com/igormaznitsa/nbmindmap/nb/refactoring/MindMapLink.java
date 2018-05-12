@@ -80,6 +80,7 @@ public class MindMapLink {
       Thread.sleep(time);
     }catch(InterruptedException ex){
       LOGGER.warn("Delay has been interrupted");
+      Thread.currentThread().interrupt();
     }
   }
   

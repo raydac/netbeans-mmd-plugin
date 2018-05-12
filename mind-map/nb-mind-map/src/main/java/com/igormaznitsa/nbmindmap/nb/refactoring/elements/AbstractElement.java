@@ -57,7 +57,8 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
     try {
       Thread.sleep(delay);
     }
-    catch (InterruptedException ex) {
+    catch (final InterruptedException ex) {
+      Thread.currentThread().interrupt();
       throw new IOException("Interrupted", ex); //NOI18N
     }
   }
