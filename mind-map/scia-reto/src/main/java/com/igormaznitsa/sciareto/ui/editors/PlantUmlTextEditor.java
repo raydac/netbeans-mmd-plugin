@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,7 +95,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   private static final Pattern NEWPAGE_PATTERN = Pattern.compile("^\\s*newpage($|\\s.*$)", Pattern.MULTILINE);
 
-  private static final int AUTOUPDATE_DELAY = 5000;
+  private static final int DELAY_AUTOREFRESH_SECONDS = 5;
 
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
@@ -266,7 +267,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     });
 
     this.autoRefresh = new JCheckBox("Auto-refresh", true);
-    this.autoRefresh.setToolTipText("Refresh rendered image during typing");
+    this.autoRefresh.setToolTipText(String.format("Refresh rendered image during typing (in %d seconds)", DELAY_AUTOREFRESH_SECONDS));
 
     this.autoRefresh.addActionListener(new ActionListener() {
       @Override
@@ -375,7 +376,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       @Override
       public void keyTyped(final @Nonnull KeyEvent e) {
         if (autoRefresh.isSelected() && autoRefreshTimer.get() == null) {
-          final Timer oneTimeRefreshTimer = new Timer(AUTOUPDATE_DELAY, new ActionListener() {
+          final Timer oneTimeRefreshTimer = new Timer((int)TimeUnit.SECONDS.toMillis(DELAY_AUTOREFRESH_SECONDS), new ActionListener() {
             @Override
             public void actionPerformed(@Nonnull final ActionEvent e) {
               try {
