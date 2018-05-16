@@ -42,6 +42,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
+import java.io.IOError;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
@@ -72,7 +73,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     protected NodeFileOrFolder compute() {
       try {
         return new NodeFileOrFolder(this.parent, this.isdir, this.name, this.addhidden, this.writable);
-      } catch (IOException ex) {
+      } catch (final IOException ex) {
         throw new RuntimeException(ex);
       }
     }
@@ -187,9 +188,17 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
         }
 
         Collections.reverse(forks);
-        
+
         for (final ForkedLoadNodeTask f : forks) {
-          this.children.add(f.join());
+          try {
+            this.children.add(f.join());
+          } catch (final RuntimeException ex) {
+            if (ex.getCause() instanceof IOError) {
+              throw (IOException) ex.getCause();
+            } else {
+              throw new IOException(ex);
+            }
+          }
         }
 
         Collections.sort(this.children, this);
