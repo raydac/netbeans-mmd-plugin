@@ -175,7 +175,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
         final List<ForkedLoadNodeTask> forks = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(generatedFile.toPath())) {
+        try (final DirectoryStream<Path> stream = Files.newDirectoryStream(generatedFile.toPath())) {
           for (final Path p : stream) {
             if (addHiddenFilesAndFolders || !Files.isHidden(p)) {
               forks.add(new ForkedLoadNodeTask(this, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
