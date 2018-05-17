@@ -18,7 +18,6 @@
  */
 package com.igormaznitsa.sciareto.preferences;
 
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -23,13 +23,14 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.ui.Icons;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
+import java.awt.Component;
+import java.awt.Image;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.*;
 import java.util.Locale;
 
 public class TreeCellRenderer extends DefaultTreeCellRenderer {
@@ -138,7 +139,9 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
     if (value != null) {
       if (value instanceof NodeFileOrFolder) {
         final NodeFileOrFolder node = (NodeFileOrFolder) value;
-        if (node instanceof NodeProject) {
+        if (node.isLoading()) {
+          this.setIcon(ProjectTreeIconAnimationConroller.LOADING);
+        } else if (node instanceof NodeProject) {
           if (node.isReadOnly()) {
             this.setIcon(expanded ? PROJECT_OPENED_RO : PROJECT_CLOSED_RO);
           } else {

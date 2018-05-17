@@ -72,6 +72,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import javax.swing.JTree;
 
 public final class ExplorerTree extends JScrollPane {
 
@@ -89,7 +90,7 @@ public final class ExplorerTree extends JScrollPane {
     this.projectTree.setDropMode(DropMode.ON);
 
     this.projectTree.setEditable(true);
-
+    
     ToolTipManager.sharedInstance().registerComponent(this.projectTree);
 
     this.projectTree.setCellRenderer(new TreeCellRenderer());
@@ -129,7 +130,7 @@ public final class ExplorerTree extends JScrollPane {
           final TreePath selPath = projectTree.getPathForLocation(e.getX(), e.getY());
           if (selRow >= 0) {
             final NodeFileOrFolder node = (NodeFileOrFolder) selPath.getLastPathComponent();
-            if (node != null && node.isLeaf()) {
+            if (node != null && !node.isLoading() && node.isLeaf()) {
               final File file = node.makeFileForNode();
               if (file != null) {
                 if (context.openFileAsTab(file)) {
@@ -167,7 +168,7 @@ public final class ExplorerTree extends JScrollPane {
         if (selPath != null) {
           projectTree.setSelectionPath(selPath);
           final Object last = selPath.getLastPathComponent();
-          if (last instanceof NodeFileOrFolder) {
+          if (last instanceof NodeFileOrFolder && !((NodeFileOrFolder)last).isLoading()) {
             makePopupMenu((NodeFileOrFolder) last).show(e.getComponent(), e.getX(), e.getY());
           }
         }
@@ -176,6 +177,11 @@ public final class ExplorerTree extends JScrollPane {
     });
   }
 
+  @Nonnull
+  public JTree getProjectTree() {
+    return this.projectTree;
+  }
+  
   public boolean hasSelectedItem() {
     return this.projectTree.getSelectionPath() != null;
   }
@@ -307,11 +313,7 @@ public final class ExplorerTree extends JScrollPane {
       refresh.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          try {
-            getCurrentGroup().refreshProjectFolder((NodeProject) node, PrefUtils.isShowHiddenFilesAndFolders());
-          } catch (IOException ex) {
-            MainFrame.showExceptionDialog(ex);
-          }
+          getCurrentGroup().startProjectFolderRefresh((NodeProject) node);
         }
       });
       result.add(refresh);
@@ -349,12 +351,12 @@ public final class ExplorerTree extends JScrollPane {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
             if (knowledgeFolder.mkdirs()) {
-              try {
-                getCurrentGroup().refreshProjectFolder(theProject, PrefUtils.isShowHiddenFilesAndFolders());
-                context.focusInTree(knowledgeFolder);
-              } catch (IOException ex) {
-                MainFrame.showExceptionDialog(ex);
-              }
+                getCurrentGroup().startProjectFolderRefresh(theProject, new Runnable() {
+                  @Override
+                  public void run() {
+                    context.focusInTree(knowledgeFolder);
+                  }
+                });
             } else {
               LOGGER.error("Can't create knowledge folder : " + knowledgeFolder); //NOI18N
             }

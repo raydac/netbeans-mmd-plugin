@@ -71,6 +71,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Main;
+import java.lang.reflect.InvocationTargetException;
 
 public final class UiUtils {
 
@@ -119,6 +120,20 @@ public final class UiUtils {
   }
 
   private UiUtils() {
+  }
+
+  public static void invokeInSwingThread(@Nonnull final Runnable runnable) {
+    if (SwingUtilities.isEventDispatchThread()) {
+      runnable.run();
+    } else {
+      try {
+        SwingUtilities.invokeAndWait(runnable);
+      } catch (InterruptedException ex) {
+        Thread.currentThread().interrupt();
+      } catch (InvocationTargetException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
   }
 
   @Nullable

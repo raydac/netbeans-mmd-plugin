@@ -45,22 +45,24 @@ public class NodeProject extends NodeFileOrFolder {
 
   private volatile File folder = null;
   private volatile boolean knowledgeFolderPresented;
-  
+  private volatile boolean loading;
+
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) throws IOException {
     super(group, true, folder.getName(), PrefUtils.isShowHiddenFilesAndFolders(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
-    this.knowledgeFolderPresented = new File(folder,Context.KNOWLEDGE_FOLDER).isDirectory();
-    
-    final long startTime = System.currentTimeMillis();
-    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
-    final long spentTime = System.currentTimeMillis() - startTime;
-    LOGGER.info(String.format("Spent time to open project '%s' took %d ms", folder, spentTime));
+    this.knowledgeFolderPresented = new File(folder, Context.KNOWLEDGE_FOLDER).isDirectory();
+    this.loading = true;
   }
 
-  public boolean hasKnowledgeFolder(){
+  @Override
+  public boolean isLoading() {
+    return this.loading;
+  }
+
+  public boolean hasKnowledgeFolder() {
     return this.knowledgeFolderPresented;
   }
-  
+
   @Override
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
@@ -95,7 +97,7 @@ public class NodeProject extends NodeFileOrFolder {
   public List<File> findAffectedFiles(@Nonnull final File changedFile) {
     final File baseFolder = makeFileForNode();
     final boolean folder = changedFile.isDirectory();
-    
+
     final List<File> result = new ArrayList<>();
     for (final File mindMapFile : FileUtils.listFiles(baseFolder, new String[]{"mmd", "MMD"}, true)) { //NOI18N
       try {
@@ -136,24 +138,41 @@ public class NodeProject extends NodeFileOrFolder {
   }
 
   @Override
-  public final void reloadSubtree(final boolean showHiddenFiles) throws IOException {
-    super.reloadSubtree(showHiddenFiles);
-    final File knowledgeFolder = new File(this.folder, Context.KNOWLEDGE_FOLDER);
-    this.knowledgeFolderPresented = knowledgeFolder.isDirectory();
-    if (!showHiddenFiles && this.knowledgeFolderPresented) {
+  public void reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
+    final long startTime = System.currentTimeMillis();
+    super.reloadSubtree(addHiddenFilesAndFolders);
+    LOGGER.info(String.format("Project %s reloaded, spent %d ms", this.toString(), System.currentTimeMillis() - startTime));
+  }
+
+  @Override
+  @Nonnull
+  @MustNotContainNull
+  protected List<NodeFileOrFolder> _reloadSubtree(final boolean showHiddenFiles) throws IOException {
+    this.loading = true;
+    this.getGroup().notifyProjectStateChanged(this);
+    try {
+      final List<NodeFileOrFolder> result = new ArrayList<>(super._reloadSubtree(showHiddenFiles));
+      final File knowledgeFolder = new File(this.folder, Context.KNOWLEDGE_FOLDER);
+      this.knowledgeFolderPresented = knowledgeFolder.isDirectory();
+      if (!showHiddenFiles && this.knowledgeFolderPresented) {
         boolean knowledgeFolderAdded = false;
-        
-        for(final NodeFileOrFolder f : this.children) {
-            if (f.isProjectKnowledgeFolder()) {
-                knowledgeFolderAdded = true;
-                break;
-            }
+
+        for (final NodeFileOrFolder f : result) {
+          if (f.isProjectKnowledgeFolder()) {
+            knowledgeFolderAdded = true;
+            break;
+          }
         }
-        
+
         if (!knowledgeFolderAdded) {
-            this.children.add(new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), showHiddenFiles, !Files.isWritable(knowledgeFolder.toPath())));
-            Collections.sort(this.children, this);
+          result.add(new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), showHiddenFiles, !Files.isWritable(knowledgeFolder.toPath())));
+          Collections.sort(result, this);
         }
+      }
+      return result;
+    } finally {
+      this.loading = false;
+      this.getGroup().notifyProjectStateChanged(this);
     }
   }
 

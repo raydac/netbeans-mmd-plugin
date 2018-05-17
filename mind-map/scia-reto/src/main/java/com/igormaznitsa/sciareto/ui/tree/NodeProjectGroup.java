@@ -34,11 +34,13 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -208,6 +210,23 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     this.listeners.remove(l);
   }
 
+  void notifyProjectStateChanged(@Nonnull final NodeProject project) {
+    Assertions.assertTrue("Must belong the group", project.getGroup() == this);
+    
+    final TreeModelEvent event = new TreeModelEvent(this, new TreePath(new Object[]{this, project}));
+    
+    UiUtils.invokeInSwingThread(new Runnable() {
+      @Override
+      public void run() {
+        for (final TreeModelListener l : listeners) {
+          l.treeStructureChanged(event);
+        }
+      }
+    });
+  }
+
+  
+  
   @Nullable
   public NodeProject findProjectForFile(@Nonnull final File file) {
     final Path filepath = Paths.toPath(file);
@@ -236,11 +255,15 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     return path;
   }
 
-  public void refreshProjectFolder(@Nonnull final NodeProject nodeProject, final boolean showHiddenFiles) throws IOException {
+  public void startProjectFolderRefresh(@Nonnull final NodeProject nodeProject, @Nullable @MustNotContainNull final Runnable ... invokeLater) {
     final int index = this.getIndex(nodeProject);
     if (index >= 0) {
-      nodeProject.reloadSubtree(showHiddenFiles);
-      nodeProject.fireNotifySubtreeChanged(this, this.listeners);
+      Main.getApplicationFrame().asyncReloadProject(nodeProject, ArrayUtils.joinArrays(invokeLater, new Runnable[]{new Runnable() {
+        @Override
+        public void run() {
+          nodeProject.fireNotifySubtreeChanged(NodeProjectGroup.this, listeners);
+        }
+      }}));
     }
   }
 

@@ -20,6 +20,7 @@ package com.igormaznitsa.sciareto.ui;
 
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -27,6 +28,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.ui.editors.*;
@@ -44,6 +46,7 @@ import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
+import com.igormaznitsa.sciareto.ui.tree.ProjectTreeIconAnimationConroller;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.annotation.Nonnull;
@@ -60,6 +63,9 @@ import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
@@ -81,6 +87,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private final JPanel mainPanel;
 
   private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
+
+  private static final ExecutorService loadingExecutorService = Executors.newCachedThreadPool(new ThreadFactory() {
+    @Override
+    @Nonnull
+    public Thread newThread(@Nonnull final Runnable r) {
+      final Thread result = new Thread(r, "LOAIDNG_THREAD");
+      result.setDaemon(true);
+      return result;
+    }
+  });
 
   public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
@@ -358,9 +374,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   public static void showExceptionDialog(@Nonnull final Exception ex) {
     MainFrame.LOGGER.error("Error", ex);
-    JOptionPane.showMessageDialog(Main.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    UiUtils.invokeInSwingThread(new Runnable() {
+      @Override
+      public void run() {
+        JOptionPane.showMessageDialog(Main.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    });
   }
-  
+
   public void processTabChanged(@Nullable final TabTitle title) {
     this.menuSaveAll.setEnabled(this.tabPane.hasEditableAndChangedDocument());
 
@@ -1142,6 +1163,39 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }//GEN-LAST:event_menuOpenProjectActionPerformed
 
+  @Nonnull
+  @ReturnsOriginal
+  public NodeProject asyncReloadProject(@Nonnull final NodeProject project, @Nullable final Runnable ... invokeLater) {
+    LOGGER.info("Starting asyncronous loading of " + project.toString());
+    
+    ProjectTreeIconAnimationConroller.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), project);
+    
+    loadingExecutorService.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          project.reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
+        } catch (final IOException ex) {
+          LOGGER.error("Can't open project", ex);
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              JOptionPane.showMessageDialog(rootPane, "Can't open project : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+          });
+        } finally {
+          ProjectTreeIconAnimationConroller.getInstance().unregisterLoadingProject(project);
+          if (invokeLater != null && invokeLater.length > 0) {
+            for(final Runnable r : invokeLater) {
+              SwingUtilities.invokeLater(r);
+            }
+          }
+        }
+      }
+    });
+    return project;
+  }
+
   @Override
   public boolean openProject(@Nonnull final File folder, final boolean enforceSeparatedProject) {
     boolean result = false;
@@ -1152,7 +1206,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         final NodeProject node;
         try {
-          node = this.explorerTree.getCurrentGroup().addProjectFolder(folder);
+          node = asyncReloadProject(this.explorerTree.getCurrentGroup().addProjectFolder(folder), null);
         } catch (final IOException ex) {
           JOptionPane.showMessageDialog(this.rootPane, "Can't open project : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
           LOGGER.error("Can't open project", ex);

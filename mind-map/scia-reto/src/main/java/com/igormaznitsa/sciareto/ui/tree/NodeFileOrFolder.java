@@ -103,6 +103,10 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     this.readonly = readOnly;
   }
 
+  public boolean isLoading() {
+    return false;
+  }
+  
   public int size() {
     if (this.folderFlag) {
       int counter = 1;
@@ -169,8 +173,16 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   public void reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
+    this.children.clear();
+    this.children.addAll(_reloadSubtree(addHiddenFilesAndFolders));
+  }
+  
+  @Nonnull
+  @MustNotContainNull
+  protected List<NodeFileOrFolder> _reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
+    final List<NodeFileOrFolder> result;
     if (this.folderFlag) {
-      this.children.clear();
+      result = new ArrayList<>();
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
         final List<ForkedLoadNodeTask> forks = new ArrayList<>();
@@ -190,7 +202,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
         for (final ForkedLoadNodeTask f : forks) {
           try {
-            this.children.add(f.join());
+            result.add(f.join());
           } catch (final RuntimeException ex) {
             if (ex.getCause() instanceof IOException) {
               throw (IOException) ex.getCause();
@@ -200,9 +212,12 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
           }
         }
 
-        Collections.sort(this.children, this);
+        Collections.sort(result, this);
       }
+    } else {
+      result = Collections.emptyList();
     }
+    return result;
   }
 
   @Nullable
@@ -261,7 +276,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   @Override
   public int getChildCount() {
-    return this.children.size();
+    return this.isLoading() ? 0 : this.children.size();
   }
 
   @Nullable
@@ -287,7 +302,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   @Override
   public boolean isLeaf() {
-    return !this.folderFlag;
+    return this.isLoading() ? true : !this.folderFlag;
   }
 
   @Override
