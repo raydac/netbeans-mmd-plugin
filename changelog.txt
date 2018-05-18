@@ -1,3 +1,8 @@
+__1.4.4 (SNAPSHOT)__
+- SR: updated embedded PlantUML version to 1.2018.5
+- SR: improved PlatUML editor
+- SR: improved speed of work with project folders
+
 __1.4.3 (01-may-2018)__
 - SR:  license changed to LGPL 2.1
 - ALL: increased step of scroll and decreased step of scale in panel
