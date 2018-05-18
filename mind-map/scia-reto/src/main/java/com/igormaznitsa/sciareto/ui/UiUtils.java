@@ -65,6 +65,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.apache.commons.lang.SystemUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -122,6 +123,10 @@ public final class UiUtils {
   private UiUtils() {
   }
 
+  public static void assertSwingThread() {
+    Assertions.assertTrue("Mus be called only from Swing Dispatcher!", SwingUtilities.isEventDispatchThread());
+  }
+  
   public static void invokeInSwingThread(@Nonnull final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();

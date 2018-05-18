@@ -90,7 +90,7 @@ public final class ExplorerTree extends JScrollPane {
     this.projectTree.setDropMode(DropMode.ON);
 
     this.projectTree.setEditable(true);
-    
+
     ToolTipManager.sharedInstance().registerComponent(this.projectTree);
 
     this.projectTree.setCellRenderer(new TreeCellRenderer());
@@ -107,7 +107,7 @@ public final class ExplorerTree extends JScrollPane {
           if (selectedPath != null) {
             final NodeFileOrFolder node = (NodeFileOrFolder) selectedPath.getLastPathComponent();
             if (node != null) {
-              if (node.isLeaf()) {
+              if (!node.isLoading() && node.isLeaf()) {
                 final File file = node.makeFileForNode();
                 if (file != null && !context.openFileAsTab(file)) {
                   UiUtils.openInSystemViewer(file);
@@ -168,8 +168,12 @@ public final class ExplorerTree extends JScrollPane {
         if (selPath != null) {
           projectTree.setSelectionPath(selPath);
           final Object last = selPath.getLastPathComponent();
-          if (last instanceof NodeFileOrFolder && !((NodeFileOrFolder)last).isLoading()) {
-            makePopupMenu((NodeFileOrFolder) last).show(e.getComponent(), e.getX(), e.getY());
+          if (last instanceof NodeFileOrFolder) {
+            if (((NodeFileOrFolder)last).isLoading()) {
+              makePopupMenuForLoading((NodeFileOrFolder) last).show(e.getComponent(), e.getX(), e.getY());
+            } else {
+              makePopupMenu((NodeFileOrFolder) last).show(e.getComponent(), e.getX(), e.getY());
+            }
           }
         }
       }
@@ -181,7 +185,7 @@ public final class ExplorerTree extends JScrollPane {
   public JTree getProjectTree() {
     return this.projectTree;
   }
-  
+
   public boolean hasSelectedItem() {
     return this.projectTree.getSelectionPath() != null;
   }
@@ -191,7 +195,7 @@ public final class ExplorerTree extends JScrollPane {
     if (path != null) {
       final NodeFileOrFolder component = (NodeFileOrFolder) path.getLastPathComponent();
       final Rectangle rect = this.projectTree.getRowBounds(this.projectTree.getRowForPath(path));
-      final JPopupMenu popupMenu = makePopupMenu(component);
+      final JPopupMenu popupMenu = component.isLoading() ? makePopupMenuForLoading(component) : makePopupMenu(component);
       popupMenu.show(this.projectTree, rect.x + rect.width / 2, rect.y + rect.height / 2);
     }
   }
@@ -238,6 +242,25 @@ public final class ExplorerTree extends JScrollPane {
         projectTree.expandPath(new TreePath(new Object[]{getCurrentGroup(), node}));
       }
     });
+  }
+
+  @Nonnull
+  private JPopupMenu makePopupMenuForLoading(@Nonnull final NodeFileOrFolder node) {
+    final JPopupMenu result = new JPopupMenu();
+    
+    if (node instanceof NodeProject) {
+      final JMenuItem stopAndClose = new JMenuItem("Cancel and remove");
+      stopAndClose.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          сloseProject((NodeProject) node);
+        }
+      });
+      
+      result.add(stopAndClose);
+    }
+
+    return result;
   }
 
   @Nonnull
@@ -351,12 +374,12 @@ public final class ExplorerTree extends JScrollPane {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
             if (knowledgeFolder.mkdirs()) {
-                getCurrentGroup().startProjectFolderRefresh(theProject, new Runnable() {
-                  @Override
-                  public void run() {
-                    context.focusInTree(knowledgeFolder);
-                  }
-                });
+              getCurrentGroup().startProjectFolderRefresh(theProject, new Runnable() {
+                @Override
+                public void run() {
+                  context.focusInTree(knowledgeFolder);
+                }
+              });
             } else {
               LOGGER.error("Can't create knowledge folder : " + knowledgeFolder); //NOI18N
             }

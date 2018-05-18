@@ -31,6 +31,7 @@ import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
+import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
 import com.igormaznitsa.sciareto.ui.editors.*;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
@@ -1166,6 +1167,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Nonnull
   @ReturnsOriginal
   public NodeProject asyncReloadProject(@Nonnull final NodeProject project, @Nullable final Runnable ... invokeLater) {
+    assertSwingThread();
+    
     LOGGER.info("Starting asyncronous loading of " + project.toString());
     
     ProjectTreeIconAnimationConroller.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), project);
