@@ -1177,7 +1177,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       @Override
       public void run() {
         try {
-          project.reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
+          project.reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(), project);
         } catch (final IOException ex) {
           LOGGER.error("Can't open project", ex);
           SwingUtilities.invokeLater(new Runnable() {

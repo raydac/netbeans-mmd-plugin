@@ -77,20 +77,24 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     private final String name;
     private final boolean addhidden;
     private final boolean writable;
+    private final Cancelable cancelable;
 
-    protected ForkedLoadNodeTask(@Nonnull final NodeFileOrFolder parent, final boolean isdir, @Nonnull final String name, final boolean addhidden, final boolean writable) {
+    protected ForkedLoadNodeTask(@Nonnull final NodeFileOrFolder parent, @Nonnull final Cancelable cancelable, final boolean isdir, @Nonnull final String name, final boolean addhidden, final boolean writable) {
       this.parent = parent;
       this.name = name;
       this.addhidden = addhidden;
       this.writable = writable;
       this.isdir = isdir;
+      this.cancelable = cancelable;
     }
 
     @Override
     @Nonnull
     protected NodeFileOrFolder compute() {
       try {
-        return new NodeFileOrFolder(this.parent, this.isdir, this.name, this.addhidden, this.writable);
+        final NodeFileOrFolder result = new NodeFileOrFolder(this.parent, this.isdir, this.name, this.addhidden, this.writable);
+        result.reloadSubtree(this.addhidden, this.cancelable);
+        return result;
       } catch (final IOException ex) {
         throw new RuntimeException(ex);
       }
@@ -113,7 +117,6 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     if (folder) {
       this.children = new ArrayList<>();
       this.folderFlag = true;
-      reloadSubtree(showHiddenFiles);
     } else {
       this.children = Collections.EMPTY_LIST;
       this.folderFlag = false;
@@ -188,17 +191,12 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
-    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
+    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(),THREAD_CANCELABLE);
   }
 
-  public void reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
+  public void reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelable) throws IOException {
     this.children.clear();
-    this.children.addAll(_reloadSubtree(addHiddenFilesAndFolders, getCancelable()));
-  }
-
-  @Nonnull
-  protected Cancelable getCancelable() {
-    return THREAD_CANCELABLE;
+    this.children.addAll(_reloadSubtree(addHiddenFilesAndFolders, cancelable));
   }
 
   @Nonnull
@@ -216,7 +214,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
               break;
             }
             if (addHiddenFilesAndFolders || !Files.isHidden(p)) {
-              forks.add(new ForkedLoadNodeTask(this, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
+              forks.add(new ForkedLoadNodeTask(this, cancelableObject, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
             }
           }
         }

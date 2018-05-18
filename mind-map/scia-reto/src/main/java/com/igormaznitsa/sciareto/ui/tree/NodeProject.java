@@ -68,7 +68,7 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
     this.folder = new File(folder.getParentFile(), name);
-    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
+    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(), this);
   }
 
   @Override
@@ -85,7 +85,7 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
   public void setFolder(@Nonnull final File folder) throws IOException {
     Assertions.assertTrue("Must be directory", folder.isDirectory()); //NOI18N
     this.folder = folder;
-    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders());
+    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(), this);
   }
 
   @Nonnull
@@ -150,9 +150,9 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
   }
 
   @Override
-  public void reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
+  public void reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelable) throws IOException {
     final long startTime = System.currentTimeMillis();
-    super.reloadSubtree(addHiddenFilesAndFolders);
+    super.reloadSubtree(addHiddenFilesAndFolders, cancelable);
     LOGGER.info(String.format("Project %s reloaded, spent %d ms", this.toString(), System.currentTimeMillis() - startTime));
   }
 
