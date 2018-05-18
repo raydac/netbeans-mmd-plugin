@@ -253,6 +253,7 @@ public final class ExplorerTree extends JScrollPane {
       stopAndClose.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
+          ((NodeProject) node).cancel();
           сloseProject((NodeProject) node);
         }
       });

@@ -38,25 +38,26 @@ import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NodeProject extends NodeFileOrFolder {
+public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Cancelable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProject.class);
 
   private volatile File folder = null;
   private volatile boolean knowledgeFolderPresented;
-  private volatile boolean loading;
+  private final AtomicBoolean loading = new AtomicBoolean();
 
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) throws IOException {
     super(group, true, folder.getName(), PrefUtils.isShowHiddenFilesAndFolders(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
     this.knowledgeFolderPresented = new File(folder, Context.KNOWLEDGE_FOLDER).isDirectory();
-    this.loading = true;
+    this.loading.set(true);
   }
 
   @Override
   public boolean isLoading() {
-    return this.loading;
+    return this.loading.get();
   }
 
   public boolean hasKnowledgeFolder() {
@@ -138,6 +139,17 @@ public class NodeProject extends NodeFileOrFolder {
   }
 
   @Override
+  public boolean isCanceled() {
+    return Thread.currentThread().isInterrupted() || this.loading.get() == false;
+  }
+
+  @Override
+  public void cancel() {
+    LOGGER.info("Canceling prject " + this.toString());
+    this.loading.set(false);
+  }
+
+  @Override
   public void reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
     final long startTime = System.currentTimeMillis();
     super.reloadSubtree(addHiddenFilesAndFolders);
@@ -147,32 +159,40 @@ public class NodeProject extends NodeFileOrFolder {
   @Override
   @Nonnull
   @MustNotContainNull
-  protected List<NodeFileOrFolder> _reloadSubtree(final boolean showHiddenFiles) throws IOException {
-    this.loading = true;
+  protected List<NodeFileOrFolder> _reloadSubtree(final boolean showHiddenFiles, @Nonnull final Cancelable cancelable) throws IOException {
+    this.loading.set(true);
+    
     this.getGroup().notifyProjectStateChanged(this);
     try {
-      final List<NodeFileOrFolder> result = new ArrayList<>(super._reloadSubtree(showHiddenFiles));
+      final List<NodeFileOrFolder> result = new ArrayList<>(super._reloadSubtree(showHiddenFiles, cancelable));
       final File knowledgeFolder = new File(this.folder, Context.KNOWLEDGE_FOLDER);
       this.knowledgeFolderPresented = knowledgeFolder.isDirectory();
+     
       if (!showHiddenFiles && this.knowledgeFolderPresented) {
         boolean knowledgeFolderAdded = false;
 
         for (final NodeFileOrFolder f : result) {
-          if (f.isProjectKnowledgeFolder()) {
+          if (!cancelable.isCanceled() && f.isProjectKnowledgeFolder()) {
             knowledgeFolderAdded = true;
             break;
           }
         }
 
-        if (!knowledgeFolderAdded) {
+        if (!cancelable.isCanceled() && !knowledgeFolderAdded) {
           result.add(new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), showHiddenFiles, !Files.isWritable(knowledgeFolder.toPath())));
           Collections.sort(result, this);
         }
       }
       return result;
     } finally {
-      this.loading = false;
-      this.getGroup().notifyProjectStateChanged(this);
+      try {
+        if (!cancelable.isCanceled()) {
+          this.loading.set(false);
+          this.getGroup().notifyProjectStateChanged(this);
+        }
+      } finally {
+        this.loading.set(false);
+      }
     }
   }
 

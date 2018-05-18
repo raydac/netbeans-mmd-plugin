@@ -51,6 +51,25 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeFileOrFolder.class);
 
+  protected interface Cancelable {
+
+    void cancel();
+
+    boolean isCanceled();
+  }
+
+  public static final Cancelable THREAD_CANCELABLE = new Cancelable() {
+    @Override
+    public boolean isCanceled() {
+      return Thread.currentThread().isInterrupted();
+    }
+
+    @Override
+    public void cancel() {
+      throw new UnsupportedOperationException("Can't be called directy");
+    }
+  };
+
   protected static class ForkedLoadNodeTask extends RecursiveTask<NodeFileOrFolder> {
 
     private final NodeFileOrFolder parent;
@@ -106,7 +125,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   public boolean isLoading() {
     return false;
   }
-  
+
   public int size() {
     if (this.folderFlag) {
       int counter = 1;
@@ -174,12 +193,17 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   public void reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
     this.children.clear();
-    this.children.addAll(_reloadSubtree(addHiddenFilesAndFolders));
+    this.children.addAll(_reloadSubtree(addHiddenFilesAndFolders, getCancelable()));
   }
-  
+
+  @Nonnull
+  protected Cancelable getCancelable() {
+    return THREAD_CANCELABLE;
+  }
+
   @Nonnull
   @MustNotContainNull
-  protected List<NodeFileOrFolder> _reloadSubtree(final boolean addHiddenFilesAndFolders) throws IOException {
+  protected List<NodeFileOrFolder> _reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelableObject) throws IOException {
     final List<NodeFileOrFolder> result;
     if (this.folderFlag) {
       result = new ArrayList<>();
@@ -188,6 +212,9 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
         final List<ForkedLoadNodeTask> forks = new ArrayList<>();
         try (final DirectoryStream<Path> stream = Files.newDirectoryStream(generatedFile.toPath())) {
           for (final Path p : stream) {
+            if (cancelableObject.isCanceled()) {
+              break;
+            }
             if (addHiddenFilesAndFolders || !Files.isHidden(p)) {
               forks.add(new ForkedLoadNodeTask(this, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
             }
@@ -195,24 +222,34 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
         }
 
         for (final ForkedLoadNodeTask f : forks) {
+          if (cancelableObject.isCanceled()) {
+            break;
+          }
           f.fork();
         }
 
-        Collections.reverse(forks);
+        if (!cancelableObject.isCanceled()) {
+          Collections.reverse(forks);
 
-        for (final ForkedLoadNodeTask f : forks) {
-          try {
-            result.add(f.join());
-          } catch (final RuntimeException ex) {
-            if (ex.getCause() instanceof IOException) {
-              throw (IOException) ex.getCause();
-            } else {
-              throw new IOException(ex);
+          for (final ForkedLoadNodeTask f : forks) {
+            if (cancelableObject.isCanceled()) {
+              break;
+            }
+            try {
+              result.add(f.join());
+            } catch (final RuntimeException ex) {
+              if (ex.getCause() instanceof IOException) {
+                throw (IOException) ex.getCause();
+              } else {
+                throw new IOException(ex);
+              }
             }
           }
-        }
 
-        Collections.sort(result, this);
+          if (!cancelableObject.isCanceled()) {
+            Collections.sort(result, this);
+          }
+        }
       }
     } else {
       result = Collections.emptyList();
