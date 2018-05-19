@@ -1132,6 +1132,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     final JFileChooser fileChooser = new JFileChooser();
     fileChooser.setFileView(new FileView() {
       private Icon KNOWLEDGE_FOLDER_ICO = null;
+      private Icon OTHER_FOLDER_ICO = null;
 
       @Override
       public Icon getIcon(final File f) {
@@ -1152,7 +1153,17 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
               result = KNOWLEDGE_FOLDER_ICO;
             }
           } else {
-            result = super.getIcon(f);
+            if (OTHER_FOLDER_ICO == null) {
+              Icon superIcon = super.getIcon(f);
+              if (superIcon == null || superIcon instanceof ImageIcon) {
+                OTHER_FOLDER_ICO = superIcon == null ? UIManager.getIcon("FileView.directoryIcon") : superIcon;
+                result = OTHER_FOLDER_ICO;
+              } else {
+                result = superIcon;
+              }
+            } else {
+              result = OTHER_FOLDER_ICO;
+            }
           }
           return result;
         } else if (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mmd")) { //NOI18N
