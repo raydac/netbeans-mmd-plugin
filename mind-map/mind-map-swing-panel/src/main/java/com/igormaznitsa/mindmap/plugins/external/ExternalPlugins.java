@@ -31,6 +31,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Locale;
+import javax.annotation.Nullable;
 
 public class ExternalPlugins {
 
@@ -52,6 +53,7 @@ public class ExternalPlugins {
       try {
         final PluginClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<PluginClassLoader>() {
           @Override
+          @Nullable
           public PluginClassLoader run() {
             PluginClassLoader result;
             try {
