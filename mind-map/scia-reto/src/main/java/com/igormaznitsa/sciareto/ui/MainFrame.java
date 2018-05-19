@@ -102,7 +102,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
     initComponents();
-    
+
     if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.ABOUT, this)) {
       this.menuHelp.setVisible(false);
     }
@@ -1135,19 +1135,26 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
       @Override
       public Icon getIcon(final File f) {
+        final Icon result;
         if (f.isDirectory()) {
           final File knowledge = new File(f, Context.KNOWLEDGE_FOLDER);
           if (knowledge.isDirectory()) {
             if (KNOWLEDGE_FOLDER_ICO == null) {
-              final Icon icon = UIManager.getIcon("FileView.directoryIcon"); //NOI18N
-              if (icon != null) {
-                KNOWLEDGE_FOLDER_ICO = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(fileChooser, icon), Icons.MMDBADGE.getIcon().getImage()));
+              Icon superIcon = super.getIcon(f);
+              if (superIcon == null || superIcon instanceof ImageIcon) {
+                superIcon = superIcon == null ? UIManager.getIcon("FileView.directoryIcon") : superIcon;
+                KNOWLEDGE_FOLDER_ICO = new ImageIcon(UiUtils.makeBadgedRightBottom(UiUtils.iconToImage(fileChooser, superIcon), Icons.MMDBADGE.getIcon().getImage()));
+                result = KNOWLEDGE_FOLDER_ICO;
+              } else {
+                result = superIcon;
               }
+            } else {
+              result = KNOWLEDGE_FOLDER_ICO;
             }
-            return KNOWLEDGE_FOLDER_ICO;
           } else {
-            return super.getIcon(f);
+            result = super.getIcon(f);
           }
+          return result;
         } else if (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".mmd")) { //NOI18N
           return Icons.DOCUMENT.getIcon();
         } else {
@@ -1167,13 +1174,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Nonnull
   @ReturnsOriginal
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public NodeProject asyncReloadProject(@Nonnull final NodeProject project, @Nullable final Runnable ... invokeLater) {
+  public NodeProject asyncReloadProject(@Nonnull final NodeProject project, @Nullable final Runnable... invokeLater) {
     assertSwingThread();
-    
+
     LOGGER.info("Starting asyncronous loading of " + project.toString());
-    
+
     ProjectTreeIconAnimationConroller.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), project);
-    
+
     loadingExecutorService.submit(new Runnable() {
       @Override
       public void run() {
@@ -1190,7 +1197,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         } finally {
           ProjectTreeIconAnimationConroller.getInstance().unregisterLoadingProject(project);
           if (invokeLater != null && invokeLater.length > 0) {
-            for(final Runnable r : invokeLater) {
+            for (final Runnable r : invokeLater) {
               SwingUtilities.invokeLater(r);
             }
           }
