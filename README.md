@@ -14,7 +14,7 @@ The Main part of a software project is not code but knowledge generated during t
 # Changelog
 __1.4.4 (SNAPSHOT)__
 - SR: updated embedded PlantUML version to 1.2018.5
-- SR: improved PlatUML editor
+- SR: improved PlantUML editor
 - SR: improved speed of work with project folders
 
 __1.4.3 (01-may-2018)__
