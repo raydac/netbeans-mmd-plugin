@@ -72,6 +72,8 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JTree;
 
 public final class ExplorerTree extends JScrollPane {
@@ -82,6 +84,8 @@ public final class ExplorerTree extends JScrollPane {
   private final DnDTree projectTree;
   private final Context context;
 
+  private static final Icon CROSS_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png"));
+  
   public ExplorerTree(@Nonnull final Context context) throws IOException {
     super();
     this.projectTree = new DnDTree();
@@ -249,7 +253,7 @@ public final class ExplorerTree extends JScrollPane {
     final JPopupMenu result = new JPopupMenu();
     
     if (node instanceof NodeProject) {
-      final JMenuItem stopAndClose = new JMenuItem("Cancel and remove");
+      final JMenuItem stopAndClose = new JMenuItem("Cancel and remove", CROSS_ICON);
       stopAndClose.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
