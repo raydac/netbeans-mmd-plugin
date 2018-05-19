@@ -145,7 +145,7 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
 
   @Override
   public void cancel() {
-    LOGGER.info("Canceling prject " + this.toString());
+    LOGGER.info("Canceling project load : " + this.toString());
     this.loading.set(false);
   }
 
