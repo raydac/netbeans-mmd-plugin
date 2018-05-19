@@ -46,7 +46,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
 
   private static final long serialVersionUID = 4095304247486153265L;
 
-  protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
   private final MMDPrintOptions options;
 

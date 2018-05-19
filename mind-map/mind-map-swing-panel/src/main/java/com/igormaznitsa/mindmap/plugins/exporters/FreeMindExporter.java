@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class FreeMindExporter extends AbstractExporter {
   private static void writeTopicRecursively(@Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg, int shift, @Nonnull final State state) {
     final String mainShiftStr = generateString(' ', shift);
 
-    final Color edge = cfg.getConnectorColor();
+//    final Color edge = cfg.getConnectorColor();
     String position = topic.getTopicLevel() == 1 ? (AbstractCollapsableElement.isLeftSidedTopic(topic) ? "left" : "right") : ""; //NOI18N
 
     state.append(mainShiftStr)

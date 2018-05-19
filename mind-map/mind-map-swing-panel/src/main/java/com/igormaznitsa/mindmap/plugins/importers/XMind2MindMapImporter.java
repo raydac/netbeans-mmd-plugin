@@ -318,15 +318,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
         final String colorFill = t.getAttribute("svg:fill");
         final String colorText = t.getAttribute("fo:color");
         final String colorBorder = t.getAttribute("border-line-color");
-        if (colorFill != null) {
-          back = Utils.html2color(colorFill, false);
-        }
-        if (colorText != null) {
-          front = Utils.html2color(colorText, false);
-        }
-        if (colorBorder != null) {
-          bord = Utils.html2color(colorBorder, false);
-        }
+        back = Utils.html2color(colorFill, false);
+        front = Utils.html2color(colorText, false);
+        bord = Utils.html2color(colorBorder, false);
       }
 
       this.foreground = front;

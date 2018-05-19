@@ -149,7 +149,7 @@ public class VisualAttributeImageBlock {
     } else {
       final List<VisualAttributePlugin> detectedPlugins = new ArrayList<VisualAttributePlugin>();
       final Map<String, String> attributes = this.model.getAttributes();
-      final Map<String, String> codeSnippets = this.model.getCodeSnippets();
+//      final Map<String, String> codeSnippets = this.model.getCodeSnippets();
       for (final VisualAttributePlugin p : pluginsFromRegistry) {
         final String attributeKey = p.getAttributeKey();
         if (!AttributePlugin.NULL_ATTRIBUTE.equals(attributeKey)  && attributes.containsKey(attributeKey)) {

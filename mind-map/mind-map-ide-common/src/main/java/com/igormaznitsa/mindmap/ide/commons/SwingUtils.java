@@ -57,9 +57,8 @@ public class SwingUtils {
 
     @Override
     public void actionPerformed(@Nonnull final ActionEvent e) {
-      final JComponent component = getFocusedComponent();
-
-      if (component instanceof JTextComponent) {
+      final JTextComponent component = getFocusedComponent();
+      if (component != null) {
         ((JTextComponent) component).selectAll();
         component.requestFocusInWindow();
       }

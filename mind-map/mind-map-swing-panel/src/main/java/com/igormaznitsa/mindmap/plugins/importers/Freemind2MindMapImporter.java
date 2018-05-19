@@ -114,6 +114,9 @@ public class Freemind2MindMapImporter extends AbstractImporter {
           processHtmlElement(n, builder, imageURLs);
         }
         break;
+        default: {
+          // just ignoring  other elements
+        }break;
       }
     }
     return builder;

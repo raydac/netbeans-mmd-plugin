@@ -27,7 +27,6 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
@@ -61,6 +60,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -478,7 +478,9 @@ public final class Utils {
     } else {
       try {
         SwingUtilities.invokeAndWait(runnable);
-      } catch (Exception ex) {
+      } catch (InterruptedException ex) {
+        Thread.currentThread().interrupt();
+      } catch (InvocationTargetException ex) {
         throw new RuntimeException("Detected exception during SwingUtilities.invokeAndWait", ex);
       }
     }

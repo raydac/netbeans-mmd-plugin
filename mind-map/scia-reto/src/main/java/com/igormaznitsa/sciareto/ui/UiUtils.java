@@ -127,20 +127,6 @@ public final class UiUtils {
     Assertions.assertTrue("Mus be called only from Swing Dispatcher!", SwingUtilities.isEventDispatchThread());
   }
   
-  public static void invokeInSwingThread(@Nonnull final Runnable runnable) {
-    if (SwingUtilities.isEventDispatchThread()) {
-      runnable.run();
-    } else {
-      try {
-        SwingUtilities.invokeAndWait(runnable);
-      } catch (InterruptedException ex) {
-        Thread.currentThread().interrupt();
-      } catch (InvocationTargetException ex) {
-        throw new RuntimeException(ex);
-      }
-    }
-  }
-
   @Nullable
   public static <T> T findComponent(@Nonnull final Container compo, @Nonnull final Class<T> klazz) {
     for (int i = 0; i < compo.getComponentCount(); i++) {

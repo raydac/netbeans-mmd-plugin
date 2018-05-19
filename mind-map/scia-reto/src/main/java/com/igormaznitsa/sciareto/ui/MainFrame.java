@@ -102,7 +102,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
     initComponents();
-
+    
     if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.ABOUT, this)) {
       this.menuHelp.setVisible(false);
     }
@@ -375,7 +375,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   public static void showExceptionDialog(@Nonnull final Exception ex) {
     MainFrame.LOGGER.error("Error", ex);
-    UiUtils.invokeInSwingThread(new Runnable() {
+    Utils.safeSwingBlockingCall(new Runnable() {
       @Override
       public void run() {
         JOptionPane.showMessageDialog(Main.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -1166,6 +1166,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   @Nonnull
   @ReturnsOriginal
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public NodeProject asyncReloadProject(@Nonnull final NodeProject project, @Nullable final Runnable ... invokeLater) {
     assertSwingThread();
     

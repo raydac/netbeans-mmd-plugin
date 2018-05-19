@@ -49,7 +49,7 @@ import com.igormaznitsa.sciareto.ui.misc.FileExaminator;
 import com.igormaznitsa.sciareto.ui.misc.NodeListRenderer;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 
-public class FindFilesForTextPanel extends javax.swing.JPanel {
+public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = 8076096265342142731L;
 

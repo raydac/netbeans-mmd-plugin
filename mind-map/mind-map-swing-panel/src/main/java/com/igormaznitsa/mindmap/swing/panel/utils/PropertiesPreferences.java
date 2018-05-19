@@ -169,10 +169,10 @@ public class PropertiesPreferences extends Preferences {
   }
 
   @Override
-  @Nullable
+  @Nonnull
   @MustNotContainNull
   public String[] childrenNames() throws BackingStoreException {
-    return null;
+    return new String[0];
   }
 
   @Override

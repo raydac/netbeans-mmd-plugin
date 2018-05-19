@@ -39,6 +39,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
@@ -86,6 +87,25 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
         l.treeNodesRemoved(event);
       }
     }
+  }
+
+  @Override
+  public void reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelable) throws IOException {
+    LOGGER.info("Start group reloading : "+this.groupName);
+    final long startTime = System.currentTimeMillis();
+    _reloadSubtree(addHiddenFilesAndFolders, cancelable);
+    LOGGER.info(String.format("Group '%s' reload took %d ms", this.groupName, System.currentTimeMillis() - startTime));
+  }
+
+  @Override
+  @Nonnull
+  @MustNotContainNull
+  protected List<NodeFileOrFolder> _reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelableObject) throws IOException {
+    for(final NodeFileOrFolder f : this.children) {
+      if (cancelableObject.isCanceled()) break;
+      f.reloadSubtree(addHiddenFilesAndFolders, cancelableObject);
+    }
+    return this.children;
   }
 
   @Nonnull
@@ -215,7 +235,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     
     final TreeModelEvent event = new TreeModelEvent(this, new TreePath(new Object[]{this, project}));
     
-    UiUtils.invokeInSwingThread(new Runnable() {
+    Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
         for (final TreeModelListener l : listeners) {
@@ -225,8 +245,6 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     });
   }
 
-  
-  
   @Nullable
   public NodeProject findProjectForFile(@Nonnull final File file) {
     final Path filepath = Paths.toPath(file);

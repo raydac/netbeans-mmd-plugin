@@ -43,8 +43,6 @@ public class ASCIIDocExporter extends AbstractExporter {
     String result = text;
     if (head) {
       result = text.replace("\n", " pass:[<br>]");
-    } else {
-      result = text;
     }
     return result;
   }
@@ -103,7 +101,9 @@ public class ASCIIDocExporter extends AbstractExporter {
 
     if (transition != null) {
       final Topic linkedTopic = topic.getMap().findTopicForLink(transition);
-      state.append("<<").append(Assertions.assertNotNull(getTopicUid(linkedTopic))).append(",Go to>>").appendNextLine().appendNextLine();
+      if (linkedTopic != null) {
+        state.append("<<").append(Assertions.assertNotNull(getTopicUid(linkedTopic))).append(",Go to>>").appendNextLine().appendNextLine();
+      }
     }
 
     for (final Map.Entry<String, String> s : topic.getCodeSnippets().entrySet()) {

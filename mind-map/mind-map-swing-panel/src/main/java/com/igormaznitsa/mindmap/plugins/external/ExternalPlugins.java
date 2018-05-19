@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.external;
 
 import com.igormaznitsa.commons.version.Version;
@@ -27,6 +26,9 @@ import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -44,11 +46,28 @@ public class ExternalPlugins {
   }
 
   public void init() {
-    final Collection<File> plugins = FileUtils.listFiles(this.pluginsFolder, new String[] {PLUGIN_EXTENSION, PLUGIN_EXTENSION.toUpperCase(Locale.ENGLISH)}, false);
+    final Collection<File> plugins = FileUtils.listFiles(this.pluginsFolder, new String[]{PLUGIN_EXTENSION, PLUGIN_EXTENSION.toUpperCase(Locale.ENGLISH)}, false);
     LOGGER.info("Detected " + plugins.size() + " plugin(s)");
     for (final File plugin : plugins) {
       try {
-        final PluginClassLoader loader = new PluginClassLoader(plugin);
+        final PluginClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<PluginClassLoader>() {
+          @Override
+          public PluginClassLoader run() {
+            PluginClassLoader result;
+            try {
+              result = new PluginClassLoader(plugin);
+            } catch (IOException ex) {
+              LOGGER.error("Can't create plugin class loader", ex);
+              result = null;
+            }
+            return result;
+          }
+        });
+
+        if (loader == null) {
+          throw new IOException("Can't create plugin class loader, see log for stacktrace");
+        }
+
         final String pluginTitle = GetUtils.ensureNonNull(loader.getAttributes(Attribute.TITLE), "<unknown>");
         final Version pluginVersion = new Version(loader.getAttributes(Attribute.VERSION));
 

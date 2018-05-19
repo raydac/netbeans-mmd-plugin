@@ -70,8 +70,10 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     }
   };
 
-  protected static class ForkedLoadNodeTask extends RecursiveTask<NodeFileOrFolder> {
+  protected static final class ForkedLoadNodeTask extends RecursiveTask<NodeFileOrFolder> {
 
+    private final long serialVersionUID = 289347923874323L;
+    
     private final NodeFileOrFolder parent;
     private final boolean isdir;
     private final String name;

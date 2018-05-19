@@ -37,6 +37,7 @@ import javax.annotation.Nonnull;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import java.awt.RenderingHints;
@@ -82,7 +83,7 @@ public class MMDPrint {
     if (paperWidthInPixels > 0 && paperHeightInPixels > 0) {
 
       if (printableObject.isMmdPanel()) {
-        cfg = new MindMapPanelConfig(printableObject.getPanel().getConfiguration(), false);
+        cfg = new MindMapPanelConfig(assertNotNull(printableObject.getPanel()).getConfiguration(), false);
         cfg.setDrawBackground(false);
         cfg.setDropShadow(false);
 
