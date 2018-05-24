@@ -45,22 +45,23 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     tokenMap.put("scale", Token.RESERVED_WORD);
     tokenMap.put("skinparam", Token.RESERVED_WORD);
     tokenMap.put("title", Token.RESERVED_WORD);
-    tokenMap.put("caption", Token.RESERVED_WORD);
     tokenMap.put("usecase", Token.RESERVED_WORD);
-    tokenMap.put("as", Token.RESERVED_WORD);
-    tokenMap.put("is", Token.RESERVED_WORD);
-    tokenMap.put("actor", Token.RESERVED_WORD);
     tokenMap.put("boundary", Token.RESERVED_WORD);
+    tokenMap.put("caption", Token.RESERVED_WORD);
     tokenMap.put("control", Token.RESERVED_WORD);
+    tokenMap.put("collections", Token.RESERVED_WORD);
     tokenMap.put("entity", Token.RESERVED_WORD);
     tokenMap.put("database", Token.RESERVED_WORD);
-    tokenMap.put("collections", Token.RESERVED_WORD);
+    tokenMap.put("detach", Token.RESERVED_WORD);
     tokenMap.put("participant", Token.RESERVED_WORD);
     tokenMap.put("order", Token.RESERVED_WORD);
+    tokenMap.put("as", Token.RESERVED_WORD);
+    tokenMap.put("actor", Token.RESERVED_WORD);
     tokenMap.put("autonumber", Token.RESERVED_WORD);
+    tokenMap.put("alt", Token.RESERVED_WORD);
     tokenMap.put("resume", Token.RESERVED_WORD);
     tokenMap.put("newpage", Token.RESERVED_WORD);
-    tokenMap.put("alt", Token.RESERVED_WORD);
+    tokenMap.put("is", Token.RESERVED_WORD);
     tokenMap.put("if", Token.RESERVED_WORD);
     tokenMap.put("then", Token.RESERVED_WORD);
     tokenMap.put("endif", Token.RESERVED_WORD);
@@ -68,7 +69,6 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     tokenMap.put("repeat", Token.RESERVED_WORD);
     tokenMap.put("while", Token.RESERVED_WORD);
     tokenMap.put("endwhile", Token.RESERVED_WORD);
-    tokenMap.put("detach", Token.RESERVED_WORD);
     tokenMap.put("else", Token.RESERVED_WORD);
     tokenMap.put("opt", Token.RESERVED_WORD);
     tokenMap.put("loop", Token.RESERVED_WORD);
@@ -96,10 +96,12 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     tokenMap.put("activate", Token.RESERVED_WORD);
     tokenMap.put("deactivate", Token.RESERVED_WORD);
     tokenMap.put("start", Token.RESERVED_WORD);
+    tokenMap.put("state", Token.RESERVED_WORD);
     tokenMap.put("stop", Token.RESERVED_WORD);
     tokenMap.put("file", Token.RESERVED_WORD);
     tokenMap.put("folder", Token.RESERVED_WORD);
     tokenMap.put("frame", Token.RESERVED_WORD);
+    tokenMap.put("fork", Token.RESERVED_WORD);
     tokenMap.put("interface", Token.RESERVED_WORD);
     tokenMap.put("class", Token.RESERVED_WORD);
     tokenMap.put("namespace", Token.RESERVED_WORD);
@@ -290,7 +292,7 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
         break;
         case Token.IDENTIFIER:
         case Token.RESERVED_WORD: {
-          if (RSyntaxUtilities.isWhitespace(c)) {
+          if (RSyntaxUtilities.isWhitespace(c) || !RSyntaxUtilities.isLetterOrDigit(c)) {
             final int value = wordsToHighlight.get(text, currentTokenStart, i - 1);
             if (value < 0) {
               addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
@@ -298,7 +300,8 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
               addToken(text, currentTokenStart, i - 1, value, newStartOffset + currentTokenStart);
             }
             currentTokenStart = i;
-            currentTokenType = Token.WHITESPACE;
+            
+            currentTokenType = RSyntaxUtilities.isWhitespace(c) ? Token.WHITESPACE : Token.IDENTIFIER;
           }
         }
         break;
