@@ -47,7 +47,7 @@ import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
-import com.igormaznitsa.sciareto.ui.tree.ProjectTreeIconAnimationConroller;
+import com.igormaznitsa.sciareto.ui.tree.ProjectLoadingIconAnimationController;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.annotation.Nonnull;
@@ -1190,7 +1190,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     LOGGER.info("Starting asyncronous loading of " + project.toString());
 
-    ProjectTreeIconAnimationConroller.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), project);
+    ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), project);
 
     loadingExecutorService.submit(new Runnable() {
       @Override
@@ -1206,7 +1206,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             }
           });
         } finally {
-          ProjectTreeIconAnimationConroller.getInstance().unregisterLoadingProject(project);
+          ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
           if (invokeLater != null && invokeLater.length > 0) {
             for (final Runnable r : invokeLater) {
               SwingUtilities.invokeLater(r);

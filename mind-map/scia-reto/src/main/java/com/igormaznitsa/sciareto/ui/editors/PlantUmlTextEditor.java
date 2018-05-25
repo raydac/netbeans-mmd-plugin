@@ -32,6 +32,7 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.misc.BigLoaderIconAnimationConroller;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.*;
 import java.awt.datatransfer.*;
@@ -51,9 +52,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -74,6 +82,7 @@ import net.sourceforge.plantuml.OptionFlags;
 import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.UmlDiagram;
 import net.sourceforge.plantuml.core.Diagram;
+import net.sourceforge.plantuml.core.DiagramDescription;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -93,9 +102,28 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private static final Icon ICON_WARNING = new ImageIcon(UiUtils.loadIcon("warning16.png"));
   private static final Icon ICON_INFO = new ImageIcon(UiUtils.loadIcon("info16.png"));
 
+  private final JLabel progressLabel = new JLabel(BigLoaderIconAnimationConroller.LOADING);
+
   private static final Pattern NEWPAGE_PATTERN = Pattern.compile("^\\s*newpage($|\\s.*$)", Pattern.MULTILINE);
 
   private static final int DELAY_AUTOREFRESH_SECONDS = 5;
+
+  private String lastSuccessfulyRenderedText = null;
+
+  private final ExecutorService RENDER_EXECUTOR = new ThreadPoolExecutor(1, 1,
+          60, TimeUnit.SECONDS,
+          new ArrayBlockingQueue<Runnable>(1),
+          new ThreadFactory() {
+    @Override
+    @Nonnull
+    public Thread newThread(@Nonnull final Runnable r) {
+      final Thread result = new Thread(r, "RENDER-EXECUTOR-THREAD");
+      result.setDaemon(true);
+      return result;
+    }
+  },
+          new ThreadPoolExecutor.AbortPolicy()
+  );
 
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
@@ -195,7 +223,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     buttonRefresh.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        renderCurrentTextInPlantUml();
+        startRenderScript();
       }
     });
 
@@ -236,7 +264,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       @Override
       public void actionPerformed(ActionEvent e) {
         pageNumberToRender--;
-        renderCurrentTextInPlantUml();
+        startRenderScript();
       }
     });
 
@@ -246,7 +274,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       @Override
       public void actionPerformed(ActionEvent e) {
         pageNumberToRender++;
-        renderCurrentTextInPlantUml();
+        startRenderScript();
       }
     });
 
@@ -376,13 +404,13 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       @Override
       public void keyTyped(final @Nonnull KeyEvent e) {
         if (autoRefresh.isSelected() && autoRefreshTimer.get() == null) {
-          final Timer oneTimeRefreshTimer = new Timer((int)TimeUnit.SECONDS.toMillis(DELAY_AUTOREFRESH_SECONDS), new ActionListener() {
+          final Timer oneTimeRefreshTimer = new Timer((int) TimeUnit.SECONDS.toMillis(DELAY_AUTOREFRESH_SECONDS), new ActionListener() {
             @Override
             public void actionPerformed(@Nonnull final ActionEvent e) {
               try {
                 final String txt = editor.getText();
                 if (isSyntaxCorrect(txt)) {
-                  renderCurrentTextInPlantUml();
+                  startRenderScript();
                 } else {
                   autoRefreshTimer.set(null);
                 }
@@ -405,6 +433,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   @Override
   protected void doDispose() {
     stopAutoupdateTimer();
+    RENDER_EXECUTOR.shutdownNow();
   }
 
   @Override
@@ -643,7 +672,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            renderCurrentTextInPlantUml();
+            startRenderScript();
           }
         });
       }
@@ -662,7 +691,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            renderCurrentTextInPlantUml();
+            startRenderScript();
           }
         });
       }
@@ -703,7 +732,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       if (file != null) {
         this.editor.setText(FileUtils.readFileToString(file, "UTF-8")); //NOI18N
         this.editor.setCaretPosition(0);
-        renderCurrentTextInPlantUml();
+        startRenderScript();
       }
     } finally {
       this.ignoreChange = false;
@@ -730,7 +759,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       SystemUtils.saveUTFText(file, this.editor.getText());
       this.title.setChanged(false);
       result = true;
-      renderCurrentTextInPlantUml();
+      startRenderScript();
     } else {
       result = true;
     }
@@ -761,26 +790,82 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     return this;
   }
 
-  private void renderCurrentTextInPlantUml() {
+  private void startRenderScript() {
     stopAutoupdateTimer();
 
-    final String text = this.editor.getText();
+    final String currentText = this.editor.getText();
 
-    final SourceStringReader reader = new SourceStringReader(text, "UTF-8");
-    final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
-    try {
-      final int totalPages = Math.max(countNewPages(text), reader.getBlocks().size());
+    if (!currentText.equals(this.lastSuccessfulyRenderedText)) {
+
+      final SourceStringReader reader = new SourceStringReader(currentText, "UTF-8");
+      final int totalPages = Math.max(countNewPages(currentText), reader.getBlocks().size());
       final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
-
-      reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
-      this.imageComponent.setImage(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())), false);
       updatePageNumberInfo(imageIndex, totalPages);
 
-      this.renderedScrollPane.revalidate();
-    } catch (IOException e) {
-      LOGGER.error("Can't render plant uml", e);
-      this.renderedScrollPane.setViewportView(new JLabel("Error during rendering"));
-      updatePageNumberInfo(-1, -1);
+      Future<BufferedImage> renderImage = null;
+
+      final int dividerPosition = Math.max(0, this.mainPanel.getDividerLocation());
+
+      try {
+        RENDER_EXECUTOR.submit(new Runnable() {
+          @Override
+          public void run() {
+            BigLoaderIconAnimationConroller.getInstance().registerLabel(progressLabel);
+            try {
+              try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                  @Override
+                  public void run() {
+                    mainPanel.setBottomComponent(progressLabel);
+                    mainPanel.setDividerLocation(dividerPosition);
+                  }
+                });
+              } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return;
+              } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex);
+              }
+
+              final AtomicReference<Exception> detectedError = new AtomicReference<Exception>();
+              final AtomicReference<BufferedImage> generatedImage = new AtomicReference<BufferedImage>();
+
+              final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
+              try {
+                final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
+                generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
+              } catch (IOException ex) {
+                detectedError.set(ex);
+              }
+
+              SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                  final Exception error = detectedError.get();
+                  if (error == null) {
+                    lastSuccessfulyRenderedText = currentText;
+                    imageComponent.setImage(generatedImage.get(), false);
+                    mainPanel.setBottomComponent(renderedScrollPane);
+                    renderedScrollPane.revalidate();
+                  } else {
+                    final JLabel errorLabel = new JLabel(error.getMessage());
+                    mainPanel.setBottomComponent(errorLabel);
+                    mainPanel.revalidate();
+                  }
+
+                  mainPanel.setDividerLocation(dividerPosition);
+                }
+              });
+
+            } finally {
+              BigLoaderIconAnimationConroller.getInstance().unregisterLabel(progressLabel);
+            }
+
+          }
+        });
+      } catch (RejectedExecutionException ex) {
+        LOGGER.info("Rejected plant uml refresh");
+      }
     }
   }
 

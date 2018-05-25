@@ -16,11 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package com.igormaznitsa.sciareto.ui.tree;
+package com.igormaznitsa.sciareto.ui.misc;
 
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
 import static java.awt.image.ImageObserver.ABORT;
 import static java.awt.image.ImageObserver.ALLBITS;
@@ -29,36 +28,30 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
 import javax.swing.ImageIcon;
-import javax.swing.JTree;
-import javax.swing.tree.TreePath;
+import javax.swing.JLabel;
 
-public final class ProjectTreeIconAnimationConroller {
+public final class BigLoaderIconAnimationConroller {
   
-  public static final ImageIcon LOADING = new ImageIcon(UiUtils.class.getClassLoader().getResource("icons/loading.gif")); //NOI18N
+  public static final ImageIcon LOADING = new ImageIcon(UiUtils.class.getClassLoader().getResource("icons/bigloader.gif")); //NOI18N
 
   private static final class LoadingIconRedrawer {
 
-    final JTree tree;
-    final TreePath path;
+    final JLabel label;
 
-    LoadingIconRedrawer(@Nonnull final JTree tree, @Nonnull final TreePath path) {
-      this.tree = tree;
-      this.path = path;
+    LoadingIconRedrawer(@Nonnull final JLabel label) {
+      this.label = label;
     }
 
     public void redraw() {
-      final Rectangle rect = this.tree.getPathBounds(this.path);
-      if (rect != null) {
-        this.tree.repaint(rect);
-      }
+      this.label.repaint();
     }
   }
 
   private final List<LoadingIconRedrawer> registeredRedrawers = new CopyOnWriteArrayList<>();
  
-  private static final ProjectTreeIconAnimationConroller INSTANCE = new ProjectTreeIconAnimationConroller();
+  private static final BigLoaderIconAnimationConroller INSTANCE = new BigLoaderIconAnimationConroller();
  
-  private ProjectTreeIconAnimationConroller(){
+  private BigLoaderIconAnimationConroller(){
     LOADING.setImageObserver(new ImageObserver() {
       @Override
       public boolean imageUpdate(Image img, int flags, int x, int y, int width, int height) {
@@ -74,18 +67,18 @@ public final class ProjectTreeIconAnimationConroller {
   }
   
   @Nonnull
-  public static ProjectTreeIconAnimationConroller getInstance() {
+  public static BigLoaderIconAnimationConroller getInstance() {
     return INSTANCE;
   }
   
-  public void registerLoadingProject(@Nonnull final JTree tree, @Nonnull final NodeProject project) {
-    this.registeredRedrawers.add(new LoadingIconRedrawer(tree, new TreePath(new Object[]{project.getGroup(), project})));
+  public void registerLabel(@Nonnull final JLabel label) {
+    this.registeredRedrawers.add(new LoadingIconRedrawer(label));
   }
 
-  public void unregisterLoadingProject(@Nonnull final NodeProject project) {
+  public void unregisterLabel(@Nonnull final JLabel label) {
     for (final LoadingIconRedrawer r : registeredRedrawers) {
-      if (r.path.getLastPathComponent() == project) {
-        registeredRedrawers.remove(r);
+      if (r.label == label) {  
+        this.registeredRedrawers.remove(r);
       }
     }
   }
