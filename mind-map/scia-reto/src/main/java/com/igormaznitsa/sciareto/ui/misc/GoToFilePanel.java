@@ -55,6 +55,7 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
     return o1.toString().compareTo(o2.toString());
   }
 
+  @SuppressWarnings("ResultOfObjectAllocationIgnored")
   public GoToFilePanel(@Nonnull final ExplorerTree tree, @Nullable final Object dialogOkObject) {
     super();
     this.tree = tree;

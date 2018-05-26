@@ -67,6 +67,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
   private static final long serialVersionUID = -6683682013891751388L;
   private final File projectFolder;
 
+  @SuppressWarnings("ResultOfObjectAllocationIgnored")
   public FileEditPanel(@Nullable final File projectFolder, @Nullable final DataContainer initialData) {
     initComponents();
     this.projectFolder = projectFolder;

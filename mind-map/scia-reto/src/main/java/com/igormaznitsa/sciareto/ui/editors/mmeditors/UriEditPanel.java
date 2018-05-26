@@ -42,6 +42,7 @@ public final class UriEditPanel extends javax.swing.JPanel  {
   private static final ImageIcon IMAGE_BAD = new ImageIcon(UiUtils.loadIcon("cancel.png")); //NOI18N
   private static final ImageIcon IMAGE_QUESTION = new ImageIcon(UiUtils.loadIcon("question16.png")); //NOI18N
 
+  @SuppressWarnings("ResultOfObjectAllocationIgnored")
   public UriEditPanel(final String uri) {
     initComponents();
 

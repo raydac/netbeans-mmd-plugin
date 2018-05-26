@@ -109,6 +109,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
   private final Object okDialogExit; 
   
   
+  @SuppressWarnings("ResultOfObjectAllocationIgnored")
   public FindFilesForTextPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind, @Nullable final Object okDialogExit) {
     super();
     initComponents();

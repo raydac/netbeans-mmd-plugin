@@ -159,6 +159,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private final JCheckBox autoRefresh;
   private int pageNumberToRender = 0;
 
+  private final JPanel menu;
+  
   private final AtomicReference<Timer> autoRefreshTimer = new AtomicReference<>();
 
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
@@ -215,7 +217,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.renderedScrollPane.getHorizontalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
     this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
 
-    final JPanel menu = new JPanel(new GridBagLayout());
+    this.menu = new JPanel(new GridBagLayout());
     final GridBagConstraints gbdata = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
 
     final JButton buttonRefresh = new JButton(loadMenuIcon("arrow_refresh"));
@@ -309,26 +311,26 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
-    menu.add(buttonRefresh, gbdata);
-    menu.add(buttonClipboardImage, gbdata);
-    menu.add(buttonClipboardText, gbdata);
-    menu.add(buttonExportImage, gbdata);
-    menu.add(buttonPrintImage, gbdata);
-    menu.add(Box.createHorizontalStrut(16), gbdata);
-    menu.add(this.buttonPrevPage, gbdata);
-    menu.add(this.labelPageNumber, gbdata);
-    menu.add(this.buttonNextPage, gbdata);
-    menu.add(this.autoRefresh, gbdata);
+    this.menu.add(buttonRefresh, gbdata);
+    this.menu.add(buttonClipboardImage, gbdata);
+    this.menu.add(buttonClipboardText, gbdata);
+    this.menu.add(buttonExportImage, gbdata);
+    this.menu.add(buttonPrintImage, gbdata);
+    this.menu.add(Box.createHorizontalStrut(16), gbdata);
+    this.menu.add(this.buttonPrevPage, gbdata);
+    this.menu.add(this.labelPageNumber, gbdata);
+    this.menu.add(this.buttonNextPage, gbdata);
+    this.menu.add(this.autoRefresh, gbdata);
 
     gbdata.fill = GridBagConstraints.HORIZONTAL;
     gbdata.weightx = 10000;
-    menu.add(Box.createHorizontalBox(), gbdata);
+    this.menu.add(Box.createHorizontalBox(), gbdata);
     gbdata.weightx = 1;
     gbdata.fill = GridBagConstraints.NONE;
 
-    menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO), gbdata);
-    menu.add(makeLinkLabel("AsciiMath Reference", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
-    menu.add(this.labelWarningNoGraphwiz, gbdata);
+    this.menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO), gbdata);
+    this.menu.add(makeLinkLabel("AsciiMath Reference", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
+    this.menu.add(this.labelWarningNoGraphwiz, gbdata);
 
     this.renderedPanel.add(menu, BorderLayout.NORTH);
     this.renderedPanel.add(this.renderedScrollPane, BorderLayout.CENTER);
@@ -430,6 +432,14 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     });
   }
 
+  private void setMenuItemsEnable(final boolean enable) {
+    for(final Component c : this.menu.getComponents()) {
+      if (c instanceof JButton) {
+        c.setEnabled(enable);
+      }
+    }
+  }
+  
   @Override
   protected void doDispose() {
     stopAutoupdateTimer();
@@ -816,7 +826,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
                 SwingUtilities.invokeAndWait(new Runnable() {
                   @Override
                   public void run() {
-                    mainPanel.setBottomComponent(progressLabel);
+                    setMenuItemsEnable(false);
+                    renderedPanel.remove(renderedScrollPane);
+                    renderedPanel.add(progressLabel, BorderLayout.CENTER);
                     mainPanel.setDividerLocation(dividerPosition);
                   }
                 });
@@ -845,12 +857,14 @@ public final class PlantUmlTextEditor extends AbstractEditor {
                   if (error == null) {
                     lastSuccessfulyRenderedText = currentText;
                     imageComponent.setImage(generatedImage.get(), false);
-                    mainPanel.setBottomComponent(renderedScrollPane);
                     renderedScrollPane.revalidate();
+                    renderedPanel.remove(progressLabel);
+                    renderedPanel.add(renderedScrollPane, BorderLayout.CENTER);
+                    setMenuItemsEnable(true);
                   } else {
                     final JLabel errorLabel = new JLabel(error.getMessage());
-                    mainPanel.setBottomComponent(errorLabel);
-                    mainPanel.revalidate();
+                    renderedPanel.remove(progressLabel);
+                    renderedPanel.add(errorLabel, BorderLayout.CENTER);
                   }
 
                   mainPanel.setDividerLocation(dividerPosition);

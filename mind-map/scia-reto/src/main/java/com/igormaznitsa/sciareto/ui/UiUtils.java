@@ -72,7 +72,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Main;
-import java.lang.reflect.InvocationTargetException;
 
 public final class UiUtils {
 
