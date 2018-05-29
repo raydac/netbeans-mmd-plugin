@@ -76,6 +76,9 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   private Icon LEAF_MINDMAP;
   private Icon LEAF_MINDMAP_RO;
 
+  private Icon LEAF_EMPTY;
+  private Icon LEAF_EMPTY_RO;
+
   private Icon LEAF_PLANTUML;
   private Icon LEAF_PLANTUML_RO;
 
@@ -125,6 +128,11 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
       LEAF_MINDMAP_RO = new ImageIcon(UiUtils.makeBadgedRightTop(Icons.DOCUMENT.getIcon().getImage(), READONLY_BADGE));
     }
 
+    if (LEAF_EMPTY == null) {
+      LEAF_EMPTY = new ImageIcon(UiUtils.iconToImage(tree, DEFAULT_FILE)); //NOI18N
+      LEAF_EMPTY_RO = new ImageIcon(UiUtils.makeBadgedRightTop(UiUtils.iconToImage(tree, DEFAULT_FILE), READONLY_BADGE));
+    }
+
     if (LEAF_PLANTUML == null) {
       LEAF_PLANTUML = new ImageIcon(UiUtils.iconToImage(tree, PLANTUML_FILE)); //NOI18N
       LEAF_PLANTUML_RO = new ImageIcon(UiUtils.makeBadgedRightTop(UiUtils.iconToImage(tree, PLANTUML_FILE), READONLY_BADGE));
@@ -156,7 +164,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
           } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
             this.setIcon(node.isReadOnly() ? ICON_IMAGE_RO : ICON_IMAGE);
           } else {
-            this.setIcon(node.isReadOnly() ? LEAF_RO : LEAF);
+            this.setIcon(node.isReadOnly() ? LEAF_EMPTY_RO : LEAF_EMPTY);
           }
         } else if (node.isProjectKnowledgeFolder()) {
           this.setText("Knowledge");

@@ -50,6 +50,7 @@ import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.editors.TextEditor;
+import com.igormaznitsa.sciareto.ui.misc.SysFileExtensionEditorPanel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.event.DocumentEvent;
@@ -1412,14 +1413,19 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private void buttonExtensionsOpenInSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExtensionsOpenInSystemActionPerformed
     final String prevExtensions = PreferencesManager.getInstance().getPreferences().get(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, MainFrame.DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS);
-    final String edited = (String)JOptionPane.showInputDialog(this, "System file extensions", "Edit system file extensions", JOptionPane.PLAIN_MESSAGE, null, null, prevExtensions);
 
-    if (edited != null && !prevExtensions.equals(edited)) {
-      LOGGER.info("Set system file extensions : " + edited);
-      if (MainFrame.DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS.equals(edited)) {
-        PreferencesManager.getInstance().getPreferences().remove(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM);
-      } else {
-        PreferencesManager.getInstance().getPreferences().put(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, edited);
+    final SysFileExtensionEditorPanel dataPanel = new SysFileExtensionEditorPanel(prevExtensions);
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "System file extensions", dataPanel)) {
+
+      final String edited = dataPanel.makeValue();
+
+      if (edited != null && !prevExtensions.equals(edited)) {
+        LOGGER.info("Set system file extensions : " + edited);
+        if (MainFrame.DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS.equals(edited)) {
+          PreferencesManager.getInstance().getPreferences().remove(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM);
+        } else {
+          PreferencesManager.getInstance().getPreferences().put(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, edited);
+        }
       }
     }
   }//GEN-LAST:event_buttonExtensionsOpenInSystemActionPerformed
