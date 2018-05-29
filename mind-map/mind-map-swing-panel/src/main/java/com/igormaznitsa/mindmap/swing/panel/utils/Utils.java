@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import com.igormaznitsa.meta.annotation.ImplementationNote;
@@ -66,6 +65,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import javax.xml.XMLConstants;
 
 public final class Utils {
 
@@ -76,7 +76,7 @@ public final class Utils {
   public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size"; //NOI18N
 
   private static final Pattern URI_PATTERN = Pattern.compile("^(?:([^:\\s]+):)(?://(?:[^?/@\\s]*@)?([^/?\\s]*)/?)?([^?\\s]+)?(?:\\?([^#\\s]*))?(?:#\\S*)?$");
-  
+
   private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
 
   private Utils() {
@@ -85,7 +85,7 @@ public final class Utils {
   /**
    * Get input stream for resource in zip file.
    *
-   * @param zipFile      zip file
+   * @param zipFile zip file
    * @param resourcePath path to resource
    * @return input stream for resource or null if not found or directory
    * @throws IOException if there is any transport error
@@ -107,7 +107,7 @@ public final class Utils {
    * Read who;e zip item into byte array.
    *
    * @param zipFile zip file
-   * @param path    path to resource
+   * @param path path to resource
    * @return byte array or null if not found
    * @throws IOException thrown if there is any transport error
    */
@@ -131,7 +131,7 @@ public final class Utils {
   /**
    * Load and parse XML document from input stream.
    *
-   * @param inStream  stream to read document
+   * @param inStream stream to read document
    * @param autoClose true if stream must be closed, false otherwise
    * @return parsed document
    * @throws IOException
@@ -142,9 +142,23 @@ public final class Utils {
   @Nonnull
   public static Document loadXmlDocument(@Nonnull final InputStream inStream, @Nullable final String charset, final boolean autoClose) throws SAXException, IOException, ParserConfigurationException {
     final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+    try {
+      factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    } catch (final ParserConfigurationException ex) {
+      LOGGER.error("Can't set feature for XML parser : " + ex.getMessage(), ex);
+      throw new SAXException("Can't set flag to use security processing of XML file");
+    }
+
+    try {
+      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      factory.setFeature("http://apache.org/xml/features/validation/schema", false);
+    } catch (final ParserConfigurationException ex) {
+      LOGGER.warn("Can't set some features for XML parser : " + ex.getMessage());
+    }
+
     factory.setIgnoringComments(true);
     factory.setValidating(false);
-    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
     final DocumentBuilder builder = factory.newDocumentBuilder();
 
@@ -169,7 +183,7 @@ public final class Utils {
   /**
    * Get first direct child for name.
    *
-   * @param node        element to find children
+   * @param node element to find children
    * @param elementName name of child element
    * @return found first child or null if not found
    * @since 1.4.0
@@ -187,7 +201,7 @@ public final class Utils {
   /**
    * Find all direct children with defined name.
    *
-   * @param element          parent element
+   * @param element parent element
    * @param childElementname child element name
    * @return list of found elements
    * @since 1.4.0
@@ -209,13 +223,14 @@ public final class Utils {
 
   /**
    * Allows to check that some string has URI in appropriate format.
+   *
    * @param uri string to be checked, must not be null
    * @return true if the string contains correct uri, false otherwise
    */
   public static boolean isUriCorrect(@Nonnull final String uri) {
     return URI_PATTERN.matcher(uri).matches();
   }
-  
+
   /**
    * Get max image size.
    *
@@ -240,7 +255,7 @@ public final class Utils {
   /**
    * Load and encode image into Base64.
    *
-   * @param in      stream to read image
+   * @param in stream to read image
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return null if it was impossible to load image for its format, loaded
    * prepared image
@@ -260,7 +275,7 @@ public final class Utils {
   /**
    * Load and encode image into Base64 from file.
    *
-   * @param file    image file
+   * @param file image file
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return image
    * @throws IOException if any error during conversion or loading
@@ -278,7 +293,7 @@ public final class Utils {
   /**
    * Rescale image and encode into Base64.
    *
-   * @param image   image to rescale and encode
+   * @param image image to rescale and encode
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return scaled and encoded image
    * @throws IOException if it was impossible to encode image
@@ -433,9 +448,9 @@ public final class Utils {
       final int[] components;
 
       if (hasAlpha) {
-        components = new int[] {color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[]{color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
       } else {
-        components = new int[] {color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[]{color.getRed(), color.getGreen(), color.getBlue()};
       }
 
       for (final int c : components) {
@@ -696,15 +711,15 @@ public final class Utils {
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> findPopupMenuItems(
-      @Nonnull final MindMapPanel panel,
-      @Nonnull final PopUpSection section,
-      final boolean fullScreenModeActive,
-      @Nonnull @MayContainNull final List<JMenuItem> list,
-      @Nonnull DialogProvider dialogProvider,
-      @Nullable final Topic topicUnderMouse,
-      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
-      @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems,
-      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
+          @Nonnull final MindMapPanel panel,
+          @Nonnull final PopUpSection section,
+          final boolean fullScreenModeActive,
+          @Nonnull @MayContainNull final List<JMenuItem> list,
+          @Nonnull DialogProvider dialogProvider,
+          @Nullable final Topic topicUnderMouse,
+          @Nonnull @MustNotContainNull final Topic[] selectedTopics,
+          @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems,
+          @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
   ) {
     list.clear();
 
@@ -714,8 +729,8 @@ public final class Utils {
       }
       if (p.getSection() == section) {
         if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
-            || (p.needsTopicUnderMouse() && topicUnderMouse != null)
-            || (p.needsSelectedTopics() && selectedTopics.length > 0)) {
+                || (p.needsTopicUnderMouse() && topicUnderMouse != null)
+                || (p.needsSelectedTopics() && selectedTopics.length > 0)) {
 
           final JMenuItem item = p.makeMenuItem(panel, dialogProvider, topicUnderMouse, selectedTopics, customProcessors.get(p.getClass()));
           if (item != null) {
@@ -761,19 +776,19 @@ public final class Utils {
     try {
       result = clipboard.isDataFlavorAvailable(flavor);
     } catch (final IllegalStateException ex) {
-      LOGGER.warn("Can't get access to clipboard : "+ ex.getMessage());
+      LOGGER.warn("Can't get access to clipboard : " + ex.getMessage());
     }
     return result;
   }
 
   @Nonnull
   public static JPopupMenu makePopUp(
-      @Nonnull final MindMapPanel source,
-      final boolean fullScreenModeActive,
-      @Nonnull final DialogProvider dialogProvider,
-      @Nullable final Topic topicUnderMouse,
-      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
-      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
+          @Nonnull final MindMapPanel source,
+          final boolean fullScreenModeActive,
+          @Nonnull final DialogProvider dialogProvider,
+          @Nullable final Topic topicUnderMouse,
+          @Nonnull @MustNotContainNull final Topic[] selectedTopics,
+          @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
     final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
