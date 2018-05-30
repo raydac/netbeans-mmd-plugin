@@ -31,7 +31,7 @@ import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
+import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
 import com.igormaznitsa.sciareto.ui.editors.*;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
@@ -90,20 +90,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
 
-  public static final String DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS = "doc,dot,wbk,"
-          + "docx,docm,dotx,dotm,docb,"
-          + "xls,xlt,xlm,"
-          + "xlsx,xlsm,xltx,"
-          + "xlsb,xla,xlam,xll,xlw,"
-          + "ppt,pot,pps,"
-          + "pptx,pptm,potx,potm,ppam,ppsx,ppsm,sldx,sldm,"
-          + "pub,xps,"
-          + "pdf,djvu,epub,"
-          + "tga,tif,bmp,jp2,ico,"
-          + "avi,mp2,mpeg,mpg,mp3,mp4,mpa,mid,midi,mkv,mka,m3u,flac,mov,qt,"
-          + "3g2,3gp,3gp2,3gpp,3gpp2,asf,asx,dat,drv,f4v,flv,gtp,h264,m4v,mod,moov,mts,rm,rmvb,spl,srt,stl,swf,ts,vcd,vid,vob,webm,wm,wmv,yuv,"
-          + "bin";
-  
   private static final ExecutorService loadingExecutorService = Executors.newCachedThreadPool(new ThreadFactory() {
     @Override
     @Nonnull
@@ -419,23 +405,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }
 
-  public static boolean isExtensionShouldBeOpenedInSystem(@Nonnull final String ext) {
-    final String extensions = PreferencesManager.getInstance().getPreferences().get(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS);
-    final String [] parsed = extensions.split("\\,");
-    
-    boolean found = false;
-    
-    for(final String s : parsed) {
-      final String trimmed = s.trim();
-      if (!s.isEmpty() && ext.equalsIgnoreCase(s)) {
-        found = true;
-        break;
-      }
-    }
-    
-    return found;
-  }
-  
   @Override
   public void notifyUpdateRedoUndo() {
     SwingUtilities.invokeLater(new Runnable() {
@@ -634,7 +603,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             processTabChange();
           }
         } else {
-          if (isExtensionShouldBeOpenedInSystem(FilenameUtils.getExtension(file.getName()))) {
+          if (SystemFileExtensionManager.getInstance().isSystemFileExtension(FilenameUtils.getExtension(file.getName()))) {
             LOGGER.info("Exension of file "+file.getName()+" among extensions to be opened in system browser");
             result = false;
           } else {

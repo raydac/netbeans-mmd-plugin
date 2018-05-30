@@ -107,7 +107,7 @@ public final class SourceTextEditor extends AbstractEditor {
 
     final StringBuilder acc = new StringBuilder();
 
-    final Set<String> allEtensinsions = new HashSet<String>();
+    final Set<String> allEtensinsions = new HashSet<>();
 
     for (final Map.Entry<String, List<String>> e : SRC_EXTENSIONS.entrySet()) {
       final String type = e.getKey();

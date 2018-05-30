@@ -159,11 +159,11 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
 
   @Nonnull
   private Graph<FileVertex, Number> makeGraph(@Nullable final File projectFolder, @Nullable final File startMindMap) {
-    final DirectedSparseGraph<FileVertex, Number> result = new DirectedSparseGraph<FileVertex, Number>();
+    final DirectedSparseGraph<FileVertex, Number> result = new DirectedSparseGraph<>();
 
     final AtomicInteger edgeCounter = new AtomicInteger();
 
-    final Set<File> mapFilesInProcessing = new HashSet<File>();
+    final Set<File> mapFilesInProcessing = new HashSet<>();
 
     if (startMindMap != null) {
       addMindMapAndFillByItsLinks(null, result, projectFolder, startMindMap, edgeCounter, mapFilesInProcessing);
@@ -281,10 +281,10 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
       this.add(new JLabel("There is not any Mind map in the project!"), BorderLayout.CENTER);
     
     } else {
-      final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<FileVertex, Number>(graph);
+      final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<>(graph);
 
-      final VisualizationModel<FileVertex, Number> viewModel = new DefaultVisualizationModel<FileVertex, Number>(graphLayout, new Dimension(2000, 2000));
-      final VisualizationViewer<FileVertex, Number> graphViewer = new VisualizationViewer<FileVertex, Number>(viewModel, new Dimension(800, 800));
+      final VisualizationModel<FileVertex, Number> viewModel = new DefaultVisualizationModel<>(graphLayout, new Dimension(2000, 2000));
+      final VisualizationViewer<FileVertex, Number> graphViewer = new VisualizationViewer<>(viewModel, new Dimension(800, 800));
 
       final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse() {
         @Override

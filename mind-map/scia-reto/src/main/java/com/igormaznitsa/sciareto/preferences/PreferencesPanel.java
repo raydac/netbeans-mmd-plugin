@@ -48,7 +48,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.editors.TextEditor;
 import com.igormaznitsa.sciareto.ui.misc.SysFileExtensionEditorPanel;
 import javax.swing.DefaultComboBoxModel;
@@ -1412,22 +1411,9 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonGraphvizDotFileActionPerformed
 
   private void buttonExtensionsOpenInSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExtensionsOpenInSystemActionPerformed
-    final String prevExtensions = PreferencesManager.getInstance().getPreferences().get(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, MainFrame.DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS);
-
-    final SysFileExtensionEditorPanel dataPanel = new SysFileExtensionEditorPanel(prevExtensions);
+    final SysFileExtensionEditorPanel dataPanel = new SysFileExtensionEditorPanel(SystemFileExtensionManager.getInstance().getExtensionsAsCommaSeparatedString());
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "System file extensions", dataPanel)) {
-
-      final String value = dataPanel.getValuerNullIfDefault();
-
-      if (value == null) {
-        LOGGER.info("Reset system file extensions to default");
-        PreferencesManager.getInstance().getPreferences().remove(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM);
-      } else if (!prevExtensions.equals(value)) {
-        LOGGER.info("Set system file extensions value : " + value);
-        PreferencesManager.getInstance().getPreferences().put(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, value);
-      } else {
-        LOGGER.info("System file extensions value not changed");
-      }
+      SystemFileExtensionManager.getInstance().setExtensionsAsCommaSeparatedString(dataPanel.getValuerNullIfDefault());
     }
   }//GEN-LAST:event_buttonExtensionsOpenInSystemActionPerformed
 

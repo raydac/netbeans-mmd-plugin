@@ -839,8 +839,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
                 throw new RuntimeException(ex);
               }
 
-              final AtomicReference<Exception> detectedError = new AtomicReference<Exception>();
-              final AtomicReference<BufferedImage> generatedImage = new AtomicReference<BufferedImage>();
+              final AtomicReference<Exception> detectedError = new AtomicReference<>();
+              final AtomicReference<BufferedImage> generatedImage = new AtomicReference<>();
 
               final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
               try {

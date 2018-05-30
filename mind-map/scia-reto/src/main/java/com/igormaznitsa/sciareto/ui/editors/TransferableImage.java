@@ -34,10 +34,11 @@ public class TransferableImage implements Transferable {
   private final WeakReference<Image> image;
 
   public TransferableImage(@Nonnull final Image image) {
-    this.image = new WeakReference<Image>(Assertions.assertNotNull(image));
+    this.image = new WeakReference<>(Assertions.assertNotNull(image));
   }
 
   @Nonnull
+  @Override
   public Object getTransferData(@Nonnull final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
     final Image theImage = this.image.get();
     if (flavor.equals(DataFlavor.imageFlavor) && theImage != null) {
@@ -49,10 +50,12 @@ public class TransferableImage implements Transferable {
 
   @Nonnull
   @MustNotContainNull
+  @Override
   public DataFlavor[] getTransferDataFlavors() {
     return new DataFlavor[] {DataFlavor.imageFlavor};
   }
 
+  @Override
   public boolean isDataFlavorSupported(@Nonnull DataFlavor flavor) {
     final Image theimage = this.image.get();
     if (theimage == null) {

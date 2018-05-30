@@ -19,7 +19,7 @@
 package com.igormaznitsa.sciareto.ui.misc;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.sciareto.ui.MainFrame;
+import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +72,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
       lines [i] = this.tableExtensions.getModel().getValueAt(i, 0).toString();
     }
     final String result = prepareStringFromLines(lines);
-    return result.equals(prepareStringFromLines(parseExtensionsAndSortForFirstChar(MainFrame.DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS))) ? null : result;
+    return result.equals(prepareStringFromLines(parseExtensionsAndSortForFirstChar(SystemFileExtensionManager.getInstance().getDefaultExtensionsAsCommaSeparatedString()))) ? null : result;
   }
 
   private static String prepareStringFromLines(@Nonnull @MustNotContainNull final String [] lines) {
@@ -224,7 +224,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
   }// </editor-fold>//GEN-END:initComponents
 
   private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
-    makeModelAndSetToTable(MainFrame.DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS);
+    makeModelAndSetToTable(SystemFileExtensionManager.getInstance().getDefaultExtensionsAsCommaSeparatedString());
   }//GEN-LAST:event_buttonResetActionPerformed
 
   private void buttonAddLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddLineActionPerformed
