@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -32,7 +33,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
 
-  private final List<String> strings = new ArrayList<String>();
+  private final List<String> strings = new ArrayList<>();
   
   public SysFileExtensionEditorPanel(@Nonnull final String initValue) {
     initComponents();
@@ -64,27 +65,39 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     this.tableExtensions.revalidate();
   }
   
-  @Nonnull
-  public String makeValue() {
-    final StringBuilder builder = new StringBuilder();
+  @Nullable
+  public String getValuerNullIfDefault() {
+    final String [] lines = new String[this.tableExtensions.getModel().getRowCount()];
     for(int i=0; i<this.tableExtensions.getModel().getRowCount(); i++){
-      final String obj = this.tableExtensions.getModel().getValueAt(i, 0).toString();
-      for(final String ext : obj.split("\\,")) {
+      lines [i] = this.tableExtensions.getModel().getValueAt(i, 0).toString();
+    }
+    final String result = prepareStringFromLines(lines);
+    return result.equals(prepareStringFromLines(parseExtensionsAndSortForFirstChar(MainFrame.DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS))) ? null : result;
+  }
+
+  private static String prepareStringFromLines(@Nonnull @MustNotContainNull final String [] lines) {
+    final StringBuilder builder = new StringBuilder();
+    for (final String s : lines) {
+      for (final String ext : s.split("\\,")) {
         final String trimmed = ext.toLowerCase(Locale.ENGLISH).trim();
-        if (trimmed.isEmpty()) continue;
-        if (builder.length()>0) builder.append(',');
+        if (trimmed.isEmpty()) {
+          continue;
+        }
+        if (builder.length() > 0) {
+          builder.append(',');
+        }
         builder.append(trimmed);
       }
     }
     return builder.toString();
   }
-
+  
   @Nonnull
   @MustNotContainNull
   private static String [] parseExtensionsAndSortForFirstChar(@Nonnull final String text) {
    final String [] parsed = text.split("\\,");
    Arrays.sort(parsed);
-   final List<String> result = new ArrayList<String>();
+   final List<String> result = new ArrayList<>();
   
    final StringBuilder buffer = new StringBuilder();
    Character curChar = null;
@@ -132,6 +145,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     jPanel1.setLayout(new java.awt.GridBagLayout());
 
     buttonAddLine.setText("Add");
+    buttonAddLine.setToolTipText("Add new empty line into table");
     buttonAddLine.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonAddLineActionPerformed(evt);
@@ -144,6 +158,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     jPanel1.add(buttonAddLine, gridBagConstraints);
 
     buttonEditLine.setText("Edit");
+    buttonEditLine.setToolTipText("Start edit focused line");
     buttonEditLine.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonEditLineActionPerformed(evt);
@@ -156,6 +171,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     jPanel1.add(buttonEditLine, gridBagConstraints);
 
     buttonDeleteLine.setText("Delete");
+    buttonDeleteLine.setToolTipText("Delete focused line");
     buttonDeleteLine.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonDeleteLineActionPerformed(evt);
@@ -173,6 +189,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     jPanel1.add(filler1, gridBagConstraints);
 
     buttonReset.setText("Reset");
+    buttonReset.setToolTipText("Reset format list to default state");
     buttonReset.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonResetActionPerformed(evt);

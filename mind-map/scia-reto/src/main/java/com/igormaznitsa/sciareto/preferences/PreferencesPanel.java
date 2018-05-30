@@ -1417,15 +1417,16 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     final SysFileExtensionEditorPanel dataPanel = new SysFileExtensionEditorPanel(prevExtensions);
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "System file extensions", dataPanel)) {
 
-      final String edited = dataPanel.makeValue();
+      final String value = dataPanel.getValuerNullIfDefault();
 
-      if (edited != null && !prevExtensions.equals(edited)) {
-        LOGGER.info("Set system file extensions : " + edited);
-        if (MainFrame.DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS.equals(edited)) {
-          PreferencesManager.getInstance().getPreferences().remove(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM);
-        } else {
-          PreferencesManager.getInstance().getPreferences().put(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, edited);
-        }
+      if (value == null) {
+        LOGGER.info("Reset system file extensions to default");
+        PreferencesManager.getInstance().getPreferences().remove(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM);
+      } else if (!prevExtensions.equals(value)) {
+        LOGGER.info("Set system file extensions value : " + value);
+        PreferencesManager.getInstance().getPreferences().put(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, value);
+      } else {
+        LOGGER.info("System file extensions value not changed");
       }
     }
   }//GEN-LAST:event_buttonExtensionsOpenInSystemActionPerformed
