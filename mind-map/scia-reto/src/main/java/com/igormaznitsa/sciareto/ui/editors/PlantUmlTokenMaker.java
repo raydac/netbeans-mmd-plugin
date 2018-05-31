@@ -35,6 +35,8 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
 
     tokenMap.put("@startgantt", Token.RESERVED_WORD);
     tokenMap.put("@endgantt", Token.RESERVED_WORD);
+    tokenMap.put("@startmath", Token.RESERVED_WORD);
+    tokenMap.put("@endmath", Token.RESERVED_WORD);
     tokenMap.put("@startdot", Token.RESERVED_WORD);
     tokenMap.put("@enddot", Token.RESERVED_WORD);
     tokenMap.put("@startuml", Token.RESERVED_WORD);
