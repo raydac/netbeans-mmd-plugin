@@ -1837,11 +1837,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             newText = newText.trim();
           }
 
+          boolean contentChanged = false;
           if (!oldText.equals(newText)) {
             editedElement.setText(newText);
+            contentChanged = true;
           }
           this.textEditorPanel.setVisible(false);
-          updateView(true);
+          updateView(contentChanged);
           fireNotificationEnsureTopicVisibility(editedTopic);
         }
       } finally {
