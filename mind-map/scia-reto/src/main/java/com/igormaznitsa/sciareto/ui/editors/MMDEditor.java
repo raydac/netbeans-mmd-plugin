@@ -153,7 +153,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     this.scrollPane.getHorizontalScrollBar().addAdjustmentListener(listener);
     this.scrollPane.getVerticalScrollBar().addAdjustmentListener(listener);
 
-
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
     final MindMap map;
@@ -206,13 +205,12 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
     if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-        || e.getKeyCode() == KeyEvent.VK_LEFT
-        || e.getKeyCode() == KeyEvent.VK_RIGHT
-        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+            || e.getKeyCode() == KeyEvent.VK_LEFT
+            || e.getKeyCode() == KeyEvent.VK_RIGHT
+            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
       e.consume();
     }
   }
-
 
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
@@ -800,7 +798,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       this.customProcessors.put(ChangeColorPlugin.class, new CustomJob() {
         @Override
         public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[] {topic});
+          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
         }
       });
     }
@@ -818,14 +816,24 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       result = UiUtils.editText(String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), note.getValue());
     }
     if (result != null) {
+      boolean changed = false;
+
       if (result.isEmpty()) {
-        topic.removeExtra(Extra.ExtraType.NOTE);
+        if (note != null) {
+          topic.removeExtra(Extra.ExtraType.NOTE);
+          changed = true;
+        }
       } else {
-        topic.setExtra(new ExtraNote(result));
+        if (note == null || !note.getValue().equals(result)) {
+          topic.setExtra(new ExtraNote(result));
+          changed = true;
+        }
       }
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      if (changed) {
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
     }
   }
 
@@ -850,8 +858,8 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       if (currentFilePath == null) {
         final FileEditPanel.DataContainer prefilled = new FileEditPanel.DataContainer(null, this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
         dataContainer = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
-            this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
-            prefilled);
+                this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
+                prefilled);
         if (dataContainer != null) {
           this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, dataContainer.isShowWithSystemTool());
         }
@@ -930,14 +938,29 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       }
 
       if (result != null) {
+        boolean changed = false;
         if (result == remove) {
-          topic.removeExtra(Extra.ExtraType.TOPIC);
+          if (topic.getExtras().get(Extra.ExtraType.TOPIC) != null) {
+            topic.removeExtra(Extra.ExtraType.TOPIC);
+            changed = true;
+          }
         } else {
-          topic.setExtra(result);
+          final Object prev = topic.getExtras().get(Extra.ExtraType.TOPIC);
+          if (prev == null) {
+            topic.setExtra(result);
+            changed = true;
+          } else {
+            if (!result.equals(prev)) {
+              topic.setExtra(result);
+              changed = true;
+            }
+          }
         }
-        this.mindMapPanel.invalidate();
-        this.mindMapPanel.repaint();
-        onMindMapModelChanged(this.mindMapPanel);
+        if (changed) {
+          this.mindMapPanel.invalidate();
+          this.mindMapPanel.repaint();
+          onMindMapModelChanged(this.mindMapPanel);
+        }
       }
     }
   }
@@ -954,14 +977,26 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         result = UiUtils.editURI(String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
       }
       if (result != null) {
+
+        boolean changed = false;
+
         if (result == UiUtils.EMPTY_URI) {
-          topic.removeExtra(Extra.ExtraType.LINK);
+          if (link != null) {
+            changed = true;
+            topic.removeExtra(Extra.ExtraType.LINK);
+          }
         } else {
-          topic.setExtra(new ExtraLink(result));
+          if (!result.equals(link.getAsURI())) {
+            changed = true;
+            topic.setExtra(new ExtraLink(result));
+          }
         }
-        this.mindMapPanel.invalidate();
-        this.mindMapPanel.repaint();
-        onMindMapModelChanged(this.mindMapPanel);
+
+        if (changed) {
+          this.mindMapPanel.invalidate();
+          this.mindMapPanel.repaint();
+          onMindMapModelChanged(this.mindMapPanel);
+        }
       }
     }
   }
