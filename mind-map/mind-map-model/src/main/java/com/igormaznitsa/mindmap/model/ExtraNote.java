@@ -35,6 +35,22 @@ public class ExtraNote extends Extra<String> {
   }
   
   @Override
+  public boolean equals(@Nullable final Object that) {
+    if (that == null) return false;
+    if (this == that) return true;
+    if (that instanceof ExtraNote) {
+      return this.text.equals(((ExtraNote)that).text);
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return this.text.hashCode();
+  }
+  
+  @Override
   @Nonnull
   public String getValue() {
     return this.text;

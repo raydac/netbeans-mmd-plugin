@@ -29,6 +29,22 @@ public class ExtraTopic extends Extra<String> {
   
   public static final String TOPIC_UID_ATTR = "topicLinkUID"; //NOI18N
   
+  @Override
+  public int hashCode() {
+    return this.topicUID.hashCode();
+  }
+  
+  @Override
+  public boolean equals(@Nullable final Object that) {
+    if (that == null) return false;
+    if (this == that) return true;
+    if (that instanceof ExtraTopic) {
+      return this.topicUID.equals(((ExtraTopic)that).topicUID);
+    } else {
+      return false;
+    }
+  }
+  
   @Nullable
   public static ExtraTopic makeLinkTo(@Nonnull final MindMap map, @Nullable final Topic topic) {
     ExtraTopic result = null;

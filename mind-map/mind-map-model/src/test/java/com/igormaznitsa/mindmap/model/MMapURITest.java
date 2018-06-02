@@ -34,6 +34,14 @@ public class MMapURITest {
   }
 
   @Test
+  public void testEquals() throws Exception {
+    assertTrue(new MMapURI("http://www.google.com").equals(new MMapURI("http://www.google.com")));
+    assertTrue(new MMapURI("http://www.google.com?a=1").equals(new MMapURI("http://www.google.com?a=1")));
+    assertFalse(new MMapURI("http://www.google.com?a=1").equals(new MMapURI("http://www.google.com")));
+    assertFalse(new MMapURI("http://www.google.com?a=1").equals(new MMapURI("http://www.googler.com?a=1")));
+  }
+  
+  @Test
   public void testReplaceName() throws Exception {
     assertEquals("universe.doc?query=123", new MMapURI("?query=123#eee").replaceName("universe.doc").asURI().toString());
     assertEquals("hello/universe.doc?query=123", new MMapURI("hello/world.txt?query=123#eee").replaceName("universe.doc").asURI().toString());

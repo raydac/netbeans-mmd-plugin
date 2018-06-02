@@ -52,6 +52,24 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     return pattern.matcher(filePathAsText).find();
   }
 
+  @Override
+  public int hashCode() {
+    return this.fileUri.hashCode() ^ (this.mmdFileFlag ? 1 : 0);
+  }
+  
+  @Override
+  public boolean equals(@Nullable final Object that) {
+    if (that == null) return false;
+    if (this == that) return true;
+  
+    if (that instanceof ExtraFile) {
+      final ExtraFile thatFile = (ExtraFile) that;
+      return this.mmdFileFlag == thatFile.mmdFileFlag && this.fileUri.equals(thatFile.fileUri);
+    } else {
+      return false;
+    }
+  }
+  
   public boolean isMMDFile() {
     return this.mmdFileFlag;
   }

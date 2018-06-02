@@ -20,6 +20,13 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ExtraFileTest {
+
+  @Test
+  public void testEquals() throws Exception {
+    assertTrue(new ExtraFile("./text.txt").equals(new ExtraFile("./text.txt")));
+    assertFalse(new ExtraFile("./text.txt").equals(new ExtraFile("./text2.txt")));
+  }
+
   @Test
   public void testHasParent() throws Exception {
     assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item1/item2/item2.txt")));

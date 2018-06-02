@@ -25,6 +25,23 @@ import javax.annotation.Nullable;
 public class ExtraLink extends Extra<MMapURI> implements ExtraLinkable {
   private static final long serialVersionUID = -3343908686571445847L;
   private final MMapURI uri;
+
+  @Override
+  public int hashCode() {
+    return this.uri.hashCode();
+  }
+  
+  @Override
+  public boolean equals(@Nullable final Object that) {
+    if (that == null) return false;
+    if (this == that) return true;
+    
+    if (that instanceof ExtraLink) {
+      return this.uri.equals(((ExtraLink)that).uri);
+    } else {
+      return false;
+    }
+  }
   
   public ExtraLink(@Nonnull final MMapURI uri) {
     this.uri = uri;

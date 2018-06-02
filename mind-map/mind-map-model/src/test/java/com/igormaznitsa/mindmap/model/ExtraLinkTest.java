@@ -23,6 +23,15 @@ import java.util.regex.Pattern;
 public class ExtraLinkTest {
   
   @Test
+  public void testEquals() throws Exception {
+    assertTrue(new ExtraLink("http://www.google.com").equals(new ExtraLink("http://www.google.com")));
+    assertTrue(new ExtraLink("http://www.google.com?a=1&b=2").equals(new ExtraLink("http://www.google.com?a=1&b=2")));
+    assertFalse(new ExtraLink("http://www.google.com?a=1&b=2").equals(new ExtraLink("http://www.googlee.com?a=1&b=2")));
+    assertFalse(new ExtraLink("http://www.google.com?a=1&b=2").equals(new ExtraLink("http://www.google.com?b=2&a=1")));
+    assertFalse(new ExtraLink("http://www.google.com?a=1&b=2").equals(new ExtraLink("http://www.google.com?b=1&a=2")));
+  }
+  
+  @Test
   public void testContainsPattern() throws Exception {
     final ExtraLink link = new ExtraLink("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344");
     assertTrue(link.containsPattern(null, Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"))));

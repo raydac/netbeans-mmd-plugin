@@ -44,6 +44,28 @@ public class MMapURI implements Serializable {
   private final Properties parameters;
   private final boolean fileUriFlag;
 
+  @Override
+  public int hashCode() {
+    return this.uri.hashCode() ^ (this.fileUriFlag ? 1 : 0) ^ (31 * this.parameters.size());
+  }
+  
+  @Override
+  public boolean equals(@Nullable final Object that) {
+    if (that == null) return false;
+    if (this == that) return true;
+    if (that instanceof MMapURI) {
+      final MMapURI thatURI = (MMapURI) that;
+      if (this.parameters.size()!=thatURI.parameters.size()) return false;
+      for(final String s : this.parameters.stringPropertyNames()) {
+        if (!thatURI.parameters.containsKey(s)) return false;
+        if (!this.parameters.getProperty(s).equals(thatURI.parameters.getProperty(s))) return false;
+      }
+      return this.uri.equals(thatURI.uri);
+    } else {
+      return false;
+    }
+  }
+  
   @Nullable
   private static String extractHost(@Nonnull final URI uri) {
     String host = uri.getHost();

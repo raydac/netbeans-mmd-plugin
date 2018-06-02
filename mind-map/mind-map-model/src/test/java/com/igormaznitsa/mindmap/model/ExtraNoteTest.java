@@ -23,6 +23,14 @@ import java.util.regex.Pattern;
 public class ExtraNoteTest {
   
   @Test
+  public void testEquals() throws Exception {
+    assertTrue(new ExtraNote("aaa").equals(new ExtraNote("aaa")));
+    assertFalse(new ExtraNote("aaa").equals(new ExtraNote("Aaa")));
+    assertFalse(new ExtraNote("aaa").equals(new ExtraNote("aaaa")));
+    assertFalse(new ExtraNote("aaa").equals(new ExtraNote("")));
+  }
+  
+  @Test
   public void testContainsPattern() throws Exception {
     final ExtraNote note = new ExtraNote("domr dsf sdf sdf \n sdf http://www.1cpp.ru/forum/YaBB.pl?num=1341507344 fsdf sdfd \n");
     assertTrue(note.containsPattern(null, Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"))));
