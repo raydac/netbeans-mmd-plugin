@@ -18,7 +18,7 @@ intellij {
     updateSinceUntilBuild false
 }
 
-def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.2.4"
+def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.2.5-SNAPSHOT"
 def mindMapCommonVersion = project.hasProperty('mm_ide_common_version') ? project.getProperty('mm_ide_common_version') : project.version
 def mindMapPanelVersion = project.hasProperty('mm_panel_version') ? project.getProperty('mm_panel_version') : project.version
 

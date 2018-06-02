@@ -16,7 +16,7 @@
     <meta.version>1.1.2</meta.version>
     <uber.pom>1.0.1</uber.pom>
     <iam.commons.version>1.0.0</iam.commons.version>
-    <mindmap.model.version>1.2.4</mindmap.model.version>
+    <mindmap.model.version>1.2.5-SNAPSHOT</mindmap.model.version>
   </properties>
 
   <modules>
