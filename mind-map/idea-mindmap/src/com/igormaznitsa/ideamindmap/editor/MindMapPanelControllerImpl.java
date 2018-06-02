@@ -19,11 +19,21 @@ package com.igormaznitsa.ideamindmap.editor;
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
-import com.igormaznitsa.ideamindmap.swing.*;
+import com.igormaznitsa.ideamindmap.swing.AboutForm;
+import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
+import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
+import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
+import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
@@ -35,7 +45,12 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.swing.panel.*;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapConfigListener;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
+import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -179,7 +194,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
   @Override
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
-    return Utils.makePopUp(source, false, this.dialogProvider,  element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
+    return Utils.makePopUp(source, false, this.dialogProvider, element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
   }
 
   private void startOptionsEdit() {
@@ -206,16 +221,26 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
     }
     if (result != null) {
+      boolean changed = false;
       if (result == IdeaUtils.EMPTY_URI) {
-        topic.removeExtra(Extra.ExtraType.LINK);
+        if (link != null) {
+          changed = true;
+          topic.removeExtra(Extra.ExtraType.LINK);
+        }
       } else {
-        topic.setExtra(new ExtraLink(result));
+        final ExtraLink newLink = new ExtraLink(result);
+        if (link == null || !link.equals(newLink)) {
+          changed = true;
+          topic.setExtra(newLink);
+        }
       }
 
-      final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
-      mindMapPanel.invalidate();
-      mindMapPanel.repaint();
-      this.editor.onMindMapModelChanged(mindMapPanel);
+      if (changed) {
+        final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
+        mindMapPanel.invalidate();
+        mindMapPanel.repaint();
+        this.editor.onMindMapModelChanged(mindMapPanel);
+      }
     }
   }
 
@@ -252,14 +277,25 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     }
 
     if (result != null) {
+      boolean changed = false;
+
       if (result == remove) {
-        topic.removeExtra(Extra.ExtraType.TOPIC);
+        if (link != null) {
+          changed = true;
+          topic.removeExtra(Extra.ExtraType.TOPIC);
+        }
       } else {
-        topic.setExtra(result);
+        if (link == null || !link.equals(result)) {
+          changed = true;
+          topic.setExtra(result);
+        }
       }
-      mindMapPanel.invalidate();
-      mindMapPanel.repaint();
-      this.editor.onMindMapModelChanged(mindMapPanel);
+
+      if (changed) {
+        mindMapPanel.invalidate();
+        mindMapPanel.repaint();
+        this.editor.onMindMapModelChanged(mindMapPanel);
+      }
     }
   }
 
@@ -297,7 +333,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       }
 
       if (dataContainer != null) {
-        final boolean changed;
+        boolean changed = false;
         if (dataContainer.isEmpty()) {
           changed = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
@@ -313,8 +349,12 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
             if (currentFilePath == null) {
               this.editor.getMindMapPanel().putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, theFile.getParentFile());
             }
-            topic.setExtra(new ExtraFile(fileUri));
-            changed = true;
+
+            final ExtraFile newFile = new ExtraFile(fileUri);
+            if (currentFilePath == null || !currentFilePath.equals(newFile)) {
+              topic.setExtra(newFile);
+              changed = true;
+            }
           } else {
             dialogProvider.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPath()));
             changed = false;
@@ -371,14 +411,26 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
               note.getValue());
     }
     if (result != null) {
+      boolean changed = false;
+
       if (result.isEmpty()) {
-        topic.removeExtra(Extra.ExtraType.NOTE);
+        if (note != null) {
+          topic.removeExtra(Extra.ExtraType.NOTE);
+          changed = true;
+        }
       } else {
-        topic.setExtra(new ExtraNote(result));
+        final ExtraNote newNote = new ExtraNote(result);
+        if (note == null || !note.equals(newNote)) {
+          topic.setExtra(newNote);
+          changed = true;
+        }
       }
-      this.editor.getMindMapPanel().invalidate();
-      this.editor.getMindMapPanel().repaint();
-      this.editor.onMindMapModelChanged(this.editor.getMindMapPanel());
+
+      if (changed) {
+        this.editor.getMindMapPanel().invalidate();
+        this.editor.getMindMapPanel().repaint();
+        this.editor.onMindMapModelChanged(this.editor.getMindMapPanel());
+      }
     }
   }
 

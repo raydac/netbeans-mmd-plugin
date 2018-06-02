@@ -626,14 +626,26 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
               note.getValue());
     }
     if (result != null) {
+      boolean changed = false;
+
       if (result.isEmpty()) {
-        topic.removeExtra(Extra.ExtraType.NOTE);
+        if (note != null) {
+          changed = true;
+          topic.removeExtra(Extra.ExtraType.NOTE);
+        }
       } else {
-        topic.setExtra(new ExtraNote(result));
+        final ExtraNote newNote = new ExtraNote(result);
+        if (note == null || !note.equals(newNote)) {
+          changed = true;
+          topic.setExtra(newNote);
+        }
       }
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+
+      if (changed) {
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
     }
 
     this.mainScrollPane.requestFocus();
