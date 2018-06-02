@@ -108,7 +108,41 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   private static final int DELAY_AUTOREFRESH_SECONDS = 5;
 
-  private String lastSuccessfulyRenderedText = null;
+  private static final class LastRendered {
+
+    private final int page;
+    private final String text;
+
+    public LastRendered(final int page, @Nonnull final String text) {
+      this.page = page;
+      this.text = text;
+    }
+
+    @Override
+    public int hashCode() {
+      return this.text.hashCode() ^ this.page;
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (getClass() != obj.getClass()) {
+        return false;
+      }
+      final LastRendered other = (LastRendered) obj;
+      if (this.page != other.page) {
+        return false;
+      }
+      return Objects.equals(this.text, other.text);
+    }
+  }
+
+  private volatile LastRendered lastSuccessfulyRenderedText = null;
 
   private final ExecutorService RENDER_EXECUTOR = new ThreadPoolExecutor(1, 1,
           60, TimeUnit.SECONDS,
@@ -160,7 +194,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private int pageNumberToRender = 0;
 
   private final JPanel menu;
-  
+
   private final AtomicReference<Timer> autoRefreshTimer = new AtomicReference<>();
 
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
@@ -433,13 +467,13 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   }
 
   private void setMenuItemsEnable(final boolean enable) {
-    for(final Component c : this.menu.getComponents()) {
+    for (final Component c : this.menu.getComponents()) {
       if (c instanceof JButton) {
         c.setEnabled(enable);
       }
     }
   }
-  
+
   @Override
   protected void doDispose() {
     stopAutoupdateTimer();
@@ -803,14 +837,20 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private void startRenderScript() {
     stopAutoupdateTimer();
 
-    final String currentText = this.editor.getText();
+    final String theText = this.editor.getText();
+    
+    final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
+    final int totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
+    final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
+
+    if (imageIndex != this.pageNumberToRender) {
+      this.pageNumberToRender = imageIndex;
+    }
+    
+    final LastRendered currentText = new LastRendered(imageIndex, theText);
 
     if (!currentText.equals(this.lastSuccessfulyRenderedText)) {
-
-      final SourceStringReader reader = new SourceStringReader(currentText, "UTF-8");
-      final int totalPages = Math.max(countNewPages(currentText), reader.getBlocks().size());
-      final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
-      updatePageNumberInfo(imageIndex, totalPages);
+      updatePageNumberInfo(currentText.page, totalPages);
 
       Future<BufferedImage> renderImage = null;
 
