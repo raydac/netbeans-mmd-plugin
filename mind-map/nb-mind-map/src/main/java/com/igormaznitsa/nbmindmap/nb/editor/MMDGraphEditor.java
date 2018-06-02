@@ -102,12 +102,12 @@ import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispat
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 @MultiViewElement.Registration(
-    displayName = "#MMDGraphEditor.displayName",
-    mimeType = MMDDataObject.MIME,
-    persistenceType = PERSISTENCE_NEVER,
-    iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
-    preferredID = MMDGraphEditor.ID,
-    position = 1
+        displayName = "#MMDGraphEditor.displayName",
+        mimeType = MMDDataObject.MIME,
+        persistenceType = PERSISTENCE_NEVER,
+        iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
+        preferredID = MMDGraphEditor.ID,
+        position = 1
 )
 public final class MMDGraphEditor extends CloneableEditor implements AdjustmentListener, MindMapController, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, FlavorListener, ClipboardListener {
 
@@ -181,7 +181,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     super(support);
 
     this.putClientProperty("print.size", new Dimension(500, 500));
-    
+
     this.editorSupport = support;
 
     this.mainScrollPane = UI_COMPO_FACTORY.makeScrollPane();
@@ -323,8 +323,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     try {
       this.mindMapPanel.dispose();
       LOGGER.info("MMD Editor is disposed : " + this.mindMapPanel.toString());
-    }
-    finally {
+    } finally {
 
       final Clipboard clipboard = NbUtils.findClipboard();
       if (clipboard instanceof ExClipboard) {
@@ -439,11 +438,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       theMap.write(writer);
       this.editorSupport.replaceDocumentText(writer.toString());
       this.editorSupport.getDataObject().setModified(true);
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       LOGGER.error("Can't get document text", ex); //NOI18N
-    }
-    finally {
+    } finally {
       copyNameToCallbackTopComponent();
     }
   }
@@ -501,9 +498,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
     if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-        || e.getKeyCode() == KeyEvent.VK_LEFT
-        || e.getKeyCode() == KeyEvent.VK_RIGHT
-        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+            || e.getKeyCode() == KeyEvent.VK_LEFT
+            || e.getKeyCode() == KeyEvent.VK_RIGHT
+            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
       e.consume();
     }
   }
@@ -561,8 +558,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
               }
               return;
             }
-          }
-          catch (Exception ex) {
+          } catch (Exception ex) {
             LOGGER.error("onClickExtra#FILE", ex); //NOI18N
             NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgWrongFilePath"), uri.toString()));
             return;
@@ -635,8 +631,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
                 NbUtils.SelectIn.PROJECTS.select(this, fileObj);
               }
             }
-          }
-          catch (Exception ex) {
+          } catch (Exception ex) {
             LOGGER.error("Cant't find or open data object", ex); //NOI18N
             NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.cantFindFileObj"), uri.toString()));
           }
@@ -851,8 +846,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
           if (list != null && !list.isEmpty()) {
             detectedFileObject = (File) list.get(0);
           }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
           LOGGER.error("Can't extract file from DnD", ex);
           throw ex;
         }
@@ -871,24 +865,21 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
             dataObject = DataObject.find(proj.getProjectDirectory());
           }
         }
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         LOGGER.error("Can't extract node from dragged element", ex);
         throw ex;
       }
     } else if (dataObjectFlavor != null) {
       try {
         dataObject = (DataObject) dtde.getTransferable().getTransferData(dataObjectFlavor);
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         LOGGER.error("Can't extract data object from dragged element", ex);
         throw ex;
       }
     } else if (projectObjectFlavor != null) {
       try {
         dataObject = DataObject.find(((Project) dtde.getTransferable().getTransferData(projectObjectFlavor)).getProjectDirectory());
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         LOGGER.error("Can't extract data object from project", ex);
         throw ex;
       }
@@ -923,15 +914,13 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       if (detectedLink != null) {
         try {
           decodedLink = new URI(detectedLink);
-        }
-        catch (final URISyntaxException ex) {
+        } catch (final URISyntaxException ex) {
           decodedLink = null;
         }
       }
 
       dtde.dropComplete(true);
-    }
-    catch (final Exception ex) {
+    } catch (final Exception ex) {
       LOGGER.error("Can't extract data from DnD", ex);
       dtde.dropComplete(false);
     }
@@ -1015,8 +1004,8 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       if (currentFilePath == null) {
         final FileEditPanel.DataContainer prefilled = new FileEditPanel.DataContainer(null, this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
         dataContainer = NbUtils.editFilePath(null, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
-            this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
-            prefilled);
+                this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
+                prefilled);
         if (dataContainer != null) {
           this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, dataContainer.isShowWithSystemTool());
         }
@@ -1037,7 +1026,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       }
 
       if (dataContainer != null) {
-        final boolean changed;
+        boolean changed = false;
         if (dataContainer.isEmpty()) {
           changed = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
@@ -1053,8 +1042,13 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
             if (currentFilePath == null) {
               this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, theFile.getParentFile());
             }
-            topic.setExtra(new ExtraFile(fileUri));
+            
+            final ExtraFile newFile = new ExtraFile(fileUri);
+            
+            if (currentFilePath == null || !currentFilePath.equals(newFile)){
+            topic.setExtra(newFile);
             changed = true;
+            }
           } else {
             NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPath()));
             changed = false;
@@ -1101,14 +1095,25 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     }
 
     if (result != null) {
+      boolean changed = false;
+
       if (result == remove) {
-        topic.removeExtra(Extra.ExtraType.TOPIC);
+        if (link != null) {
+          topic.removeExtra(Extra.ExtraType.TOPIC);
+          changed = true;
+        }
       } else {
-        topic.setExtra(result);
+        if (link == null || !link.equals(result)) {
+          changed = true;
+          topic.setExtra(result);
+        }
       }
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+
+      if (changed) {
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
     }
   }
 
@@ -1123,14 +1128,26 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       result = NbUtils.editURI(null, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
     }
     if (result != null) {
+      boolean changed = false;
+
       if (result == NbUtils.EMPTY_URI) {
-        topic.removeExtra(Extra.ExtraType.LINK);
+        if (link != null) {
+          changed = true;
+          topic.removeExtra(Extra.ExtraType.LINK);
+        }
       } else {
-        topic.setExtra(new ExtraLink(result));
+        final ExtraLink newLink = new ExtraLink(result);
+        if (link == null || !link.equals(newLink)) {
+          topic.setExtra(newLink);
+          changed = true;
+        }
       }
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+
+      if (changed) {
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
     }
   }
 
@@ -1145,14 +1162,26 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       result = NbUtils.editText(null, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), note.getValue());
     }
     if (result != null) {
+      boolean changed = false;
+
       if (result.isEmpty()) {
-        topic.removeExtra(Extra.ExtraType.NOTE);
+        if (note != null) {
+          changed = true;
+          topic.removeExtra(Extra.ExtraType.NOTE);
+        }
       } else {
-        topic.setExtra(new ExtraNote(result));
+        final ExtraNote newNote = new ExtraNote(result);
+        if (note == null || !note.equals(newNote)) {
+          topic.setExtra(newNote);
+          changed = true;
+        }
       }
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+
+      if (changed) {
+        this.mindMapPanel.invalidate();
+        this.mindMapPanel.repaint();
+        onMindMapModelChanged(this.mindMapPanel);
+      }
     }
   }
 
@@ -1188,7 +1217,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   @Override
   public PrintPage[][] getPages(final int paperWidthInPixels, final int paperHeightInPixels, final double pageZoomFactor) {
     final MMDPrintOptions printOptions = new MMDPrintOptions();
- 
+
     if (pageZoomFactor < 0.1d) {
       printOptions.setScaleType(MMDPrintOptions.ScaleType.FIT_TO_SINGLE_PAGE);
     } else if (pageZoomFactor > 20.0d) {
@@ -1198,11 +1227,11 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       printOptions.setScaleType(MMDPrintOptions.ScaleType.ZOOM);
       printOptions.setScale(pageZoomFactor);
     }
-    
+
     final com.igormaznitsa.mindmap.print.PrintPage[][] pages = new MMDPrint(PrintableObject.newBuild().mmdpanel(this.mindMapPanel).build(), paperWidthInPixels, paperHeightInPixels, printOptions).getPages();
-    
+
     final PrintPage[][] result = new PrintPage[pages.length][];
-    
+
     for (int i = 0; i < pages.length; i++) {
       result[i] = new PrintPage[pages[i].length];
       for (int p = 0; p < pages[i].length; p++) {
@@ -1343,8 +1372,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
             mindMapPanel.invalidate();
             mindMapPanel.revalidate();
             mindMapPanel.repaint();
-          }
-          finally {
+          } finally {
             mindMapPanel.unlock();
           }
         } else {
