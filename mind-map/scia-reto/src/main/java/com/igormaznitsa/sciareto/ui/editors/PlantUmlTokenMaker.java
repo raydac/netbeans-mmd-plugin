@@ -35,6 +35,8 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
 
     tokenMap.put("@startgantt", Token.RESERVED_WORD);
     tokenMap.put("@endgantt", Token.RESERVED_WORD);
+    tokenMap.put("@startlatex", Token.RESERVED_WORD);
+    tokenMap.put("@endlatex", Token.RESERVED_WORD);
     tokenMap.put("@startmath", Token.RESERVED_WORD);
     tokenMap.put("@endmath", Token.RESERVED_WORD);
     tokenMap.put("@startdot", Token.RESERVED_WORD);
@@ -295,17 +297,17 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
         case Token.IDENTIFIER:
         case Token.RESERVED_WORD: {
           if (RSyntaxUtilities.isWhitespace(c) || !RSyntaxUtilities.isLetterOrDigit(c)) {
-            final int value = wordsToHighlight.get(text, currentTokenStart, i - 1);
-            if (value < 0) {
-              addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
-            } else {
-              addToken(text, currentTokenStart, i - 1, value, newStartOffset + currentTokenStart);
+              final int value = wordsToHighlight.get(text, currentTokenStart, i - 1);
+              if (value < 0) {
+                addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
+              } else {
+                addToken(text, currentTokenStart, i - 1, value, newStartOffset + currentTokenStart);
+              }
+              currentTokenStart = i;
+
+              currentTokenType = RSyntaxUtilities.isWhitespace(c) ? Token.WHITESPACE : Token.IDENTIFIER;
             }
-            currentTokenStart = i;
-            
-            currentTokenType = RSyntaxUtilities.isWhitespace(c) ? Token.WHITESPACE : Token.IDENTIFIER;
           }
-        }
         break;
         case Token.COMMENT_EOL: {
           if (c == '\n') {
@@ -360,6 +362,10 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
       break;
     }
     return this.firstToken;
+  }
+
+  private static boolean isAllowedCharReservedWord(final char c) {
+    return RSyntaxUtilities.isLetterOrDigit(c) || c == '<' || c == '>' || c == '/';
   }
 
 }
