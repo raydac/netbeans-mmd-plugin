@@ -77,7 +77,9 @@ import java.util.regex.Pattern;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
+import org.apache.commons.io.FilenameUtils;
 
 public final class MMDEditor extends AbstractEditor implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
 
@@ -661,7 +663,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       if (decodedLink != null) {
         addURItoElement(decodedLink, element);
       } else {
-        addFileToElement(detectedFile, element);
+        addFileToElement(detectedFile, element, SystemFileExtensionManager.getInstance().isSystemFileExtension(FilenameUtils.getExtension(detectedFile.getName())));
       }
       dtde.dropComplete(true);
     } else if (decodedLink != null) {
@@ -706,20 +708,26 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     }
   }
 
-  private void addFileToElement(@Nonnull final File theFile, @Nullable final AbstractElement element) {
+  private void addFileToElement(@Nonnull final File theFile, @Nullable final AbstractElement element, final boolean openInSystemBrowser) {
     if (element != null) {
       final Topic topic = element.getModel();
       final MMapURI theURI;
 
+      final Properties properties = new Properties();
+      
+      if (openInSystemBrowser) {
+        properties.setProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "true");
+      }
+      
       if (PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true)) { //NOI18N
         final File projectFolder = getProjectFolder();
         if (theFile.equals(projectFolder)) {
-          theURI = new MMapURI(projectFolder, new File("."), null); //NOI18N
+          theURI = new MMapURI(projectFolder, new File("."), properties); //NOI18N
         } else {
-          theURI = new MMapURI(projectFolder, theFile, null);
+          theURI = new MMapURI(projectFolder, theFile, properties);
         }
       } else {
-        theURI = new MMapURI(null, theFile, null);
+        theURI = new MMapURI(null, theFile, properties);
       }
 
       if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
