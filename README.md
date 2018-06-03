@@ -13,9 +13,12 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.4 (SNAPSHOT)__
-- SR: updated embedded PlantUML version to 1.2018.8
-- SR: improved PlantUML editor
-- SR: improved speed of work with project folders
+- ALL: [#45](https://github.com/raydac/netbeans-mmd-plugin/issues/45) improved security in XML import
+- SR:  added list of file extensions to be opened in system provided viewer
+- ALL: added extra logic to check edited content to prevent false model change event
+- SR:  updated embedded PlantUML version to 1.2018.8
+- SR:  improved PlantUML editor
+- SR:  improved speed of work with project folders
 
 __1.4.3 (01-may-2018)__
 - SR:  license changed to LGPL 2.1
