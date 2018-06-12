@@ -714,11 +714,11 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       final MMapURI theURI;
 
       final Properties properties = new Properties();
-      
+
       if (openInSystemBrowser) {
         properties.setProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "true");
       }
-      
+
       if (PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true)) { //NOI18N
         final File projectFolder = getProjectFolder();
         if (theFile.equals(projectFolder)) {
@@ -994,7 +994,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
             topic.removeExtra(Extra.ExtraType.LINK);
           }
         } else {
-          if (!result.equals(link.getAsURI())) {
+          if (link == null || !result.equals(link.getAsURI())) {
             changed = true;
             topic.setExtra(new ExtraLink(result));
           }
