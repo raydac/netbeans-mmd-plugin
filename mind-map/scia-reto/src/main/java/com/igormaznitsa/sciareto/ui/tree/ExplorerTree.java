@@ -173,10 +173,11 @@ public final class ExplorerTree extends JScrollPane {
           projectTree.setSelectionPath(selPath);
           final Object last = selPath.getLastPathComponent();
           if (last instanceof NodeFileOrFolder) {
-            if (((NodeFileOrFolder)last).isLoading()) {
-              makePopupMenuForLoading((NodeFileOrFolder) last).show(e.getComponent(), e.getX(), e.getY());
-            } else {
-              makePopupMenu((NodeFileOrFolder) last).show(e.getComponent(), e.getX(), e.getY());
+            final NodeFileOrFolder nof = (NodeFileOrFolder) last;
+            if (nof.isLoading()) {
+              makePopupMenuForLoading(nof).show(e.getComponent(), e.getX(), e.getY());
+            } else if (!nof.hasNoAccess()){
+              makePopupMenu(nof).show(e.getComponent(), e.getX(), e.getY());
             }
           }
         }
