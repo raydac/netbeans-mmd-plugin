@@ -147,8 +147,12 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
     if (value != null) {
       if (value instanceof NodeFileOrFolder) {
         final NodeFileOrFolder node = (NodeFileOrFolder) value;
+        this.setEnabled(true);
         if (node.isLoading()) {
           this.setIcon(ProjectLoadingIconAnimationController.LOADING);
+        } else if (node.hasNoAccess()) {
+            this.setEnabled(false);
+            this.setDisabledIcon(LEAF_RO);
         } else if (node instanceof NodeProject) {
           if (node.isReadOnly()) {
             this.setIcon(expanded ? PROJECT_OPENED_RO : PROJECT_CLOSED_RO);

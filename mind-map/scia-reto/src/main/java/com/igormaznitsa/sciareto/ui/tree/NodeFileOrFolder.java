@@ -38,11 +38,13 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.util.concurrent.RecursiveTask;
@@ -107,9 +109,9 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   protected final List<NodeFileOrFolder> children;
   protected final boolean folderFlag;
-
+  
   protected volatile String name;
-
+  private volatile boolean noAccess;
   private final boolean readonly;
 
   public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean showHiddenFiles, final boolean readOnly) throws IOException {
@@ -210,7 +212,17 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
         final List<ForkedLoadNodeTask> forks = new ArrayList<>();
-        try (final DirectoryStream<Path> stream = Files.newDirectoryStream(generatedFile.toPath())) {
+        
+        DirectoryStream<Path> stream;
+        try{
+            stream = Files.newDirectoryStream(generatedFile.toPath());
+        }catch(AccessDeniedException ex){
+            LOGGER.info("Can't get access to file: "+generatedFile);
+            this.noAccess = true;
+            return result;
+        }
+        
+        try {
           for (final Path p : stream) {
             if (cancelableObject.isCanceled()) {
               break;
@@ -219,6 +231,8 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
               forks.add(new ForkedLoadNodeTask(this, cancelableObject, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
             }
           }
+        } finally {
+            IOUtils.closeQuetly(stream);
         }
 
         for (final ForkedLoadNodeTask f : forks) {
@@ -337,9 +351,13 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     return this.folderFlag;
   }
 
+  public boolean hasNoAccess() {
+      return this.noAccess;
+  }
+  
   @Override
   public boolean isLeaf() {
-    return this.isLoading() ? true : !this.folderFlag;
+    return this.isLoading() ? true : !(this.folderFlag || this.noAccess);
   }
 
   @Override
@@ -393,7 +411,6 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
           return new TreePath(ArrayUtils.joinArrays(new Object[]{this}, result.getPath()));
         }
       }
-
     }
     return null;
   }

@@ -98,8 +98,12 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     final TreePath curPath = getPathForLocation(evt.getX(), evt.getY());
     final Object lastElement = curPath.getLastPathComponent();
     if (lastElement instanceof NodeFileOrFolder) {
-      final File file = ((NodeFileOrFolder) lastElement).makeFileForNode();
-      return file == null ? null : file.getAbsolutePath();
+      final NodeFileOrFolder nodeFileOrFolder = (NodeFileOrFolder) lastElement;
+      final File file = nodeFileOrFolder.makeFileForNode();
+      return file == null ? null : 
+              (nodeFileOrFolder.hasNoAccess() ? "[NO ACCESS]" : "" )
+              + (nodeFileOrFolder.hasNoAccess() ? "[READ ONLY]" : "")
+              + file.getAbsolutePath();
     } else {
       return null;
     }
