@@ -86,6 +86,7 @@ import net.sourceforge.plantuml.core.DiagramDescription;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -838,7 +839,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     stopAutoupdateTimer();
 
     final String theText = this.editor.getText();
-    
+
     final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
     final int totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
     final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
@@ -846,7 +847,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     if (imageIndex != this.pageNumberToRender) {
       this.pageNumberToRender = imageIndex;
     }
-    
+
     final LastRendered currentText = new LastRendered(imageIndex, theText);
 
     if (!currentText.equals(this.lastSuccessfulyRenderedText)) {
@@ -868,6 +869,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
                   public void run() {
                     setMenuItemsEnable(false);
                     renderedPanel.remove(renderedScrollPane);
+                    for (final Component c : renderedPanel.getComponents()) {
+                      if ("ERROR_LABEL".equals(c.getName())) {
+                        renderedPanel.remove(c);
+                        break;
+                      }
+                    }
                     renderedPanel.add(progressLabel, BorderLayout.CENTER);
                     mainPanel.setDividerLocation(dividerPosition);
                   }
@@ -886,7 +893,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
               try {
                 final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
                 generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
-              } catch (IOException ex) {
+              } catch (Exception ex) {
                 detectedError.set(ex);
               }
 
@@ -902,7 +909,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
                     renderedPanel.add(renderedScrollPane, BorderLayout.CENTER);
                     setMenuItemsEnable(true);
                   } else {
-                    final JLabel errorLabel = new JLabel(error.getMessage());
+                    final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + StringEscapeUtils.escapeHtml(error.getMessage()) + "</h1></html>", JLabel.CENTER);
+                    errorLabel.setName("ERROR_LABEL");
                     renderedPanel.remove(progressLabel);
                     renderedPanel.add(errorLabel, BorderLayout.CENTER);
                   }
