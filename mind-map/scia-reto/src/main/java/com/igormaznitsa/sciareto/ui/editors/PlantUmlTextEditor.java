@@ -79,8 +79,8 @@ import javax.swing.undo.CannotUndoException;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.OptionFlags;
+import net.sourceforge.plantuml.PSystemError;
 import net.sourceforge.plantuml.SourceStringReader;
-import net.sourceforge.plantuml.UmlDiagram;
 import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.core.DiagramDescription;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
@@ -544,7 +544,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     reader.getBlocks();
     try {
       final Diagram system = reader.getBlocks().get(0).getDiagram();
-      if (system instanceof UmlDiagram) {
+      if (!(system instanceof PSystemError)) {
         result = true;
       }
     } catch (Exception ex) {
