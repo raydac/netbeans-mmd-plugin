@@ -406,6 +406,16 @@ public final class Utils {
     return result.toArray(new Topic[result.size()]);
   }
 
+  public static boolean safeObjectEquals(@Nullable final Object obj1, @Nullable final Object obj2) {
+    if (obj1 == obj2) {
+      return true;
+    }
+    if (obj1 == null || obj2 == null) {
+      return false;
+    }
+    return obj1.equals(obj2);
+  }
+
   public static void setAttribute(@Nonnull final String name, @Nullable final String value, @Nonnull @MustNotContainNull final Topic[] topics) {
     for (final Topic t : topics) {
       t.setAttribute(name, value);

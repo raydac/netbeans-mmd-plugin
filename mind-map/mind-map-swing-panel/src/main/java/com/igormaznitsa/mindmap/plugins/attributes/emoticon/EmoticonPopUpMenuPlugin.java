@@ -23,6 +23,8 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 
@@ -56,26 +58,39 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
         if (dialogProvider.msgOkCancel(null, BUNDLE.getString("Emoticons.DialogTitle"), scrollPane)) {
           final String emoticonName = iconPanel.getSelectedName();
           if (emoticonName != null) {
+            final boolean changed;
             if ("empty".equals(emoticonName)) {
-              setAttribute(null, topic, selectedTopics);
+              changed = setAttribute(null, topic, selectedTopics);
             } else {
-              setAttribute(emoticonName, topic, selectedTopics);
+              changed = setAttribute(emoticonName, topic, selectedTopics);
+            }
+            if (changed) {
+              panel.notifyModelChanged();
             }
           }
-          panel.notifyModelChanged();
         }
       }
     });
     return result;
   }
 
-  private void setAttribute(@Nullable final String value, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] topics) {
+  private boolean setAttribute(@Nullable final String value, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] topics) {
+    boolean changed = false;
     if (topic != null) {
-      topic.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
+      final String old = topic.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
+      if (!safeObjectEquals(old, value)){
+        topic.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
+        changed = true;
+      }
     }
     for (final Topic t : topics) {
-      t.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
+      final String old = t.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
+      if (!safeObjectEquals(old, value)) {
+        t.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
+        changed = true;
+      }
     }
+    return changed;
   }
 
   @Override

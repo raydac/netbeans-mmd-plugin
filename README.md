@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.4 (SNAPSHOT)__
+- ALL: increased number of emoticons
 - ALL: [#45](https://github.com/raydac/netbeans-mmd-plugin/issues/45) improved security in XML import
 - SR:  added list of file extensions to be opened in system provided viewer
 - ALL: added extra logic to check edited content to prevent false model change event
