@@ -52,18 +52,18 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
   private static final long serialVersionUID = -4915750239120689053L;
 
   private boolean dragAcceptableType = false;
-  
-  public DnDTree(){
+
+  public DnDTree() {
     super();
     this.setDragEnabled(true);
     this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     this.setDropMode(DropMode.ON_OR_INSERT);
-    
+
     final DragSource dragSource = DragSource.getDefaultDragSource();
-    dragSource.createDefaultDragGestureRecognizer(this,DnDConstants.ACTION_MOVE, this);
-    
-    final DropTarget dropTarget = new DropTarget(this, this);    
-    
+    dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
+
+    final DropTarget dropTarget = new DropTarget(this, this);
+
     this.setTransferHandler(new TransferHandler() {
 
       private static final long serialVersionUID = 3109256773218160485L;
@@ -88,7 +88,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
       }
     });
   }
-  
+
   @Override
   @Nullable
   public String getToolTipText(@Nonnull final MouseEvent evt) {
@@ -100,26 +100,26 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     if (lastElement instanceof NodeFileOrFolder) {
       final NodeFileOrFolder nodeFileOrFolder = (NodeFileOrFolder) lastElement;
       final File file = nodeFileOrFolder.makeFileForNode();
-      return file == null ? null : 
-              (nodeFileOrFolder.hasNoAccess() ? "[NO ACCESS]" : "" )
+      return file == null ? null
+              : (nodeFileOrFolder.hasNoAccess() ? "[NO ACCESS]" : "")
               + (nodeFileOrFolder.hasNoAccess() ? "[READ ONLY]" : "")
               + file.getAbsolutePath();
     } else {
       return null;
     }
   }
-  
-  public void focusToFirstElement(){
+
+  public void focusToFirstElement() {
     final TreeModel model = this.getModel();
     final Object root = model.getRoot();
-    if (root != null){
-      final Object firstChild = model.getChildCount(root)>0 ? model.getChild(root, 0) : null;
-      if (firstChild!=null){
-        this.setSelectionPath(new TreePath(new Object[]{root,firstChild}));
+    if (root != null) {
+      final Object firstChild = model.getChildCount(root) > 0 ? model.getChild(root, 0) : null;
+      if (firstChild != null) {
+        this.setSelectionPath(new TreePath(new Object[]{root, firstChild}));
       }
     }
   }
-  
+
   @Override
   public void dragEnter(@Nonnull final DragSourceDragEvent dsde) {
   }
@@ -152,7 +152,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
 
   @Override
   public void dragOver(@Nonnull final DropTargetDragEvent dtde) {
-    if (!this.dragAcceptableType){
+    if (!this.dragAcceptableType) {
       dtde.rejectDrag();
     }
   }
@@ -178,8 +178,8 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
         if (dropTargetNode instanceof NodeFileOrFolder) {
           final NodeFileOrFolder node = (NodeFileOrFolder) dropTargetNode;
           if (!node.isLeaf()) {
-           //TODO processing of file drag in tree
-           System.out.println("Not implemented yet!"); //NOI18N
+            //TODO processing of file drag in tree
+            System.out.println("Not implemented yet!"); //NOI18N
           } else {
             dtde.rejectDrop();
           }
@@ -201,18 +201,41 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     }
     return result;
   }
-  
+
   @Override
   public void dragGestureRecognized(@Nonnull final DragGestureEvent dragGestureEvent) {
     final JTree tree = (JTree) dragGestureEvent.getComponent();
     final TreePath path = tree.getSelectionPath();
     if (path != null) {
       final Object selection = path.getLastPathComponent();
-      if (selection instanceof NodeFileOrFolder){
-        FileTransferable node = new FileTransferable(Arrays.asList(((NodeFileOrFolder)selection).makeFileForNode()));
+      if (selection instanceof NodeFileOrFolder) {
+        FileTransferable node = new FileTransferable(Arrays.asList(((NodeFileOrFolder) selection).makeFileForNode()));
         dragGestureEvent.startDrag(DragSource.DefaultCopyDrop, node, this);
-      } 
+      }
     }
   }
-  
+
+  @Nullable
+  public TreePath findTreePathToFolderContains(@Nonnull final File file) {
+    final File folder;
+    folder = file.getParentFile();
+
+    if (folder == null) {
+      return null;
+    }
+
+    final NodeProjectGroup model = (NodeProjectGroup) this.getModel();
+
+    TreePath result = null;
+    if (folder != null) {
+      for (final NodeFileOrFolder p : model) {
+        result = p.findPathToFile(folder);
+        if (result != null) {
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
 }

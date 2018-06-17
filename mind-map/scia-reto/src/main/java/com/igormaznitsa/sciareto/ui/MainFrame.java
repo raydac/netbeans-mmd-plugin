@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -21,7 +21,9 @@ package com.igormaznitsa.sciareto.ui;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -69,6 +71,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.swing.filechooser.FileFilter;
 
 public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
 
@@ -604,7 +607,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           }
         } else {
           if (SystemFileExtensionManager.getInstance().isSystemFileExtension(FilenameUtils.getExtension(file.getName()))) {
-            LOGGER.info("Exension of file "+file.getName()+" among extensions to be opened in system browser");
+            LOGGER.info("Exension of file " + file.getName() + " among extensions to be opened in system browser");
             result = false;
           } else {
             if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, "Very big file", "It is a very big file! Are you sure to open it?")) {
@@ -808,6 +811,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     mainMenu = new javax.swing.JMenuBar();
     menuFile = new javax.swing.JMenu();
     menuNewProject = new javax.swing.JMenuItem();
+    menuNewFile = new javax.swing.JMenuItem();
     jSeparator2 = new javax.swing.JPopupMenu.Separator();
     menuOpenProject = new javax.swing.JMenuItem();
     menuOpenRecentProject = new javax.swing.JMenu();
@@ -852,11 +856,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuFileMenuSelected(evt);
       }
-
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuFileMenuDeselected(evt);
       }
-
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
         menuFileMenuCanceled(evt);
       }
@@ -871,6 +873,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     });
     menuFile.add(menuNewProject);
+
+    menuNewFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/document16.png"))); // NOI18N
+    menuNewFile.setText("New File");
+    menuNewFile.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuNewFileActionPerformed(evt);
+      }
+    });
+    menuFile.add(menuNewFile);
     menuFile.add(jSeparator2);
 
     menuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/open_folder.png"))); // NOI18N
@@ -950,11 +961,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuEditMenuSelected(evt);
       }
-
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuEditMenuDeselected(evt);
       }
-
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
         menuEditMenuCanceled(evt);
       }
@@ -1070,10 +1079,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuNavigateMenuSelected(evt);
       }
-
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
       }
-
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
       }
     });
@@ -1619,6 +1626,83 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.explorerTree.showPopUpForSelectedItem();
   }//GEN-LAST:event_menuEditShowTreeContextMenuActionPerformed
 
+  private void menuNewFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewFileActionPerformed
+    final JFileChooser fileChooser = new JFileChooser(this.explorerTree.getCurrentFocusedFolder());
+    fileChooser.setDialogTitle("New file");
+
+    class Filter extends FileFilter {
+
+      final String extension;
+      final String description;
+
+      Filter(@Nonnull final String extension, @Nonnull final String description) {
+        this.extension = '.' + extension;
+        this.description = description;
+      }
+
+      @Override
+      public boolean accept(@Nonnull final File f) {
+        return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(this.extension);
+      }
+
+      @Override
+      @Nonnull
+      public String getDescription() {
+        return this.description;
+      }
+    }
+
+    fileChooser.setAcceptAllFileFilterUsed(false);
+    final Filter filerMindMap = new Filter("mmd", "Mind Map file (*.mmd)");
+    final Filter filerText = new Filter("txt", "Text file (*.txt)");
+    final Filter filerPuml = new Filter("puml", "PantUML file (*.puml)");
+
+    fileChooser.addChoosableFileFilter(filerMindMap);
+    fileChooser.addChoosableFileFilter(filerText);
+    fileChooser.addChoosableFileFilter(filerPuml);
+
+    fileChooser.setFileFilter(filerMindMap);
+
+    if (fileChooser.showDialog(this, "Create") == JFileChooser.APPROVE_OPTION) {
+      final Filter choosenFilter = (Filter) fileChooser.getFileFilter();
+      File selectedFile = fileChooser.getSelectedFile();
+
+      if (!selectedFile.getName().contains(".")) {
+        selectedFile = new File(selectedFile.getParent(), selectedFile.getName() + "." + choosenFilter.extension);
+      }
+
+      final String text;
+
+      if (choosenFilter == filerMindMap) {
+        final MindMap model = new MindMap(null, true);
+        model.setAttribute("showJumps", "true"); //NOI18N
+        final Topic root = model.getRoot();
+        if (root != null) {
+          root.setText("Root"); //NOI18N
+        }
+
+        try {
+          text = model.write(new StringWriter()).toString();
+        } catch (IOException ex) {
+          throw new Error("Unexpected error", ex);
+        }
+      } else if (choosenFilter == filerPuml) {
+        final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"), "\n");
+        text = "@startuml " + nextLine + nextLine + "@enduml";
+      } else {
+        text = "";
+      }
+
+      try {
+        org.apache.commons.io.FileUtils.write(selectedFile, text, "UTF-8");
+        this.explorerTree.addFileIfPossible(selectedFile, true);
+      } catch (IOException ex) {
+        LOGGER.error("Can't create file : " + selectedFile);
+        JOptionPane.showMessageDialog(this, "Can't create file", "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+  }//GEN-LAST:event_menuNewFileActionPerformed
+
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
     for (final Component c : menu.getMenuComponents()) {
@@ -1727,6 +1811,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenuItem menuMakeDonation;
   private javax.swing.JMenu menuNavigate;
   private javax.swing.JMenuItem menuNavigateLinksGraph;
+  private javax.swing.JMenuItem menuNewFile;
   private javax.swing.JMenuItem menuNewProject;
   private javax.swing.JMenuItem menuOpenFile;
   private javax.swing.JMenuItem menuOpenProject;

@@ -85,7 +85,7 @@ public final class ExplorerTree extends JScrollPane {
   private final Context context;
 
   private static final Icon CROSS_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png"));
-  
+
   public ExplorerTree(@Nonnull final Context context) throws IOException {
     super();
     this.projectTree = new DnDTree();
@@ -176,7 +176,7 @@ public final class ExplorerTree extends JScrollPane {
             final NodeFileOrFolder nof = (NodeFileOrFolder) last;
             if (nof.isLoading()) {
               makePopupMenuForLoading(nof).show(e.getComponent(), e.getX(), e.getY());
-            } else if (!nof.hasNoAccess()){
+            } else if (!nof.hasNoAccess()) {
               makePopupMenu(nof).show(e.getComponent(), e.getX(), e.getY());
             }
           }
@@ -193,6 +193,24 @@ public final class ExplorerTree extends JScrollPane {
 
   public boolean hasSelectedItem() {
     return this.projectTree.getSelectionPath() != null;
+  }
+
+  @Nullable
+  public File getCurrentFocusedFolder() {
+    final TreePath path = this.projectTree.getSelectionPath();
+    File result = null;
+    if (path != null) {
+      NodeFileOrFolder selected = (NodeFileOrFolder) path.getLastPathComponent();
+      do {
+        if (!selected.isLeaf() && !selected.hasNoAccess()) {
+          result = selected.makeFileForNode();
+          break;
+        } else {
+          selected = selected.getNodeParent();
+        }
+      } while (selected != null);
+    }
+    return result;
   }
 
   public void showPopUpForSelectedItem() {
@@ -252,7 +270,7 @@ public final class ExplorerTree extends JScrollPane {
   @Nonnull
   private JPopupMenu makePopupMenuForLoading(@Nonnull final NodeFileOrFolder node) {
     final JPopupMenu result = new JPopupMenu();
-    
+
     if (node instanceof NodeProject) {
       final JMenuItem stopAndClose = new JMenuItem("Cancel and remove", CROSS_ICON);
       stopAndClose.addActionListener(new ActionListener() {
@@ -262,7 +280,7 @@ public final class ExplorerTree extends JScrollPane {
           сloseProject((NodeProject) node);
         }
       });
-      
+
       result.add(stopAndClose);
     }
 
@@ -509,12 +527,8 @@ public final class ExplorerTree extends JScrollPane {
 
     final File projectFolder = project == null ? null : project.getFolder();
 
-    if (project != null) {
-      if (node.findProject() != project) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Different projects", "Opened Map file from another project. File paths will not be relative ones.")) {
-          return;
-        }
-      }
+    if (project != null && (node.findProject() != project && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Different projects", "Opened Map file from another project. File paths will not be relative ones."))) {
+      return;
     }
 
     final List<Topic> targetTopics = new ArrayList<>(Arrays.asList(editor.getMindMapPanel().getSelectedTopics()));
@@ -658,13 +672,7 @@ public final class ExplorerTree extends JScrollPane {
         }
 
         if (ok) {
-          try {
-            getCurrentGroup().addChild(folder, PrefUtils.isShowHiddenFilesAndFolders(), file);
-            context.openFileAsTab(file);
-            context.focusInTree(file);
-          } catch (IOException ex) {
-            MainFrame.showExceptionDialog(ex);
-          }
+          addFileIfPossible(file, true);
         }
       } else {
         DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Illegal file name!");
@@ -685,6 +693,25 @@ public final class ExplorerTree extends JScrollPane {
     this.projectTree.setModel(Assertions.assertNotNull(model));
     if (expandFirst && model.getChildCount() > 0) {
       this.projectTree.expandPath(new TreePath(new Object[]{model, model.getChildAt(0)}));
+    }
+  }
+
+  public void addFileIfPossible(@Nonnull final File file, final boolean openAndFocusInTree) {
+    if (file.exists()) {
+      final TreePath parentFolderPath = this.projectTree.findTreePathToFolderContains(file);
+
+      if (parentFolderPath != null) {
+        final NodeFileOrFolder folder = (NodeFileOrFolder) parentFolderPath.getLastPathComponent();
+        try {
+          getCurrentGroup().addChild(folder, PrefUtils.isShowHiddenFilesAndFolders(), file);
+          if (openAndFocusInTree){
+            context.openFileAsTab(file);
+            context.focusInTree(file);
+          }
+        } catch (IOException ex) {
+          MainFrame.showExceptionDialog(ex);
+        }
+      }
     }
   }
 
