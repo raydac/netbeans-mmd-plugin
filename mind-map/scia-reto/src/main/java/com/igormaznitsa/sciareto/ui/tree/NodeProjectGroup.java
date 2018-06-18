@@ -91,7 +91,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
   @Override
   public void reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelable) throws IOException {
-    LOGGER.info("Start group reloading : "+this.groupName);
+    LOGGER.info("Start group reloading : " + this.groupName);
     final long startTime = System.currentTimeMillis();
     _reloadSubtree(addHiddenFilesAndFolders, cancelable);
     LOGGER.info(String.format("Group '%s' reload took %d ms", this.groupName, System.currentTimeMillis() - startTime));
@@ -101,8 +101,10 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   @Nonnull
   @MustNotContainNull
   protected List<NodeFileOrFolder> _reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelableObject) throws IOException {
-    for(final NodeFileOrFolder f : this.children) {
-      if (cancelableObject.isCanceled()) break;
+    for (final NodeFileOrFolder f : this.children) {
+      if (cancelableObject.isCanceled()) {
+        break;
+      }
       f.reloadSubtree(addHiddenFilesAndFolders, cancelableObject);
     }
     return this.children;
@@ -150,25 +152,25 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   @Override
   public void valueForPathChanged(@Nonnull final TreePath path, @Nonnull final Object newValue) {
     String newFileName = String.valueOf(newValue);
-    
+
     if (FILE_NAME.matcher(newFileName).matches()) {
       final Object last = path.getLastPathComponent();
       if (last instanceof NodeFileOrFolder) {
         final NodeFileOrFolder editedNode = (NodeFileOrFolder) last;
 
         final String oldName = editedNode.toString();
-        
+
         if (!oldName.equals(newFileName)) {
           final File origFile = ((NodeFileOrFolder) last).makeFileForNode();
           final String oldExtension = FilenameUtils.getExtension(oldName);
           final String newExtension = FilenameUtils.getExtension(newFileName);
-          
-          if (!oldExtension.equals(newExtension)){
-            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, "Changed extension", String.format("You have changed extension! Restore old extension '%s'?",oldExtension))){
-              newFileName = FilenameUtils.getBaseName(newFileName)+(oldExtension.isEmpty() ? "" : '.'+oldExtension); //NOI18N
+
+          if (!oldExtension.equals(newExtension)) {
+            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, "Changed extension", String.format("You have changed extension! Restore old extension '%s'?", oldExtension))) {
+              newFileName = FilenameUtils.getBaseName(newFileName) + (oldExtension.isEmpty() ? "" : '.' + oldExtension); //NOI18N
             }
           }
-          
+
           if (origFile != null) {
             final File newFile = new File(origFile.getParentFile(), newFileName);
 
@@ -181,7 +183,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
               boolean doIt = true;
 
               List<File> affectedFiles = null;
-              
+
               final NodeProject project = editedNode.findProject();
               if (project != null) {
                 affectedFiles = project.findAffectedFiles(origFile);
@@ -190,7 +192,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
                   if (affectedFiles == null) {
                     doIt = false;
                   } else {
-                      affectedFiles = project.replaceAllLinksToFile(affectedFiles, origFile, newFile);
+                    affectedFiles = project.replaceAllLinksToFile(affectedFiles, origFile, newFile);
                   }
                 }
               }
@@ -232,9 +234,9 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
   void notifyProjectStateChanged(@Nonnull final NodeProject project) {
     Assertions.assertTrue("Must belong the group", project.getGroup() == this);
-    
+
     final TreeModelEvent event = new TreeModelEvent(this, new TreePath(new Object[]{this, project}));
-    
+
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
@@ -273,7 +275,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     return path;
   }
 
-  public void startProjectFolderRefresh(@Nonnull final NodeProject nodeProject, @Nullable @MustNotContainNull final Runnable ... invokeLater) {
+  public void startProjectFolderRefresh(@Nonnull final NodeProject nodeProject, @Nullable @MustNotContainNull final Runnable... invokeLater) {
     final int index = this.getIndex(nodeProject);
     if (index >= 0) {
       Main.getApplicationFrame().asyncReloadProject(nodeProject, ArrayUtils.joinArrays(invokeLater, new Runnable[]{new Runnable() {
@@ -285,13 +287,15 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     }
   }
 
-  public boolean fireNotificationThatNodeDeleted(@Nonnull final NodeFileOrFolder node) {
+  public boolean deleteNode(@Nonnull final NodeFileOrFolder node, final boolean notifyListeners) {
     final NodeFileOrFolder parentNode = node.getNodeParent();
     if (parentNode != null) {
       final TreeModelEvent event = new TreeModelEvent(this, parentNode.makeTreePath(), new int[]{node.getIndexAtParent()}, new Object[]{node});
       if (parentNode.deleteChild(node)) {
-        for (final TreeModelListener l : this.listeners) {
-          l.treeNodesRemoved(event);
+        if (notifyListeners) {
+          for (final TreeModelListener l : this.listeners) {
+            l.treeNodesRemoved(event);
+          }
         }
         return true;
       }
@@ -299,12 +303,14 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     return false;
   }
 
-  public void addChild(@Nonnull final NodeFileOrFolder folder, final boolean showHiddenFiles, @Nonnull final File childFile) throws IOException {
+  @Nonnull
+  public NodeFileOrFolder addChild(@Nonnull final NodeFileOrFolder folder, final boolean showHiddenFiles, @Nonnull final File childFile) throws IOException {
     final NodeFileOrFolder newNode = folder.addFile(childFile, showHiddenFiles);
     final TreeModelEvent event = new TreeModelEvent(this, folder.makeTreePath(), new int[]{newNode.getIndexAtParent()}, new Object[]{newNode});
     for (final TreeModelListener l : this.listeners) {
       l.treeNodesInserted(event);
     }
+    return newNode;
   }
 
   @Nonnull

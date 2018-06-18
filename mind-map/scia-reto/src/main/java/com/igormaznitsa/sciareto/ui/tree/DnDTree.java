@@ -18,6 +18,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -36,7 +37,10 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DropMode;
@@ -227,15 +231,51 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     final NodeProjectGroup model = (NodeProjectGroup) this.getModel();
 
     TreePath result = null;
-    if (folder != null) {
-      for (final NodeFileOrFolder p : model) {
-        result = p.findPathToFile(folder);
-        if (result != null) {
-          break;
-        }
+    for (final NodeFileOrFolder p : model) {
+      result = p.findPathToFile(folder);
+      if (result != null) {
+        break;
       }
     }
     return result;
+  }
+
+  @Nullable
+  public TreePath tryCreatePathInTreeToFile(@Nonnull final File file) throws IOException {
+    TreePath path = null;
+
+    final List<String> folders = new ArrayList<>();
+
+    final NodeProjectGroup model = (NodeProjectGroup) this.getModel();
+
+    File theFolder = file.getParentFile();
+    
+    while (theFolder != null) {
+      path = model.findPathToFile(theFolder);
+      if (path == null) {
+        if (theFolder.isDirectory()) {
+          folders.add(0, theFolder.getName());
+        }
+        theFolder = theFolder.getParentFile();
+      } else {
+        break;
+      }
+    }
+
+    if (path != null) {
+      NodeFileOrFolder parent = (NodeFileOrFolder) path.getLastPathComponent();
+      for (final String name : folders) {
+        final File folder = new File(parent.makeFileForNode(), name);
+        if (folder.isDirectory() || folder.mkdir()) {
+          parent = model.addChild(parent, PrefUtils.isShowHiddenFilesAndFolders(), folder);
+        } else {
+          throw new IOException("Can't find or create folder: " + folder);
+        }
+      }
+      path = parent.makeTreePath();
+    }
+    
+    return path;
   }
 
 }

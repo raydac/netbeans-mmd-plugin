@@ -1668,7 +1668,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       File selectedFile = fileChooser.getSelectedFile();
 
       if (!selectedFile.getName().contains(".")) {
-        selectedFile = new File(selectedFile.getParent(), selectedFile.getName() + "." + choosenFilter.extension);
+        selectedFile = new File(selectedFile.getParent(), selectedFile.getName() + choosenFilter.extension);
       }
 
       final String text;
