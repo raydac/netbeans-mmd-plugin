@@ -63,6 +63,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -855,7 +856,15 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
       Future<BufferedImage> renderImage = null;
 
-      final int dividerPosition = Math.max(0, this.mainPanel.getDividerLocation());
+      final AtomicInteger dividerLocation = new AtomicInteger(Math.max(0, this.mainPanel.getDividerLocation()));
+      final PropertyChangeListener dividerListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          dividerLocation.set(Math.max(0, mainPanel.getDividerLocation()));
+        }
+      };
+
+      this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
 
       try {
         RENDER_EXECUTOR.submit(new Runnable() {
@@ -876,7 +885,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
                       }
                     }
                     renderedPanel.add(progressLabel, BorderLayout.CENTER);
-                    mainPanel.setDividerLocation(dividerPosition);
+                    mainPanel.setDividerLocation(dividerLocation.get());
                   }
                 });
               } catch (InterruptedException ex) {
@@ -900,6 +909,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                  mainPanel.removePropertyChangeListener(dividerListener);
+
                   final Exception error = detectedError.get();
                   if (error == null) {
                     lastSuccessfulyRenderedText = currentText;
@@ -915,7 +926,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
                     renderedPanel.add(errorLabel, BorderLayout.CENTER);
                   }
 
-                  mainPanel.setDividerLocation(dividerPosition);
+                  mainPanel.setDividerLocation(dividerLocation.get());
                 }
               });
 
