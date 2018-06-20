@@ -265,6 +265,32 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
+    final JButton buttonEditScript = new JButton(loadMenuIcon("edit_script")) {
+      @Override
+      public void setEnabled(final boolean flag) {
+        super.setEnabled(true);
+      }
+
+      @Override
+      public boolean isEnabled() {
+        return true;
+      }
+    };
+
+    buttonEditScript.setToolTipText("Edit script");
+    buttonEditScript.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (isTextEditorVisible()) {
+          mainPanel.setDividerLocation(0);
+          imageComponent.requestFocus();
+        } else {
+          mainPanel.setDividerLocation(256);
+          editor.requestFocus();
+        }
+      }
+    });
+
     final JButton buttonExportImage = new JButton(loadMenuIcon("picture_save"));
     buttonExportImage.setToolTipText("Export image as file");
     buttonExportImage.addActionListener(new ActionListener() {
@@ -348,6 +374,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     });
 
     this.menu.add(buttonRefresh, gbdata);
+    this.menu.add(buttonEditScript, gbdata);
     this.menu.add(buttonClipboardImage, gbdata);
     this.menu.add(buttonClipboardText, gbdata);
     this.menu.add(buttonExportImage, gbdata);
