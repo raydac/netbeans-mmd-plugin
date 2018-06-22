@@ -72,6 +72,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.TreePath;
 
 public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
 
@@ -640,16 +641,18 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   @Override
-  public void focusInTree(@Nonnull final TabTitle title) {
+  public boolean focusInTree(@Nonnull final TabTitle title) {
+    boolean result = false;
     final File file = title.getAssociatedFile();
     if (file != null) {
-      this.explorerTree.focusToFileItem(file);
+      result = this.explorerTree.focusToFileItem(file);
     }
+    return result;
   }
 
   @Override
-  public void focusInTree(@Nonnull final File file) {
-    this.explorerTree.focusToFileItem(file);
+  public boolean focusInTree(@Nonnull final File file) {
+    return this.explorerTree.focusToFileItem(file);
   }
 
   @Override
@@ -1191,7 +1194,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     fileChooser.setDialogTitle("Open project folder");
 
     if (fileChooser.showOpenDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
-      openProject(fileChooser.getSelectedFile(), false);
+      final File choosenFile = fileChooser.getSelectedFile();
+      if (!focusInTree(choosenFile)) {
+        openProject(fileChooser.getSelectedFile(), false);
+      }
     }
   }//GEN-LAST:event_menuOpenProjectActionPerformed
 

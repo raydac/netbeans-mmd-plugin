@@ -45,9 +45,9 @@ public interface Context {
 
   void onCloseProject(@Nonnull final NodeProject project);
 
-  void focusInTree(@Nonnull TabTitle title);
+  boolean focusInTree(@Nonnull TabTitle title);
 
-  void focusInTree(@Nonnull File file);
+  boolean focusInTree(@Nonnull File file);
   
   boolean safeCloseEditorsForFile(@Nonnull File file);
 

@@ -249,13 +249,16 @@ public final class ExplorerTree extends JScrollPane {
     this.projectTree.focusToFirstElement();
   }
 
-  public void focusToFileItem(@Nonnull final File file) {
+  public boolean focusToFileItem(@Nonnull final File file) {
+    boolean found = false;
     final NodeProjectGroup group = getCurrentGroup();
     final TreePath pathToFile = group.findPathToFile(file);
     if (pathToFile != null) {
+      found = true;
       this.projectTree.setSelectionPath(pathToFile);
       this.projectTree.scrollPathToVisible(pathToFile);
     }
+    return found;
   }
 
   public void unfoldProject(@Nonnull final NodeProject node) {
