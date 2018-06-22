@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -721,6 +721,16 @@ public final class ExplorerTree extends JScrollPane {
         }
       }
     }
+  }
+
+  @Nullable
+  public File findFirstProjectFolder() {
+    final NodeProjectGroup group = (NodeProjectGroup) this.projectTree.getModel();
+    File result = null;
+    if (group.getChildCount() > 0) {
+      result = ((NodeFileOrFolder) group.getChild(group, 0)).makeFileForNode();
+    }
+    return result;
   }
 
 }

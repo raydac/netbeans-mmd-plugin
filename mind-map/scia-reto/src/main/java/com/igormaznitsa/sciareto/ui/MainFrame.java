@@ -1627,7 +1627,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuEditShowTreeContextMenuActionPerformed
 
   private void menuNewFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewFileActionPerformed
-    final JFileChooser fileChooser = new JFileChooser(this.explorerTree.getCurrentFocusedFolder());
+    File currentFolder = this.explorerTree.getCurrentFocusedFolder();
+    if (currentFolder == null) {
+      currentFolder = this.explorerTree.findFirstProjectFolder();
+    }
+
+    final JFileChooser fileChooser = new JFileChooser(currentFolder);
     fileChooser.setDialogTitle("New file");
 
     class Filter extends FileFilter {
