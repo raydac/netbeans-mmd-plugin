@@ -77,6 +77,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 public final class IdeaUtils {
 
@@ -584,5 +585,18 @@ public final class IdeaUtils {
   @Nonnull
   public static GlobalSearchScope moduleScope(@Nonnull Module module) {
     return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module).uniteWith(module.getModuleContentWithDependenciesScope());
+  }
+
+  @Nonnull
+  public static Pattern string2pattern(@Nonnull final String text, final int patternFlags){
+    final StringBuilder result = new StringBuilder();
+
+    for(final char c : text.toCharArray()){
+      result.append("\\u"); //NOI18N
+      final String code = Integer.toHexString(c).toUpperCase(Locale.ENGLISH);
+      result.append("0000",0,4-code.length()).append(code); //NOI18N
+    }
+
+    return Pattern.compile(result.toString(), patternFlags);
   }
 }

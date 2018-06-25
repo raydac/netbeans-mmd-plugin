@@ -17,12 +17,23 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
+import com.igormaznitsa.ideamindmap.findtext.FindTextPanel;
+import com.igormaznitsa.ideamindmap.findtext.FindTextScopeProvider;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.Extra.ExtraType;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MindMapController;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
@@ -50,7 +61,11 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.fileEditor.DocumentsEditor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorLocation;
+import com.intellij.openapi.fileEditor.FileEditorState;
+import com.intellij.openapi.fileEditor.FileEditorStateLevel;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -58,6 +73,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.xml.ui.Committable;
 import com.intellij.util.xml.ui.UndoHelper;
 import org.jetbrains.annotations.NonNls;
@@ -69,15 +85,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.*;
-import java.awt.event.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
@@ -91,16 +120,18 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
+  private final JPanel mainPanel;
   private final JScrollPane mainScrollPane;
   private final MindMapPanel mindMapPanel;
   private final Project project;
   private final VirtualFile file;
   private final Document[] documents;
-  private boolean dragAcceptableType = false;
   private final MindMapPanelControllerImpl panelController;
   private final UndoHelper undoHelper;
-  private boolean firstLayouting = true;
   private final DocumentListener documentListener;
+  private final FindTextPanel findTextPanel;
+  private boolean dragAcceptableType = false;
+  private boolean firstLayouting = true;
 
   public MindMapDocumentEditor(final Project project, final VirtualFile file) {
     this.project = project;
@@ -151,8 +182,16 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
     DataManager.registerDataProvider(this.mainScrollPane, this);
 
+    this.findTextPanel = new FindTextPanel(this);
+
+    this.mainScrollPane.setColumnHeaderView(this.findTextPanel);
+
     this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
     this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
+
+    this.mainPanel = new JBPanel(new BorderLayout());
+    this.mainPanel.add(this.mainScrollPane, BorderLayout.CENTER);
+    this.mainPanel.add(this.findTextPanel, BorderLayout.NORTH);
   }
 
   @Override
@@ -302,7 +341,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   @Nonnull
   @Override
   public JComponent getComponent() {
-    return this.mainScrollPane;
+    return this.mainPanel;
   }
 
   @Nullable
@@ -396,13 +435,103 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   }
 
+  public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+    Topic startTopic = null;
+    if (this.mindMapPanel.hasSelectedTopics()) {
+      final Topic[] selected = this.mindMapPanel.getSelectedTopics();
+      startTopic = selected[selected.length - 1];
+    }
+
+    final VirtualFile baseFolder = findRootFolderForEditedFile();
+    final File projectBaseFolder = baseFolder == null ? null : VfsUtil.virtualToIoFile(baseFolder);
+
+    final Set<ExtraType> extras = EnumSet.noneOf(ExtraType.class);
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_NOTES)) {
+      extras.add(ExtraType.NOTE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_FILES)) {
+      extras.add(ExtraType.FILE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_URI)) {
+      extras.add(ExtraType.LINK);
+    }
+    final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
+
+    Topic found = this.mindMapPanel.getModel().findNext(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    if (found == null && startTopic != null) {
+      found = this.mindMapPanel.getModel().findNext(projectBaseFolder, null, pattern, inTopicText, extras);
+    }
+
+    if (found != null) {
+      this.mindMapPanel.removeAllSelection();
+      this.mindMapPanel.focusTo(found);
+    }
+
+    return found != null;
+  }
+
+  public boolean findPrev(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+    Topic startTopic = null;
+    if (this.mindMapPanel.hasSelectedTopics()) {
+      final Topic[] selected = this.mindMapPanel.getSelectedTopics();
+      startTopic = selected[0];
+    }
+
+    final VirtualFile baseFolder = findRootFolderForEditedFile();
+    final File projectBaseFolder = baseFolder == null ? null : VfsUtil.virtualToIoFile(baseFolder);
+
+    final Set<ExtraType> extras = new HashSet<ExtraType>();
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_NOTES)) {
+      extras.add(ExtraType.NOTE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_FILES)) {
+      extras.add(ExtraType.FILE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_URI)) {
+      extras.add(ExtraType.LINK);
+    }
+    final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
+
+    Topic found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    if (found == null && startTopic != null) {
+      found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, null, pattern, inTopicText, extras);
+    }
+
+    if (found != null) {
+      this.mindMapPanel.removeAllSelection();
+      this.mindMapPanel.focusTo(found);
+    }
+
+    return found != null;
+  }
+
+
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
-    if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-        || e.getKeyCode() == KeyEvent.VK_LEFT
-        || e.getKeyCode() == KeyEvent.VK_RIGHT
-        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
-      e.consume();
+    if (type == KeyEventType.PRESSED) {
+      if (e.getModifiers() == 0) {
+        switch (e.getKeyCode()) {
+          case KeyEvent.VK_ESCAPE: {
+            this.findTextPanel.setVisible(false);
+            this.mainScrollPane.requestFocus();
+            e.consume();
+          }
+          break;
+          case KeyEvent.VK_UP:
+          case KeyEvent.VK_LEFT:
+          case KeyEvent.VK_RIGHT:
+          case KeyEvent.VK_DOWN: {
+            e.consume();
+          }
+          break;
+        }
+      } else if (e.getModifiers() == KeyEvent.CTRL_MASK) {
+        if (e.getKeyCode() == KeyEvent.VK_F) {
+          this.findTextPanel.setVisible(true);
+          this.findTextPanel.requestFocus();
+          e.consume();
+        }
+      }
     }
   }
 
@@ -613,7 +742,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   private void editTextForTopic(final Topic topic) {
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
+    final ExtraNote note = (ExtraNote) topic.getExtras().get(ExtraType.NOTE);
     final String result;
     if (note == null) {
       // create new
@@ -631,7 +760,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       if (result.isEmpty()) {
         if (note != null) {
           changed = true;
-          topic.removeExtra(Extra.ExtraType.NOTE);
+          topic.removeExtra(ExtraType.NOTE);
         }
       } else {
         final ExtraNote newNote = new ExtraNote(result);
@@ -762,7 +891,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     if (element != null) {
       final Topic topic = element.getModel();
       final MMapURI mmapUri = new MMapURI(uri);
-      if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
+      if (topic.getExtras().containsKey(ExtraType.LINK)) {
         if (!getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
           return;
         }
@@ -777,7 +906,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private void addNoteToElement(@Nonnull final String text, @Nullable final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();
-      if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
+      if (topic.getExtras().containsKey(ExtraType.NOTE)) {
         if (!getDialogProvider().msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
           return;
         }
@@ -803,7 +932,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
             new MMapURI(rootFolder, theFileIo, null) :
             new MMapURI(null, theFileIo, null); //NOI18N
 
-        if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
+        if (topic.getExtras().containsKey(ExtraType.FILE)) {
           if (!getDialogProvider()
               .msgConfirmOkCancel(null, BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"), BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
             return;
