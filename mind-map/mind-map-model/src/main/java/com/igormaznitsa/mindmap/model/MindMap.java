@@ -174,7 +174,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
         throw new IllegalArgumentException("It looks like that topic doesn't belong to the mind map");
       }
       if (startIndex > 0) {
-        while (startIndex >= 0) {
+        while (startIndex > 0) {
           final Topic candidate = plain.get(--startIndex);
           if (candidate.containsPattern(baseFolder, pattern, findInTopicText, extrasForSearch)) {
             result = candidate;
