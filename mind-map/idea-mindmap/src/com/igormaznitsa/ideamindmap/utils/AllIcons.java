@@ -26,15 +26,10 @@ public class AllIcons {
 
   public static class FindText {
     public static final Icon CASE = IconLoader.getIcon("/icons/find/case16.png");
-    public static final Icon CASE_DISABLED =  IconLoader.getDisabledIcon(CASE);
     public static final Icon FILE = IconLoader.getIcon("/icons/find/disk16.png");
-    public static final Icon FILE_DISABLED = IconLoader.getDisabledIcon(FILE);
     public static final Icon NOTE = IconLoader.getIcon("/icons/find/note16.png");
-    public static final Icon NOTE_DISABLED = IconLoader.getDisabledIcon(NOTE);
     public static final Icon TEXT = IconLoader.getIcon("/icons/find/text16.png");
-    public static final Icon TEXT_DISABLED = IconLoader.getDisabledIcon(TEXT);
     public static final Icon URL = IconLoader.getIcon("/icons/find/url16.png");
-    public static final Icon URL_DISABLED = IconLoader.getDisabledIcon(URL);
     public static final Icon NEXT = IconLoader.getIcon("/icons/find/resultset_next.png");
     public static final Icon PREV = IconLoader.getIcon("/icons/find/resultset_previous.png");
     public static final Icon CLOSE = IconLoader.getIcon("/icons/find/nimbusCloseFrame.png");

@@ -54,11 +54,11 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
   private JLabel labelTitle;
   private JPanel panelButtonsForMap;
   private JTextField textFieldSearchText;
-  private JToggleButton toggleButtonCaseSensitive;
-  private JToggleButton toggleButtonFile;
-  private JToggleButton toggleButtonNote;
-  private JToggleButton toggleButtonTopicText;
-  private JToggleButton toggleButtonURI;
+  private FindTextToggleButton toggleButtonCaseSensitive;
+  private FindTextToggleButton toggleButtonFile;
+  private FindTextToggleButton toggleButtonNote;
+  private FindTextToggleButton toggleButtonTopicText;
+  private FindTextToggleButton toggleButtonURI;
 
   public FindTextPanel(@Nonnull final MindMapDocumentEditor documentEditor) {
     super();
@@ -69,23 +69,6 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     this.toggleButtonFile.setSelected(stateInFile);
     this.toggleButtonNote.setSelected(stateInNote);
     this.toggleButtonURI.setSelected(stateInURI);
-
-    final ActionListener stateListener = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        stateCaseSensitive = toggleButtonCaseSensitive.isSelected();
-        stateInTopicText = toggleButtonTopicText.isSelected();
-        stateInFile = toggleButtonFile.isSelected();
-        stateInNote = toggleButtonNote.isSelected();
-        stateInURI = toggleButtonURI.isSelected();
-      }
-    };
-
-    this.toggleButtonCaseSensitive.addActionListener(stateListener);
-    this.toggleButtonFile.addActionListener(stateListener);
-    this.toggleButtonNote.addActionListener(stateListener);
-    this.toggleButtonTopicText.addActionListener(stateListener);
-    this.toggleButtonURI.addActionListener(stateListener);
 
     this.textFieldSearchText.setPreferredSize(new Dimension(TEXT_FIELD_WIDTH, this.textFieldSearchText.getPreferredSize().height));
     this.textFieldSearchText.setMinimumSize(new Dimension(TEXT_FIELD_WIDTH, this.textFieldSearchText.getMinimumSize().height));
@@ -162,22 +145,25 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     buttonNext = new JButton(AllIcons.FindText.NEXT);
     labelClose = new JBLabel();
     filler1 = new Box.Filler(new java.awt.Dimension(0, 0), new Dimension(0, 0), new Dimension(32767, 0));
-    toggleButtonCaseSensitive = new JToggleButton(AllIcons.FindText.CASE_DISABLED);
-    toggleButtonCaseSensitive.setSelectedIcon(AllIcons.FindText.CASE);
+
+    final ActionListener stateListener = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        stateCaseSensitive = toggleButtonCaseSensitive.isSelected();
+        stateInTopicText = toggleButtonTopicText.isSelected();
+        stateInFile = toggleButtonFile.isSelected();
+        stateInNote = toggleButtonNote.isSelected();
+        stateInURI = toggleButtonURI.isSelected();
+      }
+    };
+
+    toggleButtonCaseSensitive = new FindTextToggleButton(AllIcons.FindText.CASE, "Case-sensetive search", stateListener); // NOI18N
+    toggleButtonTopicText = new FindTextToggleButton(AllIcons.FindText.TEXT, "Find in titles", stateListener); // NOI18N
+    toggleButtonNote = new FindTextToggleButton(AllIcons.FindText.NOTE, "Find in text notes", stateListener); // NOI18N
+    toggleButtonFile = new FindTextToggleButton(AllIcons.FindText.FILE, "Find in file links", stateListener); // NOI18N
+    toggleButtonURI = new FindTextToggleButton(AllIcons.FindText.URL, "Find in URI", stateListener); // NOI18N
 
     panelButtonsForMap = new JBPanel();
-
-    toggleButtonTopicText = new JToggleButton(AllIcons.FindText.TEXT_DISABLED);
-    toggleButtonTopicText.setSelectedIcon(AllIcons.FindText.TEXT);
-
-    toggleButtonNote = new JToggleButton(AllIcons.FindText.NOTE_DISABLED);
-    toggleButtonNote.setSelectedIcon(AllIcons.FindText.NOTE);
-
-    toggleButtonFile = new JToggleButton(AllIcons.FindText.FILE_DISABLED);
-    toggleButtonFile.setSelectedIcon(AllIcons.FindText.FILE);
-
-    toggleButtonURI = new JToggleButton(AllIcons.FindText.URL_DISABLED);
-    toggleButtonURI.setSelectedIcon(AllIcons.FindText.URL);
 
     setLayout(new GridBagLayout());
 
@@ -251,13 +237,6 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     gridBagConstraints.weightx = 100000.0;
     add(filler1, gridBagConstraints);
 
-    toggleButtonCaseSensitive.setToolTipText("Case sensitive mode"); // NOI18N
-    toggleButtonCaseSensitive.setFocusable(false);
-    toggleButtonCaseSensitive.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        toggleButtonCaseSensitiveActionPerformed(evt);
-      }
-    });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 4;
     gridBagConstraints.gridy = 0;
@@ -267,8 +246,6 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
 
     panelButtonsForMap.setLayout(new java.awt.GridBagLayout());
 
-    toggleButtonTopicText.setToolTipText("Find in topic title"); // NOI18N
-    toggleButtonTopicText.setFocusable(false);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
@@ -276,8 +253,6 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     gridBagConstraints.weightx = 1.0;
     panelButtonsForMap.add(toggleButtonTopicText, gridBagConstraints);
 
-    toggleButtonNote.setToolTipText("Find in topic notes"); // NOI18N
-    toggleButtonNote.setFocusable(false);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
@@ -285,8 +260,6 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     gridBagConstraints.weightx = 1.0;
     panelButtonsForMap.add(toggleButtonNote, gridBagConstraints);
 
-    toggleButtonFile.setToolTipText("Find in file links"); // NOI18N
-    toggleButtonFile.setFocusable(false);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 0;
@@ -294,8 +267,6 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     gridBagConstraints.weightx = 1.0;
     panelButtonsForMap.add(toggleButtonFile, gridBagConstraints);
 
-    toggleButtonURI.setToolTipText("Find in URI links");
-    toggleButtonURI.setFocusable(false);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 3;
     gridBagConstraints.gridy = 0;
@@ -313,7 +284,7 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
   private void textFieldSearchTextKeyPressed(java.awt.event.KeyEvent evt) {
     switch (evt.getKeyCode()) {
       case KeyEvent.VK_ESCAPE: {
-        this.setVisible(false);
+        this.deactivate();
         evt.consume();
       }
       break;
@@ -357,5 +328,23 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
 
   private void toggleButtonCaseSensitiveActionPerformed(java.awt.event.ActionEvent evt) {
     stateCaseSensitive = this.toggleButtonCaseSensitive.isSelected();
+  }
+
+  public boolean activate() {
+    boolean activated = false;
+    if (!this.isVisible()) {
+      activated = true;
+      this.textFieldSearchText.setText("");
+      this.setVisible(true);
+    }
+    this.textFieldSearchText.requestFocus();
+    return activated;
+  }
+
+  public void deactivate() {
+    if (this.isVisible()) {
+      this.setVisible(false);
+    }
+    this.documentEditor.getMindMapPanel().requestFocus();
   }
 }

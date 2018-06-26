@@ -525,13 +525,15 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
           }
           break;
         }
-      } else if (e.getModifiers() == KeyEvent.CTRL_MASK) {
-        if (e.getKeyCode() == KeyEvent.VK_F) {
-          this.findTextPanel.setVisible(true);
-          this.findTextPanel.requestFocus();
-          e.consume();
-        }
       }
+    }
+
+    if (!e.isConsumed() && e.getModifiers() == KeyEvent.CTRL_MASK && e.getKeyCode() == KeyEvent.VK_F) {
+      this.findTextPanel.activate();
+    }
+
+    if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+      this.findTextPanel.deactivate();
     }
   }
 
