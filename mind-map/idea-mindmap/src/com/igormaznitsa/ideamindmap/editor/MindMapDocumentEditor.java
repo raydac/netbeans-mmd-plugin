@@ -511,12 +511,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     if (type == KeyEventType.PRESSED) {
       if (e.getModifiers() == 0) {
         switch (e.getKeyCode()) {
-          case KeyEvent.VK_ESCAPE: {
-            this.findTextPanel.setVisible(false);
-            this.mainScrollPane.requestFocus();
-            e.consume();
-          }
-          break;
           case KeyEvent.VK_UP:
           case KeyEvent.VK_LEFT:
           case KeyEvent.VK_RIGHT:
