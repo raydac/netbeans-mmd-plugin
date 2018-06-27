@@ -178,7 +178,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     }
   };
   private static final Logger LOGGER = LoggerFactory.getLogger(PlantUmlTextEditor.class);
-  private static File lastExportedFile = null;
+  private File lastExportedFile = null;
   private final RSyntaxTextArea editor;
   private final TabTitle title;
   private final RUndoManager undoManager;
@@ -245,8 +245,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
 
     this.renderedPanel = new JPanel(new BorderLayout());
-    this.imageComponent = new ScalableImage();
-    this.renderedScrollPane = new EditorScrollPanel(this.imageComponent);
+    this.renderedScrollPane = new EditorScrollPanel();
+    this.imageComponent = new ScalableImage(this.renderedScrollPane);
+    this.renderedScrollPane.setViewportView(this.imageComponent);
     this.renderedScrollPane.setWheelScrollingEnabled(true);
     this.renderedScrollPane.getVerticalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
     this.renderedScrollPane.getVerticalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
@@ -593,7 +594,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   }
 
   private void exportAsFile() {
-    final JFileChooser fileChooser = new JFileChooser(lastExportedFile);
+    final JFileChooser fileChooser = new JFileChooser(lastExportedFile == null ? this.getTabTitle().getAssociatedFile().getParentFile() : lastExportedFile);
     fileChooser.setAcceptAllFileFilterUsed(false);
 
     final FileFilter fileFiterSVG = new FileFilter() {

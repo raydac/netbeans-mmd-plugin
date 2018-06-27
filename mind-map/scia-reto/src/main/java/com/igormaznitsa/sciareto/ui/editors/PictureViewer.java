@@ -74,7 +74,7 @@ public final class PictureViewer extends AbstractEditor {
   public PictureViewer(@Nonnull final Context context, @Nonnull final File file) throws IOException {
     super();
     this.title = new TabTitle(context, this, file);
-    this.imageViewer = new ScalableImage();
+    this.imageViewer = new ScalableImage(this.scrollPane);
     this.scrollPane.setWheelScrollingEnabled(true);
     this.scrollPane.getVerticalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);

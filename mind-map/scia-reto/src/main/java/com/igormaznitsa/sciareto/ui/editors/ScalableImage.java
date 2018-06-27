@@ -33,15 +33,18 @@ import java.awt.image.BufferedImage;
 final class ScalableImage extends JComponent {
 
   private static final long serialVersionUID = 6804581090800919466L;
-  private static final float SCALE_STEP = 0.2f;
+  private static final float SCALE_STEP = 0.1f;
   private final MindMapPanelConfig config = new MindMapPanelConfig();
   private BufferedImage image;
   private float scale = 1.0f;
 
   private Point dragOrigin;
 
-  public ScalableImage() {
+  private final JScrollPane parentScrollPane;
+
+  public ScalableImage(@Nullable final JScrollPane pane) {
     super();
+    this.parentScrollPane = pane;
 
     final ScalableImage theInstance = this;
 
@@ -50,11 +53,31 @@ final class ScalableImage extends JComponent {
       public void mouseWheelMoved(@Nonnull final MouseWheelEvent e) {
         if (!e.isConsumed() && ((e.getModifiers() & config.getScaleModifiers()) == config.getScaleModifiers())) {
           e.consume();
+          final float oldScale = scale;
           scale = Math.max(0.2f, Math.min(scale + (SCALE_STEP * -e.getWheelRotation()), 10.0f));
           revalidate();
+          if (parentScrollPane != null) {
+            final Point mousePoint = e.getPoint();
+            final JViewport viewport = parentScrollPane.getViewport();
+
+            final Point viewPos = viewport.getViewPosition();
+            final int dx = mousePoint.x - viewPos.x;
+            final int dy = mousePoint.y - viewPos.y;
+
+            final double scaleRelation = scale / oldScale;
+
+            final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
+            final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
+
+            viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0, newMouseY - dy)));
+            parentScrollPane.revalidate();
+            parentScrollPane.repaint();
+          }
           repaint();
         }
-        sendEventToParent(e);
+        if (!e.isConsumed()) {
+          sendEventToParent(e);
+        }
       }
 
       @Override
@@ -160,10 +183,10 @@ final class ScalableImage extends JComponent {
     }
   }
 
-  public float getScale(){
+  public float getScale() {
     return this.scale;
   }
-  
+
   @Override
   public void paintComponent(@Nonnull final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
