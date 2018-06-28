@@ -246,13 +246,15 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.renderedPanel = new JPanel(new BorderLayout());
     this.renderedScrollPane = new EditorScrollPanel();
-    this.imageComponent = new ScalableImage(this.renderedScrollPane);
+    this.imageComponent = new ScalableImage();
     this.renderedScrollPane.setViewportView(this.imageComponent);
+
+    this.renderedScrollPane.getVerticalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
+    this.renderedScrollPane.getVerticalScrollBar().setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
+    this.renderedScrollPane.getHorizontalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
+    this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
+
     this.renderedScrollPane.setWheelScrollingEnabled(true);
-    this.renderedScrollPane.getVerticalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
-    this.renderedScrollPane.getVerticalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
-    this.renderedScrollPane.getHorizontalScrollBar().setBlockIncrement(IMG_BLOCK_INCREMENT);
-    this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(IMG_UNIT_INCREMENT);
 
     this.menu = new JPanel(new GridBagLayout());
     final GridBagConstraints gbdata = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);

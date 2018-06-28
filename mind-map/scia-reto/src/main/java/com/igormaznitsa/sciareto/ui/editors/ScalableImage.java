@@ -33,19 +33,18 @@ import java.awt.image.BufferedImage;
 final class ScalableImage extends JComponent {
 
   private static final long serialVersionUID = 6804581090800919466L;
-  private static final float SCALE_STEP = 0.1f;
+  private static final float SCALE_STEP = 0.05f;
   private final MindMapPanelConfig config = new MindMapPanelConfig();
   private BufferedImage image;
   private float scale = 1.0f;
 
+  public static final int IMG_UNIT_INCREMENT = 16;
+  public static final int IMG_BLOCK_INCREMENT = IMG_UNIT_INCREMENT * 8;
+
   private Point dragOrigin;
 
-  private final JScrollPane parentScrollPane;
-
-  public ScalableImage(@Nullable final JScrollPane pane) {
+  public ScalableImage() {
     super();
-    this.parentScrollPane = pane;
-
     final ScalableImage theInstance = this;
 
     final MouseAdapter adapter = new MouseAdapter() {
@@ -55,25 +54,45 @@ final class ScalableImage extends JComponent {
           e.consume();
           final float oldScale = scale;
           scale = Math.max(0.2f, Math.min(scale + (SCALE_STEP * -e.getWheelRotation()), 10.0f));
-          revalidate();
-          if (parentScrollPane != null) {
-            final Point mousePoint = e.getPoint();
-            final JViewport viewport = parentScrollPane.getViewport();
 
-            final Point viewPos = viewport.getViewPosition();
-            final int dx = mousePoint.x - viewPos.x;
-            final int dy = mousePoint.y - viewPos.y;
+          final JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, theInstance);
 
-            final double scaleRelation = scale / oldScale;
+          final Dimension size = getPreferredSize();
 
-            final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
-            final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
+          if (viewport != null) {
+            final Dimension extentSize = viewport.getExtentSize();
 
-            viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0, newMouseY - dy)));
-            parentScrollPane.revalidate();
-            parentScrollPane.repaint();
+            final Rectangle viewPos = viewport.getViewRect();
+            if (extentSize.width < size.width || extentSize.height < size.height) {
+              final Point mousePoint = e.getPoint();
+              final int dx = mousePoint.x - viewPos.x;
+              final int dy = mousePoint.y - viewPos.y;
+
+              final double scaleRelation = scale / oldScale;
+
+              final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
+              final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
+              
+              viewPos.x = Math.max(0, newMouseX - dx);
+              viewPos.y = Math.max(0, newMouseY - dy);
+              viewport.setView(ScalableImage.this);
+
+              scrollRectToVisible(viewPos);
+            } else {
+              viewPos.x = 0;
+              viewPos.y = 0;
+              scrollRectToVisible(viewPos);
+            }
+
+            final Container scrollPane = viewport.getParent();
+            if (scrollPane != null) {
+              scrollPane.revalidate();
+              scrollPane.repaint();
+            }
+          } else {
+            revalidate();
+            repaint();
           }
-          repaint();
         }
         if (!e.isConsumed()) {
           sendEventToParent(e);
@@ -125,14 +144,15 @@ final class ScalableImage extends JComponent {
             final Rectangle view = viewPort.getViewRect();
             view.x += deltaX;
             view.y += deltaY;
+            scrollRectToVisible(view);
 
-            final JComponent compo = (JComponent) viewPort.getView();
-            if (compo != null) {
-              compo.scrollRectToVisible(view);
-            }
+            viewPort.revalidate();
+            viewPort.repaint();
           }
         }
-        sendEventToParent(e);
+        if (!e.isConsumed()) {
+          sendEventToParent(e);
+        }
       }
 
       @Override
