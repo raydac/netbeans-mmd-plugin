@@ -23,7 +23,6 @@ import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.JBTextField;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
@@ -138,11 +137,10 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
 
   private void initComponents() {
     java.awt.GridBagConstraints gridBagConstraints;
-
     labelTitle = new JBLabel();
-    textFieldSearchText = new JBTextField();
-    buttonPrev = new JButton(AllIcons.FindText.PREV);
-    buttonNext = new JButton(AllIcons.FindText.NEXT);
+    textFieldSearchText = new JTextField();
+    buttonPrev = new JButton(com.intellij.icons.AllIcons.Actions.PreviousOccurence);
+    buttonNext = new JButton(com.intellij.icons.AllIcons.Actions.NextOccurence);
     labelClose = new JBLabel();
     filler1 = new Box.Filler(new java.awt.Dimension(0, 0), new Dimension(0, 0), new Dimension(32767, 0));
 
@@ -215,7 +213,7 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     add(buttonNext, gridBagConstraints);
 
     labelClose.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-    labelClose.setIcon(AllIcons.FindText.CLOSE);
+    labelClose.setIcon(com.intellij.icons.AllIcons.Actions.Close);
     labelClose.setToolTipText("Close search form (ESC)"); // NOI18N
     labelClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     labelClose.setFocusable(false);
