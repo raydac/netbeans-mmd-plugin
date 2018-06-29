@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 
 import java.io.File;
@@ -32,16 +33,16 @@ public final class FileEditPanel extends javax.swing.JPanel {
   
   public static final class DataContainer {
 
-    private final String path;
+    private final FilePathWithLine path;
     private final boolean showWithSystemTool;
 
     public DataContainer(@Nullable final String path, final boolean showWithSystemTool) {
-      this.path = path == null ? "" : path;
+      this.path = new FilePathWithLine(path);
       this.showWithSystemTool = showWithSystemTool;
     }
 
     @Nonnull
-    public String getPath() {
+    public FilePathWithLine getFilePathWithLine() {
       return this.path;
     }
 
@@ -49,13 +50,13 @@ public final class FileEditPanel extends javax.swing.JPanel {
       return this.showWithSystemTool;
     }
 
-    public boolean isEmpty() {
-      return this.path.trim().isEmpty();
+    public boolean isEmptyOrOnlySpaces() {
+      return this.path.isEmptyOrOnlySpaces();
     }
     
     public boolean isValid () {
       try {
-        return this.path.isEmpty() ? true : new File(this.path).exists();
+        return this.path.isEmptyOrOnlySpaces() ? true : new File(this.path.getPath()).exists();
       }
       catch (Exception ex) {
         return false;
@@ -70,7 +71,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
   public FileEditPanel(@Nullable final File projectFolder, @Nullable final DataContainer initialData) {
     initComponents();
     this.projectFolder = projectFolder;
-    this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath());
+    this.textFieldFilePath.setText(initialData == null ? "" : initialData.getFilePathWithLine().toString());
     this.textFieldFilePath.setComponentPopupMenu(SwingUtils.addTextActions(UI_COMPO_FACTORY.makePopupMenu()));
     this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
   }

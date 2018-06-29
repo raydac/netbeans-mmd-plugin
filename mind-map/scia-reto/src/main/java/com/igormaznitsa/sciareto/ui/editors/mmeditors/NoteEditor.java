@@ -60,13 +60,15 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import com.igormaznitsa.sciareto.ui.editors.TextEditor;
+import java.awt.Font;
 
 public final class NoteEditor extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -1715683034655322518L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NoteEditor.class);
+
+  public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
   private final UndoManager undoManager = new UndoManager(){
     private static final long serialVersionUID = -239961738072597268L;
@@ -251,7 +253,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
 
     this.setPreferredSize(new Dimension(640, 480));
-    this.editorPane.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, TextEditor.DEFAULT_FONT));
+    this.editorPane.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.editorPane.setText(text);
     this.addAncestorListener(new AncestorListener() {
       @Override

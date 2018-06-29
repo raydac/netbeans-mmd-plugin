@@ -24,6 +24,7 @@ import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
+import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Extra.ExtraType;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -109,6 +110,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
@@ -117,8 +120,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapDocumentEditor.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
-
-  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
   private final JPanel mainPanel;
   private final JScrollPane mainScrollPane;
@@ -634,6 +635,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         case FILE: {
           final MMapURI fileURI = (MMapURI) extra.getValue();
           final boolean flagOpenFileLinkInSystemViewer = Boolean.parseBoolean(fileURI.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
+          final int lineNumber = FilePathWithLine.strToLine(fileURI.getParameters().getProperty(FILELINK_ATTR_LINE, null));
 
           final VirtualFile rootFolder = findRootFolderForEditedFile();
           final VirtualFile theFile = LocalFileSystem.getInstance().findFileByIoFile(fileURI.asFile(IdeaUtils.vfile2iofile(rootFolder)));
@@ -645,16 +647,16 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
           } else if (VfsUtilCore.isAncestor(rootFolder, theFile, false)) {
             // inside project
             if (flagOpenFileLinkInSystemViewer) {
-              SelectIn.SYSTEM.open(this, theFile);
+              SelectIn.SYSTEM.open(this, theFile, -1);
             } else {
-              SelectIn.IDE.open(this, theFile);
+              SelectIn.IDE.open(this, theFile, lineNumber);
             }
           } else {
             // outside project
             if (flagOpenFileLinkInSystemViewer) {
-              SelectIn.SYSTEM.open(this, theFile);
+              SelectIn.SYSTEM.open(this, theFile, -1);
             } else {
-              SelectIn.IDE.open(this, theFile);
+              SelectIn.IDE.open(this, theFile, lineNumber);
             }
           }
         }

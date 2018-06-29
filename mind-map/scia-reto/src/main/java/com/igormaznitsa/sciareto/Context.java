@@ -35,7 +35,7 @@ public interface Context {
   @Nullable
   NodeProject findProjectForFile(@Nonnull File file);
 
-  boolean openFileAsTab(@Nonnull File file);
+  boolean openFileAsTab(@Nonnull File file, int line);
 
   boolean openProject(@Nonnull File folder, boolean enforceSeparatedItem);
 

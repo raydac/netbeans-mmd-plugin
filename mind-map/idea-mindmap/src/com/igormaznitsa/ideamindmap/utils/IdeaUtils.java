@@ -486,7 +486,7 @@ public final class IdeaUtils {
       if (result.isValid()) {
         return result;
       } else {
-        Messages.showErrorDialog(editor.getMindMapPanel(), String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()), "Error");
+        Messages.showErrorDialog(editor.getMindMapPanel(), String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPathWithLine().getPath()), "Error");
         return null;
       }
     } else {

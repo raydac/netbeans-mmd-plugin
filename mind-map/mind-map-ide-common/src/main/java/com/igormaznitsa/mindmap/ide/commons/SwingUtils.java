@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.ide.commons;
 import java.awt.event.ActionEvent;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;

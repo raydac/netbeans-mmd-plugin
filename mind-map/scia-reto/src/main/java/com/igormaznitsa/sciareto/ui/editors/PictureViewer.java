@@ -108,7 +108,7 @@ public final class PictureViewer extends AbstractEditor {
   }
 
   @Override
-  public void focusToEditor() {
+  public void focusToEditor(final int line) {
   }
 
   @Override

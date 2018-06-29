@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -40,21 +41,21 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
 
   public static final class DataContainer {
 
-    private final String path;
+    private final FilePathWithLine pathWithLine;
     private final boolean showWithSystemTool;
 
     public DataContainer(final String path, final boolean showWithSystemTool) {
-      this.path = path == null ? "" : path;
+      this.pathWithLine = new FilePathWithLine(path);
       this.showWithSystemTool = showWithSystemTool;
     }
 
-    public String getPath() {
-      return this.path;
+    public FilePathWithLine getPathWithLine() {
+      return this.pathWithLine;
     }
 
     public boolean isValid() {
       try {
-        return this.path.isEmpty() || new File(this.path).exists();
+        return this.pathWithLine.isEmptyOrOnlySpaces() || new File(this.pathWithLine.getPath()).exists();
       }
       catch (Exception ex) {
         return false;
@@ -63,10 +64,6 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
 
     public boolean isShowWithSystemTool() {
       return this.showWithSystemTool;
-    }
-
-    public boolean isEmpty() {
-      return this.path.trim().isEmpty();
     }
   }
 
@@ -78,7 +75,7 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
     this.dialogProvider = dialogProvider;
     initComponents();
     this.projectFolder = projectFolder;
-    this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath());
+    this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPathWithLine().toString());
     this.checkBoxShowFileInSystem.setSelected(initialData != null && initialData.isShowWithSystemTool());
   }
 
@@ -157,7 +154,7 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.ipadx = 2;
     add(optionPanel, gridBagConstraints);
-  }// </editor-fold>
+  }
 
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {
     if (evt.getClickCount() > 1) {

@@ -113,7 +113,7 @@ public final class ExplorerTree extends JScrollPane {
             if (node != null) {
               if (!node.isLoading() && node.isLeaf()) {
                 final File file = node.makeFileForNode();
-                if (file != null && !context.openFileAsTab(file)) {
+                if (file != null && !context.openFileAsTab(file, -1)) {
                   UiUtils.openInSystemViewer(file);
                 }
               } else {
@@ -137,7 +137,7 @@ public final class ExplorerTree extends JScrollPane {
             if (node != null && !node.isLoading() && node.isLeaf()) {
               final File file = node.makeFileForNode();
               if (file != null) {
-                if (context.openFileAsTab(file)) {
+                if (context.openFileAsTab(file, -1)) {
                   SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -716,7 +716,7 @@ public final class ExplorerTree extends JScrollPane {
         try {
           getCurrentGroup().addChild(folder, PrefUtils.isShowHiddenFilesAndFolders(), file);
           if (openAndFocusInTree) {
-            context.openFileAsTab(file);
+            context.openFileAsTab(file, -1);
             context.focusInTree(file);
           }
         } catch (IOException ex) {

@@ -148,14 +148,14 @@ public final class SourceTextEditor extends AbstractEditor {
     return SRC_FILE_FILTER;
   }
 
-  public SourceTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
+  public SourceTextEditor(@Nonnull final Context context, @Nullable File file, final int line, final boolean noSyntax) throws IOException {
     super();
     this.editor = new RSyntaxTextArea();
     this.editor.setPopupMenu(null);
 
     final String syntaxType = file == null ? null : MAP_EXTENSION2TYPE.get(FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH));
 
-    this.editor.setSyntaxEditingStyle(syntaxType == null ? SyntaxConstants.SYNTAX_STYLE_NONE : syntaxType);
+    this.editor.setSyntaxEditingStyle(noSyntax || syntaxType == null ? SyntaxConstants.SYNTAX_STYLE_NONE : syntaxType);
     this.editor.setAntiAliasingEnabled(true);
     this.editor.setBracketMatchingEnabled(true);
     this.editor.setCodeFoldingEnabled(true);
@@ -206,13 +206,26 @@ public final class SourceTextEditor extends AbstractEditor {
     this.undoManager.updateActions();
 
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
+    
+    gotoLine(line);
   }
 
+  private void gotoLine(final int line){
+    if (line > 0) {
+      try {
+        this.editor.setCaretPosition(this.editor.getLineStartOffset(line - 1));
+      } catch (Exception ex) {
+        LOGGER.warn("Can't focus to line : " + line);
+      }
+    }
+  }
+  
   @Override
-  public void focusToEditor() {
+  public void focusToEditor(final int line) {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+        gotoLine(line);
         editor.requestFocusInWindow();
       }
     });

@@ -13,6 +13,7 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.4 (SNAPSHOT)__
+- ALL: added support of line number in file link through pattern `<file_path>:<line_number>`
 - IJ:  [#15](https://github.com/raydac/netbeans-mmd-plugin/issues/15) added node search panel activated by `CTRL+F`
 - ALL: increased number of emoticons
 - ALL: [#45](https://github.com/raydac/netbeans-mmd-plugin/issues/45) improved security in XML import

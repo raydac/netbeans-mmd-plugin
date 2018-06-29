@@ -347,7 +347,7 @@ public final class UiUtils {
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, title, filePathEditor)) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getFilePathWithLine().getPath()));
         result = null;
       }
     }

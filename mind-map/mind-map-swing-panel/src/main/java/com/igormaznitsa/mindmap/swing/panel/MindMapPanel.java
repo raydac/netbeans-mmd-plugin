@@ -1236,7 +1236,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
     switch (extra.getType()) {
       case FILE: {
-        builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenFile")).append(StringEscapeUtils.escapeHtml(((ExtraFile) extra).getAsString()));
+        final ExtraFile efile = (ExtraFile)extra;
+        final String line = efile.getAsURI().getParameters().getProperty("line",null);
+        if (line != null && !line.equals("0")) {
+          builder.append(String.format(BUNDLE.getString("MindMapPanel.tooltipOpenFileWithLine"),StringEscapeUtils.escapeHtml(efile.getAsString()),StringEscapeUtils.escapeHtml(line)));
+        } else {
+          builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenFile")).append(StringEscapeUtils.escapeHtml(efile.getAsString()));
+        }
       }
       break;
       case TOPIC: {

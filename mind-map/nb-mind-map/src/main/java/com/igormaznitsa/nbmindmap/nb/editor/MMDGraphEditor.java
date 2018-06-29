@@ -17,7 +17,11 @@ package com.igormaznitsa.nbmindmap.nb.editor;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
+import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
+import static com.igormaznitsa.mindmap.ide.commons.FilePathWithLine.strToLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -99,6 +103,8 @@ import java.util.List;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import org.openide.cookies.LineCookie;
+import org.openide.text.Line;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 @MultiViewElement.Registration(
@@ -117,8 +123,6 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDGraphEditor.class);
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
-
-  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
   public static final String ID = "mmd-graph-editor"; //NOI18N
 
@@ -565,6 +569,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
           }
 
           try {
+            final int line = FilePathWithLine.strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null));
             if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
               NbUtils.openInSystemViewer(null, theFile);
             } else {
@@ -628,6 +633,17 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
                 if (openable != null) {
                   openable.open();
                 }
+
+                if (line > 0) {
+                  final LineCookie lineCookie = dobj.getCookie(LineCookie.class);
+                  if (lineCookie != null) {
+                    final Line theLine = lineCookie.getLineSet().getOriginal(line - 1);
+                    if (theLine != null) {
+                      theLine.show(Line.ShowOpenType.OPEN, Line.ShowVisibilityType.FOCUS);
+                    }
+                  }
+                }
+
                 NbUtils.SelectIn.PROJECTS.select(this, fileObj);
               }
             }
@@ -1012,45 +1028,50 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       } else {
         final MMapURI uri = currentFilePath.getValue();
         final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
+        int lineToOpen = strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null));
+        final String lineAsStr = lineToOpen < 0 ? "" : ":" + lineToOpen;
 
         final FileEditPanel.DataContainer origPath;
         if (uri.isAbsolute()) {
-          origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getAbsolutePath(), flagOpenInSystem);
+          origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getAbsolutePath() + lineAsStr, flagOpenInSystem);
         } else if (projectFolder == null) {
           NbUtils.msgWarn(null, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.warnText"));
-          origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getPath(), flagOpenInSystem);
+          origPath = new FileEditPanel.DataContainer(uri.asFile(getProjectFolder()).getPath() + lineAsStr, flagOpenInSystem);
         } else {
-          origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
+          origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath() + lineAsStr, flagOpenInSystem);
         }
         dataContainer = NbUtils.editFilePath(null, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
       }
 
       if (dataContainer != null) {
         boolean changed = false;
-        if (dataContainer.isEmpty()) {
+        if (dataContainer.isEmptyOrOnlySpaces()) {
           changed = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
           final Properties props = new Properties();
           if (dataContainer.isShowWithSystemTool()) {
             props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
           }
-          final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, dataContainer.getPath(), props); //NOI18N
+          if (dataContainer.getFilePathWithLine().getLine() >= 0) {
+            props.put(FILELINK_ATTR_LINE, Integer.toString(dataContainer.getFilePathWithLine().getLine()));
+          }
+          final MMapURI fileUri = MMapURI.makeFromFilePath(NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, dataContainer.getFilePathWithLine().getPath(), props); //NOI18N
           final File theFile = fileUri.asFile(projectFolder);
-          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getPath(), fileUri.asString(false, true))); //NOI18N
+          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getFilePathWithLine(), fileUri.asString(false, true))); //NOI18N
 
           if (theFile.exists()) {
             if (currentFilePath == null) {
               this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, theFile.getParentFile());
             }
-            
+
             final ExtraFile newFile = new ExtraFile(fileUri);
-            
-            if (currentFilePath == null || !currentFilePath.equals(newFile)){
-            topic.setExtra(newFile);
-            changed = true;
+
+            if (currentFilePath == null || !currentFilePath.equals(newFile)) {
+              topic.setExtra(newFile);
+              changed = true;
             }
           } else {
-            NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPath()));
+            NbUtils.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getFilePathWithLine()));
             changed = false;
           }
         }

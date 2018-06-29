@@ -296,12 +296,12 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     this.setToolTipTextAt(count, tabTitle.getToolTipText());
   }
 
-  public boolean focusToFile(@Nonnull final File file) {
+  public boolean focusToFile(@Nonnull final File file, final int line) {
     for (int i = 0; i < this.getTabCount(); i++) {
       final TabTitle title = (TabTitle) this.getTabComponentAt(i);
       if (file.equals(title.getAssociatedFile())) {
         this.setSelectedIndex(i);
-        ((TabTitle) this.getTabComponentAt(i)).getProvider().focusToEditor();
+        ((TabTitle) this.getTabComponentAt(i)).getProvider().focusToEditor(line);
         return true;
       }
     }

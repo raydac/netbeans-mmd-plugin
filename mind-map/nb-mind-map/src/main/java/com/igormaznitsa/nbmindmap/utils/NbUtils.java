@@ -357,7 +357,7 @@ public final class NbUtils {
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
-        NbUtils.msgError(parentComponent, String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPath()));
+        NbUtils.msgError(parentComponent, String.format(java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getFilePathWithLine()));
         result = null;
       }
     }

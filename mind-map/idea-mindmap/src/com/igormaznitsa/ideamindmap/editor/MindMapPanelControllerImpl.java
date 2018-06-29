@@ -26,6 +26,7 @@ import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -66,10 +67,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
+
 public class MindMapPanelControllerImpl implements MindMapPanelController, MindMapConfigListener {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanelControllerImpl.class);
-  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
 
   private final MindMapDocumentEditor editor;
   private final MindMapDialogProvider dialogProvider;
@@ -326,24 +329,29 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       } else {
         final MMapURI uri = currentFilePath.getValue();
         final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
+        final int line = FilePathWithLine.strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null));
 
         final FileEditPanel.DataContainer origPath;
-        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
+        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath() + (line < 0 ? "" : ":" + Integer.toString(line)), flagOpenInSystem);
         dataContainer = IdeaUtils.editFilePath(this.editor, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
       }
 
       if (dataContainer != null) {
         boolean changed = false;
-        if (dataContainer.isEmpty()) {
+        if (dataContainer.getPathWithLine().isEmptyOrOnlySpaces()) {
           changed = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
           final Properties props = new Properties();
           if (dataContainer.isShowWithSystemTool()) {
             props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
           }
-          final MMapURI fileUri = MMapURI.makeFromFilePath(this.editor.isMakeRelativePath() ? projectFolder : null, dataContainer.getPath(), props); //NOI18N
+          if (dataContainer.getPathWithLine().getLine() >= 0) {
+            props.put(FILELINK_ATTR_LINE, Integer.toString(dataContainer.getPathWithLine().getLine()));
+          }
+
+          final MMapURI fileUri = MMapURI.makeFromFilePath(this.editor.isMakeRelativePath() ? projectFolder : null, dataContainer.getPathWithLine().getPath(), props); //NOI18N
           final File theFile = fileUri.asFile(projectFolder);
-          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getPath(), fileUri.asString(false, true))); //NOI18N
+          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getPathWithLine(), fileUri.asString(false, true))); //NOI18N
 
           if (theFile.exists()) {
             if (currentFilePath == null) {
@@ -356,7 +364,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
               changed = true;
             }
           } else {
-            dialogProvider.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPath()));
+            dialogProvider.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPathWithLine().getPath()));
             changed = false;
           }
         }

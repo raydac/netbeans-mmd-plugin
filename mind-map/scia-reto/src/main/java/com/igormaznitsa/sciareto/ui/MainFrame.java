@@ -72,7 +72,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.tree.TreePath;
 
 public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
 
@@ -223,7 +222,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             item.addActionListener(new ActionListener() {
               @Override
               public void actionPerformed(ActionEvent e) {
-                openFileAsTab(file);
+                openFileAsTab(file, -1);
               }
             });
             menuOpenRecentFile.add(item);
@@ -251,7 +250,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           openedProject = true;
           openProject(file, true);
         } else if (file.isFile()) {
-          openFileAsTab(file);
+          openFileAsTab(file, -1);
         }
       }
       if (!openedProject) {
@@ -518,7 +517,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       final File[] activeFiles = FileHistoryManager.getInstance().getActiveFiles();
       for (final File f : activeFiles) {
         if (f.isFile()) {
-          openFileAsTab(f);
+          openFileAsTab(f, -1);
         }
       }
 
@@ -563,10 +562,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   @Override
-  public boolean openFileAsTab(@Nonnull final File file) {
+  public boolean openFileAsTab(@Nonnull final File file, final int line) {
     boolean result = false;
     if (file.isFile()) {
-      if (this.tabPane.focusToFile(file)) {
+      if (this.tabPane.focusToFile(file, line)) {
         result = true;
       } else {
         final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
@@ -588,7 +587,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           }
         } else if (SourceTextEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
           try {
-            final SourceTextEditor panel = new SourceTextEditor(this, file);
+            final SourceTextEditor panel = new SourceTextEditor(this, file, line, false);
             this.tabPane.createTab(panel);
             result = true;
           } catch (IOException ex) {
@@ -616,7 +615,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             }
 
             try {
-              final TextEditor panel = new TextEditor(this, file);
+              final SourceTextEditor panel = new SourceTextEditor(this, file, line, true);
               this.tabPane.createTab(panel);
               result = true;
             } catch (IOException ex) {
@@ -634,7 +633,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       } catch (IOException x) {
         LOGGER.error("Can't register last opened file", x); //NOI18N
       } finally {
-        this.tabPane.focusToFile(file);
+        this.tabPane.focusToFile(file, -1);
       }
     }
     return result;
@@ -1303,7 +1302,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
     final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog(null, "open-file", "Open file", null, true, MMDEditor.MMD_FILE_FILTER, "Open");
     if (file != null) {
-      if (openFileAsTab(file)) {
+      if (openFileAsTab(file, -1)) {
         try {
           FileHistoryManager.getInstance().registerOpenedProject(file);
           SwingUtilities.invokeLater(new Runnable() {
@@ -1599,7 +1598,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         boolean cantFind = true;
         if (fileToOpen.exists()) {
           if (fileToOpen.isFile()) {
-            if (openFileAsTab(fileToOpen)) {
+            if (openFileAsTab(fileToOpen, -1)) {
               cantFind = false;
             }
           } else if (fileToOpen.isDirectory()) {

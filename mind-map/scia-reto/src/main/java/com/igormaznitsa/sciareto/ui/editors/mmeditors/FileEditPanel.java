@@ -18,6 +18,7 @@
  */
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
+import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.io.File;
 
@@ -32,32 +33,31 @@ public final class FileEditPanel extends javax.swing.JPanel {
 
   public static final class DataContainer {
 
-    private final String path;
+    private final FilePathWithLine filePathWithLine;
     private final boolean showWithSystemTool;
 
     public DataContainer(@Nullable final String path, final boolean showWithSystemTool) {
-      this.path = path == null ? "" : path; //NOI18N
+      this.filePathWithLine = new FilePathWithLine(path);
       this.showWithSystemTool = showWithSystemTool;
     }
 
     @Nonnull
-    public String getPath() {
-      return this.path;
+    public FilePathWithLine getFilePathWithLine() {
+      return this.filePathWithLine;
     }
 
     public boolean isShowWithSystemTool() {
       return this.showWithSystemTool;
     }
 
-    public boolean isEmpty() {
-      return this.path.trim().isEmpty();
+    public boolean isEmptyOrOnlySpaces() {
+      return this.filePathWithLine.isEmptyOrOnlySpaces();
     }
-    
-    public boolean isValid () {
+
+    public boolean isValid() {
       try {
-        return this.path.isEmpty() ? true : new File(this.path).exists();
-      }
-      catch (Exception ex) {
+        return this.filePathWithLine.isEmptyOrOnlySpaces() ? true : new File(this.filePathWithLine.getPath()).exists();
+      } catch (Exception ex) {
         return false;
       }
     }
@@ -71,7 +71,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
   public FileEditPanel(@Nullable final File projectFolder, @Nullable final DataContainer initialData) {
     initComponents();
     this.projectFolder = projectFolder;
-    this.textFieldFilePath.setText(initialData == null ? "" : initialData.getPath()); //NOI18N
+    this.textFieldFilePath.setText(initialData.getFilePathWithLine().toString()); //NOI18N
     this.checkBoxShowFileInSystem.setSelected(initialData == null ? false : initialData.isShowWithSystemTool());
     this.textFieldFilePath.setComponentPopupMenu(SwingUtils.addTextActions(UIComponentFactoryProvider.findInstance().makePopupMenu()));
     new Focuser(this.textFieldFilePath);

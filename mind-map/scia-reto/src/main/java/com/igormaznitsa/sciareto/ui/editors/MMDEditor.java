@@ -21,7 +21,10 @@ package com.igormaznitsa.sciareto.ui.editors;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
+import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -91,7 +94,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
   private final TabTitle title;
 
-  private static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
   private final Context context;
 
   private boolean dragAcceptableType;
@@ -234,7 +236,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   }
 
   @Override
-  public void focusToEditor() {
+  public void focusToEditor(final int line) {
     this.mindMapPanel.requestFocus();
   }
 
@@ -514,7 +516,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
             UiUtils.openInSystemViewer(theFile);
           } else if (theFile.isDirectory()) {
             this.context.openProject(theFile, false);
-          } else if (!this.context.openFileAsTab(theFile)) {
+          } else if (!this.context.openFileAsTab(theFile, FilePathWithLine.strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null)))) {
             UiUtils.openInSystemViewer(theFile);
           }
         }
@@ -663,7 +665,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       if (decodedLink != null) {
         addURItoElement(decodedLink, element);
       } else {
-        addFileToElement(detectedFile, element, SystemFileExtensionManager.getInstance().isSystemFileExtension(FilenameUtils.getExtension(detectedFile.getName())));
+        addFileToElement(detectedFile, element, -1, SystemFileExtensionManager.getInstance().isSystemFileExtension(FilenameUtils.getExtension(detectedFile.getName())));
       }
       dtde.dropComplete(true);
     } else if (decodedLink != null) {
@@ -708,7 +710,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     }
   }
 
-  private void addFileToElement(@Nonnull final File theFile, @Nullable final AbstractElement element, final boolean openInSystemBrowser) {
+  private void addFileToElement(@Nonnull final File theFile, @Nullable final AbstractElement element, final int lineNumber, final boolean openInSystemBrowser) {
     if (element != null) {
       final Topic topic = element.getModel();
       final MMapURI theURI;
@@ -717,6 +719,10 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
       if (openInSystemBrowser) {
         properties.setProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "true");
+      }
+
+      if (lineNumber >= 0) {
+        properties.setProperty(FILELINK_ATTR_LINE, Integer.toString(lineNumber));
       }
 
       if (PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true)) { //NOI18N
@@ -874,24 +880,28 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       } else {
         final MMapURI uri = currentFilePath.getValue();
         final boolean flagOpenInSystem = Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false")); //NOI18N
+        final int line = FilePathWithLine.strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null));
 
         final FileEditPanel.DataContainer origPath;
-        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath(), flagOpenInSystem);
+        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath() + (line < 0 ? "" : ":" + line), flagOpenInSystem);
         dataContainer = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
       }
 
       if (dataContainer != null) {
         final boolean valueChanged;
-        if (dataContainer.isEmpty()) {
+        if (dataContainer.getFilePathWithLine().isEmptyOrOnlySpaces()) {
           valueChanged = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
           final Properties props = new Properties();
           if (dataContainer.isShowWithSystemTool()) {
             props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
           }
-          final MMapURI fileUri = MMapURI.makeFromFilePath(PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, dataContainer.getPath(), props); //NOI18N
+          if (dataContainer.getFilePathWithLine().getLine() >= 0) {
+            props.put(FILELINK_ATTR_LINE, Integer.toString(dataContainer.getFilePathWithLine().getLine()));
+          }
+          final MMapURI fileUri = MMapURI.makeFromFilePath(PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, dataContainer.getFilePathWithLine().getPath(), props); //NOI18N
           final File theFile = fileUri.asFile(projectFolder);
-          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getPath(), fileUri.asString(false, true))); //NOI18N
+          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getFilePathWithLine(), fileUri.asString(false, true))); //NOI18N
 
           if (theFile.exists()) {
             if (currentFilePath == null) {
@@ -900,7 +910,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
             topic.setExtra(new ExtraFile(fileUri));
             valueChanged = true;
           } else {
-            DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPath()));
+            DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getFilePathWithLine().getPath()));
             valueChanged = false;
           }
         }

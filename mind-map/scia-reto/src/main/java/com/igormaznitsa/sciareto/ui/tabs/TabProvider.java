@@ -30,7 +30,7 @@ import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
 
 public interface TabProvider {
 
-  void focusToEditor();
+  void focusToEditor(int line);
 
   @Weight(Weight.Unit.NORMAL)
   @Nonnull

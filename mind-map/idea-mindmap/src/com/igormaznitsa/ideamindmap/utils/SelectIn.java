@@ -21,7 +21,13 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.ide.projectView.impl.ProjectViewPane;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.LogicalPosition;
+import com.intellij.openapi.editor.ScrollType;
+import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.NavigatableFileEditor;
+import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
@@ -70,7 +76,7 @@ public enum SelectIn {
       });
   }
 
-  public void open(@Nonnull final MindMapDocumentEditor source, @Nonnull final VirtualFile file) {
+  public void open(@Nonnull final MindMapDocumentEditor source, @Nonnull final VirtualFile file, final int line) {
     final ProjectManager manager = ProjectManager.getInstance();
     switch (this) {
     case IDE: {
@@ -88,7 +94,20 @@ public enum SelectIn {
       }
       else {
         projectFocusTo(source.getProject(),file);
-        FileEditorManager.getInstance(source.getProject()).openFile(file,true);
+        final FileEditor [] editors = FileEditorManager.getInstance(source.getProject()).openFile(file,true);
+
+        if (line > 0) {
+          for(final FileEditor e : editors) {
+            if (e instanceof NavigatableFileEditor) {
+              final TextEditor navigatedEditor = (TextEditor) e;
+              final Editor editor = navigatedEditor.getEditor();
+              if (editor!=null && editor.getDocument().getLineCount()>line){
+                editor.getCaretModel().moveToLogicalPosition(new LogicalPosition(line-1,0));
+                editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+              }
+            }
+          }
+        }
       }
     }
     break;

@@ -24,6 +24,9 @@ public final class Misc {
   private Misc() {
   }
 
+  public static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
+  public static final String FILELINK_ATTR_LINE = "line"; //NOI18N
+  
   /**
    * Session key to keep last selected folder for added file into mind map node.
    * Object is File.
