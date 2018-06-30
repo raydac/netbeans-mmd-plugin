@@ -53,9 +53,14 @@ import com.intellij.ide.PasteProvider;
 import com.intellij.ide.dnd.DnDDragStartBean;
 import com.intellij.ide.dnd.TransferableWrapper;
 import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.Shortcut;
+import com.intellij.openapi.actionSystem.ShortcutSet;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
@@ -134,6 +139,8 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private boolean dragAcceptableType = false;
   private boolean firstLayouting = true;
 
+  private final ShortcutSet findShortcut;
+
   public MindMapDocumentEditor(final Project project, final VirtualFile file) {
     this.project = project;
     this.file = file;
@@ -193,6 +200,13 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.mainPanel = new JBPanel(new BorderLayout());
     this.mainPanel.add(this.mainScrollPane, BorderLayout.CENTER);
     this.mainPanel.add(this.findTextPanel, BorderLayout.NORTH);
+
+    final AnAction findAction = ActionManager.getInstance().getAction("Find");
+    if (findAction != null) {
+      this.findShortcut = findAction.getShortcutSet();
+    } else {
+      this.findShortcut = null;
+    }
   }
 
   @Override
@@ -523,7 +537,29 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       }
     }
 
-    if (!e.isConsumed() && e.getModifiers() == KeyEvent.CTRL_MASK && e.getKeyCode() == KeyEvent.VK_F) {
+    boolean activated = false;
+    if (this.findShortcut != null) {
+      final KeyStroke eventStroke = KeyStroke.getKeyStrokeForEvent(e);
+      for (final Shortcut c : this.findShortcut.getShortcuts()) {
+        if (c instanceof KeyboardShortcut) {
+          final KeyboardShortcut keyboardShortcut = (KeyboardShortcut) c;
+          final KeyStroke firstKeyStroke = keyboardShortcut.getFirstKeyStroke();
+          final KeyStroke secondKeyStroke = keyboardShortcut.getSecondKeyStroke();
+
+          if (firstKeyStroke != null && firstKeyStroke.getModifiers() == eventStroke.getModifiers() && firstKeyStroke.getKeyCode() == eventStroke.getKeyCode() && firstKeyStroke.getKeyChar() == eventStroke.getKeyChar()) {
+            activated = true;
+            break;
+          }
+          if (secondKeyStroke != null && secondKeyStroke.getModifiers() == eventStroke.getModifiers() && secondKeyStroke.getKeyCode() == eventStroke.getKeyCode() && secondKeyStroke.getKeyChar() == eventStroke.getKeyChar()) {
+            activated = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (activated) {
+      e.consume();
       this.findTextPanel.activate();
     }
 

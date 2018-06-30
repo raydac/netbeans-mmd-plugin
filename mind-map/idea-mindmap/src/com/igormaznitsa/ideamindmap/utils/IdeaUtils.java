@@ -587,16 +587,4 @@ public final class IdeaUtils {
     return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module).uniteWith(module.getModuleContentWithDependenciesScope());
   }
 
-  @Nonnull
-  public static Pattern string2pattern(@Nonnull final String text, final int patternFlags){
-    final StringBuilder result = new StringBuilder();
-
-    for(final char c : text.toCharArray()){
-      result.append("\\u"); //NOI18N
-      final String code = Integer.toHexString(c).toUpperCase(Locale.ENGLISH);
-      result.append("0000",0,4-code.length()).append(code); //NOI18N
-    }
-
-    return Pattern.compile(result.toString(), patternFlags);
-  }
 }

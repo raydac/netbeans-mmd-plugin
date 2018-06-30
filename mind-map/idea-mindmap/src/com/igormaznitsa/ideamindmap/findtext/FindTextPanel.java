@@ -32,7 +32,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
 
-import static com.igormaznitsa.ideamindmap.utils.IdeaUtils.string2pattern;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.string2pattern;
 
 public final class FindTextPanel extends JBPanel implements FindTextScopeProvider {
 

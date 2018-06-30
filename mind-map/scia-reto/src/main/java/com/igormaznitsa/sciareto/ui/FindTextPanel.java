@@ -18,6 +18,7 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import static com.igormaznitsa.mindmap.ide.commons.Misc.string2pattern;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -338,14 +339,14 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
   private void findNext(){
     final String text = this.textFieldSearchText.getText();
     if (!text.isEmpty()){
-      this.context.getFocusedTab().getProvider().findNext(MapUtils.string2pattern(text, this.toggleButtonCaseSensitive.isSelected() ? Pattern.UNICODE_CASE : (Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE)),this);
+      this.context.getFocusedTab().getProvider().findNext(string2pattern(text, this.toggleButtonCaseSensitive.isSelected() ? Pattern.UNICODE_CASE : (Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE)),this);
     }
   }
   
   private void findPrev(){
     final String text = this.textFieldSearchText.getText();
     if (!text.isEmpty()) {
-      this.context.getFocusedTab().getProvider().findPrev(MapUtils.string2pattern(text,this.toggleButtonCaseSensitive.isSelected() ? Pattern.UNICODE_CASE : (Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE)),this);
+      this.context.getFocusedTab().getProvider().findPrev(string2pattern(text,this.toggleButtonCaseSensitive.isSelected() ? Pattern.UNICODE_CASE : (Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE)),this);
     }
   }
   
