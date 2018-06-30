@@ -103,8 +103,13 @@ import java.util.List;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import java.beans.PropertyChangeListener;
+import java.util.regex.Pattern;
+import org.openide.actions.FindAction;
 import org.openide.cookies.LineCookie;
 import org.openide.text.Line;
+import org.openide.util.HelpCtx;
+import org.openide.util.actions.ActionPerformer;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 @MultiViewElement.Registration(
@@ -133,6 +138,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   private final JScrollPane mainScrollPane;
   private final MindMapPanel mindMapPanel;
+  private final FindTextPanel findTextPanel;
 
   private boolean dragAcceptableType = false;
 
@@ -207,6 +213,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     this.setLayout(new BorderLayout(0, 0));
     this.add(this.mainScrollPane, BorderLayout.CENTER);
 
+    this.findTextPanel = new FindTextPanel(this, "");
+    this.add(this.findTextPanel, BorderLayout.SOUTH);
+
     this.mindMapPanel.addComponentListener(new ComponentAdapter() {
       @Override
       public void componentResized(final ComponentEvent e) {
@@ -225,6 +234,88 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
     this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
     this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
+
+    final FindAction action = new FindAction() {
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        findTextPanel.activate();
+      }
+
+      @Override
+      public boolean isEnabled() {
+        return true;
+      }
+    };
+
+    this.getActionMap().put(FindAction.class.getName(), action);
+  }
+
+  public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+    Topic startTopic = null;
+    if (this.mindMapPanel.hasSelectedTopics()) {
+      final Topic[] selected = this.mindMapPanel.getSelectedTopics();
+      startTopic = selected[selected.length - 1];
+    }
+
+    final File projectBaseFolder = this.getProjectFolder();
+
+    final Set<Extra.ExtraType> extras = EnumSet.noneOf(Extra.ExtraType.class);
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_NOTES)) {
+      extras.add(Extra.ExtraType.NOTE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_FILES)) {
+      extras.add(Extra.ExtraType.FILE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_URI)) {
+      extras.add(Extra.ExtraType.LINK);
+    }
+    final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
+
+    Topic found = this.mindMapPanel.getModel().findNext(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    if (found == null && startTopic != null) {
+      found = this.mindMapPanel.getModel().findNext(projectBaseFolder, null, pattern, inTopicText, extras);
+    }
+
+    if (found != null) {
+      this.mindMapPanel.removeAllSelection();
+      this.mindMapPanel.focusTo(found);
+    }
+
+    return found != null;
+  }
+
+  public boolean findPrev(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+    Topic startTopic = null;
+    if (this.mindMapPanel.hasSelectedTopics()) {
+      final Topic[] selected = this.mindMapPanel.getSelectedTopics();
+      startTopic = selected[0];
+    }
+
+    final File projectBaseFolder = this.getProjectFolder();
+
+    final Set<Extra.ExtraType> extras = new HashSet<Extra.ExtraType>();
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_NOTES)) {
+      extras.add(Extra.ExtraType.NOTE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_FILES)) {
+      extras.add(Extra.ExtraType.FILE);
+    }
+    if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_URI)) {
+      extras.add(Extra.ExtraType.LINK);
+    }
+    final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
+
+    Topic found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    if (found == null && startTopic != null) {
+      found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, null, pattern, inTopicText, extras);
+    }
+
+    if (found != null) {
+      this.mindMapPanel.removeAllSelection();
+      this.mindMapPanel.focusTo(found);
+    }
+
+    return found != null;
   }
 
   @Override
@@ -501,11 +592,22 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
-    if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-            || e.getKeyCode() == KeyEvent.VK_LEFT
-            || e.getKeyCode() == KeyEvent.VK_RIGHT
-            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
-      e.consume();
+    if (type == KeyEventType.PRESSED) {
+      if (e.getModifiers() == 0) {
+        switch (e.getKeyCode()) {
+          case KeyEvent.VK_UP:
+          case KeyEvent.VK_LEFT:
+          case KeyEvent.VK_RIGHT:
+          case KeyEvent.VK_DOWN: {
+            e.consume();
+          }
+          break;
+        }
+      }
+    }
+
+    if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+      this.findTextPanel.deactivate();
     }
   }
 
