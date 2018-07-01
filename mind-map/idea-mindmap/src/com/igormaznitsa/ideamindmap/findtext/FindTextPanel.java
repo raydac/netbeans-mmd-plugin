@@ -21,6 +21,8 @@ package com.igormaznitsa.ideamindmap.findtext;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 
@@ -39,6 +41,8 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
   private static final long serialVersionUID = -2286996344502363552L;
 
   private static final int TEXT_FIELD_WIDTH = 300;
+
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
 
   private static boolean stateCaseSensitive = false;
   private static boolean stateInTopicText = true;
@@ -139,9 +143,13 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     java.awt.GridBagConstraints gridBagConstraints;
     labelTitle = new JBLabel();
     textFieldSearchText = new JTextField();
-    buttonPrev = new JButton(com.intellij.icons.AllIcons.Actions.PreviousOccurence);
-    buttonNext = new JButton(com.intellij.icons.AllIcons.Actions.NextOccurence);
-    labelClose = new JBLabel();
+    buttonPrev = UI_COMPO_FACTORY.makeButton();
+    buttonPrev.setIcon(com.intellij.icons.AllIcons.Actions.PreviousOccurence);
+
+    buttonNext = UI_COMPO_FACTORY.makeButton();
+    buttonNext.setIcon(com.intellij.icons.AllIcons.Actions.NextOccurence);
+
+    labelClose = UI_COMPO_FACTORY.makeLabel();
     filler1 = new Box.Filler(new java.awt.Dimension(0, 0), new Dimension(0, 0), new Dimension(32767, 0));
 
     final ActionListener stateListener = new ActionListener() {

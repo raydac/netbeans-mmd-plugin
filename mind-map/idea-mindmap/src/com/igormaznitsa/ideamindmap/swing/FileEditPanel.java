@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.ideamindmap.swing;
 
+import java.awt.*;
 import java.io.File;
 import java.util.ResourceBundle;
 
@@ -31,7 +32,7 @@ import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.ui.UI;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 public final class FileEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileEditPanel.class);
@@ -145,6 +146,7 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
     optionPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
     checkBoxShowFileInSystem.setText(bundle.getString("FileEditPanel.checkBoxShowFileInSystem.text"));
+    optionPanel.add(Box.createHorizontalStrut(96));
     optionPanel.add(checkBoxShowFileInSystem);
 
     gridBagConstraints = new java.awt.GridBagConstraints();

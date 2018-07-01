@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -20,6 +21,8 @@ import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
@@ -33,13 +36,10 @@ import com.intellij.ui.EditorTextField;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
+import javax.annotation.Nullable;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.BorderLayout;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -56,6 +56,8 @@ public class PlainTextEditor extends JPanel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PlainTextEditor.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+
+  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
 
   private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {
 
@@ -86,11 +88,11 @@ public class PlainTextEditor extends JPanel {
       return result;
     }
 
-    public String getSelectedText(){
+    public String getSelectedText() {
       final SelectionModel model = Assertions.assertNotNull(this.getEditor()).getSelectionModel();
       final int start = model.getSelectionStart();
       final int end = model.getSelectionEnd();
-      return getDocument().getText(new TextRange(start,end));
+      return getDocument().getText(new TextRange(start, end));
     }
 
     public void replaceSelection(@Nonnull final String clipboardText) {
@@ -106,29 +108,39 @@ public class PlainTextEditor extends JPanel {
               getDocument().replaceString(start, end, "");
               getDocument().insertString(start, clipboardText);
             }
-          },null, null, UndoConfirmationPolicy.DEFAULT, getDocument());
+          }, null, null, UndoConfirmationPolicy.DEFAULT, getDocument());
         }
       });
     }
 
-    public void clear(){
+    public void clear() {
       this.setText("");
     }
   }
 
   private final EmptyTextEditor editor;
 
+  @Nonnull
+  private JButton makeButton(@Nullable final String text, @Nullable final Icon icon) {
+    final JButton result = UI_COMPO_FACTORY.makeButton();
+    result.setText(text);
+    result.setIcon(icon);
+    return result;
+  }
+
   public PlainTextEditor(final Project project, final String text) {
     super(new BorderLayout());
     this.editor = new EmptyTextEditor(project);
 
-    final JToolBar menu = new JToolBar();
+    final JToolBar menu = UI_COMPO_FACTORY.makeToolBar();
+    menu.setFloatable(false);
 
-    final JButton buttonImport = new JButton("Import", AllIcons.Buttons.IMPORT);
+    final JButton buttonImport = makeButton("Import", AllIcons.Buttons.IMPORT);
     final PlainTextEditor theInstance = this;
 
     buttonImport.addActionListener(new ActionListener() {
-      @Override public void actionPerformed(ActionEvent e) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
         final File home = new File(System.getProperty("user.home")); //NOI18N
 
         final File toOpen = IdeaUtils.chooseFile(theInstance, true, BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), home, TEXT_FILE_FILTER);
@@ -137,8 +149,7 @@ public class PlainTextEditor extends JPanel {
           try {
             final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
             editor.setText(text);
-          }
-          catch (Exception ex) {
+          } catch (Exception ex) {
             LOGGER.error("Error during text file loading", ex); //NOI18N
             Messages.showErrorDialog(BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"), "Error");
           }
@@ -147,52 +158,53 @@ public class PlainTextEditor extends JPanel {
       }
     });
 
-    final JButton buttonExport = new JButton("Export", AllIcons.Buttons.EXPORT);
+    final JButton buttonExport = makeButton("Export", AllIcons.Buttons.EXPORT);
     buttonExport.addActionListener(new ActionListener() {
-      @Override public void actionPerformed(ActionEvent e) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
         final File home = new File(System.getProperty("user.home")); //NOI18N
-        final File toSave= IdeaUtils.chooseFile(theInstance, true, BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), home, TEXT_FILE_FILTER);
+        final File toSave = IdeaUtils.chooseFile(theInstance, true, BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), home, TEXT_FILE_FILTER);
         if (toSave != null) {
           try {
             final String text = getText();
             FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
-          }
-          catch (Exception ex) {
+          } catch (Exception ex) {
             LOGGER.error("Error during text file saving", ex); //NOI18N
-            Messages.showErrorDialog(BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"),"Error");
+            Messages.showErrorDialog(BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"), "Error");
           }
         }
       }
     });
 
-    final JButton buttonCopy = new JButton("Copy", AllIcons.Buttons.COPY);
+    final JButton buttonCopy = makeButton("Copy", AllIcons.Buttons.COPY);
     buttonCopy.addActionListener(new ActionListener() {
-      @Override public void actionPerformed(ActionEvent e) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
         final StringSelection stringSelection = new StringSelection(editor.getSelectedText());
         final Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
         clpbrd.setContents(stringSelection, null);
       }
     });
 
-    final JButton buttonPaste = new JButton("Paste", AllIcons.Buttons.PASTE);
+    final JButton buttonPaste = makeButton("Paste", AllIcons.Buttons.PASTE);
     buttonPaste.addActionListener(new ActionListener() {
-      @Override public void actionPerformed(ActionEvent e) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
         try {
           final String clipboardText = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
           editor.replaceSelection(clipboardText);
-        }
-        catch (UnsupportedFlavorException ex) {
+        } catch (UnsupportedFlavorException ex) {
           // no text data in clipboard
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
           LOGGER.error("Error during paste from clipboard", ex); //NOI18N
         }
       }
     });
 
-    final JButton buttonClearAll = new JButton("Clear All", AllIcons.Buttons.CLEARALL);
+    final JButton buttonClearAll = makeButton("Clear All", AllIcons.Buttons.CLEARALL);
     buttonClearAll.addActionListener(new ActionListener() {
-      @Override public void actionPerformed(ActionEvent e) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
         editor.clear();
       }
     });
@@ -208,7 +220,8 @@ public class PlainTextEditor extends JPanel {
 
     // I made so strange trick to move the caret into the start of document, all other ways didn't work :(
     SwingUtilities.invokeLater(new Runnable() {
-      @Override public void run() {
+      @Override
+      public void run() {
         editor.replaceSelection(text);
       }
     });
