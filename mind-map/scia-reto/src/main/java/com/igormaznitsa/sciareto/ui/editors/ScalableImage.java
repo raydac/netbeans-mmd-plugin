@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -20,17 +20,21 @@ package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-final class ScalableImage extends JComponent {
+final class ScalableImage extends JComponent implements ScaleStatusIndicator.Scalable {
 
   private static final long serialVersionUID = 6804581090800919466L;
   private static final float SCALE_STEP = 0.05f;
@@ -43,6 +47,11 @@ final class ScalableImage extends JComponent {
 
   private Point dragOrigin;
 
+  private static final float MIN_SCALE = 0.2f;
+  private static final float MAX_SCALE = 10.0f;
+
+  private final java.util.List<ActionListener> scalableListeners = new CopyOnWriteArrayList<ActionListener>();
+
   public ScalableImage() {
     super();
     final ScalableImage theInstance = this;
@@ -53,7 +62,7 @@ final class ScalableImage extends JComponent {
         if (!e.isConsumed() && ((e.getModifiers() & config.getScaleModifiers()) == config.getScaleModifiers())) {
           e.consume();
           final float oldScale = scale;
-          scale = Math.max(0.2f, Math.min(scale + (SCALE_STEP * -e.getWheelRotation()), 10.0f));
+          scale = Math.max(MIN_SCALE, Math.min(scale + (SCALE_STEP * -e.getWheelRotation()), MAX_SCALE));
 
           final JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, theInstance);
 
@@ -72,7 +81,7 @@ final class ScalableImage extends JComponent {
 
               final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
               final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
-              
+
               viewPos.x = Math.max(0, newMouseX - dx);
               viewPos.y = Math.max(0, newMouseY - dy);
               viewport.setView(ScalableImage.this);
@@ -93,6 +102,8 @@ final class ScalableImage extends JComponent {
             revalidate();
             repaint();
           }
+
+          fireScaleListeners();
         }
         if (!e.isConsumed()) {
           sendEventToParent(e);
@@ -165,6 +176,13 @@ final class ScalableImage extends JComponent {
     this.addMouseMotionListener(adapter);
   }
 
+  private void fireScaleListeners() {
+    final ActionEvent event = new ActionEvent(ScalableImage.this, 0, "scaled");
+    for (final ActionListener a : scalableListeners) {
+      a.actionPerformed(event);
+    }
+  }
+
   private void sendEventToParent(@Nonnull final MouseEvent e) {
     final Container parent = this.getParent();
     if (parent != null) {
@@ -203,6 +221,7 @@ final class ScalableImage extends JComponent {
     }
   }
 
+  @Override
   public float getScale() {
     return this.scale;
   }
@@ -235,10 +254,28 @@ final class ScalableImage extends JComponent {
   public void setImage(@Nullable final BufferedImage image, final boolean resetZoom) {
     this.image = image;
     if (resetZoom) {
-      this.scale = 1.0f;
+      setScale(1.0f);
     }
     revalidate();
     repaint();
+  }
+
+  @Override
+  public void setScale(final float scale) {
+    this.scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
+    revalidate();
+    repaint();
+    fireScaleListeners();
+  }
+
+  @Override
+  public void addScaleListener(@Nonnull final ActionListener scaleListener) {
+    this.scalableListeners.add(scaleListener);
+  }
+
+  @Override
+  public void removeScaleListener(@Nonnull final ActionListener scaleListener) {
+    this.scalableListeners.remove(scaleListener);
   }
 
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -26,9 +26,13 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.apache.commons.io.FilenameUtils;
@@ -65,27 +69,28 @@ public final class PictureViewer extends AbstractEditor {
   };
   private static final Logger LOGGER = LoggerFactory.getLogger(PictureViewer.class);
   private final TabTitle title;
-  private final JPanel mainPanel = new JPanel(new BorderLayout(0,0));
+  private final JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
   private final JScrollPane scrollPane = new EditorScrollPanel();
-  
+
   private final ScalableImage imageViewer;
   private transient BufferedImage image;
+  private final ScaleStatusIndicator scaleLabel;
 
   public PictureViewer(@Nonnull final Context context, @Nonnull final File file) throws IOException {
     super();
     this.title = new TabTitle(context, this, file);
     this.imageViewer = new ScalableImage();
-    
+    this.scaleLabel = new ScaleStatusIndicator(this.imageViewer);
+
     this.scrollPane.getVerticalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
     this.scrollPane.getHorizontalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
     this.scrollPane.getHorizontalScrollBar().setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
-    
+
     this.scrollPane.setWheelScrollingEnabled(true);
 
-    final JToolBar toolbar = new JToolBar(JToolBar.HORIZONTAL);
-    toolbar.setFloatable(false);
-    
+    final JPanel toolbar = new JPanel(new GridBagLayout());
+
     final JButton buttonPrintImage = new JButton(loadMenuIcon("printer"));
     buttonPrintImage.setToolTipText("Print image");
     buttonPrintImage.setFocusPainted(false);
@@ -99,11 +104,17 @@ public final class PictureViewer extends AbstractEditor {
       }
     });
 
-    toolbar.add(buttonPrintImage);
-    
+    final GridBagConstraints bc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
+
+    toolbar.add(buttonPrintImage, bc);
+    bc.weightx = 1000.0d;
+    toolbar.add(Box.createHorizontalGlue(), bc);
+    bc.weightx = 1.0d;
+    toolbar.add(this.scaleLabel, bc);
+
     this.mainPanel.add(toolbar, BorderLayout.NORTH);
     this.mainPanel.add(this.scrollPane, BorderLayout.CENTER);
-    
+
     loadContent(file);
   }
 

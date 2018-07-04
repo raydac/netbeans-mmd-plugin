@@ -30,6 +30,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.misc.BigLoaderIconAnimationConroller;
@@ -247,6 +248,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.renderedPanel = new JPanel(new BorderLayout());
     this.renderedScrollPane = new EditorScrollPanel();
     this.imageComponent = new ScalableImage();
+    final ScaleStatusIndicator scaleLabel = new ScaleStatusIndicator(this.imageComponent);
     this.renderedScrollPane.setViewportView(this.imageComponent);
 
     this.renderedScrollPane.getVerticalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
@@ -257,7 +259,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.renderedScrollPane.setWheelScrollingEnabled(true);
 
     this.menu = new JPanel(new GridBagLayout());
-    final GridBagConstraints gbdata = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+    final GridBagConstraints gbdata = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.VERTICAL, new Insets(2, 0, 0, 0), 0, 0);
 
     final JButton buttonRefresh = new JButton(loadMenuIcon("arrow_refresh"));
     buttonRefresh.setToolTipText("Refresh image for text");
@@ -392,7 +394,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     gbdata.weightx = 10000;
     this.menu.add(Box.createHorizontalBox(), gbdata);
     gbdata.weightx = 1;
-    gbdata.fill = GridBagConstraints.NONE;
+    gbdata.fill = GridBagConstraints.VERTICAL;
+    this.menu.add(scaleLabel, gbdata);
+    this.menu.add(Box.createHorizontalStrut(16), gbdata);
 
     this.menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO), gbdata);
     this.menu.add(makeLinkLabel("AsciiMath Reference", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
