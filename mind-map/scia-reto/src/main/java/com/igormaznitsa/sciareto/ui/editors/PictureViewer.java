@@ -76,6 +76,8 @@ public final class PictureViewer extends AbstractEditor {
   private transient BufferedImage image;
   private final ScaleStatusIndicator scaleLabel;
 
+  private final JLabel imageInfoLabel;
+
   public PictureViewer(@Nonnull final Context context, @Nonnull final File file) throws IOException {
     super();
     this.title = new TabTitle(context, this, file);
@@ -107,6 +109,8 @@ public final class PictureViewer extends AbstractEditor {
     final GridBagConstraints bc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
 
     toolbar.add(buttonPrintImage, bc);
+    this.imageInfoLabel = new JLabel();
+    toolbar.add(this.imageInfoLabel, bc);
     bc.weightx = 1000.0d;
     toolbar.add(Box.createHorizontalGlue(), bc);
     bc.weightx = 1.0d;
@@ -141,6 +145,8 @@ public final class PictureViewer extends AbstractEditor {
     }
 
     this.image = loaded;
+
+    this.imageInfoLabel.setText(String.format("<html><b>&nbsp;Width=%d px,&nbsp;Height=%d px</b></html>", this.image.getWidth(null), this.image.getHeight(null)));
 
     this.imageViewer.setImage(this.image, true);
     this.scrollPane.setViewportView(this.imageViewer);
