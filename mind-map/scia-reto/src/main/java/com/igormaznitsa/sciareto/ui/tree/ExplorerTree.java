@@ -611,7 +611,11 @@ public final class ExplorerTree extends JScrollPane {
         if (extension != null) {
           final String providedExtension = FilenameUtils.getExtension(fileName);
           if (!extension.equalsIgnoreCase(providedExtension)) {
-            fileName += '.' + extension;
+            if ("txt".equals(extension)){
+              fileName += providedExtension.isEmpty() ? '.' + extension : "";
+            } else {
+              fileName += '.' + extension;
+            }
           }
         }
         final File file = new File(folder.makeFileForNode(), fileName);
