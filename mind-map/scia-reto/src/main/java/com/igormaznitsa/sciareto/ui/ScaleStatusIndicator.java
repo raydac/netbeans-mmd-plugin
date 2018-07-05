@@ -21,6 +21,8 @@ package com.igormaznitsa.sciareto.ui;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -49,10 +51,10 @@ public class ScaleStatusIndicator extends JLabel {
     this.observableObject = Assertions.assertNotNull(observableObject);
     this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     this.setToolTipText("Reset scale");
-    this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
     this.setBackground(new Color(0xf7ffc8));
+    this.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
     this.setForeground(Color.BLACK);
-    this.setOpaque(true);
+    this.setOpaque(false);
 
     this.addMouseListener(new MouseAdapter() {
       @Override
@@ -68,6 +70,19 @@ public class ScaleStatusIndicator extends JLabel {
       }
     });
     updateTextForScale();
+  }
+
+  @Override
+  public void paintComponent(@Nonnull final Graphics g) {
+    final Dimension size = this.getSize();
+    g.setColor(this.getBackground());
+    size.width--;
+    size.height--;
+    final int radius = size.height / 2;
+    g.fillRoundRect(0, 0, size.width, size.height, radius, radius);
+    g.setColor(this.getBackground().darker().darker());
+    g.drawRoundRect(0, 0, size.width, size.height, radius, radius);
+    super.paintComponent(g);
   }
 
   private void updateTextForScale() {
