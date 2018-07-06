@@ -200,7 +200,12 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
               if (doIt) {
                 Files.move(origFile.toPath(), newFile.toPath());
                 editedNode.setName(newFile.getName());
-
+                
+                final TreeModelEvent renamedEvent = new TreeModelEvent(this, editedNode.makeTreePath());
+                for(final TreeModelListener l : listeners) {
+                  l.treeNodesChanged(renamedEvent);
+                }
+                
                 editedNode.fireNotifySubtreeChanged(this, listeners);
 
                 this.context.notifyFileRenamed(affectedFiles, origFile, newFile);
