@@ -297,6 +297,6 @@ public class MMapURI implements Serializable {
   @Override
   @Nonnull
   public String toString() {
-    return asString(true, true);
+    return asString(false, true);
   }
 }

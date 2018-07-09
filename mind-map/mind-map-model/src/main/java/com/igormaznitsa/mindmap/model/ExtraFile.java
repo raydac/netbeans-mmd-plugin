@@ -103,7 +103,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   @Override
   @Nonnull
   public String provideAsStringForSave() {
-    return this.fileUri.toString();
+    return this.fileUri.asString(false, true);
   }
 
   @Override

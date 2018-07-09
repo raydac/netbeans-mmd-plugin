@@ -18,12 +18,30 @@ package com.igormaznitsa.mindmap.model;
 import java.io.File;
 import java.net.URI;
 import java.util.Properties;
+import javax.annotation.Nonnull;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ModelUtilsTest {
 
+  private void assertEscapeUnescapePre(@Nonnull final String text) {
+    assertEquals(text, StringEscapeUtils.unescapeHtml(ModelUtils.escapeTextForPreBlock(text)));
+  }
+  
+  @Test
+  public void testEscapeTextForPreBlock() {
+    assertEscapeUnescapePre("");
+    assertEscapeUnescapePre("a");
+    assertEscapeUnescapePre("a b");
+    assertEscapeUnescapePre("абвг");
+    assertEscapeUnescapePre("абвг\niuweyqqw123123");
+    assertEscapeUnescapePre("<pre>123</pre>");
+    assertEscapeUnescapePre("&#32;");
+    assertEscapeUnescapePre("123 456 \r \n \t \b <html>``` some");
+  }
+  
   @Test
   public void testExtractQueryParameters() throws Exception {
     final Properties properties = ModelUtils.extractQueryPropertiesFromURI(new URI("file://hello?some=test&other=&misc=%26ffsdsd&h=1"));

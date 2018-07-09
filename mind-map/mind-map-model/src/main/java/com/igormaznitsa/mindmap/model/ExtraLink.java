@@ -77,7 +77,7 @@ public class ExtraLink extends Extra<MMapURI> implements ExtraLinkable {
   @Override
   @Nonnull
   public String provideAsStringForSave() {
-    return this.uri.toString();
+    return this.uri.asString(false, true);
   }
   
   @Override

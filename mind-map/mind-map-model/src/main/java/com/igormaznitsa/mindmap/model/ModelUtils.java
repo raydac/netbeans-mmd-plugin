@@ -113,9 +113,31 @@ public final class ModelUtils {
 
   @Nonnull
   public static String makePreBlock(@Nonnull final String text) {
-    return "<pre>" + StringEscapeUtils.escapeHtml(text) + "</pre>"; //NOI18N
+    return "<pre>" + escapeTextForPreBlock(text) + "</pre>"; //NOI18N
   }
 
+  @Nonnull
+  public static String escapeTextForPreBlock(@Nonnull final String text) {
+    final int length = text.length();
+    final StringBuilder result = new StringBuilder(length);
+
+    for(int i=0;i<length;i++) {
+      final char chr = text.charAt(i);
+    
+      switch(chr) {
+          case '\"' : result.append("&quot;");break;
+          case '&' : result.append("&amp;");break;
+          case '<' : result.append("&lt;");break;
+          case '>' : result.append("&gt;");break;
+          default: {
+            result.append(chr);
+          }break;
+      }
+    }
+    
+    return result.toString();
+  }
+  
   @Nonnull
   public static String makeMDCodeBlock(@Nonnull final String text) throws IOException {
     final int maxQuotes = calcMaxLengthOfBacktickQuotesSubstr(text) + 1;
