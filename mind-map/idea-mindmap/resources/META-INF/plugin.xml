@@ -164,7 +164,9 @@
     </application-components>
 
     <actions>
-        <!-- Add your actions here -->
+        <action description="Find a topic for its text value at Mind Map document" class="com.igormaznitsa.ideamindmap.swing.FindInMindMapAction" id="FindTextAtMindMap" text="Find at Mind Map" use-shortcut-of="Find">
+            <add-to-group group-id="FindMenuGroup" relative-to-action="Find" anchor="after"/>
+        </action>
     </actions>
 
 </idea-plugin>

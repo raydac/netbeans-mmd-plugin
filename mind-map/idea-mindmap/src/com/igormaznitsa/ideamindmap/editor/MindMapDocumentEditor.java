@@ -139,8 +139,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private boolean dragAcceptableType = false;
   private boolean firstLayouting = true;
 
-  private final ShortcutSet findShortcut;
-
   public MindMapDocumentEditor(final Project project, final VirtualFile file) {
     this.project = project;
     this.file = file;
@@ -200,13 +198,16 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.mainPanel = new JBPanel(new BorderLayout());
     this.mainPanel.add(this.mainScrollPane, BorderLayout.CENTER);
     this.mainPanel.add(this.findTextPanel, BorderLayout.NORTH);
+  }
 
-    final AnAction findAction = ActionManager.getInstance().getAction("Find");
+  @Nullable
+  private ShortcutSet getFindAtMindMapShortcutSet() {
+    ShortcutSet result = null;
+    final AnAction findAction = ActionManager.getInstance().getAction("FindTextAtMindMap");
     if (findAction != null) {
-      this.findShortcut = findAction.getShortcutSet();
-    } else {
-      this.findShortcut = null;
+      result = findAction.getShortcutSet();
     }
+    return result;
   }
 
   @Override
@@ -538,9 +539,10 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     }
 
     boolean activated = false;
-    if (this.findShortcut != null) {
+    final ShortcutSet findAtMindMap = getFindAtMindMapShortcutSet();
+    if (findAtMindMap != null) {
       final KeyStroke eventStroke = KeyStroke.getKeyStrokeForEvent(e);
-      for (final Shortcut c : this.findShortcut.getShortcuts()) {
+      for (final Shortcut c : findAtMindMap.getShortcuts()) {
         if (c instanceof KeyboardShortcut) {
           final KeyboardShortcut keyboardShortcut = (KeyboardShortcut) c;
           final KeyStroke firstKeyStroke = keyboardShortcut.getFirstKeyStroke();
@@ -560,12 +562,26 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
     if (activated) {
       e.consume();
-      this.findTextPanel.activate();
+      activateTextSearchPanel();
     }
 
     if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-      this.findTextPanel.deactivate();
+      ApplicationManager.getApplication().invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          findTextPanel.deactivate();
+        }
+      });
     }
+  }
+
+  public void activateTextSearchPanel() {
+    ApplicationManager.getApplication().invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        findTextPanel.activate();
+      }
+    });
   }
 
   @Override
