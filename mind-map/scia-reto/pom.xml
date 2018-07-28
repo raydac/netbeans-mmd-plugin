@@ -171,7 +171,7 @@
                     <plugin>
                         <groupId>com.akathist.maven.plugins.launch4j</groupId>
                         <artifactId>launch4j-maven-plugin</artifactId>
-                        <version>1.7.21</version>
+                        <version>1.7.22</version>
                         <executions>
                             <execution>
                                 <id>l4j-clui</id>
@@ -278,7 +278,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>animal-sniffer-maven-plugin</artifactId>
-                <version>1.16</version>
+                <version>1.17</version>
                 <configuration>
                     <annotations>
                         <annotation>com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer</annotation>
