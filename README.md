@@ -13,13 +13,13 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.4 (SNAPSHOT)__
+- SR:  updated versions: PlantUML 1.2018.9, Batik 1.10, JLatexMath 1.0.7, JNA 4.5.2
 - ALL: added support of line number in file link through pattern `<file_path>:<line_number>` [twit](https://twitter.com/IgorMaznitsa/status/1013153379122581504)
 - IJ:  [#15](https://github.com/raydac/netbeans-mmd-plugin/issues/15) added node search panel usually activated by `CTRL+F` [twit](https://twitter.com/IgorMaznitsa/status/1013387683475935234)
 - ALL: increased number of emoticons
 - ALL: [#45](https://github.com/raydac/netbeans-mmd-plugin/issues/45) improved security in XML import
 - SR:  added list of file extensions to be opened in system provided viewer
 - ALL: added extra logic to check edited content to prevent false model change event
-- SR:  updated embedded PlantUML version to 1.2018.8
 - SR:  improved PlantUML editor
 - SR:  improved speed of work with project folders
 

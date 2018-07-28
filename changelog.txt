@@ -1,4 +1,5 @@
 __1.4.4 (SNAPSHOT)__
+- SR:  updated versions: PlantUML 1.2018.9, Batik 1.10, JLatexMath 1.0.7, JNA 4.5.2
 - ALL: added support of line number in file link through pattern `<file_path>:<line_number>`
 - IJ:  [#15](https://github.com/raydac/netbeans-mmd-plugin/issues/15) added node search panel activated by `CTRL+F`
 - ALL: increased number of emoticons
