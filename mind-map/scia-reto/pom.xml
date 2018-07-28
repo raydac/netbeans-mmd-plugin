@@ -27,12 +27,12 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <jung.version>2.1.1</jung.version>
-        <batik.version>1.9.1</batik.version>
-        <jlatexmath.version>1.0.6</jlatexmath.version>
-        <plantuml.version>1.2018.8</plantuml.version>
+        <batik.version>1.10</batik.version>
+        <jlatexmath.version>1.0.7</jlatexmath.version>
+        <plantuml.version>1.2018.9</plantuml.version>
         <rsyntax.version>2.6.1</rsyntax.version>
         <mixpanel.version>1.4.4</mixpanel.version>
-        <jna.version>4.5.1</jna.version>
+        <jna.version>4.5.2</jna.version>
     </properties>
 
     <dependencies>
