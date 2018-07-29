@@ -103,14 +103,13 @@ import java.util.List;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
-import java.beans.PropertyChangeListener;
 import java.util.regex.Pattern;
 import org.openide.actions.FindAction;
 import org.openide.cookies.LineCookie;
 import org.openide.text.Line;
-import org.openide.util.HelpCtx;
-import org.openide.util.actions.ActionPerformer;
+import org.openide.windows.Mode;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
+import org.openide.windows.WindowManager;
 
 @MultiViewElement.Registration(
         displayName = "#MMDGraphEditor.displayName",
@@ -146,6 +145,27 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   private static final WeakSet<MMDGraphEditor> ALL_EDITORS = new WeakSet<MMDGraphEditor>();
 
+  private static final FindAction findAction = new FindAction() {
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+      final Mode editor = WindowManager.getDefault().findMode("editor");
+      if (editor != null) {
+        final TopComponent component = editor.getSelectedTopComponent();
+        if (component instanceof MMDGraphEditor) {
+          ((MMDGraphEditor) component).findTextPanel.activate();
+        }
+      }
+    }
+
+    @Override
+    public boolean isEnabled() {
+      return true;
+    }
+  };
+
+
+  
+  
   private final Action actionCopy = new AbstractAction() {
     private static final long serialVersionUID = 935382113400815225L;
 
@@ -235,19 +255,6 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
     this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-    final FindAction action = new FindAction() {
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        findTextPanel.activate();
-      }
-
-      @Override
-      public boolean isEnabled() {
-        return true;
-      }
-    };
-
-    this.getActionMap().put(FindAction.class.getName(), action);
   }
 
   public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
@@ -328,6 +335,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     actionMap.put(DefaultEditorKit.cutAction, this.actionCut);
     actionMap.put(DefaultEditorKit.copyAction, this.actionCopy);
     actionMap.put(DefaultEditorKit.pasteAction, this.actionPaste);
+    actionMap.put(FindAction.class.getName(), findAction);
   }
 
   private void registerAsClipboardListener() {
