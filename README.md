@@ -12,7 +12,8 @@
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
 
 # Changelog
-__1.4.4 (SNAPSHOT)__
+__1.4.4 (04-aug-2018)__
+- ALL: [#46](https://github.com/raydac/netbeans-mmd-plugin/issues/46) improved map model save procedure to not encode national charsets into URL format
 - SR:  updated versions: PlantUML 1.2018.9, Batik 1.10, JLatexMath 1.0.7, JNA 4.5.2
 - ALL: added support of line number in file link through pattern `<file_path>:<line_number>` [twit](https://twitter.com/IgorMaznitsa/status/1013153379122581504)
 - IJ:  [#15](https://github.com/raydac/netbeans-mmd-plugin/issues/15) added node search panel usually activated by `CTRL+F` [twit](https://twitter.com/IgorMaznitsa/status/1013387683475935234)

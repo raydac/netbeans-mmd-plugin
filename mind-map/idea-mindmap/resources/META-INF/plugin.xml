@@ -18,6 +18,15 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.4.4 (04-aug-2018)</p>
+        <ul>
+          <li>#46 improved map model save procedure to not encode national charsets into URL format</li>
+          <li>added support of line number in file link through pattern [file_path]:[line_number]</li>
+          <li>#15 added node search panel usually activated by CTRL+F</li>
+          <li>increased number of emoticons</li>
+          <li>#45 improved security in XML import</li>
+          <li>added extra logic to check edited content to prevent false model change event</li>
+        </ul>
         <p>1.4.3 (01-may-2018)</p>
         <ul>
           <li>increased step of scroll and decreased step of scale in panel</li>
