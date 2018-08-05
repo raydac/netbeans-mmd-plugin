@@ -79,9 +79,15 @@
           <p>The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and <a href="https://en.wikipedia.org/wiki/Mind_map">a mind map diagram</a> is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to create and edit knowledge graph just within NetBeans based projects.</p>
 
           <h1>
-            <a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation</h1>
-          <p>Because my main programming tool is <a href="https://netbeans.org/">NetBeans IDE</a>, initially I developed the plugin for NetBeans and it was compatible with Java 1.7+ and NetBeans 7.4+. Then I made porting to Intellij IDEA and at present the plugin is provided for both IDEs.<br>
-            <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshot1.png" alt="Screen">
+            <a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>History of implementation</h1>
+            <p>On start I implemented the editor as a just plugin for <a href="https://netbeans.org/">NetBeans IDE</a>, but because at work I very often use <a href="https://www.jetbrains.com/idea/">Intellij IDEA</a>, I developed and a plugin for IJ IDEA editor. Some of my friends are not programmers at all and they needed some tool to make documentation for their projects and I developed standalone version based on the IDE plugin with extended functionality and support of PlantUML (since 1.4.3 version) and called standalone editor as "SciaReto". Now I have three products based on the same editor core
+                <ul>
+                    <li>NetBeans IDE plugin</li>
+                    <li>Intellij IDEA IDE plugin</li>
+                    <li>SciaReto standalone desktop application</li>
+                </ul>
+                <br>
+            <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/threeidescr.png" alt="Screen">
           </p>
 
           <h1>
