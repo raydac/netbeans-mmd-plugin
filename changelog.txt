@@ -1,3 +1,6 @@
+__1.4.5 (SNAPSHOT)__
+- ALL: improved procesing of fold/unfold keyboard shortcuts to support multiple selected topics
+
 __1.4.4 (04-aug-2018)__
 - SR:  updated versions: PlantUML 1.2018.9, Batik 1.10, JLatexMath 1.0.7, JNA 4.5.2
 - ALL: added support of line number in file link through pattern `<file_path>:<line_number>`
