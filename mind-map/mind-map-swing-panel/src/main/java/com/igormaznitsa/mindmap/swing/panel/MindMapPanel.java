@@ -314,7 +314,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               e.consume();
               setScale(1.0);
               updateView(false);
-            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)) {
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
+                    || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
+                    || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e)
+                    || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD_ALL, e)) {
               e.consume();
               final List<AbstractElement> elements = new ArrayList<AbstractElement>();
               for (final Topic t : getSelectedTopics()) {
@@ -324,7 +327,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 }
               }
               if (!elements.isEmpty()) {
-                doFoldOrUnfoldTopic(elements, config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e), true);
+                endEdit(false);
+                doFoldOrUnfoldTopic(elements,
+                        config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e),
+                        config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
+                );
               }
             }
 
@@ -609,7 +616,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               final ElementPart part = element.findPartForPoint(e.getPoint());
               if (part == ElementPart.COLLAPSATOR) {
                 fireNotificationTopicCollapsatorClick(element.getModel(), true);
-                doFoldOrUnfoldTopic(Collections.singletonList(element), element.isCollapsed(), isCtrlDown);
+                doFoldOrUnfoldTopic(Collections.singletonList(element), !element.isCollapsed(), isCtrlDown);
                 if (selectedTopics.isEmpty() || selectedTopics.size() == 1) {
                   removeAllSelection();
                   select(element.getModel(), false);
@@ -1141,25 +1148,28 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     select(element.getModel(), false);
   }
 
-  private void doFoldOrUnfoldTopic(@Nonnull @MustNotContainNull final List<AbstractElement> elements, final boolean unfold, final boolean onlyFirstLevel) {
+  private void doFoldOrUnfoldTopic(@Nonnull @MustNotContainNull final List<AbstractElement> elements, final boolean fold, final boolean onlyFirstLevel) {
+    boolean changed = false;
+
     for (final AbstractElement e : elements) {
-      if (unfold) {
-        ((AbstractCollapsableElement) e).setCollapse(false);
-        if (onlyFirstLevel) {
-          ((AbstractCollapsableElement) e).collapseAllFirstLevelChildren();
-        }
-      } else {
-        ((AbstractCollapsableElement) e).setCollapse(true);
+      if (fold) {
+        changed |= MindMapUtils.foldOrUnfoldChildren(e.getModel(), true, onlyFirstLevel ? 1 : Integer.MAX_VALUE);
         for (final Topic t : getSelectedTopics()) {
           if (!MindMapUtils.isTopicVisible(t)) {
             this.selectedTopics.remove(t);
+            changed = true;
           }
         }
+      } else {
+        changed |= MindMapUtils.foldOrUnfoldChildren(e.getModel(), false, onlyFirstLevel ? 1 : Integer.MAX_VALUE);
       }
     }
-    this.model.resetPayload();
-    notifyModelChanged();
-    repaint();
+
+    if (changed) {
+      this.model.resetPayload();
+      notifyModelChanged();
+      repaint();
+    }
   }
 
   /**
@@ -1697,11 +1707,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         endEdit(false);
         removeAllSelection();
 
-        if (this.model.getRoot() != null) {
-          final AbstractElement root = (AbstractElement) assertNotNull(this.model.getRoot()).getPayload();
-          if (root != null && root.collapseOrExpandAllChildren(collapse)) {
-            updateView(true);
-          }
+        final Topic topic = this.model.getRoot();
+
+        if (topic != null && MindMapUtils.foldOrUnfoldChildren(topic, collapse, Integer.MAX_VALUE)) {
+          updateView(true);
         }
       } finally {
         this.unlock();

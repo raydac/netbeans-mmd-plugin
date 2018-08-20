@@ -55,7 +55,9 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_FOCUS_ROOT_OR_START_EDIT = "focusToRootOrStartEdit";
   public static final String KEY_CANCEL_EDIT = "cancelEdit";
   public static final String KEY_TOPIC_FOLD = "topicFold";
+  public static final String KEY_TOPIC_FOLD_ALL = "topicFoldAll";
   public static final String KEY_TOPIC_UNFOLD = "topicUnfold";
+  public static final String KEY_TOPIC_UNFOLD_ALL = "topicUnfoldAll";
   public static final String KEY_FOCUS_MOVE_UP = "moveFocusUp";
   public static final String KEY_FOCUS_MOVE_DOWN = "moveFocusDown";
   public static final String KEY_FOCUS_MOVE_LEFT = "moveFocusLeft";
@@ -127,7 +129,9 @@ public final class MindMapPanelConfig implements Serializable {
       this.mapShortCut.put(KEY_ADD_SIBLING_AND_START_EDIT, new KeyShortcut(KEY_ADD_SIBLING_AND_START_EDIT, KeyEvent.VK_ENTER, 0));
       this.mapShortCut.put(KEY_CANCEL_EDIT, new KeyShortcut(KEY_CANCEL_EDIT, KeyEvent.VK_ESCAPE, 0));
       this.mapShortCut.put(KEY_TOPIC_FOLD, new KeyShortcut(KEY_TOPIC_FOLD, KeyEvent.VK_MINUS, 0));
+      this.mapShortCut.put(KEY_TOPIC_FOLD_ALL, new KeyShortcut(KEY_TOPIC_FOLD_ALL, KeyEvent.VK_MINUS, KeyEvent.ALT_MASK));
       this.mapShortCut.put(KEY_TOPIC_UNFOLD, new KeyShortcut(KEY_TOPIC_UNFOLD, KeyEvent.VK_EQUALS, 0));
+      this.mapShortCut.put(KEY_TOPIC_UNFOLD_ALL, new KeyShortcut(KEY_TOPIC_UNFOLD_ALL, KeyEvent.VK_EQUALS, KeyEvent.ALT_MASK));
       this.mapShortCut.put(KEY_FOCUS_ROOT_OR_START_EDIT, new KeyShortcut(KEY_FOCUS_ROOT_OR_START_EDIT, KeyEvent.VK_SPACE, KeyEvent.ALT_MASK));
       this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN, new KeyShortcut(KEY_FOCUS_MOVE_DOWN, KeyEvent.VK_DOWN, 0));
       this.mapShortCut.put(KEY_FOCUS_MOVE_UP, new KeyShortcut(KEY_FOCUS_MOVE_UP, KeyEvent.VK_UP, 0));
@@ -149,7 +153,9 @@ public final class MindMapPanelConfig implements Serializable {
       this.mapShortCut.put(KEY_ADD_SIBLING_AND_START_EDIT, new KeyShortcut(KEY_ADD_SIBLING_AND_START_EDIT, KeyEvent.VK_ENTER, 0));
       this.mapShortCut.put(KEY_CANCEL_EDIT, new KeyShortcut(KEY_CANCEL_EDIT, KeyEvent.VK_ESCAPE, 0));
       this.mapShortCut.put(KEY_TOPIC_FOLD, new KeyShortcut(KEY_TOPIC_FOLD, KeyEvent.VK_MINUS, 0));
+      this.mapShortCut.put(KEY_TOPIC_FOLD_ALL, new KeyShortcut(KEY_TOPIC_FOLD_ALL, KeyEvent.VK_MINUS, KeyEvent.ALT_MASK));
       this.mapShortCut.put(KEY_TOPIC_UNFOLD, new KeyShortcut(KEY_TOPIC_UNFOLD, KeyEvent.VK_EQUALS, 0));
+      this.mapShortCut.put(KEY_TOPIC_UNFOLD_ALL, new KeyShortcut(KEY_TOPIC_UNFOLD_ALL, KeyEvent.VK_EQUALS, KeyEvent.ALT_MASK));
       this.mapShortCut.put(KEY_FOCUS_ROOT_OR_START_EDIT, new KeyShortcut(KEY_FOCUS_ROOT_OR_START_EDIT, KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK));
       this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN, new KeyShortcut(KEY_FOCUS_MOVE_DOWN, KeyEvent.VK_DOWN, 0));
       this.mapShortCut.put(KEY_FOCUS_MOVE_UP, new KeyShortcut(KEY_FOCUS_MOVE_UP, KeyEvent.VK_UP, 0));

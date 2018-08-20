@@ -1,5 +1,5 @@
 __1.4.5 (SNAPSHOT)__
-- ALL: improved procesing of fold/unfold keyboard shortcuts to support multiple selected topics
+- ALL: improved procesing of fold/unfold keyboard shortcuts to fold and unfold all children [#17](https://github.com/raydac/netbeans-mmd-plugin/issues/17)
 
 __1.4.4 (04-aug-2018)__
 - SR:  updated versions: PlantUML 1.2018.9, Batik 1.10, JLatexMath 1.0.7, JNA 4.5.2

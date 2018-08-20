@@ -89,6 +89,10 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     MindMapUtils.setCollapsed(this.model, collapseElementFlag);
   }
 
+  public void foldAllChildren() {
+    
+  }
+  
   public void collapseAllFirstLevelChildren() {
     for (final Topic t : this.model.getChildren()) {
       MindMapUtils.setCollapsed(t, true);

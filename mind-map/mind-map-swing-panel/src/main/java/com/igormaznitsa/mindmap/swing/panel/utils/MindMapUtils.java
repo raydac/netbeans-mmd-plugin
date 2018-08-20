@@ -101,8 +101,19 @@ public final class MindMapUtils {
     return "true".equalsIgnoreCase(topic.getAttribute(ATTR_COLLAPSED.getText()));//NOI18N
   }
 
-  public static boolean setCollapsed(@Nonnull final Topic topic, final boolean flag) {
-    return topic.setAttribute(ATTR_COLLAPSED.getText(), flag ? "true" : null);//NOI18N
+  public static boolean foldOrUnfoldChildren(@Nonnull final Topic topic, final boolean fold, final int levelCount) {
+    boolean result = false;
+    if (levelCount > 0 && topic.hasChildren()) {
+      for(final Topic c : topic) {
+        result |= foldOrUnfoldChildren(c, fold, levelCount - 1);
+      }
+      result |= setCollapsed(topic, fold);
+    }
+    return result;
+  }
+  
+  public static boolean setCollapsed(@Nonnull final Topic topic, final boolean fold) {
+    return topic.setAttribute(ATTR_COLLAPSED.getText(), fold ? "true" : null);//NOI18N
   }
 
   public static void removeCollapseAttributeFromTopicsWithoutChildren(@Nullable final MindMap map) {
