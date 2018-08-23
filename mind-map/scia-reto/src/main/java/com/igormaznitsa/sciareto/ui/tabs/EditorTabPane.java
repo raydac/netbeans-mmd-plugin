@@ -44,6 +44,7 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
@@ -54,6 +55,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
   private final Context context;
 
   private boolean enabledNotificationAboutChange;
+
+  private final List<ActionListener> maxMinEditorListeners = new CopyOnWriteArrayList<ActionListener>();
 
   public EditorTabPane(@Nonnull final Context context) {
     super(JTabbedPane.TOP);
@@ -73,17 +76,25 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
       @Override
       public void mouseClicked(MouseEvent e) {
-        processPopup(e);
+        if (!processPopup(e) && e.getClickCount() > 1) {
+          final ActionEvent event = new ActionEvent(EditorTabPane.this, 0, "MAXMINEDITOR");
+          for (final ActionListener l : maxMinEditorListeners) {
+            l.actionPerformed(event);
+          }
+        }
       }
 
-      private void processPopup(@Nonnull final MouseEvent e) {
+      private boolean processPopup(@Nonnull final MouseEvent e) {
+        boolean popup = false;
         if (e.isPopupTrigger()) {
           final JPopupMenu menu = makePopupMenu();
           if (menu != null) {
             menu.show(e.getComponent(), e.getX(), e.getY());
             e.consume();
+            popup = true;
           }
         }
+        return popup;
       }
     });
 
@@ -96,6 +107,14 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
     });
 
+  }
+
+  public void addMaxMinEditorListener(@Nonnull final ActionListener l) {
+    this.maxMinEditorListeners.add(l);
+  }
+
+  public void removeMaxMinEditorListener(@Nonnull final ActionListener l) {
+    this.maxMinEditorListeners.remove(l);
   }
 
   public void setNotifyForTabChanged(final boolean enable) {
@@ -167,8 +186,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
           public void actionPerformed(@Nonnull final ActionEvent e) {
             try {
               title.save();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
             }
@@ -184,8 +202,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
           public void actionPerformed(@Nonnull final ActionEvent e) {
             try {
               title.saveAs();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
             }
@@ -269,18 +286,18 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
   }
 
   @Nullable
-  public AbstractEditor getCurrentEditor(){
+  public AbstractEditor getCurrentEditor() {
     AbstractEditor result = null;
-    
+
     final int selected = this.getSelectedIndex();
-    
-    if (selected>=0){
-      result = ((TabTitle)this.getTabComponentAt(selected)).getProvider().getEditor();
+
+    if (selected >= 0) {
+      result = ((TabTitle) this.getTabComponentAt(selected)).getProvider().getEditor();
     }
-    
+
     return result;
   }
-  
+
   public void createTab(@Nonnull final TabProvider panel) {
     super.addTab("...", panel.getEditor().getContainerToShow()); //NOI18N
     final int count = this.getTabCount() - 1;
@@ -319,8 +336,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     if (index >= 0) {
       try {
         this.removeTabAt(index);
-      }
-      finally {
+      } finally {
         title.disposeEditor();
       }
       return true;

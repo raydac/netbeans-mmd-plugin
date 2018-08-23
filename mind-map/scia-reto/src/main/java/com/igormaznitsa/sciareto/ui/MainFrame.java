@@ -93,6 +93,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
 
+  private int lastDividerLocation;
+  
   private static final ExecutorService loadingExecutorService = Executors.newCachedThreadPool(new ThreadFactory() {
     @Override
     @Nonnull
@@ -175,6 +177,19 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     splitPane.setResizeWeight(0.0d);
     splitPane.setLeftComponent(this.explorerTree);
 
+    this.tabPane.addMaxMinEditorListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        final int divider = splitPane.getDividerLocation();
+        if (divider > 3) {
+          lastDividerLocation = divider;
+          splitPane.setDividerLocation(0);
+        } else {
+          splitPane.setDividerLocation(lastDividerLocation);
+        }
+      }
+    });
+    
     this.mainPanel = new JPanel(new BorderLayout(0, 0));
     this.mainPanel.add(this.tabPane, BorderLayout.CENTER);
 
