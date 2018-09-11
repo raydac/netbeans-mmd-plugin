@@ -28,11 +28,13 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import static com.igormaznitsa.sciareto.ui.editors.AbstractEditor.loadMenuIcon;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.apache.commons.io.FilenameUtils;
@@ -106,8 +108,22 @@ public final class PictureViewer extends AbstractEditor {
       }
     });
 
+    final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
+    buttonClipboardImage.setToolTipText("Copy image to clipboard");
+
+    buttonClipboardImage.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        final BufferedImage image = imageViewer.getImage();
+        if (image != null) {
+          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(image), null);
+        }
+      }
+    });
+
     final GridBagConstraints bc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
 
+    toolbar.add(buttonClipboardImage, bc);
     toolbar.add(buttonPrintImage, bc);
     this.imageInfoLabel = new JLabel();
     toolbar.add(this.imageInfoLabel, bc);
