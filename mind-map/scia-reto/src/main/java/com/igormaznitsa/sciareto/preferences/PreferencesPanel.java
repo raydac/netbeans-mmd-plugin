@@ -1429,7 +1429,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.checkboxRelativePathsForFilesInTheProject.setSelected(preferences.getBoolean("makeRelativePathToProject", true)); //NOI18N
       this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true)); //NOI18N
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true)); //NOI18N
-      this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true));
+      this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
 
       // third part options
       final String pathToGraphViz = preferences.get("plantuml.dotpath", null);
