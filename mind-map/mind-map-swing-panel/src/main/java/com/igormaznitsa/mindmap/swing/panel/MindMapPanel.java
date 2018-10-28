@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -63,6 +62,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import java.awt.datatransfer.DataFlavor;
 
 public class MindMapPanel extends JComponent implements ClipboardOwner {
 
@@ -292,14 +292,14 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               e.consume();
               focusTo(deleteSelectedTopics(false));
             } else if (config.isKeyEventDetected(e,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_UP,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
-                MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED)) {
+                    MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,
+                    MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,
+                    MindMapPanelConfig.KEY_FOCUS_MOVE_UP,
+                    MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN,
+                    MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+                    MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
+                    MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+                    MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED)) {
               e.consume();
               processMoveFocusByKey(e);
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
@@ -936,7 +936,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 //        gfx.draw(new Rectangle2D.Double(elementPosition.getX(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.YELLOW, null);
 //      }
 // ------------------------------------------------------------------------------
-
     }
   }
 
@@ -1173,12 +1172,14 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   /**
-   * Get saved session object. Object is presented and saved only for the current panel and only in memory.
+   * Get saved session object. Object is presented and saved only for the
+   * current panel and only in memory.
    *
-   * @param <T>   type of object
-   * @param key   key of object, must not be null
+   * @param <T> type of object
+   * @param key key of object, must not be null
    * @param klazz object type, must not be null
-   * @param def   default value will be returned as result if object not presented, can be null
+   * @param def default value will be returned as result if object not
+   * presented, can be null
    * @return null if object is not found, the found object otherwise
    * @throws ClassCastException if object type is wrong for saved object
    * @since 1.4.2
@@ -1246,10 +1247,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
     switch (extra.getType()) {
       case FILE: {
-        final ExtraFile efile = (ExtraFile)extra;
-        final String line = efile.getAsURI().getParameters().getProperty("line",null);
+        final ExtraFile efile = (ExtraFile) extra;
+        final String line = efile.getAsURI().getParameters().getProperty("line", null);
         if (line != null && !line.equals("0")) {
-          builder.append(String.format(BUNDLE.getString("MindMapPanel.tooltipOpenFileWithLine"),StringEscapeUtils.escapeHtml(efile.getAsString()),StringEscapeUtils.escapeHtml(line)));
+          builder.append(String.format(BUNDLE.getString("MindMapPanel.tooltipOpenFileWithLine"), StringEscapeUtils.escapeHtml(efile.getAsString()), StringEscapeUtils.escapeHtml(line)));
         } else {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenFile")).append(StringEscapeUtils.escapeHtml(efile.getAsString()));
         }
@@ -1471,10 +1472,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
     if (nextFocused != null) {
       final boolean addFocused = config.isKeyEventDetected(key,
-          MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
-          MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
-          MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
-          MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
+              MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+              MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
+              MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+              MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
       if (!addFocused || this.selectedTopics.contains(nextFocused.getModel())) {
         removeAllSelection();
       }
@@ -1487,7 +1488,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   /**
-   * Safe Swing thread execution sequence of some jobs over model with model changed notification in the end
+   * Safe Swing thread execution sequence of some jobs over model with model
+   * changed notification in the end
    *
    * @param jobs sequence of jobs to be executed
    * @since 1.3.1
@@ -2005,8 +2007,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Set model for the panel, allows to notify listeners optionally.
    *
-   * @param model                      model to be set
-   * @param notifyModelChangeListeners true if to notify model change listeners, false otherwise
+   * @param model model to be set
+   * @param notifyModelChangeListeners true if to notify model change listeners,
+   * false otherwise
    * @since 1.3.0
    */
   public void setModel(@Nonnull final MindMap model, final boolean notifyModelChangeListeners) {
@@ -2440,7 +2443,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Try lock the panel if it is not disposed.
    *
-   * @return true if the panel is locked successfully, false if the panel has been disposed.
+   * @return true if the panel is locked successfully, false if the panel has
+   * been disposed.
    */
   public boolean lockIfNotDisposed() {
     boolean result = false;
@@ -2493,9 +2497,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Create transferable topic list in system clipboard.
    *
-   * @param cut    true shows that remove topics after placing into clipboard
-   * @param topics topics to be placed into clipboard, if there are successors and ancestors then successors will be removed
-   * @return true if topic array is not empty and operation completed successfully, false otherwise
+   * @param cut true shows that remove topics after placing into clipboard
+   * @param topics topics to be placed into clipboard, if there are successors
+   * and ancestors then successors will be removed
+   * @return true if topic array is not empty and operation completed
+   * successfully, false otherwise
    * @since 1.3.1
    */
   public boolean copyTopicsToClipboard(final boolean cut, @Nonnull @MustNotContainNull final Topic... topics) {
@@ -2524,7 +2530,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Paste topics from clipboard to currently selected ones.
    *
-   * @return true if there detected topic list in clipboard and these topics added to selected ones, false otherwise
+   * @return true if there detected topic list in clipboard and these topics
+   * added to selected ones, false otherwise
    * @since 1.3.1
    */
   public boolean pasteTopicsFromClipboard() {
@@ -2555,9 +2562,55 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
               invalidate();
               repaint();
+
+              result = true;
             }
           } catch (final Exception ex) {
             LOGGER.error("Can't get clipboard data", ex);
+          }
+        } else if (Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor)) {
+          try {
+            final int MAX_TEXT_LEN = 96;
+            String clipboardText = (String) clipboard.getContents(null).getTransferData(DataFlavor.stringFlavor);
+            
+            if (clipboardText != null) {
+              clipboardText = clipboardText.trim();
+              
+              final String topicText;
+              final String extraNoteText;
+
+              if (clipboardText.length() > MAX_TEXT_LEN) {
+                topicText = clipboardText.substring(0, MAX_TEXT_LEN) + "...";
+                extraNoteText = clipboardText;
+              } else {
+                topicText = clipboardText;
+                extraNoteText = null;
+              }
+
+              final Topic[] selectedTopics = this.getSelectedTopics();
+              
+              if (selectedTopics.length > 0) {
+                for (final Topic s : selectedTopics) {
+                  final Topic newTopic;
+                  if (extraNoteText == null) {
+                    newTopic = new Topic(this.model, s, topicText);
+                  } else {
+                    newTopic = new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
+                  }
+                  MindMapUtils.ensureVisibility(newTopic);
+                }
+
+                fireNotificationMindMapChanged();
+
+                invalidate();
+                repaint();
+
+                result = true;
+              }
+
+            }
+          } catch (Exception ex) {
+            LOGGER.error("Can't get clipboard text", ex);
           }
         }
       } finally {
@@ -2592,7 +2645,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Some Job over mind map model.
    *
-   * @see MindMapPanel#executeModelJobs(com.igormaznitsa.mindmap.swing.panel.MindMapPanel.ModelJob...)
+   * @see
+   * MindMapPanel#executeModelJobs(com.igormaznitsa.mindmap.swing.panel.MindMapPanel.ModelJob...)
    * @since 1.3.1
    */
   public interface ModelJob {
