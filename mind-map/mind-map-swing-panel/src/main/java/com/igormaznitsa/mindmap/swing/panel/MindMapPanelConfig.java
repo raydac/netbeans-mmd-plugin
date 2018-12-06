@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.swing.panel;
-
 
 import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
@@ -111,7 +109,7 @@ public final class MindMapPanelConfig implements Serializable {
   private float connectorWidth = 1.5f;
   private float selectLineWidth = 3.0f;
   private float jumpLinkWidth = 1.5f;
-  private Font font = new Font(Font.DIALOG, Font.BOLD, 18); //NOI18N
+  private Font font = new Font(Font.SERIF, Font.BOLD, 18);
   private double scale = 1.0d;
   private boolean dropShadow = true;
   private RenderQuality renderQuality = RenderQuality.DEFAULT;
@@ -327,7 +325,7 @@ public final class MindMapPanelConfig implements Serializable {
           } else if (fieldClass == String.class) {
             f.set(this, prefs.get(fieldName, (String) f.get(etalon)));
           } else if (fieldClass == RenderQuality.class) {
-            final String name = prefs.get(fieldName, ((RenderQuality)f.get(etalon)).name());
+            final String name = prefs.get(fieldName, ((RenderQuality) f.get(etalon)).name());
             f.set(this, RenderQuality.valueOf(name));
           } else {
             throw new Error("Unexpected field type " + fieldClass.getName());
@@ -510,7 +508,6 @@ public final class MindMapPanelConfig implements Serializable {
     this.scaleModifiers = value;
     notifyCfgListenersAboutChange();
   }
-
 
   @Nonnull
   public Color getSelectLineColor() {
