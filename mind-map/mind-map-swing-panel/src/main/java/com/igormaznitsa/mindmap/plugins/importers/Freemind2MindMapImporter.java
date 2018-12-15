@@ -238,7 +238,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     if (!color.isEmpty()) {
       final Color colorConverted = Utils.html2color(color, false);
       final Color backgroundColorConverted = Utils.html2color(backgroundСolor, false);
-      
+
       if (colorConverted != null) {
         topicToProcess.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(colorConverted, false));
       }
@@ -246,7 +246,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
       if (backgroundColorConverted != null) {
         topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(backgroundColorConverted, false));
       } else {
-        if (colorConverted!=null){
+        if (colorConverted != null) {
           topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(colorConverted), false));
         }
       }
@@ -273,10 +273,16 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     }
 
     if (!link.isEmpty()) {
-      try {
-        topicToProcess.setExtra(new ExtraLink(link));
-      } catch (URISyntaxException ex) {
-        LOGGER.warn("Can't convert link: " + link);
+      if (link.startsWith("#")) {
+        if (!id.isEmpty()) {
+          linksMap.put(id, link.substring(1));
+        }
+      } else {
+        try {
+          topicToProcess.setExtra(new ExtraLink(link));
+        } catch (URISyntaxException ex) {
+          LOGGER.warn("Can't convert link: " + link);
+        }
       }
     }
 
