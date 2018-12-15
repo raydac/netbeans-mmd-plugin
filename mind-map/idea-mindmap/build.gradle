@@ -22,8 +22,8 @@ def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getP
 def mindMapCommonVersion = project.hasProperty('mm_ide_common_version') ? project.getProperty('mm_ide_common_version') : project.version
 def mindMapPanelVersion = project.hasProperty('mm_panel_version') ? project.getProperty('mm_panel_version') : project.version
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 defaultTasks 'clean', 'build'
 
@@ -35,6 +35,8 @@ dependencies {
     compile 'com.igormaznitsa:meta-utils:1.1.2'
     compile 'com.grack:nanojson:1.0'
     compile 'net.iharder:base64:2.3.9'
+    compile 'org.jsoup:jsoup:1.11.3'
+
 
     compile 'com.igormaznitsa:mind-map-model:' + mindMapModelVersion
     compile 'com.igormaznitsa:mind-map-ide-common:' + mindMapCommonVersion
