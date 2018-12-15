@@ -24,8 +24,6 @@
     <module>mind-map-swing-panel</module>
     <module>mind-map-plugin-archetype</module>
     <module>mind-map-ide-common</module>
-    <module>nb-mind-map</module>
-    <module>idea-mindmap</module>
     <module>scia-reto</module>
   </modules>
 
@@ -96,13 +94,11 @@
 
   <profiles>
     <profile>
-      <id>localrepo</id>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>local-oss-git-repo</id>
-          <url>file:///home/igorm/Projects_PET/iam-oss-mvn-snapshots</url>
-        </snapshotRepository>
-      </distributionManagement>
+      <id>ide</id>
+      <modules>
+        <module>nb-mind-map</module>
+        <module>idea-mindmap</module>
+      </modules>
     </profile>
   </profiles>
 
@@ -126,7 +122,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>2.12.0</version>
+      <version>2.23.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -168,8 +164,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
         </configuration>
@@ -179,7 +175,7 @@
         <artifactId>meta-checker</artifactId>
         <version>${meta.version}</version>
         <configuration>
-          <restrictClassFormat>6</restrictClassFormat>
+          <restrictClassFormat><![CDATA[<8]]></restrictClassFormat>
           <checkMayContainNull>true</checkMayContainNull>
           <checkNullable>true</checkNullable>
         </configuration>
