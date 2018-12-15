@@ -66,6 +66,9 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.xml.XMLConstants;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
+import org.w3c.dom.Node;
 
 public final class Utils {
 
@@ -126,6 +129,18 @@ public final class Utils {
     }
 
     return result;
+  }
+
+  @Nonnull
+  public static Document loadHtmlDocument(@Nonnull final InputStream inStream, @Nullable final String charset, final boolean autoClose) throws ParserConfigurationException, IOException {
+    try {
+      final org.jsoup.nodes.Document result = Jsoup.parse(IOUtils.toString(inStream, charset));
+      return new W3CDom().fromJsoup(result);
+    } finally {
+      if (autoClose) {
+        IOUtils.closeQuietly(inStream);
+      }
+    }
   }
 
   /**
@@ -209,15 +224,14 @@ public final class Utils {
   @Nonnull
   @MustNotContainNull
   public static List<Element> findDirectChildrenForName(@Nonnull final Element element, @Nonnull final String childElementname) {
-    final NodeList found = element.getElementsByTagName(childElementname);
     final List<Element> resultList = new ArrayList<Element>();
-
-    for (int i = 0; i < found.getLength(); i++) {
-      if (found.item(i).getParentNode().equals(element) && found.item(i) instanceof Element) {
-        resultList.add((Element) found.item(i));
+    final NodeList list = element.getChildNodes();
+    for (int i = 0; i < list.getLength(); i++) {
+      final Node node = list.item(i);
+      if (element.equals(node.getParentNode()) && node instanceof Element && childElementname.equals(node.getNodeName())) {
+        resultList.add((Element) node);
       }
     }
-
     return resultList;
   }
 
@@ -715,7 +729,7 @@ public final class Utils {
 
   @Nonnull
   public static Color makeContrastColor(@Nonnull final Color color) {
-    return calculateColorBrightness(color) < 128 ? Color.WHITE : Color.BLACK;
+    return new Color(color.getRed() ^ 0xFF, color.getGreen() ^ 0xFF, color.getBlue() ^ 0xFF);
   }
 
   @Nonnull
