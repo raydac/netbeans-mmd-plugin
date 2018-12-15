@@ -33,7 +33,7 @@ public class UtilsTest {
   }
   
   @Test
-  public void testconvertCamelCasedToHumanForm(){
+  public void testConvertCamelCasedToHumanForm(){
     assertEquals("Hello world and universe",Utils.convertCamelCasedToHumanForm("helloWorldAndUniverse", true));
     assertEquals("hello world and universe",Utils.convertCamelCasedToHumanForm("helloWorldAndUniverse", false));
   }
