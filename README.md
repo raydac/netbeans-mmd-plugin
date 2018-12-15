@@ -13,9 +13,10 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.5 (SNAPSHOT)__
+- ALL: Improved import from FreeMind XHTML format
 - ALL: Paste plain text to add a new node [#48](https://github.com/raydac/netbeans-mmd-plugin/issues/48) 
 - ALL: improved procesing of fold/unfold keyboard shortcuts to fold and unfold all children [#17](https://github.com/raydac/netbeans-mmd-plugin/issues/17)
-- SR:  updated PlantUML version to 1.2018.12
+- SR:  updated PlantUML version to 1.2018.13
 
 __1.4.4 (04-aug-2018)__
 - ALL: [#46](https://github.com/raydac/netbeans-mmd-plugin/issues/46) improved map model save procedure to not encode national charsets into URL format
