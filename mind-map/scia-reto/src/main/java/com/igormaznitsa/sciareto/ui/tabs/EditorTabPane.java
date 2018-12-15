@@ -56,7 +56,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
   private boolean enabledNotificationAboutChange;
 
-  private final List<ActionListener> maxMinEditorListeners = new CopyOnWriteArrayList<ActionListener>();
+  private final List<ActionListener> maxMinEditorListeners = new CopyOnWriteArrayList<>();
 
   public EditorTabPane(@Nonnull final Context context) {
     super(JTabbedPane.TOP);

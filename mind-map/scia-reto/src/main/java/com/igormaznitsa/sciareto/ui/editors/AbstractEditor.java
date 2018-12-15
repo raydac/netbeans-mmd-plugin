@@ -33,7 +33,7 @@ import javax.swing.ImageIcon;
 public abstract class AbstractEditor implements TabProvider,Disposable {
   
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
-  private static final Map<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
+  private static final Map<String, ImageIcon> ICON_CACHE = new HashMap<>();
 
   public AbstractEditor(){
     super();
@@ -79,11 +79,11 @@ public abstract class AbstractEditor implements TabProvider,Disposable {
   
   @Nonnull
   protected static synchronized ImageIcon loadMenuIcon(@Nonnull final String name) {
-    if (iconCache.containsKey(name)) {
-      return iconCache.get(name);
+    if (ICON_CACHE.containsKey(name)) {
+      return ICON_CACHE.get(name);
     } else {
       final ImageIcon loaded = new javax.swing.ImageIcon(ClassLoader.getSystemResource("menu_icons/" + name + ".png"));
-      iconCache.put(name, loaded);
+      ICON_CACHE.put(name, loaded);
       return loaded;
     }
   }

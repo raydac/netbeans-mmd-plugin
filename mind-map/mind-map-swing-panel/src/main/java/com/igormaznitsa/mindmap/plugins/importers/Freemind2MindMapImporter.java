@@ -88,7 +88,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
           topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, Utils.rescaleImageAndEncodeAsBase64(file, -1));
           break;
         }
-      } catch (final Exception ex) {
+      } catch (Exception ex) {
         LOGGER.warn("Can't decode or load image for URI : " + s);
       }
     }
@@ -140,9 +140,9 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   private static List<RichContent> extractRichContent(@Nonnull final Element richContentElement) {
     final List<Element> richContents = Utils.findDirectChildrenForName(richContentElement, "richcontent");
 
-    final List<RichContent> result = new ArrayList<RichContent>();
+    final List<RichContent> result = new ArrayList<>();
 
-    final List<String> foundImageUrls = new ArrayList<String>();
+    final List<String> foundImageUrls = new ArrayList<>();
 
     for (final Element e : richContents) {
       final String textType = findAttribute(e, "type");
@@ -176,8 +176,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
       throw new IllegalArgumentException("Can't parse freemind file as xhtml");
     }
 
-    final Map<String, Topic> idTopicMap = new HashMap<String, Topic>();
-    final Map<String, String> linksMap = new HashMap<String, String>();
+    final Map<String, Topic> idTopicMap = new HashMap<>();
+    final Map<String, String> linksMap = new HashMap<>();
     final MindMap resultedMap = new MindMap(null, true);
     resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 

@@ -95,7 +95,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private int lastDividerLocation;
   
-  private static final ExecutorService loadingExecutorService = Executors.newCachedThreadPool(new ThreadFactory() {
+  private static final ExecutorService LOADING_EXECUTOR_SERVICE = Executors.newCachedThreadPool(new ThreadFactory() {
     @Override
     @Nonnull
     public Thread newThread(@Nonnull final Runnable r) {
@@ -1225,7 +1225,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), project);
 
-    loadingExecutorService.submit(new Runnable() {
+    LOADING_EXECUTOR_SERVICE.submit(new Runnable() {
       @Override
       public void run() {
         try {

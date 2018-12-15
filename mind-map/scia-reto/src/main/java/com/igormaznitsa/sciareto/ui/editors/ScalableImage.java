@@ -50,7 +50,7 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
   private static final float MIN_SCALE = 0.2f;
   private static final float MAX_SCALE = 10.0f;
 
-  private final java.util.List<ActionListener> scalableListeners = new CopyOnWriteArrayList<ActionListener>();
+  private final java.util.List<ActionListener> scalableListeners = new CopyOnWriteArrayList<>();
 
   public ScalableImage() {
     super();
