@@ -24,15 +24,15 @@
 
     <properties>
         <app.name>sciareto_${project.version}</app.name>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <jung.version>2.1.1</jung.version>
         <batik.version>1.10</batik.version>
         <jlatexmath.version>1.0.7</jlatexmath.version>
-        <plantuml.version>1.2018.13</plantuml.version>
-        <rsyntax.version>2.6.1</rsyntax.version>
+        <plantuml.version>1.2018.14</plantuml.version>
+        <rsyntax.version>3.0.0</rsyntax.version>
         <mixpanel.version>1.4.4</mixpanel.version>
-        <jna.version>4.5.2</jna.version>
+        <jna.version>5.2.0</jna.version>
     </properties>
 
     <dependencies>
@@ -118,32 +118,6 @@
 
     <profiles>
         <profile>
-            <id>coverage</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.2</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>report</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>publish</id>
             <build>
                 <plugins>
@@ -171,7 +145,7 @@
                     <plugin>
                         <groupId>com.akathist.maven.plugins.launch4j</groupId>
                         <artifactId>launch4j-maven-plugin</artifactId>
-                        <version>1.7.24</version>
+                        <version>1.7.25</version>
                         <executions>
                             <execution>
                                 <id>l4j-clui</id>
@@ -193,14 +167,14 @@
                                         <mutexName>sciaretoeditor</mutexName>
                                     </singleInstance>
                                     <jre>
-                                        <minVersion>1.7.0</minVersion>
+                                        <minVersion>1.8.0</minVersion>
                                         <jdkPreference>preferJre</jdkPreference>
                                     </jre>
                                     <versionInfo>
-                                        <fileVersion>1.4.4.0</fileVersion>
+                                        <fileVersion>1.4.5.0</fileVersion>
                                         <txtFileVersion>${project.version}</txtFileVersion>
                                         <fileDescription>SciaReto Mind Map editor</fileDescription>
-                                        <copyright>2018 Igor Maznitsa</copyright>
+                                        <copyright>2016-2019 Igor Maznitsa</copyright>
                                         <productVersion>${main.version.raw}.0</productVersion>
                                         <txtProductVersion>${project.version}</txtProductVersion>
                                         <productName>${project.name}</productName>
@@ -225,7 +199,7 @@
                             <generateDiskImageFile>true</generateDiskImageFile>
                             <includeApplicationsSymlink>true</includeApplicationsSymlink>
                             <diskImageInternetEnable>true</diskImageInternetEnable>
-                            <jvmVersion>1.7+</jvmVersion>
+                            <jvmVersion>1.8+</jvmVersion>
                             <jvmOptions>
                                 <option>-XX:+IgnoreUnrecognizedVMOptions</option>
                                 <option>-XaddExports:java.desktop/com.apple.eawt=ALL-UNNAMED</option>
@@ -251,7 +225,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -269,8 +243,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                 </configuration>
@@ -279,23 +253,23 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>animal-sniffer-maven-plugin</artifactId>
                 <version>1.17</version>
-                <configuration>
-                    <annotations>
-                        <annotation>com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer</annotation>
-                    </annotations>
-                    <signature>
-                        <groupId>org.codehaus.mojo.signature</groupId>
-                        <artifactId>java17</artifactId>
-                        <version>1.0</version>
-                    </signature>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>ensure-java-1.7-class-library</id>
+                        <id>ensure-java-1.8-class-library</id>
                         <phase>test</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
+                        <configuration>
+                          <annotations>
+                            <annotation>com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer</annotation>
+                          </annotations>
+                          <signature>
+                            <groupId>org.codehaus.mojo.signature</groupId>
+                            <artifactId>java18</artifactId>
+                            <version>1.0</version>
+                          </signature>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -304,7 +278,7 @@
                 <artifactId>meta-checker</artifactId>
                 <version>${meta.version}</version>
                 <configuration>
-                    <restrictClassFormat>7</restrictClassFormat>
+                    <restrictClassFormat>8</restrictClassFormat>
                     <checkMayContainNull>true</checkMayContainNull>
                     <checkNullable>true</checkNullable>
                     <ignoreClasses>
@@ -337,7 +311,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
