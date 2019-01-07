@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import com.grack.nanojson.JsonArray;
-import com.grack.nanojson.JsonObject;
-import com.grack.nanojson.JsonParser;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.*;
@@ -47,6 +43,8 @@ import java.util.List;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Mindmup2MindMapImporter extends AbstractImporter {
 
@@ -63,8 +61,8 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       return null;
     }
 
-    final JsonObject parsedJson;
-    parsedJson = JsonParser.object().from(FileUtils.readFileToString(file, "UTF-8"));
+    final JSONObject parsedJson;
+    parsedJson = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
 
     MindMap resultedMap = null;
 
@@ -84,21 +82,21 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
         mindMapRoot.setExtra(new ExtraFile(new MMapURI(null, file, null)));
       }
 
-      final JsonArray links = parsedJson.getArray("links");
-      if (links != null) {
+      if (parsedJson.has("links")) {
+        final JSONArray links = parsedJson.getJSONArray("links");
         processLinks(resultedMap, links, mapTopicId);
       }
     }
     return resultedMap;
   }
 
-  private void processLinks(@Nonnull final MindMap map, @Nonnull final JsonArray links, @Nonnull final Map<Long, Topic> topics) {
-    for (int i = 0; i < links.size(); i++) {
+  private void processLinks(@Nonnull final MindMap map, @Nonnull final JSONArray links, @Nonnull final Map<Long, Topic> topics) {
+    for (int i = 0; i < links.length(); i++) {
       try {
-        final JsonObject linkObject = links.getObject(i);
+        final JSONObject linkObject = links.getJSONObject(i);
 
-        final Topic fromTopic = topics.get(linkObject.getNumber("ideaIdFrom", Long.MIN_VALUE).longValue());
-        final Topic toTopic = topics.get(linkObject.getNumber("ideaIdTo", Long.MIN_VALUE).longValue());
+        final Topic fromTopic = topics.get(linkObject.optLong("ideaIdFrom",Long.MIN_VALUE));
+        final Topic toTopic = topics.get(linkObject.optLong("ideaIdTo",Long.MIN_VALUE));
 
         if (fromTopic != null && toTopic != null) {
           fromTopic.setExtra(ExtraTopic.makeLinkTo(map, toTopic));
@@ -109,30 +107,31 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     }
   }
 
-  private void parseTopic(@Nonnull MindMap map, @Nullable final Topic parentTopic, @Nullable final Topic pregeneratedTopic, @Nonnull final JsonObject json, @Nonnull final Map<Long, Topic> idTopicMap) {
-    final JsonObject ideas = json.getObject("ideas");
+  private void parseTopic(@Nonnull MindMap map, @Nullable final Topic parentTopic, @Nullable final Topic pregeneratedTopic, @Nonnull final JSONObject json, @Nonnull final Map<Long, Topic> idTopicMap) {
+    final JSONObject ideas = json.optJSONObject("ideas");
     if (ideas != null) {
 
       final List<OrderableIdea> sortedIdeas = new ArrayList<OrderableIdea>();
-      for (final Map.Entry<String, Object> i : ideas.entrySet()) {
-        if (i.getValue() instanceof JsonObject) {
-          final JsonObject idea = (JsonObject) i.getValue();
-          double order = 0.0d;
-          try {
-            order = Double.parseDouble(i.getKey().trim());
-          } catch (final NumberFormatException ex) {
-            LOGGER.error("Detected unexpected number format in order", ex);
-          }
-          sortedIdeas.add(new OrderableIdea(order, idea));
+      for (final String key : ideas.keySet()) {
+        final JSONObject idea = ideas.optJSONObject(key);
+        if (idea == null) {
+          continue;
         }
+        double order = 0.0d;
+        try {
+          order = Double.parseDouble(key.trim());
+        } catch (final NumberFormatException ex) {
+          LOGGER.error("Detected unexpected number format in order", ex);
+        }
+        sortedIdeas.add(new OrderableIdea(order, idea));
       }
       Collections.sort(sortedIdeas);
 
       for (final OrderableIdea i : sortedIdeas) {
-        final JsonObject ideaObject = i.getIdea();
+        final JSONObject ideaObject = i.getIdea();
 
-        final String title = ideaObject.getString("title", "");
-        final long id = ideaObject.getNumber("id", Long.MIN_VALUE).longValue();
+        final String title = ideaObject.optString("title", "");
+        final long id = ideaObject.optLong("id", Long.MIN_VALUE);
 
         final Topic topicToProcess;
 
@@ -156,20 +155,21 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
           idTopicMap.put(id, topicToProcess);
         }
 
-        final JsonObject attributes = ideaObject.getObject("attr");
+        final JSONObject attributes = ideaObject.optJSONObject("attr");
 
         if (attributes != null) {
-          for (final Map.Entry<String, Object> a : attributes.entrySet()) {
-            final String name = a.getKey();
-            final Object attrJson = a.getValue();
-            if ("note".equals(name)) {
-              processAttrNote((JsonObject) attrJson, topicToProcess);
-            } else if ("icon".equals(name)) {
-              processAttrIcon((JsonObject) attrJson, topicToProcess);
-            } else if ("style".equals(name)) {
-              processAttrStyle((JsonObject) attrJson, topicToProcess);
-            } else {
-              LOGGER.warn("Detected unsupported attribute '" + name + '\'');
+          for (final String key : attributes.keySet()) {
+            final JSONObject attrJson = attributes.optJSONObject(key);
+            if (attrJson != null) {
+              if ("note".equals(key)) {
+                processAttrNote(attrJson, topicToProcess);
+              } else if ("icon".equals(key)) {
+                processAttrIcon(attrJson, topicToProcess);
+              } else if ("style".equals(key)) {
+                processAttrStyle(attrJson, topicToProcess);
+              } else {
+                LOGGER.warn("Detected unsupported attribute '" + key + '\'');
+              }
             }
           }
         }
@@ -183,11 +183,11 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     }
   }
 
-  private void processAttrNote(@Nonnull final JsonObject note, @Nonnull final Topic topic) {
-    topic.setExtra(new ExtraNote(note.getString("text", "")));
+  private void processAttrNote(@Nonnull final JSONObject note, @Nonnull final Topic topic) {
+    topic.setExtra(new ExtraNote(note.optString("text", "")));
   }
 
-  private void processAttrIcon(@Nonnull final JsonObject icon, @Nonnull final Topic topic) {
+  private void processAttrIcon(@Nonnull final JSONObject icon, @Nonnull final Topic topic) {
     final String iconUrl = icon.getString("url");
     if (iconUrl.startsWith("data:")) {
       final String[] data = iconUrl.split("\\,");
@@ -212,7 +212,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     }
   }
 
-  private void processAttrStyle(@Nonnull final JsonObject style, @Nonnull final Topic topic) {
+  private void processAttrStyle(@Nonnull final JSONObject style, @Nonnull final Topic topic) {
     final String background = style.getString("background");
     if (background != null) {
       final Color color = Utils.html2color(background, false);
@@ -260,9 +260,9 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
   private static final class OrderableIdea implements Comparable<OrderableIdea> {
 
     private final double order;
-    private final JsonObject idea;
+    private final JSONObject idea;
 
-    private OrderableIdea(final double order, @Nonnull final JsonObject idea) {
+    private OrderableIdea(final double order, @Nonnull final JSONObject idea) {
       this.order = order;
       this.idea = idea;
     }
@@ -272,7 +272,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     }
 
     @Nonnull
-    private JsonObject getIdea() {
+    private JSONObject getIdea() {
       return this.idea;
     }
 

@@ -156,6 +156,11 @@
       <version>1.11.3</version>
     </dependency>
     <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20180813</version>
+    </dependency>
+    <dependency>
       <groupId>net.iharder</groupId>
       <artifactId>base64</artifactId>
       <version>2.3.9</version>
@@ -170,11 +175,6 @@
       <groupId>com.igormaznitsa</groupId>
       <artifactId>commons-version</artifactId>
       <version>${iam.commons.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.grack</groupId>
-      <artifactId>nanojson</artifactId>
-      <version>1.0</version>
     </dependency>
   </dependencies>
   

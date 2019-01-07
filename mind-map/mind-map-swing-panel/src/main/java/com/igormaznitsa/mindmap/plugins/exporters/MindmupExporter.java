@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import com.grack.nanojson.JsonStringWriter;
-import com.grack.nanojson.JsonWriter;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
@@ -42,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import org.json.JSONStringer;
 
 public class MindmupExporter extends AbstractExporter {
 
@@ -108,7 +106,7 @@ public class MindmupExporter extends AbstractExporter {
 
     state.startObj("attr"); //NOI18N
     state.startObj("style").set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false)))
-        .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false))).end(); //NOI18N
+            .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false))).end(); //NOI18N
 
     final String attachment = makeHtmlFromExtras(topic);
     if (attachment != null) {
@@ -167,9 +165,9 @@ public class MindmupExporter extends AbstractExporter {
     if (root != null) {
       state.startObj("attr"); //NOI18N
       state.startObj("style")
-          .set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, root), false)))//NOI18N
-          .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, root), false)))//NOI18N
-          .end(); //NOI18N
+              .set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, root), false)))//NOI18N
+              .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, root), false)))//NOI18N
+              .end(); //NOI18N
     }
 
     final String attachment = root == null ? null : makeHtmlFromExtras(root);
@@ -191,11 +189,11 @@ public class MindmupExporter extends AbstractExporter {
           state.set("ideaIdFrom", src.getID()); //NOI18N
           state.set("ideaIdTo", dest.getID()); //NOI18N
           state.startObj("attr")
-              .startObj("style")
-              .set("color", "#FF0000")
-              .set("lineStyle", "dashed")
-              .end()
-              .end(); //NOI18N
+                  .startObj("style")
+                  .set("color", "#FF0000")
+                  .set("lineStyle", "dashed")
+                  .end()
+                  .end(); //NOI18N
           state.end();
         }
       }
@@ -286,7 +284,14 @@ public class MindmupExporter extends AbstractExporter {
 
     private final Map<String, TopicData> topicsWithId = new HashMap<String, TopicData>();
     private final List<TopicData> topicsContainsJump = new ArrayList<TopicData>();
-    private JsonStringWriter json = JsonWriter.string();
+
+    private JSONStringer jsonStringer = new JSONStringer();
+    private final List<JsonType> stack = new ArrayList<>();
+
+    private enum JsonType {
+      OBJECT,
+      ARRAY
+    }
 
     public State() {
     }
@@ -317,47 +322,63 @@ public class MindmupExporter extends AbstractExporter {
     @SuppressWarnings("unchecked")
     @Nonnull
     public State startObj(@Nonnull final String key) {
-      this.json = this.json.object(key);
+      this.jsonStringer.key(key).object();
+      this.stack.add(JsonType.OBJECT);
       return this;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
     public State startObj() {
-      this.json = this.json.object();
+      this.jsonStringer.object();
+      this.stack.add(JsonType.OBJECT);
       return this;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
     public State startArray(@Nonnull final String key) {
-      this.json = this.json.array(key);
+      this.jsonStringer.key(key).array();
+      this.stack.add(JsonType.ARRAY);
       return this;
     }
 
     @Nonnull
     public State set(@Nonnull final String key, @Nonnull final String value) {
-      this.json.value(key, value);
+      this.jsonStringer.key(key).value(value);
       return this;
     }
 
     @Nonnull
     public State set(@Nonnull final String key, final int value) {
-      this.json.value(key, value);
+      this.jsonStringer.key(key).value((long) value);
       return this;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
     public State end() {
-      this.json = json.end();
+      if (this.stack.isEmpty()) {
+        throw new IllegalArgumentException("Unexpected JSON end");
+      }
+      final JsonType type = this.stack.remove(this.stack.size() - 1);
+      switch (type) {
+        case ARRAY:
+          this.jsonStringer.endArray();
+          break;
+        case OBJECT:
+          this.jsonStringer.endObject();
+          break;
+        default:
+          throw new Error("Unexpected type:" + type);
+      }
       return this;
     }
 
     @Override
     @Nonnull
     public String toString() {
-      return json.done();
+      return this.jsonStringer.toString();
     }
   }
 
