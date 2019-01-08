@@ -33,7 +33,7 @@ dependencies {
     compile 'com.igormaznitsa:commons-version:1.0.0'
     compile 'com.igormaznitsa:meta-annotations:1.1.2'
     compile 'com.igormaznitsa:meta-utils:1.1.2'
-    compile 'com.grack:nanojson:1.0'
+    compile 'org.json:json:20180813'
     compile 'net.iharder:base64:2.3.9'
     compile 'org.jsoup:jsoup:1.11.3'
 
