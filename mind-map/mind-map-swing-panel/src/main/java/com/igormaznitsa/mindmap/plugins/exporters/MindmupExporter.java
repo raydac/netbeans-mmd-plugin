@@ -16,8 +16,17 @@
 package com.igormaznitsa.mindmap.plugins.exporters;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.meta.common.utils.GetUtils;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import static com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin.ATTR_KEY;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -26,41 +35,31 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONStringer;
 
 public class MindmupExporter extends AbstractExporter {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
-  private static int idCounter = 1;
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindmupExporter.class);
 
-  @Nullable
-  private static String getTopicUid(@Nonnull final Topic topic) {
-    return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
-  }
-
-  @Nullable
-  private static String makeHtmlFromExtras(@Nonnull final Topic topic) {
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-
-    if (file == null && link == null && note == null) {
-      return null;
-    }
-
+  @Nonnull
+  private static String makeHtmlFromExtras(@Nullable final ExtraLink link, @Nullable final ExtraFile file) {
     final StringBuilder result = new StringBuilder();
 
     if (file != null) {
@@ -71,12 +70,6 @@ public class MindmupExporter extends AbstractExporter {
       final String uri = link.getValue().asString(true, true);
       result.append("LINK: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
     }
-    if (note != null) {
-      if (file != null || link != null) {
-        result.append("<br>"); //NOI18N
-      }
-      result.append("<pre>").append(StringEscapeUtils.escapeHtml(note.getValue())).append("</pre>"); //NOI18N
-    }
     return result.toString();
   }
 
@@ -86,132 +79,161 @@ public class MindmupExporter extends AbstractExporter {
     return "mindmup";
   }
 
-  private int writeTopic(@Nonnull final State state, int id, @Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
-    state.startObj(Integer.toString(idCounter));
+  private static class TopicId {
 
-    state.processTopic(idCounter, id, topic);
+    private final int id;
+    private final Topic topic;
+    private final String uuid;
 
-    idCounter++;
-
-    state.set("title", topic.getText()); //NOI18N
-    state.set("id", id); //NOI18N
-
-    id = Math.abs(id);
-
-    state.startObj("ideas"); //NOI18N
-    for (final Topic t : topic.getChildren()) {
-      id = writeTopic(state, id + 1, cfg, t);
+    private TopicId(final int id, @Nullable final String uuid, @Nonnull final Topic topic) {
+      this.id = id;
+      this.topic = topic;
+      this.uuid = uuid;
     }
-    state.end();
-
-    state.startObj("attr"); //NOI18N
-    state.startObj("style").set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false)))
-            .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false))).end(); //NOI18N
-
-    final String attachment = makeHtmlFromExtras(topic);
-    if (attachment != null) {
-      state.startObj("attachment"); //NOI18N
-      state.set("contentType", "text/html"); //NOI18N
-      state.set("content", attachment); //NOI18N
-      state.end();
-    }
-
-    state.end();
-    state.end();
-
-    return id;
   }
 
-  private void writeRoot(@Nonnull final State state, @Nonnull final MindMapPanelConfig cfg, @Nullable final Topic root) {
-    state.startObj();
+  private void writeTopic(
+          @Nonnull final JSONStringer stringer,
+          @Nonnull final MindMapPanelConfig cfg,
+          @Nonnull final AtomicInteger idCounter,
+          @Nullable final Topic topic,
+          @Nonnull final Map<String, String> linkMap,
+          @Nonnull final Map<String, TopicId> uuidMap
+  ) {
+    stringer.key("title").value(GetUtils.ensureNonNull(topic.getText(), ""));
+    final int topicId = idCounter.getAndIncrement();
+    stringer.key("id").value(topicId);
 
-    if (root == null) {
-      state.set("title", ""); //NOI18N
+    final String uuid = GetUtils.ensureNonNull(topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR), "genlink_" + topicId);
+    uuidMap.put(uuid, new TopicId(topicId, uuid, topic));
+
+    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
+    final ExtraTopic jump = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
+    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+
+    final String encodedImage = topic.getAttribute(ATTR_KEY);
+
+    if (jump != null) {
+      linkMap.put(uuid, jump.getValue());
+    }
+
+    stringer.key("attr").object();
+
+    stringer.key("style").object();
+    stringer.key("background").value(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false));
+    stringer.endObject();
+
+    if (note != null) {
+      stringer.key("note").object();
+      stringer.key("index").value(3);
+      stringer.key("text").value(note.getValue());
+      stringer.endObject();
+    }
+
+    if (encodedImage != null) {
+      BufferedImage renderedImage;
+      try {
+        renderedImage = ImageIO.read(new ByteArrayInputStream(Utils.base64decode(encodedImage)));
+      } catch (IOException ex) {
+        LOGGER.error("Can't render image for topic:" + topic);
+        renderedImage = null;
+      }
+
+      stringer.key("icon").object();
+      stringer.key("url").value("data:image/png;base64," + encodedImage);
+      stringer.key("position").value("left");
+
+      if (renderedImage != null) {
+        stringer.key("width").value(renderedImage.getWidth());
+        stringer.key("height").value(renderedImage.getHeight());
+      }
+
+      stringer.endObject();
+    }
+
+    stringer.endObject();
+
+    if (link != null || file != null) {
+      stringer.key("attachment").object();
+      stringer.key("contentType").value("text/html");
+      stringer.key("content").value(makeHtmlFromExtras(link, file));
+      stringer.endObject();
+    }
+
+    stringer.key("ideas").object();
+    int childIdCounter = 1;
+    for (final Topic child : topic.getChildren()) {
+      final boolean left = AbstractCollapsableElement.isLeftSidedTopic(child);
+      stringer.key(Integer.toString(left ? -childIdCounter : childIdCounter)).object();
+      childIdCounter++;
+      writeTopic(stringer, cfg, idCounter, child, linkMap, uuidMap);
+      stringer.endObject();
+    }
+    stringer.endObject();
+  }
+
+  private void writeRoot(@Nonnull final JSONStringer stringer, @Nonnull final MindMapPanelConfig cfg, @Nullable final Topic root) {
+    stringer.object();
+
+    stringer.key("formatVersion").value(3L);
+    stringer.key("id").value("root");
+    stringer.key("ideas").object();
+
+    final Map<String, String> linkMap = new HashMap<>();
+    final Map<String, TopicId> uuidTopicMap = new HashMap<>();
+
+    if (root != null) {
+      stringer.key("1").object();
+      writeTopic(stringer, cfg, new AtomicInteger(1), root, linkMap, uuidTopicMap);
+      stringer.endObject();
+      stringer.key("title").value(GetUtils.ensureNonNull(root.getText(), "[Root]"));
     } else {
-      state.set("title", root.getText()); //NOI18N
+      stringer.key("title").value("Empty map");
     }
-    state.set("id", 1); //NOI18N
-    state.set("formatVersion", 2); //NOI18N
 
-    final List<Topic> leftChildren = new ArrayList<Topic>();
-    final List<Topic> rightChildren = new ArrayList<Topic>();
+    stringer.endObject();
 
-    if (root != null) {
-      for (final Topic t : root.getChildren()) {
-        if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
-          leftChildren.add(t);
-        } else {
-          rightChildren.add(t);
+    if (!linkMap.isEmpty()) {
+      stringer.key("links").array();
+
+      for (final Map.Entry<String, String> entry : linkMap.entrySet()) {
+        final TopicId from = uuidTopicMap.get(entry.getKey());
+        final TopicId to = uuidTopicMap.get(entry.getValue());
+
+        if (from != null && to != null) {
+          stringer.object();
+
+          stringer.key("ideaIdFrom").value(from.id);
+          stringer.key("ideaIdTo").value(to.id);
+
+          stringer.key("attr").object();
+          stringer.key("style").object();
+
+          stringer.key("arrow").value("to");
+          stringer.key("color").value(Utils.color2html(cfg.getJumpLinkColor(), false));
+          stringer.key("lineStyle").value("dashed");
+
+          stringer.endObject();
+          stringer.endObject();
+
+          stringer.endObject();
         }
       }
-    }
-    state.startObj("ideas"); //NOI18N
 
-    if (root != null) {
-      state.processTopic(0, 1, root);
+      stringer.endArray();
     }
 
-    int id = 2;
-    for (final Topic right : rightChildren) {
-      id = writeTopic(state, id + 1, cfg, right);
-    }
-
-    for (final Topic left : leftChildren) {
-      id = writeTopic(state, -(id + 1), cfg, left);
-    }
-
-    state.end();
-
-    if (root != null) {
-      state.startObj("attr"); //NOI18N
-      state.startObj("style")
-              .set("background", assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, root), false)))//NOI18N
-              .set("color", assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, root), false)))//NOI18N
-              .end(); //NOI18N
-    }
-
-    final String attachment = root == null ? null : makeHtmlFromExtras(root);
-    if (attachment != null) {
-      state.startObj("attachment"); //NOI18N
-      state.set("contentType", "text/html"); //NOI18N
-      state.set("content", attachment); //NOI18N
-      state.end();
-    }
-    state.end();
-
-    final List<TopicData> topicsWithJumps = state.getTopicsContainingJump();
-    if (!topicsWithJumps.isEmpty()) {
-      state.startArray("links"); //NOI18N
-      for (final TopicData src : topicsWithJumps) {
-        final TopicData dest = state.findTopic((ExtraTopic) src.getTopic().getExtras().get(Extra.ExtraType.TOPIC));
-        if (dest != null) {
-          state.startObj(); //NOI18N
-          state.set("ideaIdFrom", src.getID()); //NOI18N
-          state.set("ideaIdTo", dest.getID()); //NOI18N
-          state.startObj("attr")
-                  .startObj("style")
-                  .set("color", "#FF0000")
-                  .set("lineStyle", "dashed")
-                  .end()
-                  .end(); //NOI18N
-          state.end();
-        }
-      }
-      state.end();
-    }
-
-    if (root != null) {
-      state.end();
-    }
+    stringer.endObject();
   }
 
   @Override
   public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
-    final State state = new State();
+    final JSONStringer stringer = new JSONStringer();
 
-    writeRoot(state, panel.getConfiguration(), panel.getModel().getRoot());
+    writeRoot(stringer, panel.getConfiguration(), panel.getModel().getRoot());
 
-    final String text = state.toString();
+    final String text = stringer.toString();
 
     File fileToSaveMap = null;
     OutputStream theOut = out;
@@ -252,134 +274,6 @@ public class MindmupExporter extends AbstractExporter {
   @Override
   public int getOrder() {
     return 2;
-  }
-
-  private static class TopicData {
-
-    private final int uid;
-    private final int id;
-    private final Topic topic;
-
-    public TopicData(final int uid, final int id, @Nonnull final Topic topic) {
-      this.uid = uid;
-      this.id = id;
-      this.topic = topic;
-    }
-
-    public int getUID() {
-      return this.uid;
-    }
-
-    public int getID() {
-      return id;
-    }
-
-    @Nonnull
-    public Topic getTopic() {
-      return this.topic;
-    }
-  }
-
-  private static class State {
-
-    private final Map<String, TopicData> topicsWithId = new HashMap<String, TopicData>();
-    private final List<TopicData> topicsContainsJump = new ArrayList<TopicData>();
-
-    private JSONStringer jsonStringer = new JSONStringer();
-    private final List<JsonType> stack = new ArrayList<>();
-
-    private enum JsonType {
-      OBJECT,
-      ARRAY
-    }
-
-    public State() {
-    }
-
-    public void processTopic(final int uid, final int id, @Nonnull final Topic topic) {
-      final String topicUID = getTopicUid(topic);
-      if (topicUID != null) {
-        topicsWithId.put(topicUID, new TopicData(uid, id, topic));
-      }
-
-      final ExtraTopic linkto = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
-      if (linkto != null) {
-        this.topicsContainsJump.add(new TopicData(uid, id, topic));
-      }
-    }
-
-    @Nonnull
-    @MustNotContainNull
-    public List<TopicData> getTopicsContainingJump() {
-      return this.topicsContainsJump;
-    }
-
-    @Nullable
-    public TopicData findTopic(@Nonnull final ExtraTopic link) {
-      return topicsWithId.get(link.getValue());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public State startObj(@Nonnull final String key) {
-      this.jsonStringer.key(key).object();
-      this.stack.add(JsonType.OBJECT);
-      return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public State startObj() {
-      this.jsonStringer.object();
-      this.stack.add(JsonType.OBJECT);
-      return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public State startArray(@Nonnull final String key) {
-      this.jsonStringer.key(key).array();
-      this.stack.add(JsonType.ARRAY);
-      return this;
-    }
-
-    @Nonnull
-    public State set(@Nonnull final String key, @Nonnull final String value) {
-      this.jsonStringer.key(key).value(value);
-      return this;
-    }
-
-    @Nonnull
-    public State set(@Nonnull final String key, final int value) {
-      this.jsonStringer.key(key).value((long) value);
-      return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public State end() {
-      if (this.stack.isEmpty()) {
-        throw new IllegalArgumentException("Unexpected JSON end");
-      }
-      final JsonType type = this.stack.remove(this.stack.size() - 1);
-      switch (type) {
-        case ARRAY:
-          this.jsonStringer.endArray();
-          break;
-        case OBJECT:
-          this.jsonStringer.endObject();
-          break;
-        default:
-          throw new Error("Unexpected type:" + type);
-      }
-      return this;
-    }
-
-    @Override
-    @Nonnull
-    public String toString() {
-      return this.jsonStringer.toString();
-    }
   }
 
 }
