@@ -516,6 +516,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     RENDER_EXECUTOR.shutdownNow();
   }
 
+  @Nonnull
+  @Override
+  public String getDefaultExtension() {
+    return "puml";
+  }
+
   @Override
   public boolean saveDocumentAs() throws IOException {
     stopAutoupdateTimer();

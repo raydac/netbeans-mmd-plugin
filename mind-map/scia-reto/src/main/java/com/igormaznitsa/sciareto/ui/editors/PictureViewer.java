@@ -138,6 +138,12 @@ public final class PictureViewer extends AbstractEditor {
     loadContent(file);
   }
 
+  @Nonnull
+  @Override
+  public String getDefaultExtension() {
+    return "png";
+  }
+
   @Override
   public void focusToEditor(final int line) {
   }

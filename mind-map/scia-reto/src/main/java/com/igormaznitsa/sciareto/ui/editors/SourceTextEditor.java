@@ -210,6 +210,12 @@ public final class SourceTextEditor extends AbstractEditor {
     gotoLine(line);
   }
 
+  @Nonnull
+  @Override
+  public String getDefaultExtension() {
+    return "txt";
+  }
+
   private void gotoLine(final int line){
     if (line > 0) {
       try {

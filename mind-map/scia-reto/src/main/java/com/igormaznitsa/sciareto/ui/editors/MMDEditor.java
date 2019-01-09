@@ -260,6 +260,12 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     return this.undoStorage.hasUndo();
   }
 
+  @Nonnull
+  @Override
+  public String getDefaultExtension() {
+    return "mmd";
+  }
+
   @Override
   public void loadContent(@Nullable File file) throws IOException {
     final MindMap map;
