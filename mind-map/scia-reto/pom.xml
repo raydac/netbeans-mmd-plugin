@@ -23,7 +23,7 @@
   </licenses>
 
   <properties>
-    <app.name>sciareto_${project.version}</app.name>
+    <app.name>sciareto-${project.version}</app.name>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <jung.version>2.1.1</jung.version>
@@ -122,6 +122,172 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>com.igormaznitsa</groupId>
+            <artifactId>mvn-jlink-wrapper</artifactId>
+            <version>1.0.0</version>
+            <executions>
+              <execution>
+                <id>cache-work-jdk</id>
+                <goals>
+                  <goal>cache-jdk</goal>
+                </goals>
+                <configuration>
+                  <jdkPathProperty>mvnjlink.jdk.work.path</jdkPathProperty>
+                  <provider>ADOPT</provider>
+                  <providerConfig>
+                    <release>jdk-11.0.1+13</release>
+                    <arch>x64</arch>
+                    <type>jdk</type>
+                    <impl>hotspot</impl>
+                  </providerConfig>
+                </configuration>
+              </execution>
+              <execution>
+                <id>cache-linux-jdk</id>
+                <goals>
+                  <goal>cache-jdk</goal>
+                </goals>
+                <configuration>
+                  <jdkPathProperty>mvnjlink.jdk.linux.path</jdkPathProperty>
+                  <provider>ADOPT</provider>
+                  <providerConfig>
+                    <release>jdk-11.0.1+13</release>
+                    <arch>x64</arch>
+                    <os>linux</os>
+                    <type>jdk</type>
+                    <impl>hotspot</impl>
+                  </providerConfig>
+                </configuration>
+              </execution>
+              <execution>
+                <id>cache-windows-jdk</id>
+                <goals>
+                  <goal>cache-jdk</goal>
+                </goals>
+                <configuration>
+                  <jdkPathProperty>mvnjlink.jdk.windows.path</jdkPathProperty>
+                  <provider>ADOPT</provider>
+                  <providerConfig>
+                    <release>jdk-11.0.1+13</release>
+                    <arch>x64</arch>
+                    <os>windows</os>
+                    <type>jdk</type>
+                    <impl>hotspot</impl>
+                  </providerConfig>
+                </configuration>
+              </execution>
+              <execution>
+                <id>call-jdeps</id>
+                <goals>
+                  <goal>jdeps</goal>
+                </goals>
+                <configuration>
+                  <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
+                  <output>${project.build.directory}${file.separator}jdeps.out</output>
+                  <options>
+                    <option>-s</option>
+                    <option>${project.build.directory}${file.separator}${project.build.finalName}.jar</option>
+                  </options>
+                </configuration>
+              </execution>
+              <execution>
+                <id>make-jre-linux</id>
+                <goals>
+                  <goal>jlink</goal>
+                </goals>
+                <configuration>
+                  <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
+                  <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
+                  <output>${project.build.directory}${file.separator}jre_linux</output>
+                  <modulePath>${mvnjlink.jdk.linux.path}${file.separator}jmods</modulePath>
+                  <options>
+                    <option>--compress=2</option>
+                    <option>--no-header-files</option>
+                    <option>--no-man-pages</option>
+                  </options>
+                </configuration>
+              </execution>
+              <execution>
+                <id>make-jre-windows</id>
+                <goals>
+                  <goal>jlink</goal>
+                </goals>
+                <configuration>
+                  <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
+                  <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
+                  <output>${project.build.directory}${file.separator}jre_windows</output>
+                  <modulePath>${mvnjlink.jdk.windows.path}${file.separator}jmods</modulePath>
+                  <options>
+                    <option>--compress=2</option>
+                    <option>--no-header-files</option>
+                    <option>--no-man-pages</option>
+                  </options>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>com.akathist.maven.plugins.launch4j</groupId>
+            <artifactId>launch4j-maven-plugin</artifactId>
+            <version>1.7.25</version>
+            <configuration>
+              <headerType>gui</headerType>
+              <outfile>${project.build.directory}/${app.name}.exe</outfile>
+              <downloadUrl>http://www.oracle.com/technetwork/java/javase/downloads</downloadUrl>
+              <classPath>
+                <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
+                <preCp>anything</preCp>
+              </classPath>
+              <icon>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}windows${file.separator}app.ico</icon>
+              <singleInstance>
+                <mutexName>sciaretoeditor</mutexName>
+              </singleInstance>
+              <versionInfo>
+                <fileVersion>1.4.5.0</fileVersion>
+                <txtFileVersion>${project.version}</txtFileVersion>
+                <fileDescription>SciaReto Mind Map editor</fileDescription>
+                <copyright>2016-2019 Igor Maznitsa</copyright>
+                <productVersion>${main.version.raw}.0</productVersion>
+                <txtProductVersion>${project.version}</txtProductVersion>
+                <productName>${project.name}</productName>
+                <companyName>igormaznitsa.com</companyName>
+                <internalName>${project.name}</internalName>
+                <originalFilename>${app.name}.exe</originalFilename>
+              </versionInfo>
+            </configuration>
+            <executions>
+              <execution>
+                <id>l4j-embedded-jar</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>launch4j</goal>
+                </goals>
+                <configuration>
+                  <outfile>${project.build.directory}${file.separator}${app.name}_WINDOWS.exe</outfile>
+                  <jre>
+                    <minVersion>1.8.0</minVersion>
+                    <jdkPreference>preferJre</jdkPreference>
+                  </jre>
+                </configuration>
+              </execution>
+              <execution>
+                <id>l4j-only-starter</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>launch4j</goal>
+                </goals>
+                <configuration>
+                  <outfile>${project.build.directory}${file.separator}${app.name}.exe</outfile>
+                  <dontWrapJar>true</dontWrapJar>
+                  <jar>.\scia-reto.jar</jar>
+                  <jre>
+                    <path>.\jre</path>
+                  </jre>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
             <executions>
@@ -133,54 +299,24 @@
                 </goals>
                 <configuration>
                   <appendAssemblyId>false</appendAssemblyId>
-                  <finalName>sciareto_${project.version}_LINUX</finalName>
+                  <finalName>${app.name}-linux-x64-openjdk</finalName>
                   <descriptors>
-                    <descriptor>src/assemble/linux.xml</descriptor>
+                    <descriptor>src${file.separator}assembly${file.separator}linux.xml</descriptor>
                   </descriptors>
                 </configuration>
               </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>com.akathist.maven.plugins.launch4j</groupId>
-            <artifactId>launch4j-maven-plugin</artifactId>
-            <version>1.7.25</version>
-            <executions>
               <execution>
-                <id>l4j-clui</id>
+                <id>make-windows</id>
                 <phase>install</phase>
                 <goals>
-                  <goal>launch4j</goal>
+                  <goal>single</goal>
                 </goals>
                 <configuration>
-                  <headerType>gui</headerType>
-                  <outfile>${project.build.directory}/${app.name}.exe</outfile>
-                  <downloadUrl>http://www.oracle.com/technetwork/java/javase/downloads</downloadUrl>
-                  <classPath>
-                    <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
-                    <preCp>anything</preCp>
-                  </classPath>
-                  <icon>logo.ico</icon>
-                  <outfile>${project.build.directory}/${app.name}_WINDOWS.exe</outfile>
-                  <singleInstance>
-                    <mutexName>sciaretoeditor</mutexName>
-                  </singleInstance>
-                  <jre>
-                    <minVersion>1.8.0</minVersion>
-                    <jdkPreference>preferJre</jdkPreference>
-                  </jre>
-                  <versionInfo>
-                    <fileVersion>1.4.5.0</fileVersion>
-                    <txtFileVersion>${project.version}</txtFileVersion>
-                    <fileDescription>SciaReto Mind Map editor</fileDescription>
-                    <copyright>2016-2019 Igor Maznitsa</copyright>
-                    <productVersion>${main.version.raw}.0</productVersion>
-                    <txtProductVersion>${project.version}</txtProductVersion>
-                    <productName>${project.name}</productName>
-                    <companyName>igormaznitsa.com</companyName>
-                    <internalName>${project.name}</internalName>
-                    <originalFilename>${app.name}.exe</originalFilename>
-                  </versionInfo>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${app.name}-windows-x64-openjdk</finalName>
+                  <descriptors>
+                    <descriptor>src${file.separator}assembly${file.separator}windows.xml</descriptor>
+                  </descriptors>
                 </configuration>
               </execution>
             </executions>
@@ -210,6 +346,32 @@
                 <goals>
                   <goal>bundle</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>clean-temp</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.directory}</directory>
+                      <includes>
+                        <include>original-sciareto-*.jar</include>
+                        <include>${app.name}.exe</include>
+                        <include>jdeps.out</include>
+                      </includes>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
