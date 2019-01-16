@@ -1,4 +1,4 @@
 #!/bin/sh
 BASEDIR=`dirname "$0"`
 
-exec "$BASEDIR"/jre/bin/java -jar "$BASEDIR"/zxpoly-emul*.jar
+exec "$BASEDIR"/jre/bin/java -jar "$BASEDIR"/scia-reto-*.jar

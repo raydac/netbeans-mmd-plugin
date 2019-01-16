@@ -250,7 +250,7 @@
                   <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
                   <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
                   <output>${project.build.directory}${file.separator}jre_macos</output>
-                  <modulePath>${mvnjlink.jdk.macos.path}${file.separator}jmods</modulePath>
+                  <modulePath>${mvnjlink.jdk.macos.path}${file.separator}Contents${file.separator}Home${file.separator}jmods</modulePath>
                   <options>
                     <option>--compress=2</option>
                     <option>--no-header-files</option>
