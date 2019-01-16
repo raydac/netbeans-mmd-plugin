@@ -3,7 +3,8 @@ __1.4.5 (SNAPSHOT)__
 - ALL: Improved import from FreeMind XHTML format
 - ALL: Paste plain text to add a new node [#48](https://github.com/raydac/netbeans-mmd-plugin/issues/48) 
 - ALL: improved procesing of fold/unfold keyboard shortcuts to fold and unfold all children [#17](https://github.com/raydac/netbeans-mmd-plugin/issues/17)
-- SR:  updated PlantUML version to 1.2018.14
+- SR:  improved distributives, added prepared embedded OpenJDK image
+- SR:  updated PlantUML version to 1.2019.0
 
 __1.4.4 (04-aug-2018)__
 - SR:  updated versions: PlantUML 1.2018.9, Batik 1.10, JLatexMath 1.0.7, JNA 4.5.2
