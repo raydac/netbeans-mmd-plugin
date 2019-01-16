@@ -177,6 +177,23 @@
                 </configuration>
               </execution>
               <execution>
+                <id>cache-macos-jdk</id>
+                <goals>
+                  <goal>cache-jdk</goal>
+                </goals>
+                <configuration>
+                  <jdkPathProperty>mvnjlink.jdk.macos.path</jdkPathProperty>
+                  <provider>ADOPT</provider>
+                  <providerConfig>
+                    <release>jdk-11.0.1+13</release>
+                    <arch>x64</arch>
+                    <os>mac</os>
+                    <type>jdk</type>
+                    <impl>hotspot</impl>
+                  </providerConfig>
+                </configuration>
+              </execution>
+              <execution>
                 <id>call-jdeps</id>
                 <goals>
                   <goal>jdeps</goal>
@@ -217,6 +234,23 @@
                   <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
                   <output>${project.build.directory}${file.separator}jre_windows</output>
                   <modulePath>${mvnjlink.jdk.windows.path}${file.separator}jmods</modulePath>
+                  <options>
+                    <option>--compress=2</option>
+                    <option>--no-header-files</option>
+                    <option>--no-man-pages</option>
+                  </options>
+                </configuration>
+              </execution>
+              <execution>
+                <id>make-jre-macos</id>
+                <goals>
+                  <goal>jlink</goal>
+                </goals>
+                <configuration>
+                  <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
+                  <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
+                  <output>${project.build.directory}${file.separator}jre_macos</output>
+                  <modulePath>${mvnjlink.jdk.macos.path}${file.separator}jmods</modulePath>
                   <options>
                     <option>--compress=2</option>
                     <option>--no-header-files</option>
@@ -319,33 +353,56 @@
                   </descriptors>
                 </configuration>
               </execution>
+              <execution>
+                <id>make-mac</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${project.build.finalName}-macos-x64-openjdk</finalName>
+                  <descriptors>
+                    <descriptor>src${file.separator}assembly${file.separator}mac.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
           <plugin>
-            <groupId>sh.tak.appbundler</groupId>
-            <artifactId>appbundle-maven-plugin</artifactId>
-            <version>1.2.0</version>
-            <configuration>
-              <bundleName>${app.name}</bundleName>
-              <diskImageFile>${project.build.directory}/${project.build.finalName}_OSX.dmg</diskImageFile>
-              <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
-              <iconFile>logo.icns</iconFile>
-              <bundleName>Scia-Reto Editor</bundleName>
-              <generateDiskImageFile>true</generateDiskImageFile>
-              <includeApplicationsSymlink>true</includeApplicationsSymlink>
-              <diskImageInternetEnable>true</diskImageInternetEnable>
-              <jvmVersion>1.8+</jvmVersion>
-              <jvmOptions>
-                <option>-XX:+IgnoreUnrecognizedVMOptions</option>
-                <option>-XaddExports:java.desktop/com.apple.eawt=ALL-UNNAMED</option>
-              </jvmOptions>
-            </configuration>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>truezip-maven-plugin</artifactId>
+            <version>1.2</version>
             <executions>
               <execution>
-                <phase>package</phase>
+                <id>remove-manifest-from-mac-jar</id>
                 <goals>
-                  <goal>bundle</goal>
+                  <goal>remove</goal>
                 </goals>
+                <phase>install</phase>
+                <configuration>
+                  <fileset>
+                    <directory>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-openjdk.jar${file.separator}META-INF</directory>
+                  </fileset>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>com.coderplus.maven.plugins</groupId>
+            <artifactId>copy-rename-maven-plugin</artifactId>
+            <version>1.0.1</version>
+            <executions>
+              <execution>
+                <id>rename-mac-jar-to-zip</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>rename</goal>
+                </goals>
+                <configuration>
+                  <sourceFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-openjdk.jar</sourceFile>
+                  <destinationFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-openjdk.zip</destinationFile>
+                </configuration>
               </execution>
             </executions>
           </plugin>
