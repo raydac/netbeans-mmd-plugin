@@ -45,6 +45,7 @@ import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -1548,7 +1549,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     config.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
     config.setFont(this.fontMindMapEditor);
 
-    config.setRenderQuality(GetUtils.ensureNonNull((RenderQuality) this.comboBoxRenderQuality.getSelectedItem(), RenderQuality.DEFAULT));
+    config.setRenderQuality(GetUtils.ensureNonNull((RenderQuality) this.comboBoxRenderQuality.getSelectedItem(), Utils.getDefaultRenderQialityForOs()));
 
     for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
       config.setKeyShortCut(e.getValue());

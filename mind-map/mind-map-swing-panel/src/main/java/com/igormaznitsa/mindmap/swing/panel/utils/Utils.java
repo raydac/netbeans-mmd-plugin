@@ -66,6 +66,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.xml.XMLConstants;
+import org.apache.commons.lang.SystemUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.W3CDom;
 import org.w3c.dom.Node;
@@ -304,6 +305,20 @@ public final class Utils {
     return rescaleImageAndEncodeAsBase64(image, maxSize);
   }
 
+  /**
+   * Get default render quality for host OS.
+   * @return the render quality for host OS, must not be null
+   * @since 1.4.5
+   */
+  @Nonnull
+  public static RenderQuality getDefaultRenderQialityForOs() {
+    RenderQuality result = RenderQuality.DEFAULT;
+    if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_WINDOWS) {
+      result = RenderQuality.QUALITY;
+    }
+    return result;
+  }
+  
   /**
    * Rescale image and encode into Base64.
    *

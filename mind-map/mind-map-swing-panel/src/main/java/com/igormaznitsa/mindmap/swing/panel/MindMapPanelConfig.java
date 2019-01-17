@@ -45,6 +45,7 @@ import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import org.apache.commons.lang.SystemUtils;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 public final class MindMapPanelConfig implements Serializable {
 
@@ -112,7 +113,7 @@ public final class MindMapPanelConfig implements Serializable {
   private Font font = new Font(Font.SERIF, Font.BOLD, 18);
   private double scale = 1.0d;
   private boolean dropShadow = true;
-  private RenderQuality renderQuality = RenderQuality.DEFAULT;
+  private RenderQuality renderQuality = Utils.getDefaultRenderQialityForOs();
   private transient volatile boolean notificationEnabled = true;
 
   public MindMapPanelConfig(@Nonnull final MindMapPanelConfig cfg, final boolean copyListeners) {
@@ -790,7 +791,7 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   public void setRenderQuality(@Nullable final RenderQuality value) {
-    this.renderQuality = GetUtils.ensureNonNull(value, RenderQuality.DEFAULT);
+    this.renderQuality = GetUtils.ensureNonNull(value, Utils.getDefaultRenderQialityForOs());
     notifyCfgListenersAboutChange();
   }
 
