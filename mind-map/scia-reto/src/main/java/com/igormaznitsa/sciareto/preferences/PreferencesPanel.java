@@ -135,7 +135,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private void initComponents() {
     java.awt.GridBagConstraints gridBagConstraints;
 
-    jScrollPane1 = new javax.swing.JScrollPane();
+    MainScrollPanel = new javax.swing.JScrollPane();
     jPanel6 = new javax.swing.JPanel();
     jPanel3 = new javax.swing.JPanel();
     jLabel2 = new javax.swing.JLabel();
@@ -166,10 +166,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     colorChooser1stText = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
     colorChooser2ndBackground = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
     colorChooser2ndText = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
-    slider1stLevelHorzGap = new javax.swing.JSlider();
-    slider1stLevelVertGap = new javax.swing.JSlider();
-    slider2ndLevelHorzGap = new javax.swing.JSlider();
-    slider2ndLevelVertGap = new javax.swing.JSlider();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
     jLabel3 = new javax.swing.JLabel();
@@ -189,6 +185,14 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     textFieldPathToGraphvizDot = new javax.swing.JTextField();
     buttonGraphvizDotFile = new javax.swing.JButton();
     filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+    jPanel16 = new javax.swing.JPanel();
+    slider1stLevelHorzGap = new javax.swing.JSlider();
+    jPanel17 = new javax.swing.JPanel();
+    slider1stLevelVertGap = new javax.swing.JSlider();
+    jPanel18 = new javax.swing.JPanel();
+    slider2ndLevelHorzGap = new javax.swing.JSlider();
+    jPanel19 = new javax.swing.JPanel();
+    slider2ndLevelVertGap = new javax.swing.JSlider();
     jPanel1 = new javax.swing.JPanel();
     checkboxUseInsideBrowser = new javax.swing.JCheckBox();
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -549,82 +553,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel2.add(colorChooser2ndText, gridBagConstraints);
 
-    slider1stLevelHorzGap.setMajorTickSpacing(30);
-    slider1stLevelHorzGap.setMaximum(250);
-    slider1stLevelHorzGap.setMinimum(10);
-    slider1stLevelHorzGap.setPaintLabels(true);
-    slider1stLevelHorzGap.setPaintTicks(true);
-    slider1stLevelHorzGap.setBorder(javax.swing.BorderFactory.createTitledBorder("1st level horz.gap"));
-    slider1stLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        slider1stLevelHorzGapStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(slider1stLevelHorzGap, gridBagConstraints);
-
-    slider1stLevelVertGap.setMajorTickSpacing(30);
-    slider1stLevelVertGap.setMaximum(250);
-    slider1stLevelVertGap.setMinimum(10);
-    slider1stLevelVertGap.setPaintLabels(true);
-    slider1stLevelVertGap.setPaintTicks(true);
-    slider1stLevelVertGap.setBorder(javax.swing.BorderFactory.createTitledBorder("1st level vert.gap"));
-    slider1stLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        slider1stLevelVertGapStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(slider1stLevelVertGap, gridBagConstraints);
-
-    slider2ndLevelHorzGap.setMajorTickSpacing(30);
-    slider2ndLevelHorzGap.setMaximum(250);
-    slider2ndLevelHorzGap.setMinimum(10);
-    slider2ndLevelHorzGap.setPaintLabels(true);
-    slider2ndLevelHorzGap.setPaintTicks(true);
-    slider2ndLevelHorzGap.setBorder(javax.swing.BorderFactory.createTitledBorder("2nd level horz.gap"));
-    slider2ndLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        slider2ndLevelHorzGapStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(slider2ndLevelHorzGap, gridBagConstraints);
-
-    slider2ndLevelVertGap.setMajorTickSpacing(30);
-    slider2ndLevelVertGap.setMaximum(250);
-    slider2ndLevelVertGap.setMinimum(10);
-    slider2ndLevelVertGap.setPaintLabels(true);
-    slider2ndLevelVertGap.setPaintTicks(true);
-    slider2ndLevelVertGap.setBorder(javax.swing.BorderFactory.createTitledBorder("2nd level vert.gap"));
-    slider2ndLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        slider2ndLevelVertGapStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(slider2ndLevelVertGap, gridBagConstraints);
-
     jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Selection frame"));
     jPanel5.setLayout(new java.awt.GridBagLayout());
 
@@ -785,6 +713,94 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weighty = 1000.0;
     jPanel2.add(filler5, gridBagConstraints);
+
+    jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("1st level horz.gap"));
+    jPanel16.setLayout(new java.awt.BorderLayout());
+
+    slider1stLevelHorzGap.setMajorTickSpacing(30);
+    slider1stLevelHorzGap.setMaximum(250);
+    slider1stLevelHorzGap.setMinimum(10);
+    slider1stLevelHorzGap.setPaintLabels(true);
+    slider1stLevelHorzGap.setPaintTicks(true);
+    slider1stLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        slider1stLevelHorzGapStateChanged(evt);
+      }
+    });
+    jPanel16.add(slider1stLevelHorzGap, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    jPanel2.add(jPanel16, gridBagConstraints);
+
+    jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("1st level vert.gap"));
+    jPanel17.setLayout(new java.awt.BorderLayout());
+
+    slider1stLevelVertGap.setMajorTickSpacing(30);
+    slider1stLevelVertGap.setMaximum(250);
+    slider1stLevelVertGap.setMinimum(10);
+    slider1stLevelVertGap.setPaintLabels(true);
+    slider1stLevelVertGap.setPaintTicks(true);
+    slider1stLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        slider1stLevelVertGapStateChanged(evt);
+      }
+    });
+    jPanel17.add(slider1stLevelVertGap, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    jPanel2.add(jPanel17, gridBagConstraints);
+
+    jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("2nd level horz.gap"));
+    jPanel18.setLayout(new java.awt.BorderLayout());
+
+    slider2ndLevelHorzGap.setMajorTickSpacing(30);
+    slider2ndLevelHorzGap.setMaximum(250);
+    slider2ndLevelHorzGap.setMinimum(10);
+    slider2ndLevelHorzGap.setPaintLabels(true);
+    slider2ndLevelHorzGap.setPaintTicks(true);
+    slider2ndLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        slider2ndLevelHorzGapStateChanged(evt);
+      }
+    });
+    jPanel18.add(slider2ndLevelHorzGap, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    jPanel2.add(jPanel18, gridBagConstraints);
+
+    jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("2nd level vert.gap"));
+    jPanel19.setLayout(new java.awt.BorderLayout());
+
+    slider2ndLevelVertGap.setMajorTickSpacing(30);
+    slider2ndLevelVertGap.setMaximum(250);
+    slider2ndLevelVertGap.setMinimum(10);
+    slider2ndLevelVertGap.setPaintLabels(true);
+    slider2ndLevelVertGap.setPaintTicks(true);
+    slider2ndLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        slider2ndLevelVertGapStateChanged(evt);
+      }
+    });
+    jPanel19.add(slider2ndLevelVertGap, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    jPanel2.add(jPanel19, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -1071,9 +1087,9 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.insets = new java.awt.Insets(16, 5, 0, 5);
     jPanel6.add(jPanel9, gridBagConstraints);
 
-    jScrollPane1.setViewportView(jPanel6);
+    MainScrollPanel.setViewportView(jPanel6);
 
-    add(jScrollPane1, java.awt.BorderLayout.CENTER);
+    add(MainScrollPanel, java.awt.BorderLayout.CENTER);
   }// </editor-fold>//GEN-END:initComponents
 
   private void checkBoxShowGridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxShowGridActionPerformed
@@ -1593,6 +1609,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JScrollPane MainScrollPanel;
   private javax.swing.JButton buttonAbout;
   private javax.swing.JButton buttonExportToFile;
   private javax.swing.JButton buttonExtensionsOpenInSystem;
@@ -1652,6 +1669,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private javax.swing.JPanel jPanel13;
   private javax.swing.JPanel jPanel14;
   private javax.swing.JPanel jPanel15;
+  private javax.swing.JPanel jPanel16;
+  private javax.swing.JPanel jPanel17;
+  private javax.swing.JPanel jPanel18;
+  private javax.swing.JPanel jPanel19;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
@@ -1660,7 +1681,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private javax.swing.JPanel jPanel7;
   private javax.swing.JPanel jPanel8;
   private javax.swing.JPanel jPanel9;
-  private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JLabel labelBorderWidth;
   private javax.swing.JPanel panelScalingModifiers;
   private javax.swing.JSlider slider1stLevelHorzGap;
