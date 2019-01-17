@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
@@ -23,12 +24,8 @@ import com.intellij.ui.ColorChooser;
 import com.intellij.util.ui.UIUtil;
 
 import javax.annotation.Nullable;
-import javax.swing.DefaultButtonModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyEditor;
@@ -52,7 +49,7 @@ public class ColorChooserButton extends JButton {
   public ColorChooserButton(@Nullable final DialogProvider dialogProvider) {
     super();
 
-    final ColorChooserButton theInstance = this;
+    this.setHorizontalAlignment(SwingConstants.LEFT);
 
     this.setModel(new DefaultButtonModel() {
       private static final long serialVersionUID = 3109256773218160485L;
@@ -62,19 +59,19 @@ public class ColorChooserButton extends JButton {
         final PropertyEditor editor = PropertyEditorManager.findEditor(Color.class);
         if (editor == null) {
           LOGGER.error("Can't find registered color editor");
-          if (dialogProvider != null)
+          if (dialogProvider != null) {
             dialogProvider.msgError(null, "Can't find color editor! unexpected state! Contact developer!");
+          }
           return;
         }
 
         editor.setValue(value);
 
-        final Color selectedColor = ColorChooser.chooseColor(theInstance, String.format(BUNDLE.getString("ColorChoosingButton.dialogTitle"), getText()), getValue());
+        final Color selectedColor = ColorChooser.chooseColor(ColorChooserButton.this, String.format(BUNDLE.getString("ColorChoosingButton.dialogTitle"), getText()), getValue());
         if (selectedColor != null) {
           setValue(selectedColor);
           lastResultOk = true;
-        }
-        else {
+        } else {
           lastResultOk = false;
         }
 
@@ -94,34 +91,34 @@ public class ColorChooserButton extends JButton {
     final int size = UIUtil.isRetina() ? 8 : 16;
     final int halfSize = size / 2;
 
-    final Image img = UIUtil.createImage(size, size, BufferedImage.TYPE_INT_RGB);
+    final int offsetX = 8;
+    final Image img = UIUtil.createImage(size + offsetX, size, BufferedImage.TYPE_INT_ARGB);
     final Graphics gfx = img.getGraphics();
     try {
       if (color == null) {
         gfx.setColor(IdeaUtils.isDarkTheme() ? Color.darkGray : Color.white);
-        gfx.fillRect(0, 0, size, size);
+        gfx.fillRect(offsetX, 0, size, size);
         gfx.setColor(IdeaUtils.isDarkTheme() ? Color.yellow : Color.black);
-        gfx.drawRect(0, 0, size - 1, size - 1);
-        gfx.drawLine(0, 0, size - 1, size - 1);
-      }
-      else if (color == DIFF_COLORS) {
+        gfx.drawRect(offsetX, 0, size - 1, size - 1);
+        gfx.drawLine(offsetX, 0, offsetX + size - 1, size - 1);
+      } else if (color == DIFF_COLORS) {
         gfx.setColor(Color.red);
-        gfx.fillRect(0, 0, halfSize, halfSize);
+        gfx.fillRect(offsetX, 0, halfSize, halfSize);
         gfx.setColor(Color.green);
-        gfx.fillRect(halfSize, 0, halfSize, halfSize);
-        gfx.setColor(Color.blue);
-        gfx.fillRect(0, halfSize, halfSize, halfSize);
+        gfx.fillRect(offsetX + halfSize, 0, halfSize, halfSize);
         gfx.setColor(Color.yellow);
-        gfx.fillRect(halfSize, halfSize, halfSize, halfSize);
-      }
-      else {
-        gfx.setColor(color);
-        gfx.fillRect(0, 0, size, size);
+        gfx.fillRect(offsetX, halfSize, halfSize, halfSize);
+        gfx.setColor(Color.blue);
+        gfx.fillRect(offsetX + halfSize, halfSize, halfSize, halfSize);
         gfx.setColor(Color.black);
-        gfx.drawRect(0, 0, size - 1, size - 1);
+        gfx.drawRect(offsetX, 0, size - 1, size - 1);
+      } else {
+        gfx.setColor(color);
+        gfx.fillRect(offsetX, 0, size, size);
+        gfx.setColor(Color.black);
+        gfx.drawRect(offsetX, 0, size - 1, size - 1);
       }
-    }
-    finally {
+    } finally {
       gfx.dispose();
     }
     return new ImageIcon(img);
