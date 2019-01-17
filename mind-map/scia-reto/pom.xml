@@ -30,7 +30,7 @@
     <batik.version>1.10</batik.version>
     <jlatexmath.version>1.0.7</jlatexmath.version>
     <plantuml.version>1.2019.0</plantuml.version>
-    <rsyntax.version>3.0.0</rsyntax.version>
+    <rsyntax.version>3.0.2</rsyntax.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.2.0</jna.version>
   </properties>
