@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "idea"
-    id "org.jetbrains.intellij" version "0.2.17"
+    id "org.jetbrains.intellij" version "0.4.1"
 }
 
 repositories {
@@ -21,6 +21,11 @@ intellij {
 def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.2.5"
 def mindMapCommonVersion = project.hasProperty('mm_ide_common_version') ? project.getProperty('mm_ide_common_version') : project.version
 def mindMapPanelVersion = project.hasProperty('mm_panel_version') ? project.getProperty('mm_panel_version') : project.version
+def commonsIoVersion = project.hasProperty('commonsio_version') ? project.getProperty('commonsio_version') : "2.5"
+def commonsLangVersion = project.hasProperty('commonslang_version') ? project.getProperty('commonslang_version') : "2.6"
+def iharderVersion = project.hasProperty('iharder_version') ? project.getProperty('iharder_version') : "2.3.9"
+def jsoupVersion = project.hasProperty('jsoup_version') ? project.getProperty('jsoup_version') : "1.11.3"
+def jsonVersion = project.hasProperty('json_version') ? project.getProperty('json_version') : "20180813"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -28,15 +33,15 @@ targetCompatibility = 1.7
 defaultTasks 'clean', 'build'
 
 dependencies {
-    compile 'commons-io:commons-io:2.5'
-    compile 'commons-lang:commons-lang:2.6'
     compile 'com.igormaznitsa:commons-version:1.0.0'
     compile 'com.igormaznitsa:meta-annotations:1.1.2'
     compile 'com.igormaznitsa:meta-utils:1.1.2'
-    compile 'org.json:json:20180813'
-    compile 'net.iharder:base64:2.3.9'
-    compile 'org.jsoup:jsoup:1.11.3'
 
+    compile 'commons-io:commons-io:' + commonsIoVersion
+    compile 'commons-lang:commons-lang:' + commonsLangVersion
+    compile 'org.json:json:' + jsonVersion
+    compile 'net.iharder:base64:' + iharderVersion
+    compile 'org.jsoup:jsoup:' + jsoupVersion
 
     compile 'com.igormaznitsa:mind-map-model:' + mindMapModelVersion
     compile 'com.igormaznitsa:mind-map-ide-common:' + mindMapCommonVersion

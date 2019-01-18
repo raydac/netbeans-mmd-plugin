@@ -153,17 +153,17 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.11.3</version>
+      <version>${jsoup.version}</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20180813</version>
+      <version>${json.version}</version>
     </dependency>
     <dependency>
       <groupId>net.iharder</groupId>
       <artifactId>base64</artifactId>
-      <version>2.3.9</version>
+      <version>${iharder.version}</version>
     </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>

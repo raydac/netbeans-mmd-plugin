@@ -17,6 +17,11 @@
     <uber.pom>1.0.1</uber.pom>
     <iam.commons.version>1.0.0</iam.commons.version>
     <mindmap.model.version>1.2.5</mindmap.model.version>
+    <jsoup.version>1.11.3</jsoup.version>
+    <json.version>20180813</json.version>
+    <iharder.version>2.3.9</iharder.version>
+    <commons.io.version>2.5</commons.io.version>
+    <commons.lang.version>2.6</commons.lang.version>
   </properties>
 
   <modules>
@@ -85,12 +90,12 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.5</version>
+        <version>${commons.io.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
+        <version>${commons.lang.version}</version>
       </dependency>
       <dependency>
         <groupId>com.igormaznitsa</groupId>
