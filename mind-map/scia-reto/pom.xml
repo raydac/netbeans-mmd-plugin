@@ -29,7 +29,7 @@
     <jung.version>2.1.1</jung.version>
     <batik.version>1.10</batik.version>
     <jlatexmath.version>1.0.7</jlatexmath.version>
-    <plantuml.version>1.2019.0</plantuml.version>
+    <plantuml.version>1.2019.1</plantuml.version>
     <rsyntax.version>3.0.2</rsyntax.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.2.0</jna.version>
@@ -124,7 +124,7 @@
           <plugin>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>mvn-jlink-wrapper</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.2</version>
             <executions>
               <execution>
                 <id>cache-work-jdk</id>
@@ -135,7 +135,7 @@
                   <jdkPathProperty>mvnjlink.jdk.work.path</jdkPathProperty>
                   <provider>ADOPT</provider>
                   <providerConfig>
-                    <release>jdk-11.0.1+13</release>
+                    <release>jdk-11.0.2+9</release>
                     <arch>x64</arch>
                     <type>jdk</type>
                     <impl>hotspot</impl>
@@ -151,7 +151,7 @@
                   <jdkPathProperty>mvnjlink.jdk.linux.path</jdkPathProperty>
                   <provider>ADOPT</provider>
                   <providerConfig>
-                    <release>jdk-11.0.1+13</release>
+                    <release>jdk-11.0.2+9</release>
                     <arch>x64</arch>
                     <os>linux</os>
                     <type>jdk</type>
@@ -168,7 +168,7 @@
                   <jdkPathProperty>mvnjlink.jdk.windows.path</jdkPathProperty>
                   <provider>ADOPT</provider>
                   <providerConfig>
-                    <release>jdk-11.0.1+13</release>
+                    <release>jdk-11.0.2+9</release>
                     <arch>x64</arch>
                     <os>windows</os>
                     <type>jdk</type>
@@ -185,7 +185,7 @@
                   <jdkPathProperty>mvnjlink.jdk.macos.path</jdkPathProperty>
                   <provider>ADOPT</provider>
                   <providerConfig>
-                    <release>jdk-11.0.1+13</release>
+                    <release>jdk-11.0.2+9</release>
                     <arch>x64</arch>
                     <os>mac</os>
                     <type>jdk</type>

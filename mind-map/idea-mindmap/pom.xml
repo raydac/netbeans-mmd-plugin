@@ -28,7 +28,7 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>(,9)</version>
+                  <version>[1.8,9]</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
@@ -122,8 +122,15 @@
         <groupId>org.fortasoft</groupId>
         <artifactId>gradle-maven-plugin</artifactId>
         <version>1.0.8</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.gradle</groupId>
+            <artifactId>gradle-tooling-api</artifactId>
+            <version>5.2</version>
+          </dependency>
+        </dependencies>
         <configuration>
-          <gradleVersion>4.2</gradleVersion>
+          <gradleVersion>5.2</gradleVersion>
           <tasks>
             <task>clean</task>
             <task>build</task>
@@ -140,5 +147,20 @@
       </plugin>
     </plugins>
   </build>
+
+
+  <repositories>
+    <repository>
+      <id>gradle-repository</id>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <url>https://repo.gradle.org/gradle/libs-releases-local/</url>
+    </repository>
+  </repositories>
+
 
 </project>
