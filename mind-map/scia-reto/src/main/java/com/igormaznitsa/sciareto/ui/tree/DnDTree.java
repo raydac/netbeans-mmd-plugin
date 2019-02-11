@@ -50,6 +50,8 @@ import javax.swing.TransferHandler;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 public final class DnDTree extends JTree implements DragSourceListener, DropTargetListener, DragGestureListener {
 
@@ -249,7 +251,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     final NodeProjectGroup model = (NodeProjectGroup) this.getModel();
 
     File theFolder = file.getParentFile();
-    
+
     while (theFolder != null) {
       path = model.findPathToFile(theFolder);
       if (path == null) {
@@ -274,8 +276,34 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
       }
       path = parent.makeTreePath();
     }
-    
+
     return path;
+  }
+
+  @Nullable
+  public File cloneFile(@Nonnull final TreePath path) throws IOException {
+    final NodeFileOrFolder node = (NodeFileOrFolder) path.getLastPathComponent();
+    final File baseFile = node.makeFileForNode();
+    if (baseFile == null) {
+      return null;
+    }
+
+    final File folder = baseFile.getParentFile();
+
+    String name = node.name;
+    final String extension = FilenameUtils.getExtension(baseFile.getName());
+    final String baseName = FilenameUtils.getBaseName(baseFile.getName());
+    File newFile = null;
+    for (int i = 1; i < Integer.MAX_VALUE; i++) {
+      newFile = new File(folder, baseName + "_copy" + i + (extension.isEmpty() ? "" : '.' + extension));
+      if (!newFile.exists()) {
+        break;
+      }
+    }
+
+    FileUtils.copyFile(baseFile, newFile);
+
+    return newFile;
   }
 
 }

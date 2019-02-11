@@ -72,6 +72,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import java.nio.charset.StandardCharsets;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
@@ -345,6 +346,24 @@ public final class ExplorerTree extends JScrollPane {
         }
       });
       result.add(rename);
+
+      if (node.isLeaf()) {
+        final JMenuItem doClone = new JMenuItem("Clone");
+        doClone.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(@Nonnull final ActionEvent e) {
+            try {
+              final File file = projectTree.cloneFile(node.makeTreePath());
+              if (file != null) {
+                addFileIfPossible(file, false);
+              }
+            } catch (IOException ex) {
+              DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't make copy '" + node + '\'');
+            }
+          }
+        });
+        result.add(doClone);
+      }
     }
 
     if (node instanceof NodeProject) {
@@ -611,7 +630,7 @@ public final class ExplorerTree extends JScrollPane {
         if (extension != null) {
           final String providedExtension = FilenameUtils.getExtension(fileName);
           if (!extension.equalsIgnoreCase(providedExtension)) {
-            if ("txt".equals(extension)){
+            if ("txt".equals(extension)) {
               fileName += providedExtension.isEmpty() ? '.' + extension : "";
             } else {
               fileName += '.' + extension;
@@ -643,7 +662,7 @@ public final class ExplorerTree extends JScrollPane {
                 root.setText("Root"); //NOI18N
               }
               try {
-                FileUtils.write(file, model.write(new StringWriter()).toString(), "UTF-8"); //NOI18N
+                FileUtils.write(file, model.write(new StringWriter()).toString(), StandardCharsets.UTF_8); //NOI18N
                 ok = true;
               } catch (IOException ex) {
                 LOGGER.error("Can't create MMD file", ex); //NOI18N
