@@ -33,6 +33,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.commons.io.FilenameUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -79,14 +80,16 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     return result;
   }
 
+  @UiThread
   public void removeProject(@Nonnull final NodeProject project) {
     int index = this.children.indexOf(project);
     if (index >= 0 && this.children.remove(project)) {
       final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this}, new int[]{index}, new Object[]{project});
-      for (final TreeModelListener l : this.listeners) {
+      this.listeners.forEach((l) -> {
         l.treeNodesRemoved(event);
-      }
+      });
     }
+    project.dispose();
   }
 
   @Override

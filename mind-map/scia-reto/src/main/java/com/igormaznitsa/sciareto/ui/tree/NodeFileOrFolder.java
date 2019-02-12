@@ -18,22 +18,6 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.ArrayUtils;
@@ -43,11 +27,28 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.RecursiveTask;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
@@ -75,7 +76,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   protected static final class ForkedLoadNodeTask extends RecursiveTask<NodeFileOrFolder> {
 
     private final long serialVersionUID = 289347923874323L;
-    
+
     private final NodeFileOrFolder parent;
     private final boolean isdir;
     private final String name;
@@ -109,17 +110,19 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   protected final List<NodeFileOrFolder> children;
   protected final boolean folderFlag;
-  
+
   protected volatile String name;
   private volatile boolean noAccess;
   private final boolean readonly;
+
+  private volatile boolean disposed = false;
 
   public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean showHiddenFiles, final boolean readOnly) throws IOException {
     this.parent = parent;
     this.name = name;
 
     if (folder) {
-      this.children = new ArrayList<>();
+      this.children = Collections.synchronizedList(new ArrayList<NodeFileOrFolder>());
       this.folderFlag = true;
     } else {
       this.children = Collections.EMPTY_LIST;
@@ -195,12 +198,20 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
-    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(),THREAD_CANCELABLE);
+    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(), THREAD_CANCELABLE);
   }
 
   public void reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelable) throws IOException {
-    this.children.clear();
+    clearChildren();
     this.children.addAll(_reloadSubtree(addHiddenFilesAndFolders, cancelable));
+  }
+
+  private void clearChildren() {
+    try {
+      this.children.forEach(NodeFileOrFolder::dispose);
+    } finally {
+      this.children.clear();
+    }
   }
 
   @Nonnull
@@ -212,16 +223,16 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
       final File generatedFile = makeFileForNode();
       if (generatedFile != null && generatedFile.isDirectory()) {
         final List<ForkedLoadNodeTask> forks = new ArrayList<>();
-        
+
         DirectoryStream<Path> stream;
-        try{
-            stream = Files.newDirectoryStream(generatedFile.toPath());
-        }catch(AccessDeniedException ex){
-            LOGGER.info("Can't get access to file: "+generatedFile);
-            this.noAccess = true;
-            return result;
+        try {
+          stream = Files.newDirectoryStream(generatedFile.toPath());
+        } catch (AccessDeniedException ex) {
+          LOGGER.info("Can't get access to file: " + generatedFile);
+          this.noAccess = true;
+          return result;
         }
-        
+
         try {
           for (final Path p : stream) {
             if (cancelableObject.isCanceled()) {
@@ -232,7 +243,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
             }
           }
         } finally {
-            IOUtils.closeQuetly(stream);
+          IOUtils.closeQuetly(stream);
         }
 
         for (final ForkedLoadNodeTask f : forks) {
@@ -352,9 +363,9 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   public boolean hasNoAccess() {
-      return this.noAccess;
+    return this.noAccess;
   }
-  
+
   @Override
   public boolean isLeaf() {
     return this.isLoading() ? true : !(this.folderFlag || this.noAccess);
@@ -416,7 +427,13 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   boolean deleteChild(@Nonnull final NodeFileOrFolder child) {
-    return this.children.remove(child);
+    boolean result = false;
+    try {
+      result = this.children.remove(child);
+    } finally {
+      child.dispose();
+    }
+    return result;
   }
 
   protected void fillAllMatchNamePattern(@Nonnull final Pattern namePattern, @Nonnull @MustNotContainNull final List<NodeFileOrFolder> resultList) {
@@ -458,4 +475,24 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     };
   }
 
+  public final boolean isDisposed() {
+    return this.disposed;
+  }
+
+  public final void dispose() {
+    if (!this.disposed) {
+      this.disposed = true;
+      try {
+        this.onDispose();
+      } finally {
+        this.children.forEach((c) -> {
+          c.dispose();
+        });
+      }
+    }
+  }
+
+  protected void onDispose() {
+
+  }
 }
