@@ -161,13 +161,13 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
   @MustNotContainNull
   protected List<NodeFileOrFolder> _reloadSubtree(final boolean showHiddenFiles, @Nonnull final Cancelable cancelable) throws IOException {
     this.loading.set(true);
-    
+
     this.getGroup().notifyProjectStateChanged(this);
     try {
       final List<NodeFileOrFolder> result = new ArrayList<>(super._reloadSubtree(showHiddenFiles, cancelable));
       final File knowledgeFolder = new File(this.folder, Context.KNOWLEDGE_FOLDER);
       this.knowledgeFolderPresented = knowledgeFolder.isDirectory();
-     
+
       if (!showHiddenFiles && this.knowledgeFolderPresented) {
         boolean knowledgeFolderAdded = false;
 
@@ -179,8 +179,12 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
         }
 
         if (!cancelable.isCanceled() && !knowledgeFolderAdded) {
-          result.add(new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), showHiddenFiles, !Files.isWritable(knowledgeFolder.toPath())));
-          Collections.sort(result, this);
+          final NodeFileOrFolder knowledgeFolderNode = new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), showHiddenFiles, !Files.isWritable(knowledgeFolder.toPath()));
+          knowledgeFolderNode.reloadSubtree(showHiddenFiles, cancelable);
+          if (!cancelable.isCanceled()) {
+            result.add(knowledgeFolderNode);
+            Collections.sort(result, this);
+          }
         }
       }
       return result;
