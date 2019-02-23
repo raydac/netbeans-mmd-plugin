@@ -33,6 +33,7 @@
     <rsyntax.version>3.0.2</rsyntax.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.2.0</jna.version>
+    <jre.version>11.0.2</jre.version>
   </properties>
 
   <dependencies>
@@ -133,12 +134,11 @@
                 </goals>
                 <configuration>
                   <jdkPathProperty>mvnjlink.jdk.work.path</jdkPathProperty>
-                  <provider>ADOPT</provider>
+                  <provider>BELLSOFT</provider>
                   <providerConfig>
-                    <release>jdk-11.0.2+9</release>
-                    <arch>x64</arch>
+                    <version>${jre.version}</version>
                     <type>jdk</type>
-                    <impl>hotspot</impl>
+                    <arch>amd64</arch>
                   </providerConfig>
                 </configuration>
               </execution>
@@ -149,13 +149,12 @@
                 </goals>
                 <configuration>
                   <jdkPathProperty>mvnjlink.jdk.linux.path</jdkPathProperty>
-                  <provider>ADOPT</provider>
+                  <provider>BELLSOFT</provider>
                   <providerConfig>
-                    <release>jdk-11.0.2+9</release>
-                    <arch>x64</arch>
                     <os>linux</os>
+                    <version>${jre.version}</version>
                     <type>jdk</type>
-                    <impl>hotspot</impl>
+                    <arch>amd64</arch>
                   </providerConfig>
                 </configuration>
               </execution>
@@ -166,13 +165,12 @@
                 </goals>
                 <configuration>
                   <jdkPathProperty>mvnjlink.jdk.windows.path</jdkPathProperty>
-                  <provider>ADOPT</provider>
+                  <provider>BELLSOFT</provider>
                   <providerConfig>
-                    <release>jdk-11.0.2+9</release>
-                    <arch>x64</arch>
                     <os>windows</os>
+                    <version>${jre.version}</version>
                     <type>jdk</type>
-                    <impl>hotspot</impl>
+                    <arch>amd64</arch>
                   </providerConfig>
                 </configuration>
               </execution>
@@ -183,13 +181,12 @@
                 </goals>
                 <configuration>
                   <jdkPathProperty>mvnjlink.jdk.macos.path</jdkPathProperty>
-                  <provider>ADOPT</provider>
+                  <provider>BELLSOFT</provider>
                   <providerConfig>
-                    <release>jdk-11.0.2+9</release>
-                    <arch>x64</arch>
-                    <os>mac</os>
+                    <os>macos</os>
+                    <version>${jre.version}</version>
                     <type>jdk</type>
-                    <impl>hotspot</impl>
+                    <arch>amd64</arch>
                   </providerConfig>
                 </configuration>
               </execution>
@@ -250,7 +247,7 @@
                   <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
                   <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
                   <output>${project.build.directory}${file.separator}jre_macos</output>
-                  <modulePath>${mvnjlink.jdk.macos.path}${file.separator}Contents${file.separator}Home${file.separator}jmods</modulePath>
+                  <modulePath>${mvnjlink.jdk.macos.path}${file.separator}jmods</modulePath>
                   <options>
                     <option>--compress=2</option>
                     <option>--no-header-files</option>
