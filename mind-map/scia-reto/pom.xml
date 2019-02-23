@@ -288,20 +288,6 @@
             </configuration>
             <executions>
               <execution>
-                <id>l4j-embedded-jar</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>launch4j</goal>
-                </goals>
-                <configuration>
-                  <outfile>${project.build.directory}${file.separator}${app.name}_WINDOWS.exe</outfile>
-                  <jre>
-                    <minVersion>1.8.0</minVersion>
-                    <jdkPreference>preferJre</jdkPreference>
-                  </jre>
-                </configuration>
-              </execution>
-              <execution>
                 <id>l4j-only-starter</id>
                 <phase>install</phase>
                 <goals>

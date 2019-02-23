@@ -31,6 +31,13 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}common</directory>
+      <outputDirectory>${project.build.finalName}</outputDirectory>
+      <includes>
+       <include>*/**</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${project.build.directory}${file.separator}jre_windows</directory>
       <outputDirectory>${project.build.finalName}${file.separator}jre</outputDirectory>
       <includes>

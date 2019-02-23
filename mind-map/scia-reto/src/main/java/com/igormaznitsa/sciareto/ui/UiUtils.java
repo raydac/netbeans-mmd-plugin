@@ -84,8 +84,7 @@ public final class UiUtils {
   static {
     try {
       EMPTY_URI = new MMapURI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
-    }
-    catch (URISyntaxException ex) {
+    } catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
     }
     final Color color = UIManager.getColor("Panel.background"); //NOI18N
@@ -125,7 +124,7 @@ public final class UiUtils {
   public static void assertSwingThread() {
     Assertions.assertTrue("Mus be called only from Swing Dispatcher!", SwingUtilities.isEventDispatchThread());
   }
-  
+
   @Nullable
   public static <T> T findComponent(@Nonnull final Container compo, @Nonnull final Class<T> klazz) {
     for (int i = 0; i < compo.getComponentCount(); i++) {
@@ -152,7 +151,7 @@ public final class UiUtils {
     if (w instanceof JDialog) {
       final JDialog d = (JDialog) w;
       final JOptionPane optpane = findComponent(d, JOptionPane.class);
-      if (optpane!=null){
+      if (optpane != null) {
         optpane.setValue(exitOption);
         w.setVisible(false);
         result = true;
@@ -198,8 +197,7 @@ public final class UiUtils {
           return new Point(((screenWidth - width) / 2) + bounds.x, ((screenHeight - height) / 2) + bounds.y);
         }
       }
-    }
-    catch (final Exception e) {
+    } catch (final Exception e) {
       LOGGER.error("Can't get point", e); //NOI18N
     }
 
@@ -219,9 +217,9 @@ public final class UiUtils {
 
   public static int calculateBrightness(@Nonnull final Color color) {
     return (int) Math.sqrt(
-        color.getRed() * color.getRed() * .241d
-        + color.getGreen() * color.getGreen() * .691d
-        + color.getBlue() * color.getBlue() * .068d);
+            color.getRed() * color.getRed() * .241d
+            + color.getGreen() * color.getGreen() * .691d
+            + color.getBlue() * color.getBlue() * .068d);
   }
 
   @Nonnull
@@ -236,8 +234,7 @@ public final class UiUtils {
       final Graphics g = image.getGraphics();
       try {
         icon.paintIcon(context, g, 0, 0);
-      }
-      finally {
+      } finally {
         g.dispose();
       }
     }
@@ -253,8 +250,7 @@ public final class UiUtils {
     try {
       gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
       gfx.drawImage(badge, width - badge.getWidth(null) - 1, height - badge.getHeight(null) - 1, null);
-    }
-    finally {
+    } finally {
       gfx.dispose();
     }
     return result;
@@ -269,8 +265,7 @@ public final class UiUtils {
     try {
       gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
       gfx.drawImage(badge, width - badge.getWidth(null) - 1, 1, null);
-    }
-    finally {
+    } finally {
       gfx.dispose();
     }
     return result;
@@ -283,11 +278,9 @@ public final class UiUtils {
     if (inStream != null) {
       try {
         result = ImageIO.read(inStream);
-      }
-      catch (IOException ex) {
+      } catch (IOException ex) {
         result = null;
-      }
-      finally {
+      } finally {
         IOUtils.closeQuetly(inStream);
       }
     }
@@ -308,8 +301,7 @@ public final class UiUtils {
       }
       try {
         return new MMapURI(text.trim());
-      }
-      catch (URISyntaxException ex) {
+      } catch (URISyntaxException ex) {
         DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
@@ -363,46 +355,58 @@ public final class UiUtils {
       } else {
         return null;
       }
-    }
-    finally {
+    } finally {
       textEditor.dispose();
     }
   }
 
-  public static void openInSystemViewer(@Nonnull final File file) {
-    final Runnable startEdit = new Runnable() {
-      @Override
-      public void run() {
-        boolean ok = false;
+  public static void openLocalResource(@Nonnull final String resource) {
+    try {
+      final File folderPath = new File(MainFrame.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+      SwingUtilities.invokeLater(() -> {
         if (Desktop.isDesktopSupported()) {
-          final Desktop dsk = Desktop.getDesktop();
-          if (dsk.isSupported(Desktop.Action.OPEN)) {
+          final Desktop desktop = Desktop.getDesktop();
+          if (desktop.isSupported(Desktop.Action.OPEN)) {
             try {
-              dsk.open(file);
-              ok = true;
-            }
-            catch (Throwable ex) {
-              LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N //NOI18N
+              desktop.open(new File(folderPath, resource.replace('/', File.separatorChar)));
+            } catch (IOException ex) {
+              LOGGER.error("Can't open in desktop: " + resource, ex);
             }
           }
         }
-        if (!ok) {
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't open file in system viewer! See the log!");//NOI18N
-              Toolkit.getDefaultToolkit().beep();
-            }
-          });
+      });
+    } catch (URISyntaxException ex) {
+      LOGGER.error("Can't get folder path", ex);
+    }
+  }
+
+  public static void openInSystemViewer(@Nonnull final File file) {
+    final Runnable startEdit = () -> {
+      boolean ok = false;
+      if (Desktop.isDesktopSupported()) {
+        final Desktop dsk = Desktop.getDesktop();
+        if (dsk.isSupported(Desktop.Action.OPEN)) {
+          try {
+            dsk.open(file);
+            ok = true;
+          } catch (Throwable ex) {
+            LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N //NOI18N
+          }
         }
+      }
+      if (!ok) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't open file in system viewer! See the log!");//NOI18N
+            Toolkit.getDefaultToolkit().beep();
+          }
+        });
       }
     };
     final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
-    thr.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-      @Override
-      public void uncaughtException(final Thread t, final Throwable e) {
-        LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e); //NOI18N
-      }
+    thr.setUncaughtExceptionHandler((final Thread t, final Throwable e) -> {
+      LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e); //NOI18N
     });
 
     thr.setDaemon(true);
@@ -419,24 +423,21 @@ public final class UiUtils {
       if (desktop.isSupported(Desktop.Action.BROWSE)) {
         try {
           desktop.browse(url.toURI());
-        }
-        catch (Exception x) {
+        } catch (Exception x) {
           LOGGER.error("Can't browse URL in Desktop", x); //NOI18N
         }
       } else if (SystemUtils.IS_OS_LINUX) {
         final Runtime runtime = Runtime.getRuntime();
         try {
           runtime.exec("xdg-open " + url); //NOI18N
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           LOGGER.error("Can't browse URL under Linux", e); //NOI18N
         }
       } else if (SystemUtils.IS_OS_MAC) {
         final Runtime runtime = Runtime.getRuntime();
         try {
           runtime.exec("open " + url); //NOI18N
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           LOGGER.error("Can't browse URL on MAC", e); //NOI18N
         }
       }
@@ -452,8 +453,7 @@ public final class UiUtils {
         showURLExternal(uri.toURL());
       }
       return true;
-    }
-    catch (MalformedURLException ex) {
+    } catch (MalformedURLException ex) {
       LOGGER.error("MalformedURLException", ex); //NOI18N
       return false;
     }

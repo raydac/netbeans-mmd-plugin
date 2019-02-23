@@ -23,6 +23,14 @@
       <filtered>true</filtered>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}common</directory>
+      <outputDirectory>${file.separator}</outputDirectory>
+      <includes>
+       <include>*/**</include>
+      </includes>
+      <filtered>false</filtered>
+    </fileSet>
+    <fileSet>
       <directory>${project.build.directory}${file.separator}jre_macos</directory>
       <outputDirectory>${file.separator}SciaReto.app${file.separator}Contents${file.separator}MacOS${file.separator}jre</outputDirectory>
       <includes>

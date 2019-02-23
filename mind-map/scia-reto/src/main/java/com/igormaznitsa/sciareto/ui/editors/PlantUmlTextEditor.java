@@ -398,7 +398,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.menu.add(scaleLabel, gbdata);
     this.menu.add(Box.createHorizontalStrut(16), gbdata);
 
-    this.menu.add(makeLinkLabel("PlantUML Reference", "http://plantuml.com/PlantUML_Language_Reference_Guide.pdf", "Open PlantUL manual", ICON_INFO), gbdata);
+    this.menu.add(makeLinkLabel("PlantUML Reference", ()-> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), gbdata);
     this.menu.add(makeLinkLabel("AsciiMath Reference", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
     this.menu.add(this.labelWarningNoGraphwiz, gbdata);
 
@@ -545,7 +545,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   }
 
   @Nonnull
-  private JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final String uri, @Nonnull final String toolTip, @Nonnull final Icon icon) {
+  private JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final Runnable onClick, @Nonnull final String toolTip, @Nonnull final Icon icon) {
     final JLabel result = new JLabel(text, icon, JLabel.RIGHT);
     final Font font = result.getFont().deriveFont(Font.BOLD);
     final Map attributes = font.getAttributes();
@@ -557,15 +557,22 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     result.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(@Nonnull final MouseEvent e) {
-        try {
-          UiUtils.browseURI(new URI(uri), false);
-        } catch (URISyntaxException ex) {
-          LOGGER.error("Can't open URI", ex);
-        }
+        onClick.run();
       }
     });
     result.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
     return result;
+  }
+
+  @Nonnull
+  private JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final String uri, @Nonnull final String toolTip, @Nonnull final Icon icon) {
+    return this.makeLinkLabel(text, ()->{
+      try {
+        UiUtils.browseURI(new URI(uri), false);
+      } catch (URISyntaxException ex) {
+        LOGGER.error("Can't open URI", ex);
+      }
+    }, toolTip, icon);
   }
 
   private void updateGraphvizLabelVisibility() {

@@ -860,6 +860,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuGoToFile = new javax.swing.JMenuItem();
     menuNavigateLinksGraph = new javax.swing.JMenuItem();
     menuHelp = new javax.swing.JMenu();
+    menuHelpHelp = new javax.swing.JMenuItem();
+    menuHelpPLantUmpManual = new javax.swing.JMenuItem();
     menuAbout = new javax.swing.JMenuItem();
     jSeparator4 = new javax.swing.JPopupMenu.Separator();
     menuMakeDonation = new javax.swing.JMenuItem();
@@ -870,14 +872,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuFile.setMnemonic('f');
     menuFile.setText("File");
     menuFile.addMenuListener(new javax.swing.event.MenuListener() {
-      public void menuSelected(javax.swing.event.MenuEvent evt) {
-        menuFileMenuSelected(evt);
+      public void menuCanceled(javax.swing.event.MenuEvent evt) {
+        menuFileMenuCanceled(evt);
       }
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuFileMenuDeselected(evt);
       }
-      public void menuCanceled(javax.swing.event.MenuEvent evt) {
-        menuFileMenuCanceled(evt);
+      public void menuSelected(javax.swing.event.MenuEvent evt) {
+        menuFileMenuSelected(evt);
       }
     });
 
@@ -975,14 +977,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuEdit.setMnemonic('e');
     menuEdit.setText("Edit");
     menuEdit.addMenuListener(new javax.swing.event.MenuListener() {
-      public void menuSelected(javax.swing.event.MenuEvent evt) {
-        menuEditMenuSelected(evt);
+      public void menuCanceled(javax.swing.event.MenuEvent evt) {
+        menuEditMenuCanceled(evt);
       }
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuEditMenuDeselected(evt);
       }
-      public void menuCanceled(javax.swing.event.MenuEvent evt) {
-        menuEditMenuCanceled(evt);
+      public void menuSelected(javax.swing.event.MenuEvent evt) {
+        menuEditMenuSelected(evt);
       }
     });
 
@@ -1093,12 +1095,12 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuNavigate.setMnemonic('n');
     menuNavigate.setText("Navigate");
     menuNavigate.addMenuListener(new javax.swing.event.MenuListener() {
-      public void menuSelected(javax.swing.event.MenuEvent evt) {
-        menuNavigateMenuSelected(evt);
+      public void menuCanceled(javax.swing.event.MenuEvent evt) {
       }
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
       }
-      public void menuCanceled(javax.swing.event.MenuEvent evt) {
+      public void menuSelected(javax.swing.event.MenuEvent evt) {
+        menuNavigateMenuSelected(evt);
       }
     });
 
@@ -1125,6 +1127,24 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     menuHelp.setMnemonic('h');
     menuHelp.setText("Help");
+
+    menuHelpHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/help.png"))); // NOI18N
+    menuHelpHelp.setText("Help");
+    menuHelpHelp.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuHelpHelpActionPerformed(evt);
+      }
+    });
+    menuHelp.add(menuHelpHelp);
+
+    menuHelpPLantUmpManual.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/factory.png"))); // NOI18N
+    menuHelpPLantUmpManual.setText("PlantUML manual");
+    menuHelpPLantUmpManual.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuHelpPLantUmpManualActionPerformed(evt);
+      }
+    });
+    menuHelp.add(menuHelpPLantUmpManual);
 
     menuAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/information.png"))); // NOI18N
     menuAbout.setMnemonic('a');
@@ -1728,6 +1748,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }//GEN-LAST:event_menuNewFileActionPerformed
 
+  private void menuHelpPLantUmpManualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHelpPLantUmpManualActionPerformed
+    UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf");
+  }//GEN-LAST:event_menuHelpPLantUmpManualActionPerformed
+
+  private void menuHelpHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHelpHelpActionPerformed
+    UiUtils.openLocalResource("help/index.html");
+  }//GEN-LAST:event_menuHelpHelpActionPerformed
+
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
     for (final Component c : menu.getMenuComponents()) {
@@ -1832,6 +1860,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenuItem menuFullScreen;
   private javax.swing.JMenuItem menuGoToFile;
   private javax.swing.JMenu menuHelp;
+  private javax.swing.JMenuItem menuHelpHelp;
+  private javax.swing.JMenuItem menuHelpPLantUmpManual;
   private javax.swing.JMenu menuLookAndFeel;
   private javax.swing.JMenuItem menuMakeDonation;
   private javax.swing.JMenu menuNavigate;
