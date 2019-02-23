@@ -94,6 +94,9 @@ import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 
 public class Main {
 
@@ -103,7 +106,7 @@ public class Main {
 
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 4L, 5L}, null); //NOI18N
+  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 5L}, null); //NOI18N
 
   public static final Random RND = new Random();
 
@@ -175,6 +178,22 @@ public class Main {
       IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
     }
 
+    @Override
+    public void doExportToClipboard(MindMapPanel panel, JComponent options) throws IOException {
+      final MindMap map = panel.getModel();
+      final StringWriter writer = map.write(new StringWriter());
+      final String text = writer.toString();
+      SwingUtilities.invokeLater(new Runnable(){
+        @Override
+        public void run() {
+          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+          if (clipboard != null) {
+            clipboard.setContents(new StringSelection(text), panel);
+          }
+        }
+      });
+    }
+
     @Nonnull
     @Override
     public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
@@ -231,7 +250,7 @@ public class Main {
     System.setProperty("apple.laf.useScreenMenuBar", "true"); //NOI18N
     System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SciaReto"); //NOI18N
     // ----------------------------
-    
+
     SystemUtils.setDebugLevelForJavaLogger(Level.WARNING);
 
     PlatformProvider.getPlatform().init();
@@ -371,12 +390,12 @@ public class Main {
 
           if (PlatformProvider.isErrorDetected()) {
             JOptionPane.showMessageDialog(null, "Can't init the Platform dependent layer, the default one will be used instead.\n"
-                + "Check that you have installed Java correctly to avoid the warning", "Warning", JOptionPane.WARNING_MESSAGE);
+                    + "Check that you have installed Java correctly to avoid the warning", "Warning", JOptionPane.WARNING_MESSAGE);
           }
 
-          try{
+          try {
             MAIN_FRAME = new MainFrame(args);
-          } catch(IOException ex) {
+          } catch (IOException ex) {
             LOGGER.error("Can't create frame", ex);
             JOptionPane.showMessageDialog(null, "Can't create frame : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);

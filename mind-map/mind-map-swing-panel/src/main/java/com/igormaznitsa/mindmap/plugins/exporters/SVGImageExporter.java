@@ -52,11 +52,69 @@ import java.io.*;
 import java.text.DecimalFormat;
 
 import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.SystemFlavorMap;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class SVGImageExporter extends AbstractExporter {
+
+  public static class SvgClip implements Transferable {
+
+    private static final DataFlavor SVG_FLAVOR = new DataFlavor("image/svg+xml; class=java.io.InputStream", "Scalable Vector Graphic");
+    final private String svgContent;
+
+    private final DataFlavor[] supportedFlavors;
+
+    public SvgClip(@Nonnull final String str) {
+      this.supportedFlavors = new DataFlavor[]{
+        SVG_FLAVOR,};
+
+      this.svgContent = str;
+      SystemFlavorMap systemFlavorMap = (SystemFlavorMap) SystemFlavorMap.getDefaultFlavorMap();
+      DataFlavor dataFlavor = SVG_FLAVOR;
+      systemFlavorMap.addUnencodedNativeForFlavor(dataFlavor, "image/svg+xml");
+    }
+
+    @Nonnull
+    static DataFlavor getSVGFlavor() {
+      return SvgClip.SVG_FLAVOR;
+    }
+
+    @Override
+    public boolean isDataFlavorSupported(@Nonnull final DataFlavor flavor) {
+      for (DataFlavor supported : this.supportedFlavors) {
+        if (flavor.equals(supported)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    @Override
+    @Nonnull
+    @MustNotContainNull
+    public DataFlavor[] getTransferDataFlavors() {
+      return this.supportedFlavors;
+    }
+
+    @Override
+    @Nonnull
+    public Object getTransferData(@Nonnull final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+      if (isDataFlavorSupported(flavor) && flavor.equals(SVG_FLAVOR)) {
+        InputStream stream = new ByteArrayInputStream(this.svgContent.getBytes("UTF-8"));
+        return stream;
+      }
+      throw new UnsupportedFlavorException(flavor);
+    }
+
+    public void lostOwnership(@Nonnull final Clipboard clipboard, @Nonnull final Transferable tr) {
+    }
+  }
 
   protected static final String FONT_CLASS_NAME = "mindMapTitleFont";
 
@@ -131,8 +189,8 @@ public class SVGImageExporter extends AbstractExporter {
     return panel;
   }
 
-  @Override
-  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+  @Nonnull
+  private String makeContent(@Nonnull final MindMapPanel panel, @Nullable final JComponent options) throws IOException {
     if (options instanceof HasOptions) {
       final HasOptions opts = (HasOptions) options;
       this.flagExpandAllNodes = Boolean.parseBoolean(opts.getOption(Options.KEY_EXPAND_ALL));
@@ -169,7 +227,7 @@ public class SVGImageExporter extends AbstractExporter {
 
     final Dimension2D blockSize = calculateSizeOfMapInPixels(workMap, null, newConfig, flagExpandAllNodes, RenderQuality.DEFAULT);
     if (blockSize == null) {
-      return;
+      return SVG_HEADER + "</svg>";
     }
 
     final StringBuilder buffer = new StringBuilder(16384);
@@ -189,7 +247,26 @@ public class SVGImageExporter extends AbstractExporter {
     }
     buffer.append("</svg>");
 
-    final String text = buffer.toString();
+    return buffer.toString();
+  }
+
+  @Override
+  public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
+    final String text = makeContent(panel, options);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard != null) {
+          clipboard.setContents(new SvgClip(text), null);
+        }
+      }
+    });
+  }
+
+  @Override
+  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+    final String text = makeContent(panel, options);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

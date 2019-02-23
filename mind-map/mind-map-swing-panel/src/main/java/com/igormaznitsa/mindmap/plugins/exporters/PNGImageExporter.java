@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.exporters;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -39,8 +38,13 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.*;
 
@@ -51,6 +55,36 @@ public final class PNGImageExporter extends AbstractExporter {
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_PNG);
   private boolean flagExpandAllNodes = false;
   private boolean flagDrawBackground = true;
+
+  public static class ImageSelection implements Transferable {
+
+    private Image image;
+
+    public ImageSelection(@Nonnull final BufferedImage image) {
+      this.image = image;
+    }
+
+    @Override
+    @Nonnull
+    @MustNotContainNull
+    public DataFlavor[] getTransferDataFlavors() {
+      return new DataFlavor[]{DataFlavor.imageFlavor};
+    }
+
+    @Override
+    public boolean isDataFlavorSupported(@Nonnull final DataFlavor flavor) {
+      return DataFlavor.imageFlavor.equals(flavor);
+    }
+
+    @Override
+    @Nonnull
+    public Object getTransferData(@Nonnull final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+      if (!DataFlavor.imageFlavor.equals(flavor)) {
+        throw new UnsupportedFlavorException(flavor);
+      }
+      return this.image;
+    }
+  }
 
   public PNGImageExporter() {
     super();
@@ -97,8 +131,8 @@ public final class PNGImageExporter extends AbstractExporter {
     return panel;
   }
 
-  @Override
-  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+  @Nullable
+  private BufferedImage makeImage(@Nonnull final MindMapPanel panel, @Nullable final JComponent options) throws IOException {
     if (options instanceof HasOptions) {
       final HasOptions opts = (HasOptions) options;
       this.flagExpandAllNodes = Boolean.parseBoolean(opts.getOption(Options.KEY_EXPAND_ALL));
@@ -120,7 +154,28 @@ public final class PNGImageExporter extends AbstractExporter {
     newConfig.setDrawBackground(this.flagDrawBackground);
     newConfig.setScale(1.0f);
 
-    final RenderedImage image = MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, flagExpandAllNodes, RenderQuality.QUALITY);
+    return MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, flagExpandAllNodes, RenderQuality.QUALITY);
+  }
+
+  @Override
+  public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
+    final BufferedImage image = makeImage(panel, options);
+    if (image != null) {
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+          if (clipboard != null) {
+            clipboard.setContents(new ImageSelection(image), null);
+          }
+        }
+      });
+    }
+  }
+
+  @Override
+  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+    final RenderedImage image = makeImage(panel, options);
 
     if (image == null) {
       if (out == null) {
@@ -205,7 +260,7 @@ public final class PNGImageExporter extends AbstractExporter {
     @Nonnull
     @MustNotContainNull
     public String[] getOptionKeys() {
-      return new String[] {KEY_EXPAND_ALL, KEY_DRAW_BACK};
+      return new String[]{KEY_EXPAND_ALL, KEY_DRAW_BACK};
     }
 
     @Override

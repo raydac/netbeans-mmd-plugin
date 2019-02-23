@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.exporters;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -36,6 +35,9 @@ import java.util.Calendar;
 import java.util.Map;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 
 public class ORGMODEExporter extends AbstractExporter {
 
@@ -102,13 +104,13 @@ public class ORGMODEExporter extends AbstractExporter {
       final Topic linkedTopic = topic.getMap().findTopicForLink(jump);
       if (linkedTopic != null) {
         state.append(prefix).append("RELATED TO: ")//NOI18N
-            .append("[[#sec:")//NOI18N
-            .append(assertNotNull(getTopicUid(linkedTopic)))
-            .append("][")//NOI18N
-            .append(escapeStr(makeLineFromString(linkedTopic.getText()), true))
-            .append("]]")//NOI18N
-            .append("  \\\\")//NOI18N
-            .nextLine();
+                .append("[[#sec:")//NOI18N
+                .append(assertNotNull(getTopicUid(linkedTopic)))
+                .append("][")//NOI18N
+                .append(escapeStr(makeLineFromString(linkedTopic.getText()), true))
+                .append("]]")//NOI18N
+                .append("  \\\\")//NOI18N
+                .nextLine();
         extrasPrinted = true;
       }
     }
@@ -128,9 +130,9 @@ public class ORGMODEExporter extends AbstractExporter {
     if (link != null) {
       final String ascurl = link.getValue().asString(true, true);
       state.append(prefix).append("URL: [[")//NOI18N
-          .append(ascurl)
-          .append("]] \\\\")//NOI18N
-          .nextLine();
+              .append(ascurl)
+              .append("]] \\\\")//NOI18N
+              .nextLine();
       extrasPrinted = true;
     }
 
@@ -268,8 +270,8 @@ public class ORGMODEExporter extends AbstractExporter {
     }
   }
 
-  @Override
-  public void doExport(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options, @Nullable final OutputStream out) throws IOException {
+  @Nonnull
+  private String makeContent(@Nonnull final MindMapPanel panel) throws IOException {
     final State state = new State();
 
     final Topic root = panel.getModel().getRoot();
@@ -295,7 +297,26 @@ public class ORGMODEExporter extends AbstractExporter {
       }
     }
 
-    final String text = state.toString();
+    return state.toString();
+  }
+
+  @Override
+  public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
+    final String text = makeContent(panel);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard != null) {
+          clipboard.setContents(new StringSelection(text), null);
+        }
+      }
+    });
+  }
+
+  @Override
+  public void doExport(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options, @Nullable final OutputStream out) throws IOException {
+    final String text = makeContent(panel);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

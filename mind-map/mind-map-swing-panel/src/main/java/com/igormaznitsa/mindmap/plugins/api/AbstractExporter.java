@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.meta.annotation.MayContainNull;
@@ -50,11 +49,11 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   @Override
   @Nullable
   public JMenuItem makeMenuItem(
-      @Nonnull final MindMapPanel panel,
-      @Nonnull final DialogProvider dialogProvider,
-      @Nullable final Topic actionTopic,
-      @Nonnull @MayContainNull final Topic[] selectedTopics,
-      @Nullable final CustomJob processor) {
+          @Nonnull final MindMapPanel panel,
+          @Nonnull final DialogProvider dialogProvider,
+          @Nullable final Topic actionTopic,
+          @Nonnull @MayContainNull final Topic[] selectedTopics,
+          @Nullable final CustomJob processor) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
     result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
 
@@ -69,7 +68,13 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
             if (options != null && !dialogProvider.msgOkCancel(null, getName(panel, actionTopic, selectedTopics), options)) {
               return;
             }
-            doExport(panel, options, null);
+            if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
+              LOGGER.info("Export map into file: " + AbstractExporter.this);
+              doExport(panel, options, null);
+            } else {
+              LOGGER.info("Export map into clipboard:" + AbstractExporter.this);
+              doExportToClipboard(panel, options);
+            }
           } else {
             processor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
           }
@@ -110,6 +115,8 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   }
 
   public abstract void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException;
+
+  public abstract void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nullable final JComponent options) throws IOException;
 
   @Nonnull
   public abstract String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);

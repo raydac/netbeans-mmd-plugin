@@ -35,6 +35,9 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -50,6 +53,7 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONStringer;
 
@@ -227,13 +231,30 @@ public class MindmupExporter extends AbstractExporter {
     stringer.endObject();
   }
 
+  @Nonnull
+  private String makeContent(@Nonnull final MindMapPanel panel) {
+    final JSONStringer stringer = new JSONStringer();
+    writeRoot(stringer, panel.getConfiguration(), panel.getModel().getRoot());
+    return stringer.toString();
+  }
+
+  @Override
+  public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
+    final String text = makeContent(panel);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard != null) {
+          clipboard.setContents(new StringSelection(text), null);
+        }
+      }
+    });
+  }
+
   @Override
   public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
-    final JSONStringer stringer = new JSONStringer();
-
-    writeRoot(stringer, panel.getConfiguration(), panel.getModel().getRoot());
-
-    final String text = stringer.toString();
+    final String text = makeContent(panel);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;
