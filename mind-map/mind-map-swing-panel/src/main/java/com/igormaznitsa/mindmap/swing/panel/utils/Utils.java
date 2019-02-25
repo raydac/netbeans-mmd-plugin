@@ -83,6 +83,8 @@ public final class Utils {
 
   private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
 
+  public static final boolean LTR_LANGUAGE = ComponentOrientation.getOrientation(new Locale(System.getProperty("user.language"))).isLeftToRight();
+  
   private Utils() {
   }
 

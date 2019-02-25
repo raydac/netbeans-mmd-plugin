@@ -1601,7 +1601,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               }
             }
 
-            AbstractCollapsableElement.makeTopicLeftSided(newTopic, numLeft < numRight);
+            AbstractCollapsableElement.makeTopicLeftSided(newTopic, Utils.LTR_LANGUAGE ? numLeft < numRight : numLeft > numRight);
           } else if (baseTopic != null && baseTopic.getPayload() != null) {
             final AbstractElement element = assertNotNull((AbstractElement) baseTopic.getPayload());
             AbstractCollapsableElement.makeTopicLeftSided(newTopic, element.isLeftDirection());
