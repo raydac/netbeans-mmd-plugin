@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.view;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -20,7 +21,6 @@ import com.intellij.ide.DataManager;
 import com.intellij.ide.PsiCopyPasteManager;
 import com.intellij.ide.SelectInTarget;
 import com.intellij.ide.dnd.aware.DnDAwareTree;
-import com.intellij.ide.impl.ProjectPaneSelectInTarget;
 import com.intellij.ide.projectView.BaseProjectTreeBuilder;
 import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
 import com.intellij.ide.projectView.impl.ProjectViewTree;
@@ -48,34 +48,45 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class KnowledgeViewPane extends AbstractProjectViewPane {
-  @NonNls public static final String ID = "NBKnowledgePane";
+  @NonNls
+  public static final String ID = "NBKnowledgePane";
   private JScrollPane myComponent;
 
   public KnowledgeViewPane(@Nonnull Project project) {
     super(project);
   }
 
-  @Override public String getTitle() {
+  @Override
+  public String getTitle() {
     return "Knowledge";
   }
 
-  @Override public Icon getIcon() {
+  @Override
+  public Icon getIcon() {
     return AllIcons.Logo.MINDMAP;
   }
 
-  @Nonnull @Override public String getId() {
+  @Nonnull
+  @Override
+  public String getId() {
     return ID;
   }
 
-  @Override public JComponent createComponent() {
-    if (myComponent != null)
+  @Override
+  public JComponent createComponent() {
+    if (myComponent != null) {
       return myComponent;
+    }
 
     DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(null);
     DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
@@ -171,10 +182,10 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
 
           DataContext dataContext = DataManager.getInstance().getDataContext(myTree);
           OpenSourceUtil.openSourcesFrom(dataContext, false);
-        }
-        else if (KeyEvent.VK_ESCAPE == e.getKeyCode()) {
-          if (e.isConsumed())
+        } else if (KeyEvent.VK_ESCAPE == e.getKeyCode()) {
+          if (e.isConsumed()) {
             return;
+          }
           PsiCopyPasteManager copyPasteManager = PsiCopyPasteManager.getInstance();
           boolean[] isCopied = new boolean[1];
           if (copyPasteManager.getElements(isCopied) != null && !isCopied[0]) {
@@ -201,26 +212,32 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
     };
   }
 
-  @Nonnull @Override public ActionCallback updateFromRoot(boolean restoreExpandedPaths) {
+  @Nonnull
+  @Override
+  public ActionCallback updateFromRoot(boolean restoreExpandedPaths) {
     return ActionCallback.DONE;
   }
 
-  @Override public void select(Object element, VirtualFile file, boolean requestFocus) {
+  @Override
+  public void select(Object element, VirtualFile file, boolean requestFocus) {
     if (file != null) {
       ((KnowledgeViewTreeBuilder) getTreeBuilder()).select(element, file, requestFocus);
     }
   }
 
-  @Override public int getWeight() {
+  @Override
+  public int getWeight() {
     return 10;
   }
 
-  @Override public JTree getTree() {
+  @Override
+  public JTree getTree() {
     return this.myTree;
   }
 
-  @Override public SelectInTarget createSelectInTarget() {
-    return new ProjectPaneSelectInTarget(myProject);
+  @Override
+  public SelectInTarget createSelectInTarget() {
+    return new SelectInTargetImpl(this.myProject);
   }
 
 }
