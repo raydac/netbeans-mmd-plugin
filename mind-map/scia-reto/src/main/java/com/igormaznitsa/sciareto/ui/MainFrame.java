@@ -35,7 +35,12 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
-import com.igormaznitsa.sciareto.ui.editors.*;
+import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
+import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
+import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
+import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
+import com.igormaznitsa.sciareto.ui.editors.PlantUmlTextEditor;
+import com.igormaznitsa.sciareto.ui.editors.SourceTextEditor;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.FileLinkGraphPanel;
@@ -51,27 +56,57 @@ import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
 import com.igormaznitsa.sciareto.ui.tree.ProjectLoadingIconAnimationController;
-import org.apache.commons.io.FilenameUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
-import javax.swing.filechooser.FileView;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSplitPane;
+import javax.swing.JWindow;
+import javax.swing.KeyStroke;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileView;
+import org.apache.commons.io.FilenameUtils;
 
 public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
 
@@ -93,6 +128,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
 
+  private final JSplitPane mainSplitPane;
+  
   private int lastDividerLocation;
   
   private static final ExecutorService LOADING_EXECUTOR_SERVICE = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -171,31 +208,22 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     this.explorerTree = new ExplorerTree(this);
 
-    final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    splitPane.setOneTouchExpandable(true);
-    splitPane.setDividerLocation(250);
-    splitPane.setResizeWeight(0.0d);
-    splitPane.setLeftComponent(this.explorerTree);
+    this.mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    this.mainSplitPane.setOneTouchExpandable(true);
+    this.mainSplitPane.setDividerLocation(250);
+    this.mainSplitPane.setResizeWeight(0.0d);
+    this.mainSplitPane.setLeftComponent(this.explorerTree);
 
-    this.tabPane.addMaxMinEditorListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        final int divider = splitPane.getDividerLocation();
-        if (divider > 3) {
-          lastDividerLocation = divider;
-          splitPane.setDividerLocation(0);
-        } else {
-          splitPane.setDividerLocation(lastDividerLocation);
-        }
-      }
+    this.tabPane.addMaxMinEditorListener((@Nonnull final ActionEvent e) -> {
+      ensureTreePanelIsVisible();
     });
     
     this.mainPanel = new JPanel(new BorderLayout(0, 0));
     this.mainPanel.add(this.tabPane, BorderLayout.CENTER);
 
-    splitPane.setRightComponent(this.mainPanel);
+    this.mainSplitPane.setRightComponent(this.mainPanel);
 
-    add(splitPane, BorderLayout.CENTER);
+    add(this.mainSplitPane, BorderLayout.CENTER);
 
     this.menuOpenRecentProject.addMenuListener(new MenuListener() {
       @Override
@@ -205,11 +233,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           for (final File folder : lastOpenedProjects) {
             final JMenuItem item = new JMenuItem(folder.getName());
             item.setToolTipText(folder.getAbsolutePath());
-            item.addActionListener(new ActionListener() {
-              @Override
-              public void actionPerformed(ActionEvent e) {
-                openProject(folder, false);
-              }
+            item.addActionListener((ActionEvent e1) -> {
+              openProject(folder, false);
             });
             menuOpenRecentProject.add(item);
           }
@@ -269,11 +294,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         }
       }
       if (!openedProject) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            splitPane.setDividerLocation(0);
-          }
+        SwingUtilities.invokeLater(() -> {
+          this.mainSplitPane.setDividerLocation(0);
         });
       }
     }
@@ -287,17 +309,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       if (currentLFClassName.equals(info.getClassName())) {
         menuItem.setSelected(true);
       }
-      menuItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          try {
-            UIManager.setLookAndFeel(info.getClassName());
-            SwingUtilities.updateComponentTreeUI(theInstance);
-            PreferencesManager.getInstance().getPreferences().put(Main.PROPERTY_LOOKANDFEEL, info.getClassName());
-            PreferencesManager.getInstance().flush();
-          } catch (Exception ex) {
-            LOGGER.error("Can't change LF", ex); //NOI18N
-          }
+      menuItem.addActionListener((@Nonnull final ActionEvent e) -> {
+        try {
+          UIManager.setLookAndFeel(info.getClassName());
+          SwingUtilities.updateComponentTreeUI(theInstance);
+          PreferencesManager.getInstance().getPreferences().put(Main.PROPERTY_LOOKANDFEEL, info.getClassName());
+          PreferencesManager.getInstance().flush();
+        } catch (Exception ex) {
+          LOGGER.error("Can't change LF", ex); //NOI18N
         }
       });
       this.menuLookAndFeel.add(menuItem);
@@ -341,17 +360,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
     }
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        if (tabPane.getTabCount() > 0) {
-          tabPane.setSelectedIndex(0);
-          processTabChanged(tabPane.getCurrentTitle());
-        } else {
-          processTabChanged(null);
-        }
-        tabPane.setNotifyForTabChanged(true);
+    SwingUtilities.invokeLater(() -> {
+      if (tabPane.getTabCount() > 0) {
+        tabPane.setSelectedIndex(0);
+        processTabChanged(tabPane.getCurrentTitle());
+      } else {
+        processTabChanged(null);
       }
+      tabPane.setNotifyForTabChanged(true);
     });
 
     enableAllMenuItems();
@@ -359,6 +375,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.explorerTree.focusToFirstElement();
   }
 
+  private void ensureTreePanelIsVisible(){
+    final int divider = this.mainSplitPane.getDividerLocation();
+    if (divider > 3) {
+      this.lastDividerLocation = divider;
+      this.mainSplitPane.setDividerLocation(0);
+    } else {
+      this.mainSplitPane.setDividerLocation(lastDividerLocation);
+    }
+  }
+  
   private void updateMenuItemsForProvider(@Nullable final TabProvider provider) {
     if (provider == null) {
       this.menuRedo.setEnabled(false);
@@ -394,11 +420,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   public static void showExceptionDialog(@Nonnull final Exception ex) {
     MainFrame.LOGGER.error("Error", ex);
-    Utils.safeSwingBlockingCall(new Runnable() {
-      @Override
-      public void run() {
-        JOptionPane.showMessageDialog(Main.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-      }
+    Utils.safeSwingBlockingCall(() -> {
+      JOptionPane.showMessageDialog(Main.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     });
   }
 
@@ -1466,27 +1489,21 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
             endFullScreenIfActive();
 
-            final KeyEventDispatcher fullScreenEscCatcher = new KeyEventDispatcher() {
-              @Override
-              public boolean dispatchKeyEvent(@Nonnull final KeyEvent e) {
-                if (e.getID() == KeyEvent.KEY_PRESSED && (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_F11)) {
-                  endFullScreenIfActive();
-                  return true;
-                }
-                return false;
+            final KeyEventDispatcher fullScreenEscCatcher = (@Nonnull final KeyEvent e) -> {
+              if (e.getID() == KeyEvent.KEY_PRESSED && (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_F11)) {
+                endFullScreenIfActive();
+                return true;
               }
+              return false;
             };
 
-            if (this.taskToEndFullScreen.compareAndSet(null, new Runnable() {
-              @Override
-              public void run() {
-                try {
-                  window.dispose();
-                } finally {
-                  tabPane.setComponentAt(tabIndex, selectedEditor.getContainerToShow());
-                  device.setFullScreenWindow(null);
-                  KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
-                }
+            if (this.taskToEndFullScreen.compareAndSet(null, (Runnable) () -> {
+              try {
+                window.dispose();
+              } finally {
+                tabPane.setComponentAt(tabIndex, selectedEditor.getContainerToShow());
+                device.setFullScreenWindow(null);
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(fullScreenEscCatcher);
               }
             })) {
               try {
@@ -1525,11 +1542,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         final File file = selected.makeFileForNode();
         if (file != null) {
           this.focusInTree(file);
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              explorerTree.requestFocus();
-            }
+          ensureTreePanelIsVisible();
+          SwingUtilities.invokeLater(() -> {
+            explorerTree.requestFocus();
           });
         }
       }
