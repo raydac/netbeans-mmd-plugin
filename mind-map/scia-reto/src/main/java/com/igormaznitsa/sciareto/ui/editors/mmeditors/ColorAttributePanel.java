@@ -70,6 +70,7 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
+    java.awt.GridBagConstraints gridBagConstraints;
 
     colorChooserBorder = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
     colorChooserFill = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
@@ -78,14 +79,37 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
     buttonResetFill = new javax.swing.JButton();
     buttonResetText = new javax.swing.JButton();
 
+    setLayout(new java.awt.GridBagLayout());
+
     colorChooserBorder.setText("Border color"); // NOI18N
     colorChooserBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.ipadx = 64;
+    gridBagConstraints.insets = new java.awt.Insets(8, 16, 8, 16);
+    add(colorChooserBorder, gridBagConstraints);
 
     colorChooserFill.setText("Fill color"); // NOI18N
     colorChooserFill.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.ipadx = 64;
+    gridBagConstraints.insets = new java.awt.Insets(0, 16, 8, 16);
+    add(colorChooserFill, gridBagConstraints);
 
     colorChooserText.setText("Text color"); // NOI18N
     colorChooserText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.ipadx = 64;
+    gridBagConstraints.insets = new java.awt.Insets(0, 16, 8, 16);
+    add(colorChooserText, gridBagConstraints);
 
     buttonResetBorder.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
     buttonResetBorder.addActionListener(new java.awt.event.ActionListener() {
@@ -93,6 +117,11 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
         buttonResetBorderActionPerformed(evt);
       }
     });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
+    add(buttonResetBorder, gridBagConstraints);
 
     buttonResetFill.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
     buttonResetFill.addActionListener(new java.awt.event.ActionListener() {
@@ -100,6 +129,11 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
         buttonResetFillActionPerformed(evt);
       }
     });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+    add(buttonResetFill, gridBagConstraints);
 
     buttonResetText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
     buttonResetText.addActionListener(new java.awt.event.ActionListener() {
@@ -107,41 +141,11 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
         buttonResetTextActionPerformed(evt);
       }
     });
-
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-    this.setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(colorChooserText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(colorChooserFill, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(colorChooserBorder, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(buttonResetBorder, javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(buttonResetFill, javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(buttonResetText, javax.swing.GroupLayout.Alignment.TRAILING))
-        .addContainerGap())
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(buttonResetBorder)
-          .addComponent(colorChooserBorder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(colorChooserFill, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(buttonResetFill))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(buttonResetText)
-          .addComponent(colorChooserText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+    add(buttonResetText, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void buttonResetBorderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetBorderActionPerformed
