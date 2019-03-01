@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -56,35 +57,6 @@ public final class PNGImageExporter extends AbstractExporter {
   private boolean flagExpandAllNodes = false;
   private boolean flagDrawBackground = true;
 
-  public static class ImageSelection implements Transferable {
-
-    private Image image;
-
-    public ImageSelection(@Nonnull final BufferedImage image) {
-      this.image = image;
-    }
-
-    @Override
-    @Nonnull
-    @MustNotContainNull
-    public DataFlavor[] getTransferDataFlavors() {
-      return new DataFlavor[]{DataFlavor.imageFlavor};
-    }
-
-    @Override
-    public boolean isDataFlavorSupported(@Nonnull final DataFlavor flavor) {
-      return DataFlavor.imageFlavor.equals(flavor);
-    }
-
-    @Override
-    @Nonnull
-    public Object getTransferData(@Nonnull final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-      if (!DataFlavor.imageFlavor.equals(flavor)) {
-        throw new UnsupportedFlavorException(flavor);
-      }
-      return this.image;
-    }
-  }
 
   public PNGImageExporter() {
     super();
