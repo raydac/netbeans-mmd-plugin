@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
+import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -116,7 +117,7 @@ public final class PictureViewer extends AbstractEditor {
       public void actionPerformed(ActionEvent e) {
         final BufferedImage image = imageViewer.getImage();
         if (image != null) {
-          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(image), null);
+          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new ImageSelection(image), null);
         }
       }
     });

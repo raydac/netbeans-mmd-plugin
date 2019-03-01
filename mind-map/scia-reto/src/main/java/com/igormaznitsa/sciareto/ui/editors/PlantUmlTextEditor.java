@@ -18,10 +18,12 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
+import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
@@ -56,6 +58,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -313,7 +316,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       public void actionPerformed(ActionEvent e) {
         final BufferedImage image = imageComponent.getImage();
         if (image != null) {
-          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(image), null);
+          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new ImageSelection(image), null);
         }
       }
     });
@@ -363,6 +366,21 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       }
     });
 
+    final JButton buttonAscImageToClipboard = new JButton(loadMenuIcon("clipboard_asc"));
+    buttonAscImageToClipboard.setToolTipText("Copy ASCII image to clipboard");
+    buttonAscImageToClipboard.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent e) {
+        final String text = renderPageAsAscII();
+        if (text != null) {
+          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+          if (clipboard != null) {
+            clipboard.setContents(new StringSelection(text), null);
+          }
+        }
+      }
+    });
+
     this.autoRefresh = new JCheckBox("Auto-refresh", true);
     this.autoRefresh.setToolTipText(String.format("Refresh rendered image during typing (in %d seconds)", DELAY_AUTOREFRESH_SECONDS));
 
@@ -381,6 +399,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.menu.add(buttonRefresh, gbdata);
     this.menu.add(buttonEditScript, gbdata);
     this.menu.add(buttonClipboardImage, gbdata);
+    this.menu.add(buttonAscImageToClipboard, gbdata);
     this.menu.add(buttonClipboardText, gbdata);
     this.menu.add(buttonExportImage, gbdata);
     this.menu.add(buttonPrintImage, gbdata);
@@ -398,7 +417,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.menu.add(scaleLabel, gbdata);
     this.menu.add(Box.createHorizontalStrut(16), gbdata);
 
-    this.menu.add(makeLinkLabel("PlantUML Reference", ()-> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), gbdata);
+    this.menu.add(makeLinkLabel("PlantUML Reference", () -> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), gbdata);
     this.menu.add(makeLinkLabel("AsciiMath Reference", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
     this.menu.add(this.labelWarningNoGraphwiz, gbdata);
 
@@ -566,7 +585,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   @Nonnull
   private JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final String uri, @Nonnull final String toolTip, @Nonnull final Icon icon) {
-    return this.makeLinkLabel(text, ()->{
+    return this.makeLinkLabel(text, () -> {
       try {
         UiUtils.browseURI(new URI(uri), false);
       } catch (URISyntaxException ex) {
@@ -986,6 +1005,28 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       } catch (RejectedExecutionException ex) {
         LOGGER.info("Rejected plant uml refresh");
       }
+    }
+  }
+
+  @Nullable
+  @UiThread
+  private String renderPageAsAscII() {
+    final String theText = this.editor.getText();
+
+    final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
+    final int totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
+
+    final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
+
+    final ByteArrayOutputStream utfBuffer = new ByteArrayOutputStream();
+
+    try {
+      final DiagramDescription description = reader.outputImage(utfBuffer, imageIndex - 1, new FileFormatOption(FileFormat.UTXT, false));
+      return new String(utfBuffer.toByteArray(), StandardCharsets.UTF_8);
+    } catch (Exception ex) {
+      LOGGER.error("Can't export ASCII image", ex);
+      JOptionPane.showMessageDialog(mainPanel, "Error during ASCII render: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      return null;
     }
   }
 
