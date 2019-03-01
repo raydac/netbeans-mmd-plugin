@@ -13,6 +13,8 @@ The Main part of a software project is not code but knowledge generated during t
 
 # Changelog
 __1.4.5 (SNAPSHOT)__
+- ALL: pressed CTRL during export makes export into system clipboard
+- IJ:  [#50](https://github.com/raydac/netbeans-mmd-plugin/issues/50) fixed exception in IDEA 2019.1
 - ALL: Reworked MindMup import-export
 - ALL: Improved import from FreeMind XHTML format
 - ALL: Paste plain text to add a new node [#48](https://github.com/raydac/netbeans-mmd-plugin/issues/48) 
