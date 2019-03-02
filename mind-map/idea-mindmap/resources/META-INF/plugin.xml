@@ -19,8 +19,14 @@
 
     <change-notes><![CDATA[
         <p>1.4.5 (SNAPSHOT)</p>
-          <li>
-          </li>
+        <ul>
+          <li>pressed CTRL during export makes export into system clipboard</li>
+          <li>#50 fixed exception in IDEA 2019.1</li>
+          <li>Reworked MindMup import-export</li>
+          <li>Improved import from FreeMind XHTML format</li>
+          <li>#48 Paste plain text to add a new node</li>
+          <li>#17 improved procesing of fold/unfold keyboard shortcuts to fold and unfold all children</li>
+        </ul>
         <p>1.4.4 (04-aug-2018)</p>
         <ul>
           <li>#46 improved map model save procedure to not encode national charsets into URL format</li>
@@ -176,7 +182,9 @@
     </application-components>
 
     <actions>
-        <action description="Find a topic for its text value at Mind Map document" class="com.igormaznitsa.ideamindmap.swing.FindInMindMapAction" id="FindTextAtMindMap" text="Find at Mind Map" use-shortcut-of="Find">
+        <action description="Find a topic for its text value at Mind Map document"
+                class="com.igormaznitsa.ideamindmap.swing.FindInMindMapAction" id="FindTextAtMindMap"
+                text="Find at Mind Map" use-shortcut-of="Find">
             <add-to-group group-id="FindMenuGroup" relative-to-action="Find" anchor="after"/>
         </action>
     </actions>
