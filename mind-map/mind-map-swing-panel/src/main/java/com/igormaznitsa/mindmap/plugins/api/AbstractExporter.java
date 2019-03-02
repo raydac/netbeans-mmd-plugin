@@ -116,6 +116,13 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
 
   public abstract void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException;
 
+  /**
+   * Export data into clipboard.
+   * @param panel mind map panel to be exported, must not be null
+   * @param options component containing extra options, can be null
+   * @throws IOException it will be thrown if any error 
+   * @since 1.4.5
+   */
   public abstract void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nullable final JComponent options) throws IOException;
 
   @Nonnull
