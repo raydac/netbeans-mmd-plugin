@@ -28,10 +28,22 @@
     <p>Pop-up menu is the main way for manipulations with a mind map but also there are some keyboard shortcuts, the main keyboard shortcuts are <b>TAB</b>(to add new child node) and <b>ENTER</b>(to add sibling node), you can navigate between nodes with cursor keys.</p>
     <h2>PlantUML files</h2>
     <p>There is embedded editor of PlantUML files, but before you have to install <a href="https://www.graphviz.org/download/">Graphviz graph visualization software</a>.</p>
+    <p>By default any plantUML editor is opened in view mode, if you want edit plantUML script then you should open script editor panel in the top part of the page, you can make that through either pressing button <b>Edit script</b> or just drag the top page border by mouse.</p>
+    <p>During script edit operations, the view is updated automatically (if <b>Auto refresh</b> is on) after some time delay, the view is refreshed automatically also just after document save.</p>
     <h2>F.A.Q.</h2>
+    <h3>How to make multiline text in mind map nodes?</h3>
+    <p>By default ENTER stops node text edit but if press <b>SHIFT+ENTER</b> then next line will be added.</p>
+    <h3>How quickly add link to a file?</h3>
+    <p>Mind map supports drag-n-drop operations so that just drag file from project tree by mouse and drop it over needed mind map node.</p>
+    <h3>How quickly create jump between nodes?</h3>
+    <p>Press CNTRL and drag target node by mouse, drop it over node where jump should be presented.</p>
+    <h3>How quickly hide/show project tree panel?</h3>
+    <p>Mouse double click on editor tab allows quickly hide/show project tree panel.</p>
     <h3>How to select render quality?</h3>
     <p>You can choose render quality through <b>Edit-&gt;Preferences-&gt;Render quality</b></p>
     <h3>Where edit the list of keyboard shortcuts?</h3>
     <p>Editable list of keyboard shortcuts is available through <b>Edit-&gt;Preferences-&gt;Edit keyboard shortcuts</b></p>
+    <h3>Added images is rescaled, why?</h3>
+    <p>Added images are saved inside text document as BASE64 encoded PNG images, it is very easy to add huge image and kill any possibility to process document, so that by default image is rescaled to have width and height no more than 350 px, It is possible to change the value through Java system property <i>mmap.max.image.side.size</i></p>
   </body>
 </html>
