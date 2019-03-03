@@ -1,6 +1,6 @@
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/6cec4cb9ac42419aa003a27597c3c357)](https://www.codacy.com/app/rrg4400/netbeans-mmd-plugin)
-[![Java 7.0+](https://img.shields.io/badge/java-7.0%2b-green.svg)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+[![Java 8.0+](https://img.shields.io/badge/java-8.0%2b-green.svg)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 [![NetBeans](https://img.shields.io/badge/netbeans-8.0%2b-green.svg)](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
 [![Intellij IDEA](https://img.shields.io/badge/idea-14.0.5%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)
 [![PayPal donation](https://img.shields.io/badge/donation-PayPal-red.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2)
@@ -9,7 +9,10 @@
 ![Banner](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png)  
 
 # Introduction
-The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.  
+The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.   
+
+Initially I developed plugin for NetBeans IDE but because in companies, where I work for, mainly Intellij IDEA in use, I developed plugin for Intellij IDEA too. Then one my friend asked me to develop some standalone version which could be used by users who don't have any relations to Java and its tool so that I developed SciaReto application.
+
 
 # Changelog
 __1.4.5 (03-mar-2019)__
@@ -17,41 +20,26 @@ __1.4.5 (03-mar-2019)__
 - IJ:  [#50](https://github.com/raydac/netbeans-mmd-plugin/issues/50) fixed exception in IDEA 2019.1
 - ALL: Reworked MindMup import-export
 - ALL: Improved import from FreeMind XHTML format
-- ALL: Paste plain text to add a new node [#48](https://github.com/raydac/netbeans-mmd-plugin/issues/48) 
+- ALL: Paste plain text to add a new node [#48](https://github.com/raydac/netbeans-mmd-plugin/issues/48)
 - ALL: improved procesing of fold/unfold keyboard shortcuts to fold and unfold all children [#17](https://github.com/raydac/netbeans-mmd-plugin/issues/17)
 - SR:  improved distributives, added prepared embedded OpenJDK image
 - SR:  updated PlantUML version to 1.2019.2
 
-__1.4.4 (04-aug-2018)__
-- ALL: [#46](https://github.com/raydac/netbeans-mmd-plugin/issues/46) improved map model save procedure to not encode national charsets into URL format
-- SR:  updated versions: PlantUML 1.2018.9, Batik 1.10, JLatexMath 1.0.7, JNA 4.5.2
-- ALL: added support of line number in file link through pattern `<file_path>:<line_number>` [twit](https://twitter.com/IgorMaznitsa/status/1013153379122581504)
-- IJ:  [#15](https://github.com/raydac/netbeans-mmd-plugin/issues/15) added node search panel usually activated by `CTRL+F` [twit](https://twitter.com/IgorMaznitsa/status/1013387683475935234)
-- ALL: increased number of emoticons
-- ALL: [#45](https://github.com/raydac/netbeans-mmd-plugin/issues/45) improved security in XML import
-- SR:  added list of file extensions to be opened in system provided viewer
-- ALL: added extra logic to check edited content to prevent false model change event
-- SR:  improved PlantUML editor
-- SR:  improved speed of work with project folders
-
-__1.4.3 (01-may-2018)__
-- SR:  license changed to LGPL 2.1
-- ALL: increased step of scroll and decreased step of scale in panel
-- ALL: added special icon for `mailto` scheme in URI
-- ALL: fixed processing of drag'n'drop URL files from browsers under Windows
-- IJ:  [#42](https://github.com/raydac/netbeans-mmd-plugin/issues/42) Fixed processing of project root in maven multi-project workspace
-- ALL: [#44](https://github.com/raydac/netbeans-mmd-plugin/issues/44) Improved emoticon panel to increase slected icon visibility 
-- ALL: [#43](https://github.com/raydac/netbeans-mmd-plugin/issues/43) Fixed non-processed exception "Clipboard is busy"
-- IJ:  [#40](https://github.com/raydac/netbeans-mmd-plugin/issues/40) Fixed exception if turn off option `disable .projectKnowledge folder autocreation` in proect facet
-- SR:  added support for [PlantUML](http://plantuml.com/) script rendering (files `.pu`,`.puml` and `.plantuml`)
-
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
 # Implementation
-Because my main programming tool is [NetBeans IDE](https://netbeans.org/), I have developed plugin for the IDE. It is compatible with Java 1.7+ and NetBeans 7.4+.  
-![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshot1.png)  
-[You can take a look at the nice screencast made by Geertjan Wielenga about the plugin](https://www.youtube.com/watch?v=7TUU25dsOfM)  
-___Also there is standalone version of the Mind Map plagin called "Scia Reto" editor. [It can be loaded from the latest release page](https://github.com/raydac/netbeans-mmd-plugin/releases/latest). Just select archive for your OS (EXE version is for Windows, DMG version is for Mac OS.)___
+
+All parts of the application are written in Java and it needs Java 1.8+ for work.   
+
+The editor has three implementations
+- standalone application (including also [PlantUML](http://plantuml.com/) support)
+- [NetBeans plug-in](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
+- [Intellij IDEA plug-in](https://plugins.jetbrains.com/plugin/8045-idea-mind-map)
+The standalone version is a Java application but it contains embedded JRE so that a user should not have pre-installed Java on computer. But [Graphviz](https://www.graphviz.org/download/) should be installed for use by PlantUML.
+
+# How to use?
+
+Just after first release for NetBeans IDE, [Geertjan Wielenga created nice screen-cast](https://www.youtube.com/watch?v=7TUU25dsOfM) which a bit out of date but still look good to understand common idea. It is very easy editor and the main set of operations look very intuitive, main questions from users I had about keyboard shortcuts but if keep in mind that __TAB__ creates new mind map node and __ENTER__ creates new sibling mode then life becomes much easier.
 
 # Key features
 ## Data format
