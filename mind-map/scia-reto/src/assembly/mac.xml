@@ -24,7 +24,7 @@
     </fileSet>
     <fileSet>
       <directory>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}common</directory>
-      <outputDirectory>${file.separator}</outputDirectory>
+      <outputDirectory>SciaReto.app${file.separator}Contents${file.separator}MacOS</outputDirectory>
       <includes>
        <include>*/**</include>
       </includes>

@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.4.5-SNAPSHOT</version>
+    <version>1.4.5</version>
   </parent>
 
   <artifactId>idea-mindmap</artifactId>
@@ -14,6 +14,36 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>clean-gradle-folders</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <followSyLinks>false</followSyLinks>
+              <filesets>
+                <fileset>
+                  <directory>${basedir}${file.separator}build</directory>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </fileset>
+                <fileset>
+                  <directory>${basedir}${file.separator}.gradle</directory>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

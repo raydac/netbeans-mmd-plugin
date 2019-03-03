@@ -18,7 +18,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.4.5 (SNAPSHOT)</p>
+        <p>1.4.5 (03-mar-2019)</p>
         <ul>
           <li>pressed CTRL during export makes export into system clipboard</li>
           <li>#50 fixed exception in IDEA 2019.1</li>
