@@ -11,8 +11,8 @@
 # Introduction
 The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and [a mind map diagram](https://en.wikipedia.org/wiki/Mind_map) is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to form mind maps and keep knowledge graph just within projects and allow to work with the graphs just with the IDE.   
 
-Initially I developed plugin for NetBeans IDE but because in companies, where I work for, mainly Intellij IDEA in use, I developed plugin for Intellij IDEA too. Then one my friend asked me to develop some standalone version which could be used by users who don't have any relations to Java and its tool so that I developed SciaReto application.
-
+Initially I developed plugin for NetBeans IDE but because in companies, where I work for, mainly Intellij IDEA in use, I developed plugin for Intellij IDEA too. Then one my friend asked me to develop some standalone version which could be used by users who don't have any relations to Java and its tool so that I developed SciaReto application.   
+[!screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
 __1.4.5 (03-mar-2019)__
@@ -34,7 +34,7 @@ All parts of the application are written in Java and it needs Java 1.8+ for work
 The editor has three implementations
 - standalone application (including also [PlantUML](http://plantuml.com/) support)
 - [NetBeans plug-in](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
-- [Intellij IDEA plug-in](https://plugins.jetbrains.com/plugin/8045-idea-mind-map)
+- [Intellij IDEA plug-in](https://plugins.jetbrains.com/plugin/8045-idea-mind-map)   
 The standalone version is a Java application but it contains embedded JRE so that a user should not have pre-installed Java on computer. But [Graphviz](https://www.graphviz.org/download/) should be installed for use by PlantUML.
 
 # How to use?
