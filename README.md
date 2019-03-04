@@ -88,8 +88,8 @@ Mind maps are opened in IDE as documents with graphic interface and the plugin d
 All manipulations over topic order and its position in the map hierarchy can be made only through mouse Drag&Drop operations (keep in mind that only one topic can be moved in the same time).  
 ![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/dragdroptopic.png)  
 
-## Change look and feel of mind maps
-You can tune most of graphic parameters for mind map rendering through the IDE **Options** (or just click **Options** in the pop-up menu).  
+## Tune look of mind map editor
+You can tune most of graphic parameters for mind map rendering through special panel __Options__. It can be activated through __Options__ item of pop-up menu and through menu __Edit->Preferences__ in the standalone version.  
 ![Screenshot](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/optionspanel.png)  
 
 ## Export mind map data
