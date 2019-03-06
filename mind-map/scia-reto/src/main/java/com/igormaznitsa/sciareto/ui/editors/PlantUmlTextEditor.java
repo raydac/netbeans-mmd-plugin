@@ -372,7 +372,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         final String text = renderPageAsAscII();
-        if (text != null) {
+        if (text == null) {
+          JOptionPane.showMessageDialog(mainPanel, "Can't generate ASCII for the diagram", "Can't generate", JOptionPane.WARNING_MESSAGE);
+        } else {
           final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
           if (clipboard != null) {
             clipboard.setContents(new StringSelection(text), null);
@@ -1021,8 +1023,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     final ByteArrayOutputStream utfBuffer = new ByteArrayOutputStream();
 
     try {
-      final DiagramDescription description = reader.outputImage(utfBuffer, imageIndex - 1, new FileFormatOption(FileFormat.UTXT, false));
-      return new String(utfBuffer.toByteArray(), StandardCharsets.UTF_8);
+      final DiagramDescription description = reader.outputImage(utfBuffer, imageIndex - 1, new FileFormatOption(FileFormat.ATXT, false));
+      final String result = new String(utfBuffer.toByteArray(), StandardCharsets.UTF_8);
+      if (result.contains("java.lang.UnsupportedOperationException: ATXT")) {
+        throw new UnsupportedOperationException("ATXT is not supported for the diagram");
+      }
+      return result;
     } catch (Exception ex) {
       LOGGER.error("Can't export ASCII image", ex);
       JOptionPane.showMessageDialog(mainPanel, "Error during ASCII render: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
