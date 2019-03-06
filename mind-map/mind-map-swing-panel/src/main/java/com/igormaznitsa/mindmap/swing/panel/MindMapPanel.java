@@ -1623,54 +1623,94 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   protected void fireNotificationSelectionChanged() {
     final Topic[] selected = this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
-    for (final MindMapListener l : this.mindMapListeners) {
-      l.onChangedSelection(this, selected);
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+          l.onChangedSelection(MindMapPanel.this, selected);
+        }
+      }
+    });
   }
 
   protected void fireNotificationMindMapChanged() {
-    for (final MindMapListener l : this.mindMapListeners) {
-      l.onMindMapModelChanged(this);
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+          l.onMindMapModelChanged(MindMapPanel.this);
+        }
+      }
+    });
   }
 
   protected void fireNotificationComponentElementsLayouted(@Nonnull final Graphics2D graphics) {
-    for (final MindMapListener l : this.mindMapListeners) {
-      l.onComponentElementsLayouted(this, graphics);
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+          l.onComponentElementsLayouted(MindMapPanel.this, graphics);
+        }
+      }
+    });
   }
 
   protected void fireNotificationClickOnExtra(@Nonnull final Topic topic, final int modifiers, final int clicks, @Nonnull final Extra<?> extra) {
-    for (final MindMapListener l : this.mindMapListeners) {
-      l.onClickOnExtra(this, modifiers, clicks, topic, extra);
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+          l.onClickOnExtra(MindMapPanel.this, modifiers, clicks, topic, extra);
+        }
+      }
+    });
   }
 
   protected void fireNotificationEnsureTopicVisibility(@Nonnull final Topic topic) {
-    for (final MindMapListener l : this.mindMapListeners) {
-      l.onEnsureVisibilityOfTopic(this, topic);
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+          l.onEnsureVisibilityOfTopic(MindMapPanel.this, topic);
+        }
+      }
+    });
   }
 
   protected void fireNotificationTopicCollapsatorClick(@Nonnull final Topic topic, final boolean beforeAction) {
-    for (final MindMapListener l : this.mindMapListeners) {
-      l.onTopicCollapsatorClick(this, topic, beforeAction);
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+          l.onTopicCollapsatorClick(MindMapPanel.this, topic, beforeAction);
+        }
+      }
+    });
   }
 
   protected void fireNotificationScaledByMouse(@Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
-    for (final MindMapListener l : this.mindMapListeners) {
-      l.onScaledByMouse(this, mousePoint, oldScale, newScale, beforeAction);
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+          l.onScaledByMouse(MindMapPanel.this, mousePoint, oldScale, newScale, beforeAction);
+        }
+      }
+    });
   }
 
   protected void fireNotificationNonConsumedKeyEvent(@Nonnull final KeyEvent keyEvent, @Nonnull final KeyEventType type) {
-    for (final MindMapListener l : this.mindMapListeners) {
-      if (keyEvent.isConsumed()) {
-        break;
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+          if (keyEvent.isConsumed()) {
+            break;
+          }
+          l.onNonConsumedKeyEvent(MindMapPanel.this, keyEvent, type);
+        }
       }
-      l.onNonConsumedKeyEvent(this, keyEvent, type);
-    }
+    });
   }
 
   public void deleteTopics(final boolean force, @Nonnull @MustNotContainNull final Topic... topics) {
@@ -2572,10 +2612,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           try {
             final int MAX_TEXT_LEN = 96;
             String clipboardText = (String) clipboard.getContents(null).getTransferData(DataFlavor.stringFlavor);
-            
+
             if (clipboardText != null) {
               clipboardText = clipboardText.trim();
-              
+
               final String topicText;
               final String extraNoteText;
 
@@ -2588,7 +2628,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               }
 
               final Topic[] selectedTopics = this.getSelectedTopics();
-              
+
               if (selectedTopics.length > 0) {
                 for (final Topic s : selectedTopics) {
                   final Topic newTopic;
