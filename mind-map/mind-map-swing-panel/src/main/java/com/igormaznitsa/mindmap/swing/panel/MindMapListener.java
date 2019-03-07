@@ -33,7 +33,7 @@ public interface MindMapListener {
   void onMindMapModelRealigned(@Nonnull MindMapPanel source, @Nonnull Dimension coveredAreaSize);
   void onEnsureVisibilityOfTopic(@Nonnull MindMapPanel source, @Nonnull Topic topic);
   void onTopicCollapsatorClick(@Nonnull MindMapPanel source, @Nonnull Topic topic, boolean beforeAction);
-  void onScaledByMouse(@Nonnull MindMapPanel source, @Nonnull Point mousePoint, double oldScale, double newScale, boolean beforeAction);
+  void onScaledByMouse(@Nonnull MindMapPanel source, @Nonnull Point mousePoint, double oldScale, double newScale);
   void onClickOnExtra(@Nonnull MindMapPanel source,int modifiers, int clicks, @Nonnull Topic topic, @Nonnull Extra<?> extra);
   void onChangedSelection(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] currentSelectedTopics);
   boolean allowedRemovingOfTopics(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] topics);

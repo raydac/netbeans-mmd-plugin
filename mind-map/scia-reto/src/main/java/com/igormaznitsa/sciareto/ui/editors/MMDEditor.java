@@ -492,22 +492,39 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   }
 
   @Override
-  public void onScaledByMouse(@Nonnull final MindMapPanel source, @Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
-    if (!beforeAction && Double.compare(oldScale, newScale) != 0) {
+  public void onScaledByMouse(@Nonnull final MindMapPanel source, @Nonnull final Point mousePoint, final double oldScale, final double newScale) {
+    if (Double.compare(oldScale, newScale) != 0) {
       final JViewport viewport = this.scrollPane.getViewport();
 
-      final Point viewPos = viewport.getViewPosition();
-      final int dx = mousePoint.x - viewPos.x;
-      final int dy = mousePoint.y - viewPos.y;
+      final Rectangle viewPos = viewport.getViewRect();
 
-      final double scaleRelation = newScale / oldScale;
+      final Dimension size = source.getSize();
+      final Dimension extentSize = viewport.getExtentSize();
 
-      final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
-      final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
+      if (extentSize.width < size.width || extentSize.height < size.height) {
 
-      viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0, newMouseY - dy)));
+        final int dx = mousePoint.x - viewPos.x;
+        final int dy = mousePoint.y - viewPos.y;
+
+        final double scaleRelation = newScale / oldScale;
+
+        final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
+        final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
+
+        viewPos.x = Math.max(0, newMouseX - dx);
+        viewPos.y = Math.max(0, newMouseY - dy);
+        viewport.setView(source);
+
+        source.scrollRectToVisible(viewPos);
+      } else {
+        viewPos.x = 0;
+        viewPos.y = 0;
+        source.scrollRectToVisible(viewPos);
+      }
+
+      this.scrollPane.revalidate();
+      this.scrollPane.repaint();
     }
-    this.scrollPane.repaint();
   }
 
   @Override

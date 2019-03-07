@@ -776,6 +776,10 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
+  public void setScaleWithoutListenerNotification(final double value) {
+    this.scale = Math.max(0.01d, value);
+  }
+
   public boolean isDropShadow() {
     return this.dropShadow;
   }

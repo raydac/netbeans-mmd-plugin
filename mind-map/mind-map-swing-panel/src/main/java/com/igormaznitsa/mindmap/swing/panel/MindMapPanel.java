@@ -72,7 +72,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   private static final int ALL_SUPPORTED_MODIFIERS = KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
-  private static final double SCALE_STEP = 0.1d;
+  private static final double SCALE_STEP = 0.03d;
   private static final double SCALE_MINIMUM = 0.3d;
   private static final double SCALE_MAXIMUM = 10.0d;
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
@@ -304,15 +304,15 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               processMoveFocusByKey(e);
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
               e.consume();
-              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)));
+              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)), false);
               updateView(false);
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
               e.consume();
-              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)));
+              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)), false);
               updateView(false);
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
               e.consume();
-              setScale(1.0);
+              setScale(1.0, false);
               updateView(false);
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
                     || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
@@ -577,10 +577,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 final double oldScale = getScale();
                 final double newScale = Math.max(SCALE_MINIMUM, Math.min(oldScale + (SCALE_STEP * -e.getWheelRotation()), SCALE_MAXIMUM));
 
-                fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, true);
-                setScale(newScale);
-                invalidate();
-                fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, false);
+                setScale(newScale, false);
+                updateElementsAndSizeForCurrentGraphics(true, false);
+
+                fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale);
 
                 e.consume();
               } else {
@@ -895,12 +895,14 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   private static void drawTopicTree(@Nonnull final MMGraphics gfx, @Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg) {
     paintTopic(gfx, topic, cfg);
-    final AbstractElement w = assertNotNull((AbstractElement) topic.getPayload());
-    if (w.isCollapsed()) {
-      return;
-    }
-    for (final Topic t : topic.getChildren()) {
-      drawTopicTree(gfx, t, cfg);
+    final AbstractElement w = (AbstractElement) topic.getPayload();
+    if (w != null) {
+      if (w.isCollapsed()) {
+        return;
+      }
+      for (final Topic t : topic.getChildren()) {
+        drawTopicTree(gfx, t, cfg);
+      }
     }
   }
 
@@ -1519,11 +1521,21 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    */
   public void notifyModelChanged() {
     Utils.safeSwingCall(new Runnable() {
+
       @Override
       public void run() {
         if (lockIfNotDisposed()) {
           try {
-            invalidate();
+            Graphics2D gfx = (Graphics2D) MindMapPanel.this.getGraphics();
+            if (gfx == null) {
+              gfx = (Graphics2D) new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB).getGraphics();
+            }
+            try {
+              updateElementsAndSizeForGraphics(gfx, true, false);
+            } finally {
+              gfx.dispose();
+            }
+
             fireNotificationMindMapChanged();
           } finally {
             unlock();
@@ -1688,12 +1700,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     });
   }
 
-  protected void fireNotificationScaledByMouse(@Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
+  protected void fireNotificationScaledByMouse(@Nonnull final Point mousePoint, final double oldScale, final double newScale) {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          l.onScaledByMouse(MindMapPanel.this, mousePoint, oldScale, newScale, beforeAction);
+          l.onScaledByMouse(MindMapPanel.this, mousePoint, oldScale, newScale);
         }
       }
     });
@@ -2129,10 +2141,14 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
   }
 
-  public void setScale(final double zoom) {
+  public void setScale(final double zoom, final boolean notifyListeners) {
     if (this.lockIfNotDisposed()) {
       try {
-        this.config.setScale(zoom);
+        if (notifyListeners) {
+          this.config.setScale(zoom);
+        } else {
+          this.config.setScaleWithoutListenerNotification(zoom);
+        }
       } finally {
         this.unlock();
       }
@@ -2220,9 +2236,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
   }
 
-  public boolean updateElementsAndSizeForGraphics(@Nullable final Graphics2D graph, final boolean enforce, final boolean doListenerNotification) {
+  public boolean updateElementsAndSizeForGraphics(@Nullable final Graphics2D graph, final boolean forceLayout, final boolean doListenerNotification) {
     boolean result = true;
-    if (enforce || !isValid()) {
+    if (forceLayout || !isValid()) {
       if (lockIfNotDisposed()) {
         try {
           if (graph != null) {
@@ -2240,7 +2256,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
               changeSizeOfComponent(layoutFullDiagramWithCenteringToPaper(gfx, this.model, this.config, pageSize), doListenerNotification);
               result = true;
-              fireNotificationComponentElementsLayouted(graph);
+              
+              if (doListenerNotification) {
+                fireNotificationComponentElementsLayouted(graph);
+              }
             }
           }
         } finally {
@@ -2333,7 +2352,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             drawErrorText(gfx, this.getSize(), error);
           } else {
             if (this.model.getRoot().getPayload() == null) {
-              updateElementsAndSizeForGraphics(gfx, true, true);
+              updateElementsAndSizeForGraphics(gfx, true, false);
             }
             drawOnGraphicsForConfiguration(new MMGraphics2DWrapper(gfx), this.config, this.model, true, this.selectedTopics);
             drawDestinationElement(gfx, this.config);
@@ -2598,11 +2617,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 }
               }
 
-              fireNotificationMindMapChanged();
-
               invalidate();
               repaint();
 
+              fireNotificationMindMapChanged();
               result = true;
             }
           } catch (final Exception ex) {
@@ -2640,11 +2658,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                   MindMapUtils.ensureVisibility(newTopic);
                 }
 
-                fireNotificationMindMapChanged();
-
                 invalidate();
                 repaint();
 
+                fireNotificationMindMapChanged();
                 result = true;
               }
 
