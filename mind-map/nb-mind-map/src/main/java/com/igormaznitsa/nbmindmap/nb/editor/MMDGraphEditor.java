@@ -847,7 +847,14 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   }
 
   @Override
-  public void onScaledByMouse(@Nonnull final MindMapPanel source, @Nonnull final Point mousePoint, final double oldScale, final double newScale) {
+  public void onScaledByMouse(
+          @Nonnull final MindMapPanel source, 
+          @Nonnull final Point mousePoint, 
+          final double oldScale, 
+          final double newScale,
+          @Nonnull final Dimension oldSize,
+          @Nonnull final Dimension newSize
+  ) {
     if (Double.compare(oldScale, newScale) != 0) {
       final JViewport viewport = this.mainScrollPane.getViewport();
 
@@ -861,10 +868,11 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         final int dx = mousePoint.x - viewPos.x;
         final int dy = mousePoint.y - viewPos.y;
 
-        final double scaleRelation = newScale / oldScale;
-
-        final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
-        final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
+        final double scaleX = newSize.getWidth() / oldSize.getWidth();
+        final double scaleY = newSize.getHeight() / oldSize.getHeight();
+        
+        final int newMouseX = (int) (Math.round(mousePoint.x * scaleX));
+        final int newMouseY = (int) (Math.round(mousePoint.y * scaleY));
 
         viewPos.x = Math.max(0, newMouseX - dx);
         viewPos.y = Math.max(0, newMouseY - dy);

@@ -46,13 +46,13 @@ public final class TextBlock implements Cloneable {
   private String text;
   private Line[] lines;
   private Font font;
-  private float maxLineAscent;
+  private double maxLineAscent;
   private final Rectangle2D bounds = new Rectangle2D.Double();
   private TextAlign textAlign;
-  
-  private static final Rectangle2D ZERO = new Rectangle2D.Float();
 
-  public TextBlock(@Nonnull final TextBlock orig){
+  private static final Rectangle2D ZERO = new Rectangle2D.Double();
+
+  public TextBlock(@Nonnull final TextBlock orig) {
     this.text = orig.text;
     this.lines = orig.lines.clone();
     this.font = orig.font;
@@ -60,7 +60,7 @@ public final class TextBlock implements Cloneable {
     this.bounds.setRect(orig.getBounds());
     this.textAlign = orig.textAlign;
   }
-  
+
   public TextBlock(@Nonnull final String text, @Nonnull final TextAlign justify) {
     updateText(Assertions.assertNotNull(text));
     this.textAlign = Assertions.assertNotNull(justify);
@@ -82,46 +82,44 @@ public final class TextBlock implements Cloneable {
   }
 
   @Nonnull
-  public TextAlign getTextAlign(){
+  public TextAlign getTextAlign() {
     return this.textAlign;
   }
-  
-  public void setTextAlign(@Nullable final TextAlign textAlign){
+
+  public void setTextAlign(@Nullable final TextAlign textAlign) {
     this.textAlign = textAlign == null ? TextAlign.CENTER : textAlign;
     invalidate();
   }
-  
+
   public void invalidate() {
     this.lines = null;
   }
 
-  public void setCoordOffset(final double x, final double y){
+  public void setCoordOffset(final double x, final double y) {
     this.bounds.setFrame(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
-  
+
   public void updateSize(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
-      this.font = cfg.getFont().deriveFont(cfg.safeScaleFloatValue(cfg.getFont().getSize2D(),2f));
-      gfx.setFont(font);
-      
-      this.maxLineAscent = gfx.getFontMaxAscent();
+    this.font = cfg.getFont().deriveFont(cfg.safeScaleFloatValue(cfg.getFont().getSize2D(), 2f));
+    gfx.setFont(font);
 
-      float maxWidth = 0.0f;
-      float maxHeight = 0.0f;
+    this.maxLineAscent = gfx.getFontMaxAscent();
 
-      final String[] brokenText = breakToLines(this.text);
+    double maxWidth = 0.0d;
+    double maxHeight = 0.0d;
 
-      this.lines = new Line[brokenText.length];
+    final String[] brokenText = breakToLines(this.text);
 
-      int index = 0;
-      for (final String s : brokenText) {
-        final Rectangle2D lineBounds = gfx.getStringBounds(s);
-        if (Float.compare((float) lineBounds.getWidth(), maxWidth) > 0) {
-          maxWidth = (float) lineBounds.getWidth();
-        }
-        maxHeight += (float) lineBounds.getHeight();
-        this.lines[index++] = new Line(s, lineBounds);
-      }
-      this.bounds.setRect(0f, 0f, maxWidth, maxHeight);
+    this.lines = new Line[brokenText.length];
+
+    int index = 0;
+    for (final String s : brokenText) {
+      final Rectangle2D lineBounds = gfx.getStringBounds(s);
+      maxWidth = Math.max(lineBounds.getWidth(), maxWidth);
+      maxHeight += lineBounds.getHeight();
+      this.lines[index++] = new Line(s, lineBounds);
+    }
+    this.bounds.setRect(0.0d, 0.0d, maxWidth, maxHeight);
   }
 
   public void paint(@Nonnull final MMGraphics gfx, @Nonnull final Color color) {
@@ -147,7 +145,7 @@ public final class TextBlock implements Cloneable {
             throw new Error("unexpected situation #283794"); //NOI18N
         }
 
-        gfx.drawString(l.line, (int)Math.round(drawX), (int)Math.round(posy),color);
+        gfx.drawString(l.line, (int) Math.round(drawX), (int) Math.round(posy), color);
         posy += l.bounds.getHeight();
       }
     }

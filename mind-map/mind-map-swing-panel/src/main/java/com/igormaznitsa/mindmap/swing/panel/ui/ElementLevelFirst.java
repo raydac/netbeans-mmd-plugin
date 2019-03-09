@@ -32,7 +32,7 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
     super(model);
   }
 
-  protected ElementLevelFirst(@Nonnull final  ElementLevelFirst element) {
+  protected ElementLevelFirst(@Nonnull final ElementLevelFirst element) {
     super(element);
   }
 
@@ -43,28 +43,28 @@ public class ElementLevelFirst extends AbstractCollapsableElement {
   }
 
   @Nonnull
-  protected Shape makeShape(@Nonnull final MindMapPanelConfig cfg, final float x, final float y) {
-    return new Rectangle2D.Float(x, y, (float) this.bounds.getWidth(), (float) this.bounds.getHeight());
+  protected Shape makeShape(@Nonnull final MindMapPanelConfig cfg, final double x, final double y) {
+    return new Rectangle2D.Double(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
   @Override
   public void drawComponent(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
-    g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f),StrokeType.SOLID);
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.1f), StrokeType.SOLID);
 
     final Shape shape = makeShape(cfg, 0f, 0f);
 
     if (cfg.isDropShadow()) {
       final float offset = cfg.safeScaleFloatValue(cfg.getShadowOffset(), 0.0f);
-      g.draw(makeShape(cfg, offset, offset),null,cfg.getShadowColor());
+      g.draw(makeShape(cfg, offset, offset), null, cfg.getShadowColor());
     }
 
-    g.draw(shape,getBorderColor(cfg),getBackgroundColor(cfg));
-    
+    g.draw(shape, getBorderColor(cfg), getBackgroundColor(cfg));
+
     if (this.visualAttributeImageBlock.mayHaveContent()) {
       this.visualAttributeImageBlock.paint(g, cfg);
     }
-    
-    this.textBlock.paint(g,getTextColor(cfg));
+
+    this.textBlock.paint(g, getTextColor(cfg));
 
     if (this.extrasIconBlock.hasContent()) {
       this.extrasIconBlock.paint(g);

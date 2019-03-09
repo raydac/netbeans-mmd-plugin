@@ -100,6 +100,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient AbstractElement destinationElement = null;
   private volatile boolean popupMenuActive = false;
 
+  private Dimension sizeMindMap = new Dimension();
+
   public MindMapPanel(@Nonnull final MindMapPanelController controller) {
     super();
 
@@ -574,13 +576,17 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               if (!e.isConsumed() && (theConfig != null && ((e.getModifiers() & theConfig.getScaleModifiers()) == theConfig.getScaleModifiers()))) {
                 endEdit(elementUnderEdit != null);
 
+                final Dimension oldSize = sizeMindMap.getSize();
+
                 final double oldScale = getScale();
                 final double newScale = Math.max(SCALE_MINIMUM, Math.min(oldScale + (SCALE_STEP * -e.getWheelRotation()), SCALE_MAXIMUM));
 
                 setScale(newScale, false);
                 updateElementsAndSizeForCurrentGraphics(true, false);
 
-                fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale);
+                final Dimension newSize = sizeMindMap.getSize();
+
+                fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, oldSize, newSize);
 
                 e.consume();
               } else {
@@ -1635,94 +1641,60 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   protected void fireNotificationSelectionChanged() {
     final Topic[] selected = this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          l.onChangedSelection(MindMapPanel.this, selected);
-        }
-      }
-    });
+    for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+      l.onChangedSelection(MindMapPanel.this, selected);
+    }
   }
 
   protected void fireNotificationMindMapChanged() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          l.onMindMapModelChanged(MindMapPanel.this);
-        }
-      }
-    });
+    for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+      l.onMindMapModelChanged(MindMapPanel.this);
+    }
   }
 
   protected void fireNotificationComponentElementsLayouted(@Nonnull final Graphics2D graphics) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          l.onComponentElementsLayouted(MindMapPanel.this, graphics);
-        }
-      }
-    });
+    for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+      l.onComponentElementsLayouted(MindMapPanel.this, graphics);
+    }
   }
 
   protected void fireNotificationClickOnExtra(@Nonnull final Topic topic, final int modifiers, final int clicks, @Nonnull final Extra<?> extra) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          l.onClickOnExtra(MindMapPanel.this, modifiers, clicks, topic, extra);
-        }
-      }
-    });
+    for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+      l.onClickOnExtra(MindMapPanel.this, modifiers, clicks, topic, extra);
+    }
   }
 
   protected void fireNotificationEnsureTopicVisibility(@Nonnull final Topic topic) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          l.onEnsureVisibilityOfTopic(MindMapPanel.this, topic);
-        }
-      }
-    });
+    for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+      l.onEnsureVisibilityOfTopic(MindMapPanel.this, topic);
+    }
   }
 
   protected void fireNotificationTopicCollapsatorClick(@Nonnull final Topic topic, final boolean beforeAction) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          l.onTopicCollapsatorClick(MindMapPanel.this, topic, beforeAction);
-        }
-      }
-    });
+    for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+      l.onTopicCollapsatorClick(MindMapPanel.this, topic, beforeAction);
+    }
   }
 
-  protected void fireNotificationScaledByMouse(@Nonnull final Point mousePoint, final double oldScale, final double newScale) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          l.onScaledByMouse(MindMapPanel.this, mousePoint, oldScale, newScale);
-        }
-      }
-    });
+  protected void fireNotificationScaledByMouse(
+          @Nonnull final Point mousePoint,
+          final double oldScale,
+          final double newScale,
+          @Nonnull final Dimension oldSize,
+          @Nonnull final Dimension newSize
+  ) {
+    for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+      l.onScaledByMouse(MindMapPanel.this, mousePoint, oldScale, newScale, oldSize, newSize);
+    }
   }
 
   protected void fireNotificationNonConsumedKeyEvent(@Nonnull final KeyEvent keyEvent, @Nonnull final KeyEventType type) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
-          if (keyEvent.isConsumed()) {
-            break;
-          }
-          l.onNonConsumedKeyEvent(MindMapPanel.this, keyEvent, type);
-        }
+    for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
+      if (keyEvent.isConsumed()) {
+        break;
       }
-    });
+      l.onNonConsumedKeyEvent(MindMapPanel.this, keyEvent, type);
+    }
   }
 
   public void deleteTopics(final boolean force, @Nonnull @MustNotContainNull final Topic... topics) {
@@ -2207,13 +2179,27 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
   }
 
+  @Override
+  @Nonnull
+  public Dimension getPreferredSize() {
+    return this.sizeMindMap.getSize();
+  }
+
+  @Override
+  @Nonnull
+  public Dimension getMinimumSize() {
+    return this.getPreferredSize();
+  }
+
   private void changeSizeOfComponent(@Nullable final Dimension size, final boolean doNotificationThatRealigned) {
     if (size != null) {
-
-      setMinimumSize(size);
-      setPreferredSize(size);
+      final Dimension oldSize = this.sizeMindMap;
+      this.sizeMindMap = size;
 
       if (doNotificationThatRealigned) {
+        this.firePropertyChange("preferredSize", oldSize, size);
+        this.firePropertyChange("minimumSize", oldSize, size);
+
         for (final MindMapListener l : this.mindMapListeners) {
           l.onMindMapModelRealigned(this, size);
         }
@@ -2256,7 +2242,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
               changeSizeOfComponent(layoutFullDiagramWithCenteringToPaper(gfx, this.model, this.config, pageSize), doListenerNotification);
               result = true;
-              
+
               if (doListenerNotification) {
                 fireNotificationComponentElementsLayouted(graph);
               }
@@ -2272,7 +2258,15 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   public boolean updateElementsAndSizeForCurrentGraphics(final boolean enforce, final boolean doListenerNotification) {
     assertSwingDispatchThread();
-    return updateElementsAndSizeForGraphics((Graphics2D) getGraphics(), enforce, doListenerNotification);
+    Graphics2D gfx = (Graphics2D) this.getGraphics();
+    try {
+      if (gfx == null) {
+        gfx = new BufferedImage(32, 32, BufferedImage.TYPE_INT_RGB).createGraphics();
+      }
+      return updateElementsAndSizeForGraphics((Graphics2D) getGraphics(), enforce, doListenerNotification);
+    } finally {
+      gfx.dispose();
+    }
   }
 
   @Override
@@ -2280,7 +2274,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     final Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        updateElementsAndSizeForCurrentGraphics(true, true);
+        updateElementsAndSizeForCurrentGraphics(true, false);
+        MindMapPanel.super.revalidate();
       }
     };
     if (SwingUtilities.isEventDispatchThread()) {
