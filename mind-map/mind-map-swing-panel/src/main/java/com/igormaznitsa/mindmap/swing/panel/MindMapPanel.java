@@ -254,7 +254,38 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           try {
             final Dimension editorPanelMinSize = textEditorPanel.getMinimumSize();
             final Dimension newDimension = new Dimension(Math.max(editorPanelMinSize.width, newSize.width), Math.max(editorPanelMinSize.height, newSize.height));
-            textEditorPanel.setSize(newDimension);
+
+            final Rectangle editorBounds = textEditorPanel.getBounds();
+            editorBounds.setSize(newDimension);
+
+            final Rectangle mainPanelBounds = MindMapPanel.this.getBounds();
+
+            if (!mainPanelBounds.contains(editorBounds)) {
+              double ex = editorBounds.getX();
+              double ey = editorBounds.getY();
+              double ew = editorBounds.getWidth();
+              double eh = editorBounds.getHeight();
+
+              if (ex < 0.0d) {
+                ew -= ex;
+                ex = 0.0d;
+              }
+              if (ey < 0.0d) {
+                eh -= ey;
+                ey = 0.0d;
+              }
+
+              if (ex + ew > mainPanelBounds.getWidth()) {
+                ex = mainPanelBounds.getWidth() - ew;
+              }
+              if (ey + eh > mainPanelBounds.getHeight()) {
+                ey = mainPanelBounds.getHeight() - eh;
+              }
+
+              editorBounds.setRect(ex, ey, ew, eh);
+            }
+
+            textEditorPanel.setBounds(editorBounds);
             textEditorPanel.repaint();
           } finally {
             unlock();
