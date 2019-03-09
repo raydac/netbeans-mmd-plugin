@@ -1705,8 +1705,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             ((AbstractCollapsableElement) parentElement).setCollapse(false);
           }
 
+          updateView(true);
           select(newTopic, false);
-          updateView(false);
           startEdit((AbstractElement) newTopic.getPayload());
         }
       } finally {
