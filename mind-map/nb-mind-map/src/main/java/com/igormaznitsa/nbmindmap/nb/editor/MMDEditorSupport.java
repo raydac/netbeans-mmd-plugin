@@ -28,7 +28,6 @@ import javax.annotation.Nullable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.StyledDocument;
-import javax.swing.undo.UndoableEdit;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.editor.GuardedDocument;
@@ -129,6 +128,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return super.messageToolTip();
   }
 
+  //TODO implement support of 'add to history' flag
   public void replaceDocumentText(final String text, final boolean addToHistory) {
     try {
       final GuardedDocument doc = (GuardedDocument) this.openDocument();
