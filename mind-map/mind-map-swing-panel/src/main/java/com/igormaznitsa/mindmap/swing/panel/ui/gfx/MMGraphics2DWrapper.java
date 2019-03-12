@@ -23,6 +23,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.font.TextLayout;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
@@ -172,7 +173,7 @@ public class MMGraphics2DWrapper implements MMGraphics {
   @Override
   @Nonnull
   public Rectangle2D getStringBounds(@Nonnull final String str) {
-    return this.wrapped.getFontMetrics().getStringBounds(str, this.wrapped);
+    return this.wrapped.getFont().getStringBounds(str, this.wrapped.getFontRenderContext());
   }
 
   @Override

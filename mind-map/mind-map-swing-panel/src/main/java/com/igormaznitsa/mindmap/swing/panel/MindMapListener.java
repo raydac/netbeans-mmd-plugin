@@ -28,7 +28,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 
 public interface MindMapListener {
-  void onMindMapModelChanged(@Nonnull MindMapPanel source);
+  void onMindMapModelChanged(@Nonnull MindMapPanel source, boolean saveToHistory);
   void onComponentElementsLayouted(@Nonnull MindMapPanel source, @Nonnull Graphics2D g);
   void onMindMapModelRealigned(@Nonnull MindMapPanel source, @Nonnull Dimension coveredAreaSize);
   void onEnsureVisibilityOfTopic(@Nonnull MindMapPanel source, @Nonnull Topic topic);

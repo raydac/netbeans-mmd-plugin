@@ -65,7 +65,7 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
               changed = setAttribute(emoticonName, topic, selectedTopics);
             }
             if (changed) {
-              panel.notifyModelChanged();
+              panel.doNotifyModelChanged(true);
             }
           }
         }

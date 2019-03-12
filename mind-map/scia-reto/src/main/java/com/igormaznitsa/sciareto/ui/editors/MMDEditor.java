@@ -394,8 +394,8 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   }
 
   @Override
-  public void onMindMapModelChanged(@Nonnull final MindMapPanel source) {
-    if (!this.preventAddUndo && this.currentModelState != null) {
+  public void onMindMapModelChanged(@Nonnull final MindMapPanel source, final boolean addToHistory) {
+    if (addToHistory && !this.preventAddUndo && this.currentModelState != null) {
       this.undoStorage.addToUndo(this.currentModelState);
       this.undoStorage.clearRedo();
       this.currentModelState = source.getModel().packToString();
@@ -477,14 +477,13 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
 
         final JViewport viewport = scrollPane.getViewport();
-        final Rectangle visible = viewport.getViewRect();
+        final Rectangle viewportRectangle = viewport.getViewRect();
 
-        if (visible.contains(bounds)) {
+        if (viewportRectangle.contains(bounds)) {
           return;
         }
 
-        bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
-
+        bounds.setLocation(bounds.x - viewportRectangle.x, bounds.y - viewportRectangle.y);
         viewport.scrollRectToVisible(bounds);
       }
 
@@ -722,7 +721,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       topic.setExtra(new ExtraLink(mmapUri));
       this.mindMapPanel.invalidate();
       this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      onMindMapModelChanged(this.mindMapPanel, true);
     }
   }
 
@@ -737,7 +736,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       topic.setExtra(new ExtraNote(text));
       this.mindMapPanel.invalidate();
       this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      onMindMapModelChanged(this.mindMapPanel, true);
     }
   }
 
@@ -776,7 +775,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       topic.setExtra(new ExtraFile(theURI));
       this.mindMapPanel.invalidate();
       this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      onMindMapModelChanged(this.mindMapPanel,true);
     }
   }
 
@@ -877,7 +876,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       if (changed) {
         this.mindMapPanel.invalidate();
         this.mindMapPanel.repaint();
-        onMindMapModelChanged(this.mindMapPanel);
+        onMindMapModelChanged(this.mindMapPanel,true);
       }
     }
   }
@@ -949,7 +948,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         if (valueChanged) {
           this.mindMapPanel.invalidate();
           this.mindMapPanel.repaint();
-          onMindMapModelChanged(this.mindMapPanel);
+          onMindMapModelChanged(this.mindMapPanel,true);
         }
       }
     }
@@ -1008,7 +1007,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         if (changed) {
           this.mindMapPanel.invalidate();
           this.mindMapPanel.repaint();
-          onMindMapModelChanged(this.mindMapPanel);
+          onMindMapModelChanged(this.mindMapPanel, true);
         }
       }
     }
@@ -1044,7 +1043,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         if (changed) {
           this.mindMapPanel.invalidate();
           this.mindMapPanel.repaint();
-          onMindMapModelChanged(this.mindMapPanel);
+          onMindMapModelChanged(this.mindMapPanel,true);
         }
       }
     }
@@ -1071,9 +1070,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         Utils.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
       }
 
-      onMindMapModelChanged(source);
-
-      source.updateView(true);
+      source.revalidate();
+      source.repaint();
+      onMindMapModelChanged(source,true);
     }
   }
 

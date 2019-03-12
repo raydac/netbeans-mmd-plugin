@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.StyledDocument;
+import javax.swing.undo.UndoableEdit;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.editor.GuardedDocument;
@@ -84,13 +85,11 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
       try {
         final StyledDocument doc = this.openDocument();
         return doc.getText(0, doc.getLength());
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         LOGGER.error("Can't get document text", ex); //NOI18N
         return null;
       }
-    }
-    else {
+    } else {
       LOGGER.warn("DataObject " + this.getDataObject() + " is not valid");
       return null;
     }
@@ -130,7 +129,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return super.messageToolTip();
   }
 
-  public void replaceDocumentText(final String text) {
+  public void replaceDocumentText(final String text, final boolean addToHistory) {
     try {
       final GuardedDocument doc = (GuardedDocument) this.openDocument();
       doc.runAtomic(new Runnable() {
@@ -139,14 +138,12 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
           try {
             doc.remove(0, doc.getLength());
             doc.insertString(0, text, null);
-          }
-          catch (Exception ex) {
+          } catch (Exception ex) {
             LOGGER.error("Can't replace text", ex); //NOI18N
           }
         }
       });
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       LOGGER.error("Can't open document to replace text", ex); //NOI18N
     }
 

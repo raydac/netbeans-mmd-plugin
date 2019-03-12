@@ -29,6 +29,8 @@ import javax.swing.text.JTextComponent;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 
 public final class TextBlock implements Cloneable {
 
@@ -100,7 +102,7 @@ public final class TextBlock implements Cloneable {
   }
 
   public void updateSize(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
-    this.font = cfg.getFont().deriveFont(cfg.safeScaleFloatValue(cfg.getFont().getSize2D(), 2f));
+    this.font = cfg.getFont().deriveFont(AffineTransform.getScaleInstance(cfg.getScale(), cfg.getScale()));
     gfx.setFont(font);
 
     this.maxLineAscent = gfx.getFontMaxAscent();

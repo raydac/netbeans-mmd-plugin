@@ -80,7 +80,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
           if (dialogProvider.msgConfirmYesNo(null, BUNDLE.getString("Images.Plugin.Remove.Dialog.Title"), BUNDLE.getString("Images.Plugin.Remove.Dialog.Text"))) {//NOI18N
             setAttribute(null, topic, selectedTopics);
             ImageVisualAttributePlugin.clearCachedImages();
-            panel.notifyModelChanged();
+            panel.doNotifyModelChanged(true);
           }
         }
       });
@@ -106,7 +106,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
               if (selectedItem.get() == 0) {
                 try {
                   setAttribute(Utils.rescaleImageAndEncodeAsBase64((Image) transferable.getTransferData(DataFlavor.imageFlavor), Utils.getMaxImageSize()), topic, selectedTopics);
-                  panel.notifyModelChanged();
+                  panel.doNotifyModelChanged(true);
                 } catch (final IllegalArgumentException ex) {
                   dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                   LOGGER.error("Can't import from clipboard image", ex); //NOI18N
@@ -127,7 +127,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
               lastSelectedFile = selected;
               try {
                 setAttribute(Utils.rescaleImageAndEncodeAsBase64(selected, Utils.getMaxImageSize()), topic, selectedTopics);
-                panel.notifyModelChanged();
+                panel.doNotifyModelChanged(true);
               } catch (final IllegalArgumentException ex) {
                 dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                 LOGGER.warn("Can't load image file : " + selected); //NOI18N

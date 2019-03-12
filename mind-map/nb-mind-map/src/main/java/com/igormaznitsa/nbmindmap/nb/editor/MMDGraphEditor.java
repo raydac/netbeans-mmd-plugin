@@ -532,14 +532,14 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   }
 
   @Override
-  public void onMindMapModelChanged(final MindMapPanel source) {
+  public void onMindMapModelChanged(final MindMapPanel source, final boolean saveToHistory) {
     try {
       final StringWriter writer = new StringWriter(16384);
 
       final MindMap theMap = this.mindMapPanel.getModel();
       MindMapUtils.removeCollapseAttributeFromTopicsWithoutChildren(theMap);
       theMap.write(writer);
-      this.editorSupport.replaceDocumentText(writer.toString());
+      this.editorSupport.replaceDocumentText(writer.toString(), saveToHistory);
       this.editorSupport.getDataObject().setModified(true);
     } catch (Exception ex) {
       LOGGER.error("Can't get document text", ex); //NOI18N
@@ -799,7 +799,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   }
 
   private void processEditorResizing() {
-    this.mindMapPanel.updateView(false);
+    this.mindMapPanel.updateView();
     this.mindMapPanel.updateEditorAfterResizing();
   }
 
@@ -920,7 +920,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       topic.setExtra(new ExtraLink(mmapUri));
       this.mindMapPanel.invalidate();
       this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      onMindMapModelChanged(this.mindMapPanel, true);
     }
   }
 
@@ -935,7 +935,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       topic.setExtra(new ExtraNote(text));
       this.mindMapPanel.invalidate();
       this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      onMindMapModelChanged(this.mindMapPanel, true);
     }
   }
 
@@ -964,7 +964,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       topic.setExtra(new ExtraFile(theURI));
       this.mindMapPanel.invalidate();
       this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel);
+      onMindMapModelChanged(this.mindMapPanel, true);
     }
   }
 
@@ -1214,7 +1214,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         if (changed) {
           this.mindMapPanel.invalidate();
           this.mindMapPanel.repaint();
-          onMindMapModelChanged(this.mindMapPanel);
+          onMindMapModelChanged(this.mindMapPanel, true);
         }
       }
     }
@@ -1268,7 +1268,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       if (changed) {
         this.mindMapPanel.invalidate();
         this.mindMapPanel.repaint();
-        onMindMapModelChanged(this.mindMapPanel);
+        onMindMapModelChanged(this.mindMapPanel, true);
       }
     }
   }
@@ -1302,7 +1302,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       if (changed) {
         this.mindMapPanel.invalidate();
         this.mindMapPanel.repaint();
-        onMindMapModelChanged(this.mindMapPanel);
+        onMindMapModelChanged(this.mindMapPanel, true);
       }
     }
   }
@@ -1336,7 +1336,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       if (changed) {
         this.mindMapPanel.invalidate();
         this.mindMapPanel.repaint();
-        onMindMapModelChanged(this.mindMapPanel);
+        onMindMapModelChanged(this.mindMapPanel, true);
       }
     }
   }
@@ -1357,7 +1357,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         topic = MindMapUtils.findFirstVisibleAncestor(topic);
       }
       if (mapChanged) {
-        this.mindMapPanel.updateView(true);
+        this.mindMapPanel.updateView();
         topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
       }
       this.mindMapPanel.select(topic, false);
@@ -1509,7 +1509,8 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         Utils.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
       }
 
-      source.updateView(true);
+      source.updateView();
+      onMindMapModelChanged(source, true);
     }
   }
 

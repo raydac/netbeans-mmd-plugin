@@ -242,7 +242,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
         mindMapPanel.invalidate();
         mindMapPanel.repaint();
-        this.editor.onMindMapModelChanged(mindMapPanel);
+        this.editor.onMindMapModelChanged(mindMapPanel, true);
       }
     }
   }
@@ -297,7 +297,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       if (changed) {
         mindMapPanel.invalidate();
         mindMapPanel.repaint();
-        this.editor.onMindMapModelChanged(mindMapPanel);
+        this.editor.onMindMapModelChanged(mindMapPanel, true);
       }
     }
   }
@@ -373,7 +373,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
           final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
           mindMapPanel.invalidate();
           mindMapPanel.repaint();
-          this.editor.onMindMapModelChanged(mindMapPanel);
+          this.editor.onMindMapModelChanged(mindMapPanel,true);
         }
       }
     }
@@ -400,7 +400,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         Utils.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
       }
 
-      source.updateView(true);
+      source.updateView();
     }
   }
 
@@ -437,7 +437,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       if (changed) {
         this.editor.getMindMapPanel().invalidate();
         this.editor.getMindMapPanel().repaint();
-        this.editor.onMindMapModelChanged(this.editor.getMindMapPanel());
+        this.editor.onMindMapModelChanged(this.editor.getMindMapPanel(), true);
       }
     }
   }
