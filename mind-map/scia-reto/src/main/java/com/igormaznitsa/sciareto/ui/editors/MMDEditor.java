@@ -418,7 +418,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         this.currentModelState = this.undoStorage.fromRedo();
         this.preventAddUndo = true;
         try {
-          this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState)), true);
+          this.mindMapPanel.setModel(new MindMap(this, new StringReader(this.currentModelState)), true);
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
         } catch (IOException ex) {
           LOGGER.error("Can't redo mind map", ex); //NOI18N
@@ -500,6 +500,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
           @Nonnull final Dimension newSize
   ) {
     if (Double.compare(oldScale, newScale) != 0) {
+      this.scrollPane.setViewportView(source);
       final JViewport viewport = this.scrollPane.getViewport();
 
       final Rectangle viewPos = viewport.getViewRect();
@@ -528,8 +529,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         viewPos.y = 0;
         source.scrollRectToVisible(viewPos);
       }
-
-      this.scrollPane.revalidate();
       this.scrollPane.repaint();
     }
   }

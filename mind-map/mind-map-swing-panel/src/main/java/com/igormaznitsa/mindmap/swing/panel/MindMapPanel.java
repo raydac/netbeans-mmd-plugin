@@ -1766,7 +1766,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             }
             this.model.removeTopic(t);
           }
-          updateView();
+          revalidate();
+          repaint();
           fireNotificationMindMapChanged(true);
         }
       } finally {

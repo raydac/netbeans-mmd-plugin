@@ -261,10 +261,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   private boolean canBeDeletedSilently() {
     final MindMapController controller = this.map.getController();
-    if (controller != null) {
-      return controller.canBeDeletedSilently(this.map, this);
-    }
-    return false;
+    return controller == null ? true : controller.canBeDeletedSilently(this.map, this);
   }
 
   public boolean canBeLost() {
