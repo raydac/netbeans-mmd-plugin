@@ -647,15 +647,17 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   @Override
-  public void onEnsureVisibilityOfTopic(@Nonnull MindMapPanel mindMapPanel, @Nonnull final Topic topic) {
+  public void onEnsureVisibilityOfTopic(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final Topic topic) {
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
       public void run() {
+
         if (topic == null) {
           return;
         }
 
+        mindMapPanel.doLayout();
         final AbstractElement element = (AbstractElement) topic.getPayload();
         if (element == null) {
           return;
@@ -679,9 +681,9 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
           return;
         }
 
-        mainScrollPane.revalidate();
+        mainScrollPane.layout();
         bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
-        viewport.scrollRectToVisible(bounds);
+        mainScrollPane.getViewport().setViewPosition(bounds.getLocation());
       }
 
     });
