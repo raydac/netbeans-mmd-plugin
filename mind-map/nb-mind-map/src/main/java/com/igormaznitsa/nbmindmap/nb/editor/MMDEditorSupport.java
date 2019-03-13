@@ -128,8 +128,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
     return super.messageToolTip();
   }
 
-  //TODO implement support of 'add to history' flag
-  public void replaceDocumentText(final String text, final boolean addToHistory) {
+  public void replaceDocumentText(final String text) {
     try {
       final GuardedDocument doc = (GuardedDocument) this.openDocument();
       doc.runAtomic(new Runnable() {

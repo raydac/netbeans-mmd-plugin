@@ -144,6 +144,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
   private volatile boolean popupMenuActive = false;
+  private volatile boolean removeEditedTopicForRollback = false;
 
   private Dimension sizeMindMap = new Dimension();
 
@@ -510,7 +511,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 processPopUp(e.getPoint(), element);
                 e.consume();
               } else {
-                endEdit(elementUnderEdit != null);
+                if (elementUnderEdit != null) {
+                  endEdit(!(textEditor.getText().isEmpty() && removeEditedTopicForRollback));
+                }
                 mouseDragSelection = null;
               }
             } catch (Exception ex) {
@@ -1669,6 +1672,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
           doLayout();
           fireNotificationMindMapChanged(false);
+          removeEditedTopicForRollback = true;
 
           SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -1917,40 +1921,44 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     if (this.lockIfNotDisposed()) {
       result = this.elementUnderEdit != null;
       try {
-        if (commit && this.elementUnderEdit != null) {
-          this.pathToPrevTopicBeforeEdit = null;
-          final AbstractElement editedElement = this.elementUnderEdit;
-          final Topic editedTopic = this.elementUnderEdit.getModel();
+        if (this.elementUnderEdit != null) {
+          if (commit) {
+            this.pathToPrevTopicBeforeEdit = null;
+            final AbstractElement editedElement = this.elementUnderEdit;
+            final Topic editedTopic = this.elementUnderEdit.getModel();
 
-          final String oldText = editedElement.getText();
-          String newText = this.textEditor.getText();
+            final String oldText = editedElement.getText();
+            String newText = this.textEditor.getText();
 
-          if (this.controller.isTrimTopicTextBeforeSet(this)) {
-            newText = newText.trim();
-          }
-
-          boolean contentChanged = false;
-          if (!oldText.equals(newText)) {
-            editedElement.setText(newText);
-            contentChanged = true;
-          }
-          this.textEditorPanel.setVisible(false);
-          
-          revalidate();
-          
-          if (contentChanged) {
-            fireNotificationMindMapChanged(true);
-          }
-          
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              fireNotificationEnsureTopicVisibility(editedTopic);
+            if (this.controller.isTrimTopicTextBeforeSet(this)) {
+              newText = newText.trim();
             }
-          });
+
+            boolean contentChanged = false;
+            if (!oldText.equals(newText)) {
+              editedElement.setText(newText);
+              contentChanged = true;
+            }
+            this.textEditorPanel.setVisible(false);
+
+            revalidate();
+            fireNotificationEnsureTopicVisibility(editedTopic);
+
+            if (contentChanged) {
+              fireNotificationMindMapChanged(true);
+            }
+          } else {
+             if (this.removeEditedTopicForRollback) {
+               final Topic topic = this.elementUnderEdit.getModel();
+               this.selectedTopics.remove(topic);
+               this.model.removeTopic(topic);
+               revalidate();
+             }
+          }
         }
       } finally {
         try {
+          this.removeEditedTopicForRollback = false;
           this.elementUnderEdit = null;
           this.textEditorPanel.setVisible(false);
           this.requestFocus();
@@ -1972,7 +1980,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           this.elementUnderEdit = element;
           element.fillByTextAndFont(this.textEditor);
           ensureVisibility(this.elementUnderEdit);
-          
+
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

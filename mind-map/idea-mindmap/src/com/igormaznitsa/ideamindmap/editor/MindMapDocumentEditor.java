@@ -128,7 +128,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   private final JPanel mainPanel;
-  private final JBScrollPane mainScrollPane;
+  private final JScrollPane mainScrollPane;
   private final MindMapPanel mindMapPanel;
   private final Project project;
   private final VirtualFile file;
@@ -151,7 +151,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.mindMapPanel.putTmpObject("editor", this);
 
     this.mindMapPanel.addMindMapListener(this);
-    this.mainScrollPane = new JBScrollPane(this.mindMapPanel, JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JBScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // NB! JBScrollPane sometime doesn't show scrollbars so that it replaced by swing panel
+    this.mainScrollPane = new JScrollPane(this.mindMapPanel, JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JBScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // NB! JBScrollPane sometime doesn't show scrollbars so that it replaced by swing panel
 
     this.mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     this.mainScrollPane.getVerticalScrollBar().setBlockIncrement(128);
@@ -653,21 +653,14 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       @Override
       public void run() {
 
-        if (topic == null) {
-          return;
-        }
-
         mindMapPanel.doLayout();
+
         final AbstractElement element = (AbstractElement) topic.getPayload();
         if (element == null) {
           return;
         }
 
         final Rectangle2D orig = element.getBounds();
-        if (orig == null) {
-          return;
-        }
-
         final int GAP = 30;
 
         final Rectangle bounds = orig.getBounds();
@@ -681,9 +674,16 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
           return;
         }
 
-        mainScrollPane.layout();
         bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
-        mainScrollPane.getViewport().setViewPosition(bounds.getLocation());
+
+        mainScrollPane.revalidate();
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            viewport.scrollRectToVisible(bounds);
+            mainScrollPane.repaint();
+          }
+        });
       }
 
     });

@@ -19,6 +19,7 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
@@ -179,6 +180,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     }
   }
 
+  @UiThread
   public boolean topicToCentre(@Nullable final Topic topic) {
     boolean result = false;
 
@@ -455,14 +457,12 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   }
 
   @Override
-  public void onEnsureVisibilityOfTopic(@Nonnull final MindMapPanel source, @Nullable final Topic topic) {
+  public void onEnsureVisibilityOfTopic(@Nonnull final MindMapPanel source, @Nonnull final Topic topic) {
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
       public void run() {
-        if (topic == null) {
-          return;
-        }
+        source.doLayout();
 
         final AbstractElement element = (AbstractElement) topic.getPayload();
         if (element == null) {
@@ -484,7 +484,14 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         }
 
         bounds.setLocation(bounds.x - viewportRectangle.x, bounds.y - viewportRectangle.y);
-        viewport.scrollRectToVisible(bounds);
+        
+        scrollPane.revalidate();
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            viewport.scrollRectToVisible(bounds);
+          }
+        });
       }
 
     });

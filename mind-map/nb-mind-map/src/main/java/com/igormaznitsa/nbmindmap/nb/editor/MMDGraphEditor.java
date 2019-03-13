@@ -163,9 +163,6 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     }
   };
 
-
-  
-  
   private final Action actionCopy = new AbstractAction() {
     private static final long serialVersionUID = 935382113400815225L;
 
@@ -539,8 +536,10 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       final MindMap theMap = this.mindMapPanel.getModel();
       MindMapUtils.removeCollapseAttributeFromTopicsWithoutChildren(theMap);
       theMap.write(writer);
-      this.editorSupport.replaceDocumentText(writer.toString(), saveToHistory);
-      this.editorSupport.getDataObject().setModified(true);
+      if (saveToHistory) {
+        this.editorSupport.replaceDocumentText(writer.toString());
+        this.editorSupport.getDataObject().setModified(true);
+      }
     } catch (Exception ex) {
       LOGGER.error("Can't get document text", ex); //NOI18N
     } finally {
@@ -625,6 +624,8 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
       @Override
       public void run() {
+        source.doLayout();
+        
         final AbstractElement element = (AbstractElement) topic.getPayload();
         if (element == null) {
           return;
@@ -646,7 +647,13 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
         bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
 
-        viewport.scrollRectToVisible(bounds);
+        mainScrollPane.revalidate();
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            viewport.scrollRectToVisible(bounds);
+          }
+        });
       }
 
     });
@@ -848,9 +855,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   @Override
   public void onScaledByMouse(
-          @Nonnull final MindMapPanel source, 
-          @Nonnull final Point mousePoint, 
-          final double oldScale, 
+          @Nonnull final MindMapPanel source,
+          @Nonnull final Point mousePoint,
+          final double oldScale,
           final double newScale,
           @Nonnull final Dimension oldSize,
           @Nonnull final Dimension newSize
@@ -870,7 +877,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
         final double scaleX = newSize.getWidth() / oldSize.getWidth();
         final double scaleY = newSize.getHeight() / oldSize.getHeight();
-        
+
         final int newMouseX = (int) (Math.round(mousePoint.x * scaleX));
         final int newMouseY = (int) (Math.round(mousePoint.y * scaleY));
 
