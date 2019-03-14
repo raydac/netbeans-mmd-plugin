@@ -400,7 +400,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         Utils.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
       }
 
-      source.updateView();
+      source.doLayout();
     }
   }
 

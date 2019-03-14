@@ -161,13 +161,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.mainScrollPane.setWheelScrollingEnabled(true);
     this.mainScrollPane.setAutoscrolls(true);
 
-    this.mindMapPanel.addComponentListener(new ComponentAdapter() {
-      @Override
-      public void componentResized(ComponentEvent e) {
-        mainScrollPane.getViewport().revalidate();
-      }
-    });
-
     final Document document = FileDocumentManager.getInstance().getDocument(this.file);
 
     this.documents = new Document[] {document};
@@ -599,7 +592,8 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   @Override
   public void onMindMapModelRealigned(@Nonnull MindMapPanel mindMapPanel, @Nonnull Dimension dimension) {
-    this.mainScrollPane.getViewport().revalidate();
+    this.mainScrollPane.revalidate();
+    this.mainScrollPane.repaint();
   }
 
   @Override
@@ -851,8 +845,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       }
 
       if (changed) {
-        this.mindMapPanel.invalidate();
-        this.mindMapPanel.repaint();
+        this.mindMapPanel.doLayout();
         onMindMapModelChanged(this.mindMapPanel, true);
       }
     }
@@ -977,8 +970,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         }
       }
       topic.setExtra(new ExtraLink(mmapUri));
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
+      this.mindMapPanel.doLayout();
       onMindMapModelChanged(this.mindMapPanel, true);
     }
   }
@@ -992,8 +984,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         }
       }
       topic.setExtra(new ExtraNote(text));
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
+      this.mindMapPanel.doLayout();
       onMindMapModelChanged(this.mindMapPanel, true);
     }
   }
@@ -1020,8 +1011,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         }
 
         topic.setExtra(new ExtraFile(theURI));
-        this.mindMapPanel.invalidate();
-        this.mindMapPanel.repaint();
+        this.mindMapPanel.doLayout();
         onMindMapModelChanged(this.mindMapPanel, true);
       } else {
         LOGGER.warn("Can't find VirtualFile for " + file);
@@ -1052,7 +1042,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   public void refreshConfiguration() {
     this.mindMapPanel.refreshConfiguration();
-    this.mindMapPanel.revalidate();
+    this.mindMapPanel.doLayout();
     this.mindMapPanel.repaint();
   }
 

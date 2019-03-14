@@ -79,7 +79,6 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
                 @Override
                 public void run() {
                   panel.setModel(map, false);
-                  panel.updateView();
                   final Topic root = map.getRoot();
                   if (root != null) {
                     panel.focusTo(root);

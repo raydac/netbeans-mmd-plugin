@@ -620,42 +620,36 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   @Override
   public void onEnsureVisibilityOfTopic(@Nonnull final MindMapPanel source, @Nonnull final Topic topic) {
-    SwingUtilities.invokeLater(new Runnable() {
+    mindMapPanel.doLayout();
 
+    final AbstractElement element = (AbstractElement) topic.getPayload();
+    if (element == null) {
+      return;
+    }
+
+    final Rectangle2D orig = element.getBounds();
+    final int GAP = 30;
+
+    final Rectangle bounds = orig.getBounds();
+    bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
+    bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
+
+    final JViewport viewport = mainScrollPane.getViewport();
+    final Rectangle visible = viewport.getViewRect();
+
+    if (visible.contains(bounds)) {
+      return;
+    }
+
+    bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
+
+    mainScrollPane.revalidate();
+    SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        source.doLayout();
-        
-        final AbstractElement element = (AbstractElement) topic.getPayload();
-        if (element == null) {
-          return;
-        }
-
-        final Rectangle2D orig = element.getBounds();
-        final int GAP = 30;
-
-        final Rectangle bounds = orig.getBounds();
-        bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
-        bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
-
-        final JViewport viewport = mainScrollPane.getViewport();
-        final Rectangle visible = viewport.getViewRect();
-
-        if (visible.contains(bounds)) {
-          return;
-        }
-
-        bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
-
-        mainScrollPane.revalidate();
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            viewport.scrollRectToVisible(bounds);
-          }
-        });
+        viewport.scrollRectToVisible(bounds);
+        mainScrollPane.repaint();
       }
-
     });
   }
 
@@ -806,7 +800,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   }
 
   private void processEditorResizing() {
-    this.mindMapPanel.updateView();
+    this.mindMapPanel.doLayout();
     this.mindMapPanel.updateEditorAfterResizing();
   }
 
@@ -1364,7 +1358,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         topic = MindMapUtils.findFirstVisibleAncestor(topic);
       }
       if (mapChanged) {
-        this.mindMapPanel.updateView();
+        this.mindMapPanel.doLayout();
         topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
       }
       this.mindMapPanel.select(topic, false);
@@ -1516,7 +1510,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         Utils.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
       }
 
-      source.updateView();
+      source.doLayout();
       onMindMapModelChanged(source, true);
     }
   }
