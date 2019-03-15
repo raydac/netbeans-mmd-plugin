@@ -377,14 +377,20 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               e.consume();
               setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)), false);
               doLayout();
+              revalidate();
+              repaint();
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
               e.consume();
               setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)), false);
               doLayout();
+              revalidate();
+              repaint();
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
               e.consume();
               setScale(1.0, false);
               doLayout();
+              revalidate();
+              repaint();
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
                     || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
                     || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e)
@@ -529,6 +535,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               if (draggedElement != null) {
                 draggedElement.updatePosition(e.getPoint());
                 if (endDragOfElement(draggedElement, destinationElement)) {
+                  doLayout();
                   revalidate();
                   repaint();
                   fireNotificationMindMapChanged(true);
@@ -657,6 +664,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 setScale(newScale, false);
                 MindMapPanel.this.doLayout();
                 MindMapPanel.this.revalidate();
+                MindMapPanel.this.repaint();
+                
                 final Dimension newSize = mindMapImageSize.get().getSize();
                 
                 fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, oldSize, newSize);
@@ -711,6 +720,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                         processedByPlugin = true;
                         try {
                           if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
+                            doLayout();
                             revalidate();
                             repaint();
                             fireNotificationMindMapChanged(true);
@@ -1232,9 +1242,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
 
     if (changed) {
+      this.doLayout();
       this.revalidate();
-      repaint();
-      fireNotificationMindMapChanged(true);
+      this.repaint();
+      this.fireNotificationMindMapChanged(true);
     }
   }
 
@@ -1757,6 +1768,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             }
             this.model.removeTopic(t);
           }
+          doLayout();
           revalidate();
           repaint();
           fireNotificationMindMapChanged(true);
@@ -1776,6 +1788,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         final Topic topic = this.model.getRoot();
 
         if (topic != null && MindMapUtils.foldOrUnfoldChildren(topic, collapse, Integer.MAX_VALUE)) {
+          doLayout();
           revalidate();
           repaint();
           fireNotificationMindMapChanged(true);
@@ -1928,7 +1941,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             }
             this.textEditorPanel.setVisible(false);
 
+            doLayout();
             revalidate();
+            repaint();
             fireNotificationEnsureTopicVisibility(editedTopic);
 
             if (contentChanged) {
@@ -1939,7 +1954,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               final Topic topic = this.elementUnderEdit.getModel();
               this.selectedTopics.remove(topic);
               this.model.removeTopic(topic);
+              doLayout();
               revalidate();
+              repaint();
             }
           }
         }
@@ -2115,6 +2132,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       }
 
       doLayout();
+      revalidate();
 
       boolean selectionChanged = false;
       for (final int[] posPath : selectedPaths) {
@@ -2477,6 +2495,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
             if (MindMapUtils.ensureVisibility(cel.getModel())) {
               doLayout();
+              revalidate();
+              repaint();
               fireNotificationMindMapChanged(false);
             }
           }
@@ -2507,6 +2527,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       if (cloned != null) {
         cloned.moveAfter(topic);
+        doLayout();
         revalidate();
         repaint();
         fireNotificationMindMapChanged(true);
@@ -2673,6 +2694,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 }
               }
 
+              doLayout();
               revalidate();
               repaint();
 
@@ -2714,6 +2736,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                   MindMapUtils.ensureVisibility(newTopic);
                 }
 
+                doLayout();
                 revalidate();
                 repaint();
 
