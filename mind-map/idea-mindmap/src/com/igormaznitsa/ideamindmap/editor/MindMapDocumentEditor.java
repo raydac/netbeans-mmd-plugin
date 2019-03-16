@@ -23,6 +23,7 @@ import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.model.Extra;
@@ -100,8 +101,6 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
@@ -138,9 +137,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private final DocumentListener documentListener;
   private final FindTextPanel findTextPanel;
   private boolean dragAcceptableType = false;
-  private boolean firstLayouting = true;
 
-  public MindMapDocumentEditor(final Project project, final VirtualFile file) {
+  public MindMapDocumentEditor(
+      final Project project,
+      final VirtualFile file
+  ) {
     this.project = project;
     this.file = file;
 
@@ -211,23 +212,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   @Override
   public void onComponentElementsLayouted(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final Graphics2D graphics2D) {
-    if (this.firstLayouting) {
-      this.firstLayouting = false;
-      centreToRoot();
-    }
-  }
-
-  public void centreToRoot() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final Topic root = mindMapPanel.getModel().getRoot();
-        if (root != null) {
-          mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, false);
-          topicToCentre(root);
-        }
-      }
-    });
   }
 
   @Override
