@@ -188,9 +188,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     if (topic != null) {
       AbstractElement element = (AbstractElement) topic.getPayload();
 
-      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, true)) {
+      if (element == null) {
+        this.mindMapPanel.doLayout();
         element = (AbstractElement) topic.getPayload();
-        this.scrollPane.getViewport().doLayout();
       }
 
       if (element != null) {
@@ -203,6 +203,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         this.scrollPane.getViewport().setViewPosition(new Point(x, y));
         result = true;
       }
+
+      this.scrollPane.revalidate();
+      this.scrollPane.repaint();
     }
 
     return result;
@@ -484,7 +487,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         }
 
         bounds.setLocation(bounds.x - viewportRectangle.x, bounds.y - viewportRectangle.y);
-        
+
         scrollPane.revalidate();
         SwingUtilities.invokeLater(new Runnable() {
           @Override
@@ -499,9 +502,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
   @Override
   public void onScaledByMouse(
-          @Nonnull final MindMapPanel source, 
-          @Nonnull final Point mousePoint, 
-          final double oldScale, 
+          @Nonnull final MindMapPanel source,
+          @Nonnull final Point mousePoint,
+          final double oldScale,
           final double newScale,
           @Nonnull final Dimension oldSize,
           @Nonnull final Dimension newSize
@@ -521,8 +524,8 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         final int dy = mousePoint.y - viewPos.y;
 
         final double scaleX = newSize.getWidth() / oldSize.getWidth();
-        final double scaleY = newSize.getHeight()/ oldSize.getHeight();
-        
+        final double scaleY = newSize.getHeight() / oldSize.getHeight();
+
         final int newMouseX = (int) (Math.round(mousePoint.x * scaleX));
         final int newMouseY = (int) (Math.round(mousePoint.y * scaleY));
 
@@ -781,7 +784,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       topic.setExtra(new ExtraFile(theURI));
       this.mindMapPanel.invalidate();
       this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel,true);
+      onMindMapModelChanged(this.mindMapPanel, true);
     }
   }
 
@@ -882,7 +885,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       if (changed) {
         this.mindMapPanel.invalidate();
         this.mindMapPanel.repaint();
-        onMindMapModelChanged(this.mindMapPanel,true);
+        onMindMapModelChanged(this.mindMapPanel, true);
       }
     }
   }
@@ -954,7 +957,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         if (valueChanged) {
           this.mindMapPanel.invalidate();
           this.mindMapPanel.repaint();
-          onMindMapModelChanged(this.mindMapPanel,true);
+          onMindMapModelChanged(this.mindMapPanel, true);
         }
       }
     }
@@ -1049,7 +1052,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         if (changed) {
           this.mindMapPanel.invalidate();
           this.mindMapPanel.repaint();
-          onMindMapModelChanged(this.mindMapPanel,true);
+          onMindMapModelChanged(this.mindMapPanel, true);
         }
       }
     }
@@ -1078,7 +1081,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
       source.revalidate();
       source.repaint();
-      onMindMapModelChanged(source,true);
+      onMindMapModelChanged(source, true);
     }
   }
 

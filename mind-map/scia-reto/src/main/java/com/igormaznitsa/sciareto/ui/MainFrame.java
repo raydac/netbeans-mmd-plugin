@@ -129,9 +129,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
 
   private final JSplitPane mainSplitPane;
-  
+
   private int lastDividerLocation;
-  
+
   private static final ExecutorService LOADING_EXECUTOR_SERVICE = Executors.newCachedThreadPool(new ThreadFactory() {
     @Override
     @Nonnull
@@ -217,7 +217,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.tabPane.addMaxMinEditorListener((@Nonnull final ActionEvent e) -> {
       ensureTreePanelIsVisible();
     });
-    
+
     this.mainPanel = new JPanel(new BorderLayout(0, 0));
     this.mainPanel.add(this.tabPane, BorderLayout.CENTER);
 
@@ -375,7 +375,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.explorerTree.focusToFirstElement();
   }
 
-  private void ensureTreePanelIsVisible(){
+  private void ensureTreePanelIsVisible() {
     final int divider = this.mainSplitPane.getDividerLocation();
     if (divider > 3) {
       this.lastDividerLocation = divider;
@@ -384,7 +384,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.mainSplitPane.setDividerLocation(lastDividerLocation);
     }
   }
-  
+
   private void updateMenuItemsForProvider(@Nullable final TabProvider provider) {
     if (provider == null) {
       this.menuRedo.setEnabled(false);
@@ -612,6 +612,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             final MMDEditor panel = new MMDEditor(this, file);
             this.tabPane.createTab(panel);
             result = true;
+            centerRootTopicIfFocusedMMD();
           } catch (IOException ex) {
             LOGGER.error("Can't load mind map", ex); //NOI18N
           }
@@ -1363,12 +1364,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       if (openFileAsTab(file, -1)) {
         try {
           FileHistoryManager.getInstance().registerOpenedProject(file);
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              centerRootTopicIfFocusedMMD();
-            }
-          });
         } catch (IOException ex) {
           LOGGER.error("Can't register last opened file", ex); //NOI18N
         }
