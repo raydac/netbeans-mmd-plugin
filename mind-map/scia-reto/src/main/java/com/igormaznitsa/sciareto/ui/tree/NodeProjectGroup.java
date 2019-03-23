@@ -18,6 +18,21 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.UiThread;
+import com.igormaznitsa.meta.common.utils.ArrayUtils;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.model.nio.Path;
+import com.igormaznitsa.mindmap.model.nio.Paths;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.preferences.PrefUtils;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.MainFrame;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,20 +47,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.commons.io.FilenameUtils;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.annotation.UiThread;
-import com.igormaznitsa.meta.common.utils.ArrayUtils;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.model.nio.Path;
-import com.igormaznitsa.mindmap.model.nio.Paths;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.preferences.PrefUtils;
-import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.UiUtils;
+import reactor.core.publisher.Mono;
 
 public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
@@ -92,25 +94,13 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     project.dispose();
   }
 
-  @Override
-  public void reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelable) throws IOException {
-    LOGGER.info("Start group reloading : " + this.groupName);
-    final long startTime = System.currentTimeMillis();
-    _reloadSubtree(addHiddenFilesAndFolders, cancelable);
-    LOGGER.info(String.format("Group '%s' reload took %d ms", this.groupName, System.currentTimeMillis() - startTime));
-  }
-
-  @Override
   @Nonnull
-  @MustNotContainNull
-  protected List<NodeFileOrFolder> _reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelableObject) throws IOException {
-    for (final NodeFileOrFolder f : this.children) {
-      if (cancelableObject.isCanceled()) {
-        break;
-      }
-      f.reloadSubtree(addHiddenFilesAndFolders, cancelableObject);
-    }
-    return this.children;
+  @Override
+  public Mono<NodeFileOrFolder> readSubtree(final boolean addHiddenFilesAndFolders) {
+    this.children.forEach(proj -> {
+      ((NodeProject)proj).initLoading(proj.readSubtree(addHiddenFilesAndFolders).subscribeOn(MainFrame.PARALLEL_SCHEDULER).subscribe());
+    });
+    return Mono.just(this);
   }
 
   @Nonnull
@@ -203,12 +193,12 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
               if (doIt) {
                 Files.move(origFile.toPath(), newFile.toPath());
                 editedNode.setName(newFile.getName());
-                
+
                 final TreeModelEvent renamedEvent = new TreeModelEvent(this, editedNode.makeTreePath());
-                for(final TreeModelListener l : listeners) {
+                for (final TreeModelListener l : listeners) {
                   l.treeNodesChanged(renamedEvent);
                 }
-                
+
                 editedNode.fireNotifySubtreeChanged(this, listeners);
 
                 this.context.notifyFileRenamed(affectedFiles, origFile, newFile);

@@ -27,9 +27,9 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
+import com.igormaznitsa.sciareto.ui.MainFrame;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,72 +39,21 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import reactor.core.Exceptions;
+import reactor.core.publisher.Mono;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeFileOrFolder.class);
-
-  protected interface Cancelable {
-
-    void cancel();
-
-    boolean isCanceled();
-  }
-
-  public static final Cancelable THREAD_CANCELABLE = new Cancelable() {
-    @Override
-    public boolean isCanceled() {
-      return Thread.currentThread().isInterrupted();
-    }
-
-    @Override
-    public void cancel() {
-      throw new UnsupportedOperationException("Can't be called directy");
-    }
-  };
-
-  protected static final class ForkedLoadNodeTask extends RecursiveTask<NodeFileOrFolder> {
-
-    private final long serialVersionUID = 289347923874323L;
-
-    private final NodeFileOrFolder parent;
-    private final boolean isdir;
-    private final String name;
-    private final boolean addhidden;
-    private final boolean writable;
-    private final Cancelable cancelable;
-
-    protected ForkedLoadNodeTask(@Nonnull final NodeFileOrFolder parent, @Nonnull final Cancelable cancelable, final boolean isdir, @Nonnull final String name, final boolean addhidden, final boolean writable) {
-      this.parent = parent;
-      this.name = name;
-      this.addhidden = addhidden;
-      this.writable = writable;
-      this.isdir = isdir;
-      this.cancelable = cancelable;
-    }
-
-    @Override
-    @Nonnull
-    protected NodeFileOrFolder compute() {
-      try {
-        final NodeFileOrFolder result = new NodeFileOrFolder(this.parent, this.isdir, this.name, this.addhidden, this.writable);
-        result.reloadSubtree(this.addhidden, this.cancelable);
-        return result;
-      } catch (final IOException ex) {
-        throw new RuntimeException(ex);
-      }
-    }
-  }
 
   protected final NodeFileOrFolder parent;
 
@@ -117,7 +66,13 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   private volatile boolean disposed = false;
 
-  public NodeFileOrFolder(@Nullable final NodeFileOrFolder parent, final boolean folder, @Nullable final String name, final boolean showHiddenFiles, final boolean readOnly) throws IOException {
+  public NodeFileOrFolder(
+          @Nullable final NodeFileOrFolder parent,
+          final boolean folder,
+          @Nullable final String name,
+          final boolean showHiddenFiles,
+          final boolean readOnly
+  ) {
     this.parent = parent;
     this.name = name;
 
@@ -198,12 +153,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
-    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(), THREAD_CANCELABLE);
-  }
-
-  public void reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelable) throws IOException {
-    clearChildren();
-    this.children.addAll(_reloadSubtree(addHiddenFilesAndFolders, cancelable));
+    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.PARALLEL_SCHEDULER).subscribe();
   }
 
   private void clearChildren() {
@@ -215,71 +165,66 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   @Nonnull
-  @MustNotContainNull
-  protected List<NodeFileOrFolder> _reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelableObject) throws IOException {
-    final List<NodeFileOrFolder> result;
-    if (this.folderFlag) {
-      result = new ArrayList<>();
-      final File generatedFile = makeFileForNode();
-      if (generatedFile != null && generatedFile.isDirectory()) {
-        final List<ForkedLoadNodeTask> forks = new ArrayList<>();
-
-        DirectoryStream<Path> stream;
-        try {
-          stream = Files.newDirectoryStream(generatedFile.toPath());
-        } catch (AccessDeniedException ex) {
-          LOGGER.info("Can't get access to file: " + generatedFile);
-          this.noAccess = true;
-          return result;
+  protected static DirectoryStream<Path> makeDirectoryStream(@Nonnull final Path path) {
+    try {
+      return Files.newDirectoryStream(path);
+    } catch (IOException ex) {
+      throw Exceptions.propagate(ex);
+    } catch (SecurityException ex) {
+      LOGGER.warn("Security error! Can't make directory stream for path: " + path);
+      return new DirectoryStream<Path>() {
+        @Override
+        public Iterator<Path> iterator() {
+          return Collections.emptyIterator();
         }
 
-        try {
-          for (final Path p : stream) {
-            if (cancelableObject.isCanceled()) {
-              break;
-            }
-            if (addHiddenFilesAndFolders || !Files.isHidden(p)) {
-              forks.add(new ForkedLoadNodeTask(this, cancelableObject, Files.isDirectory(p), p.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(p)));
-            }
-          }
-        } finally {
-          IOUtils.closeQuetly(stream);
+        @Override
+        public void close() throws IOException {
         }
-
-        for (final ForkedLoadNodeTask f : forks) {
-          if (cancelableObject.isCanceled()) {
-            break;
-          }
-          f.fork();
-        }
-
-        if (!cancelableObject.isCanceled()) {
-          Collections.reverse(forks);
-
-          for (final ForkedLoadNodeTask f : forks) {
-            if (cancelableObject.isCanceled()) {
-              break;
-            }
-            try {
-              result.add(f.join());
-            } catch (final RuntimeException ex) {
-              if (ex.getCause() instanceof IOException) {
-                throw (IOException) ex.getCause();
-              } else {
-                throw new IOException(ex);
-              }
-            }
-          }
-
-          if (!cancelableObject.isCanceled()) {
-            Collections.sort(result, this);
-          }
-        }
-      }
-    } else {
-      result = Collections.emptyList();
+      };
     }
-    return result;
+  }
+
+  protected static boolean isFileHidden(@Nonnull final Path path) {
+    try {
+      return Files.isHidden(path);
+    } catch (IOException ex) {
+      throw Exceptions.propagate(ex);
+    }
+  }
+
+  @Nonnull
+  public Mono<NodeFileOrFolder> readSubtree(final boolean addHiddenFilesAndFolders) {
+    final AtomicReference<DirectoryStream<Path>> dirStream = new AtomicReference<>();
+
+    return this.folderFlag ? Mono.just(this)
+            .map(x -> {
+              x.clearChildren();
+              return makeFileForNode();
+            })
+            .map(File::toPath)
+            .flatMapIterable(path -> {
+              dirStream.set(makeDirectoryStream(path));
+              return dirStream.get();
+            })
+            .filter(f -> {
+              if (this.parent instanceof NodeProjectGroup) {
+                return addHiddenFilesAndFolders || !isFileHidden(f) || Context.KNOWLEDGE_FOLDER.equals(f.getFileName().toString());
+              } else {
+                return addHiddenFilesAndFolders || !isFileHidden(f);
+              }
+            }).map(f -> {
+      NodeFileOrFolder newChild = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(f));
+      this.children.add(newChild);
+      return newChild;
+    }).flatMap(f -> f.readSubtree(addHiddenFilesAndFolders)).reduce((x, y) -> this).doFinally(signal -> {
+      DirectoryStream<Path> stream = dirStream.getAndSet(null);
+      if (stream != null) {
+        IOUtils.closeQuetly(stream);
+      }
+    }).doFinally(signal -> {
+      Collections.sort(this.children, this);
+    }) : Mono.empty();
   }
 
   @Nullable

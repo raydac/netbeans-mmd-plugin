@@ -72,6 +72,8 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Main;
+import reactor.core.Disposable;
+import reactor.core.scheduler.Scheduler;
 
 public final class UiUtils {
 
@@ -94,6 +96,32 @@ public final class UiUtils {
       DARK_THEME = calculateBrightness(color) < 150;
     }
   }
+
+  public static final Scheduler SWING_SCHEDULER = new Scheduler() {
+    private final Disposable nullDisposable = () -> {};
+            
+    private final Worker worker = new Worker() {
+      @Override
+      public Disposable schedule(@Nonnull final Runnable task) {
+        SwingUtilities.invokeLater(task);
+        return nullDisposable;
+      }
+
+      @Override
+      public void dispose() {
+      }
+    };
+
+    @Override
+    public Disposable schedule(@Nonnull final Runnable task) {
+      return this.createWorker().schedule(task);
+    }
+
+    @Override
+    public Scheduler.Worker createWorker() {
+      return this.worker;
+    }
+  };
 
   public static final class SplashScreen extends JWindow {
 

@@ -35,24 +35,30 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
+import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import reactor.core.Disposable;
+import reactor.core.publisher.Mono;
 
-public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Cancelable {
+public class NodeProject extends NodeFileOrFolder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProject.class);
 
   private volatile File folder = null;
   private volatile boolean knowledgeFolderPresented;
-  private final AtomicBoolean loading = new AtomicBoolean();
-
+  private final AtomicBoolean loading = new AtomicBoolean(true);
+  private final AtomicReference<Disposable> loadDispose = new AtomicReference<>();
+  
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) throws IOException {
     super(group, true, folder.getName(), PrefUtils.isShowHiddenFilesAndFolders(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
     this.knowledgeFolderPresented = new File(folder, Context.KNOWLEDGE_FOLDER).isDirectory();
-    this.loading.set(true);
   }
 
   @Override
@@ -68,7 +74,7 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
     this.folder = new File(folder.getParentFile(), name);
-    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(), this);
+    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.PARALLEL_SCHEDULER).subscribe();
   }
 
   @Override
@@ -85,7 +91,7 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
   public void setFolder(@Nonnull final File folder) throws IOException {
     Assertions.assertTrue("Must be directory", folder.isDirectory()); //NOI18N
     this.folder = folder;
-    reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(), this);
+    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.PARALLEL_SCHEDULER).subscribe();
   }
 
   @Nonnull
@@ -97,10 +103,10 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
   @MustNotContainNull
   public List<File> findAffectedFiles(@Nonnull final File changedFile) {
     final File baseFolder = makeFileForNode();
-    final boolean folder = changedFile.isDirectory();
+    final boolean isfolder = changedFile.isDirectory();
 
     final List<File> result = new ArrayList<>();
-    for (final File mindMapFile : FileUtils.listFiles(baseFolder, new String[]{"mmd", "MMD"}, true)) { //NOI18N
+    FileUtils.listFiles(baseFolder, new String[]{"mmd", "MMD"}, true).forEach((mindMapFile) -> {
       try {
         final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8"))); //NOI18N
         if (!MapUtils.findTopicsRelatedToFile(baseFolder, changedFile, map).isEmpty()) {
@@ -109,7 +115,7 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
       } catch (IOException ex) {
         LOGGER.error("Can't process mind map file", ex); //NOI18N
       }
-    }
+    });
     return result;
   }
 
@@ -121,83 +127,47 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
     final File baseFolder = makeFileForNode();
     final MMapURI fileURI = new MMapURI(baseFolder, fileToRemove, null);
 
-    for (final File file : listOfFilesToProcess) {
-      if (file.isFile()) {
-        try {
-          final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
-          if (map.deleteAllLinksToFile(baseFolder, fileURI)) {
-            SystemUtils.saveUTFText(file, map.packToString());
-            affectedFiles.add(file);
-          }
-        } catch (IOException ex) {
-          LOGGER.error("Can't process mind map file", ex); //NOI18N
+    listOfFilesToProcess.stream().filter((file) -> (file.isFile())).forEachOrdered((file) -> {
+      try {
+        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
+        if (map.deleteAllLinksToFile(baseFolder, fileURI)) {
+          SystemUtils.saveUTFText(file, map.packToString());
+          affectedFiles.add(file);
         }
+      } catch (IOException ex) {
+        LOGGER.error("Can't process mind map file", ex); //NOI18N
       }
-    }
+    });
 
     return affectedFiles;
   }
 
-  @Override
-  public boolean isCanceled() {
-    return Thread.currentThread().isInterrupted() || this.loading.get() == false;
-  }
-
-  @Override
-  public void cancel() {
-    LOGGER.info("Canceling project load : " + this.toString());
-    this.loading.set(false);
-  }
-
-  @Override
-  public void reloadSubtree(final boolean addHiddenFilesAndFolders, @Nonnull final Cancelable cancelable) throws IOException {
-    final long startTime = System.currentTimeMillis();
-    super.reloadSubtree(addHiddenFilesAndFolders, cancelable);
-    LOGGER.info(String.format("Project %s reloaded, spent %d ms", this.toString(), System.currentTimeMillis() - startTime));
-  }
-
-  @Override
-  @Nonnull
-  @MustNotContainNull
-  protected List<NodeFileOrFolder> _reloadSubtree(final boolean showHiddenFiles, @Nonnull final Cancelable cancelable) throws IOException {
+  public void initLoading(@Nonnull final Disposable disposable) {
     this.loading.set(true);
-
+    this.loadDispose.set(disposable);
     this.getGroup().notifyProjectStateChanged(this);
-    try {
-      final List<NodeFileOrFolder> result = new ArrayList<>(super._reloadSubtree(showHiddenFiles, cancelable));
-      final File knowledgeFolder = new File(this.folder, Context.KNOWLEDGE_FOLDER);
-      this.knowledgeFolderPresented = knowledgeFolder.isDirectory();
-
-      if (!showHiddenFiles && this.knowledgeFolderPresented) {
-        boolean knowledgeFolderAdded = false;
-
-        for (final NodeFileOrFolder f : result) {
-          if (!cancelable.isCanceled() && f.isProjectKnowledgeFolder()) {
-            knowledgeFolderAdded = true;
-            break;
-          }
-        }
-
-        if (!cancelable.isCanceled() && !knowledgeFolderAdded) {
-          final NodeFileOrFolder knowledgeFolderNode = new NodeFileOrFolder(this, knowledgeFolder.isDirectory(), knowledgeFolder.getName(), showHiddenFiles, !Files.isWritable(knowledgeFolder.toPath()));
-          knowledgeFolderNode.reloadSubtree(showHiddenFiles, cancelable);
-          if (!cancelable.isCanceled()) {
-            result.add(knowledgeFolderNode);
-            Collections.sort(result, this);
-          }
-        }
-      }
-      return result;
-    } finally {
-      try {
-        if (!cancelable.isCanceled()) {
-          this.loading.set(false);
-          this.getGroup().notifyProjectStateChanged(this);
-        }
-      } finally {
-        this.loading.set(false);
-      }
-    }
+  }
+  
+  @Nonnull
+  @Override
+  public Mono<NodeFileOrFolder> readSubtree(final boolean addHiddenFilesAndFolders) {
+    final AtomicLong time = new AtomicLong();
+    final AtomicReference<NodeFileOrFolder> knowledgeFolder = new AtomicReference<>();
+    
+    return Mono.just(this)
+            .doOnSubscribe(s -> {
+              time.set(System.currentTimeMillis());
+            })
+            .flatMap(p -> super.readSubtree(addHiddenFilesAndFolders))
+            .doFinally(signalType -> {
+              Collections.sort(this.children, this);
+              LOGGER.info(String.format("Project %s reloaded, spent %d ms", this.toString(), System.currentTimeMillis() - time.get()));
+            })
+            .doOnTerminate(() -> {
+              this.loading.set(false);
+              this.loadDispose.set(null);
+              this.getGroup().notifyProjectStateChanged(this);
+            });
   }
 
   @Nonnull
@@ -209,20 +179,26 @@ public class NodeProject extends NodeFileOrFolder implements NodeFileOrFolder.Ca
     final MMapURI oldFileURI = new MMapURI(baseFolder, oldFile, null);
     final MMapURI newFileURI = new MMapURI(baseFolder, newFile, null);
 
-    for (final File file : listOfFilesToProcess) {
-      if (file.isFile()) {
-        try {
-          final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
-          if (map.replaceAllLinksToFile(baseFolder, oldFileURI, newFileURI)) {
-            SystemUtils.saveUTFText(file, map.packToString());
-            affectedFiles.add(file);
-          }
-        } catch (IOException ex) {
-          LOGGER.error("Can't process mind map file", ex); //NOI18N
+    listOfFilesToProcess.stream().filter((file) -> (file.isFile())).forEachOrdered((file) -> {
+      try {
+        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
+        if (map.replaceAllLinksToFile(baseFolder, oldFileURI, newFileURI)) {
+          SystemUtils.saveUTFText(file, map.packToString());
+          affectedFiles.add(file);
         }
+      } catch (IOException ex) {
+        LOGGER.error("Can't process mind map file", ex); //NOI18N
       }
-    }
+    });
 
     return affectedFiles;
+  }
+
+  public void cancelLoading() {
+    final Disposable disposable = this.loadDispose.getAndSet(null);
+    if (disposable != null) {
+      disposable.dispose();
+      this.getGroup().notifyProjectStateChanged(this);
+    }
   }
 }

@@ -77,9 +77,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -107,6 +104,9 @@ import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileView;
 import org.apache.commons.io.FilenameUtils;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
 
@@ -132,15 +132,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private int lastDividerLocation;
 
-  private static final ExecutorService LOADING_EXECUTOR_SERVICE = Executors.newCachedThreadPool(new ThreadFactory() {
-    @Override
-    @Nonnull
-    public Thread newThread(@Nonnull final Runnable r) {
-      final Thread result = new Thread(r, "LOAIDNG_THREAD");
-      result.setDaemon(true);
-      return result;
-    }
-  });
+  public static final Scheduler PARALLEL_SCHEDULER = Schedulers.newParallel("SCIA_RETO_PARALLEL_SCHEDULER");
 
   public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
@@ -507,6 +499,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (!this.stateless) {
       saveState();
     }
+
+    PARALLEL_SCHEDULER.dispose();
+
     return true;
   }
 
@@ -1267,31 +1262,27 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     LOGGER.info("Starting asyncronous loading of " + project.toString());
 
-    ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), project);
-
-    LOADING_EXECUTOR_SERVICE.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          project.reloadSubtree(PrefUtils.isShowHiddenFilesAndFolders(), project);
-        } catch (final IOException ex) {
-          LOGGER.error("Can't open project", ex);
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              JOptionPane.showMessageDialog(rootPane, "Can't open project : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-          });
-        } finally {
-          ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
-          if (invokeLater != null && invokeLater.length > 0) {
-            for (final Runnable r : invokeLater) {
-              SwingUtilities.invokeLater(r);
-            }
-          }
-        }
-      }
-    });
+    project.initLoading(Mono.just(project)
+            .publishOn(PARALLEL_SCHEDULER)
+            .map(proj -> {
+              SwingUtilities.invokeLater(() -> ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), proj));
+              return proj;
+            })
+            .flatMap(proj -> proj.readSubtree(PrefUtils.isShowHiddenFilesAndFolders()))
+            .doOnError(error -> {
+              LOGGER.error("Can't open project", error);
+              SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(rootPane, "Can't open project : " + error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+              });
+            })
+            .doOnTerminate(() -> {
+              ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
+              if (invokeLater != null && invokeLater.length > 0) {
+                for (final Runnable r : invokeLater) {
+                  SwingUtilities.invokeLater(r);
+                }
+              }
+            }).subscribe());
     return project;
   }
 
