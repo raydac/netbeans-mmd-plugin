@@ -32,6 +32,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -69,6 +70,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -76,13 +78,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -104,7 +100,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
@@ -128,6 +123,8 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
+import reactor.core.Disposable;
+import reactor.core.publisher.DirectProcessor;
 
 public final class PlantUmlTextEditor extends AbstractEditor {
 
@@ -179,21 +176,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   private volatile LastRendered lastSuccessfulyRenderedText = null;
 
-  private final ExecutorService RENDER_EXECUTOR = new ThreadPoolExecutor(1, 1,
-          60, TimeUnit.SECONDS,
-          new ArrayBlockingQueue<Runnable>(1),
-          new ThreadFactory() {
-    @Override
-    @Nonnull
-    public Thread newThread(@Nonnull final Runnable r) {
-      final Thread result = new Thread(r, "RENDER-EXECUTOR-THREAD");
-      result.setDaemon(true);
-      return result;
-    }
-  },
-          new ThreadPoolExecutor.AbortPolicy()
-  );
-
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -230,7 +212,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   private final JPanel menu;
 
-  private final AtomicReference<Timer> autoRefreshTimer = new AtomicReference<>();
+  private final DirectProcessor<Boolean> eventProcessor = DirectProcessor.create();
+  private final Disposable eventChain;
 
   public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super();
@@ -420,7 +403,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       public void actionPerformed(@Nonnull final ActionEvent e) {
         if (!autoRefresh.isSelected()) {
           LOGGER.info("Auto-refresh is turned off");
-          stopAutoupdateTimer();
         } else {
           LOGGER.info("Auto-refresh is turned on");
         }
@@ -512,6 +494,19 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     updateGraphvizLabelVisibility();
 
     this.hideTextPanel();
+
+    this.eventChain = eventProcessor.publishOn(MainFrame.PARALLEL_SCHEDULER).delayElements(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
+            .publishOn(UiUtils.SWING_SCHEDULER)
+            .filter(x -> this.autoRefresh.isSelected())
+            .map(x -> {
+              final String txt = editor.getText();
+              if (isSyntaxCorrect(txt)) {
+                startRenderScript();
+              }
+              return x;
+            })
+            .share()
+            .subscribe();
   }
 
   public void hideTextPanel() {
@@ -525,28 +520,10 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.editor.addKeyListener(new KeyAdapter() {
       @Override
       public void keyTyped(final @Nonnull KeyEvent e) {
-        if (autoRefresh.isSelected() && autoRefreshTimer.get() == null) {
-          final Timer oneTimeRefreshTimer = new Timer((int) TimeUnit.SECONDS.toMillis(DELAY_AUTOREFRESH_SECONDS), new ActionListener() {
-            @Override
-            public void actionPerformed(@Nonnull final ActionEvent e) {
-              try {
-                final String txt = editor.getText();
-                if (isSyntaxCorrect(txt)) {
-                  startRenderScript();
-                } else {
-                  autoRefreshTimer.set(null);
-                }
-              } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-              } catch (final Exception ex) {
-                LOGGER.error("Exception in auto-refresh processing", ex);
-              }
-            }
-          });
-          oneTimeRefreshTimer.setRepeats(false);
-          if (autoRefreshTimer.compareAndSet(null, oneTimeRefreshTimer)) {
-            oneTimeRefreshTimer.start();
-          }
+        try {
+          eventProcessor.onNext(true);
+        } catch (Exception ex) {
+          LOGGER.info("Exception on next event: " + ex.getMessage());
         }
       }
     });
@@ -562,8 +539,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   @Override
   protected void doDispose() {
-    stopAutoupdateTimer();
-    RENDER_EXECUTOR.shutdownNow();
+    eventProcessor.onComplete();
+    eventChain.dispose();
   }
 
   @Nonnull
@@ -574,15 +551,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
   @Override
   public boolean saveDocumentAs() throws IOException {
-    stopAutoupdateTimer();
     return super.saveDocumentAs();
-  }
-
-  private void stopAutoupdateTimer() {
-    final Timer refTimer = this.autoRefreshTimer.getAndSet(null);
-    if (refTimer != null) {
-      refTimer.stop();
-    }
   }
 
   private int countNewPages(@Nonnull final String text) {
@@ -636,7 +605,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.labelWarningNoGraphwiz.setVisible(show);
   }
 
-  public static boolean isSyntaxCorrect(@Nonnull final String text) throws InterruptedException {
+  public static boolean isSyntaxCorrect(@Nonnull final String text) {
     boolean result = false;
     final SourceStringReader reader = new SourceStringReader(text);
     reader.getBlocks();
@@ -934,8 +903,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   }
 
   private void startRenderScript() {
-    stopAutoupdateTimer();
-
     final String theText = this.editor.getText();
 
     final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
@@ -963,79 +930,69 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
       this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
 
-      try {
-        RENDER_EXECUTOR.submit(new Runnable() {
-          @Override
-          public void run() {
-            BigLoaderIconAnimationConroller.getInstance().registerLabel(progressLabel);
-            try {
-              try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                  @Override
-                  public void run() {
-                    setMenuItemsEnable(false);
-                    renderedPanel.remove(renderedScrollPane);
-                    for (final Component c : renderedPanel.getComponents()) {
-                      if ("ERROR_LABEL".equals(c.getName())) {
-                        renderedPanel.remove(c);
-                        break;
-                      }
-                    }
-                    renderedPanel.add(progressLabel, BorderLayout.CENTER);
-                    mainPanel.setDividerLocation(dividerLocation.get());
-                  }
-                });
-              } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                return;
-              } catch (InvocationTargetException ex) {
-                throw new RuntimeException(ex);
-              }
-
-              final AtomicReference<Exception> detectedError = new AtomicReference<>();
-              final AtomicReference<BufferedImage> generatedImage = new AtomicReference<>();
-
-              final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
-              try {
-                final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
-                generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
-              } catch (Exception ex) {
-                detectedError.set(ex);
-              }
-
-              SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                  mainPanel.removePropertyChangeListener(dividerListener);
-
-                  final Exception error = detectedError.get();
-                  if (error == null) {
-                    lastSuccessfulyRenderedText = currentText;
-                    imageComponent.setImage(generatedImage.get(), false);
-                    renderedScrollPane.revalidate();
-                    renderedPanel.remove(progressLabel);
-                    renderedPanel.add(renderedScrollPane, BorderLayout.CENTER);
-                    setMenuItemsEnable(true);
-                  } else {
-                    final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + StringEscapeUtils.escapeHtml(error.getMessage()) + "</h1></html>", JLabel.CENTER);
-                    errorLabel.setName("ERROR_LABEL");
-                    renderedPanel.remove(progressLabel);
-                    renderedPanel.add(errorLabel, BorderLayout.CENTER);
-                  }
-
-                  mainPanel.setDividerLocation(dividerLocation.get());
+      MainFrame.PARALLEL_SCHEDULER.schedule(() -> {
+        BigLoaderIconAnimationConroller.getInstance().registerLabel(progressLabel);
+        try {
+          try {
+            SwingUtilities.invokeAndWait(() -> {
+              setMenuItemsEnable(false);
+              renderedPanel.remove(renderedScrollPane);
+              for (final Component c : renderedPanel.getComponents()) {
+                if ("ERROR_LABEL".equals(c.getName())) {
+                  renderedPanel.remove(c);
+                  break;
                 }
-              });
-
-            } finally {
-              BigLoaderIconAnimationConroller.getInstance().unregisterLabel(progressLabel);
-            }
-
+              }
+              renderedPanel.add(progressLabel, BorderLayout.CENTER);
+              mainPanel.setDividerLocation(dividerLocation.get());
+            });
+          } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return;
+          } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
           }
-        });
-      } catch (RejectedExecutionException ex) {
-        LOGGER.info("Rejected plant uml refresh");
-      }
+
+          final AtomicReference<Exception> detectedError = new AtomicReference<>();
+          final AtomicReference<BufferedImage> generatedImage = new AtomicReference<>();
+
+          final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
+          try {
+            final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
+            generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
+          } catch (Exception ex) {
+            detectedError.set(ex);
+          }
+
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              mainPanel.removePropertyChangeListener(dividerListener);
+
+              final Exception error = detectedError.get();
+              if (error == null) {
+                lastSuccessfulyRenderedText = currentText;
+                imageComponent.setImage(generatedImage.get(), false);
+                renderedScrollPane.revalidate();
+                renderedPanel.remove(progressLabel);
+                renderedPanel.add(renderedScrollPane, BorderLayout.CENTER);
+                setMenuItemsEnable(true);
+              } else {
+                final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + StringEscapeUtils.escapeHtml(error.getMessage()) + "</h1></html>", JLabel.CENTER);
+                errorLabel.setName("ERROR_LABEL");
+                renderedPanel.remove(progressLabel);
+                renderedPanel.add(errorLabel, BorderLayout.CENTER);
+              }
+
+              mainPanel.setDividerLocation(dividerLocation.get());
+            }
+          });
+
+        } finally {
+          BigLoaderIconAnimationConroller.getInstance().unregisterLabel(progressLabel);
+        }
+
+      });
     }
   }
 
