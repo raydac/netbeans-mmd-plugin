@@ -495,18 +495,16 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.hideTextPanel();
 
-    this.eventChain = eventProcessor.publishOn(MainFrame.PARALLEL_SCHEDULER).delayElements(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
+    this.eventChain = eventProcessor.publishOn(MainFrame.PARALLEL_SCHEDULER)
+            .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
+            .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
             .publishOn(UiUtils.SWING_SCHEDULER)
-            .filter(x -> this.autoRefresh.isSelected())
-            .map(x -> {
+            .subscribe(x -> {
               final String txt = editor.getText();
               if (isSyntaxCorrect(txt)) {
                 startRenderScript();
               }
-              return x;
-            })
-            .share()
-            .subscribe();
+            });
   }
 
   public void hideTextPanel() {
