@@ -501,18 +501,16 @@ public final class PlantUmlTextEditor extends AbstractEditor {
             .publishOn(UiUtils.SWING_SCHEDULER)
             .subscribe(x -> {
               final String txt = editor.getText();
-              if (isSyntaxCorrect(txt)) {
+              final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
+              if ((lastRendered == null || !txt.equals(lastRendered.text)) && isSyntaxCorrect(txt)) {
                 startRenderScript();
               }
             });
   }
 
   public void hideTextPanel() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        mainPanel.setDividerLocation(0);
-      }
+    SwingUtilities.invokeLater(() -> {
+      mainPanel.setDividerLocation(0);
     });
 
     this.editor.addKeyListener(new KeyAdapter() {
