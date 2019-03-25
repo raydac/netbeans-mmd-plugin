@@ -207,6 +207,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
               dirStream.set(makeDirectoryStream(path));
               return dirStream.get();
             })
+            .parallel()
             .filter(f -> {
               if (this.parent instanceof NodeProjectGroup) {
                 return addHiddenFilesAndFolders || !isFileHidden(f) || Context.KNOWLEDGE_FOLDER.equals(f.getFileName().toString());
