@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -49,6 +50,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import reactor.core.Exceptions;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
@@ -77,7 +79,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     this.name = name;
 
     if (folder) {
-      this.children = Collections.synchronizedList(new ArrayList<NodeFileOrFolder>());
+      this.children = new CopyOnWriteArrayList<>();
       this.folderFlag = true;
     } else {
       this.children = Collections.EMPTY_LIST;
@@ -214,16 +216,19 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
               } else {
                 return addHiddenFilesAndFolders || !isFileHidden(f);
               }
-            }).map(f -> {
-      NodeFileOrFolder newChild = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(f));
-      this.children.add(newChild);
-      return newChild;
-    }).flatMap(f -> f.readSubtree(addHiddenFilesAndFolders)).reduce((x, y) -> this).doFinally(signal -> {
-      DirectoryStream<Path> stream = dirStream.getAndSet(null);
-      if (stream != null) {
-        IOUtils.closeQuetly(stream);
-      }
-    }).doFinally(signal -> {
+            })
+            .map(f -> {
+              NodeFileOrFolder newChild = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(f));
+              this.children.add(newChild);
+              return newChild;
+            })
+            .flatMap(f -> f.readSubtree(addHiddenFilesAndFolders)).reduce((x, y) -> this)
+            .doOnTerminate(() -> {
+              DirectoryStream<Path> stream = dirStream.getAndSet(null);
+              if (stream != null) {
+                IOUtils.closeQuetly(stream);
+              }
+            }).doFinally(signal -> {
       Collections.sort(this.children, this);
     }) : Mono.empty();
   }
