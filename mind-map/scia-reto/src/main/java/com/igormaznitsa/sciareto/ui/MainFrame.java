@@ -132,7 +132,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private int lastDividerLocation;
 
-  public static final Scheduler PARALLEL_SCHEDULER = Schedulers.newParallel("SCIA_RETO_PARALLEL_SCHEDULER");
+  public static final Scheduler PARALLEL_SCHEDULER = Schedulers.newElastic("SCIA_RETO_PARALLEL_SCHEDULER", 30, true);
 
   public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
