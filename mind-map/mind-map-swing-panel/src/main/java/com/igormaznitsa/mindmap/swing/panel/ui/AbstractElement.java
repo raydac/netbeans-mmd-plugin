@@ -129,7 +129,17 @@ public abstract class AbstractElement {
       width += this.extrasIconBlock.getBounds().getWidth() + scaledHorzBlockGap;
     }
 
-    this.bounds.setRect(0d, 0d, width, Math.max(this.visualAttributeImageBlock.getBounds().getHeight(),Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight())));
+    this.bounds.setRect(
+            0d, 
+            0d, 
+            width, 
+            Math.max(
+                    this.visualAttributeImageBlock.getBounds().getHeight(),
+                    Math.max(
+                            this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()
+                    )
+            )
+    );
   }
 
   public void updateBlockSize(@Nonnull final MindMapPanelConfig cfg) {

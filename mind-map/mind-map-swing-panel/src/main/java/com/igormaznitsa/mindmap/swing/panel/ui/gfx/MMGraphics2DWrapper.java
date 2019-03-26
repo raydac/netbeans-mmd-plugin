@@ -173,12 +173,7 @@ public class MMGraphics2DWrapper implements MMGraphics {
   @Override
   @Nonnull
   public Rectangle2D getStringBounds(@Nonnull final String str) {
-    if (str.isEmpty()) {
-      return this.wrapped.getFontMetrics().getStringBounds("", this.wrapped);
-    } else {
-      final TextLayout textLayout = new TextLayout(str, this.wrapped.getFont(), this.wrapped.getFontRenderContext());
-      return new Rectangle2D.Float(0, -textLayout.getAscent(), textLayout.getAdvance(), textLayout.getAscent() + textLayout.getDescent() + textLayout.getLeading());
-    }
+    return this.wrapped.getFont().getStringBounds(str, this.wrapped.getFontRenderContext());
   }
 
   @Override

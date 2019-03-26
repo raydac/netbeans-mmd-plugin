@@ -15,4 +15,4 @@ echo ------JAVA_VERSION------ >> %LOG_FILE%
 
 echo ------------------------ >> %LOG_FILE%
 
-%SCIARETO_HOME%\jre\%JAVA_RUN% %JAVA_FLAGS% %JAVA_EXTRA_GFX_FLAGS% -jar %SCIARETO_HOME%\scia-reto.jar %* 2>> %LOG_FILE%
+%SCIARETO_HOME%\jre\bin\%JAVA_RUN% %JAVA_FLAGS% %JAVA_EXTRA_GFX_FLAGS% -jar %SCIARETO_HOME%\scia-reto.jar %* 2>> %LOG_FILE%
