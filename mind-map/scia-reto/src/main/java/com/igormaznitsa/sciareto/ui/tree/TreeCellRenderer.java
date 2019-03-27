@@ -33,7 +33,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.util.Locale;
 
-public class TreeCellRenderer extends DefaultTreeCellRenderer {
+public final class TreeCellRenderer extends DefaultTreeCellRenderer {
 
   private static final long serialVersionUID = -6283018126496160094L;
 
@@ -84,7 +84,7 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
 
   public TreeCellRenderer() {
     super();
-
+    this.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
   }
 
   private void ensureIcons(@Nonnull final JTree tree) {
@@ -143,47 +143,47 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer {
   @Nonnull
   public Component getTreeCellRendererComponent(@Nonnull final JTree tree, @Nullable final Object value, final boolean selected, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
     ensureIcons(tree);
-    super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+    final JLabel result = (JLabel)super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
     if (value != null) {
       if (value instanceof NodeFileOrFolder) {
         final NodeFileOrFolder node = (NodeFileOrFolder) value;
-        this.setEnabled(true);
+        result.setEnabled(true);
         if (node.isLoading()) {
-          this.setIcon(ProjectLoadingIconAnimationController.LOADING);
+          result.setIcon(ProjectLoadingIconAnimationController.LOADING);
         } else if (node.hasNoAccess()) {
-            this.setEnabled(false);
-            this.setDisabledIcon(LEAF_RO);
+            result.setEnabled(false);
+            result.setDisabledIcon(LEAF_RO);
         } else if (node instanceof NodeProject) {
           if (node.isReadOnly()) {
-            this.setIcon(expanded ? PROJECT_OPENED_RO : PROJECT_CLOSED_RO);
+            result.setIcon(expanded ? PROJECT_OPENED_RO : PROJECT_CLOSED_RO);
           } else {
-            this.setIcon(expanded ? PROJECT_OPENED : PROJECT_CLOSED);
+            result.setIcon(expanded ? PROJECT_OPENED : PROJECT_CLOSED);
           }
         } else if (node.isLeaf()) {
           final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
           if (Utils.isPlantUmlFileExtension(ext)) {
-            this.setIcon(node.isReadOnly() ? LEAF_PLANTUML_RO : LEAF_PLANTUML);
+            result.setIcon(node.isReadOnly() ? LEAF_PLANTUML_RO : LEAF_PLANTUML);
           } else if (ext.equals("mmd")) { //NOI18N
-            this.setIcon(node.isReadOnly() ? LEAF_MINDMAP_RO : LEAF_MINDMAP);
+            result.setIcon(node.isReadOnly() ? LEAF_MINDMAP_RO : LEAF_MINDMAP);
           } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
-            this.setIcon(node.isReadOnly() ? ICON_IMAGE_RO : ICON_IMAGE);
+            result.setIcon(node.isReadOnly() ? ICON_IMAGE_RO : ICON_IMAGE);
           } else {
-            this.setIcon(node.isReadOnly() ? LEAF_EMPTY_RO : LEAF_EMPTY);
+            result.setIcon(node.isReadOnly() ? LEAF_EMPTY_RO : LEAF_EMPTY);
           }
         } else if (node.isProjectKnowledgeFolder()) {
-          this.setText("Knowledge");
+          result.setText("Knowledge");
           if (node.isReadOnly()) {
-            this.setIcon(expanded ? FOLDER_KF_OPENED_RO : FOLDER_KF_CLOSED_RO);
+            result.setIcon(expanded ? FOLDER_KF_OPENED_RO : FOLDER_KF_CLOSED_RO);
           } else {
-            this.setIcon(expanded ? FOLDER_KF_OPENED : FOLDER_KF_CLOSED);
+            result.setIcon(expanded ? FOLDER_KF_OPENED : FOLDER_KF_CLOSED);
           }
         } else if (node.isReadOnly()) {
-          this.setIcon(expanded ? FOLDER_OPENED_RO : FOLDER_CLOSED_RO);
+          result.setIcon(expanded ? FOLDER_OPENED_RO : FOLDER_CLOSED_RO);
         } else {
-          this.setIcon(expanded ? FOLDER_OPENED : FOLDER_CLOSED);
+          result.setIcon(expanded ? FOLDER_OPENED : FOLDER_CLOSED);
         }
       }
     }
-    return this;
+    return result;
   }
 }

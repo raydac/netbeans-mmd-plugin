@@ -207,7 +207,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.mainSplitPane.setLeftComponent(this.explorerTree);
 
     this.tabPane.addMaxMinEditorListener((@Nonnull final ActionEvent e) -> {
-      ensureTreePanelIsVisible();
+      changeVisibilityStateOfTreePanel();
     });
 
     this.mainPanel = new JPanel(new BorderLayout(0, 0));
@@ -367,7 +367,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.explorerTree.focusToFirstElement();
   }
 
-  private void ensureTreePanelIsVisible() {
+  private void ensureTreePanelVisible() {
+    final int divider = this.mainSplitPane.getDividerLocation();
+    if (divider <= 3) {
+        this.mainSplitPane.setDividerLocation(lastDividerLocation);
+    }
+  }
+  
+  private void changeVisibilityStateOfTreePanel() {
     final int divider = this.mainSplitPane.getDividerLocation();
     if (divider > 3) {
       this.lastDividerLocation = divider;
@@ -1528,7 +1535,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         final File file = selected.makeFileForNode();
         if (file != null) {
           this.focusInTree(file);
-          ensureTreePanelIsVisible();
+          ensureTreePanelVisible();
           SwingUtilities.invokeLater(() -> {
             explorerTree.requestFocus();
           });

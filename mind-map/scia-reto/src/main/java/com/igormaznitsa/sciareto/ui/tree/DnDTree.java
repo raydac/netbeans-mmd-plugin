@@ -65,6 +65,8 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     this.setDropMode(DropMode.ON_OR_INSERT);
 
+    this.setRowHeight(0);
+    
     final DragSource dragSource = DragSource.getDefaultDragSource();
     dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
 

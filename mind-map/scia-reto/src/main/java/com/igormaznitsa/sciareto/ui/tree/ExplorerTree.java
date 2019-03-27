@@ -93,7 +93,7 @@ public final class ExplorerTree extends JScrollPane {
     this.context = context;
     this.projectTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     this.projectTree.setDropMode(DropMode.ON);
-
+    
     this.projectTree.setEditable(true);
 
     ToolTipManager.sharedInstance().registerComponent(this.projectTree);
