@@ -1698,6 +1698,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onMindMapModelChanged(MindMapPanel.this, saveToHistory);
     }
+    revalidate();
+    repaint();
   }
 
   protected void fireNotificationComponentElementsLayouted(@Nonnull final Graphics2D graphics) {

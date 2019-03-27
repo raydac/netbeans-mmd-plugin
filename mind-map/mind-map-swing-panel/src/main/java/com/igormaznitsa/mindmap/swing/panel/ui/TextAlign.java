@@ -33,5 +33,4 @@ public enum TextAlign {
     }
     return CENTER;
   }
-  
 }

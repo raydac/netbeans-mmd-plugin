@@ -42,6 +42,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import com.igormaznitsa.mindmap.plugins.processors.TextAlignMenuPlugin;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
@@ -78,6 +79,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new CollapseAllPlugin());
     registerPlugin(new UnfoldAllPlugin());
     registerPlugin(new ChangeColorPlugin());
+    registerPlugin(new TextAlignMenuPlugin());
 
     registerPlugin(new Text2MindMapImporter());
     registerPlugin(new Mindmup2MindMapImporter());

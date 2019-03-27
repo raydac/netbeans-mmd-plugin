@@ -36,7 +36,7 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
 
   @Override
   public int getOrder() {
-    return 3;
+    return 40;
   }
 
   @Override

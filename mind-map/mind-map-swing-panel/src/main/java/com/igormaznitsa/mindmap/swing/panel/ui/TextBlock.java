@@ -29,7 +29,6 @@ import javax.swing.text.JTextComponent;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 
 public final class TextBlock implements Cloneable {

@@ -77,7 +77,7 @@ public abstract class AbstractElement {
 
   public AbstractElement(@Nonnull final Topic model) {
     this.model = model;
-    this.textBlock = new TextBlock(this.model.getText(), TextAlign.CENTER);
+    this.textBlock = new TextBlock(this.model.getText(), TextAlign.findForName(model.getAttribute("align")));
     this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align"))); //NOI18N
     this.extrasIconBlock = new IconBlock(model);
     this.visualAttributeImageBlock = new VisualAttributeImageBlock(model);

@@ -38,7 +38,7 @@ public class RemoveTopicPlugin extends AbstractFocusedTopicPlugin {
 
   @Override
   public int getOrder() {
-    return 2;
+    return 30;
   }
 
   @Override

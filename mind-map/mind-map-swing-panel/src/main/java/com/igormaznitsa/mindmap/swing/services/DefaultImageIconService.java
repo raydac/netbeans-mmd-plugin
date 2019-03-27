@@ -50,6 +50,10 @@ public class DefaultImageIconService implements ImageIconService {
     MAP.put(IconID.ICON_EMOTICONS, loadIcon("emoticons16.png"));
     MAP.put(IconID.ICON_IMAGES, loadIcon("pictures16.png"));
     MAP.put(IconID.ICON_PAGE, loadIcon("page16.png"));
+    MAP.put(IconID.ICON_TEXT_ALIGN, loadIcon("text_align16.png"));
+    MAP.put(IconID.ICON_TEXT_ALIGN_CENTER, loadIcon("text_align_center16.png"));
+    MAP.put(IconID.ICON_TEXT_ALIGN_LEFT, loadIcon("text_align_left16.png"));
+    MAP.put(IconID.ICON_TEXT_ALIGN_RIGHT, loadIcon("text_align_right16.png"));
     MAP.put(IconID.POPUP_EXTRAS_TEXT, loadIcon("note16.png"));
     MAP.put(IconID.POPUP_EXTRAS_FILE, loadIcon("disk16.png"));
     MAP.put(IconID.POPUP_EXTRAS_JUMP, loadIcon("brick16.png"));
