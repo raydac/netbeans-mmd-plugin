@@ -1692,20 +1692,22 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onChangedSelection(MindMapPanel.this, selected);
     }
+    this.repaint();
   }
 
   protected void fireNotificationMindMapChanged(final boolean saveToHistory) {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onMindMapModelChanged(MindMapPanel.this, saveToHistory);
     }
-    revalidate();
-    repaint();
+    this.revalidate();
+    this.repaint();
   }
 
   protected void fireNotificationComponentElementsLayouted(@Nonnull final Graphics2D graphics) {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onComponentElementsLayouted(MindMapPanel.this, graphics);
     }
+    this.repaint();
   }
 
   protected void fireNotificationClickOnExtra(@Nonnull final Topic topic, final int modifiers, final int clicks, @Nonnull final Extra<?> extra) {
@@ -1724,6 +1726,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onTopicCollapsatorClick(MindMapPanel.this, topic, beforeAction);
     }
+    this.repaint();
   }
 
   protected void fireNotificationScaledByMouse(
@@ -1736,6 +1739,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onScaledByMouse(MindMapPanel.this, mousePoint, oldScale, newScale, oldSize, newSize);
     }
+    this.repaint();
   }
 
   protected void fireNotificationNonConsumedKeyEvent(@Nonnull final KeyEvent keyEvent, @Nonnull final KeyEventType type) {
