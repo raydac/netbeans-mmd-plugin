@@ -95,6 +95,10 @@ public class AllIcons {
     public static final Icon PRINTER = IconLoader.getIcon("/icons/printer.png");
     public static final Icon EMOTICONS = IconLoader.getIcon("/icons/emoticons.png");
     public static final Icon IMAGES = IconLoader.getIcon("/icons/pictures.png");
+    public static final Icon TEXT_ALIGN = IconLoader.getIcon("/icons/text_align.png");
+    public static final Icon TEXT_ALIGN_LEFT = IconLoader.getIcon("/icons/text_align_left.png");
+    public static final Icon TEXT_ALIGN_CENTER = IconLoader.getIcon("/icons/text_align_center.png");
+    public static final Icon TEXT_ALIGN_RIGHT = IconLoader.getIcon("/icons/text_align_right.png");
   }
 
 }

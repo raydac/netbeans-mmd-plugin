@@ -36,6 +36,10 @@ public class IdeaImageIconService implements ImageIconService {
     MAP.put(IconID.POPUP_CHANGECOLOR, AllIcons.PopUp.COLORS);
     MAP.put(IconID.POPUP_EXPORT, AllIcons.PopUp.EXPORT);
     MAP.put(IconID.POPUP_IMPORT, AllIcons.PopUp.IMPORT);
+    MAP.put(IconID.ICON_TEXT_ALIGN, AllIcons.PopUp.TEXT_ALIGN);
+    MAP.put(IconID.ICON_TEXT_ALIGN_CENTER, AllIcons.PopUp.TEXT_ALIGN_CENTER);
+    MAP.put(IconID.ICON_TEXT_ALIGN_RIGHT, AllIcons.PopUp.TEXT_ALIGN_RIGHT);
+    MAP.put(IconID.ICON_TEXT_ALIGN_LEFT, AllIcons.PopUp.TEXT_ALIGN_LEFT);
     MAP.put(IconID.POPUP_IMPORT_TXT2MM, AllIcons.ImportExport.TXT2MM);
     MAP.put(IconID.POPUP_IMPORT_XMIND2MM, AllIcons.ImportExport.XMIND2MM);
     MAP.put(IconID.POPUP_IMPORT_COGGLE2MM, AllIcons.ImportExport.COGGLE);
