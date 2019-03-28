@@ -15,6 +15,11 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.4.6 (SNAPSHOT)__
+- ALL: added plug-in to align topic text (by default text still aligned as `center`)
+- SR:  updated PlantUML version to 1.2019.3
+- ALL: minor refactoring and fixes
+
 __1.4.5 (03-mar-2019)__
 - ALL: pressed CTRL during export makes export into system clipboard
 - IJ:  [#50](https://github.com/raydac/netbeans-mmd-plugin/issues/50) fixed exception in IDEA 2019.1
