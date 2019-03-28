@@ -285,6 +285,12 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
     }
   }
 
+  public void cancelLoading(){
+      this.children.forEach((p) -> {
+          ((NodeProject)p).cancelLoading();
+      });
+  }
+  
   public boolean deleteNode(@Nonnull final NodeFileOrFolder node, final boolean notifyListeners) {
     final NodeFileOrFolder parentNode = node.getNodeParent();
     if (parentNode != null) {

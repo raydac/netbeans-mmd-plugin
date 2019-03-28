@@ -30,6 +30,7 @@ import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +41,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,6 +52,7 @@ import javax.swing.tree.TreePath;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.SignalType;
 
 public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
@@ -166,27 +167,6 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     }
   }
 
-  @Nonnull
-  protected static DirectoryStream<Path> makeDirectoryStream(@Nonnull final Path path) {
-    try {
-      return Files.newDirectoryStream(path);
-    } catch (IOException ex) {
-      throw Exceptions.propagate(ex);
-    } catch (SecurityException ex) {
-      LOGGER.warn("Security error! Can't make directory stream for path: " + path);
-      return new DirectoryStream<Path>() {
-        @Override
-        public Iterator<Path> iterator() {
-          return Collections.emptyIterator();
-        }
-
-        @Override
-        public void close() throws IOException {
-        }
-      };
-    }
-  }
-
   protected static boolean isFileHidden(@Nonnull final Path path) {
     try {
       return Files.isHidden(path);
@@ -197,40 +177,58 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   @Nonnull
   public Mono<NodeFileOrFolder> readSubtree(final boolean addHiddenFilesAndFolders) {
-    final AtomicReference<DirectoryStream<Path>> dirStream = new AtomicReference<>();
+      if (this.folderFlag) {
+          final boolean parentIsProjectGroup = this.parent instanceof NodeProjectGroup;
+          return Flux.using(() -> {
+              this.clearChildren();
+              final File nodeFile = makeFileForNode();
+              try {
+                  return Files.newDirectoryStream(nodeFile.toPath());
+              } catch (Exception ex) {
+                  LOGGER.warn("Error '" + ex.getClass().getCanonicalName() + "' during access to path: " + nodeFile.getPath());
+                  this.noAccess = true;
+                  return new DirectoryStream<Path>() {
+                      @Override
+                      public Iterator<Path> iterator() {
+                          return Collections.emptyIterator();
+                      }
 
-    return this.folderFlag ? Mono.just(this)
-            .map(x -> {
-              x.clearChildren();
-              return makeFileForNode();
-            })
-            .map(File::toPath)
-            .flatMapIterable(path -> {
-              dirStream.set(makeDirectoryStream(path));
-              return dirStream.get();
-            })
-            .parallel()
-            .filter(f -> {
-              if (this.parent instanceof NodeProjectGroup) {
-                return addHiddenFilesAndFolders || !isFileHidden(f) || Context.KNOWLEDGE_FOLDER.equals(f.getFileName().toString());
-              } else {
-                return addHiddenFilesAndFolders || !isFileHidden(f);
+                      @Override
+                      public void close() throws IOException {
+                      }
+                  };
               }
-            })
-            .map(f -> {
-              NodeFileOrFolder newChild = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(f));
-              this.children.add(newChild);
-              return newChild;
-            })
-            .flatMap(f -> f.readSubtree(addHiddenFilesAndFolders)).reduce((x, y) -> this)
-            .doOnTerminate(() -> {
-              DirectoryStream<Path> stream = dirStream.getAndSet(null);
-              if (stream != null) {
-                IOUtils.closeQuetly(stream);
-              }
-            }).doFinally(signal -> {
-      Collections.sort(this.children, this);
-    }) : Mono.empty();
+          }, Flux::fromIterable, IOUtils::closeQuetly)
+                  .publishOn(MainFrame.PARALLEL_SCHEDULER)
+                  .parallel()
+                  .doOnError(error -> {
+                      LOGGER.warn("Error during path " + makeFileForNode().getName() + " opening: " + error.getMessage());
+                      this.noAccess = true;
+                  })
+                  .filter(f -> {
+                      if (parentIsProjectGroup) {
+                          return addHiddenFilesAndFolders || !isFileHidden(f) || Context.KNOWLEDGE_FOLDER.equals(f.getFileName().toString());
+                      } else {
+                          return addHiddenFilesAndFolders || !isFileHidden(f);
+                      }
+                  })
+                  .map(f -> {
+                      NodeFileOrFolder newItem = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(f));
+                      this.children.add(newItem);
+                      return newItem;
+                  })
+                  .flatMap(f -> f.readSubtree(addHiddenFilesAndFolders))
+                  .reduce((x, y) -> {
+                      return this;
+                  })
+                  .doFinally(signalType -> {
+                      if (signalType == SignalType.ON_COMPLETE) {
+                          this.children.sort(this);
+                      }
+                  });
+      } else {
+          return Mono.empty();
+      }
   }
 
   @Nullable

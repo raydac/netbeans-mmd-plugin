@@ -507,6 +507,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       saveState();
     }
 
+    this.getCurrentGroup().cancelLoading();
     PARALLEL_SCHEDULER.dispose();
 
     return true;
