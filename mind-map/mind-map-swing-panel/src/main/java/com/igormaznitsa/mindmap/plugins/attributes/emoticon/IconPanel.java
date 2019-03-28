@@ -30,7 +30,7 @@ public final class IconPanel extends JPanel {
 
   private static final long serialVersionUID = 4823626757838675154L;
 
-  private final ButtonGroup group = new ButtonGroup();
+  private final ButtonGroup group = Utils.UI_COMPO_FACTORY.makeButtonGroup();
 
   public IconPanel() {
     super(new GridLayout(0, 6));

@@ -49,19 +49,19 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
   @Override
   @Nullable
   public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
-    final JMenu result = new JMenu(BUNDLE.getString("TextAlign.Plugin.MenuTitle"));
+    final JMenu result = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("TextAlign.Plugin.MenuTitle"));
     result.setToolTipText(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Tooltip"));
     result.setIcon(ICON);
     
-    final ButtonGroup buttonGroup = new ButtonGroup();
+    final ButtonGroup buttonGroup = UI_COMPO_FACTORY.makeButtonGroup();
     
     final Topic [] workTopics = ArrayUtils.append(topic, selectedTopics);
     
     final TextAlign sharedTextAlign = findSharedTextAlign(workTopics);
     
-    final JRadioButtonMenuItem menuLeft = new JRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Left"), ICON_LEFT, TextAlign.LEFT == sharedTextAlign);
-    final JRadioButtonMenuItem menuCenter = new JRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Center"), ICON_CENTER, TextAlign.CENTER == sharedTextAlign);
-    final JRadioButtonMenuItem menuRight = new JRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Right"), ICON_RIGHT, TextAlign.RIGHT == sharedTextAlign);
+    final JRadioButtonMenuItem menuLeft = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Left"), ICON_LEFT, TextAlign.LEFT == sharedTextAlign);
+    final JRadioButtonMenuItem menuCenter = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Center"), ICON_CENTER, TextAlign.CENTER == sharedTextAlign);
+    final JRadioButtonMenuItem menuRight = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Right"), ICON_RIGHT, TextAlign.RIGHT == sharedTextAlign);
 
     menuLeft.setToolTipText(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Left.Tooltip"));
     menuCenter.setToolTipText(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Center.Tooltip"));

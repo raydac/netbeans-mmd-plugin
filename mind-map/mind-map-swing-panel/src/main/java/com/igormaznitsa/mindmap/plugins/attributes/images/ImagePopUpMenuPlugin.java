@@ -72,7 +72,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
     final JMenuItem result;
     if (hasAttribute) {
-      result = new JMenuItem(BUNDLE.getString("Images.Plugin.MenuTitle.Remove"), ICON);//NOI18N
+      result = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("Images.Plugin.MenuTitle.Remove"), ICON);//NOI18N
       result.setToolTipText(BUNDLE.getString("Images.Plugin.MenuTitle.Remove.Tooltip"));//NOI18N
       result.addActionListener(new ActionListener() {
         @Override
@@ -85,7 +85,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
         }
       });
     } else {
-      result = new JMenuItem(BUNDLE.getString("Images.Plugin.MenuTitle.Add"), ICON);//NOI18N
+      result = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("Images.Plugin.MenuTitle.Add"), ICON);//NOI18N
       result.setToolTipText(BUNDLE.getString("Images.Plugin.MenuTitle.Add.Tooltip"));//NOI18N
 
       result.addActionListener(new ActionListener() {
@@ -153,12 +153,13 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     constraint.fill = GridBagConstraints.HORIZONTAL;
     constraint.anchor = GridBagConstraints.WEST;
 
-    final ButtonGroup group = new ButtonGroup();
+    final ButtonGroup group = UI_COMPO_FACTORY.makeButtonGroup();
 
     int selectedIndex = lastSelectedImportIndex;
 
     for (int i = 0; i < options.length; i++) {
-      final JRadioButton button = new JRadioButton(options[i]);
+      final JRadioButton button = UI_COMPO_FACTORY.makeRadioButton();
+      button.setText(options[i]);
       if (selectedIndex == i) {
         button.setSelected(true);
         selected.set(i);

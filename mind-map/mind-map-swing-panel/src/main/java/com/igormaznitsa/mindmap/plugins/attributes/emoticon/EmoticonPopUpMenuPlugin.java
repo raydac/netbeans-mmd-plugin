@@ -43,7 +43,7 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
   @Override
   @Nullable
   public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
-    final JMenuItem result = new JMenuItem(BUNDLE.getString("Emoticons.MenuTitle"), ICON);
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("Emoticons.MenuTitle"), ICON);
     result.setToolTipText(BUNDLE.getString("Emoticons.MenuTooltip"));
     result.addActionListener(new ActionListener() {
       @Override

@@ -40,6 +40,8 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButtonMenuItem;
 
 public interface UIComponentFactory {
   @Nonnull
@@ -91,8 +93,14 @@ public interface UIComponentFactory {
   JMenuItem makeMenuItem(@Nonnull String text, @Nullable Icon icon);
 
   @Nonnull
+  JRadioButtonMenuItem makeRadioButtonMenuItem(@Nonnull String text, @Nullable Icon icon, boolean selected);
+
+  @Nonnull
   JCheckBoxMenuItem makeCheckboxMenuItem(@Nonnull String text, @Nullable Icon icon, boolean selected);
 
+  @Nonnull
+  ButtonGroup makeButtonGroup();
+  
   @Nonnull
   JSeparator makeMenuSeparator();
 

@@ -152,6 +152,18 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
         return new JBCheckboxMenuItem(s, icon, b);
     }
 
+    @Nonnull
+    @Override
+    public JRadioButtonMenuItem makeRadioButtonMenuItem(@Nonnull String s, @Nullable Icon icon, boolean b) {
+        return new JRadioButtonMenuItem(s, icon, b);
+    }
+
+    @Nonnull
+    @Override
+    public ButtonGroup makeButtonGroup() {
+        return new ButtonGroup();
+    }
+
     @Override
     @Nonnull
     public JSeparator makeMenuSeparator() {

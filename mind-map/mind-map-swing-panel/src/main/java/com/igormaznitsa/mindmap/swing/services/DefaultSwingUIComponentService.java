@@ -39,6 +39,8 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButtonMenuItem;
 
 public class DefaultSwingUIComponentService implements UIComponentFactory {
 
@@ -168,8 +170,20 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
 
   @Override
   @Nonnull
-  public JCheckBoxMenuItem makeCheckboxMenuItem (@Nonnull final String text, @Nonnull final Icon icon, final boolean selected) {
+  public JCheckBoxMenuItem makeCheckboxMenuItem (@Nonnull final String text, @Nullable final Icon icon, final boolean selected) {
     return new JCheckBoxMenuItem(text, icon, selected);
+  }
+
+  @Override
+  @Nonnull
+  public JRadioButtonMenuItem makeRadioButtonMenuItem(@Nonnull final String text, @Nullable final Icon icon, final boolean selected) {
+    return new JRadioButtonMenuItem(text, icon, selected);
+  }
+  
+  @Override
+  @Nonnull
+  public ButtonGroup makeButtonGroup() {
+    return new ButtonGroup();
   }
   
   @Override
