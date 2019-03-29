@@ -1699,7 +1699,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onMindMapModelChanged(MindMapPanel.this, saveToHistory);
     }
-    this.revalidate();
     this.repaint();
   }
 
@@ -2784,6 +2783,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public void doNotifyModelChanged(final boolean addToHistory) {
+    this.revalidate();
     this.fireNotificationMindMapChanged(addToHistory);
   }
 

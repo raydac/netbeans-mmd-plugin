@@ -159,7 +159,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
           final String newExtension = FilenameUtils.getExtension(newFileName);
 
           if (!oldExtension.equals(newExtension)) {
-            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, "Changed extension", String.format("You have changed extension! Restore old extension '%s'?", oldExtension))) {
+            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(Main.getApplicationFrame(), "Changed extension", String.format("You have changed extension! Restore old extension '%s'?", oldExtension))) {
               newFileName = FilenameUtils.getBaseName(newFileName) + (oldExtension.isEmpty() ? "" : '.' + oldExtension); //NOI18N
             }
           }
@@ -205,13 +205,13 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
               }
             } catch (IOException ex) {
               LOGGER.error("Can't rename file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't rename file to '" + newValue + "\'");
+              DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't rename file to '" + newValue + "\'");
             }
           }
         }
       }
     } else {
-      DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Inapropriate file name '" + newFileName + "'!");
+      DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Inapropriate file name '" + newFileName + "'!");
     }
   }
 

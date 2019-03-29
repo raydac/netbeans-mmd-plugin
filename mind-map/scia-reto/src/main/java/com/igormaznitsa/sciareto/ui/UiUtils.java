@@ -330,7 +330,7 @@ public final class UiUtils {
       try {
         return new MMapURI(text.trim());
       } catch (URISyntaxException ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     } else {
@@ -364,10 +364,10 @@ public final class UiUtils {
     filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
 
     FileEditPanel.DataContainer result = null;
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, title, filePathEditor)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(Main.getApplicationFrame(), title, filePathEditor)) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getFilePathWithLine().getPath()));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getFilePathWithLine().getPath()));
         result = null;
       }
     }
@@ -378,7 +378,7 @@ public final class UiUtils {
   public static String editText(@Nonnull final String title, @Nonnull final String text) {
     final NoteEditor textEditor = new NoteEditor(text);
     try {
-      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, title, textEditor)) {
+      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(Main.getApplicationFrame(), title, textEditor)) {
         return textEditor.getText();
       } else {
         return null;
@@ -426,7 +426,7 @@ public final class UiUtils {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't open file in system viewer! See the log!");//NOI18N
+            DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't open file in system viewer! See the log!");//NOI18N
             Toolkit.getDefaultToolkit().beep();
           }
         });

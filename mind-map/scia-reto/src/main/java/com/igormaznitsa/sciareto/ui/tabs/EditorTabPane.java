@@ -40,6 +40,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -188,7 +189,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
               title.save();
             } catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
+              DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't save document, may be it is read-only! See log!");
             }
           }
         });
@@ -204,7 +205,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
               title.saveAs();
             } catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't save document, may be it is read-only! See log!");
+              DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't save document, may be it is read-only! See log!");
             }
           }
         });
@@ -280,7 +281,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     for (final TabTitle t : titles) {
       foundUnsaved |= t.isChanged();
     }
-    if (!foundUnsaved || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Detected unsaved", "Detected unsaved documents! Close anyway?")) {
+    if (!foundUnsaved || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(Main.getApplicationFrame(), "Detected unsaved", "Detected unsaved documents! Close anyway?")) {
       this.context.closeTab(titles);
     }
   }

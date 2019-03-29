@@ -56,6 +56,7 @@ import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -553,7 +554,7 @@ public final class NoteEditor extends javax.swing.JPanel {
         this.editorPane.setText(text);
       } catch (Exception ex) {
         LOGGER.error("Error during text file loading", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(null, UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
 
@@ -567,7 +568,7 @@ public final class NoteEditor extends javax.swing.JPanel {
         FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
       } catch (Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(null, UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
 
@@ -599,7 +600,7 @@ public final class NoteEditor extends javax.swing.JPanel {
       UiUtils.browseURI(URI.create(selectedText), false);
     } catch (Exception ex) {
       LOGGER.error("Can't open link : " + selectedText); //NOI18N
-      DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't browse link : " + selectedText);
+      DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't browse link : " + selectedText);
     }
   }//GEN-LAST:event_buttonBrowseActionPerformed
 

@@ -18,6 +18,7 @@
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
+import com.igormaznitsa.sciareto.Main;
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +29,7 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.Icons;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
-public class DonateButton extends JButton {
+public final class DonateButton extends JButton {
   private static final long serialVersionUID = -6096783678529379785L;
 
   private static final URI LINK = URI.create("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2"); //NOI18N
@@ -41,7 +42,7 @@ public class DonateButton extends JButton {
         UiUtils.browseURI(LINK, false);
       }
       catch (Exception ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't open link! You can try to open it manually:\n" + LINK.toASCIIString());
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't open link! You can try to open it manually:\n" + LINK.toASCIIString());
       }
     }
   };

@@ -47,6 +47,7 @@ import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.editors.SourceTextEditor;
@@ -1389,7 +1390,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file, "UTF-8")));
       } catch (final Exception ex) {
         LOGGER.error("Can't import settings", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't import settings [" + ex.getMessage() + ']');
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't import settings [" + ex.getMessage() + ']');
       }
     }
   }//GEN-LAST:event_buttonImportFromFileActionPerformed

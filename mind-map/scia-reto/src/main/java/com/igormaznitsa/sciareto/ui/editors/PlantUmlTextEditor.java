@@ -859,7 +859,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "sources-editor", "Save sources", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, getFileFilter(), "Save");
         if (file == null) {
           return result;
         }
