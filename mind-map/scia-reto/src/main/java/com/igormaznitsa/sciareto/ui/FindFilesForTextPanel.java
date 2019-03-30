@@ -106,14 +106,13 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
   }
 
   private static volatile TheLocale LOCALE = new TheLocale(Locale.ENGLISH);
-  private final Object okDialogExit; 
-  
-  
+  private final Object okDialogExit;
+
   @SuppressWarnings("ResultOfObjectAllocationIgnored")
   public FindFilesForTextPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind, @Nullable final Object okDialogExit) {
     super();
     initComponents();
-    
+
     this.okDialogExit = okDialogExit;
 
     this.folder = itemToFind;
@@ -237,29 +236,23 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
   }
 
   private void addFileIntoList(@Nonnull final NodeFileOrFolder file) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final boolean first = foundFiles.isEmpty();
+    SwingUtilities.invokeLater(() -> {
+      final boolean first = foundFiles.isEmpty();
 
-        foundFiles.add(file);
-        for (final ListDataListener l : listListeners) {
-          l.intervalAdded(new ListDataEvent(listOfFoundElements, ListDataEvent.INTERVAL_ADDED, foundFiles.size() - 1, foundFiles.size() - 1));
-        }
+      foundFiles.add(file);
+      for (final ListDataListener l : listListeners) {
+        l.intervalAdded(new ListDataEvent(listOfFoundElements, ListDataEvent.INTERVAL_ADDED, foundFiles.size() - 1, foundFiles.size() - 1));
+      }
 
-        if (first) {
-          listOfFoundElements.setSelectedIndex(0);
-        }
-
+      if (first) {
+        listOfFoundElements.setSelectedIndex(0);
       }
     });
   }
 
   private void startSearchThread(@Nonnull @MustNotContainNull final List<NodeFileOrFolder> scope, @Nonnull final byte[] dataToFindVariant1, @Nonnull final byte[] dataToFindVariant2) {
     int size = 0;
-    for (final NodeFileOrFolder p : scope) {
-      size += p.size();
-    }
+    size = scope.stream().map((p) -> p.size()).reduce(size, Integer::sum);
 
     final byte[] fileOpBuffer = new byte[1024 * 1024];
 
@@ -274,8 +267,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
           if (new FileExaminator(f).doesContainData(fileOpBuffer, dataToFindVariant1, dataToFindVariant2)) {
             addFileIntoList(file);
           }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
           LOGGER.error("Error during text search in '" + f + '\'', ex);
         }
 
@@ -338,8 +330,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
       oldThread.interrupt();
       try {
         oldThread.join(1000L);
-      }
-      catch (InterruptedException ex) {
+      } catch (InterruptedException ex) {
         Thread.currentThread().interrupt();
         LOGGER.error("Exception during waiting of search thread interruption", ex); //NOI18N
       }
@@ -496,15 +487,15 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
     try {
       final byte[] str1 = this.fieldText.getText().toLowerCase(selectedLocale).getBytes(this.comboCharsets.getSelectedItem().toString());
       final byte[] str2 = this.fieldText.getText().toUpperCase(selectedLocale).getBytes(this.comboCharsets.getSelectedItem().toString());
+      LOGGER.info("Start find byte patterns: " + SystemUtils.toString(str1) + ", " + SystemUtils.toString(str2));
       startSearchThread(folders, str1, str2);
-    }
-    catch (UnsupportedEncodingException ex) {
+    } catch (UnsupportedEncodingException ex) {
       JOptionPane.showMessageDialog(this, ex, "Error", JOptionPane.ERROR_MESSAGE);
     }
   }//GEN-LAST:event_buttonFindActionPerformed
 
   private void listOfFoundElementsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listOfFoundElementsMouseClicked
-    if (evt.getClickCount()>1 && !evt.isPopupTrigger() && this.listOfFoundElements.getSelectedIndex()>=0) {
+    if (evt.getClickCount() > 1 && !evt.isPopupTrigger() && this.listOfFoundElements.getSelectedIndex() >= 0) {
       UiUtils.closeCurrentDialogWithResult(this, this.okDialogExit);
     }
   }//GEN-LAST:event_listOfFoundElementsMouseClicked

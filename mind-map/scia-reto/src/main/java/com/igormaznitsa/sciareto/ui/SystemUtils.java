@@ -24,6 +24,10 @@ import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class SystemUtils {
   
@@ -43,6 +47,19 @@ public final class SystemUtils {
   
   public static boolean isMac(){
     return org.apache.commons.lang.SystemUtils.IS_OS_MAC;
+  }
+  
+  @Nonnull
+  public static String toString(@Nonnull final byte ... array) {
+    final StringBuilder result = new StringBuilder().append('[');
+    String delim = "";
+    for(final byte b : array) {
+      result.append(delim);
+      final String hex = Integer.toHexString(b & 0xFF).toUpperCase(Locale.ENGLISH);
+      result.append('#').append(hex.length() == 1 ? "0" : "").append(hex);
+      delim = ",";
+    }
+    return result.append(']').toString();
   }
   
   public static boolean deleteFile(@Nonnull final File file, final boolean moveToTrashIfPossible) {
