@@ -412,7 +412,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.menu.add(makeLinkLabel("PlantUML", () -> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), gbdata);
     this.menu.add(makeLinkLabel("AsciiMath", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
-    this.menu.add(makeLinkLabel("LatexMath", "https://en.wikibooks.org/wiki/LaTeX/Mathematics", "Open LatexMath manual", ICON_INFO), gbdata);
+//    this.menu.add(makeLinkLabel("LatexMath", "https://en.wikibooks.org/wiki/LaTeX/Mathematics", "Open LatexMath manual", ICON_INFO), gbdata);
     this.menu.add(this.labelWarningNoGraphwiz, gbdata);
 
     this.renderedPanel.add(menu, BorderLayout.NORTH);
