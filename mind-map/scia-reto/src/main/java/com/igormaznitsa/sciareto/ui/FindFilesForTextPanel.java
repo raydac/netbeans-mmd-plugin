@@ -19,7 +19,6 @@
 package com.igormaznitsa.sciareto.ui;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -59,7 +58,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
   private final transient List<NodeFileOrFolder> foundFiles = new ArrayList<>();
   private final transient List<ListDataListener> listListeners = new ArrayList<>();
 
-  private static final int MIN_TEXT_LENGTH = 1;
+  private static final int MIN_TEXT_LENGTH = 2;
 
   private final NodeFileOrFolder folder;
 
