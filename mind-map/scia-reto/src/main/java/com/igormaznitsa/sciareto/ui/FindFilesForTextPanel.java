@@ -59,7 +59,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
   private final transient List<NodeFileOrFolder> foundFiles = new ArrayList<>();
   private final transient List<ListDataListener> listListeners = new ArrayList<>();
 
-  private static final int MIN_TEXT_LENGTH = 3;
+  private static final int MIN_TEXT_LENGTH = 1;
 
   private final NodeFileOrFolder folder;
 
@@ -191,18 +191,12 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
     this.comboLocale.setModel(locales);
     this.comboLocale.setSelectedItem(LOCALE);
 
-    this.comboCharsets.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        CHARSET = comboCharsets.getSelectedItem().toString();
-      }
+    this.comboCharsets.addActionListener((ActionEvent e) -> {
+      CHARSET = comboCharsets.getSelectedItem().toString();
     });
 
-    this.comboLocale.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        LOCALE = (TheLocale) comboLocale.getSelectedItem();
-      }
+    this.comboLocale.addActionListener((ActionEvent e) -> {
+      LOCALE = (TheLocale) comboLocale.getSelectedItem();
     });
 
     this.comboLocale.revalidate();
@@ -240,9 +234,9 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
       final boolean first = foundFiles.isEmpty();
 
       foundFiles.add(file);
-      for (final ListDataListener l : listListeners) {
+      listListeners.forEach((l) -> {
         l.intervalAdded(new ListDataEvent(listOfFoundElements, ListDataEvent.INTERVAL_ADDED, foundFiles.size() - 1, foundFiles.size() - 1));
-      }
+      });
 
       if (first) {
         listOfFoundElements.setSelectedIndex(0);
@@ -305,18 +299,15 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
           }
         }
         safeSetProgressValue(Integer.MAX_VALUE);
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            buttonFind.setEnabled(true);
-            fieldText.setEnabled(true);
-            comboCharsets.setEnabled(true);
-            comboLocale.setEnabled(true);
-            if (foundFiles.isEmpty()) {
-              fieldText.requestFocus();
-            } else {
-              listOfFoundElements.requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+          buttonFind.setEnabled(true);
+          fieldText.setEnabled(true);
+          comboCharsets.setEnabled(true);
+          comboLocale.setEnabled(true);
+          if (foundFiles.isEmpty()) {
+            fieldText.requestFocus();
+          } else {
+            listOfFoundElements.requestFocus();
           }
         });
       }
@@ -345,21 +336,18 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
   }
 
   private void safeSetProgressValue(final int value) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        if (value == Integer.MAX_VALUE) {
-          progressBarSearch.setEnabled(false);
-          progressBarSearch.setIndeterminate(false);
-          progressBarSearch.setValue(progressBarSearch.getMaximum());
-        } else if (value < 0) {
-          progressBarSearch.setEnabled(true);
-          progressBarSearch.setIndeterminate(true);
-        } else {
-          progressBarSearch.setEnabled(true);
-          progressBarSearch.setIndeterminate(false);
-          progressBarSearch.setValue(value);
-        }
+    SwingUtilities.invokeLater(() -> {
+      if (value == Integer.MAX_VALUE) {
+        progressBarSearch.setEnabled(false);
+        progressBarSearch.setIndeterminate(false);
+        progressBarSearch.setValue(progressBarSearch.getMaximum());
+      } else if (value < 0) {
+        progressBarSearch.setEnabled(true);
+        progressBarSearch.setIndeterminate(true);
+      } else {
+        progressBarSearch.setEnabled(true);
+        progressBarSearch.setIndeterminate(false);
+        progressBarSearch.setValue(value);
       }
     });
   }
@@ -401,6 +389,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
     jPanel1.add(fieldText, java.awt.BorderLayout.CENTER);
 
     buttonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
+    buttonFind.setText("Find");
     buttonFind.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         buttonFindActionPerformed(evt);
@@ -421,7 +410,6 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
     jPanel3.add(jLabel2, gridBagConstraints);
-
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
@@ -432,7 +420,6 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
     gridBagConstraints.gridx = 3;
     gridBagConstraints.gridy = 0;
     jPanel3.add(jLabel3, gridBagConstraints);
-
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 4;
     gridBagConstraints.gridy = 0;
