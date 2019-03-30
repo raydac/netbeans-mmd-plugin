@@ -534,7 +534,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   private int countNewPages(@Nonnull final String text) {
     int count = 1;
     final Matcher matcher = NEWPAGE_PATTERN.matcher(text);
-    while (matcher.find()) {
+    while (!Thread.currentThread().isInterrupted() && matcher.find()) {
       count++;
     }
     return count;
