@@ -247,22 +247,20 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-    this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
-      @Override
-      public void propertyChange(@Nonnull final PropertyChangeEvent evt) {
-        if (isTextEditorVisible()) {
-          editor.requestFocusInWindow();
-        } else {
-          imageComponent.requestFocusInWindow();
-        }
-      }
-    });
-
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
 
     this.renderedPanel = new JPanel(new BorderLayout());
     this.renderedScrollPane = new EditorScrollPanel();
     this.imageComponent = new ScalableImage();
+
+    this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, (@Nonnull final PropertyChangeEvent evt) -> {
+      if (isTextEditorVisible()) {
+        editor.requestFocusInWindow();
+      } else {
+        imageComponent.requestFocusInWindow();
+      }
+    });
+
     final ScaleStatusIndicator scaleLabel = new ScaleStatusIndicator(this.imageComponent);
     this.renderedScrollPane.setViewportView(this.imageComponent);
 
@@ -278,11 +276,8 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     final JButton buttonRefresh = new JButton(loadMenuIcon("arrow_refresh"));
     buttonRefresh.setToolTipText("Refresh image for text");
-    buttonRefresh.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        startRenderScript();
-      }
+    buttonRefresh.addActionListener((ActionEvent e) -> {
+      startRenderScript();
     });
 
     final JButton buttonEditScript = new JButton(loadMenuIcon("edit_script")) {
@@ -298,27 +293,21 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     };
 
     buttonEditScript.setToolTipText("Edit script");
-    buttonEditScript.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (isTextEditorVisible()) {
-          mainPanel.setDividerLocation(0);
-          imageComponent.requestFocus();
-        } else {
-          mainPanel.setDividerLocation(256);
-          editor.requestFocus();
-        }
+    buttonEditScript.addActionListener((ActionEvent e) -> {
+      if (isTextEditorVisible()) {
+        mainPanel.setDividerLocation(0);
+        imageComponent.requestFocus();
+      } else {
+        mainPanel.setDividerLocation(256);
+        editor.requestFocus();
       }
     });
 
     final JButton buttonExportImage = new JButton(loadMenuIcon("picture_save"));
     buttonExportImage.setToolTipText("Export image as file");
-    buttonExportImage.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        Main.getApplicationFrame().endFullScreenIfActive();
-        exportAsFile();
-      }
+    buttonExportImage.addActionListener((ActionEvent e) -> {
+      Main.getApplicationFrame().endFullScreenIfActive();
+      exportAsFile();
     });
 
     final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
@@ -344,12 +333,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.buttonPrevPage = new JButton(loadMenuIcon("resultset_previous"));
     this.buttonPrevPage.setToolTipText("Previous page");
-    this.buttonPrevPage.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        pageNumberToRender--;
-        startRenderScript();
-      }
+    this.buttonPrevPage.addActionListener((ActionEvent e) -> {
+      pageNumberToRender--;
+      startRenderScript();
     });
 
     this.buttonNextPage = new JButton(loadMenuIcon("resultset_next"));
@@ -368,29 +354,23 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     final JButton buttonPrintImage = new JButton(loadMenuIcon("printer"));
     buttonPrintImage.setToolTipText("Print current page");
-    buttonPrintImage.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        Main.getApplicationFrame().endFullScreenIfActive();
-        final MMDPrintPanel printPanel = new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null, PrintableObject.newBuild().image(imageComponent.getImage()).build());
-        UiUtils.makeOwningDialogResizable(printPanel);
-        JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image", JOptionPane.PLAIN_MESSAGE);
-      }
+    buttonPrintImage.addActionListener((@Nonnull final ActionEvent e) -> {
+      Main.getApplicationFrame().endFullScreenIfActive();
+      final MMDPrintPanel printPanel = new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null, PrintableObject.newBuild().image(imageComponent.getImage()).build());
+      UiUtils.makeOwningDialogResizable(printPanel);
+      JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image", JOptionPane.PLAIN_MESSAGE);
     });
 
     final JButton buttonAscImageToClipboard = new JButton(loadMenuIcon("clipboard_asc"));
     buttonAscImageToClipboard.setToolTipText("Copy ASCII image to clipboard");
-    buttonAscImageToClipboard.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        final String text = renderPageAsAscII();
-        if (text == null) {
-          JOptionPane.showMessageDialog(mainPanel, "Can't generate ASCII for the diagram", "Can't generate", JOptionPane.WARNING_MESSAGE);
-        } else {
-          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-          if (clipboard != null) {
-            clipboard.setContents(new StringSelection(text), null);
-          }
+    buttonAscImageToClipboard.addActionListener((@Nonnull final ActionEvent e) -> {
+      final String text = renderPageAsAscII();
+      if (text == null) {
+        JOptionPane.showMessageDialog(mainPanel, "Can't generate ASCII for the diagram.\nMay be it is unsupported for such kind of diagrams.", "Can't generate", JOptionPane.WARNING_MESSAGE);
+      } else {
+        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard != null) {
+          clipboard.setContents(new StringSelection(text), null);
         }
       }
     });
@@ -430,8 +410,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.menu.add(scaleLabel, gbdata);
     this.menu.add(Box.createHorizontalStrut(16), gbdata);
 
-    this.menu.add(makeLinkLabel("PlantUML Reference", () -> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), gbdata);
-    this.menu.add(makeLinkLabel("AsciiMath Reference", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
+    this.menu.add(makeLinkLabel("PlantUML", () -> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), gbdata);
+    this.menu.add(makeLinkLabel("AsciiMath", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), gbdata);
+    this.menu.add(makeLinkLabel("LatexMath", "https://en.wikibooks.org/wiki/LaTeX/Mathematics", "Open LatexMath manual", ICON_INFO), gbdata);
     this.menu.add(this.labelWarningNoGraphwiz, gbdata);
 
     this.renderedPanel.add(menu, BorderLayout.NORTH);
@@ -1013,7 +994,6 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       return result;
     } catch (Exception ex) {
       LOGGER.error("Can't export ASCII image", ex);
-      JOptionPane.showMessageDialog(mainPanel, "Error during ASCII render: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       return null;
     }
   }
