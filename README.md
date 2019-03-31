@@ -16,6 +16,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.6 (SNAPSHOT)__
+- SR:  Unable to find files for Chinese characters [#52](https://github.com/raydac/netbeans-mmd-plugin/issues/52)
 - ALL: added plug-in to align topic text (by default text still aligned as `center`)
 - SR:  fixed support of AscIIMath and JLatexMath in standalone versions with JRE image
 - SR:  updated PlantUML version to 1.2019.3

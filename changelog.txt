@@ -1,4 +1,5 @@
 __1.4.6 (SNAPSHOT)__
+- SR:  Unable to find files for Chinese characters #52
 - ALL: added plug-in to align topic text (by default text still aligned as `center`)
 - SR:  fixed support of AscIIMath and JLatexMath in standalone versions with JRE image
 - SR:  updated PlantUML version to 1.2019.3
