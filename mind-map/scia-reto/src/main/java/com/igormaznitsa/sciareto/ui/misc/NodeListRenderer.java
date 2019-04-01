@@ -31,6 +31,7 @@ import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import com.igormaznitsa.sciareto.ui.tree.TreeCellRenderer;
+import javax.swing.JLabel;
 
 public final class NodeListRenderer extends DefaultListCellRenderer {
 
@@ -69,30 +70,32 @@ public final class NodeListRenderer extends DefaultListCellRenderer {
   @Override
   @Nonnull
   public Component getListCellRendererComponent(@Nonnull final JList<?> list, @Nonnull final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
-    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+    final JLabel result = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+   
     final NodeFileOrFolder node = (NodeFileOrFolder) value;
 
     final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
 
     if (!isSelected && COLOR_ROW_EVEN != null && COLOR_ROW_ODD != null) {
       if (index % 2 == 0) {
-        this.setBackground(COLOR_ROW_EVEN);
+        result.setBackground(COLOR_ROW_EVEN);
       } else {
-        this.setBackground(COLOR_ROW_ODD);
+        result.setBackground(COLOR_ROW_ODD);
       }
     }
 
     if (node instanceof NodeProject || !node.isLeaf()) {
-      this.setIcon(TreeCellRenderer.DEFAULT_FOLDER_CLOSED);
+      result.setIcon(TreeCellRenderer.DEFAULT_FOLDER_CLOSED);
     } else if (ext.equals("mmd")) { //NOI18N
-      this.setIcon(Icons.DOCUMENT.getIcon());
+      result.setIcon(Icons.DOCUMENT.getIcon());
     } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {
-      this.setIcon(TreeCellRenderer.ICON_IMAGE);
+      result.setIcon(TreeCellRenderer.ICON_IMAGE);
     } else {
-      this.setIcon(TreeCellRenderer.DEFAULT_FILE);
+      result.setIcon(TreeCellRenderer.DEFAULT_FILE);
     }
-    this.setText(makeTextForNode(node));
-    return this;
+    result.setText(makeTextForNode(node));
+    
+    return result;
   }
 
 }
