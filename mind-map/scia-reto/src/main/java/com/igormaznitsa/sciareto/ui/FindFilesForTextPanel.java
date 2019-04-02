@@ -58,7 +58,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
   private final transient List<NodeFileOrFolder> foundFiles = new ArrayList<>();
   private final transient List<ListDataListener> listListeners = new ArrayList<>();
 
-  private static final int MIN_TEXT_LENGTH = 2;
+  private static final int MIN_TEXT_LENGTH = 1;
 
   private final NodeFileOrFolder folder;
 
@@ -339,7 +339,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
       if (value == Integer.MAX_VALUE) {
         progressBarSearch.setEnabled(false);
         progressBarSearch.setIndeterminate(false);
-        progressBarSearch.setValue(progressBarSearch.getMaximum());
+        progressBarSearch.setValue(0);
       } else if (value < 0) {
         progressBarSearch.setEnabled(true);
         progressBarSearch.setIndeterminate(true);
@@ -385,6 +385,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
     jPanel1.add(jLabel1, java.awt.BorderLayout.WEST);
 
     fieldText.setText("jTextField1");
+    fieldText.setToolTipText("Press 'Enter' or the 'Find' button for search");
     jPanel1.add(fieldText, java.awt.BorderLayout.CENTER);
 
     buttonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N

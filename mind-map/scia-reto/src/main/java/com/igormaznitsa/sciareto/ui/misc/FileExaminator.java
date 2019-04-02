@@ -55,33 +55,40 @@ public class FileExaminator {
           }
         }
 
-        mainLoop:
-        for (int i = 0; i < buffer.position(); i++) {
-          if (Thread.currentThread().isInterrupted()) {
-            break;
-          }
-          final byte b = buffer.get(i);
-          for (int j = 0; j < len; j++) {
-            int c = counters[j];
-            if (c == 0) {
-              continue;
-            }
-            if (b == dataArr1[c] || b == dataArr2[c]) {
-              c++;
-              if (c == len) {
-                result = true;
-                break mainLoop;
-              }
-              counters[j] = c;
-            } else {
-              counters[j] = 0;
+        if (dataArr1.length == 1) {
+          for (int i = 0; i < buffer.position() && !Thread.currentThread().isInterrupted(); i++) {
+            final byte b = buffer.get(i);
+            if (b == dataArr1[0] || b == dataArr2[0]) {
+              result = true;
+              break;
             }
           }
-          if (b == dataArr1[0] || b == dataArr2[0]) {
+        } else {
+          mainLoop:
+          for (int i = 0; i < buffer.position() && !Thread.currentThread().isInterrupted(); i++) {
+            final byte b = buffer.get(i);
             for (int j = 0; j < len; j++) {
-              if (counters[j] == 0) {
-                counters[j] = 1;
-                break;
+              int c = counters[j];
+              if (c == 0) {
+                continue;
+              }
+              if (b == dataArr1[c] || b == dataArr2[c]) {
+                c++;
+                if (c == len) {
+                  result = true;
+                  break mainLoop;
+                }
+                counters[j] = c;
+              } else {
+                counters[j] = 0;
+              }
+            }
+            if (b == dataArr1[0] || b == dataArr2[0]) {
+              for (int j = 0; j < len; j++) {
+                if (counters[j] == 0) {
+                  counters[j] = 1;
+                  break;
+                }
               }
             }
           }

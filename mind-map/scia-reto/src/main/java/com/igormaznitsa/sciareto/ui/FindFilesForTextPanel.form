@@ -38,6 +38,7 @@
         <Component class="javax.swing.JTextField" name="fieldText">
           <Properties>
             <Property name="text" type="java.lang.String" value="jTextField1"/>
+            <Property name="toolTipText" type="java.lang.String" value="Press &apos;Enter&apos; or the &apos;Find&apos; button for search"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
