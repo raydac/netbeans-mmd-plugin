@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -29,10 +30,10 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-public final class ColorPickerPanel extends JPanel {
+final class ColorPickerPanel {
 
   private int rows = 8;
   private int cols = 8;
@@ -51,12 +52,14 @@ public final class ColorPickerPanel extends JPanel {
 
   private boolean readOnly = false;
 
+  private final JPanel panel;
+
   public static interface ColorListener {
 
     void onColorSelected(@Nonnull ColorPickerPanel source, @Nonnull Color color);
   }
 
-  private static final class RadioColorButton extends JLabel {
+  private static final class RadioColorButton extends JComponent {
 
     private final ColorPickerPanel parent;
     private boolean selected;
@@ -104,6 +107,12 @@ public final class ColorPickerPanel extends JPanel {
               .append(green.length() < 2 ? "0" : "").append(green)
               .append(blue.length() < 2 ? "0" : "").append(blue);
       this.setToolTipText(buffer.toString());
+    }
+
+    @Override
+    public void paintComponent(@Nonnull final Graphics gfx) {
+      gfx.setColor(this.getBackground());
+      gfx.fill3DRect(0, 0, this.getWidth(), this.getHeight(), false);
     }
 
     @Nonnull
@@ -155,15 +164,15 @@ public final class ColorPickerPanel extends JPanel {
   }
 
   public ColorPickerPanel(
+          @Nonnull final JPanel panel,
           final int rows,
           final int cols,
           final int gapHorz,
           final int gapVert,
           @Nullable @MustNotContainNull final List<Color> predefinedColors
   ) {
-    super();
-    this.setOpaque(false);
-    this.setBackground(null);
+    this.panel = panel;
+    this.panel.setOpaque(false);
 
     this.gapHorz = Math.max(0, gapHorz);
     this.gapVert = Math.max(0, gapVert);
@@ -176,24 +185,28 @@ public final class ColorPickerPanel extends JPanel {
   }
 
   public void resetSelected() {
-    for (final Component c : this.getComponents()) {
-      final RadioColorButton button = (RadioColorButton) c;
-      if (button.isSelected()) {
-        button.setSelected(false, false);
+    for (final Component c : this.panel.getComponents()) {
+      if (c instanceof RadioColorButton) {
+        final RadioColorButton button = (RadioColorButton) c;
+        if (button.isSelected()) {
+          button.setSelected(false, false);
+        }
       }
     }
-    repaint();
+    this.panel.repaint();
   }
 
   public void setColor(@Nullable final Color color) {
     if (color == null) {
       this.resetSelected();
     } else {
-      for (final Component c : this.getComponents()) {
-        final RadioColorButton button = (RadioColorButton) c;
-        if (color.equals(button.getBackground())) {
-          button.setSelected(true, true);
-          break;
+      for (final Component c : this.panel.getComponents()) {
+        if (c instanceof RadioColorButton) {
+          final RadioColorButton button = (RadioColorButton) c;
+          if (color.equals(button.getBackground())) {
+            button.setSelected(true, true);
+            break;
+          }
         }
       }
     }
@@ -201,10 +214,12 @@ public final class ColorPickerPanel extends JPanel {
 
   @Nullable
   public Color getColor() {
-    for (final Component c : this.getComponents()) {
-      final RadioColorButton button = (RadioColorButton) c;
-      if (button.isSelected()) {
-        return button.getBackground();
+    for (final Component c : this.panel.getComponents()) {
+      if (c instanceof RadioColorButton) {
+        final RadioColorButton button = (RadioColorButton) c;
+        if (button.isSelected()) {
+          return button.getBackground();
+        }
       }
     }
     return null;
@@ -220,7 +235,7 @@ public final class ColorPickerPanel extends JPanel {
       this.selectedRow = -1;
       this.selectedCol = -1;
     }
-    repaint();
+    this.panel.repaint();
   }
 
   public int getSelectedRow() {
@@ -281,13 +296,18 @@ public final class ColorPickerPanel extends JPanel {
     return this.cellHeight;
   }
 
+  @Nonnull
+  public JPanel getPanel() {
+    return this.panel;
+  }
+
   private int ave(int s, int d, float p) {
     return s + java.lang.Math.round(p * (d - s));
   }
 
   private void updateColorButtons(@Nullable @MustNotContainNull final List<Color> predefinedColors) {
-    this.removeAll();
-    this.setLayout(new GridLayout(this.rows, this.cols, this.gapHorz, this.gapVert));
+    this.panel.removeAll();
+    this.panel.setLayout(new GridLayout(this.rows, this.cols, this.gapHorz, this.gapVert));
 
     final int totalCells = this.rows * this.cols;
 
@@ -346,7 +366,7 @@ public final class ColorPickerPanel extends JPanel {
           }
           break;
         }
-        this.add(button);
+        this.panel.add(button);
       }
     } else {
       for (int i = 0; i < totalCells; i++) {
@@ -356,11 +376,11 @@ public final class ColorPickerPanel extends JPanel {
         } else {
           button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.LIGHT_GRAY, false);
         }
-        this.add(button);
+        this.panel.add(button);
       }
     }
-    this.revalidate();
-    this.doLayout();
+    this.panel.revalidate();
+    this.panel.doLayout();
   }
 
 }
