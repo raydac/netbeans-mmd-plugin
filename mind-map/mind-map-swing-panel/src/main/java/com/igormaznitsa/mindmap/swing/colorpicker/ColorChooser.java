@@ -49,8 +49,7 @@ public final class ColorChooser {
 
   public ColorChooser(
           @Nullable @MustNotContainNull final List<Color> mapColors,
-          @Nullable final Color selectedColor,
-          final boolean selectBackgroundColor
+          @Nullable final Color selectedColor
   ) {
     final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
     this.panel = componentFactory.makePanel();
@@ -175,7 +174,7 @@ public final class ColorChooser {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         final JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new ColorChooser(Arrays.asList(Color.WHITE, Color.BLACK, Color.RED, Color.ORANGE, Color.PINK), Color.ORANGE, false).getPanel(), BorderLayout.CENTER);
+        panel.add(new ColorChooser(Arrays.asList(Color.WHITE, Color.BLACK, Color.RED, Color.ORANGE, Color.PINK), Color.ORANGE).getPanel(), BorderLayout.CENTER);
 
         frame.setContentPane(panel);
         frame.pack();

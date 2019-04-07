@@ -22,6 +22,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -90,13 +92,23 @@ final class ColorPickerPanel {
       this.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(@Nonnull final MouseEvent e) {
-          if (!parent.isReadOnly()) {
+          if (!e.isConsumed() && !parent.isReadOnly()) {
             setSelected(true, true);
           }
         }
-
       });
 
+      this.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyReleased(@Nonnull final KeyEvent e) {
+          if (!e.isConsumed() && (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE)) {
+            e.consume();
+            setSelected(true, !isSelected());
+          }
+        }
+        
+      });
+      
       final String red = Integer.toHexString(color.getRed()).toUpperCase(Locale.ENGLISH);
       final String green = Integer.toHexString(color.getGreen()).toUpperCase(Locale.ENGLISH);
       final String blue = Integer.toHexString(color.getBlue()).toUpperCase(Locale.ENGLISH);
@@ -110,9 +122,14 @@ final class ColorPickerPanel {
     }
 
     @Override
+    public boolean isFocusable() {
+      return true;
+    }
+    
+    @Override
     public void paintComponent(@Nonnull final Graphics gfx) {
       gfx.setColor(this.getBackground());
-      gfx.fill3DRect(0, 0, this.getWidth(), this.getHeight(), false);
+      gfx.fill3DRect(0, 0, this.getWidth(), this.getHeight(), true);
     }
 
     @Nonnull
