@@ -36,26 +36,27 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-public final class ColorChooser extends JPanel {
+public final class ColorChooser {
 
   private final ColorPickerPanel colorPicker;
   private final ColorPickerPanel presentedColors;
-  private final JLabel sampleDark;
-  private final JLabel sampleLight;
-  private final boolean selectBackgroundColor;
+  private final JLabel sampleDarkFill;
+  private final JLabel sampleLightFill;
+  private final JLabel sampleDarkText;
+  private final JLabel sampleLightText;
+
+  private final JPanel panel;
 
   public ColorChooser(
           @Nullable @MustNotContainNull final List<Color> mapColors,
           @Nullable final Color selectedColor,
           final boolean selectBackgroundColor
   ) {
-    super(new GridBagLayout());
-
     final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
+    this.panel = componentFactory.makePanel();
+    this.panel.setLayout(new GridBagLayout());
 
     final String SAMPLE_TEXT = "TEXT";
-
-    this.selectBackgroundColor = selectBackgroundColor;
 
     GridBagConstraints data = new GridBagConstraints();
     data.anchor = GridBagConstraints.CENTER;
@@ -64,47 +65,65 @@ public final class ColorChooser extends JPanel {
     data.fill = GridBagConstraints.BOTH;
     data.insets.set(4, 4, 4, 4);
 
-    this.sampleDark = componentFactory.makeLabel();
-    this.sampleDark.setText(SAMPLE_TEXT);
-    this.sampleDark.setOpaque(true);
-    this.sampleDark.setForeground(Color.BLACK);
-    this.sampleDark.setHorizontalAlignment(JLabel.CENTER);
-    this.sampleDark.setBackground(Color.WHITE);
+    this.sampleDarkFill = componentFactory.makeLabel();
+    this.sampleDarkFill.setText(SAMPLE_TEXT);
+    this.sampleDarkFill.setOpaque(true);
+    this.sampleDarkFill.setForeground(Color.BLACK);
+    this.sampleDarkFill.setHorizontalAlignment(JLabel.CENTER);
+    this.sampleDarkFill.setBackground(Color.WHITE);
 
-    this.sampleLight = componentFactory.makeLabel();
-    this.sampleLight.setText(SAMPLE_TEXT);
-    this.sampleLight.setOpaque(true);
-    this.sampleLight.setForeground(Color.WHITE);
-    this.sampleLight.setHorizontalAlignment(SwingConstants.CENTER);
-    this.sampleLight.setBackground(Color.BLACK);
+    this.sampleDarkText = componentFactory.makeLabel();
+    this.sampleDarkText.setText(SAMPLE_TEXT);
+    this.sampleDarkText.setOpaque(true);
+    this.sampleDarkText.setForeground(Color.BLACK);
+    this.sampleDarkText.setHorizontalAlignment(JLabel.CENTER);
+    this.sampleDarkText.setBackground(Color.WHITE);
+
+    this.sampleLightFill = componentFactory.makeLabel();
+    this.sampleLightFill.setText(SAMPLE_TEXT);
+    this.sampleLightFill.setOpaque(true);
+    this.sampleLightFill.setForeground(Color.WHITE);
+    this.sampleLightFill.setHorizontalAlignment(SwingConstants.CENTER);
+    this.sampleLightFill.setBackground(Color.BLACK);
+
+    this.sampleLightText = componentFactory.makeLabel();
+    this.sampleLightText.setText(SAMPLE_TEXT);
+    this.sampleLightText.setOpaque(true);
+    this.sampleLightText.setForeground(Color.WHITE);
+    this.sampleLightText.setHorizontalAlignment(SwingConstants.CENTER);
+    this.sampleLightText.setBackground(Color.BLACK);
 
     this.colorPicker = new ColorPickerPanel(componentFactory.makePanel(), 8, 13, 4, 4, null);
     this.presentedColors = new ColorPickerPanel(componentFactory.makePanel(), 2, 13, 4, 4, mapColors == null ? Collections.<Color>emptyList() : mapColors);
 
-    this.add(this.colorPicker.getPanel(), data);
+    this.panel.add(this.colorPicker.getPanel(), data);
 
     data.gridy = 1;
 
     final JPanel samplePanel = componentFactory.makePanel();
-    samplePanel.setLayout(new GridLayout(2, 1));
+
+    samplePanel.setLayout(new GridLayout(2, 2));
     samplePanel.setBorder(BorderFactory.createTitledBorder(Texts.getString("ColorChooser.Text.Example")));
-    samplePanel.add(this.sampleDark);
-    samplePanel.add(this.sampleLight);
+
+    samplePanel.add(this.sampleDarkFill);
+    samplePanel.add(this.sampleLightText);
+    samplePanel.add(this.sampleDarkText);
+    samplePanel.add(this.sampleLightFill);
 
     data.insets.set(4, 32, 4, 32);
 
-    this.add(samplePanel, data);
+    this.panel.add(samplePanel, data);
 
     data.insets.set(4, 4, 4, 4);
 
     data.gridy = 2;
-    this.add(this.presentedColors.getPanel(), data);
+    this.panel.add(this.presentedColors.getPanel(), data);
 
     this.colorPicker.addColorListener(new ColorPickerPanel.ColorListener() {
       @Override
       public void onColorSelected(@Nonnull final ColorPickerPanel source, @Nonnull final Color color) {
         presentedColors.resetSelected();
-        updateSample(color);
+        updateSamples(color);
       }
     });
 
@@ -112,7 +131,7 @@ public final class ColorChooser extends JPanel {
       @Override
       public void onColorSelected(@Nonnull final ColorPickerPanel source, @Nonnull final Color color) {
         colorPicker.resetSelected();
-        updateSample(color);
+        updateSamples(color);
       }
     });
 
@@ -121,27 +140,24 @@ public final class ColorChooser extends JPanel {
         @Override
         public void run() {
           presentedColors.setColor(selectedColor);
-          updateSample(selectedColor);
+          updateSamples(selectedColor);
         }
       });
     }
 
-    this.doLayout();
-    this.repaint();
+    this.panel.doLayout();
   }
 
-  public boolean isSelectBackgroundColor() {
-    return this.selectBackgroundColor;
+  @Nonnull
+  public JPanel getPanel() {
+    return this.panel;
   }
 
-  private void updateSample(@Nonnull final Color color) {
-    if (this.selectBackgroundColor) {
-      this.sampleDark.setBackground(color);
-      this.sampleLight.setBackground(color);
-    } else {
-      this.sampleDark.setForeground(color);
-      this.sampleLight.setForeground(color);
-    }
+  private void updateSamples(@Nonnull final Color color) {
+    this.sampleDarkFill.setBackground(color);
+    this.sampleLightFill.setBackground(color);
+    this.sampleDarkText.setForeground(color);
+    this.sampleLightText.setForeground(color);
   }
 
   @Nullable
@@ -159,7 +175,7 @@ public final class ColorChooser extends JPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         final JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new ColorChooser(Arrays.asList(Color.WHITE, Color.BLACK, Color.RED, Color.ORANGE, Color.PINK), Color.ORANGE, false), BorderLayout.CENTER);
+        panel.add(new ColorChooser(Arrays.asList(Color.WHITE, Color.BLACK, Color.RED, Color.ORANGE, Color.PINK), Color.ORANGE, false).getPanel(), BorderLayout.CENTER);
 
         frame.setContentPane(panel);
         frame.pack();
