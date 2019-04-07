@@ -50,7 +50,7 @@ public final class ColorPickerPanel extends JPanel {
   private final List<ColorListener> colorListeners = new ArrayList<>();
 
   private boolean readOnly = false;
-  
+
   public static interface ColorListener {
 
     void onColorSelected(@Nonnull ColorPickerPanel source, @Nonnull Color color);
@@ -62,7 +62,7 @@ public final class ColorPickerPanel extends JPanel {
     private boolean selected;
 
     RadioColorButton(
-            @Nonnull 
+            @Nonnull
             final ColorPickerPanel parent,
             final int cellWidth,
             final int cellHeight,
@@ -83,7 +83,7 @@ public final class ColorPickerPanel extends JPanel {
       this.setBorder(selected ? BorderFactory.createLineBorder(getContrastColor(this.getBackground()), Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
 
       this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-      
+
       this.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(@Nonnull final MouseEvent e) {
@@ -117,12 +117,12 @@ public final class ColorPickerPanel extends JPanel {
         if (removeCurrentSelection) {
           this.parent.resetSelected();
         }
-        
+
         this.selected = selected;
         this.setBorder(selected ? BorderFactory.createLineBorder(getContrastColor(this.getBackground()), Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
         this.revalidate();
         this.repaint();
-        
+
         if (selected) {
           this.parent.fireColorSelected(this.getBackground());
         }
@@ -155,8 +155,8 @@ public final class ColorPickerPanel extends JPanel {
   }
 
   public ColorPickerPanel(
-          final int rows, 
-          final int cols, 
+          final int rows,
+          final int cols,
           final int gapHorz,
           final int gapVert,
           @Nullable @MustNotContainNull final List<Color> predefinedColors
@@ -164,7 +164,7 @@ public final class ColorPickerPanel extends JPanel {
     super();
     this.setOpaque(false);
     this.setBackground(null);
-    
+
     this.gapHorz = Math.max(0, gapHorz);
     this.gapVert = Math.max(0, gapVert);
     this.predefinedColors = predefinedColors;
@@ -186,7 +186,7 @@ public final class ColorPickerPanel extends JPanel {
   }
 
   public void setColor(@Nullable final Color color) {
-    if (color == null){
+    if (color == null) {
       this.resetSelected();
     } else {
       for (final Component c : this.getComponents()) {
@@ -198,7 +198,7 @@ public final class ColorPickerPanel extends JPanel {
       }
     }
   }
-  
+
   @Nullable
   public Color getColor() {
     for (final Component c : this.getComponents()) {
@@ -292,7 +292,7 @@ public final class ColorPickerPanel extends JPanel {
     final int totalCells = this.rows * this.cols;
 
     if (predefinedColors == null) {
-      final float step = 2.2f / Math.max(1, totalCells - 12);
+      final float step = 1.0f / Math.max(1, totalCells - 13);
 
       float hue = 0.0f;
 
@@ -309,35 +309,38 @@ public final class ColorPickerPanel extends JPanel {
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.GRAY, false);
             break;
           case 3:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.WHITE, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.LIGHT_GRAY, false);
             break;
           case 4:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.BLUE, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.WHITE, false);
             break;
           case 5:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.RED, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.BLUE, false);
             break;
           case 6:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.MAGENTA, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.RED, false);
             break;
           case 7:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.PINK, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.MAGENTA, false);
             break;
           case 8:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.GREEN, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.PINK, false);
             break;
           case 9:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.CYAN, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.GREEN, false);
             break;
           case 10:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.YELLOW, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.CYAN, false);
             break;
           case 11:
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.YELLOW, false);
+            break;
+          case 12:
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.ORANGE, false);
             break;
           default: {
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight,
-                    Color.getHSBColor(hue, i * 0.03f, 1.0f),
+                    Color.getHSBColor(hue, i * step, 0.8f),
                     false);
             hue += step;
           }
@@ -351,7 +354,7 @@ public final class ColorPickerPanel extends JPanel {
         if (i < predefinedColors.size()) {
           button = new RadioColorButton(this, this.cellWidth, this.cellHeight, predefinedColors.get(i), false);
         } else {
-          button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.WHITE, false);
+          button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.LIGHT_GRAY, false);
         }
         this.add(button);
       }

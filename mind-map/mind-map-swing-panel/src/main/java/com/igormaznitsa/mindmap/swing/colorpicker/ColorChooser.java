@@ -72,8 +72,8 @@ public final class ColorChooser extends JPanel {
     this.sampleLight.setHorizontalAlignment(SwingConstants.CENTER);
     this.sampleLight.setBackground(Color.BLACK);
     
-    this.colorPicker = new ColorPickerPanel(10, 10, 4, 4, null);
-    this.presentedColors = new ColorPickerPanel(2, 10, 4, 4, mapColors == null ? Collections.<Color>emptyList() : mapColors);
+    this.colorPicker = new ColorPickerPanel(8, 13, 4, 4, null);
+    this.presentedColors = new ColorPickerPanel(2, 13, 4, 4, mapColors == null ? Collections.<Color>emptyList() : mapColors);
 
     this.add(this.colorPicker, data);
 
