@@ -18,6 +18,8 @@
  */
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import java.awt.Color;
 
 public final class ColorAttributePanel extends javax.swing.JPanel {
@@ -49,11 +51,20 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
     }
   }
 
-  public ColorAttributePanel(final Color border, final Color fill, final Color text) {
+  public ColorAttributePanel(final MindMap map, final Color border, final Color fill, final Color text) {
     initComponents();
     this.colorChooserBorder.setValue(border);
     this.colorChooserFill.setValue(fill);
     this.colorChooserText.setValue(text);
+    
+    this.colorChooserBorder.setSelectBackground(true);
+    this.colorChooserBorder.setUsedColors(MindMapUtils.findAllTopicColors(map, MindMapUtils.ColorType.BORDER));
+    
+    this.colorChooserFill.setSelectBackground(true);
+    this.colorChooserFill.setUsedColors(MindMapUtils.findAllTopicColors(map, MindMapUtils.ColorType.FILL));
+
+    this.colorChooserText.setSelectBackground(false);
+    this.colorChooserText.setUsedColors(MindMapUtils.findAllTopicColors(map, MindMapUtils.ColorType.TEXT));
   }
 
   public Result getResult() {

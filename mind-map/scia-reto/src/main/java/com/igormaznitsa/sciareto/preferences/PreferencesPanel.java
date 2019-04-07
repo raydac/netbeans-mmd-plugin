@@ -99,6 +99,25 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   public PreferencesPanel(final Context context) {
     this.context = context;
     initComponents();
+    
+    this.colorChooser1stBackground.setSelectBackground(true);
+    this.colorChooser1stText.setSelectBackground(false);
+
+    this.colorChooser2ndBackground.setSelectBackground(true);
+    this.colorChooser2ndText.setSelectBackground(false);
+    
+    this.colorChooserCollapsatorBackground.setSelectBackground(true);
+    this.colorChooserCollapsatorBorder.setSelectBackground(true);
+    
+    this.colorChooserRootBackground.setSelectBackground(true);
+    this.colorChooserRootText.setSelectBackground(false);
+    
+    this.colorChooserSelectLine.setSelectBackground(true);
+    this.colorChooserConnectorColor.setSelectBackground(true);
+    this.colorChooserGridColor.setSelectBackground(true);
+    this.colorChooserJumpLink.setSelectBackground(true);
+    this.colorChooserPaperColor.setSelectBackground(true);
+    
     this.textFieldPathToGraphvizDot.getDocument().addDocumentListener(new DocumentListener() {
 
       private void onChange() {

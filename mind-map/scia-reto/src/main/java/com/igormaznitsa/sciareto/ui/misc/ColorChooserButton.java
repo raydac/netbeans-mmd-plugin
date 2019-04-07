@@ -18,8 +18,10 @@
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.colorpicker.ColorChooser;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -31,51 +33,77 @@ import javax.annotation.Nullable;
 import javax.swing.DefaultButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import javax.swing.SwingUtilities;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class ColorChooserButton extends JButton {
 
   private static final long serialVersionUID = -354752410805059103L;
-  
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ColorChooserButton.class);
-  
+
   private Color value = null;
 
   private volatile boolean lastResultOk;
 
-  public static final Color DIFF_COLORS = new Color(0,true);
+  public static final Color DIFF_COLORS = new Color(0, true);
+
+  private boolean selectBackground = true;
+  
+  private final List<Color> usedColors = new CopyOnWriteArrayList<>();
   
   public ColorChooserButton() {
     super();
 
     final ColorChooserButton theButtonInstance = this;
-    
+
     this.setModel(new DefaultButtonModel() {
       private static final long serialVersionUID = 3109256773218160485L;
 
       @Override
       protected void fireActionPerformed(ActionEvent e) {
         final Window ownerWindow = SwingUtilities.getWindowAncestor(theButtonInstance);
-        
-        final Color selectedColor = JColorChooser.showDialog(ownerWindow == null ? Main.getApplicationFrame() : ownerWindow, String.format(UiUtils.BUNDLE.getString("ColorChoosingButton.dialogTitle"), getText()), value);
-        if (selectedColor!=null) {
-          setValue(selectedColor);
-          lastResultOk = true;
+
+        final ColorChooser colorChooser = new ColorChooser(usedColors, value, selectBackground);
+
+        if (DialogProviderManager.getInstance().getDialogProvider()
+                .msgOkCancel(ownerWindow == null ? Main.getApplicationFrame() : ownerWindow,
+                        String.format(UiUtils.BUNDLE.getString("ColorChoosingButton.dialogTitle"),
+                                getText()),
+                        colorChooser)) {
+          final Color selectedColor = colorChooser.getColor();
+          if (selectedColor != null) {
+            setValue(selectedColor);
+            lastResultOk = true;
+          } else {
+            lastResultOk = false;
+          }
+
+          super.fireActionPerformed(e);
         }
-        else {
-          lastResultOk = false;
-        }
-        
-        super.fireActionPerformed(e);
       }
     });
 
     setValue(Color.BLACK);
   }
 
+  public void setUsedColors(@Nonnull @MustNotContainNull final List<Color> colors) {
+    this.usedColors.clear();
+    this.usedColors.addAll(colors);
+  }
+  
+  public boolean isSelectBackground() {
+    return this.selectBackground;
+  }
+  
+  public void setSelectBackground(final boolean value) {
+    this.selectBackground = value;
+  }
+  
   public boolean isLastOkPressed() {
     return this.lastResultOk;
   }
@@ -85,13 +113,13 @@ public final class ColorChooserButton extends JButton {
     final Image img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
     final Graphics gfx = img.getGraphics();
     try {
-      if (color == null){
+      if (color == null) {
         gfx.setColor(UiUtils.DARK_THEME ? Color.darkGray : Color.white);
         gfx.fillRect(0, 0, 16, 16);
         gfx.setColor(UiUtils.DARK_THEME ? Color.yellow : Color.black);
         gfx.drawRect(0, 0, 15, 15);
         gfx.drawLine(0, 0, 15, 15);
-      }else if (color == DIFF_COLORS) {
+      } else if (color == DIFF_COLORS) {
         gfx.setColor(Color.red);
         gfx.fillRect(0, 0, 8, 8);
         gfx.setColor(Color.green);
@@ -100,14 +128,13 @@ public final class ColorChooserButton extends JButton {
         gfx.fillRect(0, 8, 8, 8);
         gfx.setColor(Color.yellow);
         gfx.fillRect(8, 8, 8, 8);
-      }else{
+      } else {
         gfx.setColor(color);
         gfx.fillRect(0, 0, 16, 16);
         gfx.setColor(Color.black);
         gfx.drawRect(0, 0, 15, 15);
       }
-    }
-    finally {
+    } finally {
       gfx.dispose();
     }
     return new ImageIcon(img);

@@ -1052,7 +1052,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     final Color fillColor = UiUtils.extractCommonColorForColorChooserButton(ATTR_FILL_COLOR.getText(), topics);
     final Color textColor = UiUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
 
-    final ColorAttributePanel panel = new ColorAttributePanel(borderColor, fillColor, textColor);
+    final ColorAttributePanel panel = new ColorAttributePanel(source.getModel(), borderColor, fillColor, textColor);
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(Main.getApplicationFrame(), String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
       ColorAttributePanel.Result result = panel.getResult();
 

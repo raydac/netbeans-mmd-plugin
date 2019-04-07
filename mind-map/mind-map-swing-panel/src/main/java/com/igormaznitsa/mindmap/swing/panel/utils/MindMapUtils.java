@@ -33,8 +33,17 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class MindMapUtils {
+
+  public enum ColorType {
+    BORDER,
+    FILL,
+    TEXT
+  }
 
   private MindMapUtils() {
   }
@@ -45,6 +54,32 @@ public final class MindMapUtils {
     }
     final String collapsed = topic.findAttributeInAncestors(ATTR_COLLAPSED.getText());
     return collapsed != null && Boolean.parseBoolean(collapsed);
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  public static List<Color> findAllTopicColors(@Nonnull final MindMap map, @Nonnull final ColorType colorType) {
+    final Set<Color> result = new HashSet<>();
+    for (final Topic topic : map) {
+      final Color color;
+      switch (colorType) {
+        case BORDER:
+          color = Utils.html2color(topic.getAttribute(ATTR_BORDER_COLOR.getText()), false);
+          break;
+        case FILL:
+          color = Utils.html2color(topic.getAttribute(ATTR_FILL_COLOR.getText()), false);
+          break;
+        case TEXT:
+          color = Utils.html2color(topic.getAttribute(ATTR_TEXT_COLOR.getText()), false);
+          break;
+        default:
+          throw new Error("Unexpected color type: " + colorType);
+      }
+      if (color != null) {
+        result.add(color);
+      }
+    }
+    return Arrays.asList(result.toArray(new Color[0]));
   }
 
   @Nullable
@@ -104,14 +139,14 @@ public final class MindMapUtils {
   public static boolean foldOrUnfoldChildren(@Nonnull final Topic topic, final boolean fold, final int levelCount) {
     boolean result = false;
     if (levelCount > 0 && topic.hasChildren()) {
-      for(final Topic c : topic) {
+      for (final Topic c : topic) {
         result |= foldOrUnfoldChildren(c, fold, levelCount - 1);
       }
       result |= setCollapsed(topic, fold);
     }
     return result;
   }
-  
+
   public static boolean setCollapsed(@Nonnull final Topic topic, final boolean fold) {
     return topic.setAttribute(ATTR_COLLAPSED.getText(), fold ? "true" : null);//NOI18N
   }
@@ -215,7 +250,7 @@ public final class MindMapUtils {
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
-    return panel.getController().getDialogProvider(panel).msgSaveFileDialog(null,"user-dir", title, home, true, new FileFilter() { //NOI18N
+    return panel.getController().getDialogProvider(panel).msgSaveFileDialog(null, "user-dir", title, home, true, new FileFilter() { //NOI18N
       @Override
       public boolean accept(@Nonnull final File f) {
         return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
@@ -235,7 +270,7 @@ public final class MindMapUtils {
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
-    return panel.getController().getDialogProvider(panel).msgOpenFileDialog(null,"user-dir", title, home, true, new FileFilter() { //NOI18N
+    return panel.getController().getDialogProvider(panel).msgOpenFileDialog(null, "user-dir", title, home, true, new FileFilter() { //NOI18N
       @Override
       public boolean accept(@Nonnull final File f) {
         return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
@@ -269,23 +304,24 @@ public final class MindMapUtils {
     }
     return file;
   }
-  
+
   /**
    * Remove duplications and successors for presented topics in array.
+   *
    * @param topics array to be processed
    * @return resulted array
    * @since 1.3.1
    */
   @Nonnull
   @MustNotContainNull
-  public static Topic [] removeSuccessorsAndDuplications(@Nonnull @MustNotContainNull final Topic ... topics) {
+  public static Topic[] removeSuccessorsAndDuplications(@Nonnull @MustNotContainNull final Topic... topics) {
     final List<Topic> result = new ArrayList<Topic>();
-    
-    for(final Topic t : topics) {
+
+    for (final Topic t : topics) {
       final Iterator<Topic> iterator = result.iterator();
-      while(iterator.hasNext()){
+      while (iterator.hasNext()) {
         final Topic listed = iterator.next();
-        if (listed == t || listed.hasAncestor(t)){
+        if (listed == t || listed.hasAncestor(t)) {
           iterator.remove();
         }
       }
