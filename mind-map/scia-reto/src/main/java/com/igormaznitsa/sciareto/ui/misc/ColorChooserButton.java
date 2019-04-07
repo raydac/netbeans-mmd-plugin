@@ -52,8 +52,6 @@ public final class ColorChooserButton extends JButton {
 
   public static final Color DIFF_COLORS = new Color(0, true);
 
-  private boolean selectBackground = true;
-  
   private final List<Color> usedColors = new CopyOnWriteArrayList<>();
   
   public ColorChooserButton() {
@@ -68,13 +66,13 @@ public final class ColorChooserButton extends JButton {
       protected void fireActionPerformed(ActionEvent e) {
         final Window ownerWindow = SwingUtilities.getWindowAncestor(theButtonInstance);
 
-        final ColorChooser colorChooser = new ColorChooser(usedColors, value, selectBackground);
+        final ColorChooser colorChooser = new ColorChooser(usedColors, value);
 
         if (DialogProviderManager.getInstance().getDialogProvider()
                 .msgOkCancel(ownerWindow == null ? Main.getApplicationFrame() : ownerWindow,
                         String.format(UiUtils.BUNDLE.getString("ColorChoosingButton.dialogTitle"),
                                 getText()),
-                        colorChooser)) {
+                        colorChooser.getPanel())) {
           final Color selectedColor = colorChooser.getColor();
           if (selectedColor != null) {
             setValue(selectedColor);
@@ -94,14 +92,6 @@ public final class ColorChooserButton extends JButton {
   public void setUsedColors(@Nonnull @MustNotContainNull final List<Color> colors) {
     this.usedColors.clear();
     this.usedColors.addAll(colors);
-  }
-  
-  public boolean isSelectBackground() {
-    return this.selectBackground;
-  }
-  
-  public void setSelectBackground(final boolean value) {
-    this.selectBackground = value;
   }
   
   public boolean isLastOkPressed() {
