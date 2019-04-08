@@ -122,10 +122,6 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     comboBoxRenderQuality = new javax.swing.JComboBox();
     jPanel2 = new javax.swing.JPanel();
     checkBoxDropShadow = new javax.swing.JCheckBox();
-    slider1stLevelHorzGap = new javax.swing.JSlider();
-    slider1stLevelVertGap = new javax.swing.JSlider();
-    slider2ndLevelHorzGap = new javax.swing.JSlider();
-    slider2ndLevelVertGap = new javax.swing.JSlider();
     jPanel7 = new javax.swing.JPanel();
     buttonFont = new javax.swing.JButton();
     jPanel8 = new javax.swing.JPanel();
@@ -145,6 +141,14 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     jPanel12 = new javax.swing.JPanel();
     labelBorderWidth = new javax.swing.JLabel();
     spinnerElementBorderWidth = new javax.swing.JSpinner();
+    jPanel14 = new javax.swing.JPanel();
+    slider1stLevelHorzGap = new javax.swing.JSlider();
+    jPanel15 = new javax.swing.JPanel();
+    slider1stLevelVertGap = new javax.swing.JSlider();
+    jPanel16 = new javax.swing.JPanel();
+    slider2ndLevelHorzGap = new javax.swing.JSlider();
+    jPanel17 = new javax.swing.JPanel();
+    slider2ndLevelVertGap = new javax.swing.JSlider();
     jPanel1 = new javax.swing.JPanel();
     checkboxUseInsideBrowser = new javax.swing.JCheckBox();
     checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -169,6 +173,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     buttonImportSettings = new javax.swing.JButton();
     filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 16), new java.awt.Dimension(0, 16), new java.awt.Dimension(32767, 16));
     filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+    filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+    filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+    filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 16), new java.awt.Dimension(0, 16), new java.awt.Dimension(32767, 16));
     filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
     filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
 
@@ -333,7 +340,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 1;
-    gridBagConstraints.ipadx = 112;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel4.add(colorChooserPaperColor, gridBagConstraints);
 
@@ -361,7 +368,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.ipadx = 144;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel4.add(colorChooserGridColor, gridBagConstraints);
 
@@ -386,7 +393,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel4.add(jLabel1, gridBagConstraints);
 
-    jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.RenderQuality.border.title")));
+    jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.RenderQuality.border.title"))); // NOI18N
     jPanel13.setLayout(new java.awt.GridLayout(1, 0));
 
     comboBoxRenderQuality.setModel(new DefaultComboBoxModel<RenderQuality>(RenderQuality.values()));
@@ -426,78 +433,6 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel2.add(checkBoxDropShadow, gridBagConstraints);
 
-    slider1stLevelHorzGap.setMajorTickSpacing(30);
-    slider1stLevelHorzGap.setMaximum(250);
-    slider1stLevelHorzGap.setMinimum(10);
-    slider1stLevelHorzGap.setPaintLabels(true);
-    slider1stLevelHorzGap.setPaintTicks(true);
-    slider1stLevelHorzGap.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.slider1stLevelHorzGap.border.title"))); // NOI18N
-    slider1stLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        slider1stLevelHorzGapStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(slider1stLevelHorzGap, gridBagConstraints);
-
-    slider1stLevelVertGap.setMajorTickSpacing(30);
-    slider1stLevelVertGap.setMaximum(250);
-    slider1stLevelVertGap.setMinimum(10);
-    slider1stLevelVertGap.setPaintLabels(true);
-    slider1stLevelVertGap.setPaintTicks(true);
-    slider1stLevelVertGap.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.slider1stLevelVertGap.border.title"))); // NOI18N
-    slider1stLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        slider1stLevelVertGapStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(slider1stLevelVertGap, gridBagConstraints);
-
-    slider2ndLevelHorzGap.setMajorTickSpacing(30);
-    slider2ndLevelHorzGap.setMaximum(250);
-    slider2ndLevelHorzGap.setMinimum(10);
-    slider2ndLevelHorzGap.setPaintLabels(true);
-    slider2ndLevelHorzGap.setPaintTicks(true);
-    slider2ndLevelHorzGap.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.slider2ndLevelHorzGap.border.title"))); // NOI18N
-    slider2ndLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        slider2ndLevelHorzGapStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(slider2ndLevelHorzGap, gridBagConstraints);
-
-    slider2ndLevelVertGap.setMajorTickSpacing(30);
-    slider2ndLevelVertGap.setMaximum(250);
-    slider2ndLevelVertGap.setMinimum(10);
-    slider2ndLevelVertGap.setPaintLabels(true);
-    slider2ndLevelVertGap.setPaintTicks(true);
-    slider2ndLevelVertGap.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.slider2ndLevelVertGap.border.title"))); // NOI18N
-    slider2ndLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        slider2ndLevelVertGapStateChanged(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    jPanel2.add(slider2ndLevelVertGap, gridBagConstraints);
-
     jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.jPanel7.border.title"))); // NOI18N
 
     buttonFont.setText("..."); // NOI18N
@@ -510,17 +445,17 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
     jPanel7.setLayout(jPanel7Layout);
     jPanel7Layout.setHorizontalGroup(
-        jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(buttonFont, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
-                .addContainerGap())
+      jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel7Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(buttonFont, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+        .addContainerGap())
     );
     jPanel7Layout.setVerticalGroup(
-        jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addComponent(buttonFont)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+      jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel7Layout.createSequentialGroup()
+        .addComponent(buttonFont)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -572,49 +507,49 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     javax.swing.GroupLayout panelScalingModifiersLayout = new javax.swing.GroupLayout(panelScalingModifiers);
     panelScalingModifiers.setLayout(panelScalingModifiersLayout);
     panelScalingModifiersLayout.setHorizontalGroup(
-        panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelScalingModifiersLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(checkBoxScalingCTRL)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(checkBoxScalingALT)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(checkBoxScalingSHIFT)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(checkBoxScalingMETA)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+      panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(panelScalingModifiersLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(checkBoxScalingCTRL)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxScalingALT)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxScalingSHIFT)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(checkBoxScalingMETA)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     panelScalingModifiersLayout.setVerticalGroup(
-        panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelScalingModifiersLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(checkBoxScalingCTRL)
-                    .addComponent(checkBoxScalingALT)
-                    .addComponent(checkBoxScalingSHIFT)
-                    .addComponent(checkBoxScalingMETA))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+      panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(panelScalingModifiersLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(panelScalingModifiersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(checkBoxScalingCTRL)
+          .addComponent(checkBoxScalingALT)
+          .addComponent(checkBoxScalingSHIFT)
+          .addComponent(checkBoxScalingMETA))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
     jPanel8.setLayout(jPanel8Layout);
     jPanel8Layout.setHorizontalGroup(
-        jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(buttonOpenShortcutEditor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelScalingModifiers, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+      jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel8Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(buttonOpenShortcutEditor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(panelScalingModifiers, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap())
     );
     jPanel8Layout.setVerticalGroup(
-        jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(buttonOpenShortcutEditor)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelScalingModifiers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+      jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel8Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(buttonOpenShortcutEditor)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(panelScalingModifiers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -702,6 +637,90 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel2.add(jPanel12, gridBagConstraints);
+
+    jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.panel1stLevelHorzGap.border.title"))); // NOI18N
+    jPanel14.setLayout(new java.awt.BorderLayout());
+
+    slider1stLevelHorzGap.setMajorTickSpacing(30);
+    slider1stLevelHorzGap.setMaximum(250);
+    slider1stLevelHorzGap.setMinimum(10);
+    slider1stLevelHorzGap.setPaintLabels(true);
+    slider1stLevelHorzGap.setPaintTicks(true);
+    slider1stLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        slider1stLevelHorzGapStateChanged(evt);
+      }
+    });
+    jPanel14.add(slider1stLevelHorzGap, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel2.add(jPanel14, gridBagConstraints);
+
+    jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.panel1stLevelVertGap.border.title"))); // NOI18N
+    jPanel15.setLayout(new java.awt.BorderLayout());
+
+    slider1stLevelVertGap.setMajorTickSpacing(30);
+    slider1stLevelVertGap.setMaximum(250);
+    slider1stLevelVertGap.setMinimum(10);
+    slider1stLevelVertGap.setPaintLabels(true);
+    slider1stLevelVertGap.setPaintTicks(true);
+    slider1stLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        slider1stLevelVertGapStateChanged(evt);
+      }
+    });
+    jPanel15.add(slider1stLevelVertGap, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel2.add(jPanel15, gridBagConstraints);
+
+    jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.panel2ndLevelHorzGap.border.title"))); // NOI18N
+    jPanel16.setLayout(new java.awt.BorderLayout());
+
+    slider2ndLevelHorzGap.setMajorTickSpacing(30);
+    slider2ndLevelHorzGap.setMaximum(250);
+    slider2ndLevelHorzGap.setMinimum(10);
+    slider2ndLevelHorzGap.setPaintLabels(true);
+    slider2ndLevelHorzGap.setPaintTicks(true);
+    slider2ndLevelHorzGap.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        slider2ndLevelHorzGapStateChanged(evt);
+      }
+    });
+    jPanel16.add(slider2ndLevelHorzGap, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel2.add(jPanel16, gridBagConstraints);
+
+    jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.panel2ndLevelVertGap.border.title"))); // NOI18N
+    jPanel17.setLayout(new java.awt.BorderLayout());
+
+    slider2ndLevelVertGap.setMajorTickSpacing(30);
+    slider2ndLevelVertGap.setMaximum(250);
+    slider2ndLevelVertGap.setMinimum(10);
+    slider2ndLevelVertGap.setPaintLabels(true);
+    slider2ndLevelVertGap.setPaintTicks(true);
+    slider2ndLevelVertGap.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        slider2ndLevelVertGapStateChanged(evt);
+      }
+    });
+    jPanel17.add(slider2ndLevelVertGap, java.awt.BorderLayout.CENTER);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel2.add(jPanel17, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -903,11 +922,13 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel9.add(buttonAbout, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel9.add(donateButton1, gridBagConstraints);
 
@@ -920,7 +941,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel9.add(buttonResetSettings, gridBagConstraints);
 
@@ -933,7 +954,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel9.add(buttonExportSettings, gridBagConstraints);
 
@@ -946,18 +967,30 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel9.add(buttonImportSettings, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     jPanel9.add(filler4, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.weighty = 1000.0;
     jPanel9.add(filler5, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    jPanel9.add(filler2, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    jPanel9.add(filler6, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    jPanel9.add(filler7, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
@@ -1502,9 +1535,12 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JComboBox<RenderQuality> comboBoxRenderQuality;
   private com.igormaznitsa.nbmindmap.nb.swing.DonateButton donateButton1;
   private javax.swing.Box.Filler filler1;
+  private javax.swing.Box.Filler filler2;
   private javax.swing.Box.Filler filler3;
   private javax.swing.Box.Filler filler4;
   private javax.swing.Box.Filler filler5;
+  private javax.swing.Box.Filler filler6;
+  private javax.swing.Box.Filler filler7;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
@@ -1517,6 +1553,10 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JPanel jPanel11;
   private javax.swing.JPanel jPanel12;
   private javax.swing.JPanel jPanel13;
+  private javax.swing.JPanel jPanel14;
+  private javax.swing.JPanel jPanel15;
+  private javax.swing.JPanel jPanel16;
+  private javax.swing.JPanel jPanel17;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
