@@ -1494,7 +1494,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     final Color fillColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_FILL_COLOR.getText(), topics);
     final Color textColor = NbUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
 
-    final ColorAttributePanel panel = new ColorAttributePanel(borderColor, fillColor, textColor);
+    final ColorAttributePanel panel = new ColorAttributePanel(source.getModel(), borderColor, fillColor, textColor);
     if (NbUtils.plainMessageOkCancel(null, String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
       ColorAttributePanel.Result result = panel.getResult();
 
