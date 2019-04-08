@@ -20,17 +20,16 @@ import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.intellij.ui.ColorChooser;
 import com.intellij.util.ui.UIUtil;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyEditor;
-import java.beans.PropertyEditorManager;
 import java.util.ResourceBundle;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ColorChooserButton extends JButton {
 
@@ -41,6 +40,8 @@ public class ColorChooserButton extends JButton {
   private volatile boolean lastResultOk;
   public static final Color DIFF_COLORS = new Color(0, true);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+
+  private final java.util.List<Color> usedColors = new CopyOnWriteArrayList<>();
 
   public ColorChooserButton() {
     this(null);
@@ -56,20 +57,21 @@ public class ColorChooserButton extends JButton {
 
       @Override
       protected void fireActionPerformed(ActionEvent e) {
-        final PropertyEditor editor = PropertyEditorManager.findEditor(Color.class);
-        if (editor == null) {
-          LOGGER.error("Can't find registered color editor");
-          if (dialogProvider != null) {
-            dialogProvider.msgError(null, "Can't find color editor! unexpected state! Contact developer!");
-          }
-          return;
+        final Window ownerWindow = SwingUtilities.getWindowAncestor(ColorChooserButton.this);
+
+        final com.igormaznitsa.mindmap.swing.colorpicker.ColorChooser colorChooser = new com.igormaznitsa.mindmap.swing.colorpicker.ColorChooser(usedColors, value);
+
+        final String title = String.format(BUNDLE.getString("ColorChoosingButton.dialogTitle"), getText());
+        final boolean result;
+
+        if (dialogProvider == null) {
+          result = JOptionPane.showConfirmDialog(ownerWindow, colorChooser.getPanel(), title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION;
+        } else {
+          result = dialogProvider.msgOkCancel(ColorChooserButton.this, title, colorChooser.getPanel());
         }
 
-        editor.setValue(value);
-
-        final Color selectedColor = ColorChooser.chooseColor(ColorChooserButton.this, String.format(BUNDLE.getString("ColorChoosingButton.dialogTitle"), getText()), getValue());
-        if (selectedColor != null) {
-          setValue(selectedColor);
+        if (result) {
+          setValue(colorChooser.getColor());
           lastResultOk = true;
         } else {
           lastResultOk = false;
@@ -81,6 +83,11 @@ public class ColorChooserButton extends JButton {
     });
 
     setValue(Color.BLACK);
+  }
+
+  public void setUsedColors(@Nonnull final java.util.List<Color> colors) {
+    this.usedColors.clear();
+    this.usedColors.addAll(colors);
   }
 
   public boolean isLastOkPressed() {
