@@ -19,18 +19,17 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -47,6 +46,10 @@ public final class ColorChooser {
 
   private final JPanel panel;
 
+  private static final List<Color> PALETTE = makePalette();
+  
+  private static final int PALETTE_ROWS = 10;
+  
   public ColorChooser(
           @Nullable @MustNotContainNull final List<Color> mapColors,
           @Nullable final Color selectedColor
@@ -65,6 +68,9 @@ public final class ColorChooser {
     data.insets.set(4, 4, 4, 4);
 
     this.sampleDarkFill = componentFactory.makeLabel();
+    final Font font = this.sampleDarkFill.getFont().deriveFont(Font.BOLD);
+    this.sampleDarkFill.setFont(font);
+    
     this.sampleDarkFill.setText(SAMPLE_TEXT);
     this.sampleDarkFill.setOpaque(true);
     this.sampleDarkFill.setForeground(Color.BLACK);
@@ -77,6 +83,7 @@ public final class ColorChooser {
     this.sampleDarkText.setForeground(Color.BLACK);
     this.sampleDarkText.setHorizontalAlignment(JLabel.CENTER);
     this.sampleDarkText.setBackground(Color.WHITE);
+    this.sampleDarkText.setFont(font);
 
     this.sampleLightFill = componentFactory.makeLabel();
     this.sampleLightFill.setText(SAMPLE_TEXT);
@@ -84,6 +91,7 @@ public final class ColorChooser {
     this.sampleLightFill.setForeground(Color.WHITE);
     this.sampleLightFill.setHorizontalAlignment(SwingConstants.CENTER);
     this.sampleLightFill.setBackground(Color.BLACK);
+    this.sampleLightFill.setFont(font);
 
     this.sampleLightText = componentFactory.makeLabel();
     this.sampleLightText.setText(SAMPLE_TEXT);
@@ -91,9 +99,10 @@ public final class ColorChooser {
     this.sampleLightText.setForeground(Color.WHITE);
     this.sampleLightText.setHorizontalAlignment(SwingConstants.CENTER);
     this.sampleLightText.setBackground(Color.BLACK);
+    this.sampleLightText.setFont(font);
 
-    this.colorPicker = new ColorPickerPanel(componentFactory.makePanel(), 8, 13, 4, 4, null);
-    this.presentedColors = new ColorPickerPanel(componentFactory.makePanel(), 2, 13, 4, 4, mapColors == null ? Collections.<Color>emptyList() : mapColors);
+    this.colorPicker = new ColorPickerPanel(componentFactory.makePanel(), PALETTE_ROWS, 12, 4, 4, PALETTE);
+    this.presentedColors = new ColorPickerPanel(componentFactory.makePanel(), 2, 12, 4, 4, mapColors == null ? Collections.<Color>emptyList() : mapColors);
 
     this.panel.add(this.colorPicker.getPanel(), data);
 
@@ -148,6 +157,50 @@ public final class ColorChooser {
   }
 
   @Nonnull
+  @MustNotContainNull
+  private static List<Color> makePalette() {
+    final List<Color> result = new ArrayList<>();
+    
+    final int STEPS = 12;
+    
+    result.addAll(makeSteps(Color.BLACK, Color.WHITE, STEPS));
+    result.addAll(makeSteps(Color.GREEN, Color.MAGENTA, STEPS));
+    result.addAll(makeSteps(Color.RED, Color.GREEN, STEPS));
+    result.addAll(makeSteps(Color.CYAN, Color.BLUE, STEPS));
+    result.addAll(makeSteps(Color.CYAN, Color.ORANGE, STEPS));
+    result.addAll(makeSteps(Color.RED, Color.YELLOW, STEPS));
+    result.addAll(makeSteps(Color.BLUE, Color.ORANGE, STEPS));
+    result.addAll(makeSteps(Color.PINK, Color.GREEN, STEPS));
+    result.addAll(makeSteps(Color.RED, Color.CYAN, STEPS));
+    result.addAll(makeSteps(Color.YELLOW, Color.PINK, STEPS));
+    
+    return Collections.unmodifiableList(result);
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  private static List<Color> makeSteps(@Nonnull final Color start, @Nonnull final Color end, final int steps) {
+    float sr = start.getRed();
+    float sg = start.getGreen();
+    float sb = start.getBlue();
+    
+    float dr = (end.getRed() - sr)/(steps-1);
+    float dg = (end.getGreen()- sg)/(steps-1);
+    float db = (end.getBlue()- sb)/(steps-1);
+    
+    final List<Color> result = new ArrayList<>();
+    
+    for(int i=0;i<steps;i++){
+      result.add(new Color(Math.round(sr), Math.round(sg), Math.round(sb)));
+      sr += dr;
+      sg += dg;
+      sb += db;
+    }
+    
+    return result;
+  }
+  
+  @Nonnull
   public JPanel getPanel() {
     return this.panel;
   }
@@ -166,21 +219,21 @@ public final class ColorChooser {
     return colorMain == null ? colorSecond : colorMain;
   }
 
-  public static void main(@Nonnull @MustNotContainNull String... args) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        final JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new ColorChooser(Arrays.asList(Color.WHITE, Color.BLACK, Color.RED, Color.ORANGE, Color.PINK), Color.ORANGE).getPanel(), BorderLayout.CENTER);
-
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setVisible(true);
-      }
-    });
-  }
+//  public static void main(@Nonnull @MustNotContainNull String... args) {
+//    SwingUtilities.invokeLater(new Runnable() {
+//      @Override
+//      public void run() {
+//        JFrame frame = new JFrame();
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//        final JPanel panel = new JPanel(new BorderLayout());
+//        panel.add(new ColorChooser(Arrays.asList(Color.WHITE, Color.BLACK, Color.RED, Color.ORANGE, Color.PINK), Color.ORANGE).getPanel(), BorderLayout.CENTER);
+//
+//        frame.setContentPane(panel);
+//        frame.pack();
+//        frame.setVisible(true);
+//      }
+//    });
+//  }
 
 }
