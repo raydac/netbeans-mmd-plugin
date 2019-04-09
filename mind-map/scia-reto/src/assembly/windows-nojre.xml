@@ -1,0 +1,41 @@
+
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+  <id>withjre_windows</id>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <includeSiteDirectory>false</includeSiteDirectory>
+
+  <formats>
+    <format>zip</format>
+  </formats>
+  <files>
+    <file>
+      <source>${project.build.directory}${file.separator}${app.name}.jar</source>
+      <destName>scia-reto.jar</destName>
+      <outputDirectory>${project.build.finalName}${file.separator}</outputDirectory>
+    </file>
+    <file>
+      <source>${project.build.directory}${file.separator}${app.name}-nojre.exe</source>
+      <destName>scia-reto.exe</destName>
+      <outputDirectory>${project.build.finalName}${file.separator}</outputDirectory>
+    </file>
+  </files>
+  <fileSets>
+    <fileSet>
+      <directory>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}windows-nojre</directory>
+      <outputDirectory>${project.build.finalName}</outputDirectory>
+      <includes>
+       <include>*/**</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}common</directory>
+      <outputDirectory>${project.build.finalName}</outputDirectory>
+      <includes>
+       <include>*/**</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

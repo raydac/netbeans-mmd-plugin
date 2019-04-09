@@ -319,6 +319,21 @@
                   </jre>
                 </configuration>
               </execution>
+              <execution>
+                <id>l4j-only-starter-installed-path</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>launch4j</goal>
+                </goals>
+                <configuration>
+                  <outfile>${project.build.directory}${file.separator}${app.name}-nojre.exe</outfile>
+                  <dontWrapJar>true</dontWrapJar>
+                  <jar>.\scia-reto.jar</jar>
+                  <jre>
+                    <minVersion>1.8</minVersion>
+                  </jre>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
           <plugin>
@@ -340,6 +355,20 @@
                 </configuration>
               </execution>
               <execution>
+                <id>make-linux-nojre</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${app.name}-linux</finalName>
+                  <descriptors>
+                    <descriptor>src${file.separator}assembly${file.separator}linux-nojre.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+              <execution>
                 <id>make-windows</id>
                 <phase>install</phase>
                 <goals>
@@ -354,6 +383,20 @@
                 </configuration>
               </execution>
               <execution>
+                <id>make-windows-nojre</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${app.name}-windows</finalName>
+                  <descriptors>
+                    <descriptor>src${file.separator}assembly${file.separator}windows-nojre.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+              <execution>
                 <id>make-mac</id>
                 <phase>install</phase>
                 <goals>
@@ -364,6 +407,20 @@
                   <finalName>${project.build.finalName}-macos-x64-openjdk</finalName>
                   <descriptors>
                     <descriptor>src${file.separator}assembly${file.separator}mac.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+              <execution>
+                <id>make-mac-nojre</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${project.build.finalName}-macos</finalName>
+                  <descriptors>
+                    <descriptor>src${file.separator}assembly${file.separator}mac-nojre.xml</descriptor>
                   </descriptors>
                 </configuration>
               </execution>
@@ -386,6 +443,18 @@
                   </fileset>
                 </configuration>
               </execution>
+              <execution>
+                <id>remove-manifest-from-mac-nojdk-jar</id>
+                <goals>
+                  <goal>remove</goal>
+                </goals>
+                <phase>install</phase>
+                <configuration>
+                  <fileset>
+                    <directory>${project.build.directory}${file.separator}${project.build.finalName}-macos.jar${file.separator}META-INF</directory>
+                  </fileset>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
           <plugin>
@@ -402,6 +471,17 @@
                 <configuration>
                   <sourceFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-openjdk.jar</sourceFile>
                   <destinationFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-openjdk.zip</destinationFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>rename-mac-nojre-jar-to-zip</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>rename</goal>
+                </goals>
+                <configuration>
+                  <sourceFile>${project.build.directory}${file.separator}${project.build.finalName}-macos.jar</sourceFile>
+                  <destinationFile>${project.build.directory}${file.separator}${project.build.finalName}-macos.zip</destinationFile>
                 </configuration>
               </execution>
             </executions>
