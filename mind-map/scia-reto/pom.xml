@@ -37,11 +37,11 @@
   </properties>
 
   <dependencies>
-      <dependency>
-        <groupId>io.projectreactor</groupId>
-        <artifactId>reactor-core</artifactId> 
-        <version>3.2.6.RELEASE</version>
-      </dependency>
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-core</artifactId>
+      <version>3.2.6.RELEASE</version>
+    </dependency>
     <dependency>
       <groupId>net.sf.jung</groupId>
       <artifactId>jung-graph-impl</artifactId>
@@ -504,6 +504,7 @@
                       <includes>
                         <include>original-sciareto-*.jar</include>
                         <include>${app.name}.exe</include>
+                        <include>${app.name}-nojre.exe</include>
                         <include>jdeps.out</include>
                       </includes>
                     </fileset>

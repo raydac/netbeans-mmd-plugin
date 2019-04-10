@@ -33,7 +33,7 @@
   </fileSets>
   <files>
     <file>
-      <source>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}mac${file.separator}SciaReto.app${file.separator}Contents${file.separator}MacOS${file.separator}sciareto</source>
+      <source>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}mac-nojre${file.separator}SciaReto.app${file.separator}Contents${file.separator}MacOS${file.separator}sciareto</source>
       <destName>sciareto</destName>
       <outputDirectory>${file.separator}SciaReto.app${file.separator}Contents${file.separator}MacOS</outputDirectory>
       <fileMode>0755</fileMode>
