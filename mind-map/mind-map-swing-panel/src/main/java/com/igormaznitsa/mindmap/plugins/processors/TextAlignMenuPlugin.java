@@ -45,19 +45,24 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
   private static final Icon ICON_CENTER = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_CENTER);
   private static final Icon ICON_LEFT = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_LEFT);
   private static final Icon ICON_RIGHT = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_RIGHT);
-  
+
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nonnull final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
     final JMenu result = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("TextAlign.Plugin.MenuTitle"));
     result.setIcon(ICON);
-    
+
     final ButtonGroup buttonGroup = UI_COMPO_FACTORY.makeButtonGroup();
-    
-    final Topic [] workTopics = ArrayUtils.append(topic, selectedTopics);
-    
+
+    final Topic[] workTopics;
+    if (topic == null) {
+      workTopics = selectedTopics;
+    } else {
+      workTopics = ArrayUtils.append(topic, selectedTopics);
+    }
+
     final TextAlign sharedTextAlign = findSharedTextAlign(workTopics);
-    
+
     final JRadioButtonMenuItem menuLeft = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Left"), ICON_LEFT, TextAlign.LEFT == sharedTextAlign);
     final JRadioButtonMenuItem menuCenter = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Center"), ICON_CENTER, TextAlign.CENTER == sharedTextAlign);
     final JRadioButtonMenuItem menuRight = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Right"), ICON_RIGHT, TextAlign.RIGHT == sharedTextAlign);
@@ -65,58 +70,58 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
     buttonGroup.add(menuLeft);
     buttonGroup.add(menuCenter);
     buttonGroup.add(menuRight);
-    
+
     result.add(menuLeft);
     result.add(menuCenter);
     result.add(menuRight);
-    
+
     menuLeft.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         setAlignValue(panel, workTopics, TextAlign.LEFT);
       }
     });
-    
+
     menuCenter.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         setAlignValue(panel, workTopics, TextAlign.CENTER);
       }
     });
-    
+
     menuRight.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         setAlignValue(panel, workTopics, TextAlign.RIGHT);
       }
     });
-    
+
     return result;
   }
 
-  private void setAlignValue(@Nonnull final MindMapPanel panel, @Nonnull @MustNotContainNull final Topic [] topics, @Nonnull final TextAlign align) {
-    for(final Topic t : topics) {
+  private void setAlignValue(@Nonnull final MindMapPanel panel, @Nonnull @MustNotContainNull final Topic[] topics, @Nonnull final TextAlign align) {
+    for (final Topic t : topics) {
       t.setAttribute("align", align.name().toLowerCase(Locale.ENGLISH));
     }
     panel.doNotifyModelChanged(true);
   }
-  
+
   @Nullable
-  private TextAlign findSharedTextAlign(@Nonnull @MustNotContainNull final Topic [] topics) {
+  private TextAlign findSharedTextAlign(@Nonnull @MustNotContainNull final Topic[] topics) {
     TextAlign result = null;
-    
-    for(final Topic t : topics) {
+
+    for (final Topic t : topics) {
       final TextAlign topicAlign = TextAlign.findForName(t.getAttribute("align"));
       if (result == null) {
         result = topicAlign;
-      } else if (result!=topicAlign) {
+      } else if (result != topicAlign) {
         return null;
       }
     }
-    
+
     return result == null ? TextAlign.CENTER : result;
   }
-  
+
   @Override
   @Nonnull
   public PopUpSection getSection() {
@@ -137,5 +142,5 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
   public int getOrder() {
     return 10;
   }
-  
+
 }
