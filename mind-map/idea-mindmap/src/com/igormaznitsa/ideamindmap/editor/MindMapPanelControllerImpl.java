@@ -401,6 +401,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       }
 
       source.doLayout();
+      source.requestFocus();
     }
   }
 

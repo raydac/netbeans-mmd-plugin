@@ -1511,6 +1511,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       }
 
       source.doLayout();
+      source.requestFocus();
       onMindMapModelChanged(source, true);
     }
   }

@@ -1070,6 +1070,8 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
       source.revalidate();
       source.repaint();
+      
+      source.requestFocus();
       onMindMapModelChanged(source, true);
     }
   }
