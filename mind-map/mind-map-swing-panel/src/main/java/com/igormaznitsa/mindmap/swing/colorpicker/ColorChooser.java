@@ -47,9 +47,9 @@ public final class ColorChooser {
   private final JPanel panel;
 
   private static final List<Color> PALETTE = makePalette();
-  
+
   private static final int PALETTE_ROWS = 10;
-  
+
   public ColorChooser(
           @Nullable @MustNotContainNull final List<Color> mapColors,
           @Nullable final Color selectedColor
@@ -70,7 +70,7 @@ public final class ColorChooser {
     this.sampleDarkFill = componentFactory.makeLabel();
     final Font font = this.sampleDarkFill.getFont().deriveFont(Font.BOLD);
     this.sampleDarkFill.setFont(font);
-    
+
     this.sampleDarkFill.setText(SAMPLE_TEXT);
     this.sampleDarkFill.setOpaque(true);
     this.sampleDarkFill.setForeground(Color.BLACK);
@@ -160,20 +160,32 @@ public final class ColorChooser {
   @MustNotContainNull
   private static List<Color> makePalette() {
     final List<Color> result = new ArrayList<>();
-    
+
     final int STEPS = 12;
-    
-    result.addAll(makeSteps(Color.BLACK, Color.WHITE, STEPS));
-    result.addAll(makeSteps(Color.GREEN, Color.MAGENTA, STEPS));
-    result.addAll(makeSteps(Color.RED, Color.GREEN, STEPS));
-    result.addAll(makeSteps(Color.CYAN, Color.BLUE, STEPS));
-    result.addAll(makeSteps(Color.CYAN, Color.ORANGE, STEPS));
-    result.addAll(makeSteps(Color.RED, Color.YELLOW, STEPS));
+
+    result.add(Color.BLACK);
+    result.add(Color.BLUE);
+    result.add(Color.RED);
+    result.add(Color.MAGENTA);
+    result.add(Color.GREEN);
+    result.add(Color.CYAN);
+    result.add(Color.YELLOW);
+    result.add(Color.ORANGE);
+    result.add(Color.DARK_GRAY);
+    result.add(Color.GRAY);
+    result.add(Color.LIGHT_GRAY);
+    result.add(Color.WHITE);
+
     result.addAll(makeSteps(Color.BLUE, Color.ORANGE, STEPS));
-    result.addAll(makeSteps(Color.PINK, Color.GREEN, STEPS));
-    result.addAll(makeSteps(Color.RED, Color.CYAN, STEPS));
+    result.addAll(makeSteps(Color.RED, Color.GREEN, STEPS));
+    result.addAll(makeSteps(Color.GREEN, Color.MAGENTA, STEPS));
+    result.addAll(makeSteps(Color.CYAN, Color.BLUE, STEPS));
     result.addAll(makeSteps(Color.YELLOW, Color.PINK, STEPS));
-    
+    result.addAll(makeSteps(Color.ORANGE, Color.CYAN, STEPS));
+    result.addAll(makeSteps(Color.RED, Color.YELLOW, STEPS));
+    result.addAll(makeSteps(Color.PINK, Color.GREEN, STEPS));
+    result.addAll(makeSteps(Color.BLACK, Color.WHITE, STEPS));
+
     return Collections.unmodifiableList(result);
   }
 
@@ -183,23 +195,27 @@ public final class ColorChooser {
     float sr = start.getRed();
     float sg = start.getGreen();
     float sb = start.getBlue();
-    
-    float dr = (end.getRed() - sr)/(steps-1);
-    float dg = (end.getGreen()- sg)/(steps-1);
-    float db = (end.getBlue()- sb)/(steps-1);
-    
+
+    final int GRADATIONS = steps + 2;
+
+    float dr = (end.getRed() - sr) / GRADATIONS;
+    float dg = (end.getGreen() - sg) / GRADATIONS;
+    float db = (end.getBlue() - sb) / GRADATIONS;
+
     final List<Color> result = new ArrayList<>();
-    
-    for(int i=0;i<steps;i++){
-      result.add(new Color(Math.round(sr), Math.round(sg), Math.round(sb)));
+
+    for (int i = 0; i < GRADATIONS; i++) {
+      if (i > 0 && i < (GRADATIONS-1)) {
+        result.add(new Color(Math.round(sr), Math.round(sg), Math.round(sb)));
+      }
       sr += dr;
       sg += dg;
       sb += db;
     }
-    
+
     return result;
   }
-  
+
   @Nonnull
   public JPanel getPanel() {
     return this.panel;
@@ -235,5 +251,4 @@ public final class ColorChooser {
 //      }
 //    });
 //  }
-
 }
