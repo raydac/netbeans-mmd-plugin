@@ -205,7 +205,7 @@ public final class ColorChooser {
     final List<Color> result = new ArrayList<>();
 
     for (int i = 0; i < GRADATIONS; i++) {
-      if (i > 0 && i < (GRADATIONS-1)) {
+      if (i > 0 && i < (GRADATIONS - 1)) {
         result.add(new Color(Math.round(sr), Math.round(sg), Math.round(sb)));
       }
       sr += dr;
