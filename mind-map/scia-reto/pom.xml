@@ -33,7 +33,7 @@
     <rsyntax.version>3.0.2</rsyntax.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.2.0</jna.version>
-    <jre.version>11.0.2</jre.version>
+    <jre.version>11.0.3</jre.version>
   </properties>
 
   <dependencies>
