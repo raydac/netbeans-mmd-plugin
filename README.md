@@ -20,7 +20,7 @@ __1.4.6 (SNAPSHOT)__
 - SR:  Unable to find files for Chinese characters [#52](https://github.com/raydac/netbeans-mmd-plugin/issues/52)
 - ALL: added plug-in to align topic text (by default text still aligned as `center`)
 - SR:  fixed support of AscIIMath and JLatexMath in standalone versions with JRE image
-- SR:  updated PlantUML version to 1.2019.4
+- SR:  updated PlantUML version to 1.2019.5
 - ALL: minor refactoring and fixes
 
 __1.4.5 (03-mar-2019)__
