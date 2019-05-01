@@ -176,14 +176,14 @@ public final class ColorChooser {
     result.add(Color.LIGHT_GRAY);
     result.add(Color.WHITE);
 
-    result.addAll(makeSteps(Color.BLUE, Color.ORANGE, STEPS));
-    result.addAll(makeSteps(Color.RED, Color.GREEN, STEPS));
-    result.addAll(makeSteps(Color.GREEN, Color.MAGENTA, STEPS));
+    result.addAll(makeSteps(Color.RED, Color.ORANGE, STEPS));
+    result.addAll(makeSteps(Color.ORANGE, Color.YELLOW, STEPS));
+    result.addAll(makeSteps(Color.YELLOW, Color.GREEN, STEPS));
+    result.addAll(makeSteps(Color.GREEN, Color.CYAN, STEPS));
     result.addAll(makeSteps(Color.CYAN, Color.BLUE, STEPS));
-    result.addAll(makeSteps(Color.YELLOW, Color.PINK, STEPS));
-    result.addAll(makeSteps(Color.ORANGE, Color.CYAN, STEPS));
-    result.addAll(makeSteps(Color.RED, Color.YELLOW, STEPS));
-    result.addAll(makeSteps(Color.PINK, Color.GREEN, STEPS));
+    result.addAll(makeSteps(Color.BLUE, Color.MAGENTA, STEPS));
+    result.addAll(makeSteps(Color.MAGENTA, Color.PINK, STEPS));
+    result.addAll(makeSteps(Color.PINK, Color.BLACK, STEPS));
     result.addAll(makeSteps(Color.BLACK, Color.WHITE, STEPS));
 
     return Collections.unmodifiableList(result);
