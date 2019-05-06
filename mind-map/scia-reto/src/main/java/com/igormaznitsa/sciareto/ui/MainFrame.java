@@ -132,7 +132,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private int lastDividerLocation;
 
-  public static final Scheduler PARALLEL_SCHEDULER = Schedulers.newElastic("SCIA_RETO_PARALLEL_SCHEDULER", 30, true);
+  public static final Scheduler PARALLEL_SCHEDULER = Schedulers.parallel();
 
   public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
@@ -1275,7 +1275,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     LOGGER.info("Starting asyncronous loading of " + project.toString());
 
     project.initLoading(Mono.just(project)
-            .publishOn(PARALLEL_SCHEDULER)
             .map(proj -> {
               SwingUtilities.invokeLater(() -> ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), proj));
               return proj;
@@ -1294,7 +1293,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                   SwingUtilities.invokeLater(r);
                 }
               }
-            }).subscribe());
+            })
+            .subscribeOn(PARALLEL_SCHEDULER)
+            .subscribe());
     return project;
   }
 

@@ -30,7 +30,6 @@ import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -80,7 +79,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     this.name = name;
 
     if (folder) {
-      this.children = new CopyOnWriteArrayList<>();
+      this.children = Collections.synchronizedList(new ArrayList<>());
       this.folderFlag = true;
     } else {
       this.children = Collections.EMPTY_LIST;
@@ -199,7 +198,6 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
                   };
               }
           }, Flux::fromIterable, IOUtils::closeQuetly)
-                  .publishOn(MainFrame.PARALLEL_SCHEDULER)
                   .parallel()
                   .doOnError(error -> {
                       LOGGER.warn("Error during path " + makeFileForNode().getName() + " opening: " + error.getMessage());
