@@ -399,6 +399,8 @@ public final class UiUtils {
               desktop.open(new File(folderPath, resource.replace('/', File.separatorChar)));
             } catch (IOException ex) {
               LOGGER.error("Can't open in desktop: " + resource, ex);
+            } catch (IllegalArgumentException ex){
+              LOGGER.error("Can't use file as argument to be opened in desktop: " + resource, ex);
             }
           }
         }
