@@ -84,7 +84,6 @@ public final class TreeCellRenderer extends DefaultTreeCellRenderer {
 
   public TreeCellRenderer() {
     super();
-    this.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
   }
 
   private void ensureIcons(@Nonnull final JTree tree) {
@@ -143,7 +142,7 @@ public final class TreeCellRenderer extends DefaultTreeCellRenderer {
   @Nonnull
   public Component getTreeCellRendererComponent(@Nonnull final JTree tree, @Nullable final Object value, final boolean selected, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
     ensureIcons(tree);
-    final JLabel result = (JLabel)super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+    final JLabel result = (JLabel) super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
     if (value != null) {
       if (value instanceof NodeFileOrFolder) {
         final NodeFileOrFolder node = (NodeFileOrFolder) value;
@@ -151,8 +150,8 @@ public final class TreeCellRenderer extends DefaultTreeCellRenderer {
         if (node.isLoading()) {
           result.setIcon(ProjectLoadingIconAnimationController.LOADING);
         } else if (node.hasNoAccess()) {
-            result.setEnabled(false);
-            result.setDisabledIcon(LEAF_RO);
+          result.setEnabled(false);
+          result.setDisabledIcon(LEAF_RO);
         } else if (node instanceof NodeProject) {
           if (node.isReadOnly()) {
             result.setIcon(expanded ? PROJECT_OPENED_RO : PROJECT_CLOSED_RO);
