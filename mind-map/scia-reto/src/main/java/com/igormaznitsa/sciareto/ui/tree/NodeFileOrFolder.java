@@ -39,7 +39,6 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -199,6 +198,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
               }
           }, Flux::fromIterable, IOUtils::closeQuetly)
                   .parallel()
+                  .runOn(MainFrame.PARALLEL_SCHEDULER)
                   .doOnError(error -> {
                       LOGGER.warn("Error during path " + makeFileForNode().getName() + " opening: " + error.getMessage());
                       this.noAccess = true;
@@ -216,9 +216,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
                       return newItem;
                   })
                   .flatMap(f -> f.readSubtree(addHiddenFilesAndFolders))
-                  .reduce((x, y) -> {
-                      return this;
-                  })
+                  .reduce((x, y) -> this)
                   .doFinally(signalType -> {
                       if (signalType == SignalType.ON_COMPLETE) {
                           this.children.sort(this);
