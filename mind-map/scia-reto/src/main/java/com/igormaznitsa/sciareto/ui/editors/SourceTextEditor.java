@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -28,30 +28,49 @@ import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ItemEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class SourceTextEditor extends AbstractEditor {
 
@@ -71,59 +90,116 @@ public final class SourceTextEditor extends AbstractEditor {
   private static final Map<String, List<String>> SRC_EXTENSIONS = new HashMap<String, List<String>>();
   private static final Map<String, String> MAP_EXTENSION2TYPE = new HashMap<String, String>();
 
+  private String originalText = "";
+
   public static final Set<String> SUPPORTED_EXTENSIONS;
+
+  public static final class FormatType implements Comparable<FormatType> {
+
+    private final String type;
+    private final String name;
+
+    private FormatType(@Nonnull final String type) {
+      this.type = type;
+      final int index = type.indexOf('/');
+      this.name = index < 0 ? type : type.substring(index + 1).toUpperCase(Locale.ENGLISH);
+    }
+
+    @Nonnull
+    public String getType() {
+      return this.type;
+    }
+
+    @Nonnull
+    @Override
+    public String toString() {
+      return this.name;
+    }
+
+    @Override
+    public int hashCode() {
+      return this.type.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object that) {
+      if (that instanceof FormatType) {
+        return this.type.equals(((FormatType) that).type);
+      }
+      return false;
+    }
+
+    @Override
+    public int compareTo(@Nonnull final FormatType that) {
+      return this.type.compareTo(that.type);
+    }
+  }
+
+  private static final List<FormatType> SUPPORTED_FORMATS = new ArrayList<>();
 
   static {
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, Arrays.asList("as")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86, Arrays.asList("asm")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_BBCODE, Arrays.asList("bbcode")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, Arrays.asList("c", "h")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CLOJURE, Arrays.asList("clj", "cljs", "cljc", "edn")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS, Arrays.asList("cc", "cpp", "cxx", "c++", "hpp")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSHARP, Arrays.asList("cs")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSS, Arrays.asList("css")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_D, Arrays.asList("d", "dd")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DART, Arrays.asList("dart")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DELPHI, Arrays.asList("pas")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE, Arrays.asList("*dockerfile")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DTD, Arrays.asList("dtd")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_FORTRAN, Arrays.asList("f", "for", "f90", "f95")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GROOVY, Arrays.asList("groovy")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HOSTS, Arrays.asList("*hosts", "*hosts.txt")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTML, Arrays.asList("htm", "html")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTACCESS, Arrays.asList("htaccess")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_INI, Arrays.asList("ini")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVA, Arrays.asList("java")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT, Arrays.asList("js")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSON, Arrays.asList("json")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSP, Arrays.asList("jsp")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LATEX, Arrays.asList("tex")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LESS, Arrays.asList("less")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LISP, Arrays.asList("lisp", "lsp")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LUA, Arrays.asList("lua")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MAKEFILE, Arrays.asList("makefile")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MXML, Arrays.asList("mxml")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_NSIS, Arrays.asList("nsi")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PERL, Arrays.asList("pl")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PHP, Arrays.asList("php")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE, Arrays.asList("properties")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PYTHON, Arrays.asList("py")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_RUBY, Arrays.asList("rb")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SAS, Arrays.asList("sas")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SCALA, Arrays.asList("scala", "sc")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SQL, Arrays.asList("sql")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TCL, Arrays.asList("tcl")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT, Arrays.asList("ts")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL, Arrays.asList("sh")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC, Arrays.asList("vb")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH, Arrays.asList("bat", "cmd")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_XML, Arrays.asList("xml")); //NOI18N
-
-    final StringBuilder acc = new StringBuilder();
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_YAML, Arrays.asList("yaml", "yml")); //NOI18N
 
     final Set<String> allEtensinsions = new HashSet<>();
 
     for (final Map.Entry<String, List<String>> e : SRC_EXTENSIONS.entrySet()) {
       final String type = e.getKey();
+      SUPPORTED_FORMATS.add(new FormatType(type));
       for (final String s : e.getValue()) {
         if (MAP_EXTENSION2TYPE.put(s, type) != null) {
           throw new Error("Detected duplicated extension : " + s); //NOI18N
         }
-        if (acc.length() > 0) {
-          acc.append(',');
-        }
-        acc.append("*.").append(s); //NOI18N
         allEtensinsions.add(s);
       }
     }
     SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(allEtensinsions);
+
+    Collections.sort(SUPPORTED_FORMATS);
+    SUPPORTED_FORMATS.add(0, new FormatType(SyntaxConstants.SYNTAX_STYLE_NONE));
   }
 
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
@@ -154,7 +230,18 @@ public final class SourceTextEditor extends AbstractEditor {
     this.editor = new RSyntaxTextArea();
     this.editor.setPopupMenu(null);
 
-    final String syntaxType = file == null ? null : MAP_EXTENSION2TYPE.get(FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH));
+    final String syntaxType;
+
+    if (file == null) {
+      syntaxType = null;
+    } else {
+      final String lowerCaseName = file.getName().toLowerCase(Locale.ENGLISH);
+      String found = MAP_EXTENSION2TYPE.get(FilenameUtils.getExtension(lowerCaseName));
+      if (found == null) {
+        found = MAP_EXTENSION2TYPE.get("*" + lowerCaseName);
+      }
+      syntaxType = found;
+    }
 
     this.editor.setSyntaxEditingStyle(noSyntax || syntaxType == null ? SyntaxConstants.SYNTAX_STYLE_NONE : syntaxType);
     this.editor.setAntiAliasingEnabled(true);
@@ -163,11 +250,37 @@ public final class SourceTextEditor extends AbstractEditor {
 
     this.editor.getCaret().setSelectionVisible(true);
     this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
+    this.editor.addHyperlinkListener((HyperlinkEvent e) -> {
+      if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+        try {
+          UiUtils.browseURI(e.getURL().toURI(), false);
+        } catch (URISyntaxException ex) {
+          LOGGER.error("Can't browse link: " + e.getURL());
+        }
+      }
+    });
 
     this.mainPanel = new JPanel(new BorderLayout());
 
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
     this.mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+    final JPanel status = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    final JComboBox<FormatType> formatTypeCombo = new JComboBox(new DefaultComboBoxModel(SUPPORTED_FORMATS.toArray()));
+    formatTypeCombo.setSelectedItem(new FormatType(this.editor.getSyntaxEditingStyle()));
+
+    formatTypeCombo.addItemListener(item -> {
+      if (item.getStateChange() == ItemEvent.SELECTED) {
+        this.editor.setSyntaxEditingStyle(((FormatType) item.getItem()).getType());
+        this.editor.revalidate();
+        this.editor.repaint();
+      }
+    });
+
+    status.add(new JLabel("Syntax:"));
+    status.add(formatTypeCombo);
+
+    this.mainPanel.add(status, BorderLayout.SOUTH);
 
     this.title = new TabTitle(context, this, file);
 
@@ -175,7 +288,7 @@ public final class SourceTextEditor extends AbstractEditor {
       @Override
       public void insertUpdate(@Nonnull final DocumentEvent e) {
         if (!ignoreChange) {
-          title.setChanged(true);
+          title.setChanged(!originalText.equals(editor.getText()));
         }
         context.notifyUpdateRedoUndo();
       }
@@ -183,7 +296,7 @@ public final class SourceTextEditor extends AbstractEditor {
       @Override
       public void removeUpdate(@Nonnull final DocumentEvent e) {
         if (!ignoreChange) {
-          title.setChanged(true);
+          title.setChanged(!originalText.equals(editor.getText()));
         }
         context.notifyUpdateRedoUndo();
       }
@@ -191,7 +304,7 @@ public final class SourceTextEditor extends AbstractEditor {
       @Override
       public void changedUpdate(@Nonnull final DocumentEvent e) {
         if (!ignoreChange) {
-          title.setChanged(true);
+          title.setChanged(!originalText.equals(editor.getText()));
         }
         context.notifyUpdateRedoUndo();
       }
@@ -207,7 +320,7 @@ public final class SourceTextEditor extends AbstractEditor {
     this.undoManager.updateActions();
 
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
-    
+
     gotoLine(line);
   }
 
@@ -217,7 +330,7 @@ public final class SourceTextEditor extends AbstractEditor {
     return "txt";
   }
 
-  private void gotoLine(final int line){
+  private void gotoLine(final int line) {
     if (line > 0) {
       try {
         this.editor.setCaretPosition(this.editor.getLineStartOffset(line - 1));
@@ -226,7 +339,7 @@ public final class SourceTextEditor extends AbstractEditor {
       }
     }
   }
-  
+
   @Override
   public void focusToEditor(final int line) {
     SwingUtilities.invokeLater(new Runnable() {
@@ -292,7 +405,8 @@ public final class SourceTextEditor extends AbstractEditor {
     this.ignoreChange = true;
     try {
       if (file != null) {
-        this.editor.setText(FileUtils.readFileToString(file, "UTF-8")); //NOI18N
+        this.editor.setText(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+        this.originalText = this.editor.getText();
         this.editor.setCaretPosition(0);
       }
     } finally {
@@ -318,6 +432,7 @@ public final class SourceTextEditor extends AbstractEditor {
         }
       }
       SystemUtils.saveUTFText(file, this.editor.getText());
+      this.originalText = this.editor.getText();
       this.title.setChanged(false);
       result = true;
     } else {
