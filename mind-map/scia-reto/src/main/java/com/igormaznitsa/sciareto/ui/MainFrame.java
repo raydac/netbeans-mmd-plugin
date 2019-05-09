@@ -370,10 +370,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private void ensureTreePanelVisible() {
     final int divider = this.mainSplitPane.getDividerLocation();
     if (divider <= 3) {
-        this.mainSplitPane.setDividerLocation(lastDividerLocation);
+      this.mainSplitPane.setDividerLocation(lastDividerLocation);
     }
   }
-  
+
   private void changeVisibilityStateOfTreePanel() {
     final int divider = this.mainSplitPane.getDividerLocation();
     if (divider > 3) {
@@ -609,7 +609,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       if (this.tabPane.focusToFile(file, line)) {
         result = true;
       } else {
-        final String ext = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.ENGLISH);
+        final String nameInLowerCase = file.getName().toLowerCase(Locale.ENGLISH);
+        final String ext = FilenameUtils.getExtension(nameInLowerCase);
         if (ext.equals("mmd")) { //NOI18N
           try {
             final MMDEditor panel = new MMDEditor(this, file);
@@ -627,7 +628,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           } catch (IOException ex) {
             LOGGER.error("Can't load file as image", ex); //NOI18N
           }
-        } else if (SourceTextEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
+        } else if (SourceTextEditor.SUPPORTED_EXTENSIONS.contains(ext) || SourceTextEditor.SUPPORTED_EXTENSIONS.contains("*" + nameInLowerCase)) {
           try {
             final SourceTextEditor panel = new SourceTextEditor(this, file, line, false);
             this.tabPane.createTab(panel);
@@ -710,9 +711,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (this.tabPane.isEmpty() || !this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch()) {
       hideFindTextPane();
     }
-    
+
     if (this.tabPane.getTabCount() == 0) {
-        this.ensureTreePanelVisible();
+      this.ensureTreePanelVisible();
     }
   }
 
@@ -1380,11 +1381,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     boolean result = false;
     final TabTitle title = this.getFocusedTab();
     if (title != null && title.getProvider().getEditor().getEditorContentType() == EditorContentType.MINDMAP) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          ((MMDEditor) title.getProvider().getEditor()).rootToCentre();
-        }
+      SwingUtilities.invokeLater(() -> {
+        ((MMDEditor) title.getProvider().getEditor()).rootToCentre();
       });
 
       result = true;
