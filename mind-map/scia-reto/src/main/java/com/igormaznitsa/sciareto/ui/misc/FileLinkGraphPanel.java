@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -51,6 +51,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
@@ -277,9 +278,9 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     final Graph<FileVertex, Number> graph = makeGraph(projectFolder, startMindMap);
 
     if (graph.getVertexCount() == 0) {
-    
+
       this.add(new JLabel("There is not any Mind map in the project!"), BorderLayout.CENTER);
-    
+
     } else {
       final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<>(graph);
 
@@ -298,6 +299,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
 
       };
       graphViewer.setGraphMouse(graphMouse);
+      graphViewer.setGraphLayout(new CircleLayout<>(graph));
 
       graphViewer.getRenderContext().setVertexIconTransformer(new Function<FileVertex, Icon>() {
         @Override
@@ -368,9 +370,10 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
           final Rectangle visible = scroll.getVisibleRect();
-          graphViewer.getGraphLayout().reset();
-          graphViewer.getGraphLayout().setSize(new Dimension(visible.width, visible.height));
+          graphViewer.setGraphLayout(new CircleLayout<>(graph));
           graphViewer.repaint();
+          scroll.revalidate();
+          scroll.repaint();
         }
       });
 
