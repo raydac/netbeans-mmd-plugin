@@ -31,7 +31,6 @@ import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -55,12 +54,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
@@ -186,16 +189,18 @@ public final class SourceTextEditor extends AbstractEditor {
 
     final Set<String> allEtensinsions = new HashSet<>();
 
-    for (final Map.Entry<String, List<String>> e : SRC_EXTENSIONS.entrySet()) {
+    SRC_EXTENSIONS.entrySet().forEach((e) -> {
       final String type = e.getKey();
       SUPPORTED_FORMATS.add(new FormatType(type));
-      for (final String s : e.getValue()) {
+      e.getValue().stream().map((s) -> {
         if (MAP_EXTENSION2TYPE.put(s, type) != null) {
           throw new Error("Detected duplicated extension : " + s); //NOI18N
         }
+        return s;
+      }).forEachOrdered((s) -> {
         allEtensinsions.add(s);
-      }
-    }
+      });
+    });
     SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(allEtensinsions);
 
     Collections.sort(SUPPORTED_FORMATS);
@@ -265,7 +270,9 @@ public final class SourceTextEditor extends AbstractEditor {
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
     this.mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-    final JPanel status = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    final JToolBar status = new JToolBar(JToolBar.HORIZONTAL);
+    status.setBorderPainted(false);
+    status.setFloatable(false);
     final JComboBox<FormatType> formatTypeCombo = new JComboBox(new DefaultComboBoxModel(SUPPORTED_FORMATS.toArray()));
     formatTypeCombo.setSelectedItem(new FormatType(this.editor.getSyntaxEditingStyle()));
 
@@ -277,6 +284,17 @@ public final class SourceTextEditor extends AbstractEditor {
       }
     });
 
+    final JLabel labelCursor = new JLabel("");
+
+    this.editor.addCaretListener((CaretEvent e) -> {
+      labelCursor.setText(String.format("%d:%d", this.editor.getCaretLineNumber() + 1, this.editor.getCaretOffsetFromLineStart() + 1));
+    });
+
+    status.add(Box.createHorizontalGlue());
+    status.add(labelCursor);
+    status.add(Box.createHorizontalStrut(16));
+    status.add(new JSeparator(JSeparator.VERTICAL));
+    status.add(Box.createHorizontalStrut(16));
     status.add(new JLabel("Syntax:"));
     status.add(formatTypeCombo);
 
@@ -321,6 +339,17 @@ public final class SourceTextEditor extends AbstractEditor {
 
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
 
+    Arrays.stream(this.editor.getCaretListeners()).forEach(listener -> listener.caretUpdate(new CaretEvent(this.editor) {
+      @Override
+      public int getDot() {
+          return editor.getCaretPosition();
+        }
+
+      @Override
+      public int getMark() {
+        return editor.getCaretPosition();
+      }
+    }));
     gotoLine(line);
   }
 
