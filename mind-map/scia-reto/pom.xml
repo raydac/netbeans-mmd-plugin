@@ -31,6 +31,7 @@
     <jlatexmath.version>1.0.7</jlatexmath.version>
     <plantuml.version>1.2019.5</plantuml.version>
     <rsyntax.version>3.0.3</rsyntax.version>
+    <rsyntax.autocomplete.version>3.0.0</rsyntax.autocomplete.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.3.0</jna.version>
     <jre.version>11.0.3</jre.version>
@@ -51,6 +52,17 @@
       <groupId>com.fifesoft</groupId>
       <artifactId>rsyntaxtextarea</artifactId>
       <version>${rsyntax.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fifesoft</groupId>
+      <artifactId>autocomplete</artifactId>
+      <version>${rsyntax.autocomplete.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fifesoft</groupId>
+          <artifactId>rsyntaxtextarea</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>net.sf.jung</groupId>
@@ -81,6 +93,12 @@
       <groupId>com.mixpanel</groupId>
       <artifactId>mixpanel-java</artifactId>
       <version>${mixpanel.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>

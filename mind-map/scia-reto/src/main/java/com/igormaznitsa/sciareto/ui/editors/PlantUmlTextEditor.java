@@ -116,6 +116,7 @@ import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -229,6 +230,11 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     this.editor.setAntiAliasingEnabled(true);
     this.editor.setBracketMatchingEnabled(true);
     this.editor.setCodeFoldingEnabled(false);
+
+    final AutoCompletion autoCompletion = new AutoCompletion(new PlantUmlTokenMaker().makeCompletionProvider());
+    autoCompletion.setAutoActivationEnabled(true);
+    autoCompletion.setAutoCompleteSingleChoices(false);
+    autoCompletion.install(this.editor);
 
     final Font mainFont = PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT);
     this.editor.setFont(mainFont);

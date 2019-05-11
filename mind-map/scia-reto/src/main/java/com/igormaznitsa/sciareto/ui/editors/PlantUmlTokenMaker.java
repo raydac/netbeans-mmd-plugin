@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -19,8 +19,14 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.fail;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.text.Segment;
+import org.fife.ui.autocomplete.BasicCompletion;
+import org.fife.ui.autocomplete.CompletionProvider;
+import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 import org.fife.ui.rsyntaxtextarea.Token;
@@ -28,108 +34,127 @@ import org.fife.ui.rsyntaxtextarea.TokenMap;
 
 public class PlantUmlTokenMaker extends AbstractTokenMaker {
 
+  private static final List<String> RESERVED_WORDS = new ArrayList<>();
+
+  static {
+    RESERVED_WORDS.add("@startsalt");
+    RESERVED_WORDS.add("@endsalt");
+    RESERVED_WORDS.add("@startgantt");
+    RESERVED_WORDS.add("@endgantt");
+    RESERVED_WORDS.add("@startlatex");
+    RESERVED_WORDS.add("@endlatex");
+    RESERVED_WORDS.add("@startmath");
+    RESERVED_WORDS.add("@endmath");
+    RESERVED_WORDS.add("@startdot");
+    RESERVED_WORDS.add("@enddot");
+    RESERVED_WORDS.add("@startuml");
+    RESERVED_WORDS.add("@enduml");
+    RESERVED_WORDS.add("@startmindmap");
+    RESERVED_WORDS.add("@endmindmap");
+    RESERVED_WORDS.add("@startwbs");
+    RESERVED_WORDS.add("@endwbs");
+    RESERVED_WORDS.add("header");
+    RESERVED_WORDS.add("endheader");
+    RESERVED_WORDS.add("legend");
+    RESERVED_WORDS.add("endlegend");
+    RESERVED_WORDS.add("scale");
+    RESERVED_WORDS.add("skinparam");
+    RESERVED_WORDS.add("title");
+    RESERVED_WORDS.add("usecase");
+    RESERVED_WORDS.add("boundary");
+    RESERVED_WORDS.add("caption");
+    RESERVED_WORDS.add("control");
+    RESERVED_WORDS.add("collections");
+    RESERVED_WORDS.add("entity");
+    RESERVED_WORDS.add("database");
+    RESERVED_WORDS.add("detach");
+    RESERVED_WORDS.add("participant");
+    RESERVED_WORDS.add("order");
+    RESERVED_WORDS.add("as");
+    RESERVED_WORDS.add("actor");
+    RESERVED_WORDS.add("autonumber");
+    RESERVED_WORDS.add("alt");
+    RESERVED_WORDS.add("resume");
+    RESERVED_WORDS.add("newpage");
+    RESERVED_WORDS.add("is");
+    RESERVED_WORDS.add("if");
+    RESERVED_WORDS.add("then");
+    RESERVED_WORDS.add("endif");
+    RESERVED_WORDS.add("elseif");
+    RESERVED_WORDS.add("repeat");
+    RESERVED_WORDS.add("while");
+    RESERVED_WORDS.add("endwhile");
+    RESERVED_WORDS.add("else");
+    RESERVED_WORDS.add("opt");
+    RESERVED_WORDS.add("loop");
+    RESERVED_WORDS.add("par");
+    RESERVED_WORDS.add("break");
+    RESERVED_WORDS.add("critical");
+    RESERVED_WORDS.add("group");
+    RESERVED_WORDS.add("note");
+    RESERVED_WORDS.add("end");
+    RESERVED_WORDS.add("over");
+    RESERVED_WORDS.add("top");
+    RESERVED_WORDS.add("bottom");
+    RESERVED_WORDS.add("right");
+    RESERVED_WORDS.add("left");
+    RESERVED_WORDS.add("of");
+    RESERVED_WORDS.add("rnote");
+    RESERVED_WORDS.add("hnote");
+    RESERVED_WORDS.add("ref");
+    RESERVED_WORDS.add("create");
+    RESERVED_WORDS.add("box");
+    RESERVED_WORDS.add("hide");
+    RESERVED_WORDS.add("footbox");
+    RESERVED_WORDS.add("skinparam");
+    RESERVED_WORDS.add("sequence");
+    RESERVED_WORDS.add("activate");
+    RESERVED_WORDS.add("deactivate");
+    RESERVED_WORDS.add("start");
+    RESERVED_WORDS.add("state");
+    RESERVED_WORDS.add("stop");
+    RESERVED_WORDS.add("file");
+    RESERVED_WORDS.add("folder");
+    RESERVED_WORDS.add("frame");
+    RESERVED_WORDS.add("fork");
+    RESERVED_WORDS.add("interface");
+    RESERVED_WORDS.add("class");
+    RESERVED_WORDS.add("namespace");
+    RESERVED_WORDS.add("page");
+    RESERVED_WORDS.add("node");
+    RESERVED_WORDS.add("package");
+    RESERVED_WORDS.add("queue");
+    RESERVED_WORDS.add("stack");
+    RESERVED_WORDS.add("rectangle");
+    RESERVED_WORDS.add("storage");
+    RESERVED_WORDS.add("card");
+    RESERVED_WORDS.add("cloud");
+    RESERVED_WORDS.add("component");
+    RESERVED_WORDS.add("agent");
+    RESERVED_WORDS.add("artifact");
+
+    Collections.sort(RESERVED_WORDS);
+  }
+
   @Override
   @Nonnull
   public TokenMap getWordsToHighlight() {
     final TokenMap tokenMap = new TokenMap();
 
-    tokenMap.put("@startsalt", Token.RESERVED_WORD);
-    tokenMap.put("@endsalt", Token.RESERVED_WORD);
-    tokenMap.put("@startgantt", Token.RESERVED_WORD);
-    tokenMap.put("@endgantt", Token.RESERVED_WORD);
-    tokenMap.put("@startlatex", Token.RESERVED_WORD);
-    tokenMap.put("@endlatex", Token.RESERVED_WORD);
-    tokenMap.put("@startmath", Token.RESERVED_WORD);
-    tokenMap.put("@endmath", Token.RESERVED_WORD);
-    tokenMap.put("@startdot", Token.RESERVED_WORD);
-    tokenMap.put("@enddot", Token.RESERVED_WORD);
-    tokenMap.put("@startuml", Token.RESERVED_WORD);
-    tokenMap.put("@enduml", Token.RESERVED_WORD);
-    tokenMap.put("@startmindmap", Token.RESERVED_WORD);
-    tokenMap.put("@endmindmap", Token.RESERVED_WORD);
-    tokenMap.put("@startwbs", Token.RESERVED_WORD);
-    tokenMap.put("@endwbs", Token.RESERVED_WORD);
-    tokenMap.put("header", Token.RESERVED_WORD);
-    tokenMap.put("endheader", Token.RESERVED_WORD);
-    tokenMap.put("legend", Token.RESERVED_WORD);
-    tokenMap.put("endlegend", Token.RESERVED_WORD);
-    tokenMap.put("scale", Token.RESERVED_WORD);
-    tokenMap.put("skinparam", Token.RESERVED_WORD);
-    tokenMap.put("title", Token.RESERVED_WORD);
-    tokenMap.put("usecase", Token.RESERVED_WORD);
-    tokenMap.put("boundary", Token.RESERVED_WORD);
-    tokenMap.put("caption", Token.RESERVED_WORD);
-    tokenMap.put("control", Token.RESERVED_WORD);
-    tokenMap.put("collections", Token.RESERVED_WORD);
-    tokenMap.put("entity", Token.RESERVED_WORD);
-    tokenMap.put("database", Token.RESERVED_WORD);
-    tokenMap.put("detach", Token.RESERVED_WORD);
-    tokenMap.put("participant", Token.RESERVED_WORD);
-    tokenMap.put("order", Token.RESERVED_WORD);
-    tokenMap.put("as", Token.RESERVED_WORD);
-    tokenMap.put("actor", Token.RESERVED_WORD);
-    tokenMap.put("autonumber", Token.RESERVED_WORD);
-    tokenMap.put("alt", Token.RESERVED_WORD);
-    tokenMap.put("resume", Token.RESERVED_WORD);
-    tokenMap.put("newpage", Token.RESERVED_WORD);
-    tokenMap.put("is", Token.RESERVED_WORD);
-    tokenMap.put("if", Token.RESERVED_WORD);
-    tokenMap.put("then", Token.RESERVED_WORD);
-    tokenMap.put("endif", Token.RESERVED_WORD);
-    tokenMap.put("elseif", Token.RESERVED_WORD);
-    tokenMap.put("repeat", Token.RESERVED_WORD);
-    tokenMap.put("while", Token.RESERVED_WORD);
-    tokenMap.put("endwhile", Token.RESERVED_WORD);
-    tokenMap.put("else", Token.RESERVED_WORD);
-    tokenMap.put("opt", Token.RESERVED_WORD);
-    tokenMap.put("loop", Token.RESERVED_WORD);
-    tokenMap.put("par", Token.RESERVED_WORD);
-    tokenMap.put("break", Token.RESERVED_WORD);
-    tokenMap.put("critical", Token.RESERVED_WORD);
-    tokenMap.put("group", Token.RESERVED_WORD);
-    tokenMap.put("note", Token.RESERVED_WORD);
-    tokenMap.put("end", Token.RESERVED_WORD);
-    tokenMap.put("over", Token.RESERVED_WORD);
-    tokenMap.put("top", Token.RESERVED_WORD);
-    tokenMap.put("bottom", Token.RESERVED_WORD);
-    tokenMap.put("right", Token.RESERVED_WORD);
-    tokenMap.put("left", Token.RESERVED_WORD);
-    tokenMap.put("of", Token.RESERVED_WORD);
-    tokenMap.put("rnote", Token.RESERVED_WORD);
-    tokenMap.put("hnote", Token.RESERVED_WORD);
-    tokenMap.put("ref", Token.RESERVED_WORD);
-    tokenMap.put("create", Token.RESERVED_WORD);
-    tokenMap.put("box", Token.RESERVED_WORD);
-    tokenMap.put("hide", Token.RESERVED_WORD);
-    tokenMap.put("footbox", Token.RESERVED_WORD);
-    tokenMap.put("skinparam", Token.RESERVED_WORD);
-    tokenMap.put("sequence", Token.RESERVED_WORD);
-    tokenMap.put("activate", Token.RESERVED_WORD);
-    tokenMap.put("deactivate", Token.RESERVED_WORD);
-    tokenMap.put("start", Token.RESERVED_WORD);
-    tokenMap.put("state", Token.RESERVED_WORD);
-    tokenMap.put("stop", Token.RESERVED_WORD);
-    tokenMap.put("file", Token.RESERVED_WORD);
-    tokenMap.put("folder", Token.RESERVED_WORD);
-    tokenMap.put("frame", Token.RESERVED_WORD);
-    tokenMap.put("fork", Token.RESERVED_WORD);
-    tokenMap.put("interface", Token.RESERVED_WORD);
-    tokenMap.put("class", Token.RESERVED_WORD);
-    tokenMap.put("namespace", Token.RESERVED_WORD);
-    tokenMap.put("page", Token.RESERVED_WORD);
-    tokenMap.put("node", Token.RESERVED_WORD);
-    tokenMap.put("package", Token.RESERVED_WORD);
-    tokenMap.put("queue", Token.RESERVED_WORD);
-    tokenMap.put("stack", Token.RESERVED_WORD);
-    tokenMap.put("rectangle", Token.RESERVED_WORD);
-    tokenMap.put("storage", Token.RESERVED_WORD);
-    tokenMap.put("card", Token.RESERVED_WORD);
-    tokenMap.put("cloud", Token.RESERVED_WORD);
-    tokenMap.put("component", Token.RESERVED_WORD);
-    tokenMap.put("agent", Token.RESERVED_WORD);
-    tokenMap.put("artifact", Token.RESERVED_WORD);
-
+    RESERVED_WORDS.forEach(str -> tokenMap.put(str, Token.RESERVED_WORD));
     return tokenMap;
+  }
+
+  @Nonnull
+  public CompletionProvider makeCompletionProvider() {
+    final DefaultCompletionProvider result = new DefaultCompletionProvider();
+    RESERVED_WORDS.stream()
+            .map(str -> str.startsWith("@") ? str.substring(1) : str)
+            .forEach(str -> result.addCompletion(new BasicCompletion(result, str)));
+
+    result.setAutoActivationRules(true, "@");
+
+    return result;
   }
 
   @Override
@@ -304,17 +329,17 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
         case Token.IDENTIFIER:
         case Token.RESERVED_WORD: {
           if (RSyntaxUtilities.isWhitespace(c) || !RSyntaxUtilities.isLetterOrDigit(c)) {
-              final int value = wordsToHighlight.get(text, currentTokenStart, i - 1);
-              if (value < 0) {
-                addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
-              } else {
-                addToken(text, currentTokenStart, i - 1, value, newStartOffset + currentTokenStart);
-              }
-              currentTokenStart = i;
-
-              currentTokenType = RSyntaxUtilities.isWhitespace(c) ? Token.WHITESPACE : Token.IDENTIFIER;
+            final int value = wordsToHighlight.get(text, currentTokenStart, i - 1);
+            if (value < 0) {
+              addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
+            } else {
+              addToken(text, currentTokenStart, i - 1, value, newStartOffset + currentTokenStart);
             }
+            currentTokenStart = i;
+
+            currentTokenType = RSyntaxUtilities.isWhitespace(c) ? Token.WHITESPACE : Token.IDENTIFIER;
           }
+        }
         break;
         case Token.COMMENT_EOL: {
           if (c == '\n') {
