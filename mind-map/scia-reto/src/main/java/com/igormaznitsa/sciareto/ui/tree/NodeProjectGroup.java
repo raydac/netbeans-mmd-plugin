@@ -98,7 +98,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   @Override
   public Mono<NodeFileOrFolder> readSubtree(final boolean addHiddenFilesAndFolders) {
     this.children.forEach(proj -> {
-      ((NodeProject)proj).initLoading(proj.readSubtree(addHiddenFilesAndFolders).subscribeOn(MainFrame.PARALLEL_SCHEDULER).subscribe());
+      ((NodeProject)proj).initLoading(proj.readSubtree(addHiddenFilesAndFolders).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe());
     });
     return Mono.just(this);
   }

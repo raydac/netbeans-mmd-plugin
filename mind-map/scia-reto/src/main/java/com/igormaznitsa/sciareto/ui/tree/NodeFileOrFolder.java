@@ -154,7 +154,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
-    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.PARALLEL_SCHEDULER).subscribe();
+    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
   }
 
   private void clearChildren() {
@@ -198,7 +198,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
               }
           }, Flux::fromIterable, IOUtils::closeQuetly)
                   .parallel()
-                  .runOn(MainFrame.PARALLEL_SCHEDULER)
+                  .runOn(MainFrame.REACTOR_SCHEDULER)
                   .doOnError(error -> {
                       LOGGER.warn("Error during path " + makeFileForNode().getName() + " opening: " + error.getMessage());
                       this.noAccess = true;

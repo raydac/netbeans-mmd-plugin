@@ -74,7 +74,7 @@ public class NodeProject extends NodeFileOrFolder {
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
     this.folder = new File(folder.getParentFile(), name);
-    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.PARALLEL_SCHEDULER).subscribe();
+    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
   }
 
   @Override
@@ -91,7 +91,7 @@ public class NodeProject extends NodeFileOrFolder {
   public void setFolder(@Nonnull final File folder) throws IOException {
     Assertions.assertTrue("Must be directory", folder.isDirectory()); //NOI18N
     this.folder = folder;
-    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.PARALLEL_SCHEDULER).subscribe();
+    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
   }
 
   @Nonnull

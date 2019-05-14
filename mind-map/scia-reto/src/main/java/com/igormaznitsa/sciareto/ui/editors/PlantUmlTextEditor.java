@@ -482,7 +482,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     this.hideTextPanel();
 
-    this.eventChain = eventProcessor.publishOn(MainFrame.PARALLEL_SCHEDULER)
+    this.eventChain = eventProcessor.publishOn(MainFrame.REACTOR_SCHEDULER)
             .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
             .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
             .publishOn(UiUtils.SWING_SCHEDULER)
@@ -913,7 +913,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
       this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
 
-      MainFrame.PARALLEL_SCHEDULER.schedule(() -> {
+      MainFrame.REACTOR_SCHEDULER.schedule(() -> {
         BigLoaderIconAnimationConroller.getInstance().registerLabel(progressLabel);
         try {
           try {

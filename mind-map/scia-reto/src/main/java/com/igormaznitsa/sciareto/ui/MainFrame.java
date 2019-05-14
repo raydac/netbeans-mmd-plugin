@@ -132,7 +132,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private int lastDividerLocation;
 
-  public static final Scheduler PARALLEL_SCHEDULER = Schedulers.parallel();
+  public static final Scheduler REACTOR_SCHEDULER = Schedulers.newParallel("sr-reactor", Runtime.getRuntime().availableProcessors() << 1, true);
 
   public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
@@ -508,7 +508,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
 
     this.getCurrentGroup().cancelLoading();
-    PARALLEL_SCHEDULER.dispose();
+    REACTOR_SCHEDULER.dispose();
 
     return true;
   }
@@ -1295,7 +1295,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                 }
               }
             })
-            .subscribeOn(PARALLEL_SCHEDULER)
+            .subscribeOn(REACTOR_SCHEDULER)
             .subscribe());
     return project;
   }

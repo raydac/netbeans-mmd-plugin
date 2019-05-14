@@ -152,7 +152,7 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
             .map(str -> str.startsWith("@") ? str.substring(1) : str)
             .forEach(str -> result.addCompletion(new BasicCompletion(result, str)));
 
-    result.setAutoActivationRules(true, "@");
+    result.setAutoActivationRules(false, "@");
 
     return result;
   }

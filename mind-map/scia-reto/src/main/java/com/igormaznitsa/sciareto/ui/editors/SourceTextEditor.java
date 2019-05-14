@@ -31,6 +31,7 @@ import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -60,8 +61,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.DocumentEvent;
@@ -270,9 +269,7 @@ public final class SourceTextEditor extends AbstractEditor {
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
     this.mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-    final JToolBar status = new JToolBar(JToolBar.HORIZONTAL);
-    status.setBorderPainted(false);
-    status.setFloatable(false);
+    final JPanel status = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     final JComboBox<FormatType> formatTypeCombo = new JComboBox(new DefaultComboBoxModel(SUPPORTED_FORMATS.toArray()));
     formatTypeCombo.setSelectedItem(new FormatType(this.editor.getSyntaxEditingStyle()));
 
@@ -293,7 +290,7 @@ public final class SourceTextEditor extends AbstractEditor {
     status.add(Box.createHorizontalGlue());
     status.add(labelCursor);
     status.add(Box.createHorizontalStrut(16));
-    status.add(new JSeparator(JSeparator.VERTICAL));
+    status.add(new JLabel("|"));
     status.add(Box.createHorizontalStrut(16));
     status.add(new JLabel("Syntax:"));
     status.add(formatTypeCombo);
@@ -342,8 +339,8 @@ public final class SourceTextEditor extends AbstractEditor {
     Arrays.stream(this.editor.getCaretListeners()).forEach(listener -> listener.caretUpdate(new CaretEvent(this.editor) {
       @Override
       public int getDot() {
-          return editor.getCaretPosition();
-        }
+        return editor.getCaretPosition();
+      }
 
       @Override
       public int getMark() {
