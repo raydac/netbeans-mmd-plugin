@@ -96,9 +96,9 @@ public final class SourceTextEditor extends AbstractEditor {
   private final JLabel labelWordWrap;
   
   private enum Wrap {
-    NO_WRAP("No wrap"),
-    LINE_WRAP("Line wrap"),
-    WORD_WRAP("Word wrap");
+    NO_WRAP  (" No wrap "),
+    LINE_WRAP("Wrap line"),
+    WORD_WRAP("Wrap word");
 
     private final String text;
     
