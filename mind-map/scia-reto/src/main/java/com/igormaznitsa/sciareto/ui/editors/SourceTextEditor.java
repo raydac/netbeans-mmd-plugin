@@ -23,21 +23,21 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -69,7 +69,6 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
@@ -78,9 +77,7 @@ public final class SourceTextEditor extends AbstractEditor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SourceTextEditor.class);
 
-  public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-
-  private final RSyntaxTextArea editor;
+  private final ScalableRsyntaxTextArea editor;
   private final TabTitle title;
 
   private boolean ignoreChange;
@@ -96,6 +93,27 @@ public final class SourceTextEditor extends AbstractEditor {
 
   public static final Set<String> SUPPORTED_EXTENSIONS;
 
+  private final JLabel labelWordWrap;
+  
+  private enum Wrap {
+    NO_WRAP("No wrap"),
+    LINE_WRAP("Line wrap"),
+    WORD_WRAP("Word wrap");
+
+    private final String text;
+    
+    Wrap(@Nonnull final String text) {
+      this.text = text;
+    }
+    
+    @Nonnull
+    String getText(){
+      return this.text;
+    }
+  }
+  
+  private Wrap currentWrap = Wrap.NO_WRAP;
+  
   public static final class FormatType implements Comparable<FormatType> {
 
     private final String type;
@@ -223,6 +241,29 @@ public final class SourceTextEditor extends AbstractEditor {
     }
   };
 
+  private void updateWrapState(){
+    this.labelWordWrap.setText(this.currentWrap.getText());
+    this.labelWordWrap.revalidate();
+    this.labelWordWrap.repaint();
+    
+    switch(this.currentWrap) {
+      case NO_WRAP: {
+        this.editor.setLineWrap(false);
+        this.editor.setWrapStyleWord(false);
+      }break;
+      case LINE_WRAP: {
+        this.editor.setLineWrap(true);
+        this.editor.setWrapStyleWord(false);
+      }break;
+      case WORD_WRAP: {
+        this.editor.setLineWrap(true);
+        this.editor.setWrapStyleWord(true);
+      }break;
+    }
+    this.editor.revalidate();
+    this.editor.repaint();
+  }
+  
   @Override
   @Nonnull
   public FileFilter getFileFilter() {
@@ -231,7 +272,7 @@ public final class SourceTextEditor extends AbstractEditor {
 
   public SourceTextEditor(@Nonnull final Context context, @Nullable File file, final int line, final boolean noSyntax) throws IOException {
     super();
-    this.editor = new RSyntaxTextArea();
+    this.editor = new ScalableRsyntaxTextArea();
     this.editor.setPopupMenu(null);
 
     final String syntaxType;
@@ -253,7 +294,6 @@ public final class SourceTextEditor extends AbstractEditor {
     this.editor.setCodeFoldingEnabled(true);
 
     this.editor.getCaret().setSelectionVisible(true);
-    this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.editor.addHyperlinkListener((HyperlinkEvent e) -> {
       if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
         try {
@@ -287,8 +327,31 @@ public final class SourceTextEditor extends AbstractEditor {
       labelCursor.setText(String.format("%d:%d", this.editor.getCaretLineNumber() + 1, this.editor.getCaretOffsetFromLineStart() + 1));
     });
 
+    this.labelWordWrap = new JLabel();
+    this.currentWrap = Wrap.NO_WRAP;
+    this.labelWordWrap.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    this.labelWordWrap.addMouseListener(new MouseAdapter(){
+      @Override
+      public void mouseClicked(@Nonnull final MouseEvent e) {
+        if (!e.isConsumed() && !e.isPopupTrigger()) {
+          switch(currentWrap){
+            case NO_WRAP: currentWrap = Wrap.LINE_WRAP;break;
+            case LINE_WRAP: currentWrap = Wrap.WORD_WRAP;break;
+            case WORD_WRAP: currentWrap = Wrap.NO_WRAP;break;
+          }
+          updateWrapState();
+        }
+      }
+    });
+ 
+    updateWrapState();
+    
     status.add(Box.createHorizontalGlue());
     status.add(labelCursor);
+    status.add(Box.createHorizontalStrut(16));
+    status.add(new JLabel("|"));
+    status.add(Box.createHorizontalStrut(16));
+    status.add(this.labelWordWrap);
     status.add(Box.createHorizontalStrut(16));
     status.add(new JLabel("|"));
     status.add(Box.createHorizontalStrut(16));
@@ -421,9 +484,7 @@ public final class SourceTextEditor extends AbstractEditor {
 
   @Override
   public void updateConfiguration() {
-    this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
-    this.editor.revalidate();
-    this.editor.repaint();
+    this.editor.updateConfig();
   }
 
   @Override

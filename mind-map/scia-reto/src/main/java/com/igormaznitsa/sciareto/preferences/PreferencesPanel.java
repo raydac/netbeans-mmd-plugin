@@ -50,7 +50,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.editors.SourceTextEditor;
+import com.igormaznitsa.sciareto.ui.editors.ScalableRsyntaxTextArea;
 import com.igormaznitsa.sciareto.ui.misc.SysFileExtensionEditorPanel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
@@ -85,8 +85,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private boolean changed;
 
-  private Font fontTextEditor = SourceTextEditor.DEFAULT_FONT;
-  private Font fontMindMapEditor = SourceTextEditor.DEFAULT_FONT;
+  private Font fontTextEditor = ScalableRsyntaxTextArea.DEFAULT_FONT;
+  private Font fontMindMapEditor = ScalableRsyntaxTextArea.DEFAULT_FONT;
 
   private final MindMapPanelConfig config = new MindMapPanelConfig();
   private final transient Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(new Comparator<String>() {
@@ -99,7 +99,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   public PreferencesPanel(final Context context) {
     this.context = context;
     initComponents();
-    
+
     this.textFieldPathToGraphvizDot.getDocument().addDocumentListener(new DocumentListener() {
 
       private void onChange() {
@@ -1340,7 +1340,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private void buttonResetToDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetToDefaultActionPerformed
     loadFrom(new MindMapPanelConfig(), PreferencesManager.getInstance().getPreferences());
-    this.fontTextEditor = SourceTextEditor.DEFAULT_FONT;
+    this.fontTextEditor = ScalableRsyntaxTextArea.DEFAULT_FONT;
     updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
   }//GEN-LAST:event_buttonResetToDefaultActionPerformed
 
@@ -1511,7 +1511,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.fontMindMapEditor = config.getFont();
       updateFontButton(this.buttonFont, this.fontMindMapEditor);
 
-      this.fontTextEditor = Assertions.assertNotNull(PreferencesManager.getInstance().getFont(prefs, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, SourceTextEditor.DEFAULT_FONT));
+      this.fontTextEditor = Assertions.assertNotNull(PreferencesManager.getInstance().getFont(prefs, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, ScalableRsyntaxTextArea.DEFAULT_FONT));
       updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
     } finally {
       this.changeNotificationAllowed = true;

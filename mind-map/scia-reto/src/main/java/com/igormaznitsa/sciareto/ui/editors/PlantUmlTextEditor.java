@@ -28,8 +28,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.MainFrame;
@@ -118,7 +116,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
@@ -195,7 +192,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
   };
   private static final Logger LOGGER = LoggerFactory.getLogger(PlantUmlTextEditor.class);
   private File lastExportedFile = null;
-  private final RSyntaxTextArea editor;
+  private final ScalableRsyntaxTextArea editor;
   private final TabTitle title;
   private final RUndoManager undoManager;
   private final ScalableImage imageComponent;
@@ -220,7 +217,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     super();
     initPlantUml();
 
-    this.editor = new RSyntaxTextArea();
+    this.editor = new ScalableRsyntaxTextArea();
     this.editor.setPopupMenu(null);
 
     final AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
@@ -236,14 +233,12 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     autoCompletion.setAutoCompleteSingleChoices(false);
     autoCompletion.install(this.editor);
 
-    final Font mainFont = PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT);
-    this.editor.setFont(mainFont);
-
     final SyntaxScheme scheme = this.editor.getSyntaxScheme();
-
-    if (mainFont != null) {
-      scheme.getStyle(Token.RESERVED_WORD).font = mainFont.deriveFont(Font.BOLD);
-      scheme.getStyle(Token.IDENTIFIER).font = mainFont.deriveFont(Font.ITALIC);
+    final Font editorFont = this.editor.getFont();
+    
+    if (editorFont != null) {
+      scheme.getStyle(Token.RESERVED_WORD).font = editorFont.deriveFont(Font.BOLD);
+      scheme.getStyle(Token.IDENTIFIER).font = editorFont.deriveFont(Font.ITALIC);
     }
 
     scheme.getStyle(Token.COMMENT_EOL).foreground = Color.LIGHT_GRAY;
@@ -815,8 +810,15 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     initPlantUml();
     updateGraphvizLabelVisibility();
     this.imageComponent.updateConfig();
-    this.editor.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
-    this.editor.revalidate();
+    this.editor.updateConfig();
+
+    final SyntaxScheme scheme = this.editor.getSyntaxScheme();
+    final Font editorFont = this.editor.getFont();
+    if (editorFont != null) {
+      scheme.getStyle(Token.RESERVED_WORD).font = editorFont.deriveFont(Font.BOLD);
+      scheme.getStyle(Token.IDENTIFIER).font = editorFont.deriveFont(Font.ITALIC);
+    }
+    
     this.editor.repaint();
   }
 
