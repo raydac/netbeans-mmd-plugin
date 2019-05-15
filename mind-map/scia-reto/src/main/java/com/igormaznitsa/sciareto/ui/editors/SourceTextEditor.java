@@ -94,26 +94,25 @@ public final class SourceTextEditor extends AbstractEditor {
   public static final Set<String> SUPPORTED_EXTENSIONS;
 
   private final JLabel labelWordWrap;
-  
+
   private enum Wrap {
     NO_WRAP  (" No wrap "),
-    LINE_WRAP("Wrap line"),
-    WORD_WRAP("Wrap word");
+    LINE_WRAP("Line wrap");
 
     private final String text;
-    
+
     Wrap(@Nonnull final String text) {
       this.text = text;
     }
-    
+
     @Nonnull
     String getText(){
       return this.text;
     }
   }
-  
+
   private Wrap currentWrap = Wrap.NO_WRAP;
-  
+
   public static final class FormatType implements Comparable<FormatType> {
 
     private final String type;
@@ -245,7 +244,7 @@ public final class SourceTextEditor extends AbstractEditor {
     this.labelWordWrap.setText(this.currentWrap.getText());
     this.labelWordWrap.revalidate();
     this.labelWordWrap.repaint();
-    
+
     switch(this.currentWrap) {
       case NO_WRAP: {
         this.editor.setLineWrap(false);
@@ -253,17 +252,13 @@ public final class SourceTextEditor extends AbstractEditor {
       }break;
       case LINE_WRAP: {
         this.editor.setLineWrap(true);
-        this.editor.setWrapStyleWord(false);
-      }break;
-      case WORD_WRAP: {
-        this.editor.setLineWrap(true);
         this.editor.setWrapStyleWord(true);
       }break;
     }
     this.editor.revalidate();
     this.editor.repaint();
   }
-  
+
   @Override
   @Nonnull
   public FileFilter getFileFilter() {
@@ -336,16 +331,15 @@ public final class SourceTextEditor extends AbstractEditor {
         if (!e.isConsumed() && !e.isPopupTrigger()) {
           switch(currentWrap){
             case NO_WRAP: currentWrap = Wrap.LINE_WRAP;break;
-            case LINE_WRAP: currentWrap = Wrap.WORD_WRAP;break;
-            case WORD_WRAP: currentWrap = Wrap.NO_WRAP;break;
+            case LINE_WRAP: currentWrap = Wrap.NO_WRAP;break;
           }
           updateWrapState();
         }
       }
     });
- 
+
     updateWrapState();
-    
+
     status.add(Box.createHorizontalGlue());
     status.add(labelCursor);
     status.add(Box.createHorizontalStrut(16));

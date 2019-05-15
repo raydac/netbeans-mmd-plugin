@@ -31,25 +31,25 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
   private MindMapPanelConfig mmPanelConfig;
-  
+
   private float fontScale = 1.0f;
   private float fontOriginalSize;
 
   private static final float SCALE_STEP = 0.5f;
   private static final float SCALE_MIN = 0.03f;
   private static final float SCALE_MAX = 10.0f;
-  
+
   public ScalableRsyntaxTextArea() {
     super();
-  
+
     this.setFont(PreferencesManager.getInstance()
-            .getFont(PreferencesManager.getInstance().getPreferences(), 
-                    SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, 
+            .getFont(PreferencesManager.getInstance().getPreferences(),
+                    SpecificKeys.PROPERTY_TEXT_EDITOR_FONT,
                     DEFAULT_FONT));
     this.fontOriginalSize = this.getFont().getSize2D();
-    
+
     refreshMmPanelConfig();
-    
+
     this.addMouseWheelListener((@Nonnull final MouseWheelEvent e) -> {
       final MindMapPanelConfig theConfig = this.mmPanelConfig;
       if (!e.isConsumed() && (theConfig != null && ((e.getModifiers() & theConfig.getScaleModifiers()) == theConfig.getScaleModifiers()))) {
@@ -57,21 +57,26 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
         updateFontForScale();
       }
     });
-    
+
     updateFontForScale();
   }
- 
-  private void updateFontForScale(){
-    this.setFont(this.getFont().deriveFont(this.fontScale * this.fontOriginalSize));
+
+  private void updateFontForScale() {
+    final Font newFont = this.getFont().deriveFont(this.fontScale * this.fontOriginalSize);
+    if (newFont.getSize() > 0) {
+      this.setFont(newFont);
+    } else {
+      this.setFont(this.getFont().deriveFont(1.0f));
+    }
   }
-  
-  private void refreshMmPanelConfig(){
+
+  private void refreshMmPanelConfig() {
     final MindMapPanelConfig config = new MindMapPanelConfig();
     config.loadFrom(PreferencesManager.getInstance().getPreferences());
     this.mmPanelConfig = config;
   }
-  
-  public void updateConfig(){
+
+  public void updateConfig() {
     refreshMmPanelConfig();
     this.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.fontOriginalSize = this.getFont().getSize2D();
@@ -79,5 +84,5 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
     this.revalidate();
     this.repaint();
   }
-  
+
 }
