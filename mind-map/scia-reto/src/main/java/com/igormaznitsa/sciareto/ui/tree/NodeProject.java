@@ -108,7 +108,7 @@ public class NodeProject extends NodeFileOrFolder {
     final List<File> result = new ArrayList<>();
     FileUtils.listFiles(baseFolder, new String[]{"mmd", "MMD"}, true).forEach((mindMapFile) -> {
       try {
-        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8"))); //NOI18N
+        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, StandardCharsets.UTF_8))); //NOI18N
         if (!MapUtils.findTopicsRelatedToFile(baseFolder, changedFile, map).isEmpty()) {
           result.add(mindMapFile);
         }

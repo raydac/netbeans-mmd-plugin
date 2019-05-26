@@ -64,6 +64,6 @@ public class MindMapFacetEditorTab extends FacetEditorTab {
   }
 
   @Nls @Override public String getDisplayName() {
-    return "NB Mind Map";
+    return "IDEA Mind Map";
   }
 }

@@ -34,7 +34,7 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsComponent.class);
   public static final String ID = "idea.mind.map.settings";
   public static final String COMPONENT_NAME = "NBMindMapSettingsComponent";
-  public static final String DISPLAY_NAME = "NB Mind Map";
+  public static final String DISPLAY_NAME = "IDEA Mind Map";
 
   private static MindMapSettingsComponent instance;
 

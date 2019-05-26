@@ -18,8 +18,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.4.6 (SNAPSHOT)</p>
+        <p>1.4.6 (26-may-2019)</p>
         <ul>
+          <li>improved color chooser, standard one replaced by custom one</li>
+          <li>added plug-in to align topic text</li>
+          <li>minor refactoring and fixes</li>
         </ul>
         <p>1.4.5 (03-mar-2019)</p>
         <ul>
