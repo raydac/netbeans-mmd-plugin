@@ -1,24 +1,24 @@
 <html lang="en" prefix="og: http://ogp.me/ns#" dir="ltr"><head>
-    <title>NetBeans Mind Map editor plugin</title>
+    <title>Free open-source mind map editor Scia-Reto</title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="keywords" content="mindmap,netbeans,knowledge,project">
+    <meta name="keywords" content="mindmap,intellijidea,editor,netbeans,knowledge,project">
 
     <meta name="robots" content="noodp,noydir">
-    <meta name="description" content="Create and edit mind maps within NetBeans projects with the NetBeans Mind Map editor plugin.">
+    <meta name="description" content="Create, edit and keep mind maps within projects.">
 
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="NetBeans Mind Map Editor plugin">
-    <meta property="og:description" content="Create and edit mind maps within NetBeans projects with the NetBeans Mind Map editor plugin.">
+    <meta property="og:title" content="Free open-source mind map editor Scia-Reto">
+    <meta property="og:description" content="Create, edit and keep mind maps within projects.">
     <meta property="og:url" content="http://www.igormaznitsa.com/netbeans-mmd-plugin/">
     <meta property="og:image" content="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png">
     <meta property="og:site_name" content="Igor Maznitsa">
 
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="NetBeans Mind Map Editor plugin">
-    <meta name="twitter:description" content="Create and edit mind maps within NetBeans projects with the NetBeans Mind Map editor plugin.">
+    <meta name="twitter:title" content="Free open-source mind map editor Scia-Reto">
+    <meta name="twitter:description" content="Create, edit and keep mind maps within projects.">
     <meta name="twitter:url" content="http://www.igormaznitsa.com/netbeans-mmd-plugin/">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png">
 
@@ -64,10 +64,10 @@
         </header>
 
         <section id="downloads" class="clearfix">
-          <p><img alt="NetBeans Mind Maps" src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png">  </p>
-          <a href="http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor" id="download-nbm" class="button"><span>For NetBeans</span></a>
-          <a href="https://plugins.jetbrains.com/plugin/8045" id="download-idea" class="button"><span>For Intellij</span></a>
+          <p><img alt="Scia-Reto editor" src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png">  </p>
           <a href="https://github.com/raydac/netbeans-mmd-plugin/releases/latest" id="download-standalone" class="button"><span>Standalone</span></a>
+          <a href="https://plugins.jetbrains.com/plugin/8045" id="download-idea" class="button"><span>For Intellij</span></a>
+          <a href="http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor" id="download-nbm" class="button"><span>For NetBeans</span></a>
         </section>
 
         <hr>
@@ -76,15 +76,15 @@
           <h1>
             <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
 
-          <p>The Main part of a software project is not code but knowledge generated during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and <a href="https://en.wikipedia.org/wiki/Mind_map">a mind map diagram</a> is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to create and edit knowledge graph just within NetBeans based projects.</p>
+          <p>The main part of any software project is not code (code is just a temporary part and implementation) but knowledge produced during the project. I guess knowledge is the main part of every business today and it is very important to move the generated knowledge from non-formal level to formal level to avoid its loss. There are many approaches to save knowledge and <a href="https://en.wikipedia.org/wiki/Mind_map">a mind map diagram</a> is one of them. Also it is very important to keep the "distance" between project and its knowledge as short as possible and the ideal variant is to keep knowledge just within the project as a document set. If you use any external knowledge engineering tool then the distance already is not so short and for the cause I had decided to develop some plugin which would allow to create and edit knowledge graph just within NetBeans based projects.</p>
 
           <h1>
             <a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>History of implementation</h1>
             <p>On start I implemented the editor as a just plugin for <a href="https://netbeans.org/">NetBeans IDE</a>, but because at work I very often use <a href="https://www.jetbrains.com/idea/">Intellij IDEA</a>, I developed and a plugin for IJ IDEA editor. Some of my friends are not programmers at all and they needed some tool to make documentation for their projects and I developed standalone version based on the IDE plugin with extended functionality and support of PlantUML (since 1.4.3 version) and called standalone editor as "SciaReto". Now I have three products based on the same editor core
                 <ul>
-                    <li>NetBeans IDE plugin</li>
-                    <li>Intellij IDEA IDE plugin</li>
-                    <li>SciaReto standalone desktop application</li>
+                  <li>SciaReto standalone desktop application</li>
+                  <li>Intellij IDEA IDE plugin</li>
+                  <li>NetBeans IDE plugin</li>
                 </ul>
                 <br>
             <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/gh-pages/images/threeidescr.png" alt="Three application with opened mind maps">
