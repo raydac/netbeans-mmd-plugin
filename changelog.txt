@@ -1,3 +1,5 @@
+__1.4.7 (SNAPSHOT)__
+
 __1.4.6 (26-may-2019)__
 - ALL:  Swing color chooser is replaced by custom one
 - SR:  Unable to find files for Chinese characters #52
