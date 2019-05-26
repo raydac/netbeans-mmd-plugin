@@ -1,4 +1,4 @@
-__1.4.6 (SNAPSHOT)__
+__1.4.6 (26-may-2019)__
 - ALL:  Swing color chooser is replaced by custom one
 - SR:  Unable to find files for Chinese characters #52
 - ALL: added plug-in to align topic text (by default text still aligned as `center`)

@@ -15,7 +15,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
-__1.4.6 (SNAPSHOT)__
+__1.4.6 (26-may-2019)__
 - ALL:  Swing color chooser is replaced by custom one
 - SR:  Unable to find files for Chinese characters [#52](https://github.com/raydac/netbeans-mmd-plugin/issues/52)
 - ALL: added plug-in to align topic text (by default text still aligned as `center`)
