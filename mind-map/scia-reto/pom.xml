@@ -34,7 +34,7 @@
     <rsyntax.autocomplete.version>3.0.0</rsyntax.autocomplete.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.3.0</jna.version>
-    <jre.version>11.0.3</jre.version>
+    <jre.version>11.0.4</jre.version>
   </properties>
 
   <dependencies>
@@ -148,7 +148,7 @@
           <plugin>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>mvn-jlink-wrapper</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <executions>
               <execution>
                 <id>cache-work-jdk</id>
