@@ -1926,10 +1926,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       result = this.elementUnderEdit != null;
       try {
         if (this.elementUnderEdit != null) {
+          final AbstractElement editedElement = this.elementUnderEdit;
+          final Topic editedTopic = this.elementUnderEdit.getModel();
+
           if (commit) {
             this.pathToPrevTopicBeforeEdit = null;
-            final AbstractElement editedElement = this.elementUnderEdit;
-            final Topic editedTopic = this.elementUnderEdit.getModel();
 
             final String oldText = editedElement.getText();
             String newText = this.textEditor.getText();
@@ -1953,11 +1954,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             if (contentChanged) {
               fireNotificationMindMapChanged(true);
             }
+            
+            this.focusTo(editedTopic);
           } else {
             if (this.removeEditedTopicForRollback.get()) {
-              final Topic topic = this.elementUnderEdit.getModel();
-              this.selectedTopics.remove(topic);
-              this.model.removeTopic(topic);
+              this.selectedTopics.remove(editedTopic);
+              this.model.removeTopic(editedTopic);
               doLayout();
               revalidate();
               repaint();
