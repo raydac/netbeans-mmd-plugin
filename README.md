@@ -17,7 +17,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 # Changelog
 __1.4.7 (SNAPSHOT)__
 - SR: embedded Java updated to 11.0.4
-- SR: PlantUML updated to 1.2019.7
+- SR: PlantUML updated to 1.2019.8
 
 __1.4.6 (26-may-2019)__
 - ALL:  Swing color chooser is replaced by custom one
