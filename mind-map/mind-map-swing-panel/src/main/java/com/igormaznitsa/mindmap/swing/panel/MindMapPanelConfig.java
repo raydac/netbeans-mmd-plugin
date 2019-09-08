@@ -110,6 +110,7 @@ public final class MindMapPanelConfig implements Serializable {
   private float connectorWidth = 1.5f;
   private float selectLineWidth = 3.0f;
   private float jumpLinkWidth = 1.5f;
+  private boolean smartTextPaste = false;
   private Font font = new Font(Font.SERIF, Font.BOLD, 18);
   private double scale = 1.0d;
   private boolean dropShadow = true;
@@ -529,6 +530,15 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
+  public boolean isSmartTextPaste() {
+    return this.smartTextPaste;
+  }
+  
+  public void setSmartTextPaste(final boolean flag) {
+    this.smartTextPaste = flag;
+    notifyCfgListenersAboutChange();
+  }
+  
   public boolean isDrawBackground() {
     return this.drawBackground;
   }

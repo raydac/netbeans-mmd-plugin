@@ -159,6 +159,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     checkBoxIgnoreWhereUsedRequests = new javax.swing.JCheckBox();
     labelMiscNeedsReloading = new javax.swing.JLabel();
     checkboxTrimTopicText = new javax.swing.JCheckBox();
+    checkBoxSmartTextPaste = new javax.swing.JCheckBox();
     jPanel5 = new javax.swing.JPanel();
     colorChooserSelectLine = new com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton();
     jLabel3 = new javax.swing.JLabel();
@@ -821,7 +822,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     labelMiscNeedsReloading.setText("IDE should be reloaded for effect"); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 9;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(labelMiscNeedsReloading, gridBagConstraints);
@@ -837,6 +838,19 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkboxTrimTopicText, gridBagConstraints);
+
+    checkBoxSmartTextPaste.setText(bundle.getString("MMDCfgPanel.checkBoxSmartTextPaste.text")); // NOI18N
+    checkBoxSmartTextPaste.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxSmartTextPasteActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 8;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    jPanel1.add(checkBoxSmartTextPaste, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -1343,6 +1357,12 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_spinnerGridStepStateChanged
 
+  private void checkBoxSmartTextPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxSmartTextPasteActionPerformed
+    if (changeNotificationAllowed) {
+      this.controller.changed();
+    }
+  }//GEN-LAST:event_checkBoxSmartTextPasteActionPerformed
+
   private void showNeedsReloadingNotification() {
     this.labelMiscNeedsReloading.setVisible(true);
   }
@@ -1394,7 +1414,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       this.slider2ndLevelVertGap.setValue(cfg.getOtherLevelVerticalInset());
 
       this.comboBoxRenderQuality.setSelectedItem(cfg.getRenderQuality());
-
+      this.checkBoxSmartTextPaste.setSelected(cfg.isSmartTextPaste());
+      
       this.mapKeyShortCuts.clear();
       this.mapKeyShortCuts.putAll(cfg.getKeyShortcutMap());
 
@@ -1447,7 +1468,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       cfg.setFirstLevelVerticalInset(this.slider1stLevelVertGap.getValue());
       cfg.setOtherLevelHorizontalInset(this.slider2ndLevelHorzGap.getValue());
       cfg.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
-
+      cfg.setSmartTextPaste(this.checkBoxSmartTextPaste.isSelected());
+      
       cfg.setRenderQuality((RenderQuality) this.comboBoxRenderQuality.getSelectedItem());
 
       for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
@@ -1514,6 +1536,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private javax.swing.JCheckBox checkBoxScalingMETA;
   private javax.swing.JCheckBox checkBoxScalingSHIFT;
   private javax.swing.JCheckBox checkBoxShowGrid;
+  private javax.swing.JCheckBox checkBoxSmartTextPaste;
   private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
   private javax.swing.JCheckBox checkBoxWatchFileRefactoring;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;

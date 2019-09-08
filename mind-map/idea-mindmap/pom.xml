@@ -25,7 +25,7 @@
               <goal>clean</goal>
             </goals>
             <configuration>
-              <followSyLinks>false</followSyLinks>
+              <followSymLinks>false</followSymLinks>
               <filesets>
                 <fileset>
                   <directory>${basedir}${file.separator}build</directory>

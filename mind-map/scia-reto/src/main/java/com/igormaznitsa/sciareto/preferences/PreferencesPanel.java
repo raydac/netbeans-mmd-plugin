@@ -214,6 +214,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     checkboxMetricsAllowed = new javax.swing.JCheckBox();
     checkboxTrimTopicText = new javax.swing.JCheckBox();
     checkBoxShowHiddenFiles = new javax.swing.JCheckBox();
+    checkBoxSmartTextPaste = new javax.swing.JCheckBox();
     jPanel9 = new javax.swing.JPanel();
     buttonAbout = new javax.swing.JButton();
     donateButton1 = new com.igormaznitsa.sciareto.ui.misc.DonateButton();
@@ -889,7 +890,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 9;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1000.0;
     jPanel1.add(jPanel7, gridBagConstraints);
@@ -945,7 +946,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel1.add(jPanel8, gridBagConstraints);
 
@@ -981,6 +982,19 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     jPanel1.add(checkBoxShowHiddenFiles, gridBagConstraints);
+
+    checkBoxSmartTextPaste.setText("Smart text paste");
+    checkBoxSmartTextPaste.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxSmartTextPasteActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 8;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    jPanel1.add(checkBoxSmartTextPaste, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -1436,6 +1450,12 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_buttonExtensionsOpenInSystemActionPerformed
 
+  private void checkBoxSmartTextPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxSmartTextPasteActionPerformed
+    if (this.changeNotificationAllowed){
+      this.changed = true;
+    }
+  }//GEN-LAST:event_checkBoxSmartTextPasteActionPerformed
+
   public void load(@Nonnull final Preferences preferences) {
     this.config.loadFrom(preferences);
     loadFrom(this.config, preferences);
@@ -1501,6 +1521,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.slider2ndLevelHorzGap.setValue(config.getOtherLevelHorizontalInset());
       this.slider2ndLevelVertGap.setValue(config.getOtherLevelVerticalInset());
 
+      this.checkBoxSmartTextPaste.setSelected(config.isSmartTextPaste());
+      
       this.mapKeyShortCuts.clear();
       this.mapKeyShortCuts.putAll(config.getKeyShortcutMap());
 
@@ -1544,6 +1566,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     config.setSelectLineWidth((Float) this.spinnerSelectLineWidth.getValue());
     config.setCollapsatorBorderWidth((Float) this.spinnerCollapsatorWidth.getValue());
     config.setElementBorderWidth((Float) this.spinnerElementBorderWidth.getValue());
+    config.setSmartTextPaste(this.checkBoxSmartTextPaste.isSelected());
 
     config.setFirstLevelHorizontalInset(this.slider1stLevelHorzGap.getValue());
     config.setFirstLevelVerticalInset(this.slider1stLevelVertGap.getValue());
@@ -1631,6 +1654,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private javax.swing.JCheckBox checkBoxScalingSHIFT;
   private javax.swing.JCheckBox checkBoxShowGrid;
   private javax.swing.JCheckBox checkBoxShowHiddenFiles;
+  private javax.swing.JCheckBox checkBoxSmartTextPaste;
   private javax.swing.JCheckBox checkBoxUnfoldCollapsedTarget;
   private javax.swing.JCheckBox checkboxMetricsAllowed;
   private javax.swing.JCheckBox checkboxRelativePathsForFilesInTheProject;
