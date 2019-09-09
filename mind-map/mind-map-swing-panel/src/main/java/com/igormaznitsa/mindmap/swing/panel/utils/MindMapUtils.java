@@ -30,10 +30,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -328,5 +331,85 @@ public final class MindMapUtils {
       result.add(t);
     }
     return result.toArray(new Topic[result.size()]);
+  }
+
+  /**
+   * Generate sub tree for whitespace offsets in text lines.
+   *
+   * @param topic topic to be root for generated text
+   * @param text text source to make topics
+   * @return same root topic provided as argument
+   * @since 1.4.7
+   */
+  @Nonnull
+  @ReturnsOriginal
+  public static Topic makeSubTreeFromText(@Nonnull final Topic topic, @Nonnull final String text) {
+    final String[] lines = Utils.breakToLines(text);
+
+    if (lines.length == 0) {
+      return topic;
+    }
+
+    int ignoredLeadingSpaces = Integer.MAX_VALUE;
+    for (String s : lines) {
+      if (s.trim().isEmpty()) {
+        continue;
+      }
+      s = s.replace("\t", "    ");
+      final int leadingSpacesNumber = s.length() - Utils.strip(s, true).length();
+      ignoredLeadingSpaces = Math.min(leadingSpacesNumber, ignoredLeadingSpaces);
+    }
+
+    int maxLineLength = 0;
+    for (int i = 0; i < lines.length; i++) {
+      final String old = lines[i];
+      final String str;
+      if (old.trim().isEmpty()) {
+        lines[i] = null;
+      } else {
+        lines[i] = old.substring(ignoredLeadingSpaces);
+        maxLineLength = Math.max(lines[i].length(), maxLineLength);
+      }
+    }
+
+    final Topic[] topics = new Topic[lines.length];
+    final Set<Integer> justAddedSibling = new HashSet<>();
+    for (int checkCharPosition = 0; checkCharPosition < maxLineLength; checkCharPosition++) {
+      justAddedSibling.clear();
+      for (int index = 0; index < lines.length; index++) {
+        final String textStr = lines[index];
+        if (textStr == null) {
+          continue;
+        }
+        if (!Character.isWhitespace(textStr.charAt(checkCharPosition))) {
+          lines[index] = null;
+          Topic mostCloseParentTopic = null;
+          for (int off = 1; index - off >= 0; off++) {
+            if (!justAddedSibling.contains(index - off)) {
+              if (topics[index - off] != null) {
+                mostCloseParentTopic = topics[index - off];
+                break;
+              }
+            }
+          }
+          if (mostCloseParentTopic == null) {
+            for (int off = 1; index + off < topics.length; off++) {
+              if (!justAddedSibling.contains(index + off)) {
+                if (topics[index + off] != null) {
+                  mostCloseParentTopic = topics[index + off];
+                  break;
+                }
+              }
+            }
+          }
+
+          final Topic newTopic = mostCloseParentTopic == null ? topic.makeChild(textStr.trim(), null) : mostCloseParentTopic.makeChild(textStr.trim(), null);
+          topics[index] = newTopic;
+          justAddedSibling.add(index);
+        }
+      }
+    }
+
+    return topic;
   }
 }

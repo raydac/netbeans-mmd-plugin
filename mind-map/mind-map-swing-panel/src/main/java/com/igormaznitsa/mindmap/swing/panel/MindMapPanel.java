@@ -179,10 +179,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                   final Topic edited = elementUnderEdit.getModel();
                   final int[] topicPosition = edited.getPositionPath();
                   endEdit(true);
-                      final Topic theTopic = model.findForPositionPath(topicPosition);
-                      if (theTopic != null) {
-                        makeNewChildAndStartEdit(theTopic, null);
-                      }
+                  final Topic theTopic = model.findForPositionPath(topicPosition);
+                  if (theTopic != null) {
+                    makeNewChildAndStartEdit(theTopic, null);
+                  }
                 }
               }
               break;
@@ -225,10 +225,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 if (pathToPrevTopicBeforeEdit != null) {
                   final int[] path = pathToPrevTopicBeforeEdit;
                   pathToPrevTopicBeforeEdit = null;
-                      final Topic topic = model.findForPositionPath(path);
-                      if (topic != null) {
-                        select(topic, false);
-                      }
+                  final Topic topic = model.findForPositionPath(path);
+                  if (topic != null) {
+                    select(topic, false);
+                  }
                 }
               }
             }
@@ -657,16 +657,16 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 final Dimension oldSize = mindMapImageSize.get();
 
                 final double oldScale = getScale();
-                final double curScale = ((long)(10.0d*(oldScale + (SCALE_STEP * -e.getWheelRotation()) + (SCALE_STEP/2.0d))))/10.0d;
+                final double curScale = ((long) (10.0d * (oldScale + (SCALE_STEP * -e.getWheelRotation()) + (SCALE_STEP / 2.0d)))) / 10.0d;
                 final double newScale = Math.max(SCALE_MINIMUM, Math.min(curScale, SCALE_MAXIMUM));
 
                 setScale(newScale, false);
                 MindMapPanel.this.doLayout();
                 MindMapPanel.this.revalidate();
                 MindMapPanel.this.repaint();
-                
+
                 final Dimension newSize = mindMapImageSize.get().getSize();
-                
+
                 fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, oldSize, newSize);
                 e.consume();
               } else {
@@ -1650,7 +1650,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             doLayout();
             parentElement = (AbstractElement) parent.getPayload();
           }
-          
+
           if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
             int numLeft = 0;
             int numRight = 0;
@@ -1954,7 +1954,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             if (contentChanged) {
               fireNotificationMindMapChanged(true);
             }
-            
+
             this.focusTo(editedTopic);
           } else {
             if (this.removeEditedTopicForRollback.get()) {
@@ -1991,12 +1991,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           element.fillByTextAndFont(this.textEditor);
           ensureVisibility(this.elementUnderEdit);
 
-                  final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
-                  textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
-                  textEditor.setMinimumSize(textBlockSize);
+          final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(), (int) element.getBounds().getHeight());
+          textEditorPanel.setBounds((int) element.getBounds().getX(), (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
+          textEditor.setMinimumSize(textBlockSize);
 
-                  textEditorPanel.setVisible(true);
-                  textEditor.requestFocus();
+          textEditorPanel.setVisible(true);
+          textEditor.requestFocus();
         }
       } finally {
         this.unlock();
@@ -2023,15 +2023,15 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           fireNotificationEnsureTopicVisibility(topic);
         }
 
-            if (topic == null) {
-              select(getModel().getRoot(), false);
-            } else {
-              final AbstractElement element = (AbstractElement) topic.getPayload();
-              if (element != null) {
-                final Rectangle2D bounds = element.getBounds();
-                processPopUp(new Point((int) Math.round(bounds.getCenterX()), (int) Math.round(bounds.getCenterY())), element);
-              }
-            }
+        if (topic == null) {
+          select(getModel().getRoot(), false);
+        } else {
+          final AbstractElement element = (AbstractElement) topic.getPayload();
+          if (element != null) {
+            final Rectangle2D bounds = element.getBounds();
+            processPopUp(new Point((int) Math.round(bounds.getCenterX()), (int) Math.round(bounds.getCenterY())), element);
+          }
+        }
       } finally {
         unlock();
       }
@@ -2299,7 +2299,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         MindMapPanel.super.doLayout();
       }
     };
-    
+
     if (SwingUtilities.isEventDispatchThread()) {
       run.run();
     } else {
@@ -2716,40 +2716,44 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             String clipboardText = (String) clipboard.getContents(null).getTransferData(DataFlavor.stringFlavor);
 
             if (clipboardText != null) {
-              clipboardText = clipboardText.trim();
-
-              final String topicText;
-              final String extraNoteText;
-
-              if (clipboardText.length() > MAX_TEXT_LEN) {
-                topicText = clipboardText.substring(0, MAX_TEXT_LEN) + "...";
-                extraNoteText = clipboardText;
+              if (this.getConfiguration().isSmartTextPaste()) {
+                for (final Topic t : this.getSelectedTopics()) {
+                  MindMapUtils.makeSubTreeFromText(t, clipboardText);
+                }
               } else {
-                topicText = clipboardText;
-                extraNoteText = null;
-              }
+                clipboardText = clipboardText.trim();
 
-              final Topic[] selectedTopics = this.getSelectedTopics();
+                final String topicText;
+                final String extraNoteText;
 
-              if (selectedTopics.length > 0) {
-                for (final Topic s : selectedTopics) {
-                  final Topic newTopic;
-                  if (extraNoteText == null) {
-                    newTopic = new Topic(this.model, s, topicText);
-                  } else {
-                    newTopic = new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
-                  }
-                  MindMapUtils.ensureVisibility(newTopic);
+                if (clipboardText.length() > MAX_TEXT_LEN) {
+                  topicText = clipboardText.substring(0, MAX_TEXT_LEN) + "...";
+                  extraNoteText = clipboardText;
+                } else {
+                  topicText = clipboardText;
+                  extraNoteText = null;
                 }
 
-                doLayout();
-                revalidate();
-                repaint();
+                final Topic[] selectedTopics = this.getSelectedTopics();
 
-                fireNotificationMindMapChanged(true);
-                result = true;
+                if (selectedTopics.length > 0) {
+                  for (final Topic s : selectedTopics) {
+                    final Topic newTopic;
+                    if (extraNoteText == null) {
+                      newTopic = new Topic(this.model, s, topicText);
+                    } else {
+                      newTopic = new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
+                    }
+                    MindMapUtils.ensureVisibility(newTopic);
+                  }
+                }
               }
+              doLayout();
+              revalidate();
+              repaint();
 
+              fireNotificationMindMapChanged(true);
+              result = true;
             }
           } catch (Exception ex) {
             LOGGER.error("Can't get clipboard text", ex);

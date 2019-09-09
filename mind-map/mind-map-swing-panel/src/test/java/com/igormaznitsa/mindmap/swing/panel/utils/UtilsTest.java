@@ -33,6 +33,22 @@ public class UtilsTest {
   }
   
   @Test
+  public void testStrip() {
+    assertEquals("", Utils.strip("", true));
+    assertEquals("", Utils.strip("", false));
+    assertEquals("", Utils.strip("   ", true));
+    assertEquals("", Utils.strip("   ", false));
+    assertEquals("huz aa", Utils.strip("huz aa", true));
+    assertEquals("huz aa", Utils.strip("huz aa", false));
+    assertEquals("huz aa", Utils.strip("   huz aa", true));
+    assertEquals("   huz aa", Utils.strip("   huz aa", false));
+    assertEquals("huz aa   ", Utils.strip("huz aa   ", true));
+    assertEquals("huz aa", Utils.strip("huz aa   ", false));
+    assertEquals("huz aa   ", Utils.strip("    huz aa   ", true));
+    assertEquals("    huz aa", Utils.strip("    huz aa   ", false));
+  }
+  
+  @Test
   public void testConvertCamelCasedToHumanForm(){
     assertEquals("Hello world and universe",Utils.convertCamelCasedToHumanForm("helloWorldAndUniverse", true));
     assertEquals("hello world and universe",Utils.convertCamelCasedToHumanForm("helloWorldAndUniverse", false));

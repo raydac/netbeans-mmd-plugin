@@ -62,6 +62,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -873,6 +874,19 @@ public final class Utils {
     return Base64.decode(text);
   }
 
+  private static final Pattern STRIP_PATTERN = Pattern.compile("^(\\s*)(.*[^\\s])(\\s*)$");
+  
+  @Nonnull
+  public static String strip(@Nonnull final String str, final boolean leading) {
+    if (str.trim().isEmpty()) return "";
+    final Matcher matcher = STRIP_PATTERN.matcher(str);
+    if (!matcher.find()){
+      throw new Error("Unexpected error in strip(String): "+str);
+    }
+    return leading ? matcher.group(2) + matcher.group(3) : matcher.group(1) + matcher.group(2);
+  }
+  
+  
   @Nonnull
   public static String base64encode(@Nonnull final byte[] data) {
     return Base64.encodeBytes(data);
