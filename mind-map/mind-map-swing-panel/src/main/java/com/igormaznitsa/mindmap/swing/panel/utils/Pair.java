@@ -15,14 +15,15 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import java.util.Objects;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Auxiliary class to keep some pair of objects in single container.
+ *
  * @param <L> left object type
- * @param <R>  right object type
+ * @param <R> right object type
  * @since 1.4.7
  */
 public class Pair<L, R> {
@@ -31,26 +32,30 @@ public class Pair<L, R> {
   private final R right;
 
   public Pair(@Nonnull final L left, @Nonnull final R right) {
-    this.left = Objects.requireNonNull(left);
-    this.right = Objects.requireNonNull(right);
+    this.left = Assertions.assertNotNull(left);
+    this.right = Assertions.assertNotNull(right);
   }
 
   @Override
   public int hashCode() {
     return this.left.hashCode() ^ this.right.hashCode();
   }
-  
+
   @Override
   public boolean equals(@Nullable final Object that) {
-    if (that == null) return false;
-    if (this == that) return true;
-    if (that instanceof Pair<?,?>) {
-      final Pair<?,?> thatPair = (Pair<?,?>)that;
+    if (that == null) {
+      return false;
+    }
+    if (this == that) {
+      return true;
+    }
+    if (that instanceof Pair<?, ?>) {
+      final Pair<?, ?> thatPair = (Pair<?, ?>) that;
       return this.left.equals(thatPair.left) && this.right.equals(thatPair.right);
     }
     return false;
   }
-  
+
   @Nonnull
   public L getLeft() {
     return this.left;
