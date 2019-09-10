@@ -19,8 +19,8 @@
 package com.igormaznitsa.sciareto.ui;
 
 import java.awt.Window;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
@@ -40,13 +40,9 @@ public final class Focuser implements AncestorListener {
   public void ancestorAdded(@Nonnull final AncestorEvent event) {
     if (event.getID() == AncestorEvent.ANCESTOR_ADDED) {
       if (event.getAncestor() instanceof Window) {
-        ((Window)event.getAncestor()).addWindowFocusListener(new WindowFocusListener() {
+        ((Window) event.getAncestor()).addWindowListener(new WindowAdapter() {
           @Override
-          public void windowLostFocus(@Nonnull final WindowEvent e) {
-          }
-          
-          @Override
-          public void windowGainedFocus(@Nonnull final WindowEvent e) {
+          public void windowOpened(@Nonnull final WindowEvent e) {
             try {
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -55,7 +51,7 @@ public final class Focuser implements AncestorListener {
                 }
               });
             } finally {
-              ((Window)e.getComponent()).removeWindowFocusListener(this);
+              ((Window) e.getComponent()).removeWindowListener(this);
             }
           }
         });
