@@ -41,18 +41,33 @@ public final class Focuser implements AncestorListener {
     if (event.getID() == AncestorEvent.ANCESTOR_ADDED) {
       if (event.getAncestor() instanceof Window) {
         ((Window) event.getAncestor()).addWindowListener(new WindowAdapter() {
+          private void doBusiness() {
+            SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+                component.requestFocus();
+              }
+            });
+          }
+
+          @Override
+          public void windowGainedFocus(@Nonnull final WindowEvent e) {
+            this.doBusiness();
+          }
+
+          @Override
+          public void windowActivated(@Nonnull final WindowEvent e) {
+            this.doBusiness();
+          }
+
           @Override
           public void windowOpened(@Nonnull final WindowEvent e) {
-            try {
-              SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                  component.requestFocus();
-                }
-              });
-            } finally {
-              ((Window) e.getComponent()).removeWindowListener(this);
-            }
+            this.doBusiness();
+          }
+
+          @Override
+          public void windowClosing(@Nonnull final WindowEvent e) {
+            ((Window) e.getComponent()).removeWindowListener(this);
           }
         });
         this.component.removeAncestorListener(this);
