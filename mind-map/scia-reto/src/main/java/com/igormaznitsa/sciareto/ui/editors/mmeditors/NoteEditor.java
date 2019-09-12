@@ -60,6 +60,7 @@ import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.Focuser;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Font;
 
@@ -292,6 +293,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     updateRedoUndoState();
     
     UiUtils.makeOwningDialogResizable(this);
+    
+    new Focuser(this.editorPane);
   }
 
   private void updateCaretPos() {
