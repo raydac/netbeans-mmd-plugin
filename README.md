@@ -16,9 +16,10 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.7 (SNAPSHOT)__
-- SR: embedded Java updated to 11.0.4
-- SR: PlantUML updated to 1.2019.8
-- SR: fixed autofocusing in topic edit dialogs [#56](https://github.com/raydac/netbeans-mmd-plugin/issues/56)
+- ALL: added support of "smart text paste" with splitting to topics (inactive by default)
+- SR:  embedded Java updated to 11.0.4
+- SR:  PlantUML updated to 1.2019.10
+- SR:  fixed autofocusing in topic edit dialogs [#56](https://github.com/raydac/netbeans-mmd-plugin/issues/56)
 
 __1.4.6 (26-may-2019)__
 - ALL:  Swing color chooser is replaced by custom one
