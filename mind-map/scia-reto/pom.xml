@@ -236,7 +236,9 @@
                   <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
                   <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
                   <output>${project.build.directory}${file.separator}jre_linux</output>
-                  <modulePath>${mvnjlink.jdk.linux.path}${file.separator}jmods</modulePath>
+                  <modulePaths>
+                    <path>${mvnjlink.jdk.linux.path}${file.separator}jmods</path>
+                  </modulePaths>
                   <options>
                     <option>--compress=2</option>
                     <option>--no-header-files</option>
@@ -257,7 +259,9 @@
                   <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
                   <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
                   <output>${project.build.directory}${file.separator}jre_windows</output>
-                  <modulePath>${mvnjlink.jdk.windows.path}${file.separator}jmods</modulePath>
+                  <modulePaths>
+                    <path>${mvnjlink.jdk.windows.path}${file.separator}jmods</path>
+                  </modulePaths>
                   <options>
                     <option>--compress=2</option>
                     <option>--no-header-files</option>
@@ -278,7 +282,9 @@
                   <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
                   <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
                   <output>${project.build.directory}${file.separator}jre_macos</output>
-                  <modulePath>${mvnjlink.jdk.macos.path}${file.separator}jmods</modulePath>
+                  <modulePaths>
+                    <path>${mvnjlink.jdk.macos.path}${file.separator}jmods</path>
+                  </modulePaths>
                   <options>
                     <option>--compress=2</option>
                     <option>--no-header-files</option>
