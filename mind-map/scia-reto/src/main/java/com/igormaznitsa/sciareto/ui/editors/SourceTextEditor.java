@@ -157,6 +157,7 @@ public final class SourceTextEditor extends AbstractEditor {
   private static final List<FormatType> SUPPORTED_FORMATS = new ArrayList<>();
 
   static {
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GO, Arrays.asList("go")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, Arrays.asList("as")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86, Arrays.asList("asm")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_BBCODE, Arrays.asList("bbcode")); //NOI18N
