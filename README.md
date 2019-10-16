@@ -17,7 +17,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 # Changelog
 __1.4.7 (SNAPSHOT)__
 - ALL: added support of "smart text paste" with splitting to topics (inactive by default)
-- SR:  embedded Java updated to 11.0.4
+- SR:  embedded Java updated to 11.0.5
 - SR:  PlantUML updated to 1.2019.11
 - SR:  fixed autofocusing in topic edit dialogs [#56](https://github.com/raydac/netbeans-mmd-plugin/issues/56)
 

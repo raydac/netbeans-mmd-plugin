@@ -34,7 +34,7 @@
     <rsyntax.autocomplete.version>3.0.2</rsyntax.autocomplete.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.4.0</jna.version>
-    <jre.version>11.0.4</jre.version>
+    <jre.version>11.0.5</jre.version>
   </properties>
 
   <dependencies>
@@ -337,9 +337,9 @@
                 <configuration>
                   <outfile>${project.build.directory}${file.separator}${app.name}.exe</outfile>
                   <dontWrapJar>true</dontWrapJar>
-                  <jar>.\scia-reto.jar</jar>
+                  <jar>scia-reto.jar</jar>
                   <jre>
-                    <path>.\jre</path>
+                    <path>jre</path>
                   </jre>
                 </configuration>
               </execution>
