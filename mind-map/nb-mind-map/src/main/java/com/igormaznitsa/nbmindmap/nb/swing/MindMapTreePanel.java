@@ -15,9 +15,11 @@
  */
 package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.mindmap.ide.commons.SortedTreeModelWrapper;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,8 +29,6 @@ import java.util.Comparator;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 public final class MindMapTreePanel extends javax.swing.JPanel implements Comparator<Object>{
 

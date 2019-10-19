@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,33 +16,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
+package com.igormaznitsa.mindmap.ide.commons;
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MindMapModelEvent;
+import com.igormaznitsa.mindmap.model.MindMapModelEventListener;
+import com.igormaznitsa.mindmap.model.Topic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
 
-public final class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
+public final class SortedTreeModelWrapper implements TreeModel, MindMapModelEventListener {
   private final MindMap model;
-  
-  private final Map<Object,List<Object>> sortedCache = new HashMap<>();
+
+  private final Map<Object, List<Object>> sortedCache = new HashMap<>();
   private final Comparator<Object> comparator;
-  
-  public SortedTreeModelWrapper(@Nonnull final MindMap model, @Nonnull final Comparator<Object> comparator){
+  private final List<TreeModelListener> treeListeners = new CopyOnWriteArrayList<>();
+
+  public SortedTreeModelWrapper(@Nonnull final MindMap model, @Nonnull final Comparator<Object> comparator) {
     this.model = model;
     this.comparator = comparator;
-    this.model.addTreeModelListener(this);
+    this.model.addMindMapModelEventListener(this);
   }
 
   @Override
@@ -59,17 +65,17 @@ public final class SortedTreeModelWrapper implements TreeModel, TreeModelListene
 
   @Override
   public int getChildCount(@Nonnull final Object parent) {
-    return this.model.getChildCount(parent);
+    return this.model.getChildCount((Topic) parent);
   }
 
   @Override
   public boolean isLeaf(@Nonnull final Object node) {
-    return this.model.isLeaf(node);
+    return this.model.isLeaf((Topic) node);
   }
 
   @Override
   public void valueForPathChanged(@Nonnull final TreePath path, @Nonnull final Object newValue) {
-    this.model.valueForPathChanged(path, newValue);
+    this.model.valueForPathChanged((Topic[]) path.getPath(), (String) newValue);
     this.sortedCache.clear();
   }
 
@@ -80,29 +86,29 @@ public final class SortedTreeModelWrapper implements TreeModel, TreeModelListene
 
   @Override
   public void addTreeModelListener(@Nonnull final TreeModelListener l) {
-    this.model.addTreeModelListener(l);
+    this.treeListeners.add(l);
   }
 
   @Override
   public void removeTreeModelListener(@Nonnull final TreeModelListener l) {
-    this.model.removeTreeModelListener(l);
+    this.treeListeners.remove(l);
   }
-  
-  private void clear(){
+
+  private void clear() {
     this.sortedCache.clear();
   }
-  
+
   @Nonnull
   @MustNotContainNull
-  private List<Object> getChildrenFromCache(@Nonnull final Object parent){
+  private List<Object> getChildrenFromCache(@Nonnull final Object parent) {
     List<Object> result = this.sortedCache.get(parent);
-    if (result == null){
+    if (result == null) {
       result = new ArrayList<>();
-      final int childCount = model.getChildCount(parent);
-      for(int i=0;i<childCount;i++){
-        result.add(model.getChild(parent, i));
+      final int childCount = model.getChildCount((Topic) parent);
+      for (int i = 0; i < childCount; i++) {
+        result.add(model.getChild((Topic) parent, i));
       }
-      if (this.comparator!=null){
+      if (this.comparator != null) {
         Collections.sort(result, this.comparator);
       }
       this.sortedCache.put(parent, result);
@@ -111,28 +117,25 @@ public final class SortedTreeModelWrapper implements TreeModel, TreeModelListene
   }
 
   @Override
-  public void treeNodesChanged(@Nonnull final TreeModelEvent e) {
-    
+  public void onMindMapStructureChanged(@Nonnull final MindMapModelEvent event) {
+    clear();
+    final TreeModelEvent treeEvent = new TreeModelEvent(this, event.getPath());
+    for (final TreeModelListener l : this.treeListeners) {
+      l.treeStructureChanged(treeEvent);
+    }
   }
 
   @Override
-  public void treeNodesInserted(@Nonnull final TreeModelEvent e) {
-    clear();
+  public void onMindMapNodesChanged(@Nonnull final MindMapModelEvent event) {
+    final TreeModelEvent treeEvent = new TreeModelEvent(this, event.getPath());
+    for (final TreeModelListener l : this.treeListeners) {
+      l.treeNodesChanged(treeEvent);
+    }
   }
 
-  @Override
-  public void treeNodesRemoved(@Nonnull final TreeModelEvent e) {
+  public void dispose() {
     clear();
+    this.model.removeMindMapModelEventListener(this);
   }
 
-  @Override
-  public void treeStructureChanged(@Nonnull final TreeModelEvent e) {
-    clear();
-  }
-   
-  public void dispose(){
-    clear();
-    this.model.removeTreeModelListener(this);
-  }
-  
 }

@@ -15,28 +15,26 @@
  */
 package com.igormaznitsa.nbmindmap.nb.navigator;
 
+import com.igormaznitsa.mindmap.ide.commons.SortedTreeModelWrapper;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDEditorSupport;
 import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
-import com.igormaznitsa.nbmindmap.nb.swing.SortedTreeModelWrapper;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.Comparator;
-
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
-
 import org.netbeans.spi.navigator.NavigatorPanel;
 import org.openide.filesystems.FileAttributeEvent;
 import org.openide.filesystems.FileChangeListener;
@@ -46,8 +44,6 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
-
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 @NavigatorPanel.Registration(displayName = "Mind map", mimeType = MMDDataObject.MIME)
 public final class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupListener, FileChangeListener, Comparator<Object> {
