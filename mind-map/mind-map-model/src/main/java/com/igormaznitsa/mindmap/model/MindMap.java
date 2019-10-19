@@ -54,7 +54,7 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   private static final String GENERATOR_VERSION_NAME = "__version__"; //NOI18N
   private final transient Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
-  private final transient List<MindMapModelEventListener> treeListeners = new CopyOnWriteArrayList<MindMapModelEventListener>();
+  private final transient List<MindMapModelEventListener> modelEventListeners = new CopyOnWriteArrayList<MindMapModelEventListener>();
   private final MindMapController controller;
   @Nullable
   private Topic root;
@@ -279,14 +279,14 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   private void fireModelChanged() {
     final Topic rootTopic = this.root;
     final MindMapModelEvent evt = new MindMapModelEvent(this, rootTopic == null ? null : rootTopic.getPath());
-    for (final MindMapModelEventListener l : this.treeListeners) {
+    for (final MindMapModelEventListener l : this.modelEventListeners) {
       l.onMindMapStructureChanged(evt);
     }
   }
 
   private void fireTopicChanged(@Nullable final Topic topic) {
     final MindMapModelEvent evt = new MindMapModelEvent(this, topic == null ? null : topic.getPath());
-    for (final MindMapModelEventListener l : this.treeListeners) {
+    for (final MindMapModelEventListener l : this.modelEventListeners) {
       l.onMindMapNodesChanged(evt);
     }
   }
@@ -543,12 +543,12 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
     return parent.getChildren().indexOf(child);
   }
 
-  public void addTreeModelListener(@Nonnull final MindMapModelEventListener l) {
-    this.treeListeners.add(l);
+  public void addMindMapModelEventListener(@Nonnull final MindMapModelEventListener l) {
+    this.modelEventListeners.add(l);
   }
 
-  public void removeTreeModelListener(@Nonnull final MindMapModelEventListener l) {
-    this.treeListeners.remove(l);
+  public void removeMindMapModelEventListener(@Nonnull final MindMapModelEventListener l) {
+    this.modelEventListeners.remove(l);
   }
 
   public boolean doesContainFileLink(@Nonnull final File baseFolder, @Nonnull final MMapURI file) {
