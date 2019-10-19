@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.model;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
@@ -34,19 +35,16 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 import org.apache.commons.io.IOUtils;
 
-public final class MindMap implements Serializable, Constants, TreeModel, Iterable<Topic> {
+public final class MindMap implements Serializable, Constants, Iterable<Topic> {
 
   public static final String FORMAT_VERSION = "1.1"; //NOI18N
   private static final long serialVersionUID = 5929181596778047354L;
@@ -56,7 +54,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
   private static final String GENERATOR_VERSION_NAME = "__version__"; //NOI18N
   private final transient Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
-  private final transient List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
+  private final transient List<MindMapModelEventListener> treeListeners = new CopyOnWriteArrayList<MindMapModelEventListener>();
   private final MindMapController controller;
   @Nullable
   private Topic root;
@@ -280,16 +278,16 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
 
   private void fireModelChanged() {
     final Topic rootTopic = this.root;
-    final TreeModelEvent evt = new TreeModelEvent(this, rootTopic == null ? (Topic[]) null : rootTopic.getPath());
-    for (final TreeModelListener l : this.treeListeners) {
-      l.treeStructureChanged(evt);
+    final MindMapModelEvent evt = new MindMapModelEvent(this, rootTopic == null ? null : rootTopic.getPath());
+    for (final MindMapModelEventListener l : this.treeListeners) {
+      l.onMindMapStructureChanged(evt);
     }
   }
 
   private void fireTopicChanged(@Nullable final Topic topic) {
-    final TreeModelEvent evt = new TreeModelEvent(this, topic == null ? null : topic.getPath());
-    for (final TreeModelListener l : this.treeListeners) {
-      l.treeNodesChanged(evt);
+    final MindMapModelEvent evt = new MindMapModelEvent(this, topic == null ? null : topic.getPath());
+    for (final MindMapModelEventListener l : this.treeListeners) {
+      l.onMindMapNodesChanged(evt);
     }
   }
 
@@ -373,7 +371,6 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     return result;
   }
 
-  @Override
   @Nullable
   public Topic getRoot() {
     this.locker.lock();
@@ -521,44 +518,36 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     }
   }
 
-  @Override
   @Nonnull
-  public Object getChild(@Nonnull final Object parent, final int index) {
-    return ((Topic) parent).getChildren().get(index);
+  public Topic getChild(@Nonnull final Topic parent, final int index) {
+    return parent.getChildren().get(index);
   }
 
-  @Override
-  public int getChildCount(@Nonnull Object parent) {
-    return ((Topic) parent).getChildren().size();
+  public int getChildCount(@Nonnull Topic parent) {
+    return parent.getChildren().size();
   }
 
-  @Override
-  public boolean isLeaf(@Nonnull final Object node) {
-    return !((Topic) node).hasChildren();
+  public boolean isLeaf(@Nonnull final Topic node) {
+    return !node.hasChildren();
   }
 
-  @Override
-  public void valueForPathChanged(@Nonnull final TreePath path, @Nullable final Object newValue) {
-    if (newValue instanceof String) {
-      ((Topic) path.getLastPathComponent()).setText((String) newValue);
-      fireTopicChanged((Topic) path.getLastPathComponent());
-    } else {
-      LOGGER.warn("Attempt to set non string value to path : " + path); //NOI18N
+  public void valueForPathChanged(@Nonnull @MustNotContainNull final Topic[] path, @Nullable final String newValue) {
+    if (path.length > 0) {
+      final Topic target = path[path.length - 1];
+      target.setText(GetUtils.ensureNonNull(newValue, ""));
+      fireTopicChanged(target);
     }
   }
 
-  @Override
-  public int getIndexOfChild(@Nonnull final Object parent, @Nullable final Object child) {
-    return ((Topic) parent).getChildren().indexOf(child);
+  public int getIndexOfChild(@Nonnull final Topic parent, @Nullable final Topic child) {
+    return parent.getChildren().indexOf(child);
   }
 
-  @Override
-  public void addTreeModelListener(@Nonnull final TreeModelListener l) {
+  public void addTreeModelListener(@Nonnull final MindMapModelEventListener l) {
     this.treeListeners.add(l);
   }
 
-  @Override
-  public void removeTreeModelListener(@Nonnull final TreeModelListener l) {
+  public void removeTreeModelListener(@Nonnull final MindMapModelEventListener l) {
     this.treeListeners.remove(l);
   }
 
