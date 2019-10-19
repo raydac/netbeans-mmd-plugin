@@ -84,9 +84,9 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
+          <groupId>org.apache.netbeans.utilities</groupId>
         <artifactId>nbm-maven-plugin</artifactId>
-        <version>4.1</version>
+          <version>4.3</version>
         <extensions>true</extensions>
         <configuration>
           <encoding>UTF-8</encoding>
