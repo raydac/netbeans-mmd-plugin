@@ -5,7 +5,7 @@ public class MMExtraData extends MMElementType {
     super("EXTRA_DATA");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "AbstractExtraData:" + super.toString();
   }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.filetemplate;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -25,7 +26,7 @@ public class MindMapTemplateGroupDescriptionFactory implements FileTemplateGroup
 
   @Override
   public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
-    final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor("IDEA Mind Map",AllIcons.Logo.MINDMAP);
+    final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor("IDEA Mind Map", AllIcons.Logo.MINDMAP);
     group.addTemplate(new FileTemplateDescriptor(MINDMAP_EMPTY_MAP, AllIcons.File.MINDMAP));
     return group;
   }

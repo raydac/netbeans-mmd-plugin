@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.facet;
 
 import com.intellij.facet.ui.FacetEditorTab;
 import com.intellij.openapi.options.ConfigurationException;
-import org.jetbrains.annotations.Nls;
-
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
+import org.jetbrains.annotations.Nls;
 
 public class MindMapFacetEditorTab extends FacetEditorTab {
 
@@ -28,42 +28,50 @@ public class MindMapFacetEditorTab extends FacetEditorTab {
 
   private MindMapFacetPanel panel;
 
-  public MindMapFacetEditorTab(final MindMapFacetConfiguration config){
+  public MindMapFacetEditorTab(final MindMapFacetConfiguration config) {
     this.config = config;
   }
 
-  @Nonnull @Override public JComponent createComponent() {
-    if (this.panel == null){
+  @Nonnull
+  @Override
+  public JComponent createComponent() {
+    if (this.panel == null) {
       this.panel = new MindMapFacetPanel(this);
     }
     return this.panel.getPanel();
   }
 
-  @Override public boolean isModified() {
+  @Override
+  public boolean isModified() {
     return this.panel != null && this.panel.isChanged();
   }
 
-  @Override public void apply() throws ConfigurationException {
-    if (this.panel!=null){
+  @Override
+  public void apply() throws ConfigurationException {
+    if (this.panel != null) {
       this.panel.save();
     }
   }
 
-  @Override public void reset() {
-    if (this.panel!=null){
+  @Override
+  public void reset() {
+    if (this.panel != null) {
       this.panel.reset();
     }
   }
 
-  @Override public void disposeUIResources() {
+  @Override
+  public void disposeUIResources() {
 
   }
 
-  public MindMapFacetConfiguration getConfiguration(){
+  public MindMapFacetConfiguration getConfiguration() {
     return this.config;
   }
 
-  @Nls @Override public String getDisplayName() {
+  @Nls
+  @Override
+  public String getDisplayName() {
     return "IDEA Mind Map";
   }
 }

@@ -22,13 +22,10 @@ import com.intellij.facet.ui.FacetEditorTab;
 import com.intellij.facet.ui.FacetValidatorsManager;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import java.util.List;
 import org.jdom.Element;
 
-import java.util.List;
-
 public class MindMapFacetConfiguration implements FacetConfiguration {
-
-  private final InMemoryPreferenceNode preferences = new InMemoryPreferenceNode();
 
   private static final String KEY_USE_INSIDE_BROWSER = "useInsideBrowser";
   private static final String KEY_USE_PROJECT_BASE_FOLDER_AS_ROOT = "useProjectBaseFolderAsRoot";
@@ -37,6 +34,7 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
   private static final String KEY_COPY_COLOR_INFO_FROM_PARENT = "copyParentColorInfoInNew";
   private static final String KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET = "unfoldCollapsedTopicInDrop";
   private static final String KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION = "disableAutocreateProjectKnowledgeFolder";
+  private final InMemoryPreferenceNode preferences = new InMemoryPreferenceNode();
 
   public MindMapFacetConfiguration() {
   }
@@ -95,6 +93,10 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
     return this.preferences.getBoolean(KEY_USE_INSIDE_BROWSER, false);
   }
 
+  public void setUseInsideBrowser(final boolean flag) {
+    this.preferences.putBoolean(KEY_USE_INSIDE_BROWSER, flag);
+  }
+
   public boolean isCopyColorInformationFromParent() {
     return this.preferences.getBoolean(KEY_COPY_COLOR_INFO_FROM_PARENT, true);
   }
@@ -109,10 +111,6 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
 
   public void setUnfoldTopicWhenItIsDropTarget(final boolean flag) {
     this.preferences.putBoolean(KEY_UNFOLD_COLLAPSED_TOPIC_DROP_TARGET, flag);
-  }
-
-  public void setUseInsideBrowser(final boolean flag) {
-    this.preferences.putBoolean(KEY_USE_INSIDE_BROWSER, flag);
   }
 
   public boolean isMakeRelativePath() {

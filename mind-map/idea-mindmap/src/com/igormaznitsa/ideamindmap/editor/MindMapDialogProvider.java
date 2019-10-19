@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
@@ -20,14 +21,13 @@ import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.WindowManager;
-
+import java.awt.Component;
+import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.io.File;
 
 public class MindMapDialogProvider implements DialogProvider {
   private final Project project;
@@ -56,7 +56,8 @@ public class MindMapDialogProvider implements DialogProvider {
     return Messages.showOkCancelDialog(this.project, text, title, Messages.getQuestionIcon()) == Messages.OK;
   }
 
-  @Override public boolean msgOkCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final JComponent component) {
+  @Override
+  public boolean msgOkCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final JComponent component) {
     return IdeaUtils.plainMessageOkCancel(this.project, title, component);
   }
 
@@ -71,7 +72,8 @@ public class MindMapDialogProvider implements DialogProvider {
     return result == Messages.CANCEL ? null : result == Messages.YES;
   }
 
-  @Nullable @Override
+  @Nullable
+  @Override
   public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean fileOnly, @Nullable final FileFilter fileFilter,
                                 @Nonnull final String approveButtonText) {
 
@@ -84,8 +86,7 @@ public class MindMapDialogProvider implements DialogProvider {
 
     if (fileChooser.showOpenDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
       return fileChooser.getSelectedFile();
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -93,18 +94,17 @@ public class MindMapDialogProvider implements DialogProvider {
   @Override
   public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean fileOnly, @Nullable final FileFilter fileFilter,
                                 @Nonnull final String approveButtonText) {
-      final JFileChooser fileChooser = new JFileChooser(defaultFolder);
-      fileChooser.setDialogTitle(title);
-      fileChooser.setFileFilter(fileFilter);
-      fileChooser.setAcceptAllFileFilterUsed(true);
-      fileChooser.setMultiSelectionEnabled(false);
-      fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    final JFileChooser fileChooser = new JFileChooser(defaultFolder);
+    fileChooser.setDialogTitle(title);
+    fileChooser.setFileFilter(fileFilter);
+    fileChooser.setAcceptAllFileFilterUsed(true);
+    fileChooser.setMultiSelectionEnabled(false);
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-      if (fileChooser.showSaveDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
-        return fileChooser.getSelectedFile();
-      }
-      else {
-        return null;
-      }
+    if (fileChooser.showSaveDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
+      return fileChooser.getSelectedFile();
+    } else {
+      return null;
     }
   }
+}

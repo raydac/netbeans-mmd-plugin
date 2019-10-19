@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.intellij.openapi.util.IconLoader;
-
-import javax.swing.*;
+import javax.swing.Icon;
 
 public class AllIcons {
   public static class Logo {
@@ -49,16 +49,16 @@ public class AllIcons {
   }
 
   public static class Tree {
-    public static final Icon DOCUMENT= IconLoader.getIcon("/icons/document.png");
-    public static final Icon BLUEBALL= IconLoader.getIcon("/icons/blueball.png");
-    public static final Icon GOLDBALL= IconLoader.getIcon("/icons/goldball.png");
+    public static final Icon DOCUMENT = IconLoader.getIcon("/icons/document.png");
+    public static final Icon BLUEBALL = IconLoader.getIcon("/icons/blueball.png");
+    public static final Icon GOLDBALL = IconLoader.getIcon("/icons/goldball.png");
   }
 
   public static class Buttons {
-    public static final Icon CROSS= IconLoader.getIcon("/icons/cross.png");
-    public static final Icon CANCEL= IconLoader.getIcon("/icons/cancel.png");
-    public static final Icon TICK= IconLoader.getIcon("/icons/tick.png");
-    public static final Icon QUESTION= IconLoader.getIcon("/icons/question.png");
+    public static final Icon CROSS = IconLoader.getIcon("/icons/cross.png");
+    public static final Icon CANCEL = IconLoader.getIcon("/icons/cancel.png");
+    public static final Icon TICK = IconLoader.getIcon("/icons/tick.png");
+    public static final Icon QUESTION = IconLoader.getIcon("/icons/question.png");
     public static final Icon EXPANDALL = IconLoader.getIcon("/icons/toggle_expand.png");
     public static final Icon COLLAPSEALL = IconLoader.getIcon("/icons/toggle.png");
     public static final Icon SELECT = IconLoader.getIcon("/icons/select.png");

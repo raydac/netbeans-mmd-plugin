@@ -3,9 +3,8 @@ package com.igormaznitsa.ideamindmap.lang.psi;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import org.apache.commons.lang.StringEscapeUtils;
-
 import javax.annotation.Nonnull;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class PsiTopic extends ASTWrapperPsiElement implements MMPsiElement {
 
@@ -19,7 +18,8 @@ public class PsiTopic extends ASTWrapperPsiElement implements MMPsiElement {
     this.unescapedText = StringEscapeUtils.unescapeHtml(text.substring(level).trim());
   }
 
-  @Override public String getName() {
+  @Override
+  public String getName() {
     return this.unescapedText;
   }
 

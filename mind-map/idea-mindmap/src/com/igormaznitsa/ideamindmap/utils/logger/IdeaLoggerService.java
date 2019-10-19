@@ -13,36 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.utils.logger;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerService;
 import com.intellij.util.containers.HashMap;
-import javax.annotation.Nonnull;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class IdeaLoggerService implements LoggerService {
 
-  private final Map<Class<?>, Logger> cacheForClass = new HashMap<Class<?>,Logger>();
-  private final Map<String, Logger> cacheForCategory = new HashMap<String,Logger>();
+  private final Map<Class<?>, Logger> cacheForClass = new HashMap<Class<?>, Logger>();
+  private final Map<String, Logger> cacheForCategory = new HashMap<String, Logger>();
 
-  @Override @Nonnull public Logger getLogger(@Nonnull final Class<?> aClass) {
-    synchronized (this.cacheForClass){
+  @Override
+  @Nonnull
+  public Logger getLogger(@Nonnull final Class<?> aClass) {
+    synchronized (this.cacheForClass) {
       Logger result = this.cacheForClass.get(aClass);
-      if (result == null){
+      if (result == null) {
         result = new IdeaLogger(aClass);
-        cacheForClass.put(aClass,result);
+        cacheForClass.put(aClass, result);
       }
       return result;
     }
   }
 
-  @Override @Nonnull public Logger getLogger(@Nonnull final String category) {
-    synchronized (this.cacheForCategory){
+  @Override
+  @Nonnull
+  public Logger getLogger(@Nonnull final String category) {
+    synchronized (this.cacheForCategory) {
       Logger result = this.cacheForCategory.get(category);
-      if (result == null){
+      if (result == null) {
         result = new IdeaLogger(category);
-        this.cacheForCategory.put(category,result);
+        this.cacheForCategory.put(category, result);
       }
       return result;
     }

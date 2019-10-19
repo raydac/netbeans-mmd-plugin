@@ -5,7 +5,7 @@ public class MMCodeSnippetStart extends MMElementType {
     super("CODESNIPPET_START");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "CodeSnippetStart:" + super.toString();
   }

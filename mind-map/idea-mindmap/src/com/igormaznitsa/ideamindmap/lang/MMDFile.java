@@ -9,7 +9,6 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.search.SearchScope;
-
 import javax.annotation.Nonnull;
 
 public class MMDFile extends PsiFileBase {
@@ -18,19 +17,23 @@ public class MMDFile extends PsiFileBase {
     super(fileViewProvider, MMLanguage.INSTANCE);
   }
 
-  @Nonnull @Override public SearchScope getUseScope() {
+  @Nonnull
+  @Override
+  public SearchScope getUseScope() {
     final Module module = ModuleUtilCore.findModuleForPsiElement(this);
     return module != null ? IdeaUtils.moduleScope(getProject(), module) : super.getUseScope();
   }
 
-  @Nonnull @Override public FileType getFileType() {
+  @Nonnull
+  @Override
+  public FileType getFileType() {
     return MindMapFileType.INSTANCE;
   }
 
   @Override
   public String toString() {
     final VirtualFile virtualFile = getVirtualFile();
-    return "MMDFile: " + (virtualFile != null? virtualFile.getName() : "<unknown>");
+    return "MMDFile: " + (virtualFile != null ? virtualFile.getName() : "<unknown>");
   }
 
 }

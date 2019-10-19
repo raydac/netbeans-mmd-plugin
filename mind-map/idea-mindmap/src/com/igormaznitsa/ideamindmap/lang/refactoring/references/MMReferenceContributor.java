@@ -7,14 +7,14 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiReferenceContributor;
 import com.intellij.psi.PsiReferenceRegistrar;
-
 import javax.annotation.Nonnull;
 
 public class MMReferenceContributor extends PsiReferenceContributor {
 
   static final Logger logger = LoggerFactory.getLogger(MMReferenceContributor.class);
 
-  @Override public void registerReferenceProviders(@Nonnull final PsiReferenceRegistrar registrar) {
-    registrar.registerReferenceProvider(PlatformPatterns.psiElement(PsiExtraFile.class),new PsiExtraFileReferenceProvider());
+  @Override
+  public void registerReferenceProviders(@Nonnull final PsiReferenceRegistrar registrar) {
+    registrar.registerReferenceProvider(PlatformPatterns.psiElement(PsiExtraFile.class), new PsiExtraFileReferenceProvider());
   }
 }

@@ -33,13 +33,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.ui.EditorTextField;
-import org.apache.commons.io.FileUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -50,6 +45,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FileUtils;
 
 public class PlainTextEditor extends JPanel {
   private static final long serialVersionUID = -125160747070513137L;
@@ -71,62 +75,7 @@ public class PlainTextEditor extends JPanel {
       return BUNDLE.getString("PlainTextEditor.fileFilter.description");
     }
   };
-
-  public static class EmptyTextEditor extends EditorTextField {
-
-    public EmptyTextEditor(final Project project) {
-      super("", project, FileTypes.PLAIN_TEXT);
-      setOneLineMode(false);
-      setAutoscrolls(true);
-    }
-
-    @Override
-    protected EditorEx createEditor() {
-      final EditorEx result = super.createEditor();
-      result.setVerticalScrollbarVisible(true);
-      result.setHorizontalScrollbarVisible(true);
-      return result;
-    }
-
-    public String getSelectedText() {
-      final SelectionModel model = Assertions.assertNotNull(this.getEditor()).getSelectionModel();
-      final int start = model.getSelectionStart();
-      final int end = model.getSelectionEnd();
-      return getDocument().getText(new TextRange(start, end));
-    }
-
-    public void replaceSelection(@Nonnull final String clipboardText) {
-      ApplicationManager.getApplication().runWriteAction(new Runnable() {
-        @Override
-        public void run() {
-          CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-            @Override
-            public void run() {
-              final SelectionModel model = Assertions.assertNotNull(getEditor()).getSelectionModel();
-              final int start = model.getSelectionStart();
-              final int end = model.getSelectionEnd();
-              getDocument().replaceString(start, end, "");
-              getDocument().insertString(start, clipboardText);
-            }
-          }, null, null, UndoConfirmationPolicy.DEFAULT, getDocument());
-        }
-      });
-    }
-
-    public void clear() {
-      this.setText("");
-    }
-  }
-
   private final EmptyTextEditor editor;
-
-  @Nonnull
-  private JButton makeButton(@Nullable final String text, @Nullable final Icon icon) {
-    final JButton result = UI_COMPO_FACTORY.makeButton();
-    result.setText(text);
-    result.setIcon(icon);
-    return result;
-  }
 
   public PlainTextEditor(final Project project, final String text) {
     super(new BorderLayout());
@@ -227,11 +176,65 @@ public class PlainTextEditor extends JPanel {
     });
   }
 
+  @Nonnull
+  private JButton makeButton(@Nullable final String text, @Nullable final Icon icon) {
+    final JButton result = UI_COMPO_FACTORY.makeButton();
+    result.setText(text);
+    result.setIcon(icon);
+    return result;
+  }
+
   public String getText() {
     return this.editor.getText();
   }
 
   public EmptyTextEditor getEditor() {
     return this.editor;
+  }
+
+  public static class EmptyTextEditor extends EditorTextField {
+
+    public EmptyTextEditor(final Project project) {
+      super("", project, FileTypes.PLAIN_TEXT);
+      setOneLineMode(false);
+      setAutoscrolls(true);
+    }
+
+    @Override
+    protected EditorEx createEditor() {
+      final EditorEx result = super.createEditor();
+      result.setVerticalScrollbarVisible(true);
+      result.setHorizontalScrollbarVisible(true);
+      return result;
+    }
+
+    public String getSelectedText() {
+      final SelectionModel model = Assertions.assertNotNull(this.getEditor()).getSelectionModel();
+      final int start = model.getSelectionStart();
+      final int end = model.getSelectionEnd();
+      return getDocument().getText(new TextRange(start, end));
+    }
+
+    public void replaceSelection(@Nonnull final String clipboardText) {
+      ApplicationManager.getApplication().runWriteAction(new Runnable() {
+        @Override
+        public void run() {
+          CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
+            @Override
+            public void run() {
+              final SelectionModel model = Assertions.assertNotNull(getEditor()).getSelectionModel();
+              final int start = model.getSelectionStart();
+              final int end = model.getSelectionEnd();
+              getDocument().replaceString(start, end, "");
+              getDocument().insertString(start, clipboardText);
+            }
+          }, null, null, UndoConfirmationPolicy.DEFAULT, getDocument());
+        }
+      });
+    }
+
+    public void clear() {
+      this.setText("");
+    }
   }
 }

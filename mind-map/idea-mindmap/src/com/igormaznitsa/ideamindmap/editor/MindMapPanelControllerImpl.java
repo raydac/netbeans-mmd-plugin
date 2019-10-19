@@ -16,6 +16,10 @@
 
 package com.igormaznitsa.ideamindmap.editor;
 
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
+
+
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
@@ -56,19 +60,17 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.openapi.options.ShowSettingsUtil;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
-import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
-import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 public class MindMapPanelControllerImpl implements MindMapPanelController, MindMapConfigListener {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
@@ -76,6 +78,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
   private final MindMapDocumentEditor editor;
   private final MindMapDialogProvider dialogProvider;
+  private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors = null;
 
   public MindMapPanelControllerImpl(final MindMapDocumentEditor editor) {
     this.editor = editor;
@@ -139,8 +142,6 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   public MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull MindMapPanel mindMapPanel) {
     return MindMapApplicationSettings.findInstance().getConfig();
   }
-
-  private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors = null;
 
   private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> getCustomProcessors() {
     if (this.customProcessors == null) {
@@ -373,7 +374,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
           final MindMapPanel mindMapPanel = this.editor.getMindMapPanel();
           mindMapPanel.invalidate();
           mindMapPanel.repaint();
-          this.editor.onMindMapModelChanged(mindMapPanel,true);
+          this.editor.onMindMapModelChanged(mindMapPanel, true);
         }
       }
     }

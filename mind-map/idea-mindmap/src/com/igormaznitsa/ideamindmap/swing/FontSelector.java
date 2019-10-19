@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -26,6 +23,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 public class FontSelector implements ActionListener {
   private JComboBox comboBoxName;
@@ -34,13 +35,14 @@ public class FontSelector implements ActionListener {
   private JPanel mainPanel;
   private JTextArea textArea;
 
-  @SuppressWarnings("unchecked") public FontSelector(final Font initial) {
+  @SuppressWarnings("unchecked")
+  public FontSelector(final Font initial) {
 
     final DefaultComboBoxModel<String> modelName = new DefaultComboBoxModel<String>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
     this.comboBoxName.setModel(modelName);
     this.comboBoxName.setSelectedItem(initial.getFamily());
 
-    final DefaultComboBoxModel<String> modelStyle = new DefaultComboBoxModel<String>(new String[] { "Plain", "Bold", "Italic", "Bold+Italic" });
+    final DefaultComboBoxModel<String> modelStyle = new DefaultComboBoxModel<String>(new String[] {"Plain", "Bold", "Italic", "Bold+Italic"});
     this.comboBoxStyle.setModel(modelStyle);
 
     this.textArea.setWrapStyleWord(true);
@@ -51,10 +53,10 @@ public class FontSelector implements ActionListener {
     selectForStyle(initial.getStyle());
 
     final List<Integer> sizes = new ArrayList<Integer>();
-    for(int i=3;i<72;i++){
+    for (int i = 3; i < 72; i++) {
       sizes.add(i);
     }
-    final DefaultComboBoxModel<Integer> modelSize = new DefaultComboBoxModel<Integer>(sizes.toArray(new Integer[]{sizes.size()}));
+    final DefaultComboBoxModel<Integer> modelSize = new DefaultComboBoxModel<Integer>(sizes.toArray(new Integer[] {sizes.size()}));
     this.comboBoxSize.setModel(modelSize);
 
     this.comboBoxSize.setSelectedItem(initial.getSize());
@@ -65,7 +67,7 @@ public class FontSelector implements ActionListener {
     this.comboBoxStyle.addActionListener(this);
     this.comboBoxSize.addActionListener(this);
 
-    final Dimension size = new Dimension(550,300);
+    final Dimension size = new Dimension(550, 300);
 
     this.mainPanel.setMinimumSize(size);
     this.mainPanel.setPreferredSize(size);
@@ -73,42 +75,47 @@ public class FontSelector implements ActionListener {
 
   private void selectForStyle(final int style) {
     switch (style) {
-    case Font.PLAIN:
-      this.comboBoxStyle.setSelectedIndex(0);break;
-    case Font.BOLD:
-      this.comboBoxStyle.setSelectedIndex(1);break;
-    case Font.ITALIC:
-      this.comboBoxStyle.setSelectedIndex(2);break;
-    default:
-      this.comboBoxStyle.setSelectedIndex(3);break;
+      case Font.PLAIN:
+        this.comboBoxStyle.setSelectedIndex(0);
+        break;
+      case Font.BOLD:
+        this.comboBoxStyle.setSelectedIndex(1);
+        break;
+      case Font.ITALIC:
+        this.comboBoxStyle.setSelectedIndex(2);
+        break;
+      default:
+        this.comboBoxStyle.setSelectedIndex(3);
+        break;
     }
   }
 
   private int getFontStyle() {
     switch (this.comboBoxStyle.getSelectedIndex()) {
-    case 0:
-      return Font.PLAIN;
-    case 1:
-      return Font.BOLD;
-    case 2:
-      return Font.ITALIC;
-    default:
-      return Font.BOLD | Font.ITALIC;
+      case 0:
+        return Font.PLAIN;
+      case 1:
+        return Font.BOLD;
+      case 2:
+        return Font.ITALIC;
+      default:
+        return Font.BOLD | Font.ITALIC;
     }
   }
 
   public Font getValue() {
     final String family = (String) this.comboBoxName.getSelectedItem();
     final int style = getFontStyle();
-    final int size = (Integer)this.comboBoxSize.getSelectedItem();
-    return new Font(family,style,size);
+    final int size = (Integer) this.comboBoxSize.getSelectedItem();
+    return new Font(family, style, size);
   }
 
   public JPanel getPanel() {
     return this.mainPanel;
   }
 
-  @Override public void actionPerformed(ActionEvent e) {
+  @Override
+  public void actionPerformed(ActionEvent e) {
     this.textArea.setFont(getValue());
   }
 }

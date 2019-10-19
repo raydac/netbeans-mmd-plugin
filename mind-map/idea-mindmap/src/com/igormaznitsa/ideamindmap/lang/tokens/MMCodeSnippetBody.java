@@ -5,7 +5,7 @@ public class MMCodeSnippetBody extends MMElementType {
     super("CODESNIPPET_BODY");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "CodeSnippetBody:" + super.toString();
   }

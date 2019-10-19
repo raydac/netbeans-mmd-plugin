@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -23,13 +24,6 @@ import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JToolBar;
-import javax.swing.JTree;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,14 +31,25 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Comparator;
 import java.util.ResourceBundle;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JToolBar;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 public final class MindMapTreePanel extends javax.swing.JPanel implements Comparator<Object>, HasPreferredFocusComponent {
 
   private static final long serialVersionUID = 2652308291444091807L;
-
-  private final MindMapTreeCellRenderer cellRenderer = new MindMapTreeCellRenderer();
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private final MindMapTreeCellRenderer cellRenderer = new MindMapTreeCellRenderer();
   private final SortedTreeModelWrapper sortedModel;
+  private JButton buttonCollapseAll;
+  private JButton buttonExpandAll;
+  private JButton buttonUnselect;
+  private JToolBar toolBar;
+  private JTree treeMindMap;
+  private JBScrollPane treeScrollPane;
 
   public MindMapTreePanel(final MindMap map, final ExtraTopic selectedTopicUid, final boolean expandAll, final ActionListener listener) {
     initComponents();
@@ -59,8 +64,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
           this.treeMindMap.setSelectionPath(new TreePath(topic.getPath()));
         }
       }
-    }
-    else {
+    } else {
       this.sortedModel = null;
     }
 
@@ -85,16 +89,17 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
     }
   }
 
-  @Override public JComponent getComponentPreferredForFocus() {
+  @Override
+  public JComponent getComponentPreferredForFocus() {
     return this.treeMindMap;
   }
 
   public void expandAll() {
-    Utils.foldUnfoldTree(this.treeMindMap,true);
+    Utils.foldUnfoldTree(this.treeMindMap, true);
   }
 
   public void collapseAll() {
-    Utils.foldUnfoldTree(this.treeMindMap,false);
+    Utils.foldUnfoldTree(this.treeMindMap, false);
   }
 
   public JTree getTree() {
@@ -182,13 +187,6 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
       this.sortedModel.dispose();
     }
   }
-
-  private JButton buttonCollapseAll;
-  private JButton buttonExpandAll;
-  private JButton buttonUnselect;
-  private JToolBar toolBar;
-  private JTree treeMindMap;
-  private JBScrollPane treeScrollPane;
 
   @Override
   public int compare(final Object o1, final Object o2) {

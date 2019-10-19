@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -25,7 +26,6 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -51,25 +51,35 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
 
   private final List<KeyShortcut> listOfKeys;
   private final List<TableModelListener> listeners = new ArrayList<TableModelListener>();
+  private JToggleButton buttonEditKeyCode;
+  private JBCheckBox checkBoxALT;
+  private JBCheckBox checkBoxCTRL;
+  private JBCheckBox checkBoxMeta;
+  private JBCheckBox checkBoxSHIFT;
+  private JBPanel mainPanel;
+  private JBScrollPane scrollPaneTable;
+  private JBLabel labelKeyCode;
+  private JBTable tableKeyShortcuts;
+  private JBTextField textFieldKeyCode;
 
-  public KeyShortCutEditPanel (final List<KeyShortcut> list) {
+  public KeyShortCutEditPanel(final List<KeyShortcut> list) {
     super();
     initComponents();
     this.listOfKeys = new ArrayList<KeyShortcut>(list);
     this.tableKeyShortcuts.setModel(this);
     this.tableKeyShortcuts.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
-      public void valueChanged (final ListSelectionEvent e) {
+      public void valueChanged(final ListSelectionEvent e) {
         updateForSelected();
       }
     });
 
     this.tableKeyShortcuts.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter"); //NOI18N
-    this.tableKeyShortcuts.getActionMap().put("Enter", new AbstractAction(){ //NOI18N
+    this.tableKeyShortcuts.getActionMap().put("Enter", new AbstractAction() { //NOI18N
       private static final long serialVersionUID = -5644390861803492172L;
-      
+
       @Override
-      public void actionPerformed (final ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         buttonEditKeyCode.requestFocus();
         buttonEditKeyCode.doClick();
       }
@@ -83,16 +93,16 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
 
     final ActionListener actionCheckBox = new ActionListener() {
       @Override
-      public void actionPerformed (final ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final int selectedRow = tableKeyShortcuts.getSelectedRow();
-        if (selectedRow>=0){
+        if (selectedRow >= 0) {
           final KeyShortcut oldShortCut = listOfKeys.get(selectedRow);
 
           int modifiers = oldShortCut.getModifiers();
           final JBCheckBox source = (JBCheckBox) e.getSource();
-          if (e.getSource() == checkBoxALT){
+          if (e.getSource() == checkBoxALT) {
             modifiers = source.isSelected() ? modifiers | KeyEvent.ALT_MASK : modifiers & ~KeyEvent.ALT_MASK;
-          } else if (e.getSource() == checkBoxCTRL){
+          } else if (e.getSource() == checkBoxCTRL) {
             modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
           } else if (e.getSource() == checkBoxMeta) {
             modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
@@ -102,8 +112,8 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
 
           listOfKeys.set(selectedRow, new KeyShortcut(oldShortCut.getID(), oldShortCut.getKeyCode(), modifiers));
 
-          for(final TableModelListener l : listeners){
-            l.tableChanged(new TableModelEvent(theInstance,selectedRow));
+          for (final TableModelListener l : listeners) {
+            l.tableChanged(new TableModelEvent(theInstance, selectedRow));
           }
 
           updateForSelected();
@@ -117,30 +127,30 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
     this.checkBoxSHIFT.addActionListener(actionCheckBox);
   }
 
-  private void updateCurrentSelectedForKey (final KeyEvent evt) {
+  private void updateCurrentSelectedForKey(final KeyEvent evt) {
     final int index = this.tableKeyShortcuts.getSelectedRow();
-    if (index>=0){
+    if (index >= 0) {
       final KeyShortcut oldShortcut = this.listOfKeys.get(index);
       final int keyCode = evt.getKeyCode();
       final int modifiers = evt.getModifiers() & (KeyEvent.META_MASK | KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK);
-      final KeyShortcut newShortCut = new KeyShortcut(oldShortcut.getID(),keyCode,modifiers);
+      final KeyShortcut newShortCut = new KeyShortcut(oldShortcut.getID(), keyCode, modifiers);
       this.listOfKeys.set(index, newShortCut);
-      for(final TableModelListener l:this.listeners){
-        l.tableChanged(new TableModelEvent(this,index));
+      for (final TableModelListener l : this.listeners) {
+        l.tableChanged(new TableModelEvent(this, index));
       }
     }
 
     updateForSelected();
   }
 
-  private KeyShortcut getSelectedRow(){
+  private KeyShortcut getSelectedRow() {
     final int index = this.tableKeyShortcuts.getSelectedRow();
     return index < 0 ? null : this.listOfKeys.get(index);
   }
 
-  private void updateForSelected(){
+  private void updateForSelected() {
     final KeyShortcut shortcut = getSelectedRow();
-    if (shortcut == null){
+    if (shortcut == null) {
       this.buttonEditKeyCode.setEnabled(false);
       this.buttonEditKeyCode.setSelected(false);
 
@@ -156,7 +166,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
 
       this.textFieldKeyCode.setText(""); //NOI18N
       this.textFieldKeyCode.setEnabled(false);
-    }else{
+    } else {
       this.buttonEditKeyCode.setEnabled(true);
       this.buttonEditKeyCode.setSelected(false);
 
@@ -174,11 +184,11 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
     }
   }
 
-  public List<KeyShortcut> getResult(){
+  public List<KeyShortcut> getResult() {
     return this.listOfKeys;
   }
 
-  @SuppressWarnings ("unchecked")
+  @SuppressWarnings("unchecked")
   private void initComponents() {
 
     scrollPaneTable = new JBScrollPane();
@@ -221,6 +231,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
       public void keyTyped(java.awt.event.KeyEvent evt) {
         textFieldKeyCodeKeyTyped(evt);
       }
+
       public void keyPressed(java.awt.event.KeyEvent evt) {
         textFieldKeyCodeKeyPressed(evt);
       }
@@ -236,72 +247,75 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
     javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
     mainPanel.setLayout(mainPanelLayout);
     mainPanelLayout.setHorizontalGroup(
-      mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-          .addContainerGap(44, Short.MAX_VALUE)
-          .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-              .addComponent(labelKeyCode)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(textFieldKeyCode))
-            .addGroup(mainPanelLayout.createSequentialGroup()
-              .addComponent(checkBoxALT)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(checkBoxCTRL)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(checkBoxSHIFT)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(checkBoxMeta)))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addComponent(buttonEditKeyCode)
-          .addContainerGap())
+        mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                .addContainerGap(44, Short.MAX_VALUE)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(labelKeyCode)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textFieldKeyCode))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(checkBoxALT)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(checkBoxCTRL)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(checkBoxSHIFT)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(checkBoxMeta)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonEditKeyCode)
+                .addContainerGap())
     );
     mainPanelLayout.setVerticalGroup(
-      mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(mainPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(buttonEditKeyCode, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, mainPanelLayout.createSequentialGroup()
-              .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(labelKeyCode)
-                .addComponent(textFieldKeyCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-              .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(checkBoxALT)
-                .addComponent(checkBoxCTRL)
-                .addComponent(checkBoxSHIFT)
-                .addComponent(checkBoxMeta))))
-          .addContainerGap(44, Short.MAX_VALUE))
+        mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(buttonEditKeyCode, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, mainPanelLayout.createSequentialGroup()
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(labelKeyCode)
+                            .addComponent(textFieldKeyCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(checkBoxALT)
+                            .addComponent(checkBoxCTRL)
+                            .addComponent(checkBoxSHIFT)
+                            .addComponent(checkBoxMeta))))
+                .addContainerGap(44, Short.MAX_VALUE))
     );
 
     add(mainPanel, java.awt.BorderLayout.PAGE_END);
   }
 
   private void buttonEditKeyCodeActionPerformed(java.awt.event.ActionEvent evt) {
-    if (this.buttonEditKeyCode.isSelected()){
+    if (this.buttonEditKeyCode.isSelected()) {
       this.textFieldKeyCode.requestFocus();
     }
   }
 
   private void textFieldKeyCodeFocusLost(java.awt.event.FocusEvent evt) {
-    if (this.buttonEditKeyCode.isSelected()){
+    if (this.buttonEditKeyCode.isSelected()) {
       this.buttonEditKeyCode.setSelected(false);
     }
   }
 
   private void textFieldKeyCodeKeyPressed(java.awt.event.KeyEvent evt) {
-    if (this.buttonEditKeyCode.isSelected()){
-      switch(evt.getKeyCode()){
-      case KeyEvent.VK_META:
-      case KeyEvent.VK_ALT:
-      case KeyEvent.VK_SHIFT:
-      case KeyEvent.VK_CONTROL: evt.consume();break;
-      default:{
-        updateCurrentSelectedForKey(evt);
-        this.buttonEditKeyCode.setSelected(false);
-        this.tableKeyShortcuts.requestFocus();
-      }break;
+    if (this.buttonEditKeyCode.isSelected()) {
+      switch (evt.getKeyCode()) {
+        case KeyEvent.VK_META:
+        case KeyEvent.VK_ALT:
+        case KeyEvent.VK_SHIFT:
+        case KeyEvent.VK_CONTROL:
+          evt.consume();
+          break;
+        default: {
+          updateCurrentSelectedForKey(evt);
+          this.buttonEditKeyCode.setSelected(false);
+          this.tableKeyShortcuts.requestFocus();
+        }
+        break;
       }
     }
     evt.consume();
@@ -312,77 +326,72 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
   }
 
   private void tableKeyShortcutsMouseClicked(java.awt.event.MouseEvent evt) {
-    if (evt.getClickCount()>1){
+    if (evt.getClickCount() > 1) {
       this.buttonEditKeyCode.requestFocus();
       this.buttonEditKeyCode.doClick();
     }
   }
 
-  private JToggleButton buttonEditKeyCode;
-  private JBCheckBox checkBoxALT;
-  private JBCheckBox checkBoxCTRL;
-  private JBCheckBox checkBoxMeta;
-  private JBCheckBox checkBoxSHIFT;
-  private JBPanel mainPanel;
-  private JBScrollPane scrollPaneTable;
-  private JBLabel labelKeyCode;
-  private JBTable tableKeyShortcuts;
-  private JBTextField textFieldKeyCode;
-
-  public JBTable getTableComponent(){
+  public JBTable getTableComponent() {
     return this.tableKeyShortcuts;
   }
 
   @Override
-  public int getRowCount () {
+  public int getRowCount() {
     return this.listOfKeys.size();
   }
 
   @Override
-  public int getColumnCount () {
+  public int getColumnCount() {
     return 2;
   }
 
   @Override
-  public String getColumnName (int columnIndex) {
-    switch(columnIndex){
-    case 0 : return BUNDLE.getString("KeyShortCutEditPanel.ColumnName");
-    case 1 : return BUNDLE.getString("KeyShortCutEditPanel.ColumnKey");
-    default: return null;
+  public String getColumnName(int columnIndex) {
+    switch (columnIndex) {
+      case 0:
+        return BUNDLE.getString("KeyShortCutEditPanel.ColumnName");
+      case 1:
+        return BUNDLE.getString("KeyShortCutEditPanel.ColumnKey");
+      default:
+        return null;
     }
   }
 
   @Override
-  public Class<?> getColumnClass (int columnIndex) {
+  public Class<?> getColumnClass(int columnIndex) {
     return String.class;
   }
 
   @Override
-  public boolean isCellEditable (int rowIndex, int columnIndex) {
+  public boolean isCellEditable(int rowIndex, int columnIndex) {
     return false;
   }
 
   @Override
-  public Object getValueAt (int rowIndex, int columnIndex) {
+  public Object getValueAt(int rowIndex, int columnIndex) {
     final KeyShortcut key = this.listOfKeys.get(rowIndex);
-    switch(columnIndex){
-    case 0 : return Utils.convertCamelCasedToHumanForm(key.getID(),true);
-    case 1 : return key.toString();
-    default: return null;
+    switch (columnIndex) {
+      case 0:
+        return Utils.convertCamelCasedToHumanForm(key.getID(), true);
+      case 1:
+        return key.toString();
+      default:
+        return null;
     }
   }
 
   @Override
-  public void setValueAt (Object aValue, int rowIndex, int columnIndex) {
+  public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
   }
 
   @Override
-  public void addTableModelListener (TableModelListener l) {
+  public void addTableModelListener(TableModelListener l) {
     this.listeners.add(l);
   }
 
   @Override
-  public void removeTableModelListener (TableModelListener l) {
+  public void removeTableModelListener(TableModelListener l) {
     this.listeners.remove(l);
   }
 }

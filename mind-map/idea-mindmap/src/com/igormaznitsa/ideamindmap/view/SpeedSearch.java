@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.view;
 
 import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode;
 import com.intellij.ui.TreeSpeedSearch;
-
+import java.util.StringTokenizer;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.util.StringTokenizer;
 
 final class SpeedSearch extends TreeSpeedSearch {
   SpeedSearch(JTree tree) {
@@ -33,8 +33,9 @@ final class SpeedSearch extends TreeSpeedSearch {
     Object userObject = ((DefaultMutableTreeNode) ((TreePath) element).getLastPathComponent()).getUserObject();
     if (userObject instanceof PsiDirectoryNode) {
       String str = getElementText(element);
-      if (str == null)
+      if (str == null) {
         return false;
+      }
       str = str.toLowerCase();
       if (pattern.indexOf('.') >= 0) {
         return compare(str, pattern);
@@ -47,8 +48,7 @@ final class SpeedSearch extends TreeSpeedSearch {
         }
       }
       return false;
-    }
-    else {
+    } else {
       return super.isMatchingElement(element, pattern);
     }
   }

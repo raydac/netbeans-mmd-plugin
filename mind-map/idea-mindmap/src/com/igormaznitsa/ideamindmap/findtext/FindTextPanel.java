@@ -19,22 +19,33 @@
 
 package com.igormaznitsa.ideamindmap.findtext;
 
+import static com.igormaznitsa.mindmap.ide.commons.Misc.string2pattern;
+
+
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
-
-import javax.annotation.Nonnull;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FocusTraversalPolicy;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
-
-import static com.igormaznitsa.mindmap.ide.commons.Misc.string2pattern;
+import javax.annotation.Nonnull;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public final class FindTextPanel extends JBPanel implements FindTextScopeProvider {
 

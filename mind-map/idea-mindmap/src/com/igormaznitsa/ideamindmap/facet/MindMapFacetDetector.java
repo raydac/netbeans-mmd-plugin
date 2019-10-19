@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.facet;
 
 import com.igormaznitsa.ideamindmap.filetype.MindMapFileType;
@@ -23,24 +24,28 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.util.indexing.FileContent;
-
 import javax.annotation.Nonnull;
 
-public class MindMapFacetDetector extends FacetBasedFrameworkDetector<MindMapFacet,MindMapFacetConfiguration> {
+public class MindMapFacetDetector extends FacetBasedFrameworkDetector<MindMapFacet, MindMapFacetConfiguration> {
 
   public MindMapFacetDetector() {
     super("NBMindMapFacetDetector");
   }
 
-  @Override public FacetType<MindMapFacet, MindMapFacetConfiguration> getFacetType() {
+  @Override
+  public FacetType<MindMapFacet, MindMapFacetConfiguration> getFacetType() {
     return MindMapFacetType.INSTANCE;
   }
 
-  @Nonnull @Override public FileType getFileType() {
+  @Nonnull
+  @Override
+  public FileType getFileType() {
     return MindMapFileType.INSTANCE;
   }
 
-  @Nonnull @Override public ElementPattern<FileContent> createSuitableFilePattern() {
+  @Nonnull
+  @Override
+  public ElementPattern<FileContent> createSuitableFilePattern() {
     return FileContentPattern.fileContent().withName(StandardPatterns.string().endsWith(".mmd"));
   }
 }

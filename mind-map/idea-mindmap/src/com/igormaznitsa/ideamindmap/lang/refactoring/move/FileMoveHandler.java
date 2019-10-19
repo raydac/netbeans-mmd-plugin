@@ -13,56 +13,62 @@ import com.intellij.usageView.UsageInfo;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.Processor;
 import com.intellij.util.Query;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 public class FileMoveHandler extends MoveFileHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FileMoveHandler.class);
 
-  @Override public boolean canProcessElement(final PsiFile element) {
+  @Override
+  public boolean canProcessElement(final PsiFile element) {
     return true;
   }
 
-  @Override public void prepareMovedFile(PsiFile file, PsiDirectory moveDestination, Map<PsiElement, PsiElement> oldToNewMap) {
+  @Override
+  public void prepareMovedFile(PsiFile file, PsiDirectory moveDestination, Map<PsiElement, PsiElement> oldToNewMap) {
     oldToNewMap.put(file, file);
   }
 
-  @Nullable @Override public List<UsageInfo> findUsages(final PsiFile psiFile, final PsiDirectory newParent, final boolean searchInComments, final boolean searchInNonJavaFiles) {
+  @Nullable
+  @Override
+  public List<UsageInfo> findUsages(final PsiFile psiFile, final PsiDirectory newParent, final boolean searchInComments, final boolean searchInNonJavaFiles) {
     Query<PsiReference> search = ReferencesSearch.search(psiFile);
     final List<PsiExtraFileReference> extraFileRefs = new ArrayList<PsiExtraFileReference>();
     search.forEach(new Processor<PsiReference>() {
-      @Override public boolean process(PsiReference psiReference) {
-        if (psiReference instanceof PsiExtraFileReference){
-          extraFileRefs.add((PsiExtraFileReference)psiReference);
+      @Override
+      public boolean process(PsiReference psiReference) {
+        if (psiReference instanceof PsiExtraFileReference) {
+          extraFileRefs.add((PsiExtraFileReference) psiReference);
         }
         return true;
       }
     });
 
-    if (extraFileRefs.isEmpty()){
+    if (extraFileRefs.isEmpty()) {
       return null;
-    }else{
+    } else {
       final List<UsageInfo> result = new ArrayList<UsageInfo>(extraFileRefs.size());
-      for(final PsiExtraFileReference e : extraFileRefs){
+      for (final PsiExtraFileReference e : extraFileRefs) {
         result.add(new FileUsageInfo(e));
       }
       return result;
     }
   }
 
-  @Override public void retargetUsages(final List<UsageInfo> usageInfos, Map<PsiElement, PsiElement> oldToNewMap) {
+  @Override
+  public void retargetUsages(final List<UsageInfo> usageInfos, Map<PsiElement, PsiElement> oldToNewMap) {
     final PsiFile newFile = (PsiFile) oldToNewMap.values().iterator().next();
 
-    for(final UsageInfo i : usageInfos){
+    for (final UsageInfo i : usageInfos) {
       final PsiExtraFileReference reference = ((FileUsageInfo) i).getExtraFileReference();
       reference.retargetToFile(newFile);
     }
   }
 
-  @Override public void updateMovedFile(PsiFile file) throws IncorrectOperationException {
+  @Override
+  public void updateMovedFile(PsiFile file) throws IncorrectOperationException {
   }
 }

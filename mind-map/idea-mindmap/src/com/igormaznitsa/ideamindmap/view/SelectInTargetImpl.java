@@ -9,9 +9,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import org.jetbrains.annotations.Nullable;
-
 import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nullable;
 
 public class SelectInTargetImpl implements SelectInTarget {
   private final Project myProject;

@@ -2,7 +2,6 @@ package com.igormaznitsa.ideamindmap.lang.psi;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.intellij.lang.ASTNode;
-
 import javax.annotation.Nonnull;
 
 public class PsiExtraURI extends AbstractExtraData {
@@ -11,7 +10,8 @@ public class PsiExtraURI extends AbstractExtraData {
     super(node);
   }
 
-  @Override public Extra.ExtraType getExtraType() {
+  @Override
+  public Extra.ExtraType getExtraType() {
     return Extra.ExtraType.LINK;
   }
 }

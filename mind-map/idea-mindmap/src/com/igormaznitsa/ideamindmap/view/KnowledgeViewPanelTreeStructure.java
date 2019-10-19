@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.view;
 
 import com.igormaznitsa.ideamindmap.view.nodes.KnowledgeViewProjectNode;
@@ -23,18 +24,16 @@ import com.intellij.ide.util.treeView.AbstractTreeStructureBase;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class KnowledgeViewPanelTreeStructure extends AbstractTreeStructureBase implements ViewSettings, TreeStructureProvider, DumbAware {
 
-  private List<TreeStructureProvider> myProviders;
-
   private final AbstractTreeNode myRoot;
+  private List<TreeStructureProvider> myProviders;
 
   public KnowledgeViewPanelTreeStructure(final Project project) {
     super(project);
@@ -48,7 +47,7 @@ public class KnowledgeViewPanelTreeStructure extends AbstractTreeStructureBase i
   @Override
   public List<TreeStructureProvider> getProviders() {
     if (myProviders == null) {
-      final TreeStructureProvider[] providers = new TreeStructureProvider[]{this};
+      final TreeStructureProvider[] providers = new TreeStructureProvider[] {this};
       myProviders = Arrays.asList(providers);
     }
     return myProviders;
@@ -58,52 +57,66 @@ public class KnowledgeViewPanelTreeStructure extends AbstractTreeStructureBase i
     myProviders = treeStructureProviders == null ? null : Arrays.asList(treeStructureProviders);
   }
 
-  @Override public Object getRootElement() {
+  @Override
+  public Object getRootElement() {
     return this.myRoot;
   }
 
-  @Override public void commit() {
+  @Override
+  public void commit() {
     PsiDocumentManager.getInstance(myProject).commitAllDocuments();
   }
 
-  @Override public boolean hasSomethingToCommit() {
+  @Override
+  public boolean hasSomethingToCommit() {
     return !myProject.isDisposed()
-      && PsiDocumentManager.getInstance(myProject).hasUncommitedDocuments();
+        && PsiDocumentManager.getInstance(myProject).hasUncommitedDocuments();
   }
 
-  @Override public boolean isShowMembers() {
+  @Override
+  public boolean isShowMembers() {
     return false;
   }
 
-  @Override public boolean isStructureView() {
+  @Override
+  public boolean isStructureView() {
     return false;
   }
 
-  @Override public boolean isShowModules() {
+  @Override
+  public boolean isShowModules() {
     return false;
   }
 
-  @Override public boolean isFlattenPackages() {
+  @Override
+  public boolean isFlattenPackages() {
     return false;
   }
 
-  @Override public boolean isAbbreviatePackageNames() {
+  @Override
+  public boolean isAbbreviatePackageNames() {
     return false;
   }
 
-  @Override public boolean isHideEmptyMiddlePackages() {
+  @Override
+  public boolean isHideEmptyMiddlePackages() {
     return false;
   }
 
-  @Override public boolean isShowLibraryContents() {
+  @Override
+  public boolean isShowLibraryContents() {
     return false;
   }
 
-  @Nonnull @Override public Collection<AbstractTreeNode> modify(@Nonnull final AbstractTreeNode parent, @Nonnull final Collection<AbstractTreeNode> children, final ViewSettings settings) {
+  @Nonnull
+  @Override
+  public Collection<AbstractTreeNode> modify(@Nonnull final AbstractTreeNode parent, @Nonnull final Collection<AbstractTreeNode> children, final ViewSettings settings) {
     return children;
   }
 
-  @Nullable @Override public Object getData(Collection<AbstractTreeNode> selected, String dataName) {
+  @Nullable
+  @Override
+  public Object getData(Collection<AbstractTreeNode> selected, String dataName) {
     return null;
   }
 }

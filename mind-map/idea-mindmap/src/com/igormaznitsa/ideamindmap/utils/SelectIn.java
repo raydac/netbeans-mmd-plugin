@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
@@ -37,84 +38,85 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
-
 import javax.annotation.Nonnull;
 
 public enum SelectIn {
   IDE,
-  SYSTEM,;
+  SYSTEM,
+  ;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SelectIn.class);
 
-  private static void projectFocusTo(final Project project,final VirtualFile file){
+  private static void projectFocusTo(final Project project, final VirtualFile file) {
     final ProjectView view = ProjectView.getInstance(project);
 
     String viewToActivate = ProjectViewPane.ID;
 
-    if (KnowledgeViewPane.ID.equals(view.getCurrentViewId())){
+    if (KnowledgeViewPane.ID.equals(view.getCurrentViewId())) {
       final Module theModule = ModuleUtil.findModuleForFile(file, project);
-      if (theModule == null){
+      if (theModule == null) {
         viewToActivate = null;
-      }else{
-        final VirtualFile knowledgeFolder = IdeaUtils.findKnowledgeFolderForModule(theModule,false);
-        if (knowledgeFolder != null && VfsUtil.isAncestor(knowledgeFolder,file,true)){
+      } else {
+        final VirtualFile knowledgeFolder = IdeaUtils.findKnowledgeFolderForModule(theModule, false);
+        if (knowledgeFolder != null && VfsUtil.isAncestor(knowledgeFolder, file, true)) {
           viewToActivate = KnowledgeViewPane.ID;
         }
       }
     }
 
-    if (viewToActivate!=null){
+    if (viewToActivate != null) {
       view.changeView(viewToActivate);
     }
 
     final ToolWindow toolwindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.PROJECT_VIEW);
-    if (toolwindow != null)
+    if (toolwindow != null) {
       toolwindow.activate(new Runnable() {
-        @Override public void run() {
+        @Override
+        public void run() {
           view.select(null, file, true);
         }
       });
+    }
   }
 
   public void open(@Nonnull final MindMapDocumentEditor source, @Nonnull final VirtualFile file, final int line) {
     final ProjectManager manager = ProjectManager.getInstance();
     switch (this) {
-    case IDE: {
-      if (file.isDirectory()) {
-        if (IdeaUtils.isInProjectContentRoot(source.getProject(),file)) {
-          projectFocusTo(source.getProject(), file);
-        }else{
-          try {
-            manager.loadAndOpenProject(file.getCanonicalPath());
-          }catch(Exception ex){
-            LOGGER.error("Can't open folder as project ["+file+']',ex);
-            IdeaUtils.openInSystemViewer(source.getDialogProvider(), file);
+      case IDE: {
+        if (file.isDirectory()) {
+          if (IdeaUtils.isInProjectContentRoot(source.getProject(), file)) {
+            projectFocusTo(source.getProject(), file);
+          } else {
+            try {
+              manager.loadAndOpenProject(file.getCanonicalPath());
+            } catch (Exception ex) {
+              LOGGER.error("Can't open folder as project [" + file + ']', ex);
+              IdeaUtils.openInSystemViewer(source.getDialogProvider(), file);
+            }
           }
-        }
-      }
-      else {
-        projectFocusTo(source.getProject(),file);
-        final FileEditor [] editors = FileEditorManager.getInstance(source.getProject()).openFile(file,true);
+        } else {
+          projectFocusTo(source.getProject(), file);
+          final FileEditor[] editors = FileEditorManager.getInstance(source.getProject()).openFile(file, true);
 
-        if (line > 0) {
-          for(final FileEditor e : editors) {
-            if (e instanceof NavigatableFileEditor) {
-              final TextEditor navigatedEditor = (TextEditor) e;
-              final Editor editor = navigatedEditor.getEditor();
-              if (editor!=null && editor.getDocument().getLineCount()>line){
-                editor.getCaretModel().moveToLogicalPosition(new LogicalPosition(line-1,0));
-                editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+          if (line > 0) {
+            for (final FileEditor e : editors) {
+              if (e instanceof NavigatableFileEditor) {
+                final TextEditor navigatedEditor = (TextEditor) e;
+                final Editor editor = navigatedEditor.getEditor();
+                if (editor != null && editor.getDocument().getLineCount() > line) {
+                  editor.getCaretModel().moveToLogicalPosition(new LogicalPosition(line - 1, 0));
+                  editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+                }
               }
             }
           }
         }
       }
-    }
-    break;
-    case SYSTEM: {
-      IdeaUtils.openInSystemViewer(source.getDialogProvider(), file);
-    }
-    break;
+      break;
+      case SYSTEM: {
+        IdeaUtils.openInSystemViewer(source.getDialogProvider(), file);
+      }
+      break;
     }
   }
 }

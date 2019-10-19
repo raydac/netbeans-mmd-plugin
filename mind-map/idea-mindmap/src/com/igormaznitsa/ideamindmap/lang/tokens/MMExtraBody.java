@@ -5,7 +5,7 @@ public class MMExtraBody extends MMElementType {
     super("EXTRA_BODY");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "ExtraBody:" + super.toString();
   }

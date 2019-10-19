@@ -5,7 +5,7 @@ public class MMExtraType extends MMElementType {
     super("EXTRA_TYPE");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "ExtraType:" + super.toString();
   }

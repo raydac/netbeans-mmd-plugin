@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -24,16 +25,16 @@ import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ResourceBundle;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public final class UriEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
   private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
@@ -42,6 +43,9 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
 
   private static final long serialVersionUID = -6683682013891751388L;
+  private javax.swing.JLabel labelBrowseCurrentLink;
+  private javax.swing.JLabel labelValidator;
+  private javax.swing.JTextField textFieldURI;
 
   public UriEditPanel(final String uri) {
     initComponents();
@@ -70,7 +74,7 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
   }
 
   @Override
-  public JComponent getComponentPreferredForFocus(){
+  public JComponent getComponentPreferredForFocus() {
     return this.textFieldURI;
   }
 
@@ -83,8 +87,7 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
     this.labelValidator.setText("");
     if (text.isEmpty()) {
       this.labelValidator.setIcon(AllIcons.Buttons.QUESTION);
-    }
-    else {
+    } else {
       this.labelValidator.setIcon(Utils.isUriCorrect(text) ? AllIcons.Buttons.TICK : AllIcons.Buttons.CANCEL);
     }
   }
@@ -130,7 +133,7 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
 
     final JButton resetButton = new JButton(AllIcons.Buttons.CROSS);
     gridBagConstraints.ipadx = 0;
-    add(resetButton,gridBagConstraints);
+    add(resetButton, gridBagConstraints);
 
     resetButton.setFocusable(false);
 
@@ -146,15 +149,10 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
     if (evt.getClickCount() > 1) {
       try {
         IdeaUtils.browseURI(new URI(this.getText().trim()), false);
-      }
-      catch (URISyntaxException ex) {
+      } catch (URISyntaxException ex) {
         LOGGER.error("Can't start browser for URI syntax error", ex);
         Toolkit.getDefaultToolkit().beep();
       }
     }
   }
-
-  private javax.swing.JLabel labelBrowseCurrentLink;
-  private javax.swing.JLabel labelValidator;
-  private javax.swing.JTextField textFieldURI;
 }

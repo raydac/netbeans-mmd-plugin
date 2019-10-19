@@ -5,7 +5,7 @@ public class MMTopic extends MMElementType {
     super("TOPIC");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "Topic:" + super.toString();
   }

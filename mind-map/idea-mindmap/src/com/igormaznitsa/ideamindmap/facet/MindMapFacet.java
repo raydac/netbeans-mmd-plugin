@@ -25,14 +25,12 @@ import com.intellij.facet.FacetType;
 import com.intellij.facet.FacetTypeId;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapFacet.class);
-
   public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<MindMapFacet>("NBMindMap");
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapFacet.class);
 
   public MindMapFacet(@Nonnull final FacetType facetType, @Nonnull final Module module,
                       @Nonnull final String name, @Nonnull final MindMapFacetConfiguration configuration, final Facet underlyingFacet) {

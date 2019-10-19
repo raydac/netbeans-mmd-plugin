@@ -6,10 +6,9 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NonNls;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NonNls;
 
 public class PsiExtraType extends ASTWrapperPsiElement implements PsiNamedElement, MMPsiElement {
 
@@ -22,21 +21,22 @@ public class PsiExtraType extends ASTWrapperPsiElement implements PsiNamedElemen
     if (text.length() > 1) {
       try {
         result = Extra.ExtraType.valueOf(text.substring(1).trim());
-      }catch (IllegalArgumentException ex){
+      } catch (IllegalArgumentException ex) {
         result = null;
       }
-    }else{
+    } else {
       result = null;
     }
     this.type = result;
   }
 
   @Nullable
-  public Extra.ExtraType getType(){
+  public Extra.ExtraType getType() {
     return type;
   }
 
-  @Override public PsiElement setName(@NonNls @Nonnull String name) throws IncorrectOperationException {
+  @Override
+  public PsiElement setName(@NonNls @Nonnull String name) throws IncorrectOperationException {
     throw new IncorrectOperationException("Can't rename");
   }
 }

@@ -5,7 +5,7 @@ public class MMCodeSnippetEnd extends MMElementType {
     super("CODESNIPPET_END");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "CodeSnippetEnd:" + super.toString();
   }

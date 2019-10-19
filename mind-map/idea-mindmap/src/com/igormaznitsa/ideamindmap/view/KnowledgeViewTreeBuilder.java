@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.view;
 
 import com.intellij.ProjectTopics;
@@ -41,24 +42,23 @@ import com.intellij.util.Alarm;
 import com.intellij.util.SmartList;
 import com.intellij.util.messages.MessageBusConnection;
 import gnu.trove.THashSet;
-
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.Set;
 
 public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
 
   public KnowledgeViewTreeBuilder(@Nonnull Project project,
-    @Nonnull JTree tree,
-    @Nonnull DefaultTreeModel treeModel,
-    @Nullable Comparator<NodeDescriptor> comparator,
-    @Nonnull KnowledgeViewPanelTreeStructure treeStructure) {
+                                  @Nonnull JTree tree,
+                                  @Nonnull DefaultTreeModel treeModel,
+                                  @Nullable Comparator<NodeDescriptor> comparator,
+                                  @Nonnull KnowledgeViewPanelTreeStructure treeStructure) {
     super(project, tree, treeModel, treeStructure, comparator);
 
     final MessageBusConnection connection = project.getMessageBus().connect(this);
@@ -85,6 +85,42 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
 
   protected ProjectViewPsiTreeChangeListener createPsiTreeChangeListener(final Project project) {
     return new ProjectTreeBuilderPsiListener(project);
+  }
+
+  private PsiElement findPsi(@Nonnull VirtualFile vFile) {
+    if (!vFile.isValid()) {
+      return null;
+    }
+    PsiManager psiManager = PsiManager.getInstance(myProject);
+    return vFile.isDirectory() ? psiManager.findDirectory(vFile) : psiManager.findFile(vFile);
+  }
+
+  private void updateNodesContaining(@Nonnull Collection<VirtualFile> filesToRefresh, @Nonnull DefaultMutableTreeNode rootNode) {
+    if (!(rootNode.getUserObject() instanceof ProjectViewNode)) {
+      return;
+    }
+    ProjectViewNode node = (ProjectViewNode) rootNode.getUserObject();
+    Collection<VirtualFile> containingFiles = null;
+    for (VirtualFile virtualFile : filesToRefresh) {
+      if (!virtualFile.isValid()) {
+        addSubtreeToUpdate(rootNode); // file must be deleted
+        return;
+      }
+      if (node.contains(virtualFile)) {
+        if (containingFiles == null) {
+          containingFiles = new SmartList<VirtualFile>();
+        }
+        containingFiles.add(virtualFile);
+      }
+    }
+    if (containingFiles != null) {
+      updateNode(rootNode);
+      Enumeration children = rootNode.children();
+      while (children.hasMoreElements()) {
+        DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
+        updateNodesContaining(containingFiles, child);
+      }
+    }
   }
 
   protected class ProjectTreeBuilderPsiListener extends ProjectViewPsiTreeChangeListener {
@@ -145,13 +181,6 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
     }
   }
 
-  private PsiElement findPsi(@Nonnull VirtualFile vFile) {
-    if (!vFile.isValid())
-      return null;
-    PsiManager psiManager = PsiManager.getInstance(myProject);
-    return vFile.isDirectory() ? psiManager.findDirectory(vFile) : psiManager.findFile(vFile);
-  }
-
   private class MyProblemListener extends WolfTheProblemSolver.ProblemListener {
     private final Alarm myUpdateProblemAlarm = new Alarm();
     private final Collection<VirtualFile> myFilesToRefresh = new THashSet<VirtualFile>();
@@ -173,8 +202,9 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
           myUpdateProblemAlarm.addRequest(new Runnable() {
             @Override
             public void run() {
-              if (!myProject.isOpen())
+              if (!myProject.isOpen()) {
                 return;
+              }
               Set<VirtualFile> filesToRefresh;
               synchronized (myFilesToRefresh) {
                 filesToRefresh = new THashSet<VirtualFile>(myFilesToRefresh);
@@ -189,32 +219,6 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
             }
           }, 200, ModalityState.NON_MODAL);
         }
-      }
-    }
-  }
-
-  private void updateNodesContaining(@Nonnull Collection<VirtualFile> filesToRefresh, @Nonnull DefaultMutableTreeNode rootNode) {
-    if (!(rootNode.getUserObject() instanceof ProjectViewNode))
-      return;
-    ProjectViewNode node = (ProjectViewNode) rootNode.getUserObject();
-    Collection<VirtualFile> containingFiles = null;
-    for (VirtualFile virtualFile : filesToRefresh) {
-      if (!virtualFile.isValid()) {
-        addSubtreeToUpdate(rootNode); // file must be deleted
-        return;
-      }
-      if (node.contains(virtualFile)) {
-        if (containingFiles == null)
-          containingFiles = new SmartList<VirtualFile>();
-        containingFiles.add(virtualFile);
-      }
-    }
-    if (containingFiles != null) {
-      updateNode(rootNode);
-      Enumeration children = rootNode.children();
-      while (children.hasMoreElements()) {
-        DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
-        updateNodesContaining(containingFiles, child);
       }
     }
   }

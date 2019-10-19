@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.filetype.MindMapFileType;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
@@ -25,11 +24,8 @@ import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.Consumer;
-import org.jdom.Element;
-
 import javax.annotation.Nonnull;
-import javax.swing.*;
+import org.jdom.Element;
 
 public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware {
 

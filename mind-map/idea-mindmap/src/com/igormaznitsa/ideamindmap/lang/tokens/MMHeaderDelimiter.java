@@ -5,7 +5,7 @@ public class MMHeaderDelimiter extends MMElementType {
     super("HEADER_DELIMITER");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "HeaderDelimiter:" + super.toString();
   }

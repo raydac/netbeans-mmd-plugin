@@ -5,41 +5,12 @@ import com.igormaznitsa.meta.common.utils.Assertions;
 import com.intellij.lexer.Lexer;
 import com.intellij.lexer.LexerPosition;
 import com.intellij.psi.tree.IElementType;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class MMLexer extends Lexer {
 
   private final com.igormaznitsa.mindmap.model.parser.MindMapLexer delegate = new com.igormaznitsa.mindmap.model.parser.MindMapLexer();
-
-  private static final class Position implements LexerPosition {
-
-    private com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition pos;
-
-    public void load(@Nonnull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
-      if (this.pos == null) {
-        this.pos = position.makeCopy();
-      } else {
-        this.pos.set(position);
-      }
-    }
-
-    public void save(@Nonnull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
-      position.set(this.pos);
-    }
-
-    @Override
-    public int getOffset() {
-      return this.pos.getOffset();
-    }
-
-    @Override
-    public int getState() {
-      return this.pos.getState().ordinal();
-    }
-  }
-
   private final Position pos = new Position();
 
   @Override
@@ -97,7 +68,8 @@ public class MMLexer extends Lexer {
           break;
         case UNKNOWN_LINE: {
           result = MMTokens.UNKNOWN;
-        }break;
+        }
+        break;
         default:
           throw Assertions.fail("Unsupported token detected [" + type + ']');
       }
@@ -147,5 +119,32 @@ public class MMLexer extends Lexer {
   @Override
   public int getBufferEnd() {
     return this.delegate.getBufferEnd();
+  }
+
+  private static final class Position implements LexerPosition {
+
+    private com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition pos;
+
+    public void load(@Nonnull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
+      if (this.pos == null) {
+        this.pos = position.makeCopy();
+      } else {
+        this.pos.set(position);
+      }
+    }
+
+    public void save(@Nonnull final com.igormaznitsa.mindmap.model.parser.MindMapLexer.LexerPosition position) {
+      position.set(this.pos);
+    }
+
+    @Override
+    public int getOffset() {
+      return this.pos.getOffset();
+    }
+
+    @Override
+    public int getState() {
+      return this.pos.getState().ordinal();
+    }
   }
 }

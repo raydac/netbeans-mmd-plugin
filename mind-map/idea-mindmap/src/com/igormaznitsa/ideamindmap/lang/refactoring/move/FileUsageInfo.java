@@ -7,12 +7,12 @@ public final class FileUsageInfo extends UsageInfo {
 
   private final PsiExtraFileReference theReference;
 
-  public FileUsageInfo(final PsiExtraFileReference reference){
+  public FileUsageInfo(final PsiExtraFileReference reference) {
     super(reference);
     this.theReference = reference;
   }
 
-  public PsiExtraFileReference getExtraFileReference(){
+  public PsiExtraFileReference getExtraFileReference() {
     return this.theReference;
   }
 }

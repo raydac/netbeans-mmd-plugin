@@ -13,37 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.utils.logger;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 
-public class IdeaLogger extends Logger{
+public class IdeaLogger extends Logger {
 
   private final com.intellij.openapi.diagnostic.Logger wrappedLogger;
 
-  public IdeaLogger(final String category){
+  public IdeaLogger(final String category) {
     super(category);
     this.wrappedLogger = com.intellij.openapi.diagnostic.Logger.getInstance(category);
   }
 
-  public IdeaLogger(final Class<?> aClass){
+  public IdeaLogger(final Class<?> aClass) {
     super(aClass);
     this.wrappedLogger = com.intellij.openapi.diagnostic.Logger.getInstance(aClass);
   }
 
-  @Override public void info(final String message) {
+  @Override
+  public void info(final String message) {
     this.wrappedLogger.info(message);
   }
 
-  @Override public void warn(final String message) {
+  @Override
+  public void warn(final String message) {
     this.wrappedLogger.warn(message);
   }
 
-  @Override public void error(final String message) {
+  @Override
+  public void error(final String message) {
     this.wrappedLogger.error(message);
   }
 
-  @Override public void error(final String message, final Throwable throwable) {
-    this.wrappedLogger.error(message,throwable);
+  @Override
+  public void error(final String message, final Throwable throwable) {
+    this.wrappedLogger.error(message, throwable);
   }
 }

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.intellij.ui.components.JBLabel;
-
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -44,52 +44,13 @@ import javax.swing.text.html.HTMLDocument;
 public class JHtmlLabel extends JBLabel {
 
   private static final long serialVersionUID = -166975925687523220L;
-
-  /**
-   * Listener to get notification about activation of a link.
-   */
-  public interface LinkListener extends Serializable {
-    /**
-     * Called if detected activation of a link placed on the label.
-     * @param source the label, must not be null
-     * @param link the link to be processed, must not be null
-     */
-    void onLinkActivated(JHtmlLabel source, String link);
-  }
-
-  /**
-   * Internal auxiliary class to keep cached parameters of found link elements.
-   */
-  private static final class HtmlLinkAddress {
-
-    private final String address;
-    private final int start;
-    private final int end;
-
-    HtmlLinkAddress(final String address, final int startOffset, final int endOffset) {
-      this.address = address;
-      this.start = startOffset;
-      this.end = endOffset;
-    }
-
-    String getHREF() {
-      return this.address;
-    }
-
-    boolean checkPosition(final int position) {
-      return position >= this.start && position < this.end;
-    }
-  }
-
+  private final List<LinkListener> linkListeners = new CopyOnWriteArrayList<LinkListener>();
   /**
    * Inside cache of detected link elements.
    */
   private transient List<HtmlLinkAddress> linkCache = null;
-
-  private final List<LinkListener> linkListeners = new CopyOnWriteArrayList<LinkListener>();
   private boolean showLinkAddressInToolTip = false;
   private int minClickCountToActivateLink = 1;
-
   public JHtmlLabel(final String text, final Icon icon, final int horizontalAlignment) {
     super(text, icon, horizontalAlignment);
 
@@ -104,8 +65,7 @@ public class JHtmlLabel extends JBLabel {
             setToolTipText(null);
           }
           setCursor(Cursor.getDefaultCursor());
-        }
-        else {
+        } else {
           if (showLinkAddressInToolTip) {
             setToolTipText(link);
           }
@@ -129,7 +89,6 @@ public class JHtmlLabel extends JBLabel {
     this.addMouseListener(mouseAdapter);
     this.addMouseMotionListener(mouseAdapter);
   }
-
   public JHtmlLabel(final String text, final int horizontalAlignment) {
     this(text, null, horizontalAlignment);
   }
@@ -150,11 +109,11 @@ public class JHtmlLabel extends JBLabel {
     this("", null, LEADING);
   }
 
-  public int getMinClickCountToActivateLink(){
+  public int getMinClickCountToActivateLink() {
     return this.minClickCountToActivateLink;
   }
 
-  public void setMinClickCountToActivateLink(final int clickNumber){
+  public void setMinClickCountToActivateLink(final int clickNumber) {
     this.minClickCountToActivateLink = Math.max(1, clickNumber);
   }
 
@@ -223,5 +182,42 @@ public class JHtmlLabel extends JBLabel {
       }
     }
     return null;
+  }
+
+  /**
+   * Listener to get notification about activation of a link.
+   */
+  public interface LinkListener extends Serializable {
+    /**
+     * Called if detected activation of a link placed on the label.
+     *
+     * @param source the label, must not be null
+     * @param link   the link to be processed, must not be null
+     */
+    void onLinkActivated(JHtmlLabel source, String link);
+  }
+
+  /**
+   * Internal auxiliary class to keep cached parameters of found link elements.
+   */
+  private static final class HtmlLinkAddress {
+
+    private final String address;
+    private final int start;
+    private final int end;
+
+    HtmlLinkAddress(final String address, final int startOffset, final int endOffset) {
+      this.address = address;
+      this.start = startOffset;
+      this.end = endOffset;
+    }
+
+    String getHREF() {
+      return this.address;
+    }
+
+    boolean checkPosition(final int position) {
+      return position >= this.start && position < this.end;
+    }
   }
 }

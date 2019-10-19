@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.filetype;
 
-import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.lang.MMLanguage;
+import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NonNls;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.*;
+import javax.swing.Icon;
+import org.jetbrains.annotations.NonNls;
 
 public class MindMapFileType extends LanguageFileType {
 
   public static final MindMapFileType INSTANCE = new MindMapFileType();
-  @NonNls public static final String DEFAULT_EXTENSION = "mmd";
+  @NonNls
+  public static final String DEFAULT_EXTENSION = "mmd";
 
   private MindMapFileType() {
     super(MMLanguage.INSTANCE);

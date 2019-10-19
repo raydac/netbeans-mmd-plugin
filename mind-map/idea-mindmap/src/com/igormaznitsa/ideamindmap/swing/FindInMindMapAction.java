@@ -6,7 +6,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditor;
-
 import javax.annotation.Nonnull;
 
 public class FindInMindMapAction extends AnAction {

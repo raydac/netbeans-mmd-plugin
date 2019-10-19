@@ -2,9 +2,8 @@ package com.igormaznitsa.ideamindmap.lang.psi;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import org.apache.commons.lang.StringEscapeUtils;
-
 import javax.annotation.Nonnull;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class PsiTopicTitle extends ASTWrapperPsiElement implements MMPsiElement {
 
@@ -15,7 +14,9 @@ public class PsiTopicTitle extends ASTWrapperPsiElement implements MMPsiElement 
     this.unescapedText = StringEscapeUtils.unescapeHtml(node.getText());
   }
 
-  @Override @Nonnull public String getName() {
+  @Override
+  @Nonnull
+  public String getName() {
     return this.unescapedText;
   }
 

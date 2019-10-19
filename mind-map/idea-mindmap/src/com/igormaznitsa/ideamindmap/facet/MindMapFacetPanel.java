@@ -17,12 +17,11 @@
 package com.igormaznitsa.ideamindmap.facet;
 
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MindMapFacetPanel {
   private final MindMapFacetEditorTab controller;

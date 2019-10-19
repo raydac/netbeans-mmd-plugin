@@ -21,27 +21,32 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.util.ui.UIUtil;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.DefaultButtonModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class ColorChooserButton extends JButton {
 
+  public static final Color DIFF_COLORS = new Color(0, true);
   private static final long serialVersionUID = -354752410805059103L;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(ColorChooserButton.class);
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private final java.util.List<Color> usedColors = new CopyOnWriteArrayList<>();
   private Color value = null;
   private volatile boolean lastResultOk;
-  public static final Color DIFF_COLORS = new Color(0, true);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
-
-  private final java.util.List<Color> usedColors = new CopyOnWriteArrayList<>();
 
   public ColorChooserButton() {
     this(null);
@@ -85,15 +90,6 @@ public class ColorChooserButton extends JButton {
     setValue(Color.BLACK);
   }
 
-  public void setUsedColors(@Nonnull final java.util.List<Color> colors) {
-    this.usedColors.clear();
-    this.usedColors.addAll(colors);
-  }
-
-  public boolean isLastOkPressed() {
-    return this.lastResultOk;
-  }
-
   private static ImageIcon makeColorIconForColor(final Color color) {
     final int size = UIUtil.isRetina() ? 8 : 16;
     final int halfSize = size / 2;
@@ -131,12 +127,21 @@ public class ColorChooserButton extends JButton {
     return new ImageIcon(img);
   }
 
-  public void setValue(final Color color) {
-    this.value = color;
-    this.setIcon(makeColorIconForColor(this.value));
+  public void setUsedColors(@Nonnull final java.util.List<Color> colors) {
+    this.usedColors.clear();
+    this.usedColors.addAll(colors);
+  }
+
+  public boolean isLastOkPressed() {
+    return this.lastResultOk;
   }
 
   public Color getValue() {
     return this.value;
+  }
+
+  public void setValue(final Color color) {
+    this.value = color;
+    this.setIcon(makeColorIconForColor(this.value));
   }
 }

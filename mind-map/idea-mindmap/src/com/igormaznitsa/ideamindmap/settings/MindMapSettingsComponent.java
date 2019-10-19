@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.settings;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDialogProvider;
@@ -23,86 +24,98 @@ import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurableProvider;
 import com.intellij.openapi.options.ConfigurationException;
-import org.jetbrains.annotations.Nls;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.*;
+import javax.swing.JComponent;
+import org.jetbrains.annotations.Nls;
 
-public class MindMapSettingsComponent extends ConfigurableProvider implements Configurable,ApplicationComponent{
+public class MindMapSettingsComponent extends ConfigurableProvider implements Configurable, ApplicationComponent {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsComponent.class);
   public static final String ID = "idea.mind.map.settings";
   public static final String COMPONENT_NAME = "NBMindMapSettingsComponent";
   public static final String DISPLAY_NAME = "IDEA Mind Map";
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsComponent.class);
   private static MindMapSettingsComponent instance;
-
+  private final MindMapDialogProvider dialogProvider = new MindMapDialogProvider(null);
   private MindMapSettingsPanel uiPanel;
 
-  private final MindMapDialogProvider dialogProvider = new MindMapDialogProvider(null);
-
-  public MindMapSettingsComponent getInstance(){
-    if (instance == null){
+  public MindMapSettingsComponent getInstance() {
+    if (instance == null) {
       instance = new MindMapSettingsComponent();
     }
 
     return instance;
   }
 
-  public DialogProvider getDialogProvider(){
+  public DialogProvider getDialogProvider() {
     return dialogProvider;
   }
 
-  @Override public void initComponent() {
+  @Override
+  public void initComponent() {
     getInstance();
   }
 
-  @Override public void disposeComponent() {
+  @Override
+  public void disposeComponent() {
     this.uiPanel = null;
   }
 
-  @Nls @Override public String getDisplayName() {
+  @Nls
+  @Override
+  public String getDisplayName() {
     return DISPLAY_NAME;
   }
 
-  @Nullable @Override public String getHelpTopic() {
+  @Nullable
+  @Override
+  public String getHelpTopic() {
     return null;
   }
 
-  @Nullable @Override public Configurable createConfigurable() {
+  @Nullable
+  @Override
+  public Configurable createConfigurable() {
     return getInstance();
   }
 
-  @Nonnull @Override public String getComponentName() {
+  @Nonnull
+  @Override
+  public String getComponentName() {
     return COMPONENT_NAME;
   }
 
-  @Nullable @Override public JComponent createComponent() {
-    if (this.uiPanel == null){
+  @Nullable
+  @Override
+  public JComponent createComponent() {
+    if (this.uiPanel == null) {
       this.uiPanel = new MindMapSettingsPanel(this);
     }
     this.uiPanel.reset(MindMapApplicationSettings.findInstance().getConfig());
     return this.uiPanel.getPanel();
   }
 
-  @Override public boolean isModified() {
+  @Override
+  public boolean isModified() {
     return this.uiPanel != null && this.uiPanel.isModified();
   }
 
-  @Override public void apply() throws ConfigurationException {
-    if (this.uiPanel!=null){
+  @Override
+  public void apply() throws ConfigurationException {
+    if (this.uiPanel != null) {
       MindMapApplicationSettings.findInstance().fillBy(this.uiPanel.makeConfig());
     }
   }
 
-  @Override public void reset() {
-    if (this.uiPanel!=null){
+  @Override
+  public void reset() {
+    if (this.uiPanel != null) {
       this.uiPanel.reset(MindMapApplicationSettings.findInstance().getConfig());
     }
   }
 
-  @Override public void disposeUIResources() {
+  @Override
+  public void disposeUIResources() {
     this.uiPanel = null;
   }
 

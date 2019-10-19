@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -38,12 +39,12 @@ public class MindMapTreeCellRenderer extends DefaultTreeCellRenderer {
 
   private Icon getIconForTopic(final Topic topic) {
     switch (topic.getTopicLevel()) {
-    case 0:
-      return AllIcons.Tree.DOCUMENT;
-    case 1:
-      return AllIcons.Tree.BLUEBALL;
-    default:
-      return AllIcons.Tree.GOLDBALL;
+      case 0:
+        return AllIcons.Tree.DOCUMENT;
+      case 1:
+        return AllIcons.Tree.BLUEBALL;
+      default:
+        return AllIcons.Tree.GOLDBALL;
     }
   }
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.utils;
 
 import javax.annotation.Nonnull;
@@ -25,8 +26,7 @@ public final class SwingUtils {
   public static void safeSwing(@Nonnull final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
-    }
-    else {
+    } else {
       SwingUtilities.invokeLater(runnable);
     }
   }

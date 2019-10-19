@@ -3,9 +3,8 @@ package com.igormaznitsa.ideamindmap.lang.psi;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import org.apache.commons.lang.StringEscapeUtils;
-
 import javax.annotation.Nonnull;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class AbstractExtraData extends ASTWrapperPsiElement implements MMPsiElement {
 
@@ -20,7 +19,9 @@ public abstract class AbstractExtraData extends ASTWrapperPsiElement implements 
 
   public abstract Extra.ExtraType getExtraType();
 
-  @Override @Nonnull public String getName() {
+  @Override
+  @Nonnull
+  public String getName() {
     return this.processedText;
   }
 

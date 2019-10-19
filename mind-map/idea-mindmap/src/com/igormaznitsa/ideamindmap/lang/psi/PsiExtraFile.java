@@ -11,11 +11,10 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PsiExtraFile extends AbstractExtraData {
 
@@ -31,8 +30,7 @@ public class PsiExtraFile extends AbstractExtraData {
     MMapURI theUri;
     try {
       theUri = new MMapURI(getName());
-    }
-    catch (URISyntaxException ex) {
+    } catch (URISyntaxException ex) {
       theUri = null;
     }
 
@@ -40,11 +38,11 @@ public class PsiExtraFile extends AbstractExtraData {
   }
 
   @Nullable
-  public MMapURI getMMapURI(){
+  public MMapURI getMMapURI() {
     return this.uri;
   }
 
-  public void setMMapURI(@Nullable final MMapURI uri){
+  public void setMMapURI(@Nullable final MMapURI uri) {
     this.uri = uri;
   }
 
@@ -67,7 +65,8 @@ public class PsiExtraFile extends AbstractExtraData {
     return result;
   }
 
-  @Override public Extra.ExtraType getExtraType() {
+  @Override
+  public Extra.ExtraType getExtraType() {
     return Extra.ExtraType.FILE;
   }
 }

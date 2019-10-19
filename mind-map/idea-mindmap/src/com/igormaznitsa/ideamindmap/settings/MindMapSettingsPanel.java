@@ -28,12 +28,9 @@ import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.intellij.openapi.ui.DialogWrapper;
-import org.apache.commons.io.FileUtils;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -45,8 +42,32 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
+import javax.annotation.Nullable;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FileUtils;
 
 public class MindMapSettingsPanel {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsPanel.class);
+  private static File lastExportedSettingsFile;
+  private static File lastImportedSettingsFile;
+  private final MindMapSettingsComponent controller;
+  private final MindMapPanelConfig etalon = new MindMapPanelConfig();
+  private final Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
+    @Override
+    public int compare(String o1, String o2) {
+      return o1.compareTo(o2);
+    }
+  });
   private JPanel mainPanel;
   private JSpinner spinnerGridStep;
   private JCheckBox checkBoxShowGrid;
@@ -87,58 +108,7 @@ public class MindMapSettingsPanel {
   private JButton buttonImportSettings;
   private JComboBox comboBoxRenderQuality;
   private JCheckBox checkBoxSmartTextPaste;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsPanel.class);
-
-  private final MindMapSettingsComponent controller;
-
-  private static File lastExportedSettingsFile;
-  private static File lastImportedSettingsFile;
-
-  private static final class PropertiesFileFilter extends FileFilter {
-
-    @Override
-    public boolean accept(final File f) {
-      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
-    }
-
-    @Override
-    public String getDescription() {
-      return "Java properties file (*.properties)";
-    }
-
-  }
-
-
-  private final MindMapPanelConfig etalon = new MindMapPanelConfig();
   private Font theFont;
-
-  private final Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
-    @Override
-    public int compare(String o1, String o2) {
-      return o1.compareTo(o2);
-    }
-  });
-
-  private static class DialogComponent extends DialogWrapper {
-    private final JComponent component;
-
-    public DialogComponent(final Component parent, final String title, final Component component) {
-      super(parent, true);
-      final JPanel panel = new JPanel(new BorderLayout(0, 0));
-      panel.add(component, BorderLayout.CENTER);
-      this.component = panel;
-      init();
-      setTitle(title);
-      pack();
-    }
-
-    @Override
-    @Nullable
-    protected JComponent createCenterPanel() {
-      return this.component;
-    }
-  }
 
   public MindMapSettingsPanel(final MindMapSettingsComponent controller) {
     this.controller = controller;
@@ -252,6 +222,22 @@ public class MindMapSettingsPanel {
     return number.doubleValue();
   }
 
+  private static int getInt(final JSpinner spinner) {
+    return ((Number) spinner.getValue()).intValue();
+  }
+
+  private static float getFloat(final JSpinner spinner) {
+    return ((Number) spinner.getValue()).floatValue();
+  }
+
+  private static SpinnerModel makeIntSpinnerModel(final int min, final int max, final int step) {
+    return new SpinnerNumberModel(min, min, max, step);
+  }
+
+  private static SpinnerModel makeFloatSpinnerModel(final double min, final double max, final double step) {
+    return new SpinnerNumberModel(min, min, max, step);
+  }
+
   public void reset(final MindMapPanelConfig config) {
     this.etalon.makeFullCopyOf(config, false, false);
     loadFieldsFrom(this.etalon);
@@ -321,22 +307,6 @@ public class MindMapSettingsPanel {
     }
 
     this.buttonFont.setText(theFont.getFamily() + ", " + strStyle + ", " + theFont.getSize());
-  }
-
-  private static int getInt(final JSpinner spinner) {
-    return ((Number) spinner.getValue()).intValue();
-  }
-
-  private static float getFloat(final JSpinner spinner) {
-    return ((Number) spinner.getValue()).floatValue();
-  }
-
-  private static SpinnerModel makeIntSpinnerModel(final int min, final int max, final int step) {
-    return new SpinnerNumberModel(min, min, max, step);
-  }
-
-  private static SpinnerModel makeFloatSpinnerModel(final double min, final double max, final double step) {
-    return new SpinnerNumberModel(min, min, max, step);
   }
 
   public JPanel getPanel() {
@@ -421,5 +391,39 @@ public class MindMapSettingsPanel {
   public boolean isModified() {
     final MindMapPanelConfig current = makeConfig();
     return this.etalon.hasDifferenceInParameters(current);
+  }
+
+  private static final class PropertiesFileFilter extends FileFilter {
+
+    @Override
+    public boolean accept(final File f) {
+      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
+    }
+
+    @Override
+    public String getDescription() {
+      return "Java properties file (*.properties)";
+    }
+
+  }
+
+  private static class DialogComponent extends DialogWrapper {
+    private final JComponent component;
+
+    public DialogComponent(final Component parent, final String title, final Component component) {
+      super(parent, true);
+      final JPanel panel = new JPanel(new BorderLayout(0, 0));
+      panel.add(component, BorderLayout.CENTER);
+      this.component = panel;
+      init();
+      setTitle(title);
+      pack();
+    }
+
+    @Override
+    @Nullable
+    protected JComponent createCenterPanel() {
+      return this.component;
+    }
   }
 }

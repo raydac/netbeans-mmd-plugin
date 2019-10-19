@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.settings;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.util.xmlb.annotations.Property;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class DeclaredFieldsSerializer implements Serializable {
 
@@ -36,24 +36,50 @@ public class DeclaredFieldsSerializer implements Serializable {
 
   @Property
   private final Map<String, String> storage = new TreeMap<String, String>(new Comparator<String>() {
-    @Override public int compare(String o1, String o2) {
+    @Override
+    public int compare(String o1, String o2) {
       return o1.compareTo(o2);
     }
   });
 
-  public interface Converter {
-    @Nullable Object fromString(@Nonnull Class<?> fieldType, @Nonnull String value);
-
-    @Nonnull String asString(@Nonnull Class<?> fieldType, @Nonnull Object value);
-
-    @Nullable Object provideDefaultValue(@Nonnull String fieldName, @Nonnull Class<?> fieldType);
-  }
-
-  private interface FieldVisitor {
-    void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType);
-  }
-
   public DeclaredFieldsSerializer() {
+  }
+
+  public DeclaredFieldsSerializer(@Nonnull final Object object, @Nullable final Converter converter) {
+    visitFields(object, new FieldVisitor() {
+      @Override
+      public void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType) {
+        try {
+          final Object value = field.get(instance);
+
+          if (fieldType.isPrimitive()) {
+            if (fieldType == float.class) {
+              storage.put(makeName(fieldName, value, false), Integer.toString((Float.floatToIntBits((Float) value))));
+            } else if (fieldType == double.class) {
+              storage.put(makeName(fieldName, value, false), Long.toString((Double.doubleToLongBits((Double) value))));
+            } else {
+              storage.put(makeName(fieldName, value, false), value.toString());
+            }
+          } else if (fieldType == String.class) {
+            storage.put(makeName(fieldName, value, false), value == null ? "" : (String) value);
+          } else {
+            if (converter == null) {
+              throw new NullPointerException("Unexpected field type " + fieldType.getName() + ", provide converter!");
+            } else {
+              final String converted = value == null ? null : converter.asString(fieldType, value);
+              storage.put(makeName(fieldName, converted, true), converted);
+            }
+          }
+        } catch (Exception ex) {
+          LOGGER.error("Can't make data for field [" + fieldName + ']');
+          if (ex instanceof RuntimeException) {
+            throw ((RuntimeException) ex);
+          } else {
+            throw new Error("Can't serialize field [" + fieldName + ']', ex);
+          }
+        }
+      }
+    });
   }
 
   private static void visitFields(@Nonnull final Object object, @Nonnull final FieldVisitor visitor) {
@@ -67,53 +93,22 @@ public class DeclaredFieldsSerializer implements Serializable {
 
   private static String makeName(final String fieldName, final Object value, final boolean needConverter) {
     final StringBuilder result = new StringBuilder(fieldName);
-    if (value == null)
+    if (value == null) {
       result.append('.');
-    if (needConverter)
+    }
+    if (needConverter) {
       result.append('@');
+    }
 
     return result.toString();
   }
 
-  public DeclaredFieldsSerializer(@Nonnull final Object object, @Nullable final Converter converter) {
-    visitFields(object, new FieldVisitor() {
-      @Override public void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType) {
-        try {
-          final Object value = field.get(instance);
+  private static boolean isNull(final String fieldName) {
+    return fieldName.indexOf('.') >= 0;
+  }
 
-          if (fieldType.isPrimitive()) {
-            if (fieldType == float.class) {
-              storage.put(makeName(fieldName,value,false),Integer.toString((Float.floatToIntBits((Float)value))));
-            }
-            else if (fieldType == double.class) {
-              storage.put(makeName(fieldName,value,false),Long.toString((Double.doubleToLongBits((Double)value))));
-            }
-            else
-              storage.put(makeName(fieldName, value, false), value.toString());
-          }
-          else if (fieldType == String.class) {
-            storage.put(makeName(fieldName, value, false), value == null ? "" : (String) value);
-          }
-          else {
-            if (converter == null) {
-              throw new NullPointerException("Unexpected field type " + fieldType.getName() + ", provide converter!");
-            }
-            else {
-              final String converted = value == null ? null : converter.asString(fieldType, value);
-              storage.put(makeName(fieldName, converted, true), converted);
-            }
-          }
-        }
-        catch (Exception ex) {
-          LOGGER.error("Can't make data for field [" + fieldName + ']');
-          if (ex instanceof RuntimeException) {
-            throw ((RuntimeException) ex);
-          }
-          else
-            throw new Error("Can't serialize field [" + fieldName + ']', ex);
-        }
-      }
-    });
+  private static boolean doesNeedConverter(final String fieldName) {
+    return fieldName.indexOf('@') >= 0;
   }
 
   @Nullable
@@ -127,8 +122,7 @@ public class DeclaredFieldsSerializer implements Serializable {
     for (final String k : this.storage.keySet()) {
       if (k.equals(fieldName)) {
         return k;
-      }
-      else if (k.startsWith(fieldName) && (k.length() - fieldName.length()) < 3) {
+      } else if (k.startsWith(fieldName) && (k.length() - fieldName.length()) < 3) {
         final String rest = k.substring(fieldName.length());
         boolean onlySpecialChars = true;
         for (int i = 0; i < rest.length(); i++) {
@@ -137,87 +131,82 @@ public class DeclaredFieldsSerializer implements Serializable {
             break;
           }
         }
-        if (onlySpecialChars)
+        if (onlySpecialChars) {
           return k;
+        }
       }
     }
     return null;
   }
 
-  private static boolean isNull(final String fieldName) {
-    return fieldName.indexOf('.') >= 0;
-  }
-
-  private static boolean doesNeedConverter(final String fieldName) {
-    return fieldName.indexOf('@') >= 0;
-  }
-
   public void fill(@Nonnull final Object instance, @Nullable final Converter converter) {
     visitFields(instance, new FieldVisitor() {
-      @Override public void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType) {
+      @Override
+      public void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType) {
         try {
           final String storageFieldName = findStorageFieldName(fieldName);
           if (storageFieldName == null) {
             if (converter == null) {
               throw new NullPointerException("Needed converter for non-saved field, to provide default value [" + fieldName + ']');
-            }
-            else {
+            } else {
               field.set(instance, converter.provideDefaultValue(fieldName, fieldType));
             }
-          }
-          else {
+          } else {
             final String value = get(storageFieldName);
             final boolean isNull = isNull(storageFieldName);
             final boolean needsConverter = doesNeedConverter(storageFieldName);
             if (isNull) {
               field.set(instance, null);
-            }
-            else if (needsConverter) {
+            } else if (needsConverter) {
               field.set(instance, converter.fromString(fieldType, value));
-            }
-            else {
+            } else {
               if (fieldType == boolean.class) {
                 field.set(instance, Boolean.parseBoolean(value));
-              }
-              else if (fieldType == byte.class) {
+              } else if (fieldType == byte.class) {
                 field.set(instance, Byte.parseByte(value));
-              }
-              else if (fieldType == char.class) {
+              } else if (fieldType == char.class) {
                 field.set(instance, (char) Integer.parseInt(value));
-              }
-              else if (fieldType == short.class) {
+              } else if (fieldType == short.class) {
                 field.set(instance, Short.parseShort(value));
-              }
-              else if (fieldType == int.class) {
+              } else if (fieldType == int.class) {
                 field.set(instance, Integer.parseInt(value));
-              }
-              else if (fieldType == long.class) {
+              } else if (fieldType == long.class) {
                 field.set(instance, Long.parseLong(value));
-              }
-              else if (fieldType == float.class) {
+              } else if (fieldType == float.class) {
                 field.set(instance, Float.intBitsToFloat(Integer.parseInt(value)));
-              }
-              else if (fieldType == double.class) {
+              } else if (fieldType == double.class) {
                 field.set(instance, Double.longBitsToDouble(Long.parseLong(value)));
-              }
-              else if (fieldType == String.class) {
+              } else if (fieldType == String.class) {
                 field.set(instance, value);
-              }
-              else
+              } else {
                 throw new Error("Unexpected primitive type [" + fieldName + " " + fieldType + ']');
+              }
             }
           }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
           LOGGER.error("Can't fill field by data [" + fieldName + ']');
           if (ex instanceof RuntimeException) {
             throw (RuntimeException) ex;
-          }
-          else {
+          } else {
             throw new Error("Unexpected exception for field processing [" + field + ']', ex);
           }
         }
       }
     });
+  }
+
+  public interface Converter {
+    @Nullable
+    Object fromString(@Nonnull Class<?> fieldType, @Nonnull String value);
+
+    @Nonnull
+    String asString(@Nonnull Class<?> fieldType, @Nonnull Object value);
+
+    @Nullable
+    Object provideDefaultValue(@Nonnull String fieldName, @Nonnull Class<?> fieldType);
+  }
+
+  private interface FieldVisitor {
+    void visitField(@Nonnull Object instance, @Nonnull Field field, @Nonnull String fieldName, @Nonnull Class<?> fieldType);
   }
 }

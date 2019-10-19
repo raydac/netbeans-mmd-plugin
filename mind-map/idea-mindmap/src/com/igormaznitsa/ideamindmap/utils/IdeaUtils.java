@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
@@ -59,14 +60,12 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.indexing.FileBasedIndex;
 import com.intellij.util.ui.UIUtil;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.velocity.exception.MethodInvocationException;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -74,19 +73,28 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.velocity.exception.MethodInvocationException;
 
 public final class IdeaUtils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(IdeaUtils.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
-
   public static final MMapURI EMPTY_URI;
   public static final String PROJECT_KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(IdeaUtils.class);
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
   private static final boolean ALLOWS_TRANSACTION_GUARD = true;
 
   static {
@@ -116,7 +124,7 @@ public final class IdeaUtils {
         }
       }
     } catch (ClassNotFoundException ex) {
-      LOGGER.info("can't find org...maven.project.MavenProjectsManager or org...maven.project.MavenProject in findMavenProjectRootForFile : "+ ex.getMessage());
+      LOGGER.info("can't find org...maven.project.MavenProjectsManager or org...maven.project.MavenProject in findMavenProjectRootForFile : " + ex.getMessage());
     } catch (NoSuchMethodException ex) {
       LOGGER.error("NoSuchMethodException in findMavenProjectRootForFile", ex);
       throw new Error("NoSuchMethodException in findMavenProjectRootForFile", ex);
@@ -165,7 +173,7 @@ public final class IdeaUtils {
 
     boolean result = false;
     if (transactionGuardInstance != null) {
-      result = safeInvokeMethodNoResult(transactionGuardInstance, "submitTransactionLater", new Class<?>[]{Disposable.class, Runnable.class}, new Object[]{new Disposable() {
+      result = safeInvokeMethodNoResult(transactionGuardInstance, "submitTransactionLater", new Class<?>[] {Disposable.class, Runnable.class}, new Object[] {new Disposable() {
         @Override
         public void dispose() {
         }
@@ -361,47 +369,22 @@ public final class IdeaUtils {
     return UIUtil.isUnderDarcula();
   }
 
-  private static class DialogComponent extends DialogWrapper {
-    private final JComponent component;
-    private final JComponent prefferedComponent;
-
-    public DialogComponent(final Project project, final String title, final JComponent component, final JComponent prefferedComponent, final boolean defaultButtonEnabled) {
-      super(project, false, IdeModalityType.PROJECT);
-      this.component = component;
-      this.prefferedComponent = prefferedComponent == null ? component : prefferedComponent;
-      init();
-      setTitle(title);
-      if (!defaultButtonEnabled)
-        getRootPane().setDefaultButton(null);
-    }
-
-    @Nullable
-    @Override
-    public JComponent getPreferredFocusedComponent() {
-      return this.prefferedComponent == null ? this.component : this.prefferedComponent;
-    }
-
-    @Nullable
-    @Override
-    protected JComponent createCenterPanel() {
-      return this.component;
-    }
-  }
-
   public static File chooseFile(final Component parent, final boolean filesOnly, final String title, final File selectedFile, final FileFilter filter) {
     final JFileChooser chooser = new JFileChooser(selectedFile);
 
     chooser.setApproveButtonText("Select");
-    if (filter != null)
+    if (filter != null) {
       chooser.setFileFilter(filter);
+    }
 
     chooser.setDialogTitle(title);
     chooser.setMultiSelectionEnabled(false);
 
-    if (filesOnly)
+    if (filesOnly) {
       chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-    else
+    } else {
       chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    }
 
     if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
       return chooser.getSelectedFile();
@@ -421,17 +404,17 @@ public final class IdeaUtils {
 
   public static boolean plainMessageOkCancel(final Project project, final String title, final JComponent centerComponent) {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
-            centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
+        centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
     return dialog.showAndGet();
   }
 
   public static void plainMessageClose(final Project project, final String title, final JComponent centerComponent) {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
-            centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true) {
+        centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true) {
       @Nonnull
       @Override
       protected Action[] createActions() {
-        return new Action[]{new DialogWrapperAction(CommonBundle.getCloseButtonText()) {
+        return new Action[] {new DialogWrapperAction(CommonBundle.getCloseButtonText()) {
 
           @Override
           protected void doAction(ActionEvent e) {
@@ -506,12 +489,13 @@ public final class IdeaUtils {
         return EMPTY_URI;
       }
       try {
-        if (!new URI(text).isAbsolute())
+        if (!new URI(text).isAbsolute()) {
           throw new URISyntaxException(text, "URI is not absolute one");
+        }
         return new MMapURI(text.trim());
       } catch (URISyntaxException ex) {
         editor.getDialogProvider()
-                .msgError(null, String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+            .msgError(null, String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     } else {
@@ -537,29 +521,33 @@ public final class IdeaUtils {
         final Balloon balloon = builder.createBalloon();
         balloon.setAnimationEnabled(true);
         final Component frame = WindowManager.getInstance().findVisibleFrame();
-        if (frame != null)
+        if (frame != null) {
           balloon.show(new RelativePoint(frame, new Point(frame.getWidth(), frame.getHeight())), Balloon.Position.below);
+        }
       }
     });
   }
 
   @Nullable
   public static File findProjectFolder(@Nullable final Project project) {
-    if (project == null) return null;
+    if (project == null) {
+      return null;
+    }
     return IdeaUtils.vfile2iofile(project.getBaseDir());
   }
 
   @Nullable
   public static File findProjectFolder(@Nullable final PsiElement element) {
-    if (element == null)
+    if (element == null) {
       return null;
+    }
     return findProjectFolder(element.getProject());
   }
 
   public static List<PsiExtraFile> findPsiFileLinksForProjectScope(final Project project) {
     List<PsiExtraFile> result = new ArrayList<PsiExtraFile>();
     Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MindMapFileType.INSTANCE,
-            GlobalSearchScope.allScope(project));
+        GlobalSearchScope.allScope(project));
     for (VirtualFile virtualFile : virtualFiles) {
       final MMDFile simpleFile = (MMDFile) PsiManager.getInstance(project).findFile(virtualFile);
       if (simpleFile != null) {
@@ -585,6 +573,34 @@ public final class IdeaUtils {
   @Nonnull
   public static GlobalSearchScope moduleScope(@Nonnull Module module) {
     return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module).uniteWith(module.getModuleContentWithDependenciesScope());
+  }
+
+  private static class DialogComponent extends DialogWrapper {
+    private final JComponent component;
+    private final JComponent prefferedComponent;
+
+    public DialogComponent(final Project project, final String title, final JComponent component, final JComponent prefferedComponent, final boolean defaultButtonEnabled) {
+      super(project, false, IdeModalityType.PROJECT);
+      this.component = component;
+      this.prefferedComponent = prefferedComponent == null ? component : prefferedComponent;
+      init();
+      setTitle(title);
+      if (!defaultButtonEnabled) {
+        getRootPane().setDefaultButton(null);
+      }
+    }
+
+    @Nullable
+    @Override
+    public JComponent getPreferredFocusedComponent() {
+      return this.prefferedComponent == null ? this.component : this.prefferedComponent;
+    }
+
+    @Nullable
+    @Override
+    protected JComponent createCenterPanel() {
+      return this.component;
+    }
   }
 
 }

@@ -5,7 +5,7 @@ public class MMHeaderLine extends MMElementType {
     super("HEADER_LINE");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "HeaderLine:" + super.toString();
   }

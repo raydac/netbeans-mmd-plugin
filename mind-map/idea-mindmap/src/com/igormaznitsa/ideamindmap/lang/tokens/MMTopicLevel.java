@@ -5,7 +5,7 @@ public class MMTopicLevel extends MMElementType {
     super("TOPIC_LEVEL");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "Topic.Level:" + super.toString();
   }

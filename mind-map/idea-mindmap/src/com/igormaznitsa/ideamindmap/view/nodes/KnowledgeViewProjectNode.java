@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.view.nodes;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -28,30 +29,33 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
 
 public class KnowledgeViewProjectNode extends AbstractProjectNode {
   public KnowledgeViewProjectNode(final Project project, final ViewSettings viewSettings) {
     super(project, project, viewSettings);
   }
 
-  @Override protected AbstractTreeNode createModuleGroup(final Module module)
-    throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  @Override
+  protected AbstractTreeNode createModuleGroup(final Module module)
+      throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
     return null;
   }
 
-  @Override protected AbstractTreeNode createModuleGroupNode(final ModuleGroup moduleGroup)
-    throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  @Override
+  protected AbstractTreeNode createModuleGroupNode(final ModuleGroup moduleGroup)
+      throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
     return null;
   }
 
-  @Nonnull @Override public Collection<? extends AbstractTreeNode> getChildren() {
+  @Nonnull
+  @Override
+  public Collection<? extends AbstractTreeNode> getChildren() {
     final ArrayList<AbstractTreeNode> result = new ArrayList<AbstractTreeNode>();
     final PsiManager psiManager = PsiManager.getInstance(getProject());
 
@@ -68,27 +72,34 @@ public class KnowledgeViewProjectNode extends AbstractProjectNode {
             return AllIcons.File.FOLDER;
           }
 
-          @Override public String getTitle() {
+          @Override
+          public String getTitle() {
             return moduleName;
           }
 
-          @Override public String toString() {
+          @Override
+          public String toString() {
             return moduleName;
           }
 
-          @Override public boolean isFQNameShown() {
+          @Override
+          public boolean isFQNameShown() {
             return false;
           }
 
-          @Override public VirtualFile getVirtualFile() {
+          @Override
+          public VirtualFile getVirtualFile() {
             return knowledgeFolder;
           }
 
-          @Nullable @Override protected String calcTooltip() {
+          @Nullable
+          @Override
+          protected String calcTooltip() {
             return "The Knowledge folder for " + m.getName();
           }
 
-          @Override protected boolean shouldShowModuleName() {
+          @Override
+          protected boolean shouldShowModuleName() {
             return false;
           }
 

@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.ideamindmap.swing;
 
-import java.awt.*;
-import java.io.File;
-import java.util.ResourceBundle;
+package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
@@ -30,47 +27,25 @@ import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.ui.UI;
-
-import javax.swing.*;
+import java.io.File;
+import java.util.ResourceBundle;
+import javax.swing.Box;
+import javax.swing.JComponent;
 
 public final class FileEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileEditPanel.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
-
-  public static final class DataContainer {
-
-    private final FilePathWithLine pathWithLine;
-    private final boolean showWithSystemTool;
-
-    public DataContainer(final String path, final boolean showWithSystemTool) {
-      this.pathWithLine = new FilePathWithLine(path);
-      this.showWithSystemTool = showWithSystemTool;
-    }
-
-    public FilePathWithLine getPathWithLine() {
-      return this.pathWithLine;
-    }
-
-    public boolean isValid() {
-      try {
-        return this.pathWithLine.isEmptyOrOnlySpaces() || new File(this.pathWithLine.getPath()).exists();
-      }
-      catch (Exception ex) {
-        return false;
-      }
-    }
-
-    public boolean isShowWithSystemTool() {
-      return this.showWithSystemTool;
-    }
-  }
-
   private static final long serialVersionUID = -6683682013891751388L;
   private final File projectFolder;
   private final DialogProvider dialogProvider;
+  private javax.swing.JButton buttonChooseFile;
+  private javax.swing.JButton buttonReset;
+  private javax.swing.JCheckBox checkBoxShowFileInSystem;
+  private javax.swing.JLabel labelBrowseCurrentLink;
+  private javax.swing.JPanel optionPanel;
+  private javax.swing.JTextField textFieldFilePath;
 
   public FileEditPanel(final DialogProvider dialogProvider, final File projectFolder, final DataContainer initialData) {
     this.dialogProvider = dialogProvider;
@@ -85,7 +60,7 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
   }
 
   @Override
-  public JComponent getComponentPreferredForFocus(){
+  public JComponent getComponentPreferredForFocus() {
     return this.textFieldFilePath;
   }
 
@@ -180,10 +155,30 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
     this.textFieldFilePath.setText("");
   }
 
-  private javax.swing.JButton buttonChooseFile;
-  private javax.swing.JButton buttonReset;
-  private javax.swing.JCheckBox checkBoxShowFileInSystem;
-  private javax.swing.JLabel labelBrowseCurrentLink;
-  private javax.swing.JPanel optionPanel;
-  private javax.swing.JTextField textFieldFilePath;
+  public static final class DataContainer {
+
+    private final FilePathWithLine pathWithLine;
+    private final boolean showWithSystemTool;
+
+    public DataContainer(final String path, final boolean showWithSystemTool) {
+      this.pathWithLine = new FilePathWithLine(path);
+      this.showWithSystemTool = showWithSystemTool;
+    }
+
+    public FilePathWithLine getPathWithLine() {
+      return this.pathWithLine;
+    }
+
+    public boolean isValid() {
+      try {
+        return this.pathWithLine.isEmptyOrOnlySpaces() || new File(this.pathWithLine.getPath()).exists();
+      } catch (Exception ex) {
+        return false;
+      }
+    }
+
+    public boolean isShowWithSystemTool() {
+      return this.showWithSystemTool;
+    }
+  }
 }

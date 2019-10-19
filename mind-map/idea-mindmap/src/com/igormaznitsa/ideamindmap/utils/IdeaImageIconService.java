@@ -3,12 +3,11 @@ package com.igormaznitsa.ideamindmap.utils;
 import com.igormaznitsa.mindmap.swing.services.DefaultImageIconService;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconService;
-
+import java.util.EnumMap;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
-import java.util.EnumMap;
-import java.util.Map;
 
 public class IdeaImageIconService implements ImageIconService {
   private static final Map<IconID, Icon> MAP = new EnumMap<IconID, Icon>(IconID.class);
@@ -47,7 +46,9 @@ public class IdeaImageIconService implements ImageIconService {
     MAP.put(IconID.POPUP_EXPORT_ORGMODE, AllIcons.ImportExport.ORGMODE);
   }
 
-  @Nullable @Override public Icon getIconForId(@Nonnull final IconID imageIconID) {
+  @Nullable
+  @Override
+  public Icon getIconForId(@Nonnull final IconID imageIconID) {
     Icon result = MAP.get(imageIconID);
     if (result == null) {
       result = DELEGATE.getIconForId(imageIconID);

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.facet;
 
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -20,32 +21,36 @@ import com.intellij.facet.Facet;
 import com.intellij.facet.FacetType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
 
-public class MindMapFacetType extends FacetType<MindMapFacet,MindMapFacetConfiguration> {
+public class MindMapFacetType extends FacetType<MindMapFacet, MindMapFacetConfiguration> {
 
   public static final MindMapFacetType INSTANCE = new MindMapFacetType();
 
-  private MindMapFacetType(){
-    super(MindMapFacet.ID,"NBMindMap","NB Mind Map");
+  private MindMapFacetType() {
+    super(MindMapFacet.ID, "NBMindMap", "NB Mind Map");
   }
 
-  @Override public MindMapFacetConfiguration createDefaultConfiguration() {
+  @Override
+  public MindMapFacetConfiguration createDefaultConfiguration() {
     return new MindMapFacetConfiguration();
   }
 
-  @Override public MindMapFacet createFacet(@Nonnull final Module module, final String name, @Nonnull final MindMapFacetConfiguration configuration, @Nullable final Facet underlyingFacet) {
-    return new MindMapFacet(this,module,name,configuration,underlyingFacet);
+  @Override
+  public MindMapFacet createFacet(@Nonnull final Module module, final String name, @Nonnull final MindMapFacetConfiguration configuration, @Nullable final Facet underlyingFacet) {
+    return new MindMapFacet(this, module, name, configuration, underlyingFacet);
   }
 
-  @Override public boolean isSuitableModuleType(ModuleType moduleType) {
-    return moduleType!=null;
+  @Override
+  public boolean isSuitableModuleType(ModuleType moduleType) {
+    return moduleType != null;
   }
 
-  @Nullable @Override public Icon getIcon() {
+  @Nullable
+  @Override
+  public Icon getIcon() {
     return AllIcons.Logo.MINDMAP;
   }
 }

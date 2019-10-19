@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,12 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.ideamindmap.findtext;
 
 import javax.annotation.Nonnull;
 
 public interface FindTextScopeProvider {
-  
+
+  boolean toSearchIn(@Nonnull SearchTextScope scope);
+
   public enum SearchTextScope {
     IN_TOPIC_TEXT,
     IN_TOPIC_NOTES,
@@ -29,6 +32,4 @@ public interface FindTextScopeProvider {
     IN_TOPIC_URI,
     CASE_INSENSETIVE;
   }
-  
-  boolean toSearchIn(@Nonnull SearchTextScope scope);
 }

@@ -7,184 +7,208 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.JBCheckboxMenuItem;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
-import com.intellij.ui.components.*;
-
+import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBRadioButton;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextField;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.*;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 
 public class IdeaUIComponentFactory implements UIComponentFactory {
 
-    private static class JOptionablePanel extends JBPanel implements HasOptions {
+  @Override
+  @Nonnull
+  public JPanel makePanel() {
+    return new JBPanel();
+  }
 
-        private static final long serialVersionUID = 7315573532005732183L;
-        private final HasOptions optionsProcessor;
+  @Nonnull
+  @Override
+  public JPanel makePanelWithOptions(@Nonnull HasOptions hasOptions) {
+    return new JOptionablePanel(hasOptions);
+  }
 
-        private JOptionablePanel(@Nonnull final HasOptions optionsProcessor) {
-            super();
-            this.optionsProcessor = optionsProcessor;
-        }
+  @Nonnull
+  @Override
+  public JToggleButton makeToggleButton() {
+    return new JToggleButton();
+  }
 
-        @Override
-        public boolean doesSupportKey(@Nonnull final String key) {
-            return this.optionsProcessor.doesSupportKey(key);
-        }
+  @Nonnull
+  @Override
+  public JRadioButton makeRadioButton() {
+    return new JBRadioButton();
+  }
 
-        @Override
-        @Nonnull
-        @MustNotContainNull
-        public String[] getOptionKeys() {
-            return this.optionsProcessor.getOptionKeys();
-        }
+  @Override
+  @Nonnull
+  public JComboBox makeComboBox() {
+    return new ComboBox();
+  }
 
-        @Override
-        @Nonnull
-        public String getOptionKeyDescription(@Nonnull final String key) {
-            return this.optionsProcessor.getOptionKeyDescription(key);
-        }
+  @Override
+  @Nonnull
+  public JButton makeButton() {
+    return new JButton();
+  }
 
-        @Override
-        public void setOption(@Nonnull final String key, @Nullable final String value) {
-            this.optionsProcessor.setOption(key, value);
-        }
+  @Override
+  @Nonnull
+  public JToolBar makeToolBar() {
+    return new JToolBar();
+  }
 
-        @Override
-        @Nullable
-        public String getOption(@Nonnull final String key) {
-            return this.optionsProcessor.getOption(key);
-        }
-    }
+  @Override
+  @Nonnull
+  public JScrollPane makeScrollPane() {
+    return new JBScrollPane();
+  }
 
+  @Override
+  @Nonnull
+  public JCheckBox makeCheckBox() {
+    return new JBCheckBox();
+  }
 
-    @Override
-    @Nonnull
-    public JPanel makePanel() {
-        return new JBPanel();
-    }
+  @Override
+  @Nonnull
+  public JLabel makeLabel() {
+    return new JBLabel();
+  }
 
-    @Nonnull
-    @Override
-    public JPanel makePanelWithOptions(@Nonnull HasOptions hasOptions) {
-        return new JOptionablePanel(hasOptions);
-    }
+  @Override
+  @Nonnull
+  public JPopupMenu makePopupMenu() {
+    return new JBPopupMenu();
+  }
 
-    @Nonnull
-    @Override
-    public JToggleButton makeToggleButton() {
-        return new JToggleButton();
-    }
+  @Override
+  @Nonnull
+  public JTextArea makeTextArea() {
+    return new JTextArea();
+  }
 
-    @Nonnull
-    @Override
-    public JRadioButton makeRadioButton() {
-        return new JBRadioButton();
-    }
+  @Override
+  @Nonnull
+  public JSpinner makeSpinner() {
+    return new JSpinner();
+  }
 
-    @Override
-    @Nonnull
-    public JComboBox makeComboBox() {
-        return new ComboBox();
-    }
+  @Override
+  @Nonnull
+  public JEditorPane makeEditorPane() {
+    return new JEditorPane();
+  }
 
-    @Override
-    @Nonnull
-    public JButton makeButton() {
-        return new JButton();
-    }
+  @Override
+  @Nonnull
+  public JMenuItem makeMenuItem(@Nonnull final String s, final Icon icon) {
+    return new JBMenuItem(s, icon);
+  }
 
-    @Override
-    @Nonnull
-    public JToolBar makeToolBar() {
-        return new JToolBar();
-    }
+  @Override
+  @Nonnull
+  public JCheckBoxMenuItem makeCheckboxMenuItem(@Nonnull final String s, final Icon icon, final boolean b) {
+    return new JBCheckboxMenuItem(s, icon, b);
+  }
 
-    @Override
-    @Nonnull
-    public JScrollPane makeScrollPane() {
-        return new JBScrollPane();
-    }
+  @Nonnull
+  @Override
+  public JRadioButtonMenuItem makeRadioButtonMenuItem(@Nonnull String s, @Nullable Icon icon, boolean b) {
+    return new JRadioButtonMenuItem(s, icon, b);
+  }
 
-    @Override
-    @Nonnull
-    public JCheckBox makeCheckBox() {
-        return new JBCheckBox();
-    }
+  @Nonnull
+  @Override
+  public ButtonGroup makeButtonGroup() {
+    return new ButtonGroup();
+  }
 
-    @Override
-    @Nonnull
-    public JLabel makeLabel() {
-        return new JBLabel();
-    }
+  @Override
+  @Nonnull
+  public JSeparator makeMenuSeparator() {
+    return new JSeparator();
+  }
 
-    @Override
-    @Nonnull
-    public JPopupMenu makePopupMenu() {
-        return new JBPopupMenu();
-    }
+  @Override
+  @Nonnull
+  public JMenu makeMenu(@Nonnull final String s) {
+    return new JMenu(s);
+  }
 
-    @Override
-    @Nonnull
-    public JTextArea makeTextArea() {
-        return new JTextArea();
-    }
+  @Override
+  @Nonnull
+  public JSlider makeSlider() {
+    return new JSlider();
+  }
 
-    @Override
-    @Nonnull
-    public JSpinner makeSpinner() {
-        return new JSpinner();
-    }
+  @Nonnull
+  @Override
+  public JTextField makeTextField() {
+    return new JBTextField();
+  }
 
-    @Override
-    @Nonnull
-    public JEditorPane makeEditorPane() {
-        return new JEditorPane();
-    }
+  private static class JOptionablePanel extends JBPanel implements HasOptions {
 
-    @Override
-    @Nonnull
-    public JMenuItem makeMenuItem(@Nonnull final String s, final Icon icon) {
-        return new JBMenuItem(s, icon);
-    }
+    private static final long serialVersionUID = 7315573532005732183L;
+    private final HasOptions optionsProcessor;
 
-    @Override
-    @Nonnull
-    public JCheckBoxMenuItem makeCheckboxMenuItem(@Nonnull final String s, final Icon icon, final boolean b) {
-        return new JBCheckboxMenuItem(s, icon, b);
-    }
-
-    @Nonnull
-    @Override
-    public JRadioButtonMenuItem makeRadioButtonMenuItem(@Nonnull String s, @Nullable Icon icon, boolean b) {
-        return new JRadioButtonMenuItem(s, icon, b);
-    }
-
-    @Nonnull
-    @Override
-    public ButtonGroup makeButtonGroup() {
-        return new ButtonGroup();
+    private JOptionablePanel(@Nonnull final HasOptions optionsProcessor) {
+      super();
+      this.optionsProcessor = optionsProcessor;
     }
 
     @Override
-    @Nonnull
-    public JSeparator makeMenuSeparator() {
-        return new JSeparator();
+    public boolean doesSupportKey(@Nonnull final String key) {
+      return this.optionsProcessor.doesSupportKey(key);
     }
 
     @Override
     @Nonnull
-    public JMenu makeMenu(@Nonnull final String s) {
-        return new JMenu(s);
+    @MustNotContainNull
+    public String[] getOptionKeys() {
+      return this.optionsProcessor.getOptionKeys();
     }
 
     @Override
     @Nonnull
-    public JSlider makeSlider() {
-        return new JSlider();
+    public String getOptionKeyDescription(@Nonnull final String key) {
+      return this.optionsProcessor.getOptionKeyDescription(key);
     }
 
-    @Nonnull
     @Override
-    public JTextField makeTextField() {
-        return new JBTextField();
+    public void setOption(@Nonnull final String key, @Nullable final String value) {
+      this.optionsProcessor.setOption(key, value);
     }
+
+    @Override
+    @Nullable
+    public String getOption(@Nonnull final String key) {
+      return this.optionsProcessor.getOption(key);
+    }
+  }
 }

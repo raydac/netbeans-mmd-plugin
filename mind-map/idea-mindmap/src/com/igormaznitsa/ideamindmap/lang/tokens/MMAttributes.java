@@ -5,7 +5,7 @@ public class MMAttributes extends MMElementType {
     super("ATTRIBUTES");
   }
 
-  @SuppressWarnings({"HardCodedStringLiteral"})
+  @SuppressWarnings( {"HardCodedStringLiteral"})
   public String toString() {
     return "Attributes:" + super.toString();
   }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.ideamindmap.swing;
 
 import com.igormaznitsa.mindmap.model.MindMap;
@@ -30,10 +31,10 @@ import javax.swing.tree.TreePath;
 public class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
   private final MindMap model;
 
-  private final Map<Object,List<Object>> sortedCache = new HashMap<Object,List<Object>>();
+  private final Map<Object, List<Object>> sortedCache = new HashMap<Object, List<Object>>();
   private final Comparator<Object> comparator;
 
-  public SortedTreeModelWrapper(final MindMap model, final Comparator<Object> comparator){
+  public SortedTreeModelWrapper(final MindMap model, final Comparator<Object> comparator) {
     this.model = model;
     this.comparator = comparator;
     this.model.addTreeModelListener(this);
@@ -80,19 +81,19 @@ public class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
     this.model.removeTreeModelListener(l);
   }
 
-  private void clear(){
+  private void clear() {
     this.sortedCache.clear();
   }
 
-  private List<Object> getChildrenFromCache(final Object parent){
+  private List<Object> getChildrenFromCache(final Object parent) {
     List<Object> result = this.sortedCache.get(parent);
-    if (result == null){
+    if (result == null) {
       result = new ArrayList<Object>();
       final int childCount = model.getChildCount(parent);
-      for(int i=0;i<childCount;i++){
+      for (int i = 0; i < childCount; i++) {
         result.add(model.getChild(parent, i));
       }
-      if (this.comparator!=null){
+      if (this.comparator != null) {
         Collections.sort(result, this.comparator);
       }
       this.sortedCache.put(parent, result);
@@ -120,7 +121,7 @@ public class SortedTreeModelWrapper implements TreeModel, TreeModelListener {
     clear();
   }
 
-  public void dispose(){
+  public void dispose() {
     clear();
     this.model.removeTreeModelListener(this);
   }

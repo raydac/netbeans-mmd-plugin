@@ -4,7 +4,6 @@ import com.igormaznitsa.ideamindmap.lang.tokens.MMTokens;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -14,9 +13,11 @@ public class PsiExtraBlock extends ASTWrapperPsiElement implements MMPsiElement 
   }
 
   @Nullable
-  public Extra.ExtraType getType(){
-    final PsiExtraType type = (PsiExtraType)this.findChildByType(MMTokens.EXTRA_TYPE);
-    if (type == null) return null;
+  public Extra.ExtraType getType() {
+    final PsiExtraType type = (PsiExtraType) this.findChildByType(MMTokens.EXTRA_TYPE);
+    if (type == null) {
+      return null;
+    }
     return type.getType();
   }
 }

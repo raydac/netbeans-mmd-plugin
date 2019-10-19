@@ -20,43 +20,24 @@ import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
-
+import java.awt.Color;
+import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
-import java.util.ResourceBundle;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 public class ColorAttributePanel extends JPanel {
   private static final long serialVersionUID = -3436912869455827455L;
 
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
-
-  public static class Result {
-    private final Color borderColor;
-    private final Color textColor;
-    private final Color fillColor;
-
-    private Result(final Color border, final Color text, final Color fill) {
-      this.borderColor = border;
-      this.textColor = text;
-      this.fillColor = fill;
-    }
-
-    public Color getTextColor() {
-      return this.textColor;
-    }
-
-    public Color getFillColor() {
-      return this.fillColor;
-    }
-
-    public Color getBorderColor() {
-      return this.borderColor;
-    }
-  }
-
   private final DialogProvider dialogProvider;
+  private JButton buttonResetBorder;
+  private JButton buttonResetFill;
+  private JButton buttonResetText;
+  private ColorChooserButton colorChooserBorder;
+  private ColorChooserButton colorChooserFill;
+  private ColorChooserButton colorChooserText;
 
   public ColorAttributePanel(@Nonnull final MindMap map,
                              @Nonnull final DialogProvider dialogProvider,
@@ -174,10 +155,27 @@ public class ColorAttributePanel extends JPanel {
     this.colorChooserText.setValue(null);
   }
 
-  private JButton buttonResetBorder;
-  private JButton buttonResetFill;
-  private JButton buttonResetText;
-  private ColorChooserButton colorChooserBorder;
-  private ColorChooserButton colorChooserFill;
-  private ColorChooserButton colorChooserText;
+  public static class Result {
+    private final Color borderColor;
+    private final Color textColor;
+    private final Color fillColor;
+
+    private Result(final Color border, final Color text, final Color fill) {
+      this.borderColor = border;
+      this.textColor = text;
+      this.fillColor = fill;
+    }
+
+    public Color getTextColor() {
+      return this.textColor;
+    }
+
+    public Color getFillColor() {
+      return this.fillColor;
+    }
+
+    public Color getBorderColor() {
+      return this.borderColor;
+    }
+  }
 }
