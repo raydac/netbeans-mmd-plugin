@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model.logger;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
-import com.igormaznitsa.mindmap.model.logger.impl.JavaLoggerServiceImpl;
 
+import com.igormaznitsa.mindmap.model.logger.impl.JavaLoggerServiceImpl;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-
 import javax.annotation.Nonnull;
 
 public final class LoggerFactory {
@@ -32,17 +32,17 @@ public final class LoggerFactory {
     service.reload();
     final Iterator<LoggerService> iterator = service.iterator();
     LOGGER_SERVICE = iterator.hasNext() ? iterator.next() : new JavaLoggerServiceImpl();
-    LOGGER_SERVICE.getLogger(LoggerFactory.class).info("Detected MindMap Logger Service: "+LOGGER_SERVICE.getClass().getName());
+    LOGGER_SERVICE.getLogger(LoggerFactory.class).info("Detected MindMap Logger Service: " + LOGGER_SERVICE.getClass().getName());
   }
 
   @Nonnull
-  public static Logger getLogger(@Nonnull final Class<?> klazz){
+  public static Logger getLogger(@Nonnull final Class<?> klazz) {
     return LOGGER_SERVICE.getLogger(assertNotNull(klazz));
-  } 
-  
+  }
+
   @Nonnull
-  public static Logger getLogger(@Nonnull final String name){
+  public static Logger getLogger(@Nonnull final String name) {
     return LOGGER_SERVICE.getLogger(assertNotNull(name));
   }
-  
+
 }

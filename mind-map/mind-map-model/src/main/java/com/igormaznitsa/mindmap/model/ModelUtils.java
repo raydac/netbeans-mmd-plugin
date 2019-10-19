@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -37,19 +38,12 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-
 public final class ModelUtils {
 
-  private ModelUtils() {
-  }
-
+  public static final Comparator<String> STRING_COMPARATOR = new StringComparator();
   private static final Logger LOGGER = LoggerFactory.getLogger(ModelUtils.class);
 
   private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>"); //NOI18N
@@ -57,18 +51,11 @@ public final class ModelUtils {
   private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
   private static final Pattern URI_QUERY_PARAMETERS = Pattern.compile("\\&?([^=]+)=([^&]*)"); //NOI18N
 
-  private static final class StringComparator implements Comparator<String>,Serializable {
+  private ModelUtils() {
+  }
 
-    private static final long serialVersionUID = -68309989264175879L;
+  ;
 
-    @Override
-    public int compare(@Nonnull final String o1, @Nonnull final String o2) {
-      return o1.compareTo(o2);
-    }
-  };
-
-  public static final Comparator<String> STRING_COMPARATOR = new StringComparator();
-  
   public static int calcCharsOnStart(final char chr, @Nonnull final String text) {
     int result = 0;
     for (int i = 0; i < text.length(); i++) {
@@ -121,23 +108,32 @@ public final class ModelUtils {
     final int length = text.length();
     final StringBuilder result = new StringBuilder(length);
 
-    for(int i=0;i<length;i++) {
+    for (int i = 0; i < length; i++) {
       final char chr = text.charAt(i);
-    
-      switch(chr) {
-          case '\"' : result.append("&quot;");break;
-          case '&' : result.append("&amp;");break;
-          case '<' : result.append("&lt;");break;
-          case '>' : result.append("&gt;");break;
-          default: {
-            result.append(chr);
-          }break;
+
+      switch (chr) {
+        case '\"':
+          result.append("&quot;");
+          break;
+        case '&':
+          result.append("&amp;");
+          break;
+        case '<':
+          result.append("&lt;");
+          break;
+        case '>':
+          result.append("&gt;");
+          break;
+        default: {
+          result.append(chr);
+        }
+        break;
       }
     }
-    
+
     return result.toString();
   }
-  
+
   @Nonnull
   public static String makeMDCodeBlock(@Nonnull final String text) throws IOException {
     final int maxQuotes = calcMaxLengthOfBacktickQuotesSubstr(text) + 1;
@@ -155,11 +151,9 @@ public final class ModelUtils {
       if (c == '\n') {
         buffer.append("<br/>"); //NOI18N
         continue;
-      }
-      else if (Character.isISOControl(c)) {
+      } else if (Character.isISOControl(c)) {
         continue;
-      }
-      else if (MD_ESCAPED_CHARS.indexOf(c) >= 0) {
+      } else if (MD_ESCAPED_CHARS.indexOf(c) >= 0) {
         buffer.append('\\');
       }
 
@@ -237,8 +231,7 @@ public final class ModelUtils {
       if (text.charAt(i) == '\n') {
         result[index++] = line.toString();
         line.setLength(0);
-      }
-      else {
+      } else {
         line.append(text.charAt(i));
       }
     }
@@ -255,7 +248,7 @@ public final class ModelUtils {
 
     final List<String> orderedkeys = new ArrayList<String>(properties.stringPropertyNames());
     Collections.sort(orderedkeys);
-    
+
     for (final String k : orderedkeys) {
       try {
         final String encodedKey = URLEncoder.encode(k, "UTF-8"); //NOI18N
@@ -265,8 +258,7 @@ public final class ModelUtils {
           buffer.append('&');
         }
         buffer.append(encodedKey).append('=').append(encodedValue);
-      }
-      catch (UnsupportedEncodingException ex) {
+      } catch (UnsupportedEncodingException ex) {
         LOGGER.error("Can't encode URI query", ex); //NOI18N
         throw new Error("Unexpected exception, can't find UTF-8 charset!"); //NOI18N
       }
@@ -288,8 +280,7 @@ public final class ModelUtils {
           final String value = URLDecoder.decode(matcher.group(2), "UTF-8"); //NOI18N
           result.put(key, value);
         }
-      }
-      catch (UnsupportedEncodingException ex) {
+      } catch (UnsupportedEncodingException ex) {
         LOGGER.error("Can't decode URI query", ex); //NOI18N
         throw new Error("Unexpected exception, can't find UTF-8 charset!"); //NOI18N
       }
@@ -312,12 +303,10 @@ public final class ModelUtils {
       final char c = s.charAt(i);
       if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || "-_.~".indexOf(c) >= 0) { //NOI18N
         result.append(c);
-      }
-      else {
+      } else {
         if (":/?#[]@!$^'()*+,;= ".indexOf(c) >= 0) { //NOI18N
           result.append(char2UriHexByte(c));
-        }
-        else {
+        } else {
           result.append(c);
         }
       }
@@ -334,13 +323,11 @@ public final class ModelUtils {
     if (path.startsWith("file:")) { //NOI18N
       try {
         return new File(new URI(normalizeFileURI(path)));
-      }
-      catch (URISyntaxException ex) {
+      } catch (URISyntaxException ex) {
         LOGGER.error("URISyntaxException for " + path, ex); //NOI18N
         return null;
       }
-    }
-    else {
+    } else {
       return new File(path);
     }
   }
@@ -360,21 +347,23 @@ public final class ModelUtils {
   public static String removeISOControls(@Nonnull final String text) {
     StringBuilder result = null;
     boolean detected = false;
-    for(int i=0;i<text.length();i++){
+    for (int i = 0; i < text.length(); i++) {
       final char ch = text.charAt(i);
       if (detected) {
-        if (!Character.isISOControl(ch)) result.append(ch);
+        if (!Character.isISOControl(ch)) {
+          result.append(ch);
+        }
       } else {
         if (Character.isISOControl(ch)) {
           detected = true;
           result = new StringBuilder(text.length());
-          result.append(text,0,i);
+          result.append(text, 0, i);
         }
       }
     }
     return detected ? result.toString() : text;
   }
-  
+
   @Nonnull
   private static String normalizeFileURI(@Nonnull final String fileUri) {
     final int schemePosition = fileUri.indexOf(':');
@@ -412,8 +401,7 @@ public final class ModelUtils {
       }
 
       return new URI(buffer.toString());
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       throw new IllegalArgumentException("Can't convert path to URI: " + path, ex); //NOI18N
     }
   }
@@ -431,14 +419,12 @@ public final class ModelUtils {
     boolean separator = false;
     if (splittedPath.length == 0) {
       separator = true;
-    }
-    else {
+    } else {
       for (final String s : splittedPath) {
         if (!s.isEmpty()) {
           pathItems.add(separator ? File.separatorChar + s : s);
           separator = false;
-        }
-        else {
+        } else {
           separator = true;
         }
       }
@@ -451,6 +437,16 @@ public final class ModelUtils {
     final String[] fullArray = pathItems.toArray(new String[pathItems.size()]);
     final String[] next = Arrays.copyOfRange(fullArray, 1, fullArray.length);
     return Paths.get(fullArray[0], next).toFile();
+  }
+
+  private static final class StringComparator implements Comparator<String>, Serializable {
+
+    private static final long serialVersionUID = -68309989264175879L;
+
+    @Override
+    public int compare(@Nonnull final String o1, @Nonnull final String o2) {
+      return o1.compareTo(o2);
+    }
   }
 
 }

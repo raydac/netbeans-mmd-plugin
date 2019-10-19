@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
-
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-//import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class MMapURI implements Serializable {
 
@@ -43,40 +41,6 @@ public class MMapURI implements Serializable {
   private final URI uri;
   private final Properties parameters;
   private final boolean fileUriFlag;
-
-  @Override
-  public int hashCode() {
-    return this.uri.hashCode() ^ (this.fileUriFlag ? 1 : 0) ^ (31 * this.parameters.size());
-  }
-  
-  @Override
-  public boolean equals(@Nullable final Object that) {
-    if (that == null) return false;
-    if (this == that) return true;
-    if (that instanceof MMapURI) {
-      final MMapURI thatURI = (MMapURI) that;
-      if (this.parameters.size()!=thatURI.parameters.size()) return false;
-      for(final String s : this.parameters.stringPropertyNames()) {
-        if (!thatURI.parameters.containsKey(s)) return false;
-        if (!this.parameters.getProperty(s).equals(thatURI.parameters.getProperty(s))) return false;
-      }
-      return this.uri.equals(thatURI.uri);
-    } else {
-      return false;
-    }
-  }
-  
-  @Nullable
-  private static String extractHost(@Nonnull final URI uri) {
-    String host = uri.getHost();
-    if (host == null) {
-      final String schemeSpecific = uri.getSchemeSpecificPart();
-      if (schemeSpecific != null && schemeSpecific.startsWith("//")) {
-        host = "";
-      }
-    }
-    return host;
-  }
 
   public MMapURI(@Nonnull final String uri) throws URISyntaxException {
     this(new URI(uri));
@@ -94,17 +58,14 @@ public class MMapURI implements Serializable {
         try {
           final String uriAsString = uri.toString();
           final int queryStart = uriAsString.lastIndexOf('?');
-          preparedURI = new URI(queryStart >= 0 ? uriAsString.substring(0,queryStart) : uriAsString);
-        }
-        catch (URISyntaxException ex) {
+          preparedURI = new URI(queryStart >= 0 ? uriAsString.substring(0, queryStart) : uriAsString);
+        } catch (URISyntaxException ex) {
           throw new Error("Unexpected error", ex);
         }
-      }
-      else {
+      } else {
         preparedURI = uri;
       }
-    }
-    else {
+    } else {
       this.parameters = EMPTY;
       preparedURI = uri;
     }
@@ -128,22 +89,65 @@ public class MMapURI implements Serializable {
 
     if (nullableBase == null) {
       this.uri = ModelUtils.toURI(filePath);
-    }
-    else {
+    } else {
       final Path basePath = Paths.toPath(nullableBase);
       if (basePath.isAbsolute()) {
         final Path path = filePath.startsWith(basePath) ? basePath.relativize(filePath) : filePath;
         this.uri = ModelUtils.toURI(path);
-      }
-      else {
+      } else {
         this.uri = ModelUtils.toURI(filePath);
       }
     }
   }
 
+  @Nullable
+  private static String extractHost(@Nonnull final URI uri) {
+    String host = uri.getHost();
+    if (host == null) {
+      final String schemeSpecific = uri.getSchemeSpecificPart();
+      if (schemeSpecific != null && schemeSpecific.startsWith("//")) {
+        host = "";
+      }
+    }
+    return host;
+  }
+
+  @SuppressWarnings("ConstantConditions")
   @Nonnull
   public static MMapURI makeFromFilePath(@Nullable final File base, @Nonnull final String filePath, @Nullable final Properties properties) {
     return new MMapURI(base, ModelUtils.makeFileForPath(filePath), properties);
+  }
+
+  @Override
+  public int hashCode() {
+    return this.uri.hashCode() ^ (this.fileUriFlag ? 1 : 0) ^ (31 * this.parameters.size());
+  }
+
+  @Override
+  public boolean equals(@Nullable final Object that) {
+    if (that == null) {
+      return false;
+    }
+    if (this == that) {
+      return true;
+    }
+    if (that instanceof MMapURI) {
+      final MMapURI thatURI = (MMapURI) that;
+      if (this.parameters.size() != thatURI.parameters.size()) {
+        return false;
+      }
+      for (final String s : this.parameters.stringPropertyNames()) {
+        if (!thatURI.parameters.containsKey(s)) {
+          return false;
+        }
+        if (!this.parameters.getProperty(s).equals(thatURI.parameters.getProperty(s))) {
+          return false;
+        }
+      }
+      return this.uri.equals(thatURI.uri);
+    } else {
+      return false;
+    }
   }
 
   @Nonnull
@@ -154,19 +158,17 @@ public class MMapURI implements Serializable {
 
     final List<String> resultPath = new ArrayList<String>();
 
-    for (final String s : splittedNewPath) {
-      resultPath.add(s);
-    }
+    resultPath.addAll(Arrays.asList(splittedNewPath));
 
     currentNumberOfResourceItemsTheLasIsZero = currentNumberOfResourceItemsTheLasIsZero + 1;
-  
-    int oldPathIndex = splittedOldPath.length - currentNumberOfResourceItemsTheLasIsZero; 
-    
+
+    int oldPathIndex = splittedOldPath.length - currentNumberOfResourceItemsTheLasIsZero;
+
     while (oldPathIndex < splittedOldPath.length) {
-      if (oldPathIndex>=0){
+      if (oldPathIndex >= 0) {
         resultPath.add(splittedOldPath[oldPathIndex]);
       }
-      oldPathIndex ++;
+      oldPathIndex++;
     }
 
     final StringBuilder buffer = new StringBuilder();
@@ -178,12 +180,12 @@ public class MMapURI implements Serializable {
     }
 
     final URI newURI = new URI(replaceHost ? newBase.getScheme() : this.uri.getScheme(),
-            replaceHost ? newBase.getUserInfo() : this.uri.getUserInfo(),
-            replaceHost ? extractHost(newBase) : extractHost(this.uri),
-            replaceHost ? newBase.getPort() : this.uri.getPort(),
-            buffer.toString(),
-            this.uri.getQuery(),
-            this.uri.getFragment()
+        replaceHost ? newBase.getUserInfo() : this.uri.getUserInfo(),
+        replaceHost ? extractHost(newBase) : extractHost(this.uri),
+        replaceHost ? newBase.getPort() : this.uri.getPort(),
+        buffer.toString(),
+        this.uri.getQuery(),
+        this.uri.getFragment()
     );
 
     return new MMapURI(newURI, this.fileUriFlag, this.parameters);
@@ -194,35 +196,35 @@ public class MMapURI implements Serializable {
     final MMapURI result;
     final String normalizedName = ModelUtils.escapeURIPath(newName).replace('\\', '/');
 
-    final String [] parsedNormalized = normalizedName.split("\\/");
-    final String [] parsedCurrentPath = this.uri.getPath().split("\\/");
+    final String[] parsedNormalized = normalizedName.split("\\/");
+    final String[] parsedCurrentPath = this.uri.getPath().split("\\/");
 
     final int baseLength = Math.max(0, parsedCurrentPath.length - parsedNormalized.length);
-    
+
     final StringBuilder buffer = new StringBuilder();
 
-    for(int i=0;i<baseLength;i++){
-      if (i>0){
+    for (int i = 0; i < baseLength; i++) {
+      if (i > 0) {
         buffer.append('/');
       }
       buffer.append(parsedCurrentPath[i]);
     }
-    
-    for(int i=0;i<parsedNormalized.length;i++){
-      if ((i==0 && buffer.length()>0) || i>0){
+
+    for (int i = 0; i < parsedNormalized.length; i++) {
+      if ((i == 0 && buffer.length() > 0) || i > 0) {
         buffer.append('/');
       }
       buffer.append(parsedNormalized[i]);
     }
-    
+
     result = new MMapURI(new URI(
-            this.uri.getScheme(),
-            this.uri.getUserInfo(),
-            extractHost(this.uri),
-            this.uri.getPort(),
-            buffer.toString(),
-            this.uri.getQuery(),
-            this.uri.getFragment()), this.fileUriFlag, parameters);
+        this.uri.getScheme(),
+        this.uri.getUserInfo(),
+        extractHost(this.uri),
+        this.uri.getPort(),
+        buffer.toString(),
+        this.uri.getQuery(),
+        this.uri.getFragment()), this.fileUriFlag, parameters);
     return result;
   }
 
@@ -231,12 +233,10 @@ public class MMapURI implements Serializable {
     if (this.fileUriFlag) {
       try {
         return new URI(this.uri.toASCIIString() + (this.parameters.isEmpty() ? "" : '?' + ModelUtils.makeQueryStringForURI(this.parameters)));
-      }
-      catch (URISyntaxException ex) {
+      } catch (URISyntaxException ex) {
         throw new Error("Unexpected error during URI convertation"); //NOI18N
       }
-    }
-    else {
+    } else {
       return this.uri;
     }
   }
@@ -262,8 +262,7 @@ public class MMapURI implements Serializable {
   public String asString(final boolean ascII, final boolean addPropertiesAsQuery) {
     if (this.fileUriFlag) {
       return (ascII ? this.uri.toASCIIString() : this.uri.toString()) + (!addPropertiesAsQuery || this.parameters.isEmpty() ? "" : '?' + ModelUtils.makeQueryStringForURI(this.parameters)); //NOI18N
-    }
-    else {
+    } else {
       return ascII ? this.uri.toASCIIString() : this.uri.toString();
     }
   }
@@ -273,12 +272,10 @@ public class MMapURI implements Serializable {
     final File result;
     if (this.uri.isAbsolute()) {
       result = ModelUtils.toFile(this.uri);
-    }
-    else {
+    } else {
       try {
         result = new File(base, URLDecoder.decode(this.uri.getPath(), "UTF-8")); //NOI18N
-      }
-      catch (UnsupportedEncodingException ex) {
+      } catch (UnsupportedEncodingException ex) {
         throw new Error("Unexpected error", ex); //NOI18N
       }
     }

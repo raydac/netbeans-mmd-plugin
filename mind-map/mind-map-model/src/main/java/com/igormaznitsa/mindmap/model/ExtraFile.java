@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
 import java.io.File;
 import java.net.URISyntaxException;
-
 import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
-
 import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 
@@ -30,11 +29,9 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   private static final long serialVersionUID = -478916403235887225L;
 
   private final MMapURI fileUri;
-
-  private volatile String cachedString;
-
   private final boolean mmdFileFlag;
   private final String lowerCasedFileExtension;
+  private volatile String cachedString;
 
   public ExtraFile(@Nonnull final MMapURI file) {
     this.fileUri = file;
@@ -44,6 +41,14 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
   public ExtraFile(@Nonnull final String text) throws URISyntaxException {
     this(new MMapURI(text));
+  }
+
+  @Nonnull
+  private static String ensureFolderPath(@Nonnull final String str) {
+    if (str.endsWith("/") || str.endsWith("\\")) {
+      return str;
+    }
+    return str + File.separatorChar;
   }
 
   @Override
@@ -56,12 +61,16 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   public int hashCode() {
     return this.fileUri.hashCode() ^ (this.mmdFileFlag ? 1 : 0);
   }
-  
+
   @Override
   public boolean equals(@Nullable final Object that) {
-    if (that == null) return false;
-    if (this == that) return true;
-  
+    if (that == null) {
+      return false;
+    }
+    if (this == that) {
+      return true;
+    }
+
     if (that instanceof ExtraFile) {
       final ExtraFile thatFile = (ExtraFile) that;
       return this.mmdFileFlag == thatFile.mmdFileFlag && this.fileUri.equals(thatFile.fileUri);
@@ -69,7 +78,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
       return false;
     }
   }
-  
+
   public boolean isMMDFile() {
     return this.mmdFileFlag;
   }
@@ -116,12 +125,6 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     return this.fileUri.isAbsolute();
   }
 
-  @Nonnull
-  private static String ensureFolderPath(@Nonnull final String str) {
-    if (str.endsWith("/") || str.endsWith("\\")) return str;
-    return str + File.separatorChar;
-  }
-  
   @Nullable
   public ExtraFile replaceParentPath(@Nullable final File baseFolder, @Nonnull final MMapURI oldFolder, @Nonnull final MMapURI newFolder) {
     final File theFile = this.fileUri.asFile(baseFolder);
@@ -131,31 +134,30 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     final String theFilePath = FilenameUtils.normalize(theFile.getAbsolutePath());
     final String oldFolderFilePath = ensureFolderPath(FilenameUtils.normalize(oldFolderFile.getAbsolutePath()));
     final String newFolderFilePath = ensureFolderPath(FilenameUtils.normalize(newFolderFile.getAbsolutePath()));
-    
-    if (theFilePath.startsWith(oldFolderFilePath)){
-      final String changedPath = newFolderFilePath+theFilePath.substring(oldFolderFilePath.length());
-      return new ExtraFile(new MMapURI(this.isAbsolute() ? null : baseFolder, new File(changedPath),this.fileUri.getParameters()));
+
+    if (theFilePath.startsWith(oldFolderFilePath)) {
+      final String changedPath = newFolderFilePath + theFilePath.substring(oldFolderFilePath.length());
+      return new ExtraFile(new MMapURI(this.isAbsolute() ? null : baseFolder, new File(changedPath), this.fileUri.getParameters()));
     } else {
       return null;
     }
   }
-  
+
   public boolean hasParent(@Nullable final File baseFolder, @Nonnull final MMapURI folder) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = folder.asFile(baseFolder);
 
     final String theFilePath = FilenameUtils.normalize(theFile.getAbsolutePath());
     final String thatFilePath = ensureFolderPath(FilenameUtils.normalize(thatFile.getAbsolutePath()));
-    
+
     if (!theFilePath.equals(thatFilePath) && theFilePath.startsWith(thatFilePath)) {
-      final String diff = theFilePath.substring(thatFilePath.length()-1);
+      final String diff = theFilePath.substring(thatFilePath.length() - 1);
       return diff.startsWith("\\") || diff.startsWith("/");
-    }
-    else {
+    } else {
       return false;
     }
   }
-  
+
   public boolean isSameOrHasParent(@Nullable final File baseFolder, @Nonnull final MMapURI file) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = file.asFile(baseFolder);
@@ -166,8 +168,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     if (theFilePath.startsWith(thatFilePath)) {
       final String diff = theFilePath.substring(thatFilePath.length());
       return diff.isEmpty() || diff.startsWith("\\") || diff.startsWith("/") || thatFilePath.endsWith("/") || thatFilePath.endsWith("\\");
-    }
-    else {
+    } else {
       return false;
     }
   }

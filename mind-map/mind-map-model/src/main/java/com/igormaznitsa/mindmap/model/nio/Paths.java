@@ -13,33 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model.nio;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.impl.J7PathService;
-
 import java.io.File;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-
 import javax.annotation.Nonnull;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 public final class Paths {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Paths.class);
-    
+
   private static final PathService PATH_SERVICE;
-    
+
   static {
     final ServiceLoader<PathService> service = ServiceLoader.load(PathService.class, Paths.class.getClassLoader());
     service.reload();
     final Iterator<PathService> iterator = service.iterator();
     PATH_SERVICE = iterator.hasNext() ? iterator.next() : new J7PathService();
-    
-    LOGGER.info("Detected path service : "+PATH_SERVICE.getClass().getName());
+
+    LOGGER.info("Detected path service : " + PATH_SERVICE.getClass().getName());
   }
 
   @Nonnull

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
 import java.io.File;
@@ -24,7 +25,7 @@ public class ExtraNote extends Extra<String> {
   private static final long serialVersionUID = 8612886872756838947L;
 
   private final String text;
-  
+
   public ExtraNote(@Nonnull final String text) {
     this.text = text;
   }
@@ -33,13 +34,17 @@ public class ExtraNote extends Extra<String> {
   public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
     return pattern.matcher(this.text).find();
   }
-  
+
   @Override
   public boolean equals(@Nullable final Object that) {
-    if (that == null) return false;
-    if (this == that) return true;
+    if (that == null) {
+      return false;
+    }
+    if (this == that) {
+      return true;
+    }
     if (that instanceof ExtraNote) {
-      return this.text.equals(((ExtraNote)that).text);
+      return this.text.equals(((ExtraNote) that).text);
     } else {
       return false;
     }
@@ -49,7 +54,7 @@ public class ExtraNote extends Extra<String> {
   public int hashCode() {
     return this.text.hashCode();
   }
-  
+
   @Override
   @Nonnull
   public String getValue() {

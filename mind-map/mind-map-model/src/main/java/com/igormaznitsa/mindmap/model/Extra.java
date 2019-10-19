@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
 import java.io.File;
@@ -21,16 +22,33 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class Extra<T> implements Serializable, Constants, Cloneable {
 
   private static final long serialVersionUID = 2547528075256486018L;
+
+  @Nonnull
+  public abstract T getValue();
+
+  @Nonnull
+  public abstract ExtraType getType();
+
+  @Nonnull
+  public abstract String getAsString();
+
+  @Nonnull
+  public abstract String provideAsStringForSave();
+
+  public abstract boolean containsPattern(@Nullable File baseFolder, @Nonnull Pattern pattern);
+
+  public final void write(@Nonnull final Writer out) throws IOException {
+    out.append("- ").append(getType().name()).append(NEXT_LINE); //NOI18N
+    out.append(ModelUtils.makePreBlock(provideAsStringForSave()));
+  }
 
   public enum ExtraType {
 
@@ -50,8 +68,7 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
             try {
               result = str.trim();
               URI.create(result);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
               result = null;
             }
           }
@@ -84,25 +101,6 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
           throw new Error("Unexpected value [" + this.name() + ']'); //NOI18N
       }
     }
-  }
-
-  @Nonnull
-  public abstract T getValue();
-
-  @Nonnull
-  public abstract ExtraType getType();
-
-  @Nonnull
-  public abstract String getAsString();
-
-  @Nonnull
-  public abstract String provideAsStringForSave();
-
-  public abstract boolean containsPattern(@Nullable File baseFolder, @Nonnull Pattern pattern);
-
-  public final void write(@Nonnull final Writer out) throws IOException {
-    out.append("- ").append(getType().name()).append(NEXT_LINE); //NOI18N
-    out.append(ModelUtils.makePreBlock(provideAsStringForSave()));
   }
 
 }

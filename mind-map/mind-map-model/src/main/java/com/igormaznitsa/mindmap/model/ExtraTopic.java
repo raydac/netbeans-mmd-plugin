@@ -13,55 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
 import java.io.File;
 import java.util.Locale;
-
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ExtraTopic extends Extra<String> {
-  private static final long serialVersionUID = -8556885025460722094L;
-
-  private final String topicUID;
-  
   public static final String TOPIC_UID_ATTR = "topicLinkUID"; //NOI18N
-  
-  @Override
-  public int hashCode() {
-    return this.topicUID.hashCode();
+  private static final long serialVersionUID = -8556885025460722094L;
+  private final String topicUID;
+
+  public ExtraTopic(@Nonnull final String topicUID) {
+    this.topicUID = topicUID;
   }
-  
-  @Override
-  public boolean equals(@Nullable final Object that) {
-    if (that == null) return false;
-    if (this == that) return true;
-    if (that instanceof ExtraTopic) {
-      return this.topicUID.equals(((ExtraTopic)that).topicUID);
-    } else {
-      return false;
-    }
-  }
-  
+
   @Nullable
   public static ExtraTopic makeLinkTo(@Nonnull final MindMap map, @Nullable final Topic topic) {
     ExtraTopic result = null;
-    if (topic!=null){
+    if (topic != null) {
       String uid = topic.getAttribute(TOPIC_UID_ATTR);
-      if (uid == null){
+      if (uid == null) {
         String time = Long.toHexString(System.currentTimeMillis() & 0x7FFFFFFFFFFFFFFFL).toUpperCase(Locale.ENGLISH);
         char extra = 'A';
-        while(true){
+        while (true) {
           uid = time + extra;
-          if (map.findTopicForLink(new ExtraTopic(uid))!=null){
-            if (extra == 'Z'){
-              time = Long.toHexString(System.nanoTime()& 0x7FFFFFFFFFFFFFFFL).toUpperCase(Locale.ENGLISH);
+          if (map.findTopicForLink(new ExtraTopic(uid)) != null) {
+            if (extra == 'Z') {
+              time = Long.toHexString(System.nanoTime() & 0x7FFFFFFFFFFFFFFFL).toUpperCase(Locale.ENGLISH);
               extra = 'A';
-            }else
-            extra ++;
-          }else{
+            } else {
+              extra++;
+            }
+          } else {
             break;
           }
         }
@@ -71,9 +58,25 @@ public class ExtraTopic extends Extra<String> {
     }
     return result;
   }
-  
-  public ExtraTopic(@Nonnull final String topicUID) {
-    this.topicUID = topicUID;
+
+  @Override
+  public int hashCode() {
+    return this.topicUID.hashCode();
+  }
+
+  @Override
+  public boolean equals(@Nullable final Object that) {
+    if (that == null) {
+      return false;
+    }
+    if (this == that) {
+      return true;
+    }
+    if (that instanceof ExtraTopic) {
+      return this.topicUID.equals(((ExtraTopic) that).topicUID);
+    } else {
+      return false;
+    }
   }
 
   @Override

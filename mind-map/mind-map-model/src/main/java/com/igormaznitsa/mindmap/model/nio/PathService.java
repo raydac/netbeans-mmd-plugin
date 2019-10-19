@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model.nio;
 
-import java.io.File;
-
-import javax.annotation.Nonnull;
-
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import java.io.File;
+import javax.annotation.Nonnull;
 
 public interface PathService {
   @Nonnull

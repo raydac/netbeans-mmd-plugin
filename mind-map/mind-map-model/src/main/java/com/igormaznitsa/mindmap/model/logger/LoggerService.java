@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model.logger;
 
 import javax.annotation.Nonnull;
@@ -20,6 +21,7 @@ import javax.annotation.Nonnull;
 public interface LoggerService {
   @Nonnull
   Logger getLogger(@Nonnull Class<?> klazz);
+
   @Nonnull
   Logger getLogger(@Nonnull String name);
 }

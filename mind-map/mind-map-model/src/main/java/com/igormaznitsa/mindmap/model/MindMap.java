@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-
+import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -35,40 +38,28 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
 import org.apache.commons.io.IOUtils;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 
 public final class MindMap implements Serializable, Constants, TreeModel, Iterable<Topic> {
 
+  public static final String FORMAT_VERSION = "1.1"; //NOI18N
   private static final long serialVersionUID = 5929181596778047354L;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMap.class);
-
-  @Nullable
-  private Topic root;
-
-  private final transient Lock locker = new ReentrantLock();
-  private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s(.+)$"); //NOI18N
   private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*(\\`+)(.*?)\\2"); //NOI18N
-
   private static final String GENERATOR_VERSION_NAME = "__version__"; //NOI18N
-  public static final String FORMAT_VERSION = "1.1"; //NOI18N
-
+  private final transient Lock locker = new ReentrantLock();
+  private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
   private final transient List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
-
   private final MindMapController controller;
+  @Nullable
+  private Topic root;
 
   public MindMap(@Nullable final MindMapController nullableController, final boolean makeRoot) {
     this.controller = nullableController;
@@ -125,6 +116,35 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     this.attributes.put(GENERATOR_VERSION_NAME, FORMAT_VERSION);
   }
 
+  static boolean fillMapByAttributes(@Nonnull final String line, @Nonnull final Map<String, String> map) {
+    final Matcher attrmatcher = PATTERN_ATTRIBUTES.matcher(line);
+    if (attrmatcher.find()) {
+      final Matcher attrParser = PATTERN_ATTRIBUTE.matcher(attrmatcher.group(1));
+      while (attrParser.find()) {
+        map.put(attrParser.group(1), attrParser.group(3));
+      }
+      return true;
+    }
+    return false;
+  }
+
+  @Nonnull
+  static String allAttributesAsString(@Nonnull final Map<String, String> map) throws IOException {
+    final StringBuilder buffer = new StringBuilder();
+
+    boolean nonfirst = false;
+    for (final Map.Entry<String, String> e : map.entrySet()) {
+      if (nonfirst) {
+        buffer.append(',');
+      } else {
+        nonfirst = true;
+      }
+      buffer.append(e.getKey()).append('=').append(ModelUtils.makeMDCodeBlock(e.getValue()));
+    }
+
+    return buffer.toString();
+  }
+
   public void clear() {
     setRoot(null, true);
   }
@@ -150,8 +170,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
           startFound = true;
         }
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
 
@@ -182,8 +201,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
           }
         }
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
 
@@ -204,8 +222,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       if (makeNotification) {
         fireModelChanged();
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -256,8 +273,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     this.locker.lock();
     try {
       return this.root == null;
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -290,8 +306,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       } else {
         this.attributes.put(name, value);
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -302,8 +317,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       if (this.root != null) {
         resetPayload(this.root);
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -352,8 +366,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
             result.add(t);
           }
         }
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
     }
@@ -366,39 +379,9 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
     this.locker.lock();
     try {
       return this.root;
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
-  }
-
-  static boolean fillMapByAttributes(@Nonnull final String line, @Nonnull final Map<String, String> map) {
-    final Matcher attrmatcher = PATTERN_ATTRIBUTES.matcher(line);
-    if (attrmatcher.find()) {
-      final Matcher attrParser = PATTERN_ATTRIBUTE.matcher(attrmatcher.group(1));
-      while (attrParser.find()) {
-        map.put(attrParser.group(1), attrParser.group(3));
-      }
-      return true;
-    }
-    return false;
-  }
-
-  @Nonnull
-  static String allAttributesAsString(@Nonnull final Map<String, String> map) throws IOException {
-    final StringBuilder buffer = new StringBuilder();
-
-    boolean nonfirst = false;
-    for (final Map.Entry<String, String> e : map.entrySet()) {
-      if (nonfirst) {
-        buffer.append(',');
-      } else {
-        nonfirst = true;
-      }
-      buffer.append(e.getKey()).append('=').append(ModelUtils.makeMDCodeBlock(e.getValue()));
-    }
-
-    return buffer.toString();
   }
 
   @Nonnull
@@ -409,12 +392,10 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       writer = new StringWriter(16384);
       try {
         write(writer);
-      }
-      catch (IOException ex) {
+      } catch (IOException ex) {
         throw new Error("Unexpected exception", ex);
       }
-    }
-    finally {
+    } finally {
       locker.unlock();
     }
     return writer.toString();
@@ -434,8 +415,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       if (rootTopic != null) {
         rootTopic.write(out);
       }
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
     return out;
@@ -467,8 +447,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       fireModelChanged();
 
       return clonedtopic;
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -495,8 +474,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       }
 
       return result;
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }
@@ -510,8 +488,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
         this.locker.lock();
         try {
           result = rootTopic.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
-        }
-        finally {
+        } finally {
           this.locker.unlock();
         }
       }
@@ -528,8 +505,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       this.locker.lock();
       try {
         _findAllTopicsForExtraType(rootTopic, type, result);
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
     }
@@ -593,8 +569,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       this.locker.lock();
       try {
         return rootTopic.doesContainFileLink(baseFolder, file);
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
     }
@@ -608,8 +583,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       this.locker.lock();
       try {
         changed = rootTopic.deleteLinkToFileIfPresented(baseFolder, file);
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
       if (changed) {
@@ -626,8 +600,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
       this.locker.lock();
       try {
         changed = rootTopic.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
-      }
-      finally {
+      } finally {
         this.locker.unlock();
       }
       if (changed) {
@@ -647,8 +620,7 @@ public final class MindMap implements Serializable, Constants, TreeModel, Iterab
         result.add(t);
       }
       return result;
-    }
-    finally {
+    } finally {
       this.locker.unlock();
     }
   }

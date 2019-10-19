@@ -13,91 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.model.parser;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+package com.igormaznitsa.mindmap.model.parser;
 
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Allows to extract lexeme from mind map file.
  */
 public final class MindMapLexer {
 
-  /**
-   * Type of allowed lexeme.
-   */
-  public enum TokenType {
-    HEAD_LINE,
-    HEAD_DELIMITER,
-    ATTRIBUTE,
-    TOPIC_LEVEL,
-    TOPIC_TITLE,
-    CODE_SNIPPET_START,
-    CODE_SNIPPET_BODY,
-    CODE_SNIPPET_END,
-    EXTRA_TYPE,
-    EXTRA_TEXT,
-    WHITESPACE,
-    UNKNOWN_LINE
-  }
-
-  /**
-   * Class contains information about current lexer state.
-   */
-  public static final class LexerPosition {
-
-    private int offset;
-    private TokenType state = TokenType.HEAD_LINE;
-    private boolean tokenCompleted;
-
-    private LexerPosition(@Nonnull final LexerPosition pos) {
-      this.offset = pos.offset;
-      this.state = pos.state;
-      this.tokenCompleted = pos.tokenCompleted;
-    }
-
-    private LexerPosition(final int offset, @Nonnull final TokenType state) {
-      this.tokenCompleted = true;
-      this.offset = offset;
-      this.state = Assertions.assertNotNull(state);
-    }
-
-    public int getOffset() {
-      return this.offset;
-    }
-
-    public boolean isTokenCompleted() {
-      return this.tokenCompleted;
-    }
-
-    @Nonnull
-    public TokenType getState() {
-      return this.state;
-    }
-
-    public void set(@Nullable final LexerPosition position) {
-      if (position != null && this != position) {
-        this.offset = position.offset;
-        this.state = position.state;
-        this.tokenCompleted = position.tokenCompleted;
-      }
-    }
-
-    @Nonnull
-    public LexerPosition makeCopy() {
-      return new LexerPosition(this);
-    }
-  }
-
+  private final LexerPosition position = new LexerPosition(0, TokenType.UNKNOWN_LINE);
   private CharSequence buffer = "";
   private int endOffset;
   private int tokenStart;
   private int tokenEnd;
   private TokenType tokenType = TokenType.UNKNOWN_LINE;
-  private final LexerPosition position = new LexerPosition(0, TokenType.UNKNOWN_LINE);
 
   public int getTokenStartOffset() {
     return this.tokenStart;
@@ -493,5 +427,71 @@ public final class MindMapLexer {
 
   public int getBufferEnd() {
     return this.endOffset;
+  }
+
+  /**
+   * Type of allowed lexeme.
+   */
+  public enum TokenType {
+    HEAD_LINE,
+    HEAD_DELIMITER,
+    ATTRIBUTE,
+    TOPIC_LEVEL,
+    TOPIC_TITLE,
+    CODE_SNIPPET_START,
+    CODE_SNIPPET_BODY,
+    CODE_SNIPPET_END,
+    EXTRA_TYPE,
+    EXTRA_TEXT,
+    WHITESPACE,
+    UNKNOWN_LINE
+  }
+
+  /**
+   * Class contains information about current lexer state.
+   */
+  public static final class LexerPosition {
+
+    private int offset;
+    private TokenType state = TokenType.HEAD_LINE;
+    private boolean tokenCompleted;
+
+    private LexerPosition(@Nonnull final LexerPosition pos) {
+      this.offset = pos.offset;
+      this.state = pos.state;
+      this.tokenCompleted = pos.tokenCompleted;
+    }
+
+    private LexerPosition(final int offset, @Nonnull final TokenType state) {
+      this.tokenCompleted = true;
+      this.offset = offset;
+      this.state = Assertions.assertNotNull(state);
+    }
+
+    public int getOffset() {
+      return this.offset;
+    }
+
+    public boolean isTokenCompleted() {
+      return this.tokenCompleted;
+    }
+
+    @Nonnull
+    public TokenType getState() {
+      return this.state;
+    }
+
+    public void set(@Nullable final LexerPosition position) {
+      if (position != null && this != position) {
+        this.offset = position.offset;
+        this.state = position.state;
+        this.tokenCompleted = position.tokenCompleted;
+      }
+    }
+
+    @Nonnull
+    public LexerPosition makeCopy() {
+      return new LexerPosition(this);
+    }
   }
 }

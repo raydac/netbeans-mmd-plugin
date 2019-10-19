@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model.nio.impl;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer;
 import com.igormaznitsa.mindmap.model.nio.AbstractPath;
 import com.igormaznitsa.mindmap.model.nio.Path;
-
 import java.io.File;
 import java.util.Iterator;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 @IgnoreInAnimalSniffer
 public class J7Path extends AbstractPath {

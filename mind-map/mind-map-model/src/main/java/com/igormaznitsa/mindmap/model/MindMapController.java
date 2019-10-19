@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
 import java.io.Serializable;
-
 import javax.annotation.Nonnull;
 
 public interface MindMapController extends Serializable {
 
   public boolean canBeDeletedSilently(@Nonnull MindMap map, @Nonnull Topic topic);
-  
+
 }

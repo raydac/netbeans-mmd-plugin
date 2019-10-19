@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model.logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class Logger {
-  
+
   public Logger(@Nonnull final Class<?> klazz) {
   }
-  
+
   public Logger(@Nonnull final String name) {
   }
-  
+
   public abstract void info(@Nullable String message);
+
   public abstract void warn(@Nullable String message);
+
   public abstract void error(@Nullable String message);
-  public abstract void error(@Nullable String message,@Nullable Throwable error);
+
+  public abstract void error(@Nullable String message, @Nullable Throwable error);
 }
