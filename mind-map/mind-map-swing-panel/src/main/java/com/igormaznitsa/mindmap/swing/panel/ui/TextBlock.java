@@ -13,45 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import static com.igormaznitsa.mindmap.model.ModelUtils.breakToLines;
 
+
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
 
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import java.awt.geom.AffineTransform;
-
 public final class TextBlock implements Cloneable {
 
-  private static final class Line {
-
-    private final Rectangle2D bounds;
-    private final String line;
-
-    private Line(@Nonnull final String line, @Nonnull final Rectangle2D bounds) {
-      this.bounds = bounds;
-      this.line = line;
-    }
-  }
-
+  private static final Rectangle2D ZERO = new Rectangle2D.Double();
+  private final Rectangle2D bounds = new Rectangle2D.Double();
   private String text;
   private Line[] lines;
   private Font font;
   private double maxLineAscent;
-  private final Rectangle2D bounds = new Rectangle2D.Double();
   private TextAlign textAlign;
-
-  private static final Rectangle2D ZERO = new Rectangle2D.Double();
 
   public TextBlock(@Nonnull final TextBlock orig) {
     this.text = orig.text;
@@ -149,6 +136,17 @@ public final class TextBlock implements Cloneable {
         gfx.drawString(l.line, (int) Math.round(drawX), (int) Math.round(posy), color);
         posy += l.bounds.getHeight();
       }
+    }
+  }
+
+  private static final class Line {
+
+    private final Rectangle2D bounds;
+    private final String line;
+
+    private Line(@Nonnull final String line, @Nonnull final Rectangle2D bounds) {
+      this.bounds = bounds;
+      this.line = line;
     }
   }
 

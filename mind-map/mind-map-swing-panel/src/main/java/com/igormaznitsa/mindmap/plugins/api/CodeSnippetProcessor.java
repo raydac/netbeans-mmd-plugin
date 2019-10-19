@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.Weight;
-
 import javax.annotation.Nonnull;
 
 /**

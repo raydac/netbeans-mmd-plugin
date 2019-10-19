@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.services;
 
+import static org.junit.Assert.assertNotNull;
+
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class DefaultImageIconServiceTest {
-  
+
   @Test
   public void testAllIcons() {
     final ImageIconService service = new DefaultImageIconService();
-    for(final IconID i : IconID.values()){
-      assertNotNull(i.name(),service.getIconForId(i));
+    for (final IconID i : IconID.values()) {
+      assertNotNull(i.name(), service.getIconForId(i));
     }
   }
-  
+
 }

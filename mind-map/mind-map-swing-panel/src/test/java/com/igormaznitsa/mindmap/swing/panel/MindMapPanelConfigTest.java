@@ -13,7 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyDouble;
+import static org.mockito.Mockito.anyFloat;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import java.awt.Color;
@@ -22,15 +39,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class MindMapPanelConfigTest {
 
   @Test
-  public void testHasDifferenceInParameters_NoDifference () {
+  public void testHasDifferenceInParameters_NoDifference() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
@@ -38,7 +53,7 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testHasDifferenceInParameters_DifferenceInBoolean () {
+  public void testHasDifferenceInParameters_DifferenceInBoolean() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
@@ -47,7 +62,7 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testHasDifferenceInParameters_DifferenceInKeyShortcuts () {
+  public void testHasDifferenceInParameters_DifferenceInKeyShortcuts() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
@@ -56,7 +71,7 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testHasDifferenceInParameters_DifferenceInFloat () {
+  public void testHasDifferenceInParameters_DifferenceInFloat() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
@@ -65,7 +80,7 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testHasDifferenceInParameters_DifferenceInInt () {
+  public void testHasDifferenceInParameters_DifferenceInInt() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
@@ -74,7 +89,7 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testHasDifferenceInParameters_DifferenceInColor () {
+  public void testHasDifferenceInParameters_DifferenceInColor() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
@@ -83,7 +98,7 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testHasDifferenceInParameters_DifferenceInFont () {
+  public void testHasDifferenceInParameters_DifferenceInFont() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
@@ -92,7 +107,7 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testHasDifferenceInParameters_DifferenceInDouble () {
+  public void testHasDifferenceInParameters_DifferenceInDouble() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
@@ -101,13 +116,13 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
-  public void testSaveRestoreState () {
+  public void testSaveRestoreState() {
     final Map<String, Object> storage = new HashMap<String, Object>();
     final Preferences prefs = mock(Preferences.class);
 
     doAnswer(new Answer() {
       @Override
-      public Object answer (final InvocationOnMock invocation) throws Throwable {
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final String value = invocation.getArgument(1);
         storage.put(key, value);
@@ -117,7 +132,7 @@ public class MindMapPanelConfigTest {
 
     doAnswer(new Answer() {
       @Override
-      public Object answer (final InvocationOnMock invocation) throws Throwable {
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final Integer value = invocation.getArgument(1);
         storage.put(key, value);
@@ -127,7 +142,7 @@ public class MindMapPanelConfigTest {
 
     doAnswer(new Answer() {
       @Override
-      public Object answer (final InvocationOnMock invocation) throws Throwable {
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final Boolean value = invocation.getArgument(1);
         storage.put(key, value);
@@ -137,7 +152,7 @@ public class MindMapPanelConfigTest {
 
     doAnswer(new Answer() {
       @Override
-      public Object answer (final InvocationOnMock invocation) throws Throwable {
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final Float value = invocation.getArgument(1);
         storage.put(key, value);
@@ -147,7 +162,7 @@ public class MindMapPanelConfigTest {
 
     doAnswer(new Answer() {
       @Override
-      public Object answer (final InvocationOnMock invocation) throws Throwable {
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final Double value = invocation.getArgument(1);
         storage.put(key, value);
@@ -157,7 +172,7 @@ public class MindMapPanelConfigTest {
 
     when(prefs.get(anyString(), anyString())).thenAnswer(new Answer<String>() {
       @Override
-      public String answer (InvocationOnMock invocation) throws Throwable {
+      public String answer(InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final String def = invocation.getArgument(1);
         return storage.containsKey(key) ? (String) storage.get(key) : def;
@@ -166,7 +181,7 @@ public class MindMapPanelConfigTest {
 
     when(prefs.getBoolean(anyString(), anyBoolean())).thenAnswer(new Answer<Boolean>() {
       @Override
-      public Boolean answer (InvocationOnMock invocation) throws Throwable {
+      public Boolean answer(InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final Boolean def = invocation.getArgument(1);
         return storage.containsKey(key) ? (Boolean) storage.get(key) : def;
@@ -175,7 +190,7 @@ public class MindMapPanelConfigTest {
 
     when(prefs.getInt(anyString(), anyInt())).thenAnswer(new Answer<Integer>() {
       @Override
-      public Integer answer (InvocationOnMock invocation) throws Throwable {
+      public Integer answer(InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final Integer def = invocation.getArgument(1);
         return storage.containsKey(key) ? (Integer) storage.get(key) : def;
@@ -184,7 +199,7 @@ public class MindMapPanelConfigTest {
 
     when(prefs.getFloat(anyString(), anyFloat())).thenAnswer(new Answer<Float>() {
       @Override
-      public Float answer (InvocationOnMock invocation) throws Throwable {
+      public Float answer(InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final Float def = invocation.getArgument(1);
         return storage.containsKey(key) ? (Float) storage.get(key) : def;
@@ -193,7 +208,7 @@ public class MindMapPanelConfigTest {
 
     when(prefs.getDouble(anyString(), anyDouble())).thenAnswer(new Answer<Double>() {
       @Override
-      public Double answer (InvocationOnMock invocation) throws Throwable {
+      public Double answer(InvocationOnMock invocation) throws Throwable {
         final String key = invocation.getArgument(0);
         final Double def = invocation.getArgument(1);
         return storage.containsKey(key) ? (Double) storage.get(key) : def;
@@ -203,12 +218,11 @@ public class MindMapPanelConfigTest {
     try {
       when(prefs.keys()).thenAnswer(new Answer<String[]>() {
         @Override
-        public String[] answer (final InvocationOnMock invocation) throws Throwable {
+        public String[] answer(final InvocationOnMock invocation) throws Throwable {
           return storage.keySet().toArray(new String[storage.size()]);
         }
       });
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       fail("Unexpected exception");
     }
 
@@ -220,7 +234,7 @@ public class MindMapPanelConfigTest {
     config.setFont(new Font("Helvetica", Font.ITALIC, 36));
 
     config.setKeyShortCut(new KeyShortcut("testShortCut", 1234, 5678));
-    
+
     config.saveTo(prefs);
     assertFalse(storage.isEmpty());
 
@@ -232,12 +246,12 @@ public class MindMapPanelConfigTest {
     assertEquals(Color.orange, newConfig.getGridColor());
     assertEquals(new Font("Helvetica", Font.ITALIC, 36), newConfig.getFont());
     assertEquals(100.5d, newConfig.getScale(), 0.0d);
-    
+
     final KeyShortcut shortCut = newConfig.getKeyShortCut("testShortCut");
     assertNotNull(shortCut);
-    assertEquals("testShortCut",shortCut.getID());
-    assertEquals(1234,shortCut.getKeyCode());
-    assertEquals(5678,shortCut.getModifiers());
+    assertEquals("testShortCut", shortCut.getID());
+    assertEquals(1234, shortCut.getKeyCode());
+    assertEquals(5678, shortCut.getModifiers());
 
     storage.clear();
 

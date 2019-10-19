@@ -13,10 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.ModelUtils;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -24,20 +35,23 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.io.*;
-import java.util.Calendar;
-import java.util.Map;
-
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class ORGMODEExporter extends AbstractExporter {
 
@@ -104,13 +118,13 @@ public class ORGMODEExporter extends AbstractExporter {
       final Topic linkedTopic = topic.getMap().findTopicForLink(jump);
       if (linkedTopic != null) {
         state.append(prefix).append("RELATED TO: ")//NOI18N
-                .append("[[#sec:")//NOI18N
-                .append(assertNotNull(getTopicUid(linkedTopic)))
-                .append("][")//NOI18N
-                .append(escapeStr(makeLineFromString(linkedTopic.getText()), true))
-                .append("]]")//NOI18N
-                .append("  \\\\")//NOI18N
-                .nextLine();
+            .append("[[#sec:")//NOI18N
+            .append(assertNotNull(getTopicUid(linkedTopic)))
+            .append("][")//NOI18N
+            .append(escapeStr(makeLineFromString(linkedTopic.getText()), true))
+            .append("]]")//NOI18N
+            .append("  \\\\")//NOI18N
+            .nextLine();
         extrasPrinted = true;
       }
     }
@@ -130,9 +144,9 @@ public class ORGMODEExporter extends AbstractExporter {
     if (link != null) {
       final String ascurl = link.getValue().asString(true, true);
       state.append(prefix).append("URL: [[")//NOI18N
-              .append(ascurl)
-              .append("]] \\\\")//NOI18N
-              .nextLine();
+          .append(ascurl)
+          .append("]] \\\\")//NOI18N
+          .nextLine();
       extrasPrinted = true;
     }
 

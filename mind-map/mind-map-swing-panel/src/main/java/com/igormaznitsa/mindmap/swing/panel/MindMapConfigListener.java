@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
 import javax.annotation.Nonnull;
@@ -20,5 +21,5 @@ import javax.annotation.Nonnull;
 public interface MindMapConfigListener {
 
   void onConfigurationPropertyChanged(@Nonnull MindMapPanelConfig changedConfig);
-  
+
 }

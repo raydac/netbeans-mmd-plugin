@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 
 import java.awt.Image;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class ScalableIconTest {
-  
+
   @Test
   public void testIcons() {
     assertNotNull(ScalableIcon.FILE.getImage(1.0f));
@@ -53,5 +57,5 @@ public class ScalableIconTest {
     assertEquals(48, img.getWidth(null));
     assertEquals(48, img.getHeight(null));
   }
-  
+
 }

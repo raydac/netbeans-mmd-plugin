@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.print;
 
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -35,7 +37,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
 /**
  * Panel to tune parameters of print.

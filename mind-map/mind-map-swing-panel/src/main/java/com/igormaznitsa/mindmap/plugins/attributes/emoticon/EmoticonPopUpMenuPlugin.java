@@ -16,6 +16,9 @@
 
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
+
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
@@ -23,17 +26,17 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
 
 public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
 
@@ -77,7 +80,7 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
     boolean changed = false;
     if (topic != null) {
       final String old = topic.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
-      if (!safeObjectEquals(old, value)){
+      if (!safeObjectEquals(old, value)) {
         topic.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
         changed = true;
       }

@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -30,11 +33,10 @@ import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.GetUtils;
 
 /**
- * Auxiliary class implementing Preferences, based on Properties. 
+ * Auxiliary class implementing Preferences, based on Properties.
+ *
  * @since 1.3.1
  */
 public class PropertiesPreferences extends Preferences {
@@ -42,17 +44,17 @@ public class PropertiesPreferences extends Preferences {
   private final Properties storage = new Properties();
   private final List<PreferenceChangeListener> listeners = new ArrayList<PreferenceChangeListener>();
   private final String comment;
-  
+
   public PropertiesPreferences(@Nullable final String comment, @Nonnull final String text) throws IOException {
     this(comment);
     this.storage.load(new StringReader(text));
   }
-  
-  public PropertiesPreferences(@Nullable final String comment){
+
+  public PropertiesPreferences(@Nullable final String comment) {
     super();
     this.comment = comment;
   }
-  
+
   @Override
   public void put(@Nonnull final String key, @Nonnull final String value) {
     this.storage.setProperty(key, value);
@@ -153,10 +155,10 @@ public class PropertiesPreferences extends Preferences {
   @Nullable
   public byte[] getByteArray(@Nonnull final String key, @Nullable final byte[] def) {
     final String found = this.storage.getProperty(key);
-    try{
+    try {
       return found == null ? def : Utils.base64decode(found);
-    }catch(final IOException ex) {
-      throw new RuntimeException("Error during BASE64 decode",ex);
+    } catch (final IOException ex) {
+      throw new RuntimeException("Error during BASE64 decode", ex);
     }
   }
 
@@ -217,11 +219,11 @@ public class PropertiesPreferences extends Preferences {
   @Nonnull
   public String toString() {
     final StringWriter writer = new StringWriter();
-    try{
+    try {
       this.storage.store(writer, GetUtils.ensureNonNull(this.comment, ""));
       return writer.toString();
-    }catch(IOException ex){
-      throw new Error("Unexpected error",ex);
+    } catch (IOException ex) {
+      throw new Error("Unexpected error", ex);
     }
   }
 
@@ -258,12 +260,12 @@ public class PropertiesPreferences extends Preferences {
 
   @Override
   public void exportSubtree(@Nonnull final OutputStream os) throws IOException, BackingStoreException {
-    this.storage.store(os, GetUtils.ensureNonNull(this.comment,""));
+    this.storage.store(os, GetUtils.ensureNonNull(this.comment, ""));
   }
-  
-  private void fireListeners(@Nonnull final String key, @Nullable final String newValue){
+
+  private void fireListeners(@Nonnull final String key, @Nullable final String newValue) {
     final PreferenceChangeEvent event = new PreferenceChangeEvent(this, key, newValue);
-    for(final PreferenceChangeListener l : this.listeners){
+    for (final PreferenceChangeListener l : this.listeners) {
       l.preferenceChange(event);
     }
   }

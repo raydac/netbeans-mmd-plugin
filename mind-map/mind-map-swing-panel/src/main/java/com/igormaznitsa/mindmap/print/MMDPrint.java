@@ -13,37 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.print;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.calculateSizeOfMapInPixels;
 import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.drawOnGraphicsForConfiguration;
+
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.geom.Dimension2D;
-
-import java.awt.image.BufferedImage;
-import javax.annotation.Nonnull;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class MMDPrint {
 
@@ -52,22 +52,6 @@ public class MMDPrint {
   private static final PrintPage[][] NO_PAGES = new PrintPage[0][0];
 
   private final PrintPage[][] pages;
-
-  @Nonnull
-  private static Point calcOffsetImage(final int pagesHorz, final int pagesVert, final int paperWidthInPixels, final int paperHeighInPixels, @Nonnull final Dimension2D calculatedSize) {
-    int x = 0;
-    int y = 0;
-
-    if (pagesHorz == 1) {
-      x = Math.max(0, (paperWidthInPixels - (int) Math.round(calculatedSize.getWidth())) / 2);
-    }
-
-    if (pagesVert == 1) {
-      y = Math.max(0, (paperHeighInPixels - (int) Math.round(calculatedSize.getHeight())) / 2);
-    }
-
-    return new Point(x, y);
-  }
 
   public MMDPrint(@Nonnull final PrintableObject printableObject, final int paperWidthInPixels, final int paperHeightInPixels, @Nonnull final MMDPrintOptions options) {
     LOGGER.info(String.format("Request to prepare print pages for %dx%d", paperWidthInPixels, paperHeightInPixels));
@@ -79,7 +63,7 @@ public class MMDPrint {
     double scale = 1.0d;
 
     final boolean drawAsImage = printableObject.isImage() || options.isDrawAsImage();
-    
+
     if (paperWidthInPixels > 0 && paperHeightInPixels > 0) {
 
       if (printableObject.isMmdPanel()) {
@@ -146,7 +130,7 @@ public class MMDPrint {
             }
           } else if (printableObject.isImage()) {
             final int neededHeight = options.getPagesInColumn() * paperHeightInPixels;
-            imageToDraw = makeScaledInstance(printableObject.getImage(), (float)neededHeight / (float)printableObject.getImage().getHeight(null));
+            imageToDraw = makeScaledInstance(printableObject.getImage(), (float) neededHeight / (float) printableObject.getImage().getHeight(null));
             final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
             final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
             offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
@@ -181,8 +165,8 @@ public class MMDPrint {
               offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
             }
           } else if (printableObject.isImage()) {
-            final int neededWidth = options.getPagesInRow()* paperWidthInPixels;
-            imageToDraw = makeScaledInstance(printableObject.getImage(), (float)neededWidth / (float)printableObject.getImage().getWidth(null));
+            final int neededWidth = options.getPagesInRow() * paperWidthInPixels;
+            imageToDraw = makeScaledInstance(printableObject.getImage(), (float) neededWidth / (float) printableObject.getImage().getWidth(null));
             final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
             final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
             offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
@@ -241,7 +225,7 @@ public class MMDPrint {
             } else {
               imageToDraw = printableObject.getImage();
             }
-            
+
             final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
             final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
             offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
@@ -266,7 +250,7 @@ public class MMDPrint {
               offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, calculatedSize);
             }
           } else if (printableObject.isImage()) {
-            imageToDraw = makeScaledInstance(printableObject.getImage(), (float)scale);
+            imageToDraw = makeScaledInstance(printableObject.getImage(), (float) scale);
             final int phorz = 1 + imageToDraw.getWidth(null) / (paperWidthInPixels + 1);
             final int pvert = 1 + imageToDraw.getHeight(null) / (paperHeightInPixels + 1);
             offsetOfImage = calcOffsetImage(phorz, pvert, paperWidthInPixels, paperHeightInPixels, new Dimension(imageToDraw.getWidth(null), imageToDraw.getHeight(null)));
@@ -347,11 +331,27 @@ public class MMDPrint {
   }
 
   @Nonnull
+  private static Point calcOffsetImage(final int pagesHorz, final int pagesVert, final int paperWidthInPixels, final int paperHeighInPixels, @Nonnull final Dimension2D calculatedSize) {
+    int x = 0;
+    int y = 0;
+
+    if (pagesHorz == 1) {
+      x = Math.max(0, (paperWidthInPixels - (int) Math.round(calculatedSize.getWidth())) / 2);
+    }
+
+    if (pagesVert == 1) {
+      y = Math.max(0, (paperHeighInPixels - (int) Math.round(calculatedSize.getHeight())) / 2);
+    }
+
+    return new Point(x, y);
+  }
+
+  @Nonnull
   private Image makeScaledInstance(@Nonnull final Image image, final float scale) {
     if (Float.compare(scale, 1.0f) == 0) {
       return image;
     }
-    
+
     final int scaledWidth = Math.round(image.getWidth(null) * scale);
     final int scaledHeight = Math.round(image.getHeight(null) * scale);
 
@@ -369,7 +369,7 @@ public class MMDPrint {
       transform.setToScale(scale, scale);
       graphics.setRenderingHints(rhints);
       graphics.drawImage(image, transform, null);
-    } catch(Exception ex) {
+    } catch (Exception ex) {
       LOGGER.error("Can't scale image", ex);
       return image;
     } finally {
@@ -377,7 +377,7 @@ public class MMDPrint {
     }
     return result;
   }
-  
+
   @Nonnull
   @MustNotContainNull
   public PrintPage[][] getPages() {

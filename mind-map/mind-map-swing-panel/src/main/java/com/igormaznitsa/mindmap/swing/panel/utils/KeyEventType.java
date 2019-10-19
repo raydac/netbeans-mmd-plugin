@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
 public enum KeyEventType {
-  PRESSED,TYPED,RELEASED
+  PRESSED, TYPED, RELEASED
 }

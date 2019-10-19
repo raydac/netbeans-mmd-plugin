@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.meta.annotation.MayContainNull;
@@ -24,16 +25,17 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 
 /**
  * Abstract auxiliary class automates way to implement an abstract exporter.
@@ -49,11 +51,11 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   @Override
   @Nullable
   public JMenuItem makeMenuItem(
-          @Nonnull final MindMapPanel panel,
-          @Nonnull final DialogProvider dialogProvider,
-          @Nullable final Topic actionTopic,
-          @Nonnull @MayContainNull final Topic[] selectedTopics,
-          @Nullable final CustomJob processor) {
+      @Nonnull final MindMapPanel panel,
+      @Nonnull final DialogProvider dialogProvider,
+      @Nullable final Topic actionTopic,
+      @Nonnull @MayContainNull final Topic[] selectedTopics,
+      @Nullable final CustomJob processor) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
     result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
 
@@ -118,9 +120,10 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
 
   /**
    * Export data into clipboard.
-   * @param panel mind map panel to be exported, must not be null
+   *
+   * @param panel   mind map panel to be exported, must not be null
    * @param options component containing extra options, can be null
-   * @throws IOException it will be thrown if any error 
+   * @throws IOException it will be thrown if any error
    * @since 1.4.5
    */
   public abstract void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nullable final JComponent options) throws IOException;

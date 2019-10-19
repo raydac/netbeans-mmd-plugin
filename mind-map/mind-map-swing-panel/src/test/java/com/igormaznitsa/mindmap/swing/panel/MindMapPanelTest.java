@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotSame;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+
 import org.junit.Test;
-import static org.mockito.Mockito.*;
 
 public class MindMapPanelTest {
 
   @Test
-  public void testCreatePanel(){
+  public void testCreatePanel() {
     final MindMapPanelConfig config = new MindMapPanelConfig();
-    
+
     final MindMapPanelController controller = mock(MindMapPanelController.class);
     when(controller.provideConfigForMindMapPanel(any(MindMapPanel.class))).thenReturn(config);
-    
+
     final MindMapPanel panel = new MindMapPanel(controller);
-    
-    assertNotSame(config,panel.getConfiguration());
+
+    assertNotSame(config, panel.getConfiguration());
   }
-  
+
 }

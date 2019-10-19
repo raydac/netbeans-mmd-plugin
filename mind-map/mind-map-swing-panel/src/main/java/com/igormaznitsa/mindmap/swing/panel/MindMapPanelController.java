@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
-
 import java.awt.Point;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JPopupMenu;
@@ -32,7 +31,7 @@ public interface MindMapPanelController {
   boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull MindMapPanel source);
 
   boolean isTrimTopicTextBeforeSet(@Nonnull MindMapPanel source);
-  
+
   boolean isSelectionAllowed(@Nonnull MindMapPanel source);
 
   boolean isElementDragAllowed(@Nonnull MindMapPanel source);

@@ -13,23 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.exporters;
+
+import static org.junit.Assert.assertTrue;
+
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-public class MindmupExporterTest extends AbstractStandardExporterTest<MindmupExporter>{
+public class MindmupExporterTest extends AbstractStandardExporterTest<MindmupExporter> {
 
   @Test
   public void testNoExceptionsAndResultPresented() throws Exception {
-    final MindMap map = new MindMap(null,true);
+    final MindMap map = new MindMap(null, true);
     map.getRoot().setText("Hello World!");
-    final String text = new String(export(map, null),"UTF-8");
-    System.out.print("JSON\n----------------\n"+text+"\n----------------\n");
+    final String text = new String(export(map, null), "UTF-8");
+    System.out.print("JSON\n----------------\n" + text + "\n----------------\n");
     assertTrue(text.contains("Hello World!"));
   }
-  
+
   @Override
   public MindmupExporter generateExporterInstance() {
     return new MindmupExporter();

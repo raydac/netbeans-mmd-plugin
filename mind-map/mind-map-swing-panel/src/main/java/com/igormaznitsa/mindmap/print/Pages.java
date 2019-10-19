@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.print;
 
 import java.awt.Color;
@@ -22,29 +23,25 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
-
 import javax.annotation.Nonnull;
 import javax.swing.JPanel;
 
 class Pages extends JPanel {
 
   private static final long serialVersionUID = -6728277837828116266L;
-
-  private final MMDPrintPanel parent;
-
   private static final int INTERVAL_X = 25;
   private static final int INTERVAL_Y = 25;
-
   private static final int SHADOW_X = 10;
   private static final int SHADOW_Y = 10;
+  private final MMDPrintPanel parent;
 
-  public Pages (@Nonnull final MMDPrintPanel parent) {
+  public Pages(@Nonnull final MMDPrintPanel parent) {
     this.parent = parent;
   }
 
   @Override
   @Nonnull
-  public Dimension getPreferredSize () {
+  public Dimension getPreferredSize() {
     final PrintPage[][] pages = this.parent.getPages();
     final PageFormat thePageFormat = this.parent.getPageFormat();
     final double scale = this.parent.getScale();
@@ -67,19 +64,19 @@ class Pages extends JPanel {
 
   @Override
   @Nonnull
-  public Dimension getMinimumSize () {
+  public Dimension getMinimumSize() {
     return this.getPreferredSize();
   }
 
   @Override
   @Nonnull
-  public Dimension getMaximumSize () {
+  public Dimension getMaximumSize() {
     return this.getPreferredSize();
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public void paint (@Nonnull final Graphics g) {
+  public void paint(@Nonnull final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
     gfx.setColor(parent.isDarkTheme() ? Color.DARK_GRAY : Color.LIGHT_GRAY);
     final Dimension size = getSize();
@@ -107,7 +104,7 @@ class Pages extends JPanel {
     final double AREA_Y = thePageFormat.getImageableY();
 
     final boolean drawBorder = this.parent.isDrawBorder();
-    
+
     gfx.scale(scale, scale);
     for (final PrintPage[] pages : allPages) {
       int x = INTERVAL_X;

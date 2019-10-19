@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.importers;
+
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
+
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
@@ -34,29 +39,30 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
-import java.util.*;
-import java.util.List;
-
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class Freemind2MindMapImporter extends AbstractImporter {
 
@@ -159,6 +165,18 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     return result;
   }
 
+  @Nonnull
+  private static String findAttribute(@Nonnull final Element element, @Nonnull final String attribute) {
+    final NamedNodeMap map = element.getAttributes();
+    for (int i = 0; i < map.getLength(); i++) {
+      final Attr attr = (Attr) map.item(i);
+      if (attribute.equalsIgnoreCase(attr.getName())) {
+        return attr.getValue();
+      }
+    }
+    return "";
+  }
+
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
@@ -197,18 +215,6 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     }
 
     return resultedMap;
-  }
-
-  @Nonnull
-  private static String findAttribute(@Nonnull final Element element, @Nonnull final String attribute) {
-    final NamedNodeMap map = element.getAttributes();
-    for (int i = 0; i < map.getLength(); i++) {
-      final Attr attr = (Attr) map.item(i);
-      if (attribute.equalsIgnoreCase(attr.getName())) {
-        return attr.getValue();
-      }
-    }
-    return "";
   }
 
   private void parseTopic(@Nonnull final File rootFolder, @Nonnull final MindMap map, @Nullable Topic parent, @Nullable Topic preGeneratedTopic, @Nonnull Element element, @Nonnull final Map<String, Topic> idTopicMap, @Nonnull final Map<String, String> linksMap) {

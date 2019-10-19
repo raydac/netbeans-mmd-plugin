@@ -13,27 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
+
+
 import com.igormaznitsa.mindmap.model.Topic;
-
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
-
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public abstract class AbstractElement {
 
@@ -52,16 +53,6 @@ public abstract class AbstractElement {
   protected Color fillColor;
   protected Color textColor;
   protected Color borderColor;
-
-  @Nonnull
-  public String getText() {
-    return this.model.getText();
-  }
-
-  public void setText(@Nonnull final String text) {
-    this.model.setText(text);
-    this.textBlock.updateText(text);
-  }
 
   protected AbstractElement(@Nonnull final AbstractElement orig) {
     this.model = orig.model;
@@ -82,6 +73,16 @@ public abstract class AbstractElement {
     this.extrasIconBlock = new IconBlock(model);
     this.visualAttributeImageBlock = new VisualAttributeImageBlock(model);
     updateColorAttributeFromModel();
+  }
+
+  @Nonnull
+  public String getText() {
+    return this.model.getText();
+  }
+
+  public void setText(@Nonnull final String text) {
+    this.model.setText(text);
+    this.textBlock.updateText(text);
   }
 
   public final void updateColorAttributeFromModel() {
@@ -130,15 +131,15 @@ public abstract class AbstractElement {
     }
 
     this.bounds.setRect(
-            0d, 
-            0d, 
-            width, 
+        0d,
+        0d,
+        width,
+        Math.max(
+            this.visualAttributeImageBlock.getBounds().getHeight(),
             Math.max(
-                    this.visualAttributeImageBlock.getBounds().getHeight(),
-                    Math.max(
-                            this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()
-                    )
+                this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight()
             )
+        )
     );
   }
 
@@ -216,7 +217,7 @@ public abstract class AbstractElement {
 
   public abstract boolean isCollapsed();
 
-  public void alignElementAndChildren(@Nonnull MindMapPanelConfig cfg, boolean leftSide, double centerX, double centerY){
+  public void alignElementAndChildren(@Nonnull MindMapPanelConfig cfg, boolean leftSide, double centerX, double centerY) {
     final double textMargin = cfg.getScale() * cfg.getTextMargins();
     final double centralBlockLineY = textMargin + Math.max(this.visualAttributeImageBlock.getBounds().getHeight(), Math.max(this.textBlock.getBounds().getHeight(), this.extrasIconBlock.getBounds().getHeight())) / 2;
 
@@ -409,7 +410,7 @@ public abstract class AbstractElement {
   public VisualAttributeImageBlock getVisualAttributeImageBlock() {
     return this.visualAttributeImageBlock;
   }
-  
+
   public boolean collapseOrExpandAllChildren(final boolean collapse) {
     boolean result = false;
 

@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
+
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -47,7 +51,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.AWTEvent;
@@ -137,6 +140,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private final JPanel textEditorPanel = UI_COMPO_FACTORY.makePanel();
   private final List<Topic> selectedTopics = new ArrayList<>();
   private final MindMapPanelConfig config;
+  private final AtomicBoolean popupMenuActive = new AtomicBoolean();
+  private final AtomicBoolean removeEditedTopicForRollback = new AtomicBoolean();
+  private final AtomicReference<Dimension> mindMapImageSize = new AtomicReference<>(new Dimension());
   private volatile MindMap model;
   private volatile String errorText;
   private transient AbstractElement elementUnderEdit = null;
@@ -144,10 +150,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient MouseSelectedArea mouseDragSelection = null;
   private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
-  private final AtomicBoolean popupMenuActive = new AtomicBoolean();
-  private final AtomicBoolean removeEditedTopicForRollback = new AtomicBoolean();
-
-  private final AtomicReference<Dimension> mindMapImageSize = new AtomicReference<>(new Dimension());
 
   public MindMapPanel(@Nonnull final MindMapPanelController controller) {
     super();
@@ -361,14 +363,14 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               e.consume();
               focusTo(deleteSelectedTopics(false));
             } else if (config.isKeyEventDetected(e,
-                    MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,
-                    MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,
-                    MindMapPanelConfig.KEY_FOCUS_MOVE_UP,
-                    MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN,
-                    MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
-                    MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
-                    MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
-                    MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED)) {
+                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_UP,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED)) {
               e.consume();
               processMoveFocusByKey(e);
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
@@ -390,9 +392,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               revalidate();
               repaint();
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
-                    || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
-                    || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e)
-                    || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD_ALL, e)) {
+                || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
+                || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e)
+                || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD_ALL, e)) {
               e.consume();
               final List<AbstractElement> elements = new ArrayList<AbstractElement>();
               for (final Topic t : getSelectedTopics()) {
@@ -404,8 +406,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               if (!elements.isEmpty()) {
                 endEdit(false);
                 doFoldOrUnfoldTopic(elements,
-                        config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e),
-                        config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
+                    config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e),
+                    config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
                 );
               }
             }
@@ -1252,11 +1254,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * Get saved session object. Object is presented and saved only for the
    * current panel and only in memory.
    *
-   * @param <T> type of object
-   * @param key key of object, must not be null
+   * @param <T>   type of object
+   * @param key   key of object, must not be null
    * @param klazz object type, must not be null
-   * @param def default value will be returned as result if object not
-   * presented, can be null
+   * @param def   default value will be returned as result if object not
+   *              presented, can be null
    * @return null if object is not found, the found object otherwise
    * @throws ClassCastException if object type is wrong for saved object
    * @since 1.4.2
@@ -1549,10 +1551,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
     if (nextFocused != null) {
       final boolean addFocused = config.isKeyEventDetected(key,
-              MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
-              MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
-              MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
-              MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
+          MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+          MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
+          MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+          MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
       if (!addFocused || this.selectedTopics.contains(nextFocused.getModel())) {
         removeAllSelection();
       }
@@ -1729,11 +1731,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   protected void fireNotificationScaledByMouse(
-          @Nonnull final Point mousePoint,
-          final double oldScale,
-          final double newScale,
-          @Nonnull final Dimension oldSize,
-          @Nonnull final Dimension newSize
+      @Nonnull final Point mousePoint,
+      final double oldScale,
+      final double newScale,
+      @Nonnull final Dimension oldSize,
+      @Nonnull final Dimension newSize
   ) {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onScaledByMouse(MindMapPanel.this, mousePoint, oldScale, newScale, oldSize, newSize);
@@ -2106,9 +2108,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Set model for the panel, allows to notify listeners optionally.
    *
-   * @param model model to be set
+   * @param model                      model to be set
    * @param notifyModelChangeListeners true if to notify model change listeners,
-   * false otherwise
+   *                                   false otherwise
    * @since 1.3.0
    */
   public void setModel(@Nonnull final MindMap model, final boolean notifyModelChangeListeners) {
@@ -2639,9 +2641,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Create transferable topic list in system clipboard.
    *
-   * @param cut true shows that remove topics after placing into clipboard
+   * @param cut    true shows that remove topics after placing into clipboard
    * @param topics topics to be placed into clipboard, if there are successors
-   * and ancestors then successors will be removed
+   *               and ancestors then successors will be removed
    * @return true if topic array is not empty and operation completed
    * successfully, false otherwise
    * @since 1.3.1
@@ -2796,8 +2798,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Some Job over mind map model.
    *
-   * @see
-   * MindMapPanel#executeModelJobs(com.igormaznitsa.mindmap.swing.panel.MindMapPanel.ModelJob...)
+   * @see MindMapPanel#executeModelJobs(com.igormaznitsa.mindmap.swing.panel.MindMapPanel.ModelJob...)
    * @since 1.3.1
    */
   public interface ModelJob {

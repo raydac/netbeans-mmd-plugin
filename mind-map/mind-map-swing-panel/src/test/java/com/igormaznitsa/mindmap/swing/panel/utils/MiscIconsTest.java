@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class MiscIconsTest {
-  
+
   @Test
   public void testReadAllIcons() {
     int number = 0;
-    for(final String iconName : MiscIcons.getNames()){
-      assertNotNull("icon '"+iconName+"\'",MiscIcons.findForName(iconName));
+    for (final String iconName : MiscIcons.getNames()) {
+      assertNotNull("icon '" + iconName + "\'", MiscIcons.findForName(iconName));
       number++;
     }
-    assertTrue(number>0);
+    assertTrue(number > 0);
   }
-  
+
 }

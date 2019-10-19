@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.plugins.api;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

@@ -18,9 +18,8 @@ package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-
+import java.awt.Image;
 import javax.annotation.Nonnull;
-import java.awt.*;
 
 public class RenderableImage implements Renderable {
   private final Image image;

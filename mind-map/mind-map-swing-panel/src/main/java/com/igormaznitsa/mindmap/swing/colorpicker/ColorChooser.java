@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.colorpicker;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -37,22 +38,19 @@ import javax.swing.SwingUtilities;
 
 public final class ColorChooser {
 
+  private static final List<Color> PALETTE = makePalette();
+  private static final int PALETTE_ROWS = 10;
   private final ColorPickerPanel colorPicker;
   private final ColorPickerPanel presentedColors;
   private final JLabel sampleDarkFill;
   private final JLabel sampleLightFill;
   private final JLabel sampleDarkText;
   private final JLabel sampleLightText;
-
   private final JPanel panel;
 
-  private static final List<Color> PALETTE = makePalette();
-
-  private static final int PALETTE_ROWS = 10;
-
   public ColorChooser(
-          @Nullable @MustNotContainNull final List<Color> mapColors,
-          @Nullable final Color selectedColor
+      @Nullable @MustNotContainNull final List<Color> mapColors,
+      @Nullable final Color selectedColor
   ) {
     final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
     this.panel = componentFactory.makePanel();

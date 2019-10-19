@@ -16,6 +16,9 @@
 
 package com.igormaznitsa.mindmap.plugins;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -26,23 +29,44 @@ import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonPopUpMenuPlu
 import com.igormaznitsa.mindmap.plugins.attributes.emoticon.EmoticonVisualAttributePlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImagePopUpMenuPlugin;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
-import com.igormaznitsa.mindmap.plugins.exporters.*;
-import com.igormaznitsa.mindmap.plugins.importers.*;
+import com.igormaznitsa.mindmap.plugins.exporters.ASCIIDocExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.FreeMindExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.MDExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.MindmupExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.ORGMODEExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.PNGImageExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.TextExporter;
+import com.igormaznitsa.mindmap.plugins.importers.CoggleMM2MindMapImporter;
+import com.igormaznitsa.mindmap.plugins.importers.Freemind2MindMapImporter;
+import com.igormaznitsa.mindmap.plugins.importers.Mindmup2MindMapImporter;
+import com.igormaznitsa.mindmap.plugins.importers.Novamind2MindMapImporter;
+import com.igormaznitsa.mindmap.plugins.importers.Text2MindMapImporter;
+import com.igormaznitsa.mindmap.plugins.importers.XMind2MindMapImporter;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
-import com.igormaznitsa.mindmap.plugins.processors.*;
+import com.igormaznitsa.mindmap.plugins.processors.AddChildPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.CloneTopicPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.EditTextPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
+import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.RemoveTopicPlugin;
+import com.igormaznitsa.mindmap.plugins.processors.TextAlignMenuPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.CollapseAllPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ShowJumpsPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.UnfoldAllPlugin;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.*;
-
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-import com.igormaznitsa.mindmap.plugins.processors.TextAlignMenuPlugin;
 
 @ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {

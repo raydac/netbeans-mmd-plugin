@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -28,7 +29,7 @@ import javax.annotation.Nonnull;
  * Image selection for transfer image into clipboard.
  */
 public class ImageSelection implements Transferable {
-  
+
   private final Image image;
 
   public ImageSelection(@Nonnull final BufferedImage image) {
@@ -39,7 +40,7 @@ public class ImageSelection implements Transferable {
   @Nonnull
   @MustNotContainNull
   public DataFlavor[] getTransferDataFlavors() {
-    return new DataFlavor[]{DataFlavor.imageFlavor};
+    return new DataFlavor[] {DataFlavor.imageFlavor};
   }
 
   @Override
@@ -55,5 +56,5 @@ public class ImageSelection implements Transferable {
     }
     return this.image;
   }
-  
+
 }

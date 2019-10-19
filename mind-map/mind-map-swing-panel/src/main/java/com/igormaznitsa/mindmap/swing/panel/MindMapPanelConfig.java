@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
-
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -32,20 +39,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-
 import javax.swing.KeyStroke;
-
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
-import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import org.apache.commons.lang.SystemUtils;
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 public final class MindMapPanelConfig implements Serializable {
 
@@ -533,12 +530,12 @@ public final class MindMapPanelConfig implements Serializable {
   public boolean isSmartTextPaste() {
     return this.smartTextPaste;
   }
-  
+
   public void setSmartTextPaste(final boolean flag) {
     this.smartTextPaste = flag;
     notifyCfgListenersAboutChange();
   }
-  
+
   public boolean isDrawBackground() {
     return this.drawBackground;
   }

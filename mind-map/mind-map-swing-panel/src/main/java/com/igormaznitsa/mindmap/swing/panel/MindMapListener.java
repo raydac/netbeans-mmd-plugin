@@ -13,29 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Topic;
-
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import javax.annotation.Nonnull;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
-
 public interface MindMapListener {
   void onMindMapModelChanged(@Nonnull MindMapPanel source, boolean saveToHistory);
+
   void onComponentElementsLayouted(@Nonnull MindMapPanel source, @Nonnull Graphics2D g);
+
   void onMindMapModelRealigned(@Nonnull MindMapPanel source, @Nonnull Dimension coveredAreaSize);
+
   void onEnsureVisibilityOfTopic(@Nonnull MindMapPanel source, @Nonnull Topic topic);
+
   void onTopicCollapsatorClick(@Nonnull MindMapPanel source, @Nonnull Topic topic, boolean beforeAction);
+
   void onScaledByMouse(@Nonnull MindMapPanel source, @Nonnull Point mousePoint, double oldScale, double newScale, @Nonnull Dimension oldSize, @Nonnull Dimension newSize);
-  void onClickOnExtra(@Nonnull MindMapPanel source,int modifiers, int clicks, @Nonnull Topic topic, @Nonnull Extra<?> extra);
-  void onChangedSelection(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] currentSelectedTopics);
-  boolean allowedRemovingOfTopics(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic [] topics);
+
+  void onClickOnExtra(@Nonnull MindMapPanel source, int modifiers, int clicks, @Nonnull Topic topic, @Nonnull Extra<?> extra);
+
+  void onChangedSelection(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic[] currentSelectedTopics);
+
+  boolean allowedRemovingOfTopics(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic[] topics);
+
   void onNonConsumedKeyEvent(@Nonnull MindMapPanel source, @Nonnull KeyEvent event, @Nonnull KeyEventType type);
 }

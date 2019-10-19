@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.model.Topic;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
+
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import java.awt.Color;
 import java.awt.Dimension;
-
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Dimension2D;
@@ -28,12 +32,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public final class ElementRoot extends AbstractElement {
 
@@ -55,8 +55,8 @@ public final class ElementRoot extends AbstractElement {
   public AbstractElement makeCopy() {
     return new ElementRoot(this);
   }
-  
-  
+
+
   @Override
   public boolean isMoveable() {
     return false;
@@ -75,13 +75,13 @@ public final class ElementRoot extends AbstractElement {
 
   @Override
   public void drawComponent(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
-    g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(),0.1f),StrokeType.SOLID);
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.1f), StrokeType.SOLID);
 
     final Shape shape = makeShape(cfg, 0f, 0f);
 
     if (cfg.isDropShadow()) {
       final float offset = cfg.safeScaleFloatValue(cfg.getShadowOffset(), 0.0f);
-      g.draw(makeShape(cfg, offset, offset),null,cfg.getShadowColor());
+      g.draw(makeShape(cfg, offset, offset), null, cfg.getShadowColor());
     }
 
     g.draw(shape, this.getBorderColor(cfg), this.getBackgroundColor(cfg));
@@ -89,8 +89,8 @@ public final class ElementRoot extends AbstractElement {
     if (this.visualAttributeImageBlock.mayHaveContent()) {
       this.visualAttributeImageBlock.paint(g, cfg);
     }
-    
-    this.textBlock.paint(g,this.getTextColor(cfg));
+
+    this.textBlock.paint(g, this.getTextColor(cfg));
 
     if (this.extrasIconBlock.hasContent()) {
       this.extrasIconBlock.paint(g);
@@ -99,18 +99,17 @@ public final class ElementRoot extends AbstractElement {
 
   @Override
   public void drawConnector(@Nonnull final MMGraphics g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
-    g.setStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(),0.1f),StrokeType.SOLID);
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f), StrokeType.SOLID);
 
     final double startX;
     if (destination.getCenterX() < source.getCenterX()) {
       // left
       startX = source.getCenterX() - source.getWidth() / 4;
-    }
-    else {
+    } else {
       // right
       startX = source.getCenterX() + source.getWidth() / 4;
     }
-      
+
     g.drawCurve(startX, source.getCenterY(), destination.getCenterX(), destination.getCenterY(), cfg.getConnectorColor());
   }
 
@@ -123,8 +122,7 @@ public final class ElementRoot extends AbstractElement {
       if ((left && lft) || (!left && !lft)) {
         if (nonfirst) {
           result += vertInset;
-        }
-        else {
+        } else {
           nonfirst = true;
         }
         result += w.getBlockSize().getHeight();
@@ -136,7 +134,7 @@ public final class ElementRoot extends AbstractElement {
   @Override
   public void alignElementAndChildren(@Nonnull final MindMapPanelConfig cfg, final boolean leftSide, final double cx, final double cy) {
     super.alignElementAndChildren(cfg, leftSide, cx, cy);
-    
+
     final double dx = cx;
     final double dy = cy;
     this.moveTo(dx, dy);
@@ -175,7 +173,7 @@ public final class ElementRoot extends AbstractElement {
   @Override
   public void updateElementBounds(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
     super.updateElementBounds(gfx, cfg);
-    final double marginOffset = ((cfg.getTextMargins()+cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
+    final double marginOffset = ((cfg.getTextMargins() + cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
     this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
   }
 
@@ -215,18 +213,15 @@ public final class ElementRoot extends AbstractElement {
         leftHeight += result.getHeight();
         if (nonfirstOnLeft) {
           leftHeight += insetV;
-        }
-        else {
+        } else {
           nonfirstOnLeft = true;
         }
-      }
-      else {
+      } else {
         rightWidth = Math.max(rightWidth, result.getWidth());
         rightHeight += result.getHeight();
         if (nonfirstOnRight) {
           rightHeight += insetV;
-        }
-        else {
+        } else {
           nonfirstOnRight = true;
         }
       }
@@ -242,8 +237,7 @@ public final class ElementRoot extends AbstractElement {
 
     if (childrenOnly) {
       result.setSize(leftWidth + rightWidth, Math.max(leftHeight, rightHeight));
-    }
-    else {
+    } else {
       result.setSize(leftWidth + rightWidth + this.bounds.getWidth(), Math.max(this.bounds.getHeight(), Math.max(leftHeight, rightHeight)));
     }
 
@@ -263,8 +257,7 @@ public final class ElementRoot extends AbstractElement {
     if (this.hasChildren()) {
       if (this.isCollapsed()) {
         return this.getModel().getLast();
-      }
-      else {
+      } else {
         double py = point.getY();
         final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
 
@@ -277,8 +270,7 @@ public final class ElementRoot extends AbstractElement {
               childForDirection.add(t);
             }
           }
-        }
-        else {
+        } else {
           for (final Topic t : this.model.getChildren()) {
             if (!(assertNotNull((AbstractElement) t.getPayload())).isLeftDirection()) {
               childForDirection.add(t);
@@ -297,8 +289,7 @@ public final class ElementRoot extends AbstractElement {
           if (py < childEndBlockY) {
             result = py < el.getBounds().getCenterY() ? prev : t;
             break;
-          }
-          else {
+          } else {
             if (t == lastOne) {
               result = t;
               break;
@@ -325,5 +316,5 @@ public final class ElementRoot extends AbstractElement {
     final Color dflt = this.textColor == null ? config.getRootTextColor() : this.textColor;
     return dflt;
   }
-  
+
 }

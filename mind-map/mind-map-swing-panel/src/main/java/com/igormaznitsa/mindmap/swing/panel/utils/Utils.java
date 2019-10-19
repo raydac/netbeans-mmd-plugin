@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import com.igormaznitsa.meta.annotation.ImplementationNote;
@@ -32,24 +33,16 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
-import com.igormaznitsa.mindmap.swing.services.*;
-import net.iharder.Base64;
-import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconService;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.KeyEvent;
@@ -58,41 +51,67 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import net.iharder.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.W3CDom;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public final class Utils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
   public static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   public static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
   public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size"; //NOI18N
-
-  private static final Pattern URI_PATTERN = Pattern.compile("^(?:([^:\\s]+):)(?://(?:[^?/@\\s]*@)?([^/?\\s]*)/?)?([^?\\s]+)?(?:\\?([^#\\s]*))?(?:#\\S*)?$");
-
-  private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
-
   public static final boolean LTR_LANGUAGE = ComponentOrientation.getOrientation(new Locale(System.getProperty("user.language"))).isLeftToRight();
-  
+  private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
+  private static final Pattern URI_PATTERN = Pattern.compile("^(?:([^:\\s]+):)(?://(?:[^?/@\\s]*@)?([^/?\\s]*)/?)?([^?\\s]+)?(?:\\?([^#\\s]*))?(?:#\\S*)?$");
+  private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
+  private static final Pattern STRIP_PATTERN = Pattern.compile("^(\\s*)(.*[^\\s])(\\s*)$");
+
   private Utils() {
   }
 
   /**
    * Get input stream for resource in zip file.
    *
-   * @param zipFile zip file
+   * @param zipFile      zip file
    * @param resourcePath path to resource
    * @return input stream for resource or null if not found or directory
    * @throws IOException if there is any transport error
@@ -114,7 +133,7 @@ public final class Utils {
    * Read who;e zip item into byte array.
    *
    * @param zipFile zip file
-   * @param path path to resource
+   * @param path    path to resource
    * @return byte array or null if not found
    * @throws IOException thrown if there is any transport error
    */
@@ -150,7 +169,7 @@ public final class Utils {
   /**
    * Load and parse XML document from input stream.
    *
-   * @param inStream stream to read document
+   * @param inStream  stream to read document
    * @param autoClose true if stream must be closed, false otherwise
    * @return parsed document
    * @throws IOException
@@ -202,7 +221,7 @@ public final class Utils {
   /**
    * Get first direct child for name.
    *
-   * @param node element to find children
+   * @param node        element to find children
    * @param elementName name of child element
    * @return found first child or null if not found
    * @since 1.4.0
@@ -220,7 +239,7 @@ public final class Utils {
   /**
    * Find all direct children with defined name.
    *
-   * @param element parent element
+   * @param element          parent element
    * @param childElementname child element name
    * @return list of found elements
    * @since 1.4.0
@@ -273,7 +292,7 @@ public final class Utils {
   /**
    * Load and encode image into Base64.
    *
-   * @param in stream to read image
+   * @param in      stream to read image
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return null if it was impossible to load image for its format, loaded
    * prepared image
@@ -293,7 +312,7 @@ public final class Utils {
   /**
    * Load and encode image into Base64 from file.
    *
-   * @param file image file
+   * @param file    image file
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return image
    * @throws IOException if any error during conversion or loading
@@ -310,6 +329,7 @@ public final class Utils {
 
   /**
    * Get default render quality for host OS.
+   *
    * @return the render quality for host OS, must not be null
    * @since 1.4.5
    */
@@ -321,11 +341,11 @@ public final class Utils {
     }
     return result;
   }
-  
+
   /**
    * Rescale image and encode into Base64.
    *
-   * @param image image to rescale and encode
+   * @param image   image to rescale and encode
    * @param maxSize max size of image, if less or zero then don't rescale
    * @return scaled and encoded image
    * @throws IOException if it was impossible to encode image
@@ -490,9 +510,9 @@ public final class Utils {
       final int[] components;
 
       if (hasAlpha) {
-        components = new int[]{color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[] {color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
       } else {
-        components = new int[]{color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[] {color.getRed(), color.getGreen(), color.getBlue()};
       }
 
       for (final int c : components) {
@@ -753,15 +773,15 @@ public final class Utils {
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> findPopupMenuItems(
-          @Nonnull final MindMapPanel panel,
-          @Nonnull final PopUpSection section,
-          final boolean fullScreenModeActive,
-          @Nonnull @MayContainNull final List<JMenuItem> list,
-          @Nonnull DialogProvider dialogProvider,
-          @Nullable final Topic topicUnderMouse,
-          @Nonnull @MustNotContainNull final Topic[] selectedTopics,
-          @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems,
-          @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
+      @Nonnull final MindMapPanel panel,
+      @Nonnull final PopUpSection section,
+      final boolean fullScreenModeActive,
+      @Nonnull @MayContainNull final List<JMenuItem> list,
+      @Nonnull DialogProvider dialogProvider,
+      @Nullable final Topic topicUnderMouse,
+      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
+      @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems,
+      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
   ) {
     list.clear();
 
@@ -771,8 +791,8 @@ public final class Utils {
       }
       if (p.getSection() == section) {
         if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
-                || (p.needsTopicUnderMouse() && topicUnderMouse != null)
-                || (p.needsSelectedTopics() && selectedTopics.length > 0)) {
+            || (p.needsTopicUnderMouse() && topicUnderMouse != null)
+            || (p.needsSelectedTopics() && selectedTopics.length > 0)) {
 
           final JMenuItem item = p.makeMenuItem(panel, dialogProvider, topicUnderMouse, selectedTopics, customProcessors.get(p.getClass()));
           if (item != null) {
@@ -825,12 +845,12 @@ public final class Utils {
 
   @Nonnull
   public static JPopupMenu makePopUp(
-          @Nonnull final MindMapPanel source,
-          final boolean fullScreenModeActive,
-          @Nonnull final DialogProvider dialogProvider,
-          @Nullable final Topic topicUnderMouse,
-          @Nonnull @MustNotContainNull final Topic[] selectedTopics,
-          @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
+      @Nonnull final MindMapPanel source,
+      final boolean fullScreenModeActive,
+      @Nonnull final DialogProvider dialogProvider,
+      @Nullable final Topic topicUnderMouse,
+      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
+      @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
     final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
@@ -874,19 +894,19 @@ public final class Utils {
     return Base64.decode(text);
   }
 
-  private static final Pattern STRIP_PATTERN = Pattern.compile("^(\\s*)(.*[^\\s])(\\s*)$");
-  
   @Nonnull
   public static String strip(@Nonnull final String str, final boolean leading) {
-    if (str.trim().isEmpty()) return "";
+    if (str.trim().isEmpty()) {
+      return "";
+    }
     final Matcher matcher = STRIP_PATTERN.matcher(str);
-    if (!matcher.find()){
-      throw new Error("Unexpected error in strip(String): "+str);
+    if (!matcher.find()) {
+      throw new Error("Unexpected error in strip(String): " + str);
     }
     return leading ? matcher.group(2) + matcher.group(3) : matcher.group(1) + matcher.group(2);
   }
-  
-  
+
+
   @Nonnull
   public static String base64encode(@Nonnull final byte[] data) {
     return Base64.encodeBytes(data);

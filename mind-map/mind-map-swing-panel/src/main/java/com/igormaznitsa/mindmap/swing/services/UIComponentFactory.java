@@ -16,8 +16,10 @@
 
 package com.igormaznitsa.mindmap.swing.services;
 
+import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -30,6 +32,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
@@ -38,10 +41,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-
-import com.igormaznitsa.mindmap.plugins.api.HasOptions;
-import javax.swing.ButtonGroup;
-import javax.swing.JRadioButtonMenuItem;
 
 public interface UIComponentFactory {
   @Nonnull
@@ -100,7 +99,7 @@ public interface UIComponentFactory {
 
   @Nonnull
   ButtonGroup makeButtonGroup();
-  
+
   @Nonnull
   JSeparator makeMenuSeparator();
 

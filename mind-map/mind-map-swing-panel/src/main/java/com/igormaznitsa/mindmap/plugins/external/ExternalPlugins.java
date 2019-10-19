@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.external;
 
 import com.igormaznitsa.commons.version.Version;
@@ -22,16 +23,15 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
-import org.apache.commons.io.FileUtils;
-
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Locale;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.apache.commons.io.FileUtils;
 
 public class ExternalPlugins {
 
@@ -47,7 +47,7 @@ public class ExternalPlugins {
   }
 
   public void init() {
-    final Collection<File> plugins = FileUtils.listFiles(this.pluginsFolder, new String[]{PLUGIN_EXTENSION, PLUGIN_EXTENSION.toUpperCase(Locale.ENGLISH)}, false);
+    final Collection<File> plugins = FileUtils.listFiles(this.pluginsFolder, new String[] {PLUGIN_EXTENSION, PLUGIN_EXTENSION.toUpperCase(Locale.ENGLISH)}, false);
     LOGGER.info("Detected " + plugins.size() + " plugin(s)");
     for (final File plugin : plugins) {
       try {

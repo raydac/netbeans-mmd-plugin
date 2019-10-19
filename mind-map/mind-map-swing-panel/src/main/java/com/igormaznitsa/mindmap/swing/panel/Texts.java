@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
 import java.util.ResourceBundle;
@@ -21,13 +22,13 @@ import javax.annotation.Nonnull;
 public final class Texts {
   public static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
-  private Texts(){
-    
+  private Texts() {
+
   }
 
   @Nonnull
-  public static String getString(@Nonnull final String key){
+  public static String getString(@Nonnull final String key) {
     return BUNDLE.getString(key);
   }
-  
+
 }

@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.exporters;
+
+import static com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin.ATTR_KEY;
+
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.GetUtils;
@@ -26,7 +30,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
-import static com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin.ATTR_KEY;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -83,26 +86,13 @@ public class MindmupExporter extends AbstractExporter {
     return "mindmup";
   }
 
-  private static class TopicId {
-
-    private final int id;
-    private final Topic topic;
-    private final String uuid;
-
-    private TopicId(final int id, @Nullable final String uuid, @Nonnull final Topic topic) {
-      this.id = id;
-      this.topic = topic;
-      this.uuid = uuid;
-    }
-  }
-
   private void writeTopic(
-          @Nonnull final JSONStringer stringer,
-          @Nonnull final MindMapPanelConfig cfg,
-          @Nonnull final AtomicInteger idCounter,
-          @Nullable final Topic topic,
-          @Nonnull final Map<String, String> linkMap,
-          @Nonnull final Map<String, TopicId> uuidMap
+      @Nonnull final JSONStringer stringer,
+      @Nonnull final MindMapPanelConfig cfg,
+      @Nonnull final AtomicInteger idCounter,
+      @Nullable final Topic topic,
+      @Nonnull final Map<String, String> linkMap,
+      @Nonnull final Map<String, TopicId> uuidMap
   ) {
     stringer.key("title").value(GetUtils.ensureNonNull(topic.getText(), ""));
     final int topicId = idCounter.getAndIncrement();
@@ -295,6 +285,19 @@ public class MindmupExporter extends AbstractExporter {
   @Override
   public int getOrder() {
     return 2;
+  }
+
+  private static class TopicId {
+
+    private final int id;
+    private final Topic topic;
+    private final String uuid;
+
+    private TopicId(final int id, @Nullable final String uuid, @Nonnull final Topic topic) {
+      this.id = id;
+      this.topic = topic;
+      this.uuid = uuid;
+    }
   }
 
 }

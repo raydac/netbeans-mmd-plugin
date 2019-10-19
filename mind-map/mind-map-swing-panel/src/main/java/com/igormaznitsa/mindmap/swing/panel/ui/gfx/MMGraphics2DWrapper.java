@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.ui.gfx;
 
 import java.awt.BasicStroke;
@@ -23,7 +24,6 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.font.TextLayout;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
@@ -101,10 +101,10 @@ public class MMGraphics2DWrapper implements MMGraphics {
           stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
           break;
         case DASHES:
-          stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{width * 3.0f, width}, 0.0f);
+          stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {width * 3.0f, width}, 0.0f);
           break;
         case DOTS:
-          stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{width, width * 2.0f}, 0.0f);
+          stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {width, width * 2.0f}, 0.0f);
           break;
         default:
           throw new Error("Unexpected stroke type : " + type);

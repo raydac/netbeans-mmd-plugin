@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
-import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
+
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
+import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 public abstract class AbstractCollapsableElement extends AbstractElement {
 
@@ -46,6 +47,18 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
     super(model);
   }
 
+  public static boolean isLeftSidedTopic(@Nonnull final Topic t) {
+    return "true".equals(t.getAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText()));
+  }
+
+  public static void makeTopicLeftSided(@Nonnull final Topic topic, final boolean left) {
+    if (left) {
+      topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), "true");//NOI18N
+    } else {
+      topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), null);
+    }
+  }
+
   protected void drawCollapsator(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean collapsed) {
     final int x = (int) Math.round(collapsatorZone.getX());
     final int y = (int) Math.round(collapsatorZone.getY());
@@ -54,12 +67,12 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
     final int DELTA = (int) Math.round(cfg.getCollapsatorSize() * 0.3d * cfg.getScale());
 
-    g.setStroke(cfg.safeScaleFloatValue(cfg.getCollapsatorBorderWidth(), 0.1f),StrokeType.SOLID);
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getCollapsatorBorderWidth(), 0.1f), StrokeType.SOLID);
 
     final Color linecolor = cfg.getCollapsatorBorderColor();
-    
+
     g.drawOval(x, y, w, h, linecolor, cfg.getCollapsatorBackgroundColor());
-    
+
     g.drawLine(x + DELTA, y + h / 2, x + w - DELTA, y + h / 2, linecolor);
     if (collapsed) {
       g.drawLine(x + w / 2, y + DELTA, x + w / 2, y + h - DELTA, linecolor);
@@ -90,9 +103,9 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   }
 
   public void foldAllChildren() {
-    
+
   }
-  
+
   public void collapseAllFirstLevelChildren() {
     for (final Topic t : this.model.getChildren()) {
       MindMapUtils.setCollapsed(t, true);
@@ -106,18 +119,6 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   public void setLeftDirection(final boolean leftSide) {
     makeTopicLeftSided(this.model, leftSide);
-  }
-
-  public static boolean isLeftSidedTopic(@Nonnull final Topic t) {
-    return "true".equals(t.getAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText()));
-  }
-
-  public static void makeTopicLeftSided(@Nonnull final Topic topic, final boolean left) {
-    if (left) {
-      topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), "true");//NOI18N
-    } else {
-      topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), null);
-    }
   }
 
   @Override
@@ -164,7 +165,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
   @Override
   public void alignElementAndChildren(@Nonnull final MindMapPanelConfig cfg, final boolean leftSide, final double leftX, final double topY) {
     super.alignElementAndChildren(cfg, leftSide, leftX, topY);
-    
+
     final double horzInset = cfg.getOtherLevelHorizontalInset() * cfg.getScale();
 
     double childrenX;
@@ -220,7 +221,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   @Override
   public void drawConnector(@Nonnull final MMGraphics g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
-    g.setStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f),StrokeType.SOLID);
+    g.setStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f), StrokeType.SOLID);
 
     final double dy = Math.abs(destination.getCenterY() - source.getCenterY());
     if (dy < (16.0d * cfg.getScale())) {
@@ -241,7 +242,7 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
         path.lineTo(destination.getCenterX(), destination.getCenterY());
       }
 
-      g.draw(path,cfg.getConnectorColor(),null);
+      g.draw(path, cfg.getConnectorColor(), null);
     }
   }
 

@@ -13,40 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.Topic;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_COLLAPSED;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
 
-import java.awt.Color;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
+import java.awt.Color;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.filechooser.FileFilter;
 
 public final class MindMapUtils {
-
-  public enum ColorType {
-    BORDER,
-    FILL,
-    TEXT
-  }
 
   private MindMapUtils() {
   }
@@ -337,7 +333,7 @@ public final class MindMapUtils {
    * Generate sub tree for whitespace offsets in text lines.
    *
    * @param topic topic to be root for generated text
-   * @param text text source to make topics
+   * @param text  text source to make topics
    * @return same root topic provided as argument
    * @since 1.4.7
    */
@@ -411,5 +407,11 @@ public final class MindMapUtils {
     }
 
     return topic;
+  }
+
+  public enum ColorType {
+    BORDER,
+    FILL,
+    TEXT
   }
 }

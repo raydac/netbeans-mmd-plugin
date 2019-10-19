@@ -17,8 +17,17 @@
 package com.igormaznitsa.mindmap.plugins.exporters;
 
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraLinkable;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
@@ -28,22 +37,25 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.io.*;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class FreeMindExporter extends AbstractExporter {
 
@@ -185,16 +197,18 @@ public class FreeMindExporter extends AbstractExporter {
 
     return state.toString();
   }
-  
+
   @Override
   public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
     final String text = makeContent(panel);
-    
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard!=null) clipboard.setContents(new StringSelection(text), null);
+        if (clipboard != null) {
+          clipboard.setContents(new StringSelection(text), null);
+        }
       }
     });
   }

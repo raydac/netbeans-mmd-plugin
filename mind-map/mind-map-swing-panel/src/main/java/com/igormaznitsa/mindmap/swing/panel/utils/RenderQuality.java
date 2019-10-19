@@ -16,10 +16,11 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public enum RenderQuality {
   DEFAULT,
@@ -54,11 +55,18 @@ public enum RenderQuality {
   }
 
   public void prepare(@Nonnull final Graphics2D g) {
-    switch(this) {
-      case QUALITY: g.setRenderingHints(RENDERING_HINTS_QUALTY); break;
-      case DEFAULT: g.setRenderingHints(RENDERING_HINTS_DEFAULT); break;
-      case SPEED: g.setRenderingHints(RENDERING_HINTS_SPEED); break;
-      default: throw new Error("Unexpected state : "+this.name());
+    switch (this) {
+      case QUALITY:
+        g.setRenderingHints(RENDERING_HINTS_QUALTY);
+        break;
+      case DEFAULT:
+        g.setRenderingHints(RENDERING_HINTS_DEFAULT);
+        break;
+      case SPEED:
+        g.setRenderingHints(RENDERING_HINTS_SPEED);
+        break;
+      default:
+        throw new Error("Unexpected state : " + this.name());
     }
   }
 }

@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.services;
 
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-
 import java.util.Iterator;
 import java.util.ServiceLoader;
-
 import javax.annotation.Nonnull;
 
 public final class UIComponentFactoryProvider {
-    private static final UIComponentFactory UI_COMPONENT_FACTORY;
+  private static final UIComponentFactory UI_COMPONENT_FACTORY;
 
-    static {
-      final ServiceLoader<UIComponentFactory> service = ServiceLoader.load(UIComponentFactory.class, UIComponentFactoryProvider.class.getClassLoader());
-      service.reload();
-      final Iterator<UIComponentFactory> iterator = service.iterator();
-      UI_COMPONENT_FACTORY = iterator.hasNext() ? iterator.next() : new DefaultSwingUIComponentService();
-      LoggerFactory.getLogger(UIComponentFactoryProvider.class).info("UI Component factory : "+UI_COMPONENT_FACTORY.getClass().getName());
-    }
+  static {
+    final ServiceLoader<UIComponentFactory> service = ServiceLoader.load(UIComponentFactory.class, UIComponentFactoryProvider.class.getClassLoader());
+    service.reload();
+    final Iterator<UIComponentFactory> iterator = service.iterator();
+    UI_COMPONENT_FACTORY = iterator.hasNext() ? iterator.next() : new DefaultSwingUIComponentService();
+    LoggerFactory.getLogger(UIComponentFactoryProvider.class).info("UI Component factory : " + UI_COMPONENT_FACTORY.getClass().getName());
+  }
 
-    @Nonnull
-    public static UIComponentFactory findInstance () {
-      return UI_COMPONENT_FACTORY;
-    }
+  @Nonnull
+  public static UIComponentFactory findInstance() {
+    return UI_COMPONENT_FACTORY;
+  }
 }

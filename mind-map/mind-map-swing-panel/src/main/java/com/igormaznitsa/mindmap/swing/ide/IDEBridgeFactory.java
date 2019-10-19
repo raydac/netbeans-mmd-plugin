@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.ide;
 
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 
 public class IDEBridgeFactory {
   private static final IDEBridge IDE_INFO_PROVIDER;
@@ -36,5 +37,5 @@ public class IDEBridgeFactory {
   public static IDEBridge findInstance() {
     return IDE_INFO_PROVIDER;
   }
-  
+
 }

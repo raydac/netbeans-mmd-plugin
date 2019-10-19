@@ -16,11 +16,11 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.KeyStroke;
 
 public final class KeyShortcut {
 

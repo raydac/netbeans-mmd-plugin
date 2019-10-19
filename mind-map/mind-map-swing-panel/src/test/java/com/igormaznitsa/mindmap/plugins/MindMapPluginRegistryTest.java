@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import java.util.List;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
+
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import java.util.List;
+import org.junit.Test;
 
 public class MindMapPluginRegistryTest {
-  
+
   @Test
   public void testInitializationAndCaching() {
     final MindMapPluginRegistry registry = MindMapPluginRegistry.getInstance();
@@ -29,13 +34,13 @@ public class MindMapPluginRegistryTest {
     final List<AbstractExporter> exportPlugins2 = registry.findFor(AbstractExporter.class);
     assertFalse(exportPlugins1.isEmpty());
     assertFalse(exportPlugins2.isEmpty());
-    assertSame(exportPlugins1,exportPlugins2);
-    try{
-      exportPlugins1.set(0,null);
+    assertSame(exportPlugins1, exportPlugins2);
+    try {
+      exportPlugins1.set(0, null);
       fail("Must be immutable list");
-    }catch(UnsupportedOperationException ex){
+    } catch (UnsupportedOperationException ex) {
       // ignore
     }
   }
-  
+
 }

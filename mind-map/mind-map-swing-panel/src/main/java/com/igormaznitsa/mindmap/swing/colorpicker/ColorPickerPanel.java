@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.colorpicker;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -37,127 +38,38 @@ import javax.swing.JPanel;
 
 final class ColorPickerPanel {
 
-  private int rows = 8;
-  private int cols = 8;
-
-  private int selectedRow = -1;
-  private int selectedCol = -1;
-
-  private int cellWidth = 24;
-  private int cellHeight = 24;
-
-  private int gapHorz = 0;
-  private int gapVert = 0;
-
   private final List<Color> predefinedColors;
   private final List<ColorListener> colorListeners = new ArrayList<>();
-
+  private final JPanel panel;
+  private int rows = 8;
+  private int cols = 8;
+  private int selectedRow = -1;
+  private int selectedCol = -1;
+  private int cellWidth = 24;
+  private int cellHeight = 24;
+  private int gapHorz = 0;
+  private int gapVert = 0;
   private boolean readOnly = false;
 
-  private final JPanel panel;
+  public ColorPickerPanel(
+      @Nonnull final JPanel panel,
+      final int rows,
+      final int cols,
+      final int gapHorz,
+      final int gapVert,
+      @Nullable @MustNotContainNull final List<Color> predefinedColors
+  ) {
+    this.panel = panel;
+    this.panel.setOpaque(false);
 
-  public static interface ColorListener {
+    this.gapHorz = Math.max(0, gapHorz);
+    this.gapVert = Math.max(0, gapVert);
+    this.predefinedColors = predefinedColors;
 
-    void onColorSelected(@Nonnull ColorPickerPanel source, @Nonnull Color color);
-  }
+    this.rows = Math.min(32, Math.max(1, rows));
+    this.cols = Math.min(32, Math.max(1, cols));
 
-  private static final class RadioColorButton extends JComponent {
-
-    private final ColorPickerPanel parent;
-    private boolean selected;
-
-    RadioColorButton(
-            @Nonnull
-            final ColorPickerPanel parent,
-            final int cellWidth,
-            final int cellHeight,
-            @Nonnull
-            final Color color,
-            final boolean selected
-    ) {
-      super();
-      this.parent = parent;
-      this.setBackground(color);
-      this.setOpaque(true);
-
-      final Dimension size = new Dimension(cellWidth, cellHeight);
-      this.setSize(size);
-      this.setPreferredSize(size);
-      this.setMinimumSize(size);
-
-      this.setBorder(selected ? BorderFactory.createLineBorder(getContrastColor(this.getBackground()), Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
-
-      this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-      this.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(@Nonnull final MouseEvent e) {
-          if (!e.isConsumed() && !parent.isReadOnly()) {
-            setSelected(true, true);
-          }
-        }
-      });
-
-      this.addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyReleased(@Nonnull final KeyEvent e) {
-          if (!e.isConsumed() && (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE)) {
-            e.consume();
-            setSelected(true, !isSelected());
-          }
-        }
-        
-      });
-      
-      final String red = Integer.toHexString(color.getRed()).toUpperCase(Locale.ENGLISH);
-      final String green = Integer.toHexString(color.getGreen()).toUpperCase(Locale.ENGLISH);
-      final String blue = Integer.toHexString(color.getBlue()).toUpperCase(Locale.ENGLISH);
-
-      final StringBuilder buffer = new StringBuilder();
-      buffer.append('#')
-              .append(red.length() < 2 ? "0" : "").append(red)
-              .append(green.length() < 2 ? "0" : "").append(green)
-              .append(blue.length() < 2 ? "0" : "").append(blue);
-      this.setToolTipText(buffer.toString());
-    }
-
-    @Override
-    public boolean isFocusable() {
-      return true;
-    }
-    
-    @Override
-    public void paintComponent(@Nonnull final Graphics gfx) {
-      gfx.setColor(this.getBackground());
-      gfx.fill3DRect(0, 0, this.getWidth(), this.getHeight(), true);
-    }
-
-    @Nonnull
-    public static Color getContrastColor(@Nonnull final Color color) {
-      double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
-      return y >= 128 ? Color.BLACK : Color.WHITE;
-    }
-
-    public void setSelected(final boolean removeCurrentSelection, final boolean selected) {
-      if (this.selected != selected || this.getBorder() == null) {
-        if (removeCurrentSelection) {
-          this.parent.resetSelected();
-        }
-
-        this.selected = selected;
-        this.setBorder(selected ? BorderFactory.createLineBorder(getContrastColor(this.getBackground()), Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
-        this.revalidate();
-        this.repaint();
-
-        if (selected) {
-          this.parent.fireColorSelected(this.getBackground());
-        }
-      }
-    }
-
-    public boolean isSelected() {
-      return this.selected;
-    }
+    updateColorButtons(this.predefinedColors);
   }
 
   public void setGaps(final int horz, final int vert) {
@@ -180,27 +92,6 @@ final class ColorPickerPanel {
     this.colorListeners.remove(listener);
   }
 
-  public ColorPickerPanel(
-          @Nonnull final JPanel panel,
-          final int rows,
-          final int cols,
-          final int gapHorz,
-          final int gapVert,
-          @Nullable @MustNotContainNull final List<Color> predefinedColors
-  ) {
-    this.panel = panel;
-    this.panel.setOpaque(false);
-
-    this.gapHorz = Math.max(0, gapHorz);
-    this.gapVert = Math.max(0, gapVert);
-    this.predefinedColors = predefinedColors;
-
-    this.rows = Math.min(32, Math.max(1, rows));
-    this.cols = Math.min(32, Math.max(1, cols));
-
-    updateColorButtons(this.predefinedColors);
-  }
-
   public void resetSelected() {
     for (final Component c : this.panel.getComponents()) {
       if (c instanceof RadioColorButton) {
@@ -211,6 +102,19 @@ final class ColorPickerPanel {
       }
     }
     this.panel.repaint();
+  }
+
+  @Nullable
+  public Color getColor() {
+    for (final Component c : this.panel.getComponents()) {
+      if (c instanceof RadioColorButton) {
+        final RadioColorButton button = (RadioColorButton) c;
+        if (button.isSelected()) {
+          return button.getBackground();
+        }
+      }
+    }
+    return null;
   }
 
   public void setColor(@Nullable final Color color) {
@@ -227,19 +131,6 @@ final class ColorPickerPanel {
         }
       }
     }
-  }
-
-  @Nullable
-  public Color getColor() {
-    for (final Component c : this.panel.getComponents()) {
-      if (c instanceof RadioColorButton) {
-        final RadioColorButton button = (RadioColorButton) c;
-        if (button.isSelected()) {
-          return button.getBackground();
-        }
-      }
-    }
-    return null;
   }
 
   public boolean isReadOnly() {
@@ -295,22 +186,22 @@ final class ColorPickerPanel {
     updateColorButtons(this.predefinedColors);
   }
 
+  public int getCellWidth() {
+    return this.cellWidth;
+  }
+
   public void setCellWidth(final int width) {
     this.cellWidth = Math.max(4, Math.min(width, 64));
     updateColorButtons(this.predefinedColors);
   }
 
-  public int getCellWidth() {
-    return this.cellWidth;
+  public int getCellHeight() {
+    return this.cellHeight;
   }
 
   public void setCellHeight(final int height) {
     this.cellHeight = Math.max(4, Math.min(height, 64));
     updateColorButtons(this.predefinedColors);
-  }
-
-  public int getCellHeight() {
-    return this.cellHeight;
   }
 
   @Nonnull
@@ -377,8 +268,8 @@ final class ColorPickerPanel {
             break;
           default: {
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight,
-                    Color.getHSBColor(hue, i * step, 0.8f),
-                    false);
+                Color.getHSBColor(hue, i * step, 0.8f),
+                false);
             hue += step;
           }
           break;
@@ -398,6 +289,108 @@ final class ColorPickerPanel {
     }
     this.panel.revalidate();
     this.panel.doLayout();
+  }
+
+  public static interface ColorListener {
+
+    void onColorSelected(@Nonnull ColorPickerPanel source, @Nonnull Color color);
+  }
+
+  private static final class RadioColorButton extends JComponent {
+
+    private final ColorPickerPanel parent;
+    private boolean selected;
+
+    RadioColorButton(
+        @Nonnull final ColorPickerPanel parent,
+        final int cellWidth,
+        final int cellHeight,
+        @Nonnull final Color color,
+        final boolean selected
+    ) {
+      super();
+      this.parent = parent;
+      this.setBackground(color);
+      this.setOpaque(true);
+
+      final Dimension size = new Dimension(cellWidth, cellHeight);
+      this.setSize(size);
+      this.setPreferredSize(size);
+      this.setMinimumSize(size);
+
+      this.setBorder(selected ? BorderFactory.createLineBorder(getContrastColor(this.getBackground()), Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
+
+      this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+      this.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(@Nonnull final MouseEvent e) {
+          if (!e.isConsumed() && !parent.isReadOnly()) {
+            setSelected(true, true);
+          }
+        }
+      });
+
+      this.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyReleased(@Nonnull final KeyEvent e) {
+          if (!e.isConsumed() && (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE)) {
+            e.consume();
+            setSelected(true, !isSelected());
+          }
+        }
+
+      });
+
+      final String red = Integer.toHexString(color.getRed()).toUpperCase(Locale.ENGLISH);
+      final String green = Integer.toHexString(color.getGreen()).toUpperCase(Locale.ENGLISH);
+      final String blue = Integer.toHexString(color.getBlue()).toUpperCase(Locale.ENGLISH);
+
+      final StringBuilder buffer = new StringBuilder();
+      buffer.append('#')
+          .append(red.length() < 2 ? "0" : "").append(red)
+          .append(green.length() < 2 ? "0" : "").append(green)
+          .append(blue.length() < 2 ? "0" : "").append(blue);
+      this.setToolTipText(buffer.toString());
+    }
+
+    @Nonnull
+    public static Color getContrastColor(@Nonnull final Color color) {
+      double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
+      return y >= 128 ? Color.BLACK : Color.WHITE;
+    }
+
+    @Override
+    public boolean isFocusable() {
+      return true;
+    }
+
+    @Override
+    public void paintComponent(@Nonnull final Graphics gfx) {
+      gfx.setColor(this.getBackground());
+      gfx.fill3DRect(0, 0, this.getWidth(), this.getHeight(), true);
+    }
+
+    public void setSelected(final boolean removeCurrentSelection, final boolean selected) {
+      if (this.selected != selected || this.getBorder() == null) {
+        if (removeCurrentSelection) {
+          this.parent.resetSelected();
+        }
+
+        this.selected = selected;
+        this.setBorder(selected ? BorderFactory.createLineBorder(getContrastColor(this.getBackground()), Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
+        this.revalidate();
+        this.repaint();
+
+        if (selected) {
+          this.parent.fireColorSelected(this.getBackground());
+        }
+      }
+    }
+
+    public boolean isSelected() {
+      return this.selected;
+    }
   }
 
 }

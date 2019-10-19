@@ -17,7 +17,6 @@
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
+
 import java.awt.Image;
 import java.io.InputStream;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
-
 import org.apache.commons.io.IOUtils;
 
 public final class ScalableIcon {
@@ -40,14 +41,11 @@ public final class ScalableIcon {
 
   public static final int BASE_WIDTH = 16;
   public static final int BASE_HEIGHT = 16;
-
-  private double currentScaleFactor = -1.0d;
-
   private final Image baseImage;
-  private Image scaledCachedImage;
-
   private final float baseScaleX;
   private final float baseScaleY;
+  private double currentScaleFactor = -1.0d;
+  private Image scaledCachedImage;
 
   public ScalableIcon(@Nonnull final Image image) {
     this.baseImage = assertNotNull("Image must not be null", image);
@@ -64,11 +62,9 @@ public final class ScalableIcon {
     final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
     try {
       return ImageIO.read(in);
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       throw new Error("Can't load resource image " + name, ex); //NOI18N
-    }
-    finally {
+    } finally {
       IOUtils.closeQuietly(in);
     }
   }

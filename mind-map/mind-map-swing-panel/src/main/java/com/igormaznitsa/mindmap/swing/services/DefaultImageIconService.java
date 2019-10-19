@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.services;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
@@ -25,12 +27,11 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import org.apache.commons.io.IOUtils;
-import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 
 public class DefaultImageIconService implements ImageIconService {
 
   private static final Map<IconID, Icon> MAP = new EnumMap<IconID, Icon>(IconID.class);
-  
+
   static {
     MAP.put(IconID.POPUP_EXPORT, loadIcon("export16.png"));
     MAP.put(IconID.POPUP_IMPORT, loadIcon("import16.png"));
@@ -69,10 +70,10 @@ public class DefaultImageIconService implements ImageIconService {
     MAP.put(IconID.POPUP_COLLAPSEALL, loadIcon("toggle16.png"));
     MAP.put(IconID.POPUP_CHANGECOLOR, loadIcon("color_swatches16.png"));
   }
-  
-  public DefaultImageIconService(){
+
+  public DefaultImageIconService() {
   }
-  
+
   @Nonnull
   private static Icon loadIcon(@Nonnull final String name) {
     final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
@@ -84,12 +85,12 @@ public class DefaultImageIconService implements ImageIconService {
       IOUtils.closeQuietly(in);
     }
   }
-  
-  
+
+
   @Override
   @Nullable
   public Icon getIconForId(@Nonnull final IconID id) {
     return MAP.get(id);
   }
-  
+
 }

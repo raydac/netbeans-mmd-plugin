@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.external;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+
 import java.io.File;
+import org.junit.Test;
 
 public class PluginClassLoaderTest {
   @Test
   public void testLoadingOfJar() throws Exception {
     final File jarFile = new File("src/test/resources/com/igormaznitsa/mindmap/plugins/external/TestPlugin.jar");
     assertTrue(jarFile.isFile());
-   final PluginClassLoader loader = new PluginClassLoader(jarFile);
-   assertEquals("Igor Maznitsa",loader.getAttributes(Attribute.AUTHOR));
-   assertEquals("*",loader.getAttributes(Attribute.COMPATIBLE));
-   assertEquals("1.0.1-SNAPSHOT",loader.getAttributes(Attribute.VERSION));
-   assertEquals("It is just a test of class loader",loader.getAttributes(Attribute.REFERENCE));
-   assertEquals("1.2.0",loader.getAttributes(Attribute.API));
-   assertEquals("Some Test Plugin",loader.getAttributes(Attribute.TITLE));
-   assertEquals("com.igormaznitsa.testmmdplugin.TestPlugin",loader.getAttributes(Attribute.PLUGINS));
+    final PluginClassLoader loader = new PluginClassLoader(jarFile);
+    assertEquals("Igor Maznitsa", loader.getAttributes(Attribute.AUTHOR));
+    assertEquals("*", loader.getAttributes(Attribute.COMPATIBLE));
+    assertEquals("1.0.1-SNAPSHOT", loader.getAttributes(Attribute.VERSION));
+    assertEquals("It is just a test of class loader", loader.getAttributes(Attribute.REFERENCE));
+    assertEquals("1.2.0", loader.getAttributes(Attribute.API));
+    assertEquals("Some Test Plugin", loader.getAttributes(Attribute.TITLE));
+    assertEquals("com.igormaznitsa.testmmdplugin.TestPlugin", loader.getAttributes(Attribute.PLUGINS));
   }
 
 }

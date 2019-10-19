@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.plugins.api;
 import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-
 import javax.annotation.Nonnull;
 
 /**

@@ -22,10 +22,6 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.lang.model.SourceVersion;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -36,6 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.lang.model.SourceVersion;
 
 public class PluginClassLoader extends URLClassLoader {
 

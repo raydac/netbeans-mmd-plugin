@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.model.Topic;
-
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
-
 import javax.annotation.Nonnull;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
-import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 
 public class ElementLevelFirst extends AbstractCollapsableElement {
 

@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.print;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.BasicStroke;
-
-import javax.swing.JButton;
-import javax.swing.JToolBar;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -43,72 +43,43 @@ import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.services.IconID;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import javax.swing.JToolBar;
 
 public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent {
 
+  protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
   static final Color BORDER_COLOR = Color.GRAY;
-  static final Stroke BORDER_STYLE = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[]{1f, 3f}, 0f);
-
+  static final Stroke BORDER_STYLE = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[] {1f, 3f}, 0f);
   private static final Icon ICO_PRINTER = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PRINTER);
   private static final Icon ICO_PAGE = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PAGE);
   private static final Icon ICO_OPTIONS = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_OPTIONS);
-
-  public enum IconId {
-    PRINTER,
-    PAGE
-  }
-
-  public interface Adaptor {
-
-    void startBackgroundTask(@Nonnull MMDPrintPanel source, @Nonnull String name, @Nonnull Runnable task);
-
-    boolean isDarkTheme(@Nonnull MMDPrintPanel source);
-
-    void onPrintTaskStarted(@Nonnull MMDPrintPanel source);
-
-    @Nonnull
-    Dimension getPreferredSizeOfPanel(@Nonnull MMDPrintPanel source);
-  }
-
-  
   private static final long serialVersionUID = -2588424836865316862L;
-
-  protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDPrintPanel.class);
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
-
-  private PageFormat pageFormat;
   private final Pages previewContainer;
-  private double pageZoomFactor;
   private final JComponent preferredFocusedComponent;
-
   private final PrintableObject printableObject;
   private final Adaptor theAdaptor;
   private final JCheckBox checkBoxDrawBorder;
   private final JCheckBox checkBoxDrawAsImage;
-  private PrintPage[][] pages;
   private final DialogProvider dialogProvider;
-
-  private MMDPrintOptions options = new MMDPrintOptions();
-
   private final int SCROLL_UNIT = 16;
   private final int SCROLL_BLOCK = SCROLL_UNIT * 8;
-  
+  private PageFormat pageFormat;
+  private double pageZoomFactor;
+  private PrintPage[][] pages;
+  private MMDPrintOptions options = new MMDPrintOptions();
+
   public MMDPrintPanel(@Nonnull final DialogProvider dialogProvider, @Nullable final Adaptor adaptor, @Nonnull final PrintableObject printableObject) {
     super(new BorderLayout());
     this.dialogProvider = dialogProvider;
@@ -122,7 +93,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLL_UNIT);
     scrollPane.getVerticalScrollBar().setBlockIncrement(SCROLL_BLOCK);
     scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLL_UNIT);
-    
+
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
     printerJob.setJobName("Mind map print job");
 
@@ -200,8 +171,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
               try {
                 LOGGER.info("Start print job");
                 printerJob.print();
-              }
-              catch (PrinterException ex) {
+              } catch (PrinterException ex) {
                 LOGGER.error("Print error", ex);
                 throw new RuntimeException("Error during print job", ex);
               }
@@ -313,7 +283,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     this.preferredFocusedComponent = scrollPane;
 
     this.add(scrollPane, BorderLayout.CENTER);
-    
+
     doLayout();
     super.setPreferredSize(this.theAdaptor.getPreferredSizeOfPanel(this));
   }
@@ -373,5 +343,22 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   boolean isDarkTheme() {
     return this.theAdaptor.isDarkTheme(this);
+  }
+
+  public enum IconId {
+    PRINTER,
+    PAGE
+  }
+
+  public interface Adaptor {
+
+    void startBackgroundTask(@Nonnull MMDPrintPanel source, @Nonnull String name, @Nonnull Runnable task);
+
+    boolean isDarkTheme(@Nonnull MMDPrintPanel source);
+
+    void onPrintTaskStarted(@Nonnull MMDPrintPanel source);
+
+    @Nonnull
+    Dimension getPreferredSizeOfPanel(@Nonnull MMDPrintPanel source);
   }
 }

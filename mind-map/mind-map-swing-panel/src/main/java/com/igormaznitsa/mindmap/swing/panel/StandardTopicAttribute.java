@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.mindmap.model.Topic;
-
 import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -28,31 +27,35 @@ public enum StandardTopicAttribute {
   ATTR_TEXT_COLOR("textColor"),
   ATTR_LEFTSIDE("leftSide"),
   ATTR_COLLAPSED("collapsed");
-  
+
   private final String textName;
-  
-  private StandardTopicAttribute(@Nonnull final String textName){
+
+  private StandardTopicAttribute(@Nonnull final String textName) {
     this.textName = textName;
   }
-  
-  @Nonnull
-  public String getText(){
-    return this.textName;
-  }
-  
+
   @Nullable
-  public static StandardTopicAttribute findForText(@Nullable final String text){
-    for(final StandardTopicAttribute s : values()){
-      if (s.getText().equals(text)) return s;
+  public static StandardTopicAttribute findForText(@Nullable final String text) {
+    for (final StandardTopicAttribute s : values()) {
+      if (s.getText().equals(text)) {
+        return s;
+      }
     }
     return null;
   }
-  
-  public static boolean doesContainOnlyStandardAttributes(@Nonnull final Topic topic){
-    final Map<String,String> attrs = topic.getAttributes();
-    for(final String k : attrs.keySet()){
-      if (findForText(k) == null) return false;
+
+  public static boolean doesContainOnlyStandardAttributes(@Nonnull final Topic topic) {
+    final Map<String, String> attrs = topic.getAttributes();
+    for (final String k : attrs.keySet()) {
+      if (findForText(k) == null) {
+        return false;
+      }
     }
     return true;
+  }
+
+  @Nonnull
+  public String getText() {
+    return this.textName;
   }
 }

@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel;
 
-import java.io.Serializable;
-import javax.annotation.Nonnull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
+import java.io.Serializable;
+import javax.annotation.Nonnull;
 
 /**
  * Auxiliary container to transfer topics through clipboard.
+ *
  * @since 1.3.1
  */
 public final class NBMindMapTopicsContainer implements Serializable {
@@ -33,10 +35,10 @@ public final class NBMindMapTopicsContainer implements Serializable {
     this.topics = topics.clone();
   }
 
-  public boolean isEmpty(){
+  public boolean isEmpty() {
     return this.topics == null || this.topics.length == 0;
   }
-  
+
   @Nonnull
   @MustNotContainNull
   public Topic[] getTopics() {

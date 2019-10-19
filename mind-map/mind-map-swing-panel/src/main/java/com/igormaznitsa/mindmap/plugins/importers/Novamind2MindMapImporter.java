@@ -16,10 +16,20 @@
 
 package com.igormaznitsa.mindmap.plugins.importers;
 
+import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.GetUtils;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
@@ -31,15 +41,7 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -49,8 +51,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipFile;
-
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class Novamind2MindMapImporter extends AbstractImporter {
 
@@ -258,6 +265,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
     private final ZipFile zipFile;
     private final Map<String, Resource> resourceMap = new HashMap<String, Resource>();
+
     private Manifest(@Nonnull final ZipFile zipFile, @Nonnull final String manifestPath) {
       this.zipFile = zipFile;
       try {
@@ -343,6 +351,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     private final Map<String, ContentTopic> topicsMap = new HashMap<String, ContentTopic>();
     private final Map<String, String> linksBetweenTopics = new HashMap<String, String>();
     private final TopicReference rootRef;
+
     ParsedContent(@Nonnull final ZipFile file, @Nonnull final String path) {
       TopicReference mapRoot = null;
 

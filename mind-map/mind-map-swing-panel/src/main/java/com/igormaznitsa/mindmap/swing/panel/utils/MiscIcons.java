@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import java.util.Collections;
-import java.util.HashMap;
 
 public class MiscIcons {
 
@@ -74,6 +75,18 @@ public class MiscIcons {
     loadingDaemon.start();
   }
 
+  @Nullable
+  public static Image findForName(@Nonnull final String name) {
+    final ImageContainer result = IMAGE_CACHE.get(name);
+    return result == null ? null : result.getImage();
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  public static String[] getNames() {
+    return ICON_NAMES.clone();
+  }
+
   private static final class ImageContainer {
 
     private final String name;
@@ -109,17 +122,5 @@ public class MiscIcons {
         IOUtils.closeQuietly(in);
       }
     }
-  }
-
-  @Nullable
-  public static Image findForName(@Nonnull final String name) {
-    final ImageContainer result = IMAGE_CACHE.get(name);
-    return result == null ? null : result.getImage();
-  }
-
-  @Nonnull
-  @MustNotContainNull
-  public static String[] getNames() {
-    return ICON_NAMES.clone();
   }
 }

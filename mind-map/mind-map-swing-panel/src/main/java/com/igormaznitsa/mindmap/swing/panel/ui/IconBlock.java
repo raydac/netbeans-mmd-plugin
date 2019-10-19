@@ -24,10 +24,9 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-
+import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.geom.Rectangle2D;
 
 public class IconBlock {
 
@@ -90,7 +89,7 @@ public class IconBlock {
             ico = findIconForFileType((ExtraFile) e);
             break;
           case LINK:
-            final String uri = ((ExtraLink)e).getAsString();
+            final String uri = ((ExtraLink) e).getAsString();
             ico = uri.startsWith("mailto:") ? ScalableIcon.LINK_EMAIL : ScalableIcon.LINK;
             break;
           case NOTE:

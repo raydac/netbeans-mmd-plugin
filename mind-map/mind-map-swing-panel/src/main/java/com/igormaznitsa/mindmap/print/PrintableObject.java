@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.print;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -22,7 +23,38 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public final class PrintableObject {
-  
+
+  private final Image image;
+  private final MindMapPanel panel;
+
+  private PrintableObject(@Nullable final Image image, @Nullable final MindMapPanel panel) {
+    this.panel = panel;
+    this.image = image;
+  }
+
+  @Nonnull
+  public static Builder newBuild() {
+    return new Builder();
+  }
+
+  @Nullable
+  public MindMapPanel getPanel() {
+    return this.panel;
+  }
+
+  @Nullable
+  public Image getImage() {
+    return this.image;
+  }
+
+  public boolean isMmdPanel() {
+    return this.panel != null;
+  }
+
+  public boolean isImage() {
+    return this.image != null;
+  }
+
   public static class Builder {
 
     private Image image;
@@ -50,35 +82,5 @@ public final class PrintableObject {
       Assertions.assertTrue("One object must be set", this.image != null || this.panel != null);
       return new PrintableObject(this.image, this.panel);
     }
-  }
-
-  @Nonnull
-  public static Builder newBuild() {
-    return new Builder();
-  }
-  private final Image image;
-  private final MindMapPanel panel;
-
-  private PrintableObject(@Nullable final Image image, @Nullable final MindMapPanel panel) {
-    this.panel = panel;
-    this.image = image;
-  }
-  
-  @Nullable
-  public MindMapPanel getPanel() {
-    return this.panel;
-  }
-  
-  @Nullable
-  public Image getImage() {
-    return this.image;
-  }
-  
-  public boolean isMmdPanel() {
-    return this.panel != null;
-  }
-  
-  public boolean isImage() {
-    return this.image != null;
   }
 }

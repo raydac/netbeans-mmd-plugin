@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.print;
 
-import javax.annotation.Nonnull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import javax.annotation.Nonnull;
 
 /**
  * Parameters for print.
@@ -25,13 +26,6 @@ import com.igormaznitsa.meta.common.utils.Assertions;
  * @since 1.4.1
  */
 public class MMDPrintOptions {
-
-  public enum ScaleType {
-    ZOOM,
-    FIT_WIDTH_TO_PAGES,
-    FIT_HEIGHT_TO_PAGES,
-    FIT_TO_SINGLE_PAGE;
-  }
 
   private ScaleType scaleOption = ScaleType.ZOOM;
   private int horzPages = 1;
@@ -103,12 +97,38 @@ public class MMDPrintOptions {
   }
 
   /**
+   * Set maximum vertical pages
+   *
+   * @param pages number of pages in column, must be 1 or great
+   * @return this instance
+   */
+  @Nonnull
+  public MMDPrintOptions setPagesInColumn(final int pages) {
+    Assertions.assertTrue("Must be >=1", pages >= 1);
+    this.vertPages = pages;
+    return this;
+  }
+
+  /**
    * Get number of pages in row.
    *
    * @return max pages, if 0 or less than zero then not defined
    */
   public int getPagesInRow() {
     return this.horzPages;
+  }
+
+  /**
+   * Set maximum horizontal pages
+   *
+   * @param pages number of pages in row, must be 1 or great
+   * @return this instance
+   */
+  @Nonnull
+  public MMDPrintOptions setPagesInRow(final int pages) {
+    Assertions.assertTrue("Must be >=1", pages >= 1);
+    this.horzPages = pages;
+    return this;
   }
 
   /**
@@ -133,29 +153,10 @@ public class MMDPrintOptions {
     return this;
   }
 
-  /**
-   * Set maximum vertical pages
-   *
-   * @param pages number of pages in column, must be 1 or great
-   * @return this instance
-   */
-  @Nonnull
-  public MMDPrintOptions setPagesInColumn(final int pages) {
-    Assertions.assertTrue("Must be >=1", pages >= 1);
-    this.vertPages = pages;
-    return this;
-  }
-
-  /**
-   * Set maximum horizontal pages
-   *
-   * @param pages number of pages in row, must be 1 or great
-   * @return this instance
-   */
-  @Nonnull
-  public MMDPrintOptions setPagesInRow(final int pages) {
-    Assertions.assertTrue("Must be >=1", pages >= 1);
-    this.horzPages = pages;
-    return this;
+  public enum ScaleType {
+    ZOOM,
+    FIT_WIDTH_TO_PAGES,
+    FIT_HEIGHT_TO_PAGES,
+    FIT_TO_SINGLE_PAGE;
   }
 }
