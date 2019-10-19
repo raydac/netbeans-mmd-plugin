@@ -18,11 +18,48 @@
  */
 package com.igormaznitsa.sciareto;
 
+import com.igormaznitsa.commons.version.Version;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MindMapController;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
+import com.igormaznitsa.mindmap.plugins.api.HasMnemonic;
+import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
+import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
+import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
+import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
+import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
+import com.igormaznitsa.sciareto.metrics.MetricsService;
+import com.igormaznitsa.sciareto.notifications.MessagesService;
+import com.igormaznitsa.sciareto.plugins.services.PrinterPlugin;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.MainFrame;
+import com.igormaznitsa.sciareto.ui.SystemUtils;
+import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.UiUtils.SplashScreen;
+import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
+import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import java.awt.Component;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -42,9 +79,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
-
-import com.igormaznitsa.sciareto.ui.MainFrame;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -58,45 +92,8 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.filechooser.FileFilter;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import com.igormaznitsa.commons.version.Version;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.MindMapController;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
-import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
-import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
-import com.igormaznitsa.mindmap.plugins.api.HasMnemonic;
-import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
-import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
-import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
-import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
-import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
-import com.igormaznitsa.sciareto.metrics.MetricsService;
-import com.igormaznitsa.sciareto.notifications.MessagesService;
-import com.igormaznitsa.sciareto.plugins.services.PrinterPlugin;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
-import com.igormaznitsa.sciareto.ui.SystemUtils;
-import com.igormaznitsa.sciareto.ui.UiUtils;
-import com.igormaznitsa.sciareto.ui.UiUtils.SplashScreen;
-import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
-import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
-import com.igormaznitsa.mindmap.plugins.api.HasOptions;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 
 public class Main {
 
@@ -106,7 +103,7 @@ public class Main {
 
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 6L}, null); //NOI18N
+  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 4L, 7L}, null); //NOI18N
 
   public static final Random RND = new Random();
 
