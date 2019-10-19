@@ -35,8 +35,6 @@ import javax.annotation.Nonnull;
 public class MMDTopicsTransferable implements Transferable {
 
   public static final DataFlavor MMD_DATA_FLAVOR;
-  private static final DataFlavor[] FLAVORS = new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
-  private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
   static {
     try {
@@ -46,6 +44,8 @@ public class MMDTopicsTransferable implements Transferable {
     }
   }
 
+  private static final DataFlavor[] FLAVORS = new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
+  private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
   private final Topic[] topics;
 
   public MMDTopicsTransferable(@Nonnull @MustNotContainNull final Topic... topics) {

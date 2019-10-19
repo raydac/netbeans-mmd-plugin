@@ -48,7 +48,7 @@ public final class ColorChooserButton extends JButton {
 
   public static final Color DIFF_COLORS = new Color(0, true);
 
-  private final List<Color> usedColors = new CopyOnWriteArrayList<>();
+  private final List<Color> usedColors = new CopyOnWriteArrayList<Color>();
 
   public ColorChooserButton() {
     super();

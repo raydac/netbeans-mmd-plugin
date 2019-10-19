@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.4.6</version>
+    <version>1.4.7</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -18,6 +18,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.4.7 (SNAPSHOT)</p>
+        <ul>
+          <li></li>
+        </ul>
         <p>1.4.6 (26-may-2019)</p>
         <ul>
           <li>improved color chooser, standard one replaced by custom one</li>
