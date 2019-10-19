@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.ide.commons;
 
 import java.util.regex.Matcher;
@@ -22,10 +23,9 @@ import javax.annotation.Nullable;
 
 public class FilePathWithLine {
 
+  private static final Pattern PATH_CONTAINS_LINE_NUMBER = Pattern.compile("^(.*):([\\d]+)$");
   private final String path;
   private final int line;
-
-  private static final Pattern PATH_CONTAINS_LINE_NUMBER = Pattern.compile("^(.*):([\\d]+)$");
 
   public FilePathWithLine(@Nullable final String filePath) {
     if (filePath == null) {
@@ -50,6 +50,19 @@ public class FilePathWithLine {
         this.line = -1;
       }
     }
+  }
+
+  public static int strToLine(@Nullable final String text) {
+    int parsed = -1;
+    if (text != null) {
+      try {
+        parsed = Integer.parseInt(text.trim());
+        parsed = parsed <= 0 ? -1 : parsed;
+      } catch (NumberFormatException ex) {
+        parsed = -1;
+      }
+    }
+    return parsed;
   }
 
   @Nonnull
@@ -80,19 +93,6 @@ public class FilePathWithLine {
     } else {
       return this.getPathOrEmpty();
     }
-  }
-  
-  public static int strToLine(@Nullable final String text) {
-    int parsed = -1;
-    if (text != null) {
-      try{
-        parsed = Integer.parseInt(text.trim());
-        parsed = parsed <= 0 ? -1 : parsed;
-      }catch(NumberFormatException ex){
-        parsed = -1;
-      }
-    }
-    return parsed;
   }
 
   public boolean isEmptyOrOnlySpaces() {

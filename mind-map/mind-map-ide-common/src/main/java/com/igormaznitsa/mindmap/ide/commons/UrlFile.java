@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.ide.commons;
 
 import java.io.File;
@@ -27,22 +28,20 @@ import org.apache.commons.io.FileUtils;
 
 public final class UrlFile {
 
-  private final Map<String, Map<String, String>> sections = new HashMap<String, Map<String, String>>();
-
   private static final Pattern SECTION_NAME = Pattern.compile("^\\s*\\[([^\\]]*?)\\]\\s*\\r?$");
   private static final Pattern NAME_VALUE = Pattern.compile("^([^=\\s]+?)\\=(.*)\\r?$");
-
+  private final Map<String, Map<String, String>> sections = new HashMap<>();
   private final int savedPairs;
-  
+
   public UrlFile(@Nonnull final File file) throws IOException {
     this(FileUtils.readFileToString(file, "Cp1252"));
   }
-  
+
   public UrlFile(@Nonnull final String text) throws IOException {
-    Map<String,String> currentSection = null;
-    
+    Map<String, String> currentSection = null;
+
     int counter = 0;
-    
+
     for (final String splittedLine : text.split("\\n")) {
       if (splittedLine.trim().isEmpty()) {
         continue;
@@ -50,39 +49,43 @@ public final class UrlFile {
       final Matcher head = SECTION_NAME.matcher(splittedLine);
       if (head.matches()) {
         final String sectionName = head.group(1);
-        if (currentSection!=null) counter+=currentSection.size();
-        currentSection = new HashMap<String,String>();
+        if (currentSection != null) {
+          counter += currentSection.size();
+        }
+        currentSection = new HashMap<String, String>();
         this.sections.put(sectionName, currentSection);
       } else {
         final Matcher keyvalue = NAME_VALUE.matcher(splittedLine);
-        if (keyvalue.matches()){
+        if (keyvalue.matches()) {
           final String key = keyvalue.group(1);
           final String value = keyvalue.group(2);
-          if (currentSection!=null){
+          if (currentSection != null) {
             currentSection.put(key, value);
           }
         }
       }
     }
-    
-    if (currentSection!=null) counter+=currentSection.size();
-    
+
+    if (currentSection != null) {
+      counter += currentSection.size();
+    }
+
     this.savedPairs = counter;
   }
-  
-  public int size(){
+
+  public int size() {
     return this.savedPairs;
   }
-  
+
   @Nullable
-  public String getURL(){
+  public String getURL() {
     return this.getValue("InternetShortcut", "URL");
   }
-  
+
   @Nullable
   public String getValue(@Nonnull final String section, @Nonnull final String key) {
-    final Map<String,String> sectionMap = this.sections.get(section);
+    final Map<String, String> sectionMap = this.sections.get(section);
     return sectionMap == null ? null : sectionMap.get(key);
   }
-  
+
 }

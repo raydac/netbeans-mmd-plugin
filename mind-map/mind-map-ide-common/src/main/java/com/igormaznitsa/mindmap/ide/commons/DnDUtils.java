@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.ide.commons;
 
 import java.awt.datatransfer.DataFlavor;
@@ -26,6 +27,7 @@ import java.io.NotSerializableException;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -99,7 +101,7 @@ public final class DnDUtils {
         if (foundMozLink == null) {
           final InputStream in = ((InputStream) dtde.getTransferable().getTransferData(df));
           final StringWriter string = new StringWriter();
-          IOUtils.copy(in, string);
+          IOUtils.copy(in, string, Charset.defaultCharset());
           IOUtils.closeQuietly(in);
           foundMozLink = removeZeroChars(string.toString().split("\\n")[0]).trim();
         }
@@ -114,11 +116,7 @@ public final class DnDUtils {
     try {
       result = (String) dtde.getTransferable().getTransferData(DataFlavor.stringFlavor);
       result = result == null ? null : removeZeroChars(result);
-    }
-    catch (NotSerializableException ex) {
-      result = null;
-    }
-    catch (final UnsupportedFlavorException ex) {
+    } catch (NotSerializableException | UnsupportedFlavorException ex) {
       result = null;
     }
     return result;

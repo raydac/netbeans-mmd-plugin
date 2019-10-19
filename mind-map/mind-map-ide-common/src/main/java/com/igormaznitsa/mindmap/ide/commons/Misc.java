@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.ide.commons;
 
 import java.util.Locale;
@@ -26,28 +27,26 @@ import javax.annotation.Nonnull;
  */
 public final class Misc {
 
-  private Misc() {
-  }
-
   public static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
   public static final String FILELINK_ATTR_LINE = "line"; //NOI18N
-
   /**
    * Session key to keep last selected folder for added file into mind map node.
    * Object is File.
    */
   public static final String SESSIONKEY_ADD_FILE_LAST_FOLDER = "file.add.last.folder";
-
   /**
    * Session key to keep last selected flag to open in system viewer for added
    * file into mind map node. Object is Boolean
    */
   public static final String SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM = "file.add.open_in_system";
 
+  private Misc() {
+  }
+
   /**
    * Create pattern from string.
    *
-   * @param text text to be converted into pattern.
+   * @param text         text to be converted into pattern.
    * @param patternFlags flags to be used
    * @return formed pattern
    */

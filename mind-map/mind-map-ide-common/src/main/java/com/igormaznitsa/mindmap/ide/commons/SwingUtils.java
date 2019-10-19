@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.ide.commons;
 
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import java.awt.event.ActionEvent;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
@@ -22,7 +24,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 
 public class SwingUtils {
 
@@ -42,7 +43,7 @@ public class SwingUtils {
     menu.add(paste);
 
     menu.add(new SelectAllTextAction());
-    
+
     return menu;
   }
 
@@ -58,7 +59,7 @@ public class SwingUtils {
     public void actionPerformed(@Nonnull final ActionEvent e) {
       final JTextComponent component = getFocusedComponent();
       if (component != null) {
-        ((JTextComponent) component).selectAll();
+        component.selectAll();
         component.requestFocusInWindow();
       }
     }
