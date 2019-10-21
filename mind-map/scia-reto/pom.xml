@@ -34,7 +34,7 @@
     <rsyntax.autocomplete.version>3.0.2</rsyntax.autocomplete.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.4.0</jna.version>
-    <jre.version>11.0.5</jre.version>
+      <jre.version>11.0.5+11</jre.version>
   </properties>
 
   <dependencies>
