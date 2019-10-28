@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.swing.colorpicker;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -21,16 +20,24 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -42,21 +49,24 @@ public final class ColorChooser {
   private static final int PALETTE_ROWS = 10;
   private final ColorPickerPanel colorPicker;
   private final ColorPickerPanel presentedColors;
+  private Color tunedColor;
   private final JLabel sampleDarkFill;
   private final JLabel sampleLightFill;
   private final JLabel sampleDarkText;
   private final JLabel sampleLightText;
   private final JPanel panel;
 
+  private final Icon COLOR_WHEEL_ICON = new ImageIcon(ColorChooser.class.getResource("/com/igormaznitsa/mindmap/swing/panel/icons/color_wheel32.png"));
+
   public ColorChooser(
-      @Nullable @MustNotContainNull final List<Color> mapColors,
-      @Nullable final Color selectedColor
+          @Nullable @MustNotContainNull final List<Color> mapColors,
+          @Nullable final Color selectedColor
   ) {
     final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
     this.panel = componentFactory.makePanel();
     this.panel.setLayout(new GridBagLayout());
 
-    final String SAMPLE_TEXT = "TEXT";
+    final String SAMPLE_TEXT = "    TEXT    ";
 
     GridBagConstraints data = new GridBagConstraints();
     data.anchor = GridBagConstraints.CENTER;
@@ -66,7 +76,7 @@ public final class ColorChooser {
     data.insets.set(4, 4, 4, 4);
 
     this.sampleDarkFill = componentFactory.makeLabel();
-    final Font font = this.sampleDarkFill.getFont().deriveFont(Font.BOLD);
+    final Font font = this.sampleDarkFill.getFont().deriveFont(Font.BOLD, this.sampleDarkFill.getFont().getSize() * 2);
     this.sampleDarkFill.setFont(font);
 
     this.sampleDarkFill.setText(SAMPLE_TEXT);
@@ -116,9 +126,45 @@ public final class ColorChooser {
     samplePanel.add(this.sampleDarkText);
     samplePanel.add(this.sampleLightFill);
 
-    data.insets.set(4, 32, 4, 32);
+    final JPanel sampleAndTunePanel = new JPanel(new GridBagLayout());
+    final GridBagConstraints sampleAndTunePanelData = new GridBagConstraints();
 
-    this.panel.add(samplePanel, data);
+    sampleAndTunePanelData.gridx = 0;
+    sampleAndTunePanelData.gridy = 0;
+    sampleAndTunePanelData.weightx = 1000;
+    sampleAndTunePanelData.fill = GridBagConstraints.HORIZONTAL;
+    sampleAndTunePanel.add(samplePanel, sampleAndTunePanelData);
+
+    sampleAndTunePanelData.weightx = 1;
+    sampleAndTunePanelData.anchor = GridBagConstraints.CENTER;
+    sampleAndTunePanelData.insets = new Insets(0, 2, 0, 2);
+    sampleAndTunePanelData.fill = GridBagConstraints.BOTH;
+    sampleAndTunePanelData.gridx = 1;
+
+    final JButton buttonTuneColor = new JButton(COLOR_WHEEL_ICON);
+    buttonTuneColor.setFocusable(false);
+    buttonTuneColor.setBorderPainted(false);
+    buttonTuneColor.setContentAreaFilled(false);
+    buttonTuneColor.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    buttonTuneColor.setToolTipText(Texts.getString("ColorChooser.ButtonColorWheel.Tooltip"));
+    buttonTuneColor.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(@Nonnull final ActionEvent event) {
+        final Color choosedColor = JColorChooser.showDialog(panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground(), false);
+        if (choosedColor != null) {
+          colorPicker.resetSelected();
+          presentedColors.setColor(null);
+          tunedColor = choosedColor;
+          updateSamples(choosedColor);
+          panel.repaint();
+        }
+      }
+    });
+
+    sampleAndTunePanel.add(buttonTuneColor, sampleAndTunePanelData);
+
+    data.insets.set(4, 32, 4, 32);
+    this.panel.add(sampleAndTunePanel, data);
 
     data.insets.set(4, 4, 4, 4);
 
@@ -145,6 +191,8 @@ public final class ColorChooser {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
+          colorPicker.resetSelected();
+          tunedColor = null;
           presentedColors.setColor(selectedColor);
           updateSamples(selectedColor);
         }
@@ -230,7 +278,14 @@ public final class ColorChooser {
   public Color getColor() {
     final Color colorMain = this.colorPicker.getColor();
     final Color colorSecond = this.presentedColors.getColor();
-    return colorMain == null ? colorSecond : colorMain;
+    final Color tunedColorByWheel = this.tunedColor;
+    if (colorMain != null) {
+      return colorMain;
+    }
+    if (colorSecond != null) {
+      return colorSecond;
+    }
+    return tunedColorByWheel;
   }
 
 //  public static void main(@Nonnull @MustNotContainNull String... args) {
