@@ -150,7 +150,10 @@ public final class ColorChooser {
     buttonTuneColor.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent event) {
-        final Color choosedColor = JColorChooser.showDialog(panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground(), false);
+        final Color choosedColor = JColorChooser.showDialog(
+                panel, 
+                Texts.getString("ColorChooser.ChooseColorDialogTitle"), 
+                sampleDarkFill.getBackground());
         if (choosedColor != null) {
           colorPicker.resetSelected();
           presentedColors.setColor(null);
