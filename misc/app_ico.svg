@@ -11,11 +11,11 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="145.34445mm"
-   height="155.30226mm"
-   viewBox="0 0 515.00003 550.2836"
+   height="145.34445mm"
+   viewBox="0 0 515.00003 515.00002"
    id="svg4285"
    version="1.1"
-   inkscape:version="0.91 r"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="app_ico.svg"
    inkscape:export-filename="/home/igorm/Projects_PET/MindMap/mind-map/scia-reto/src/main/resources/icons/logo256x256.png"
    inkscape:export-xdpi="44.307693"
@@ -117,8 +117,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="139.15009"
-     inkscape:cy="256.30472"
+     inkscape:cx="-69.951487"
+     inkscape:cy="238.66307"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -126,10 +126,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1600"
-     inkscape:window-height="798"
-     inkscape:window-x="-2"
-     inkscape:window-y="26"
+     inkscape:window-width="1920"
+     inkscape:window-height="999"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata4290">
@@ -139,7 +139,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -147,7 +147,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-115.35714,-90.077399)">
+     transform="translate(-115.35714,-107.71935)">
     <rect
        style="opacity:1;fill:url(#linearGradient4192);fill-opacity:1;stroke:#a05a2c;stroke-width:15;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4881"
@@ -157,8 +157,8 @@
        y="115.21935"
        ry="68.571426"
        inkscape:export-filename="/home/igorm/Projects_PET/MindMap/mind-map/scia-reto/src/main/resources/icons/logo256x256.png"
-       inkscape:export-xdpi="44.737865"
-       inkscape:export-ydpi="44.737865" />
+       inkscape:export-xdpi="178.95146"
+       inkscape:export-ydpi="178.95146" />
     <g
        style="stroke:#00ffff;stroke-width:12.90247536;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter4313)"
        transform="matrix(0.54253156,0,0,0.54253156,194.09319,178.45636)"
