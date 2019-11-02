@@ -16,6 +16,7 @@
       <outputDirectory>${file.separator}</outputDirectory>
       <excludes>
         <exclude>SciaReto.app${file.separator}Contents${file.separator}MacOS${file.separator}sciareto</exclude>
+        <exclude>SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}sciareto.icns</exclude>
       </excludes>
       <includes>
        <include>*/**</include>
@@ -44,6 +45,10 @@
       <destName>sciareto</destName>
       <outputDirectory>${file.separator}SciaReto.app${file.separator}Contents${file.separator}MacOS</outputDirectory>
       <fileMode>0755</fileMode>
+    </file>
+    <file>
+      <source>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}mac${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}sciareto.icns</source>
+      <outputDirectory>${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources</outputDirectory>
     </file>
     <file>
       <source>${project.build.directory}${file.separator}${app.name}.jar</source>
