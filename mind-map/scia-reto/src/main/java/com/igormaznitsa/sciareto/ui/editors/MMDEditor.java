@@ -27,6 +27,7 @@ import com.igormaznitsa.mindmap.ide.commons.Misc;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
 import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.Extra.ExtraType;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
@@ -712,7 +713,17 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       addURItoElement(decodedLink, element);
       dtde.dropComplete(true);
     } else if (detectedNote != null) {
-      addNoteToElement(detectedNote, element);
+      final boolean isuri = DnDUtils.isUriString(detectedNote);
+      if (isuri && !element.getModel().getExtras().containsKey(ExtraType.LINK)) {
+        try{
+          final URI uri = new URI(detectedNote);
+          addURItoElement(uri, element);
+        }catch(URISyntaxException exx){
+          //DO NOTHING
+        }
+      } else {
+        addNoteToElement(detectedNote, element);
+      }
       dtde.dropComplete(true);
     } else {
       dtde.dropComplete(false);

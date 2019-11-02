@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.ide.commons;
 
 import java.awt.datatransfer.DataFlavor;
@@ -108,6 +107,19 @@ public final class DnDUtils {
       }
     }
     return foundMozLink == null ? foundHtmlLink : foundMozLink;
+  }
+
+  private static final Pattern EMPTY_OR_WHITE = Pattern.compile("[\\s\\n]");
+  
+  public static boolean isUriString(@Nullable final String str) {
+    if (str == null) return false;
+    try {
+      if (EMPTY_OR_WHITE.matcher(str).find()) return false;
+      final URI uri = new URI(str);
+      return uri.isAbsolute();
+    } catch (URISyntaxException ex) {
+      return false;
+    }
   }
 
   @Nullable
