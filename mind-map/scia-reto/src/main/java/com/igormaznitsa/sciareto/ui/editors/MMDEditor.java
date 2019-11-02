@@ -713,13 +713,12 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       addURItoElement(decodedLink, element);
       dtde.dropComplete(true);
     } else if (detectedNote != null) {
-      final boolean isuri = DnDUtils.isUriString(detectedNote);
-      if (isuri && !element.getModel().getExtras().containsKey(ExtraType.LINK)) {
+      if (DnDUtils.isUriString(detectedNote)) {
         try{
           final URI uri = new URI(detectedNote);
           addURItoElement(uri, element);
         }catch(URISyntaxException exx){
-          //DO NOTHING
+          addNoteToElement(detectedNote, element);
         }
       } else {
         addNoteToElement(detectedNote, element);
