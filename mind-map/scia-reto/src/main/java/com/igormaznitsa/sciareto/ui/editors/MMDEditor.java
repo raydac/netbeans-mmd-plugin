@@ -711,7 +711,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       dtde.dropComplete(true);
     } else if (decodedLink != null) {
       addURItoElement(decodedLink, element);
-      dtde.dropComplete(true);
     } else if (detectedNote != null) {
       if (DnDUtils.isUriString(detectedNote)) {
         try{
@@ -723,9 +722,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       } else {
         addNoteToElement(detectedNote, element);
       }
-      dtde.dropComplete(true);
-    } else {
-      dtde.dropComplete(false);
     }
   }
 

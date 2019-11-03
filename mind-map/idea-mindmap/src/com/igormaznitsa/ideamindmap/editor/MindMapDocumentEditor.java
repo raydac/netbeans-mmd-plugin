@@ -948,9 +948,17 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     } else if (decodedLink != null) {
       addURItoElement(decodedLink, element);
     } else if (extractedText != null) {
-      addNoteToElement(extractedText, element);
+      if (DnDUtils.isUriString(extractedText)) {
+        try {
+          final URI uri = new URI(extractedText);
+          addURItoElement(uri, element);
+        } catch (URISyntaxException exx) {
+          addNoteToElement(extractedText, element);
+        }
+      } else {
+        addNoteToElement(extractedText, element);
+      }
     }
-
   }
 
   private void addURItoElement(@Nonnull final URI uri, @Nullable final AbstractElement element) {

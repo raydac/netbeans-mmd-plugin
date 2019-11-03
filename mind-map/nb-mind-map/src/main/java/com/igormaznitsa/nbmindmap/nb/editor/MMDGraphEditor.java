@@ -1081,6 +1081,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
     if (detectedDataObject != null) {
       addDataObjectToElement(detectedDataObject, element);
+      dtde.dropComplete(true);
     } else if (detectedFileObject != null) {
       decodedLink = DnDUtils.extractUrlLinkFromFile(detectedFileObject);
       if (decodedLink != null) {
@@ -1091,7 +1092,16 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     } else if (decodedLink != null) {
       addURItoElement(decodedLink, element);
     } else if (detectedNote != null) {
-      addNoteToElement(detectedNote, element);
+      if (DnDUtils.isUriString(detectedNote)) {
+        try {
+          final URI uri = new URI(detectedNote);
+          addURItoElement(uri, element);
+        } catch (URISyntaxException exx) {
+          addNoteToElement(detectedNote, element);
+        }
+      } else {
+        addNoteToElement(detectedNote, element);
+      }
     }
   }
 
