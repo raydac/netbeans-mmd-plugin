@@ -252,6 +252,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.weighty = 1000.0;
     gridBagConstraints.insets = new java.awt.Insets(0, 0, 16, 0);
     add(scrollPanelThirdPartibs, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
