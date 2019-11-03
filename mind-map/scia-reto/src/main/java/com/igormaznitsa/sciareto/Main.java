@@ -70,6 +70,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -103,7 +104,7 @@ public class Main {
 
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 4L, 7L}, null); //NOI18N
+  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 7L}, null); //NOI18N
 
   public static final Random RND = new Random();
 
@@ -180,7 +181,7 @@ public class Main {
       final MindMap map = panel.getModel();
       final StringWriter writer = map.write(new StringWriter());
       final String text = writer.toString();
-      SwingUtilities.invokeLater(new Runnable(){
+      SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
           final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -241,12 +242,38 @@ public class Main {
     }
   }
 
+  private static boolean trySetTaskBarValues() {
+    try {
+      final Object taskbar = Class.forName("java.awt.Taskbar").getMethod("getTaskbar").invoke(null);
+      try {
+        taskbar.getClass().getMethod("setIconBadge", String.class).invoke(taskbar, "Scia Reto");
+      } catch (InvocationTargetException ex) {
+        LOGGER.warn("Can't set title through Taskbar: " + ex.getCause());
+      }
+      try {
+        taskbar.getClass().getMethod("setIconImage", Image.class).invoke(taskbar, UiUtils.loadIcon("logo256x256.png"));
+      } catch (InvocationTargetException ex) {
+        LOGGER.warn("Can't set icon through Taskbar: " + ex.getCause());
+      }
+      return true;
+    } catch (Exception exx) {
+      LOGGER.error("trySetTaskBarValues: " + exx.toString());
+      return false;
+    }
+  }
+
   public static void main(@Nonnull @MustNotContainNull final String... args) {
     // -- Properties for MAC OSX --  
     System.setProperty("apple.awt.fileDialogForDirectories", "true"); //NOI18N
     System.setProperty("apple.laf.useScreenMenuBar", "true"); //NOI18N
     System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SciaReto"); //NOI18N
     // ----------------------------
+
+    if (trySetTaskBarValues()) {
+      LOGGER.info("Taskbar values set completed");
+    } else {
+      LOGGER.warn("Taskbar values set failed");
+    }
 
     SystemUtils.setDebugLevelForJavaLogger(Level.WARNING);
 
