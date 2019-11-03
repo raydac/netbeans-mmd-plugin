@@ -98,6 +98,9 @@ import org.apache.commons.io.IOUtils;
 
 public class Main {
 
+  public static final String APP_TITLE = "Scia Reto";
+  public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
+  
   public static final long UPSTART = System.currentTimeMillis();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -246,12 +249,12 @@ public class Main {
     try {
       final Object taskbar = Class.forName("java.awt.Taskbar").getMethod("getTaskbar").invoke(null);
       try {
-        taskbar.getClass().getMethod("setIconBadge", String.class).invoke(taskbar, "Scia Reto");
+        taskbar.getClass().getMethod("setIconBadge", String.class).invoke(taskbar, APP_TITLE);
       } catch (InvocationTargetException ex) {
         LOGGER.warn("Can't set title through Taskbar: " + ex.getCause());
       }
       try {
-        taskbar.getClass().getMethod("setIconImage", Image.class).invoke(taskbar, UiUtils.loadIcon("logo256x256.png"));
+        taskbar.getClass().getMethod("setIconImage", Image.class).invoke(taskbar, APP_ICON);
       } catch (InvocationTargetException ex) {
         LOGGER.warn("Can't set icon through Taskbar: " + ex.getCause());
       }

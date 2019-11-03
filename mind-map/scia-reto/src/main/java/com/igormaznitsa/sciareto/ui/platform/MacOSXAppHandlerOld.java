@@ -26,7 +26,7 @@ import com.igormaznitsa.meta.annotation.Warning;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.Main;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,8 +44,8 @@ public final class MacOSXAppHandlerOld implements ApplicationListener, Platform 
   public MacOSXAppHandlerOld(@Nonnull final Application application) {
     this.application = application;
     this.application.addApplicationListener(this);
-    this.application.setDockIconBadge("SciaReto");
-    this.application.setDockIconImage(UiUtils.loadIcon("logo256x256.png"));
+    this.application.setDockIconBadge(Main.APP_TITLE);
+    this.application.setDockIconImage(Main.APP_ICON);
   }
 
   private boolean processMenuEvent(@Nonnull final PlatformMenuEvent event, @Nullable @MayContainNull final Object... args) {

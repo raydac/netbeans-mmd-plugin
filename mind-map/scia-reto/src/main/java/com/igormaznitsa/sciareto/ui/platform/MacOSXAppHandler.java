@@ -31,7 +31,7 @@ import com.igormaznitsa.meta.annotation.Warning;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.Main;
 import java.io.File;
 
 import javax.annotation.Nonnull;
@@ -50,8 +50,8 @@ public final class MacOSXAppHandler implements Platform {
 
   public MacOSXAppHandler(@Nonnull final Application application) {
     this.application = application;
-    this.application.setDockIconBadge("SciaReto");
-    this.application.setDockIconImage(UiUtils.loadIcon("logo256x256.png"));
+    this.application.setDockIconBadge(Main.APP_TITLE);
+    this.application.setDockIconImage(Main.APP_ICON);
     
     this.application.setAboutHandler(new AboutHandler() {
         @Override
