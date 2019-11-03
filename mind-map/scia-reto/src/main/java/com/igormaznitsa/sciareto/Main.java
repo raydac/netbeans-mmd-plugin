@@ -259,6 +259,9 @@ public class Main {
         LOGGER.warn("Can't set icon through Taskbar: " + ex.getCause());
       }
       return true;
+    } catch(InvocationTargetException exx){
+      LOGGER.error("trySetTaskBarValues: " + exx.getCause().toString());
+      return false;
     } catch (Exception exx) {
       LOGGER.error("trySetTaskBarValues: " + exx.toString());
       return false;
