@@ -16,6 +16,8 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.7 (SNAPSHOT)__
+- SR:  fixed application icon and title under some OS
+- ALL: added recognition of text presented dragged URI link as URI link
 - ALL: improved color chooser
 - ALL: added support of "smart text paste" with splitting to topics (inactive by default)
 - SR:  embedded Java updated to 11.0.5
