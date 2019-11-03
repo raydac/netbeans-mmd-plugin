@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -39,6 +40,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -150,15 +152,25 @@ public final class ColorChooser {
     buttonTuneColor.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent event) {
-        final Color choosedColor = JColorChooser.showDialog(
-                panel, 
-                Texts.getString("ColorChooser.ChooseColorDialogTitle"), 
-                sampleDarkFill.getBackground());
+        Color choosedColor = null;
+        try {
+          choosedColor = (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class, Color.class, boolean.class)
+                  .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground(), false);
+        } catch (Exception ex) {
+          try {
+            choosedColor = (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class, Color.class)
+                    .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground());
+          } catch (Exception exx) {
+            choosedColor = null;
+            JOptionPane.showMessageDialog(panel, exx.getMessage(), "Internal error", JOptionPane.ERROR_MESSAGE);
+          }
+        }
         if (choosedColor != null) {
           colorPicker.resetSelected();
           presentedColors.setColor(null);
-          tunedColor = choosedColor;
-          updateSamples(choosedColor);
+          final Color colorWithoutAlpha = new Color(choosedColor.getRGB());
+          tunedColor = colorWithoutAlpha;
+          updateSamples(colorWithoutAlpha);
           panel.repaint();
         }
       }
