@@ -555,6 +555,7 @@
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
             <manifestEntries>
+              <Application-Name>Scia Reto</Application-Name>
               <Automatic-Module-Name>igormaznitsa.sciareto</Automatic-Module-Name>
             </manifestEntries>
           </archive>
