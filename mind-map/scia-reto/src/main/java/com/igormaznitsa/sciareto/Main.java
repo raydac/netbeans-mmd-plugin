@@ -100,7 +100,7 @@ public class Main {
 
   public static final String APP_TITLE = "Scia Reto";
   public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
-  
+
   public static final long UPSTART = System.currentTimeMillis();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -254,7 +254,7 @@ public class Main {
         LOGGER.warn("Can't set icon through Taskbar: " + ex.getCause());
       }
       return true;
-    } catch(InvocationTargetException exx){
+    } catch (InvocationTargetException exx) {
       LOGGER.error("trySetTaskBarValues: " + exx.getCause().toString());
       return false;
     } catch (Exception exx) {

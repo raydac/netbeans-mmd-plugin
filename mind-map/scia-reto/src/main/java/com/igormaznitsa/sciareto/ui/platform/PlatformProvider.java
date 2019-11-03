@@ -36,15 +36,23 @@ public final class PlatformProvider {
     
     if (SystemUtils.IS_OS_MAC_OSX){
       try{
-        detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformMacOSX").newInstance(); //NOI18N
+        detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformMacOSX").getConstructor().newInstance(); //NOI18N
       }catch(Throwable ex){
         LOGGER.error("Can't init MACOSX platform specific part",ex); //NOI18N
         detected = null;
         detectedError = true;
       }
+    } else if (SystemUtils.IS_OS_LINUX) {
+      try {
+        detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformLinux").getConstructor().newInstance(); //NOI18N
+      } catch (Throwable ex) {
+        LOGGER.error("Can't init LINUX platform specific part", ex); //NOI18N
+        detected = null;
+        detectedError = true;
+      }
     } else if (SystemUtils.IS_OS_WINDOWS) {
       try {
-        detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformWindows").newInstance(); //NOI18N
+        detected = (Platform) Class.forName("com.igormaznitsa.sciareto.ui.platform.PlatformWindows").getConstructor().newInstance(); //NOI18N
       } catch (Throwable ex) {
         LOGGER.error("Can't init WINDOWS platform specific part", ex); //NOI18N
         detected = null;
