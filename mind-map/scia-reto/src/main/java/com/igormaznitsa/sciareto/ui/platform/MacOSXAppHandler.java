@@ -31,6 +31,7 @@ import com.igormaznitsa.meta.annotation.Warning;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.io.File;
 
 import javax.annotation.Nonnull;
@@ -49,21 +50,24 @@ public final class MacOSXAppHandler implements Platform {
 
   public MacOSXAppHandler(@Nonnull final Application application) {
     this.application = application;
-    application.setAboutHandler(new AboutHandler() {
+    this.application.setDockIconBadge("SciaReto");
+    this.application.setDockIconImage(UiUtils.loadIcon("logo256x256.png"));
+    
+    this.application.setAboutHandler(new AboutHandler() {
         @Override
         public void handleAbout(AppEvent.AboutEvent ae) {
             processMenuEvent(PlatformMenuEvent.ABOUT);
         }
     });
 
-    application.setPreferencesHandler(new PreferencesHandler() {
+    this.application.setPreferencesHandler(new PreferencesHandler() {
         @Override
         public void handlePreferences(AppEvent.PreferencesEvent pe) {
             processMenuEvent(PlatformMenuEvent.PREFERENCES);
         }
     });
 
-    application.setOpenFileHandler(new OpenFilesHandler() {
+    this.application.setOpenFileHandler(new OpenFilesHandler() {
         @Override
         public void openFiles(AppEvent.OpenFilesEvent ofe) {
             final List<File> files = ofe.getFiles();
@@ -75,7 +79,7 @@ public final class MacOSXAppHandler implements Platform {
         }
     });
     
-    application.setPrintFileHandler(new PrintFilesHandler() {
+    this.application.setPrintFileHandler(new PrintFilesHandler() {
         @Override
         public void printFiles(AppEvent.PrintFilesEvent pfe) {
             final List<File> files = pfe.getFiles();
@@ -87,7 +91,7 @@ public final class MacOSXAppHandler implements Platform {
         }
     });
 
-    application.setQuitHandler(new QuitHandler() {
+    this.application.setQuitHandler(new QuitHandler() {
         @Override
         public void handleQuitRequestWith(AppEvent.QuitEvent qe, QuitResponse qr) {
             if (processMenuEvent(PlatformMenuEvent.QUIT)){
