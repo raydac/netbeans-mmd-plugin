@@ -180,8 +180,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     glassPanel.setVisible(false);
 
     this.setTitle(Main.APP_TITLE); //NOI18N
-
-    setIconImage(Main.APP_ICON); //NOI18N
+    this.setIconImage(Main.APP_ICON); //NOI18N
 
     this.stateless = args.length > 0;
 
