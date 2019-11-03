@@ -249,11 +249,6 @@ public class Main {
     try {
       final Object taskbar = Class.forName("java.awt.Taskbar").getMethod("getTaskbar").invoke(null);
       try {
-        taskbar.getClass().getMethod("setIconBadge", String.class).invoke(taskbar, APP_TITLE);
-      } catch (InvocationTargetException ex) {
-        LOGGER.warn("Can't set title through Taskbar: " + ex.getCause());
-      }
-      try {
         taskbar.getClass().getMethod("setIconImage", Image.class).invoke(taskbar, APP_ICON);
       } catch (InvocationTargetException ex) {
         LOGGER.warn("Can't set icon through Taskbar: " + ex.getCause());
