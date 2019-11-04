@@ -25,6 +25,10 @@ import javax.annotation.Nonnull;
 
 public class PlatformLinux extends PlatformDefault {
 
+  public PlatformLinux() {
+    super();
+  }
+
   private static void setGnomeAppTitle() {
     try {
       final Toolkit toolkit = Toolkit.getDefaultToolkit();

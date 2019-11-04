@@ -25,7 +25,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 
-class PlatformMacOSX implements Platform {
+public class PlatformMacOSX extends PlatformDefault {
 
   private final Application application;
 
@@ -33,6 +33,7 @@ class PlatformMacOSX implements Platform {
   private final Object macOsxAppListener;
 
   public PlatformMacOSX() {
+    super();
     this.application = Application.getApplication();
     Object macListener = null;
     try {
@@ -68,17 +69,9 @@ class PlatformMacOSX implements Platform {
   }
 
   @Override
-  public void init() {
-  }
-
-  @Override
   @Nonnull
   public String getDefaultLFClassName() {
     return UIManager.getSystemLookAndFeelClassName();
-  }
-
-  @Override
-  public void dispose() {
   }
 
   @Override

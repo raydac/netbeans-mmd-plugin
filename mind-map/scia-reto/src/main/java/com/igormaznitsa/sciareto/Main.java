@@ -414,6 +414,10 @@ public class Main {
           final int height = gd.getDisplayMode().getHeight();
 
           if (PlatformProvider.isErrorDetected()) {
+            final SplashScreen splashScr = splash.getAndSet(null);
+            if (splashScr != null) {
+              splashScr.dispose();
+            }
             JOptionPane.showMessageDialog(null, "Can't init the Platform dependent layer, the default one will be used instead.\n"
                     + "Check that you have installed Java correctly to avoid the warning", "Warning", JOptionPane.WARNING_MESSAGE);
           }

@@ -21,13 +21,12 @@ package com.igormaznitsa.sciareto.ui.platform;
 import javax.annotation.Nonnull;
 import javax.swing.UIManager;
 
-class PlatformWindows implements Platform {
+public class PlatformWindows extends PlatformDefault {
 
-  @Override
-  public void init() {
-    
+  public PlatformWindows(){
+    super();
   }
-
+  
   @Override
   public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event, @Nonnull final PlatformMenuAction listener) {
     return false;
@@ -37,11 +36,6 @@ class PlatformWindows implements Platform {
   @Nonnull
   public String getDefaultLFClassName() {
     return UIManager.getSystemLookAndFeelClassName();
-  }
-
-  @Override
-  public void dispose() {
-    
   }
 
   @Override
