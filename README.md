@@ -21,7 +21,7 @@ __1.4.7 (SNAPSHOT)__
 - ALL: improved color chooser
 - ALL: added support of "smart text paste" with splitting to topics (inactive by default)
 - SR:  embedded Java updated to 11.0.5
-- SR:  PlantUML updated to 1.2019.11
+- SR:  PlantUML updated to 1.2019.12
 - SR:  fixed autofocusing in topic edit dialogs [#56](https://github.com/raydac/netbeans-mmd-plugin/issues/56)
 
 __1.4.6 (26-may-2019)__
