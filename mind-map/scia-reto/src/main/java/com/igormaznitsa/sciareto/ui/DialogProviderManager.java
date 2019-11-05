@@ -100,6 +100,9 @@ public final class DialogProviderManager {
       for (final FileFilter f : fileFilters) {
         fileChooser.addChoosableFileFilter(f);
       }
+      if (fileFilters.length != 0) {
+        fileChooser.setFileFilter(fileFilters[0]);
+      }
       fileChooser.setMultiSelectionEnabled(false);
 
       File result = null;
@@ -129,6 +132,9 @@ public final class DialogProviderManager {
       fileChooser.setApproveButtonText(approveButtonText);
       for (final FileFilter f : fileFilters) {
         fileChooser.addChoosableFileFilter(f);
+      }
+      if (fileFilters.length != 0) {
+        fileChooser.setFileFilter(fileFilters[0]);
       }
       fileChooser.setAcceptAllFileFilterUsed(true);
       fileChooser.setMultiSelectionEnabled(false);

@@ -74,6 +74,10 @@ public final class DialogProviderManager {
         builder.addFileFilter(filter);
       }
 
+      if (fileFilters.length != 0) {
+        builder.setFileFilter(fileFilters[0]);
+      }
+
       return builder.showSaveDialog();
     }
 
@@ -87,6 +91,10 @@ public final class DialogProviderManager {
 
       for (final FileFilter filter : fileFilters) {
         builder.addFileFilter(filter);
+      }
+
+      if (fileFilters.length != 0) {
+        builder.setFileFilter(fileFilters[0]);
       }
 
       return builder.showOpenDialog();
