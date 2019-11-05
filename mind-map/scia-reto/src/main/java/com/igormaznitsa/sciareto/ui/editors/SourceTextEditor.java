@@ -237,7 +237,7 @@ public final class SourceTextEditor extends AbstractEditor {
     @Override
     @Nonnull
     public String getDescription() {
-      return "Source files";
+      return "Source text files";
     }
   };
 

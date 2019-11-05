@@ -1365,7 +1365,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
     final File file = DialogProviderManager.getInstance()
             .getDialogProvider()
-            .msgOpenFileDialog(null, "open-file", "Open file", null, true, new FileFilter[]{MMDEditor.MMD_FILE_FILTER, PlantUmlTextEditor.SRC_FILE_FILTER}, "Open");
+            .msgOpenFileDialog(null, "open-file", "Open file", null, true, new FileFilter[]{
+      MMDEditor.MMD_FILE_FILTER,
+      PlantUmlTextEditor.SRC_FILE_FILTER,
+      SourceTextEditor.SRC_FILE_FILTER
+    }, "Open");
     if (file != null) {
       if (openFileAsTab(file, -1)) {
         try {
