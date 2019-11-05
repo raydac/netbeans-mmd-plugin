@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -30,6 +30,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 public class MindMapDialogProvider implements DialogProvider {
+
   private final Project project;
 
   public MindMapDialogProvider(final Project project) {
@@ -74,12 +75,19 @@ public class MindMapDialogProvider implements DialogProvider {
 
   @Nullable
   @Override
-  public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean fileOnly, @Nullable final FileFilter fileFilter,
-                                @Nonnull final String approveButtonText) {
+  public File msgOpenFileDialog(@Nullable final Component parentComponent,
+          @Nonnull final String id,
+          @Nonnull final String title,
+          @Nullable final File defaultFolder,
+          final boolean fileOnly,
+          @Nullable @MustNotContainNull final FileFilter[] fileFilters,
+          @Nonnull final String approveButtonText) {
 
     final JFileChooser fileChooser = new JFileChooser(defaultFolder);
     fileChooser.setDialogTitle(title);
-    fileChooser.setFileFilter(fileFilter);
+    for (final FileFilter f : fileFilters) {
+      fileChooser.addChoosableFileFilter(f);
+    }
     fileChooser.setAcceptAllFileFilterUsed(true);
     fileChooser.setMultiSelectionEnabled(false);
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -92,11 +100,18 @@ public class MindMapDialogProvider implements DialogProvider {
   }
 
   @Override
-  public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean fileOnly, @Nullable final FileFilter fileFilter,
-                                @Nonnull final String approveButtonText) {
+  public File msgSaveFileDialog(@Nullable final Component parentComponent,
+          @Nonnull final String id,
+          @Nonnull final String title,
+          @Nullable final File defaultFolder,
+          final boolean fileOnly,
+          @Nullable @MustNotContainNull final FileFilter[] fileFilters,
+          @Nonnull final String approveButtonText) {
     final JFileChooser fileChooser = new JFileChooser(defaultFolder);
     fileChooser.setDialogTitle(title);
-    fileChooser.setFileFilter(fileFilter);
+    for (final FileFilter f : fileFilters) {
+      fileChooser.addChoosableFileFilter(f);
+    }
     fileChooser.setAcceptAllFileFilterUsed(true);
     fileChooser.setMultiSelectionEnabled(false);
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

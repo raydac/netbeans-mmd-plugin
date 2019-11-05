@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.ideamindmap.settings;
 
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
@@ -57,6 +56,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 
 public class MindMapSettingsPanel {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsPanel.class);
   private static File lastExportedSettingsFile;
   private static File lastImportedSettingsFile;
@@ -139,7 +139,7 @@ public class MindMapSettingsPanel {
     buttonImportSettings.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final File file = controller.getDialogProvider().msgOpenFileDialog(null, "importSettings", "Import settings", lastImportedSettingsFile, true, new PropertiesFileFilter(), "Open");
+        final File file = controller.getDialogProvider().msgOpenFileDialog(null, "importSettings", "Import settings", lastImportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
         if (file != null) {
           lastImportedSettingsFile = file;
           try {
@@ -158,7 +158,7 @@ public class MindMapSettingsPanel {
     buttonExportSettings.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        File file = controller.getDialogProvider().msgSaveFileDialog(null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new PropertiesFileFilter(), "Save");
+        File file = controller.getDialogProvider().msgSaveFileDialog(null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
         if (file != null) {
           lastExportedSettingsFile = file;
           if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
@@ -375,9 +375,9 @@ public class MindMapSettingsPanel {
     result.setFont(this.theFont);
 
     final int scaleModifier = (this.checkBoxScalingModifierALT.isSelected() ? KeyEvent.ALT_MASK : 0)
-        | (this.checkBoxScalingModifierCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0)
-        | (this.checkBoxScalingModifierSHFT.isSelected() ? KeyEvent.SHIFT_MASK : 0)
-        | (this.checkBoxScalingModifierMETA.isSelected() ? KeyEvent.META_MASK : 0);
+            | (this.checkBoxScalingModifierCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0)
+            | (this.checkBoxScalingModifierSHFT.isSelected() ? KeyEvent.SHIFT_MASK : 0)
+            | (this.checkBoxScalingModifierMETA.isSelected() ? KeyEvent.META_MASK : 0);
 
     result.setScaleModifiers(scaleModifier);
 
@@ -408,6 +408,7 @@ public class MindMapSettingsPanel {
   }
 
   private static class DialogComponent extends DialogWrapper {
+
     private final JComponent component;
 
     public DialogComponent(final Component parent, final String title, final Component component) {

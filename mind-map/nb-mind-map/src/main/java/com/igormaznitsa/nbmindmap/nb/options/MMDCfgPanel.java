@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.nbmindmap.nb.options;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -1172,8 +1171,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
     editor.setValue(this.config.getFont());
 
     final DialogDescriptor descriptor = new DialogDescriptor(
-        editor.getCustomEditor(),
-        "Mind map font"
+            editor.getCustomEditor(),
+            "Mind map font"
     );
 
     DialogDisplayer.getDefault().createDialog(descriptor).setVisible(true);
@@ -1277,7 +1276,8 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonResetSettingsActionPerformed
 
   private void buttonExportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportSettingsActionPerformed
-    File file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new PropertiesFileFilter(), "Save");
+    File file = DialogProviderManager.getInstance().getDialogProvider()
+            .msgSaveFileDialog(null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
     if (file != null) {
       lastExportedSettingsFile = file;
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
@@ -1307,7 +1307,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonExportSettingsActionPerformed
 
   private void buttonImportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportSettingsActionPerformed
-    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog(null, "importSettings", "Import settings", lastImportedSettingsFile, true, new PropertiesFileFilter(), "Open");
+    final File file = DialogProviderManager.getInstance()
+            .getDialogProvider()
+            .msgOpenFileDialog(null, "importSettings", "Import settings", lastImportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
     if (file != null) {
       lastImportedSettingsFile = file;
       try {
@@ -1415,7 +1417,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
       this.comboBoxRenderQuality.setSelectedItem(cfg.getRenderQuality());
       this.checkBoxSmartTextPaste.setSelected(cfg.isSmartTextPaste());
-      
+
       this.mapKeyShortCuts.clear();
       this.mapKeyShortCuts.putAll(cfg.getKeyShortcutMap());
 
@@ -1469,7 +1471,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
       cfg.setOtherLevelHorizontalInset(this.slider2ndLevelHorzGap.getValue());
       cfg.setOtherLevelVerticalInset(this.slider2ndLevelVertGap.getValue());
       cfg.setSmartTextPaste(this.checkBoxSmartTextPaste.isSelected());
-      
+
       cfg.setRenderQuality((RenderQuality) this.comboBoxRenderQuality.getSelectedItem());
 
       for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
@@ -1506,9 +1508,9 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
   private int getScalingModifiers() {
     return (this.checkBoxScalingALT.isSelected() ? KeyEvent.ALT_MASK : 0)
-        | (this.checkBoxScalingCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0)
-        | (this.checkBoxScalingMETA.isSelected() ? KeyEvent.ALT_MASK : 0)
-        | (this.checkBoxScalingSHIFT.isSelected() ? KeyEvent.SHIFT_MASK : 0);
+            | (this.checkBoxScalingCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0)
+            | (this.checkBoxScalingMETA.isSelected() ? KeyEvent.ALT_MASK : 0)
+            | (this.checkBoxScalingSHIFT.isSelected() ? KeyEvent.SHIFT_MASK : 0);
   }
 
   boolean valid() {

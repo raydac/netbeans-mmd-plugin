@@ -187,7 +187,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     @Override
     @Nonnull
     public String getDescription() {
-      return "Source files";
+      return "PlantUML files (*.puml, *.pu, *.plantuml)";
     }
   };
   private static final Logger LOGGER = LoggerFactory.getLogger(PlantUmlTextEditor.class);
@@ -235,7 +235,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
 
     final SyntaxScheme scheme = this.editor.getSyntaxScheme();
     final Font editorFont = this.editor.getFont();
-    
+
     if (editorFont != null) {
       scheme.getStyle(Token.RESERVED_WORD).font = editorFont.deriveFont(Font.BOLD);
       scheme.getStyle(Token.IDENTIFIER).font = editorFont.deriveFont(Font.ITALIC);
@@ -818,7 +818,7 @@ public final class PlantUmlTextEditor extends AbstractEditor {
       scheme.getStyle(Token.RESERVED_WORD).font = editorFont.deriveFont(Font.BOLD);
       scheme.getStyle(Token.IDENTIFIER).font = editorFont.deriveFont(Font.ITALIC);
     }
-    
+
     this.editor.repaint();
   }
 
@@ -848,7 +848,9 @@ public final class PlantUmlTextEditor extends AbstractEditor {
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance()
+                .getDialogProvider()
+                .msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, new FileFilter[]{getFileFilter()}, "Save");
         if (file == null) {
           return result;
         }

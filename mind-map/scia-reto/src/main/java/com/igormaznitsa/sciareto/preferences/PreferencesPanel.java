@@ -1370,7 +1370,9 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonFontForEditorActionPerformed
 
   private void buttonExportToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportToFileActionPerformed
-    File file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(this, "exportProperties", "Export settings", null, true, new PropertiesFileFilter(), "Save");
+    File file = DialogProviderManager.getInstance()
+            .getDialogProvider()
+            .msgSaveFileDialog(this, "exportProperties", "Export settings", null, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
     if (file != null) {
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) { //NOI18N
         final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel(this, "Add extension", "Add '.properties' extension?");
@@ -1399,7 +1401,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonExportToFileActionPerformed
 
   private void buttonImportFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportFromFileActionPerformed
-    final File file = DialogProviderManager.getInstance().getDialogProvider().msgOpenFileDialog(this, "importProperties", "Import settings", null, true, new PropertiesFileFilter(), "Open");
+    final File file = DialogProviderManager
+            .getInstance()
+            .getDialogProvider()
+            .msgOpenFileDialog(this, "importProperties", "Import settings", null, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
     if (file != null) {
       try {
         load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file, "UTF-8")));
@@ -1451,7 +1456,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonExtensionsOpenInSystemActionPerformed
 
   private void checkBoxSmartTextPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxSmartTextPasteActionPerformed
-    if (this.changeNotificationAllowed){
+    if (this.changeNotificationAllowed) {
       this.changed = true;
     }
   }//GEN-LAST:event_checkBoxSmartTextPasteActionPerformed
@@ -1522,7 +1527,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.slider2ndLevelVertGap.setValue(config.getOtherLevelVerticalInset());
 
       this.checkBoxSmartTextPaste.setSelected(config.isSmartTextPaste());
-      
+
       this.mapKeyShortCuts.clear();
       this.mapKeyShortCuts.putAll(config.getKeyShortcutMap());
 

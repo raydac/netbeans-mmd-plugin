@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -106,7 +105,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
             final AtomicInteger selectedItem = new AtomicInteger(-1);
 
-            if (dialogProvider.msgOkCancel(null, BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[] {BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
+            if (dialogProvider.msgOkCancel(null, BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[]{BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
               lastSelectedImportIndex = selectedItem.get();
 
               if (selectedItem.get() == 0) {
@@ -128,7 +127,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
           }
 
           if (loadFromFile) {
-            final File selected = dialogProvider.msgOpenFileDialog(null, "select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, IMAGE_FILE_FILTER, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
+            final File selected = dialogProvider.msgOpenFileDialog(null, "select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, new FileFilter[]{IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
             if (selected != null) {
               lastSelectedFile = selected;
               try {

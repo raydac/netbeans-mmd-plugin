@@ -117,27 +117,12 @@ public class Main {
 
   private static final long STATISTICS_DELAY = 7L * 24L * 3600L * 1000L;
 
-  private static final class FakeFileFilter extends FileFilter {
-
-    @Override
-    public boolean accept(@Nonnull final File f) {
-      return false;
-    }
-
-    @Override
-    @Nonnull
-    public String getDescription() {
-      return ""; //NOI18N
-    }
-
-  }
-
   private static final class LocalMMDImporter extends AbstractImporter {
 
     @Override
     @Nullable
     public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-      final File fileToImport = dialogProvider.msgOpenFileDialog(null, "", "", null, true, new FakeFileFilter(), ""); //NOI18N
+      final File fileToImport = dialogProvider.msgOpenFileDialog(null, "", "", null, true, new FileFilter[0], ""); //NOI18N
       return new MindMap(null, new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
     }
 
@@ -658,12 +643,12 @@ public class Main {
             }
 
             @Override
-            public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
+            public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull @MustNotContainNull final FileFilter[] fileFilter, @Nonnull final String approveButtonText) {
               return to;
             }
 
             @Override
-            public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull final FileFilter fileFilter, @Nonnull final String approveButtonText) {
+            public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull @MustNotContainNull final FileFilter[] fileFilter, @Nonnull final String approveButtonText) {
               return from;
             }
           };

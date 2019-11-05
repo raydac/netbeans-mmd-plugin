@@ -298,7 +298,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(Main.getApplicationFrame(), "mmd-editor-document", "Save Mind Map", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance()
+                .getDialogProvider()
+                .msgSaveFileDialog(Main.getApplicationFrame(), "mmd-editor-document", "Save Mind Map", null, true, new FileFilter[]{getFileFilter()}, "Save");
         if (file == null) {
           return result;
         }
@@ -467,33 +469,33 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   @Override
   public void onEnsureVisibilityOfTopic(@Nonnull final MindMapPanel source, @Nonnull final Topic topic) {
     SwingUtilities.invokeLater(() -> {
-        source.doLayout();
+      source.doLayout();
 
-        final AbstractElement element = (AbstractElement) topic.getPayload();
-        if (element == null) {
-            return;
-        }
+      final AbstractElement element = (AbstractElement) topic.getPayload();
+      if (element == null) {
+        return;
+      }
 
-        final Rectangle2D orig = element.getBounds();
-        final int GAP = 30;
+      final Rectangle2D orig = element.getBounds();
+      final int GAP = 30;
 
-        final Rectangle bounds = orig.getBounds();
-        bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
-        bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
+      final Rectangle bounds = orig.getBounds();
+      bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
+      bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
 
-        final JViewport viewport = scrollPane.getViewport();
-        final Rectangle viewportRectangle = viewport.getViewRect();
+      final JViewport viewport = scrollPane.getViewport();
+      final Rectangle viewportRectangle = viewport.getViewRect();
 
-        if (viewportRectangle.contains(bounds)) {
-            return;
-        }
+      if (viewportRectangle.contains(bounds)) {
+        return;
+      }
 
-        bounds.setLocation(bounds.x - viewportRectangle.x, bounds.y - viewportRectangle.y);
+      bounds.setLocation(bounds.x - viewportRectangle.x, bounds.y - viewportRectangle.y);
 
-        scrollPane.revalidate();
-        SwingUtilities.invokeLater(() -> {
-            viewport.scrollRectToVisible(bounds);
-        });
+      scrollPane.revalidate();
+      SwingUtilities.invokeLater(() -> {
+        viewport.scrollRectToVisible(bounds);
+      });
     });
   }
 
@@ -548,18 +550,18 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
           Main.getApplicationFrame().endFullScreenIfActive();
           final MMapURI uri = (MMapURI) extra.getValue();
           final File theFile = uri.asFile(getProjectFolder());
-          
-            if (theFile.isFile()) {
-                if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
-                    UiUtils.openInSystemViewer(theFile);
-                } else if (theFile.isDirectory()) {
-                    this.context.openProject(theFile, false);
-                } else if (!this.context.openFileAsTab(theFile, FilePathWithLine.strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null)))) {
-                    UiUtils.openInSystemViewer(theFile);
-                }
-            } else {
-                DialogProviderManager.getInstance().getDialogProvider().msgWarn(Main.getApplicationFrame(), String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), theFile.toString()));
+
+          if (theFile.isFile()) {
+            if (Boolean.parseBoolean(uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
+              UiUtils.openInSystemViewer(theFile);
+            } else if (theFile.isDirectory()) {
+              this.context.openProject(theFile, false);
+            } else if (!this.context.openFileAsTab(theFile, FilePathWithLine.strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null)))) {
+              UiUtils.openInSystemViewer(theFile);
             }
+          } else {
+            DialogProviderManager.getInstance().getDialogProvider().msgWarn(Main.getApplicationFrame(), String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), theFile.toString()));
+          }
         }
         break;
         case LINK: {
@@ -713,10 +715,10 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       addURItoElement(decodedLink, element);
     } else if (detectedNote != null) {
       if (DnDUtils.isUriString(detectedNote)) {
-        try{
+        try {
           final URI uri = new URI(detectedNote);
           addURItoElement(uri, element);
-        }catch(URISyntaxException exx){
+        } catch (URISyntaxException exx) {
           addNoteToElement(detectedNote, element);
         }
       } else {
@@ -826,10 +828,10 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     if (this.customProcessors == null) {
       this.customProcessors = new HashMap<>();
       this.customProcessors.put(ExtraNotePlugin.class, (CustomJob) (@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) -> {
-          if (topic != null) {
-              editTextForTopic(topic);
-              panel.requestFocus();
-          }
+        if (topic != null) {
+          editTextForTopic(topic);
+          panel.requestFocus();
+        }
       });
       this.customProcessors.put(ExtraFilePlugin.class, new CustomJob() {
         @Override
@@ -839,15 +841,15 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         }
       });
       this.customProcessors.put(ExtraURIPlugin.class, (CustomJob) (@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) -> {
-          editLinkForTopic(topic);
-          panel.requestFocus();
+        editLinkForTopic(topic);
+        panel.requestFocus();
       });
       this.customProcessors.put(ExtraJumpPlugin.class, (CustomJob) (@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) -> {
-          editTopicLinkForTopic(topic);
-          panel.requestFocus();
+        editTopicLinkForTopic(topic);
+        panel.requestFocus();
       });
       this.customProcessors.put(ChangeColorPlugin.class, (CustomJob) (@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) -> {
-          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
+        processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
       });
     }
     return this.customProcessors;
@@ -1076,7 +1078,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
       source.revalidate();
       source.repaint();
-      
+
       source.requestFocus();
       onMindMapModelChanged(source, true);
     }
@@ -1216,8 +1218,8 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   @Override
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    return this.mindMapPanel.hasSelectedTopics() 
-            && (Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR) 
+    return this.mindMapPanel.hasSelectedTopics()
+            && (Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR)
             || Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor));
   }
 

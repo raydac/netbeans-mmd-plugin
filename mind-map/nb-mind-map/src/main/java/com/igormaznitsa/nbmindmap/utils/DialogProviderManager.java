@@ -23,9 +23,8 @@ import javax.swing.filechooser.FileFilter;
 import org.openide.filesystems.FileChooserBuilder;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 
-public final class DialogProviderManager  {
-  
-  
+public final class DialogProviderManager {
+
   private static final class DialogProviderImpl implements DialogProvider {
 
     @Override
@@ -64,17 +63,37 @@ public final class DialogProviderManager  {
     }
 
     @Override
-    public File msgSaveFileDialog(final Component parentComponent, final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
-      return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showSaveDialog();
+    public File msgSaveFileDialog(final Component parentComponent, final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter[] fileFilters, final String approveButtonText) {
+      final FileChooserBuilder builder = new FileChooserBuilder(id)
+              .setTitle(title)
+              .setDefaultWorkingDirectory(defaultFolder)
+              .setFilesOnly(fileOnly)
+              .setApproveText(approveButtonText);
+
+      for (final FileFilter filter : fileFilters) {
+        builder.addFileFilter(filter);
+      }
+
+      return builder.showSaveDialog();
     }
 
     @Override
-    public File msgOpenFileDialog(final Component parentComponent, final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter fileFilter, final String approveButtonText) {
-      return new FileChooserBuilder(id).setTitle(title).setDefaultWorkingDirectory(defaultFolder).setFilesOnly(fileOnly).setFileFilter(fileFilter).setApproveText(approveButtonText).showOpenDialog();
+    public File msgOpenFileDialog(final Component parentComponent, final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter[] fileFilters, final String approveButtonText) {
+      final FileChooserBuilder builder = new FileChooserBuilder(id)
+              .setTitle(title)
+              .setDefaultWorkingDirectory(defaultFolder)
+              .setFilesOnly(fileOnly)
+              .setApproveText(approveButtonText);
+
+      for (final FileFilter filter : fileFilters) {
+        builder.addFileFilter(filter);
+      }
+
+      return builder.showOpenDialog();
     }
-    
+
   }
-  
+
   private static final DialogProviderManager INSTANCE = new DialogProviderManager();
   private final DialogProvider PROVIDER_INSTANCE = new DialogProviderImpl();
 
@@ -87,10 +106,9 @@ public final class DialogProviderManager  {
   public DialogProvider getDialogProvider() {
     return PROVIDER_INSTANCE;
   }
-  
-  
-  private DialogProviderManager(){
-    
+
+  private DialogProviderManager() {
+
   }
-  
+
 }

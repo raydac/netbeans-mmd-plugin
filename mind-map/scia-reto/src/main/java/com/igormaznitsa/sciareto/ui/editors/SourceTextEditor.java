@@ -96,7 +96,7 @@ public final class SourceTextEditor extends AbstractEditor {
   private final JLabel labelWordWrap;
 
   private enum Wrap {
-    NO_WRAP  (" No wrap "),
+    NO_WRAP(" No wrap "),
     LINE_WRAP("Line wrap");
 
     private final String text;
@@ -106,7 +106,7 @@ public final class SourceTextEditor extends AbstractEditor {
     }
 
     @Nonnull
-    String getText(){
+    String getText() {
       return this.text;
     }
   }
@@ -241,20 +241,22 @@ public final class SourceTextEditor extends AbstractEditor {
     }
   };
 
-  private void updateWrapState(){
+  private void updateWrapState() {
     this.labelWordWrap.setText(this.currentWrap.getText());
     this.labelWordWrap.revalidate();
     this.labelWordWrap.repaint();
 
-    switch(this.currentWrap) {
+    switch (this.currentWrap) {
       case NO_WRAP: {
         this.editor.setLineWrap(false);
         this.editor.setWrapStyleWord(false);
-      }break;
+      }
+      break;
       case LINE_WRAP: {
         this.editor.setLineWrap(true);
         this.editor.setWrapStyleWord(true);
-      }break;
+      }
+      break;
     }
     this.editor.revalidate();
     this.editor.repaint();
@@ -326,13 +328,17 @@ public final class SourceTextEditor extends AbstractEditor {
     this.labelWordWrap = new JLabel();
     this.currentWrap = Wrap.NO_WRAP;
     this.labelWordWrap.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    this.labelWordWrap.addMouseListener(new MouseAdapter(){
+    this.labelWordWrap.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(@Nonnull final MouseEvent e) {
         if (!e.isConsumed() && !e.isPopupTrigger()) {
-          switch(currentWrap){
-            case NO_WRAP: currentWrap = Wrap.LINE_WRAP;break;
-            case LINE_WRAP: currentWrap = Wrap.NO_WRAP;break;
+          switch (currentWrap) {
+            case NO_WRAP:
+              currentWrap = Wrap.LINE_WRAP;
+              break;
+            case LINE_WRAP:
+              currentWrap = Wrap.NO_WRAP;
+              break;
           }
           updateWrapState();
         }
@@ -508,7 +514,9 @@ public final class SourceTextEditor extends AbstractEditor {
     if (this.title.isChanged()) {
       File file = this.title.getAssociatedFile();
       if (file == null) {
-        file = DialogProviderManager.getInstance().getDialogProvider().msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, getFileFilter(), "Save");
+        file = DialogProviderManager.getInstance()
+                .getDialogProvider()
+                .msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, new FileFilter[]{getFileFilter()}, "Save");
         if (file == null) {
           return result;
         }
