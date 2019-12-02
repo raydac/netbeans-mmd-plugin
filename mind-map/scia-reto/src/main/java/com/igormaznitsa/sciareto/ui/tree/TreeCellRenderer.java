@@ -47,6 +47,7 @@ public final class TreeCellRenderer extends DefaultTreeCellRenderer {
   public static final Icon DEFAULT_FOLDER_OPENED = new ImageIcon(UiUtils.loadIcon("folderOpen16.gif")); //NOI18N
   public static final Icon DEFAULT_FILE = new ImageIcon(UiUtils.loadIcon("document_empty16.png")); //NOI18N
   public static final Icon PLANTUML_FILE = new ImageIcon(UiUtils.loadIcon("document_plantuml16.png")); //NOI18N
+  public static final Icon KSTPL_FILE = new ImageIcon(UiUtils.loadIcon("document_kstpl16.png")); //NOI18N
 
   static {
     ICON_IMAGE_RO = new ImageIcon(UiUtils.makeBadgedRightTop(((ImageIcon) ICON_IMAGE).getImage(), READONLY_BADGE));
@@ -81,6 +82,9 @@ public final class TreeCellRenderer extends DefaultTreeCellRenderer {
 
   private Icon LEAF_PLANTUML;
   private Icon LEAF_PLANTUML_RO;
+
+  private Icon LEAF_KSTPL;
+  private Icon LEAF_KSTPL_RO;
 
   public TreeCellRenderer() {
     super();
@@ -136,6 +140,11 @@ public final class TreeCellRenderer extends DefaultTreeCellRenderer {
       LEAF_PLANTUML = new ImageIcon(UiUtils.iconToImage(tree, PLANTUML_FILE)); //NOI18N
       LEAF_PLANTUML_RO = new ImageIcon(UiUtils.makeBadgedRightTop(UiUtils.iconToImage(tree, PLANTUML_FILE), READONLY_BADGE));
     }
+
+    if (LEAF_KSTPL == null) {
+      LEAF_KSTPL = new ImageIcon(UiUtils.iconToImage(tree, KSTPL_FILE)); //NOI18N
+      LEAF_KSTPL_RO = new ImageIcon(UiUtils.makeBadgedRightTop(UiUtils.iconToImage(tree, KSTPL_FILE), READONLY_BADGE));
+    }
   }
 
   @Override
@@ -162,6 +171,8 @@ public final class TreeCellRenderer extends DefaultTreeCellRenderer {
           final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
           if (Utils.isPlantUmlFileExtension(ext)) {
             result.setIcon(node.isReadOnly() ? LEAF_PLANTUML_RO : LEAF_PLANTUML);
+          } else if (ext.equals("kstpl")) { //NOI18N
+            result.setIcon(node.isReadOnly() ? LEAF_KSTPL_RO : LEAF_KSTPL);
           } else if (ext.equals("mmd")) { //NOI18N
             result.setIcon(node.isReadOnly() ? LEAF_MINDMAP_RO : LEAF_MINDMAP);
           } else if (PictureViewer.SUPPORTED_FORMATS.contains(ext)) {

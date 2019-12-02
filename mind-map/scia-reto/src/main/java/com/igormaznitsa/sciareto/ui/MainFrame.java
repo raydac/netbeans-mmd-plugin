@@ -36,7 +36,9 @@ import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
+import com.igormaznitsa.sciareto.ui.editors.AbstractPlUmlEditor;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
+import com.igormaznitsa.sciareto.ui.editors.KsTplTextEditor;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlTextEditor;
@@ -563,14 +565,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
       for (int i = 0; i < this.tabPane.getTabCount(); i++) {
         final TabTitle tab = (TabTitle) this.tabPane.getTabComponentAt(i);
-        if (tab.getType() == EditorContentType.PLANTUML) {
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              ((PlantUmlTextEditor) tab.getProvider()).hideTextPanel();
-            }
+        if (tab.getType() == EditorContentType.PLANTUML || tab.getType() == EditorContentType.KSTPL) {
+          SwingUtilities.invokeLater(() -> {
+            ((AbstractPlUmlEditor) tab.getProvider()).hideTextPanel();
           });
-        }
+        } 
       }
     } catch (IOException ex) {
       LOGGER.error("Can't restore state", ex); //NOI18N
@@ -644,6 +643,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             result = true;
           } catch (IOException ex) {
             LOGGER.error("Can't load file as plant uml text", ex); //NOI18N
+          } finally {
+            processTabChange();
+          }
+        } else if (KsTplTextEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
+          try {
+            final KsTplTextEditor panel = new KsTplTextEditor(this, file);
+            this.tabPane.createTab(panel);
+            result = true;
+          } catch (IOException ex) {
+            LOGGER.error("Can't load file as KStream topology text", ex); //NOI18N
           } finally {
             processTabChange();
           }
@@ -1368,6 +1377,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             .msgOpenFileDialog(null, "open-file", "Open file", null, true, new FileFilter[]{
       MMDEditor.MMD_FILE_FILTER,
       PlantUmlTextEditor.SRC_FILE_FILTER,
+      KsTplTextEditor.SRC_FILE_FILTER,
       SourceTextEditor.SRC_FILE_FILTER
     }, "Open");
     if (file != null) {

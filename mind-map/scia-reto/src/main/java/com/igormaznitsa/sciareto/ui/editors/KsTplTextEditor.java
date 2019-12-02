@@ -19,27 +19,22 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.ui.UiUtils;
-import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 
-public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
+public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
-  public static final Set<String> SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList("pu", "puml", "plantuml")));
-  private static final String MIME = "text/plantuml";
-  
+  public static final Set<String> SUPPORTED_EXTENSIONS = Collections.singleton("kstpl");
+  private static final String MIME = "text/kstpl";
+
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -53,36 +48,29 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
     @Override
     @Nonnull
     public String getDescription() {
-      return "PlantUML files (*.puml, *.pu, *.plantuml)";
+      return "KStream topology files (*.kstpl)";
     }
   };
 
-  @Override
-  protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel, @Nonnull final GridBagConstraints constraints) {
-    menuPanel.add(makeLinkLabel("PlantUML", () -> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), constraints);
-    menuPanel.add(makeLinkLabel("AsciiMath", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), constraints);
-//    this.menu.add(makeLinkLabel("LatexMath", "https://en.wikibooks.org/wiki/LaTeX/Mathematics", "Open LatexMath manual", ICON_INFO), gbdata);
+  public KsTplTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
+    super(context, file);
   }
-  
+
   @Override
-  protected void doPutMapping(@Nonnull final AbstractTokenMakerFactory f){
-    f.putMapping(MIME, "com.igormaznitsa.sciareto.ui.editors.PlantUmlTokenMaker");
+  protected void doPutMapping(@Nonnull final AbstractTokenMakerFactory f) {
+    f.putMapping(MIME, "com.igormaznitsa.sciareto.ui.editors.KsTplTokenMaker");
   }
 
   @Override
   @Nonnull
-  protected String getSyntaxEditingStyle(){
+  protected String getSyntaxEditingStyle() {
     return MIME;
   }
-  
-  public PlantUmlTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
-    super(context, file);
- }
 
   @Nonnull
   @Override
   public String getDefaultExtension() {
-    return "puml";
+    return "kstpl";
   }
 
   @Override
@@ -90,6 +78,4 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
   public FileFilter getFileFilter() {
     return SRC_FILE_FILTER;
   }
-
-
 }

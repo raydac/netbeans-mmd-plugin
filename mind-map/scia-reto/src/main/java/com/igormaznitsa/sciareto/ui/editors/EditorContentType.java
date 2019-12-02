@@ -23,5 +23,6 @@ public enum EditorContentType {
   SOURCES,
   TEXT,
   PLANTUML,
+  KSTPL,
   IMAGE
 }

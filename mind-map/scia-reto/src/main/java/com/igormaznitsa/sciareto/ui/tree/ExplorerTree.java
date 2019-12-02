@@ -334,6 +334,15 @@ public final class ExplorerTree extends JScrollPane {
       });
       makeNew.add(item);
 
+      item = new JMenuItem("KStream topology");
+      item.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@Nonnull final ActionEvent e) {
+          addChildTo(node, "kstpl"); //NOI18N
+        }
+      });
+      makeNew.add(item);
+
       result.add(makeNew);
     }
 
@@ -679,6 +688,18 @@ public final class ExplorerTree extends JScrollPane {
               } catch (IOException ex) {
                 LOGGER.error("Can't create PUML file", ex); //NOI18N
                 DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create puml file '" + fileName + "'!");
+              }
+            }
+            break;
+            case "kstpl": { //NOI18N
+              final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"), "\n");
+              final String text = "topology:" + nextLine;
+              try {
+                FileUtils.write(file, text, "UTF-8"); //NOI18N
+                ok = true;
+              } catch (IOException ex) {
+                LOGGER.error("Can't create KSTPL file", ex); //NOI18N
+                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create KSTPL file '" + fileName + "'!");
               }
             }
             break;
