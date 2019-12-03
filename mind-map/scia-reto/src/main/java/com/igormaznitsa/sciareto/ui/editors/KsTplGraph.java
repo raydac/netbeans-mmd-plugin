@@ -105,6 +105,7 @@ public class KsTplGraph {
   }
 
   @Override
+  @Nonnull
   public String toString() {
     final StringBuilder builder = new StringBuilder();
     this.topologies.forEach(x -> builder.append(x).append("\n"));
