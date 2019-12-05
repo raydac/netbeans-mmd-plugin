@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class KsTplGraph {
+public class KStreamsTopologyDescriptionParser {
 
   private static final Pattern MAIN_PATTERN = Pattern.compile("^(?:(<-+|-+>)|(?:([\\w\\-\\s]+?):))(.*)$", Pattern.CASE_INSENSITIVE);
   private static final Pattern ID_TAIL_PATTERN = Pattern.compile("^\\s*([\\S]+)(?:\\s+(.+?))?\\s*$");
@@ -24,7 +24,7 @@ public class KsTplGraph {
   private static final String NONE = "none";
   private final List<Topologies> topologies = new ArrayList<>();
 
-  public KsTplGraph(@Nonnull final String script) {
+  public KStreamsTopologyDescriptionParser(@Nonnull final String script) {
     final List<ParsedItem> foundItems = new ArrayList<>();
     for (final String s : script.split("\\n")) {
       String lineText = s.trim();
@@ -217,7 +217,7 @@ public class KsTplGraph {
     }
   }
 
-  private static final class SubTopology extends TopologyElement {
+  public static final class SubTopology extends TopologyElement {
 
     final Map<String, TopologyElement> children = new TreeMap<>();
 
@@ -250,7 +250,7 @@ public class KsTplGraph {
     }
   }
 
-  private static final class Topologies {
+  public static final class Topologies {
 
     final String comment;
     final List<SubTopology> subTopologies = new ArrayList<>();

@@ -41,7 +41,7 @@ import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.junit.Test;
 
-public class KsTplGraphTest {
+public class KStreamsTopologyDescriptionParserTest {
 
   @Test
   public void testFromTopology() {
@@ -55,7 +55,7 @@ public class KsTplGraphTest {
     final String src = topology.describe().toString();
     System.out.println(src);
 
-    final KsTplGraph graph = new KsTplGraph(src);
+    final KStreamsTopologyDescriptionParser graph = new KStreamsTopologyDescriptionParser(src);
     System.out.println(graph);
 
     assertEquals(5, graph.size());
@@ -75,7 +75,7 @@ public class KsTplGraphTest {
         + "    Sink: KSTREAM-SINK-0000000002 (topic: c)\n"
         + "      <-- KSTREAM-MERGE-0000000001";
 
-    assertEquals(3, new KsTplGraph(text).size());
+    assertEquals(3, new KStreamsTopologyDescriptionParser(text).size());
   }
 
   @Test
@@ -95,7 +95,7 @@ public class KsTplGraphTest {
         + "    Sink: KSTREAM-SINK-0000000003 (topic: c)\n"
         + "      <-- KSTREAM-MERGE-0000000002";
 
-    assertEquals(4, new KsTplGraph(text).size());
+    assertEquals(4, new KStreamsTopologyDescriptionParser(text).size());
   }
 
   @Test
@@ -109,17 +109,17 @@ public class KsTplGraphTest {
         + "    Sink: to-the-world (topic: output-topic)\n"
         + "      <-- sensor-a, sensor-b";
 
-    final KsTplGraph graph = new KsTplGraph(text);
+    final KStreamsTopologyDescriptionParser graph = new KStreamsTopologyDescriptionParser(text);
 
     assertEquals(3, graph.size());
-    Optional<KsTplGraph.TopologyElement> source = graph.findForId("sensor-a");
+    Optional<KStreamsTopologyDescriptionParser.TopologyElement> source = graph.findForId("sensor-a");
     assertTrue(source.isPresent());
     assertEquals(1, source.get().dataItems.get("topics").size());
     assertTrue(source.get().from.isEmpty());
     assertEquals(1, source.get().to.size());
     assertEquals("to-the-world", source.get().to.get(0).id);
 
-    Optional<KsTplGraph.TopologyElement> sink = graph.findForId("to-the-world");
+    Optional<KStreamsTopologyDescriptionParser.TopologyElement> sink = graph.findForId("to-the-world");
     assertTrue(sink.isPresent());
     assertEquals(2, sink.get().from.size());
   }
@@ -137,7 +137,7 @@ public class KsTplGraphTest {
     final String text = topology.describe().toString();
     System.out.println(text);
 
-    final KsTplGraph parsed = new KsTplGraph(text);
+    final KStreamsTopologyDescriptionParser parsed = new KStreamsTopologyDescriptionParser(text);
     assertEquals(16, parsed.size());
     System.out.println(parsed.toString());
   }
@@ -167,7 +167,7 @@ public class KsTplGraphTest {
     final String text = topology.describe().toString();
     System.out.println(text);
 
-    final KsTplGraph parsed = new KsTplGraph(text);
+    final KStreamsTopologyDescriptionParser parsed = new KStreamsTopologyDescriptionParser(text);
     assertEquals(6, parsed.size());
   }
 
@@ -202,7 +202,7 @@ public class KsTplGraphTest {
         + "\t<-- KTABLE-TOSTREAM-0000000007\n"
         + "\t\t\t";
 
-    final KsTplGraph graph = new KsTplGraph(text);
+    final KStreamsTopologyDescriptionParser graph = new KStreamsTopologyDescriptionParser(text);
     System.out.println(graph);
     assertEquals(9, graph.size());
   }
