@@ -1,8 +1,8 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -66,7 +66,7 @@ public class KStreamsTopologyDescriptionParser {
         throw new IllegalArgumentException("Can't parse line: " + lineText);
       }
     }
-    final Map<String, TopologyElement> topologyElementMaps = new HashMap<>();
+    final Map<String, TopologyElement> topologyElementMaps = new TreeMap<>();
     for (final ParsedItem i : foundItems) {
       final String lcName = i.name.toLowerCase(Locale.ENGLISH);
       final TopologyElement newElement;
@@ -124,6 +124,12 @@ public class KStreamsTopologyDescriptionParser {
     return Optional.ofNullable(result);
   }
 
+  @Nonnull
+  @MustNotContainNull
+  public List<Topologies> getTopologies() {
+    return this.topologies;
+  }
+
   private static final class ParsedItem {
 
     final String name;
@@ -143,13 +149,13 @@ public class KStreamsTopologyDescriptionParser {
 
   public static class TopologyElement {
 
-    final String type;
-    final String id;
-    final String comment;
-    final Map<String, List<String>> dataItems = new HashMap<>();
-    final List<TopologyElement> to = new ArrayList<>();
-    final List<TopologyElement> from = new ArrayList<>();
-    final ParsedItem parsedItem;
+    public final String type;
+    public final String id;
+    public final String comment;
+    public final Map<String, List<String>> dataItems = new TreeMap<>();
+    public final List<TopologyElement> to = new ArrayList<>();
+    public final List<TopologyElement> from = new ArrayList<>();
+    public final ParsedItem parsedItem;
 
     public TopologyElement(@Nonnull final ParsedItem parsedItem) {
       this.parsedItem = parsedItem;
@@ -217,7 +223,7 @@ public class KStreamsTopologyDescriptionParser {
     }
   }
 
-  public static final class SubTopology extends TopologyElement {
+  public static final class SubTopology extends TopologyElement implements Comparable<SubTopology> {
 
     final Map<String, TopologyElement> children = new TreeMap<>();
 
@@ -244,9 +250,19 @@ public class KStreamsTopologyDescriptionParser {
       return this.children.size();
     }
 
+    @Nonnull
+    public Map<String, TopologyElement> getChildren() {
+      return this.children;
+    }
+
     @Nullable
     public TopologyElement findForId(@Nonnull final String id) {
       return this.children.get(id);
+    }
+
+    @Override
+    public int compareTo(@Nonnull final SubTopology arg0) {
+      return this.id.compareTo(arg0.id);
     }
   }
 
@@ -280,6 +296,12 @@ public class KStreamsTopologyDescriptionParser {
 
     public int size() {
       return this.subTopologies.stream().mapToInt(SubTopology::size).sum() + this.orphans.size();
+    }
+
+    @Nonnull
+    @MustNotContainNull
+    public List<SubTopology> getSubTopologies() {
+      return this.subTopologies;
     }
 
     @Nullable

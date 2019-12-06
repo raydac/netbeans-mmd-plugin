@@ -75,7 +75,8 @@ public class KStreamsTopologyDescriptionParserTest {
         + "    Sink: KSTREAM-SINK-0000000002 (topic: c)\n"
         + "      <-- KSTREAM-MERGE-0000000001";
 
-    assertEquals(3, new KStreamsTopologyDescriptionParser(text).size());
+    final KStreamsTopologyDescriptionParser parser = new KStreamsTopologyDescriptionParser(text);
+    assertEquals(3, parser.size());
   }
 
   @Test

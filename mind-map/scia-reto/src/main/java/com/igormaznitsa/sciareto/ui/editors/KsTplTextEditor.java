@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.sciareto.Context;
@@ -27,6 +28,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.filechooser.FileFilter;
+import net.sourceforge.plantuml.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 
@@ -54,6 +56,49 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
   public KsTplTextEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
     super(context, file);
+  }
+
+  @Override
+  @Nonnull
+  protected String preprocessEditorText(@Nonnull final String text) {
+    try {
+      final KStreamsTopologyDescriptionParser parser = new KStreamsTopologyDescriptionParser(text);
+      final StringBuilder builder = new StringBuilder();
+      builder.append("@startuml\nleft to right direction\ntitle ").append(StringUtils.unicode("KafkaStreams topology")).append('\n');
+
+      for (final KStreamsTopologyDescriptionParser.Topologies t : parser.getTopologies()) {
+        t.getSubTopologies().stream().sorted().forEach(x -> {
+          builder.append(String.format("rectangle \"%s\"{\n", StringUtils.unicode(x.id)));
+          x.children.entrySet().forEach(e -> {
+            builder.append(String.format("rectangle \"%s\" as %s\n", StringUtils.unicode(e.getValue().id), e.getKey().replace('-', '_')));
+          });
+
+          x.children.entrySet().forEach(child -> {
+            final String id = child.getKey().replace('-', '_');
+            child.getValue().to.forEach(d -> builder.append(String.format("%s --> %s\n", id, d.id.replace('-', '_'))));
+
+            child.getValue().from.stream()
+                .filter(src -> src.to.stream().noneMatch(z -> child.getValue().id.equals(z.id)))
+                .forEach(src -> builder.append(String.format("%s <-- %s\n", id, src.id.replace('-', '_'))));
+          });
+
+          builder.append("}\n");
+        });
+      }
+
+      builder.append("@enduml\n");
+
+      System.out.println(builder.toString());
+
+      return builder.toString();
+    } catch (Exception ex) {
+      final String errorText = ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage();
+      return "@startuml\n"
+          + "skinparam shadowing false\n"
+          + "scale 3\n"
+          + "rectangle \"<&circle-x><b>" + StringUtils.unicode(errorText) + "</b>\" #FF6666\n"
+          + "@enduml";
+    }
   }
 
   @Override

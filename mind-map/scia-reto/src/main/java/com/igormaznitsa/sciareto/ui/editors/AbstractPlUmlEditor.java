@@ -34,7 +34,6 @@ import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import static com.igormaznitsa.sciareto.ui.editors.AbstractEditor.loadMenuIcon;
 import com.igormaznitsa.sciareto.ui.misc.BigLoaderIconAnimationConroller;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
@@ -809,71 +808,75 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
     return this;
   }
 
+  @Nonnull
+  protected String preprocessEditorText(@Nonnull final String text) {
+    return text;
+  }
+
   private void startRenderScript() {
-    final String theText = this.editor.getText();
+    try {
+      final String theText = this.preprocessEditorText(this.editor.getText());
 
-    final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
-    final int totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
-    final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
+      final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
+      final int totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
+      final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
 
-    if (imageIndex != this.pageNumberToRender) {
-      this.pageNumberToRender = imageIndex;
-    }
+      if (imageIndex != this.pageNumberToRender) {
+        this.pageNumberToRender = imageIndex;
+      }
 
-    final LastRendered currentText = new LastRendered(imageIndex, theText);
+      final LastRendered currentText = new LastRendered(imageIndex, theText);
 
-    if (!currentText.equals(this.lastSuccessfulyRenderedText)) {
-      updatePageNumberInfo(currentText.page, totalPages);
+      if (!currentText.equals(this.lastSuccessfulyRenderedText)) {
+        updatePageNumberInfo(currentText.page, totalPages);
 
-      Future<BufferedImage> renderImage = null;
+        Future<BufferedImage> renderImage = null;
 
-      final AtomicInteger dividerLocation = new AtomicInteger(Math.max(0, this.mainPanel.getDividerLocation()));
-      final PropertyChangeListener dividerListener = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-          dividerLocation.set(Math.max(0, mainPanel.getDividerLocation()));
-        }
-      };
+        final AtomicInteger dividerLocation = new AtomicInteger(Math.max(0, this.mainPanel.getDividerLocation()));
+        final PropertyChangeListener dividerListener = new PropertyChangeListener() {
+          @Override
+          public void propertyChange(PropertyChangeEvent evt) {
+            dividerLocation.set(Math.max(0, mainPanel.getDividerLocation()));
+          }
+        };
 
-      this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
+        this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
 
-      MainFrame.REACTOR_SCHEDULER.schedule(() -> {
-        BigLoaderIconAnimationConroller.getInstance().registerLabel(progressLabel);
-        try {
+        MainFrame.REACTOR_SCHEDULER.schedule(() -> {
+          BigLoaderIconAnimationConroller.getInstance().registerLabel(progressLabel);
           try {
-            SwingUtilities.invokeAndWait(() -> {
-              setMenuItemsEnable(false);
-              renderedPanel.remove(renderedScrollPane);
-              for (final Component c : renderedPanel.getComponents()) {
-                if ("ERROR_LABEL".equals(c.getName())) {
-                  renderedPanel.remove(c);
-                  break;
+            try {
+              SwingUtilities.invokeAndWait(() -> {
+                setMenuItemsEnable(false);
+                renderedPanel.remove(renderedScrollPane);
+                for (final Component c : renderedPanel.getComponents()) {
+                  if ("ERROR_LABEL".equals(c.getName())) {
+                    renderedPanel.remove(c);
+                    break;
+                  }
                 }
-              }
-              renderedPanel.add(progressLabel, BorderLayout.CENTER);
-              mainPanel.setDividerLocation(dividerLocation.get());
-            });
-          } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            return;
-          } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-          }
+                renderedPanel.add(progressLabel, BorderLayout.CENTER);
+                mainPanel.setDividerLocation(dividerLocation.get());
+              });
+            } catch (InterruptedException ex) {
+              Thread.currentThread().interrupt();
+              return;
+            } catch (InvocationTargetException ex) {
+              throw new RuntimeException(ex);
+            }
 
-          final AtomicReference<Exception> detectedError = new AtomicReference<>();
-          final AtomicReference<BufferedImage> generatedImage = new AtomicReference<>();
+            final AtomicReference<Exception> detectedError = new AtomicReference<>();
+            final AtomicReference<BufferedImage> generatedImage = new AtomicReference<>();
 
-          final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
-          try {
-            final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
-            generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
-          } catch (Exception ex) {
-            detectedError.set(ex);
-          }
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
+            try {
+              final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
+              generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
+            } catch (Exception ex) {
+              detectedError.set(ex);
+            }
 
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
+            SwingUtilities.invokeLater(() -> {
               mainPanel.removePropertyChangeListener(dividerListener);
 
               final Exception error = detectedError.get();
@@ -892,13 +895,22 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
               }
 
               mainPanel.setDividerLocation(dividerLocation.get());
-            }
-          });
+            });
 
-        } finally {
-          BigLoaderIconAnimationConroller.getInstance().unregisterLabel(progressLabel);
-        }
-
+          } finally {
+            BigLoaderIconAnimationConroller.getInstance().unregisterLabel(progressLabel);
+          }
+        });
+      }
+    } catch (final Exception ex) {
+      LOGGER.error("Error of PlantUML script:" + ex);
+      SwingUtilities.invokeLater(() -> {
+        final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + StringEscapeUtils.escapeHtml(ex.getMessage()) + "</h1></html>", JLabel.CENTER);
+        errorLabel.setName("ERROR_LABEL");
+        renderedPanel.remove(progressLabel);
+        renderedPanel.add(errorLabel, BorderLayout.CENTER);
+        renderedPanel.revalidate();
+        renderedPanel.repaint();
       });
     }
   }
