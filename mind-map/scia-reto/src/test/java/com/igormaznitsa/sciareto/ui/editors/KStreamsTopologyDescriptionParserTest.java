@@ -96,7 +96,11 @@ public class KStreamsTopologyDescriptionParserTest {
         + "    Sink: KSTREAM-SINK-0000000003 (topic: c)\n"
         + "      <-- KSTREAM-MERGE-0000000002";
 
-    assertEquals(4, new KStreamsTopologyDescriptionParser(text).size());
+    final KStreamsTopologyDescriptionParser parsed = new KStreamsTopologyDescriptionParser(text);
+
+    assertEquals(4, parsed.size());
+    assertEquals(1, parsed.findForId("KSTREAM-SINK-0000000003").get().dataItems.get("topic").size());
+    assertEquals("c", parsed.findForId("KSTREAM-SINK-0000000003").get().dataItems.get("topic").stream().findFirst().get());
   }
 
   @Test

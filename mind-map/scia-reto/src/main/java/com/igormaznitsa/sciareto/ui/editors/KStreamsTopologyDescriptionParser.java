@@ -19,8 +19,7 @@ public class KStreamsTopologyDescriptionParser {
   private static final Pattern MAIN_PATTERN = Pattern.compile("^(?:(<-+|-+>)|(?:([\\w\\-\\s]+?):))(.*)$", Pattern.CASE_INSENSITIVE);
   private static final Pattern ID_TAIL_PATTERN = Pattern.compile("^\\s*([\\S]+)(?:\\s+(.+?))?\\s*$");
   private static final Pattern DATA_COMMENT_PATTERN = Pattern.compile("^\\s*(?:\\(([^)]*)\\))?(.*)\\s*$");
-  private static final Pattern DATA_FINDER = Pattern.compile(",?\\s*([a-z_\\-]+?)\\s*:\\s*\\[(.*?)]");
-
+  private static final Pattern DATA_FINDER = Pattern.compile(",?\\s*([a-z_\\-]+?)\\s*:\\s*(?:\\[(.*?)]|(.*))");
   private static final String NONE = "none";
   private final List<Topologies> topologies = new ArrayList<>();
 
@@ -35,7 +34,7 @@ public class KStreamsTopologyDescriptionParser {
         lineText = "";
       }
 
-      if (lineText.isEmpty()) {
+      if (lineText.isEmpty() || NONE.equalsIgnoreCase(lineText)) {
         continue;
       }
       final Matcher matcher = MAIN_PATTERN.matcher(lineText);
@@ -176,8 +175,14 @@ public class KStreamsTopologyDescriptionParser {
               while (dataFinder.find()) {
                 final String foundType = dataFinder.group(1);
                 final String foundDataList = dataFinder.group(2);
-                final List<String> foundItems = Arrays.stream(foundDataList.split(",")).map(x -> x.trim()).filter(x -> !x.isEmpty()).collect(Collectors.toList());
-                this.dataItems.put(foundType, foundItems);
+                final String foundSingleData = dataFinder.group(3);
+                if (foundDataList != null) {
+                  final List<String> foundItems = Arrays.stream(foundDataList.split(",")).map(x -> x.trim()).filter(x -> !x.isEmpty()).collect(Collectors.toList());
+                  this.dataItems.put(foundType, foundItems);
+                }
+                if (foundSingleData != null) {
+                  this.dataItems.computeIfAbsent(foundType, (x) -> new ArrayList<>()).add(foundSingleData.trim());
+                }
               }
             }
             this.comment = foundComment == null ? "" : foundComment;

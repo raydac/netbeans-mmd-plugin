@@ -16,7 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+
 
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -107,7 +111,6 @@ import net.sourceforge.plantuml.core.DiagramDescription;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import net.sourceforge.plantuml.error.PSystemError;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -244,68 +247,100 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       }
     });
 
-    final JButton buttonExportImage = new JButton(loadMenuIcon("picture_save"));
-    buttonExportImage.setToolTipText("Export image as file");
-    buttonExportImage.addActionListener((ActionEvent e) -> {
-      Main.getApplicationFrame().endFullScreenIfActive();
-      exportAsFile();
-    });
+    final JButton buttonExportImage;
+    if (this.isExportImageAsFileAllowed()) {
+      buttonExportImage = new JButton(loadMenuIcon("picture_save"));
+      buttonExportImage.setToolTipText("Export image as file");
+      buttonExportImage.addActionListener((ActionEvent e) -> {
+        Main.getApplicationFrame().endFullScreenIfActive();
+        exportAsFile();
+      });
+    } else {
+      buttonExportImage = null;
+    }
 
-    final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
-    buttonClipboardImage.setToolTipText("Copy image to clipboard");
-    buttonClipboardImage.addActionListener((ActionEvent e) -> {
-      final BufferedImage image = imageComponent.getImage();
-      if (image != null) {
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new ImageSelection(image), null);
-      }
-    });
+    final JButton buttonClipboardImage;
+    if (this.isCopyImageToClipboardAllowed()) {
+      buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
+      buttonClipboardImage.setToolTipText("Copy image to clipboard");
+      buttonClipboardImage.addActionListener((ActionEvent e) -> {
+        final BufferedImage image = imageComponent.getImage();
+        if (image != null) {
+          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new ImageSelection(image), null);
+        }
+      });
+    } else {
+      buttonClipboardImage = null;
+    }
 
-    final JButton buttonClipboardText = new JButton(loadMenuIcon("clipboard_text"));
-    buttonClipboardText.setToolTipText("Copy script to clipboard");
-    buttonClipboardText.addActionListener((ActionEvent e) -> {
-      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(editor.getText()), null);
-    });
+    final JButton buttonClipboardText;
+    if (this.isCopyScriptToClipboardAllowed()) {
+      buttonClipboardText = new JButton(loadMenuIcon("clipboard_text"));
+      buttonClipboardText.setToolTipText("Copy script to clipboard");
+      buttonClipboardText.addActionListener((ActionEvent e) -> {
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(editor.getText()), null);
+      });
+    } else {
+      buttonClipboardText = null;
+    }
 
-    this.buttonPrevPage = new JButton(loadMenuIcon("resultset_previous"));
-    this.buttonPrevPage.setToolTipText("Previous page");
-    this.buttonPrevPage.addActionListener((ActionEvent e) -> {
-      pageNumberToRender--;
-      startRenderScript();
-    });
 
-    this.buttonNextPage = new JButton(loadMenuIcon("resultset_next"));
-    this.buttonNextPage.setToolTipText("Next page");
-    this.buttonNextPage.addActionListener((ActionEvent e) -> {
-      pageNumberToRender++;
-      startRenderScript();
-    });
+    if (isPageAllowed()) {
+      this.buttonPrevPage = new JButton(loadMenuIcon("resultset_previous"));
+      this.buttonPrevPage.setToolTipText("Previous page");
+      this.buttonPrevPage.addActionListener((ActionEvent e) -> {
+        pageNumberToRender--;
+        startRenderScript();
+      });
 
-    this.labelPageNumber = new JLabel();
+      this.buttonNextPage = new JButton(loadMenuIcon("resultset_next"));
+      this.buttonNextPage.setToolTipText("Next page");
+      this.buttonNextPage.addActionListener((ActionEvent e) -> {
+        pageNumberToRender++;
+        startRenderScript();
+      });
+
+      this.labelPageNumber = new JLabel();
+    } else {
+      this.buttonNextPage = null;
+      this.buttonPrevPage = null;
+      this.labelPageNumber = null;
+    }
 
     this.labelWarningNoGraphwiz = makeLinkLabel("You should install Graphviz!", "https://www.graphviz.org/download/", "Open download page", ICON_WARNING);
 
-    final JButton buttonPrintImage = new JButton(loadMenuIcon("printer"));
-    buttonPrintImage.setToolTipText("Print current page");
-    buttonPrintImage.addActionListener((@Nonnull final ActionEvent e) -> {
-      Main.getApplicationFrame().endFullScreenIfActive();
-      final MMDPrintPanel printPanel = new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null, PrintableObject.newBuild().image(imageComponent.getImage()).build());
-      UiUtils.makeOwningDialogResizable(printPanel);
-      JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image", JOptionPane.PLAIN_MESSAGE);
-    });
+    final JButton buttonPrintImage;
+    if (isPrintImageAllowed()) {
+      buttonPrintImage = new JButton(loadMenuIcon("printer"));
+      buttonPrintImage.setToolTipText("Print current page");
+      buttonPrintImage.addActionListener((@Nonnull final ActionEvent e) -> {
+        Main.getApplicationFrame().endFullScreenIfActive();
+        final MMDPrintPanel printPanel = new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null, PrintableObject.newBuild().image(imageComponent.getImage()).build());
+        UiUtils.makeOwningDialogResizable(printPanel);
+        JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image", JOptionPane.PLAIN_MESSAGE);
+      });
+    } else {
+      buttonPrintImage = null;
+    }
 
-    final JButton buttonAscImageToClipboard = new JButton(loadMenuIcon("clipboard_asc"));
-    buttonAscImageToClipboard.setToolTipText("Copy ASCII image to clipboard");
-    buttonAscImageToClipboard.addActionListener((@Nonnull final ActionEvent e) -> {
-      final String text = renderPageAsAscII();
-      if (text == null) {
-        JOptionPane.showMessageDialog(mainPanel, "Can't generate ASCII for the diagram.\nMay be it is unsupported for such kind of diagrams.", "Can't generate", JOptionPane.WARNING_MESSAGE);
-      } else {
-        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard != null) {
-          clipboard.setContents(new StringSelection(text), null);
+    final JButton buttonAscImageToClipboard;
+    if (isCopyAsAscIIImageInClipboardAllowed()) {
+      buttonAscImageToClipboard = new JButton(loadMenuIcon("clipboard_asc"));
+      buttonAscImageToClipboard.setToolTipText("Copy ASCII image to clipboard");
+      buttonAscImageToClipboard.addActionListener((@Nonnull final ActionEvent e) -> {
+        final String text = renderPageAsAscII();
+        if (text == null) {
+          JOptionPane.showMessageDialog(mainPanel, "Can't generate ASCII for the diagram.\nMay be it is unsupported for such kind of diagrams.", "Can't generate", JOptionPane.WARNING_MESSAGE);
+        } else {
+          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+          if (clipboard != null) {
+            clipboard.setContents(new StringSelection(text), null);
+          }
         }
-      }
-    });
+      });
+    } else {
+      buttonAscImageToClipboard = null;
+    }
 
     this.autoRefresh = new JCheckBox("Auto-refresh", true);
     this.autoRefresh.setToolTipText(String.format("Refresh rendered image during typing (in %d seconds)", DELAY_AUTOREFRESH_SECONDS));
@@ -320,15 +355,31 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
 
     this.menu.add(buttonRefresh, gbdata);
     this.menu.add(buttonEditScript, gbdata);
-    this.menu.add(buttonClipboardImage, gbdata);
-    this.menu.add(buttonAscImageToClipboard, gbdata);
-    this.menu.add(buttonClipboardText, gbdata);
-    this.menu.add(buttonExportImage, gbdata);
-    this.menu.add(buttonPrintImage, gbdata);
+    if (buttonClipboardImage != null) {
+      this.menu.add(buttonClipboardImage, gbdata);
+    }
+    if (buttonAscImageToClipboard != null) {
+      this.menu.add(buttonAscImageToClipboard, gbdata);
+    }
+    if (buttonClipboardText != null) {
+      this.menu.add(buttonClipboardText, gbdata);
+    }
+    if (buttonExportImage != null) {
+      this.menu.add(buttonExportImage, gbdata);
+    }
+    if (buttonPrintImage != null) {
+      this.menu.add(buttonPrintImage, gbdata);
+    }
     this.menu.add(Box.createHorizontalStrut(16), gbdata);
-    this.menu.add(this.buttonPrevPage, gbdata);
-    this.menu.add(this.labelPageNumber, gbdata);
-    this.menu.add(this.buttonNextPage, gbdata);
+    if (this.buttonPrevPage != null) {
+      this.menu.add(this.buttonPrevPage, gbdata);
+    }
+    if (this.labelPageNumber != null) {
+      this.menu.add(this.labelPageNumber, gbdata);
+    }
+    if (this.buttonNextPage != null) {
+      this.menu.add(this.buttonNextPage, gbdata);
+    }
     this.menu.add(this.autoRefresh, gbdata);
 
     gbdata.fill = GridBagConstraints.HORIZONTAL;
@@ -404,17 +455,41 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
     this.hideTextPanel();
 
     this.eventChain = eventProcessor.publishOn(MainFrame.REACTOR_SCHEDULER)
-            .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
-            .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
-            .publishOn(UiUtils.SWING_SCHEDULER)
-            .subscribe(x -> {
-              final String txt = editor.getText();
-              final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
-              if ((lastRendered == null || !txt.equals(lastRendered.text)) && isSyntaxCorrect(txt)) {
-                startRenderScript();
-              }
-            });
+        .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
+        .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
+        .publishOn(UiUtils.SWING_SCHEDULER)
+        .subscribe(x -> {
+          final String txt = editor.getText();
+          final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
+          if ((lastRendered == null || !txt.equals(lastRendered.text)) && isSyntaxCorrect(txt)) {
+            startRenderScript();
+          }
+        });
 
+  }
+
+  protected boolean isCopyScriptToClipboardAllowed() {
+    return true;
+  }
+
+  protected boolean isPageAllowed() {
+    return true;
+  }
+
+  protected boolean isPrintImageAllowed() {
+    return true;
+  }
+
+  protected boolean isCopyAsAscIIImageInClipboardAllowed() {
+    return true;
+  }
+
+  protected boolean isCopyImageToClipboardAllowed() {
+    return true;
+  }
+
+  protected boolean isExportImageAsFileAllowed() {
+    return true;
   }
 
   @Nonnull
@@ -768,8 +843,8 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       File file = this.title.getAssociatedFile();
       if (file == null) {
         file = DialogProviderManager.getInstance()
-                .getDialogProvider()
-                .msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, new FileFilter[]{getFileFilter()}, "Save");
+            .getDialogProvider()
+            .msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, new FileFilter[] {getFileFilter()}, "Save");
         if (file == null) {
           return result;
         }
@@ -828,7 +903,9 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       final LastRendered currentText = new LastRendered(imageIndex, theText);
 
       if (!currentText.equals(this.lastSuccessfulyRenderedText)) {
-        updatePageNumberInfo(currentText.page, totalPages);
+        if (this.labelPageNumber != null) {
+          updatePageNumberInfo(currentText.page, totalPages);
+        }
 
         Future<BufferedImage> renderImage = null;
 
@@ -888,7 +965,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
                 renderedPanel.add(renderedScrollPane, BorderLayout.CENTER);
                 setMenuItemsEnable(true);
               } else {
-                final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + StringEscapeUtils.escapeHtml(error.getMessage()) + "</h1></html>", JLabel.CENTER);
+                final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + escapeHtml(error.getMessage()) + "</h1></html>", JLabel.CENTER);
                 errorLabel.setName("ERROR_LABEL");
                 renderedPanel.remove(progressLabel);
                 renderedPanel.add(errorLabel, BorderLayout.CENTER);
@@ -905,7 +982,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
     } catch (final Exception ex) {
       LOGGER.error("Error of PlantUML script:" + ex);
       SwingUtilities.invokeLater(() -> {
-        final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + StringEscapeUtils.escapeHtml(ex.getMessage()) + "</h1></html>", JLabel.CENTER);
+        final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + escapeHtml(ex.getMessage()) + "</h1></html>", JLabel.CENTER);
         errorLabel.setName("ERROR_LABEL");
         renderedPanel.remove(progressLabel);
         renderedPanel.add(errorLabel, BorderLayout.CENTER);
@@ -918,7 +995,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
   @Nullable
   @UiThread
   private String renderPageAsAscII() {
-    final String theText = this.editor.getText();
+    final String theText = this.preprocessEditorText(this.editor.getText());
 
     final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
     final int totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
