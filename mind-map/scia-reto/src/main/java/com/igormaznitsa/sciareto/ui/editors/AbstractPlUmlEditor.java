@@ -135,7 +135,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
 
   protected final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
   private File lastExportedFile = null;
-  private final ScalableRsyntaxTextArea editor;
+  protected final ScalableRsyntaxTextArea editor;
   private final TabTitle title;
   private final RUndoManager undoManager;
   private final ScalableImage imageComponent;

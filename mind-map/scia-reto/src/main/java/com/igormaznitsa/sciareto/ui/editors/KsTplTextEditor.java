@@ -24,7 +24,11 @@ import static net.sourceforge.plantuml.StringUtils.unicode;
 
 
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.GridBagConstraints;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -37,6 +41,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
@@ -50,6 +57,8 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
   private volatile boolean modeOrtho = false;
   private volatile boolean modeHoriz = false;
+
+  private static final Icon ICON_PLANTUML = new ImageIcon(UiUtils.loadIcon("plantuml16.png"));
 
   @Override
   protected boolean isPageAllowed() {
@@ -326,6 +335,13 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
   @Override
   protected void addCustomComponents(@Nonnull final JPanel panel, @Nonnull final GridBagConstraints gbdata) {
+    final JButton buttonClipboardText = new JButton(ICON_PLANTUML);
+    buttonClipboardText.setToolTipText("Copy PlantUML script to clipboard");
+    buttonClipboardText.addActionListener((ActionEvent e) -> {
+      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(preprocessEditorText(editor.getText())), null);
+    });
+
+
     final JCheckBox checkBoxOrtho = new JCheckBox("Orthogonal lines  ", this.modeOrtho);
     checkBoxOrtho.setToolTipText("Orthogonal connector lines");
     checkBoxOrtho.addActionListener((x) -> {
@@ -342,6 +358,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
       startRenderScript();
     });
 
+    panel.add(buttonClipboardText, gbdata);
     panel.add(checkBoxOrtho, gbdata);
     panel.add(checkBoxHorizontal, gbdata);
   }
