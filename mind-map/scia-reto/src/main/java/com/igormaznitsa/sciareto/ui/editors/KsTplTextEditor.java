@@ -303,7 +303,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
   @Override
   protected void doPutMapping(@Nonnull final AbstractTokenMakerFactory f) {
-    f.putMapping(MIME, "com.igormaznitsa.sciareto.ui.editors.KsTplTokenMaker");
+    f.putMapping(MIME, "com.igormaznitsa.sciareto.ui.editors.KStreamsTopologyTokenMaker");
   }
 
   @Override
