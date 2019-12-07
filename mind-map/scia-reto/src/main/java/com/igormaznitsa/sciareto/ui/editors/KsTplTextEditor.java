@@ -118,7 +118,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     try {
       final KStreamsTopologyDescriptionParser parser = new KStreamsTopologyDescriptionParser(text);
       final StringBuilder builder = new StringBuilder();
-      builder.append("@startuml\ntop to bottom direction\ntitle ").append(unicode("KStreams topologies")).append('\n');
+      builder.append("@startuml\ntop to bottom direction\ntitle ").append(unicode("KStream topologies")).append('\n');
       final Map<String, String> keys = generateKeyMap(parser);
 
       for (final KStreamsTopologyDescriptionParser.Topologies t : parser.getTopologies()) {
@@ -249,6 +249,16 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
           + "scale 3\n"
           + "rectangle \"<&circle-x><b>" + unicode(errorText) + "</b>\" #FF6666\n"
           + "@enduml";
+    }
+  }
+
+  @Override
+  public boolean isSyntaxCorrect(final String text) {
+    try {
+      new KStreamsTopologyDescriptionParser(text);
+      return true;
+    } catch (Exception ex) {
+      return false;
     }
   }
 

@@ -75,7 +75,6 @@ import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -461,7 +460,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         .subscribe(x -> {
           final String txt = editor.getText();
           final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
-          if ((lastRendered == null || !txt.equals(lastRendered.text)) && isSyntaxCorrect(txt)) {
+          if ((lastRendered == null || !txt.equals(lastRendered.editorText)) && isSyntaxCorrect(txt)) {
             startRenderScript();
           }
         });
@@ -890,7 +889,8 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
 
   private void startRenderScript() {
     try {
-      final String theText = this.preprocessEditorText(this.editor.getText());
+      final String editorText = this.editor.getText();
+      final String theText = this.preprocessEditorText(editorText);
 
       final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
       final int totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
@@ -900,22 +900,15 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         this.pageNumberToRender = imageIndex;
       }
 
-      final LastRendered currentText = new LastRendered(imageIndex, theText);
+      final LastRendered currentText = new LastRendered(imageIndex, editorText);
 
       if (!currentText.equals(this.lastSuccessfulyRenderedText)) {
         if (this.labelPageNumber != null) {
           updatePageNumberInfo(currentText.page, totalPages);
         }
 
-        Future<BufferedImage> renderImage = null;
-
         final AtomicInteger dividerLocation = new AtomicInteger(Math.max(0, this.mainPanel.getDividerLocation()));
-        final PropertyChangeListener dividerListener = new PropertyChangeListener() {
-          @Override
-          public void propertyChange(PropertyChangeEvent evt) {
-            dividerLocation.set(Math.max(0, mainPanel.getDividerLocation()));
-          }
-        };
+        final PropertyChangeListener dividerListener = evt -> dividerLocation.set(Math.max(0, mainPanel.getDividerLocation()));
 
         this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
 
@@ -1164,16 +1157,16 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
   protected static final class LastRendered {
 
     private final int page;
-    private final String text;
+    private final String editorText;
 
-    public LastRendered(final int page, @Nonnull final String text) {
+    public LastRendered(final int page, @Nonnull final String editorText) {
       this.page = page;
-      this.text = text;
+      this.editorText = editorText;
     }
 
     @Override
     public int hashCode() {
-      return this.text.hashCode() ^ this.page;
+      return this.editorText.hashCode() ^ this.page;
     }
 
     @Override
@@ -1191,7 +1184,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       if (this.page != other.page) {
         return false;
       }
-      return Objects.equals(this.text, other.text);
+      return Objects.equals(this.editorText, other.editorText);
     }
   }
 
