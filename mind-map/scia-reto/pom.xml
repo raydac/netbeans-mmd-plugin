@@ -645,6 +645,7 @@
               <checkMayContainNull>true</checkMayContainNull>
               <checkNullable>true</checkNullable>
               <ignoreClasses>
+                <ignore>*.KStreamsTopologyTokenMaker</ignore>
                 <ignore>*.NoteEditor</ignore>
                 <ignore>*.ColorAttributePanel</ignore>
                 <ignore>*.UriEditPanel</ignore>

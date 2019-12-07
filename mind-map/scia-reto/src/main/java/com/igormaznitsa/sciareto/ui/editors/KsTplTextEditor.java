@@ -118,6 +118,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return format("note \"%s\" as %s%n", unicode(element.comment), "nte_" + element.id.hashCode() + Long.toHexString(System.nanoTime()));
   }
 
+  @Nonnull
   private String makeOptions() {
     final StringBuilder result = new StringBuilder();
 

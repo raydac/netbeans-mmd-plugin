@@ -13,11 +13,6 @@ import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
 
-
-/**
- *
- */
-
 public class KStreamsTopologyTokenMaker extends AbstractJFlexTokenMaker {
 
   /**
