@@ -165,6 +165,7 @@ public class KStreamsTopologyDescriptionParserTest {
     builder.addStateStore(storeBuilder);
     builder.<String, String>stream("input")
         .filter((k, v) -> v.endsWith("FOO"))
+        .through("some-through-topic")
         .transformValues(() -> new SimpleValueTransformer(storeName), storeName)
         .to("output");
 
@@ -173,7 +174,7 @@ public class KStreamsTopologyDescriptionParserTest {
     System.out.println(text);
 
     final KStreamsTopologyDescriptionParser parsed = new KStreamsTopologyDescriptionParser(text);
-    assertEquals(6, parsed.size());
+    assertEquals(8, parsed.size());
   }
 
   @Test

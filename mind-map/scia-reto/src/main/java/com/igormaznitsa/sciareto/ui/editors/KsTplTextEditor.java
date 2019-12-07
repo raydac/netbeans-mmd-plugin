@@ -105,26 +105,44 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return result;
   }
 
+  private String makeCommentNote(final KStreamsTopologyDescriptionParser.TopologyElement element) {
+    if (element.comment == null || element.comment.isEmpty()) {
+      return "";
+    }
+    return format("note \"%s\" as %s%n", unicode(element.comment), "nte_" + element.id.hashCode() + Long.toHexString(System.nanoTime()));
+  }
+
   @Override
   @Nonnull
   protected String preprocessEditorText(@Nonnull final String text) {
     try {
       final KStreamsTopologyDescriptionParser parser = new KStreamsTopologyDescriptionParser(text);
       final StringBuilder builder = new StringBuilder();
-      builder.append("@startuml\ntop to bottom direction\ntitle ").append(unicode("KafkaStreams topology")).append('\n');
+      builder.append("@startuml\ntop to bottom direction\ntitle ").append(unicode("KStreams topologies")).append('\n');
       final Map<String, String> keys = generateKeyMap(parser);
 
       for (final KStreamsTopologyDescriptionParser.Topologies t : parser.getTopologies()) {
         t.getSubTopologies().stream().sorted().forEach(subTopology -> {
           builder.append(format("package \"Sub-topology %s\" {%n", unicode(subTopology.id)));
+          builder.append(makeCommentNote(subTopology));
           subTopology.children.values().forEach(elem -> {
-            builder.append(KStreamType.find(elem.id).makePuml(elem, keys.get(elem.id))).append('\n');
+            final String element = KStreamType.find(elem).makePuml(elem, keys.get(elem.id));
+            final String elementComment = makeCommentNote(elem);
+            builder.append(element).append(elementComment.isEmpty() ? "" : "{").append('\n');
+            if (!elementComment.isEmpty()) {
+              builder.append(elementComment).append("}\n");
+            }
           });
           builder.append("}\n");
         });
 
         t.orphans.forEach(elem -> {
-          builder.append(KStreamType.find(elem.id).makePuml(elem, keys.get(elem.id))).append('\n');
+          final String element = KStreamType.find(elem).makePuml(elem, keys.get(elem.id));
+          final String elementComment = makeCommentNote(elem);
+          builder.append(element).append(elementComment.isEmpty() ? "" : "{").append('\n');
+          if (!elementComment.isEmpty()) {
+            builder.append(elementComment).append("}\n");
+          }
         });
 
         final StringBuilder bufferBroker = new StringBuilder();
@@ -170,7 +188,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
             });
 
         if (bufferBroker.length() > 0) {
-          builder.append("package \"Kafka broker\" {\n");
+          builder.append("package \"Kafka topics\" {\n");
           builder.append(bufferBroker.toString());
           builder.append("}\n");
         }
@@ -193,21 +211,21 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
             .forEach(element -> {
               final String elemKey = keys.get(element.id);
               element.to.forEach(dst -> {
-                builder.append(format("%s --> %s%n", elemKey, keys.get(dst.id)));
+                builder.append(format("%s -->> %s%n", elemKey, keys.get(dst.id)));
               });
               element.from.stream()
                   .filter(src -> src.to.stream().noneMatch(tl -> tl.id.equals(element.id)))
                   .forEach(src -> {
-                    builder.append(format("%s --> %s%n", keys.get(src.id), elemKey));
+                    builder.append(format("%s -->> %s%n", keys.get(src.id), elemKey));
                   });
               element.dataItems.values().stream().flatMap(di -> di.stream()).forEach(dataItemName -> {
                 final String link;
-                switch (KStreamType.find(element.id)) {
+                switch (KStreamType.find(element)) {
                   case SOURCE:
-                    link = "<==";
+                    link = "<|==";
                     break;
                   case SINK:
-                    link = "==>";
+                    link = "==|>";
                     break;
                   default:
                     link = "==";
@@ -221,7 +239,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
       builder.append("@enduml\n");
 
-      System.out.println(builder.toString());
+//      System.out.println(builder.toString());
 
       return builder.toString();
     } catch (Exception ex) {
@@ -235,27 +253,32 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   }
 
   private enum KStreamType {
-    SOURCE(".*kstream.*source.*", "rectangle \"%s\" as %s"),
-    TRANSFORM(".*kstream.*transform.*", "rectangle \"%s\" as %s"),
-    KEY_SELECT(".*kstream.*key.*select.*", "rectangle \"%s\" as %s"),
-    FILTER(".*kstream.*filter.*", "rectangle \"%s\" as %s"),
-    SINK(".*kstream.*sink.*", "rectangle \"%s\" as %s"),
-    AGGREGATE(".*kstream.*aggregate.*", "rectangle \"%s\" as %s"),
-    TABLE_TOSTREAM(".*ktable.*to.*stream.*", "rectangle \"%s\" as %s"),
-    MERGE(".*kstrean.*merge.*", "rectangle \"%s\" as %s"),
-    PROCESSOR(".*kstream.*processor.*", "rectangle \"%s\" as %s");
+    SOURCE(".*source.*", ".*kstream.*source.*", "rectangle \"%s\" as %s"),
+    TRANSFORM("", ".*kstream.*transform.*", "usecase \"%s\" as %s"),
+    KEY_SELECT("", ".*kstream.*key.*select.*", "usecase \"%s\" as %s"),
+    FILTER("", ".*kstream.*filter.*", "usecase \"%s\" as %s"),
+    SINK(".*sink.*", ".*kstream.*sink.*", "rectangle \"%s\" as %s"),
+    AGGREGATE("", ".*kstream.*aggregate.*", "usecase \"%s\" as %s"),
+    TABLE_TOSTREAM("", ".*ktable.*to.*stream.*", "usecase \"%s\" as %s"),
+    MERGE("", ".*kstrean.*merge.*", "usecase \"%s\" as %s"),
+    PROCESSOR("", ".*kstream.*processor.*", "usecase \"%s\" as %s");
 
-    private final Pattern pattern;
+    private final Pattern patternType;
+    private final Pattern patternId;
     private final String pumlPattern;
 
-    KStreamType(final String pattern, final String pumlPattern) {
-      this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+    KStreamType(final String patternType, final String patternId, final String pumlPattern) {
+      this.patternId = Pattern.compile(patternId, Pattern.CASE_INSENSITIVE);
+      this.patternType = Pattern.compile(patternType, Pattern.CASE_INSENSITIVE);
       this.pumlPattern = pumlPattern;
     }
 
-    static KStreamType find(final String text) {
+    static KStreamType find(final KStreamsTopologyDescriptionParser.TopologyElement element) {
       for (final KStreamType t : KStreamType.values()) {
-        if (t.pattern.matcher(text).matches()) {
+        if (t.patternType.matcher(element.type).matches()) {
+          return t;
+        }
+        if (t.patternId.matcher(element.id).matches()) {
           return t;
         }
       }
@@ -263,7 +286,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     }
 
     String makePuml(final KStreamsTopologyDescriptionParser.TopologyElement element, @Nonnull final String alias) {
-      return String.format(this.pumlPattern, unicode(element.id), alias);
+      return format(this.pumlPattern, unicode(element.id).replace("-", "-\\n"), alias);
     }
   }
 
