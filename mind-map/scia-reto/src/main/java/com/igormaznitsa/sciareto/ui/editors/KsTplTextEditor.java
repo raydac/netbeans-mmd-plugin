@@ -73,7 +73,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   }
 
   @Nonnull
-  private Map<String, String> generateKeyMap(KStreamsTopologyDescriptionParser parser) {
+  private Map<String, String> generateKeyMap(@Nonnull final KStreamsTopologyDescriptionParser parser) {
     final AtomicInteger counter = new AtomicInteger(0);
     final Map<String, String> result = new HashMap<>();
     parser.getTopologies().forEach(x -> {
@@ -105,7 +105,8 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return result;
   }
 
-  private String makeCommentNote(final KStreamsTopologyDescriptionParser.TopologyElement element) {
+  @Nonnull
+  private String makeCommentNote(@Nonnull final KStreamsTopologyDescriptionParser.TopologyElement element) {
     if (element.comment == null || element.comment.isEmpty()) {
       return "";
     }
@@ -253,7 +254,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   }
 
   @Override
-  public boolean isSyntaxCorrect(final String text) {
+  public boolean isSyntaxCorrect(@Nonnull final String text) {
     try {
       new KStreamsTopologyDescriptionParser(text);
       return true;
