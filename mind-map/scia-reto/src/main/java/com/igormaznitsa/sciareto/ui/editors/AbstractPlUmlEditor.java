@@ -369,6 +369,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
     if (buttonPrintImage != null) {
       this.menu.add(buttonPrintImage, gbdata);
     }
+    addCustomComponents(this.menu, gbdata);
     this.menu.add(Box.createHorizontalStrut(16), gbdata);
     if (this.buttonPrevPage != null) {
       this.menu.add(this.buttonPrevPage, gbdata);
@@ -464,6 +465,10 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
             startRenderScript();
           }
         });
+
+  }
+
+  protected void addCustomComponents(@Nonnull final JPanel panel, @Nonnull final GridBagConstraints gbdata) {
 
   }
 
@@ -887,7 +892,11 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
     return text;
   }
 
-  private void startRenderScript() {
+  protected void resetLastRendered() {
+    this.lastSuccessfulyRenderedText = null;
+  }
+
+  protected void startRenderScript() {
     try {
       final String editorText = this.editor.getText();
       final String theText = this.preprocessEditorText(editorText);

@@ -24,6 +24,7 @@ import static net.sourceforge.plantuml.StringUtils.unicode;
 
 
 import com.igormaznitsa.sciareto.Context;
+import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -36,6 +37,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
@@ -45,6 +48,8 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   public static final Set<String> SUPPORTED_EXTENSIONS = Collections.singleton("kstpl");
   private static final String MIME = "text/kstpl";
 
+  private volatile boolean modeOrtho = false;
+  private volatile boolean modeHoriz = false;
 
   @Override
   protected boolean isPageAllowed() {
@@ -113,13 +118,30 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return format("note \"%s\" as %s%n", unicode(element.comment), "nte_" + element.id.hashCode() + Long.toHexString(System.nanoTime()));
   }
 
+  private String makeOptions() {
+    final StringBuilder result = new StringBuilder();
+
+    if (this.modeHoriz) {
+      result.append("left to right direction\n");
+    } else {
+      result.append("top to bottom direction\n");
+    }
+
+    if (this.modeOrtho) {
+      result.append("skinparam linetype ortho\n");
+    }
+
+    return result.toString();
+  }
+
   @Override
   @Nonnull
   protected String preprocessEditorText(@Nonnull final String text) {
     try {
       final KStreamsTopologyDescriptionParser parser = new KStreamsTopologyDescriptionParser(text);
       final StringBuilder builder = new StringBuilder();
-      builder.append("@startuml\ntop to bottom direction\ntitle ").append(unicode("KStream topologies")).append('\n');
+
+      builder.append("@startuml\n").append(makeOptions()).append("\ntitle ").append(unicode("KStream topologies")).append('\n');
       final Map<String, String> keys = generateKeyMap(parser);
 
       for (final KStreamsTopologyDescriptionParser.Topologies t : parser.getTopologies()) {
@@ -299,6 +321,28 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     String makePuml(final KStreamsTopologyDescriptionParser.TopologyElement element, @Nonnull final String alias) {
       return format(this.pumlPattern, unicode(element.id).replace("-", "-\\n"), alias);
     }
+  }
+
+  @Override
+  protected void addCustomComponents(@Nonnull final JPanel panel, @Nonnull final GridBagConstraints gbdata) {
+    final JCheckBox checkBoxOrtho = new JCheckBox("Orthogonal lines  ", this.modeOrtho);
+    checkBoxOrtho.setToolTipText("Orthogonal connector lines");
+    checkBoxOrtho.addActionListener((x) -> {
+      this.modeOrtho = checkBoxOrtho.isSelected();
+      resetLastRendered();
+      startRenderScript();
+    });
+
+    final JCheckBox checkBoxHorizontal = new JCheckBox("Horizontal layout  ", this.modeHoriz);
+    checkBoxHorizontal.setToolTipText("Horizontal layouting of components");
+    checkBoxHorizontal.addActionListener((x) -> {
+      this.modeHoriz = checkBoxHorizontal.isSelected();
+      resetLastRendered();
+      startRenderScript();
+    });
+
+    panel.add(checkBoxOrtho, gbdata);
+    panel.add(checkBoxHorizontal, gbdata);
   }
 
   @Override
