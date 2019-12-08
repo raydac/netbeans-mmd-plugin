@@ -173,6 +173,16 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     }
   }
 
+  private static final Pattern GLOBAL_STORAGE_SUBTOPOLOGY = Pattern.compile(".*global.*store.*", Pattern.CASE_INSENSITIVE);
+
+  private boolean isGlobalStorageSubTopology(@Nonnull final KStreamsTopologyDescriptionParser.SubTopology topology) {
+    final String comment = topology.comment;
+    if (comment == null || comment.isEmpty()) {
+      return false;
+    }
+    return GLOBAL_STORAGE_SUBTOPOLOGY.matcher(comment).matches();
+  }
+
   @Override
   @Nonnull
   protected String preprocessEditorText(@Nonnull final String text) {
@@ -191,13 +201,15 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
           .append("roundCorner<<Sub-Topologies>> 25\n")
           .append("shadowing<<Sub-Topologies>> false\n")
           .append("}\n")
-          .append("title ").append(unicode("KStreams topology \"" + this.getTabTitle().getAssociatedFile().getName() + '\"')).append('\n');
+          .append("title ").append(unicode("KStreams topology \""
+          + (this.getTabTitle().getAssociatedFile() == null ? "none" : this.getTabTitle().getAssociatedFile().getName()) + '\"')).append('\n');
       final Map<String, String> keys = generateKeyMap(parser);
 
       for (final KStreamsTopologyDescriptionParser.Topologies t : parser.getTopologies()) {
         builder.append("rectangle \"Sub-topologies\" <<Sub-Topologies>> {\n");
         t.getSubTopologies().stream().sorted().forEach(subTopology -> {
-          builder.append(format("package \"Sub-topology %s\" #DFDFFF {%n", unicode(subTopology.id)));
+          builder.append(format("package \"Sub-topology %s\" %s {%n", unicode(subTopology.id),
+              isGlobalStorageSubTopology(subTopology) ? "#FFDFFF" : "#DFDFFF"));
           builder.append(makeCommentNote(null, subTopology));
           subTopology.children.values().forEach(elem -> {
             final String elemKey = keys.get(elem.id);
@@ -344,7 +356,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     this.modeGroupTopics = true;
     this.modeGroupStores = true;
     this.modeHoriz = false;
-    this.modeOrtho = false;
+    this.modeOrtho = true;
 
     final JButton buttonClipboardText = new JButton(ICON_PLANTUML);
     buttonClipboardText.setToolTipText("Copy formed PlantUML script to clipboard");

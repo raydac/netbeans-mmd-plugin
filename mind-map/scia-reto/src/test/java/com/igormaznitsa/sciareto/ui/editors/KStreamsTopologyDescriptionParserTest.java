@@ -161,7 +161,7 @@ public class KStreamsTopologyDescriptionParserTest {
         Stores.persistentKeyValueStore(globalStoreName),
         Serdes.String(),
         Serdes.String());
-    builder.addGlobalStore(globalStoreBuilder, "some-global-topic", Consumed.with(Serdes.Short(), Serdes.String(), new WallclockTimestampExtractor(), Topology.AutoOffsetReset.EARLIEST), () -> new FakeProcessor());
+    builder.addGlobalStore(globalStoreBuilder, "some-global-topic", Consumed.with(Serdes.Short(), Serdes.String(), new WallclockTimestampExtractor(), Topology.AutoOffsetReset.EARLIEST), FakeProcessor::new);
     builder.addStateStore(storeBuilder);
     builder.<String, String>stream("input")
         .filter((k, v) -> v.endsWith("FOO"))
