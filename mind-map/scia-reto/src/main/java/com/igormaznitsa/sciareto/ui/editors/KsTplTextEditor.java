@@ -31,6 +31,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -55,8 +56,10 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   public static final Set<String> SUPPORTED_EXTENSIONS = Collections.singleton("kstpl");
   private static final String MIME = "text/kstpl";
 
-  private volatile boolean modeOrtho = false;
-  private volatile boolean modeHoriz = false;
+  private volatile boolean modeOrtho;
+  private volatile boolean modeHoriz;
+  private volatile boolean modeGroupTopics;
+  private volatile boolean modeGroupStores;
 
   private static final Icon ICON_PLANTUML = new ImageIcon(UiUtils.loadIcon("plantuml16.png"));
 
@@ -144,6 +147,31 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return result.toString();
   }
 
+  @Nonnull
+  private static String makePumlMultiline(@Nonnull final String text, final int maxNonSplittedLength) {
+    if (text.length() < maxNonSplittedLength) {
+      return text;
+    }
+    return text.replace("-", "-\\n")
+        .replace(" ", "\\n")
+        .replace("_", "_\\n");
+  }
+
+  @Override
+  protected boolean isCopyAsAscIIImageInClipboardAllowed() {
+    return false;
+  }
+
+  @Override
+  public boolean isSyntaxCorrect(@Nonnull final String text) {
+    try {
+      new KStreamsTopologyDescriptionParser(text);
+      return true;
+    } catch (Exception ex) {
+      return false;
+    }
+  }
+
   @Override
   @Nonnull
   protected String preprocessEditorText(@Nonnull final String text) {
@@ -151,12 +179,24 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
       final KStreamsTopologyDescriptionParser parser = new KStreamsTopologyDescriptionParser(text);
       final StringBuilder builder = new StringBuilder();
 
-      builder.append("@startuml\n").append(makeOptions()).append("\ntitle ").append(unicode("KStream topologies")).append('\n');
+      builder.append("@startuml\n")
+          .append(makeOptions()).append('\n')
+          .append("hide stereotype\n")
+          .append("skinparam ArrowThickness 3\n")
+          .append("skinparam rectangle {\n")
+          .append("borderStyle<<Sub-Topologies>> dotted\n")
+          .append("borderColor<<Sub-Topologies>> Gray\n")
+          .append("borderThickness<<Sub-Topologies>> 2\n")
+          .append("roundCorner<<Sub-Topologies>> 25\n")
+          .append("shadowing<<Sub-Topologies>> false\n")
+          .append("}\n")
+          .append("title ").append(unicode("KStreams topology \"" + this.getTabTitle().getAssociatedFile().getName() + '\"')).append('\n');
       final Map<String, String> keys = generateKeyMap(parser);
 
       for (final KStreamsTopologyDescriptionParser.Topologies t : parser.getTopologies()) {
+        builder.append("rectangle \"Sub-topologies\" <<Sub-Topologies>> {\n");
         t.getSubTopologies().stream().sorted().forEach(subTopology -> {
-          builder.append(format("package \"Sub-topology %s\" {%n", unicode(subTopology.id)));
+          builder.append(format("package \"Sub-topology %s\" #DFDFFF {%n", unicode(subTopology.id)));
           builder.append(makeCommentNote(subTopology));
           subTopology.children.values().forEach(elem -> {
             final String element = KStreamType.find(elem).makePuml(elem, keys.get(elem.id));
@@ -168,6 +208,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
           });
           builder.append("}\n");
         });
+        builder.append("}\n");
 
         t.orphans.forEach(elem -> {
           final String element = KStreamType.find(elem).makePuml(elem, keys.get(elem.id));
@@ -205,15 +246,15 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
                 switch (storeType) {
                   case TYPE_BROKER: {
-                    bufferBroker.append(format("%s \"%s\" as %s%n", type, unicode(elem), keys.get(elem)));
+                    bufferBroker.append(format("%s \"%s\" as %s%n", type, makePumlMultiline(unicode(elem), 32), keys.get(elem)));
                   }
                   break;
                   case TYPE_STORES: {
-                    bufferStores.append(format("%s \"%s\" as %s%n", type, unicode(elem), keys.get(elem)));
+                    bufferStores.append(format("%s \"%s\" as %s%n", type, makePumlMultiline(unicode(elem), 10), keys.get(elem)));
                   }
                   break;
                   default: {
-                    bufferOthers.append(format("%s \"%s\" as %s%n", type, unicode(elem), keys.get(elem)));
+                    bufferOthers.append(format("%s \"%s\" as %s%n", type, makePumlMultiline(unicode(elem), 10), keys.get(elem)));
                   }
                   break;
                 }
@@ -221,15 +262,25 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
             });
 
         if (bufferBroker.length() > 0) {
-          builder.append("package \"Kafka topics\" {\n");
+          final boolean groupTopics = this.modeGroupTopics;
+          if (groupTopics) {
+            builder.append("package \"Topics\" #DFFFDF {\n");
+          }
           builder.append(bufferBroker.toString());
-          builder.append("}\n");
+          if (groupTopics) {
+            builder.append("}\n");
+          }
         }
 
         if (bufferStores.length() > 0) {
-          builder.append("package \"Stores\" {\n");
+          final boolean groupStores = this.modeGroupStores;
+          if (groupStores) {
+            builder.append("package \"Stores\" #FFDFDF {\n");
+          }
           builder.append(bufferStores.toString());
-          builder.append("}\n");
+          if (groupStores) {
+            builder.append("}\n");
+          }
         }
 
         if (bufferOthers.length() > 0) {
@@ -239,7 +290,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
         }
       }
 
-      parser.getTopologies().stream().forEach(topology -> {
+      parser.getTopologies().forEach(topology -> {
         Stream.concat(topology.subTopologies.stream().flatMap(st -> st.children.values().stream()), topology.orphans.stream())
             .forEach(element -> {
               final String elemKey = keys.get(element.id);
@@ -251,17 +302,17 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
                   .forEach(src -> {
                     builder.append(format("%s -->> %s%n", keys.get(src.id), elemKey));
                   });
-              element.dataItems.values().stream().flatMap(di -> di.stream()).forEach(dataItemName -> {
+              element.dataItems.values().stream().flatMap(Collection::stream).forEach(dataItemName -> {
                 final String link;
                 switch (KStreamType.find(element)) {
                   case SOURCE:
-                    link = "<|==";
+                    link = "<<=.=";
                     break;
                   case SINK:
-                    link = "==|>";
+                    link = "=.=>>";
                     break;
                   default:
-                    link = "==";
+                    link = "=.=";
                     break;
                 }
                 builder.append(format("%s %s %s%n", elemKey, link, keys.get(dataItemName)));
@@ -286,18 +337,55 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   }
 
   @Override
-  protected boolean isCopyAsAscIIImageInClipboardAllowed() {
-    return false;
-  }
+  protected void addCustomComponents(@Nonnull final JPanel panel, @Nonnull final GridBagConstraints gbdata) {
+    this.modeGroupTopics = true;
+    this.modeGroupStores = true;
+    this.modeHoriz = false;
+    this.modeOrtho = false;
 
-  @Override
-  public boolean isSyntaxCorrect(@Nonnull final String text) {
-    try {
-      new KStreamsTopologyDescriptionParser(text);
-      return true;
-    } catch (Exception ex) {
-      return false;
-    }
+    final JButton buttonClipboardText = new JButton(ICON_PLANTUML);
+    buttonClipboardText.setToolTipText("Copy formed PlantUML script to clipboard");
+    buttonClipboardText.addActionListener((ActionEvent e) -> {
+      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(preprocessEditorText(editor.getText())), null);
+    });
+
+    final JCheckBox checkBoxGroupTopics = new JCheckBox("Group topics  ", this.modeGroupTopics);
+    checkBoxGroupTopics.setToolTipText("Group all topics on scheme together");
+    checkBoxGroupTopics.addActionListener((x) -> {
+      this.modeGroupTopics = checkBoxGroupTopics.isSelected();
+      resetLastRendered();
+      startRenderScript();
+    });
+
+    final JCheckBox checkBoxGroupStores = new JCheckBox("Group stores  ", this.modeGroupStores);
+    checkBoxGroupStores.setToolTipText("Group all stores on scheme together");
+    checkBoxGroupStores.addActionListener((x) -> {
+      this.modeGroupStores = checkBoxGroupStores.isSelected();
+      resetLastRendered();
+      startRenderScript();
+    });
+
+    final JCheckBox checkBoxOrtho = new JCheckBox("Orthogonal lines  ", this.modeOrtho);
+    checkBoxOrtho.setToolTipText("Orthogonal connector lines");
+    checkBoxOrtho.addActionListener((x) -> {
+      this.modeOrtho = checkBoxOrtho.isSelected();
+      resetLastRendered();
+      startRenderScript();
+    });
+
+    final JCheckBox checkBoxHorizontal = new JCheckBox("Horizontal layout  ", this.modeHoriz);
+    checkBoxHorizontal.setToolTipText("Horizontal layouting of components");
+    checkBoxHorizontal.addActionListener((x) -> {
+      this.modeHoriz = checkBoxHorizontal.isSelected();
+      resetLastRendered();
+      startRenderScript();
+    });
+
+    panel.add(buttonClipboardText, gbdata);
+    panel.add(checkBoxGroupTopics, gbdata);
+    panel.add(checkBoxGroupStores, gbdata);
+    panel.add(checkBoxOrtho, gbdata);
+    panel.add(checkBoxHorizontal, gbdata);
   }
 
   private enum KStreamType {
@@ -334,38 +422,8 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     }
 
     String makePuml(final KStreamsTopologyDescriptionParser.TopologyElement element, @Nonnull final String alias) {
-      return format(this.pumlPattern, unicode(element.id).replace("-", "-\\n"), alias);
+      return format(this.pumlPattern, makePumlMultiline(unicode(element.id), 0), alias);
     }
-  }
-
-  @Override
-  protected void addCustomComponents(@Nonnull final JPanel panel, @Nonnull final GridBagConstraints gbdata) {
-    final JButton buttonClipboardText = new JButton(ICON_PLANTUML);
-    buttonClipboardText.setToolTipText("Copy formed PlantUML script to clipboard");
-    buttonClipboardText.addActionListener((ActionEvent e) -> {
-      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(preprocessEditorText(editor.getText())), null);
-    });
-
-
-    final JCheckBox checkBoxOrtho = new JCheckBox("Orthogonal lines  ", this.modeOrtho);
-    checkBoxOrtho.setToolTipText("Orthogonal connector lines");
-    checkBoxOrtho.addActionListener((x) -> {
-      this.modeOrtho = checkBoxOrtho.isSelected();
-      resetLastRendered();
-      startRenderScript();
-    });
-
-    final JCheckBox checkBoxHorizontal = new JCheckBox("Horizontal layout  ", this.modeHoriz);
-    checkBoxHorizontal.setToolTipText("Horizontal layouting of components");
-    checkBoxHorizontal.addActionListener((x) -> {
-      this.modeHoriz = checkBoxHorizontal.isSelected();
-      resetLastRendered();
-      startRenderScript();
-    });
-
-    panel.add(buttonClipboardText, gbdata);
-    panel.add(checkBoxOrtho, gbdata);
-    panel.add(checkBoxHorizontal, gbdata);
   }
 
   @Override

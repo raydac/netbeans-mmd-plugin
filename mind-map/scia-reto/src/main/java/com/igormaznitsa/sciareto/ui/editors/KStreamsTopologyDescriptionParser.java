@@ -27,7 +27,7 @@ public class KStreamsTopologyDescriptionParser {
     final List<ParsedItem> foundItems = new ArrayList<>();
     for (final String s : script.split("\\n")) {
       String lineText = s.trim();
-      if ("topology".equalsIgnoreCase(lineText)) {
+      if ("topology".equalsIgnoreCase(lineText) || "topology:".equalsIgnoreCase(lineText)) {
         lineText = "Topologies:";
       }
       if ("sub-topologies:".equalsIgnoreCase(lineText)) {
