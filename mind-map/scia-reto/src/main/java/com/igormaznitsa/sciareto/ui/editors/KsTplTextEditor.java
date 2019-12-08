@@ -123,11 +123,12 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   }
 
   @Nonnull
-  private String makeCommentNote(@Nonnull final KStreamsTopologyDescriptionParser.TopologyElement element) {
+  private String makeCommentNote(@Nullable String componentId, @Nonnull final KStreamsTopologyDescriptionParser.TopologyElement element) {
     if (element.comment == null || element.comment.isEmpty()) {
       return "";
     }
-    return format("note \"%s\" as %s%n", unicode(element.comment), "nte_" + element.id.hashCode() + Long.toHexString(System.nanoTime()));
+    final String noteId = "nte_" + Integer.toHexString(element.id.hashCode()) + '_' + Long.toHexString(System.nanoTime());
+    return format("note \"%s\" as %s%n%s%n", unicode(element.comment), noteId, componentId == null ? "" : componentId + " --> " + noteId);
   }
 
   @Nonnull
@@ -197,13 +198,14 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
         builder.append("rectangle \"Sub-topologies\" <<Sub-Topologies>> {\n");
         t.getSubTopologies().stream().sorted().forEach(subTopology -> {
           builder.append(format("package \"Sub-topology %s\" #DFDFFF {%n", unicode(subTopology.id)));
-          builder.append(makeCommentNote(subTopology));
+          builder.append(makeCommentNote(null, subTopology));
           subTopology.children.values().forEach(elem -> {
-            final String element = KStreamType.find(elem).makePuml(elem, keys.get(elem.id));
-            final String elementComment = makeCommentNote(elem);
-            builder.append(element).append(elementComment.isEmpty() ? "" : "{").append('\n');
+            final String elemKey = keys.get(elem.id);
+            final String element = KStreamType.find(elem).makePuml(elem, elemKey);
+            final String elementComment = makeCommentNote(elemKey, elem);
+            builder.append(element).append('\n');
             if (!elementComment.isEmpty()) {
-              builder.append(elementComment).append("}\n");
+              builder.append(elementComment).append('\n');
             }
           });
           builder.append("}\n");
@@ -211,11 +213,12 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
         builder.append("}\n");
 
         t.orphans.forEach(elem -> {
-          final String element = KStreamType.find(elem).makePuml(elem, keys.get(elem.id));
-          final String elementComment = makeCommentNote(elem);
-          builder.append(element).append(elementComment.isEmpty() ? "" : "{").append('\n');
+          final String elementKey = keys.get(elem.id);
+          final String element = KStreamType.find(elem).makePuml(elem, elementKey);
+          final String elementComment = makeCommentNote(elementKey, elem);
+          builder.append(element).append('\n');
           if (!elementComment.isEmpty()) {
-            builder.append(elementComment).append("}\n");
+            builder.append(elementComment).append('\n');
           }
         });
 
