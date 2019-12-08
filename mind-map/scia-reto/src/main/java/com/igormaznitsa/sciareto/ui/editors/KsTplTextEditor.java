@@ -286,6 +286,11 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   }
 
   @Override
+  protected boolean isCopyAsAscIIImageInClipboardAllowed() {
+    return false;
+  }
+
+  @Override
   public boolean isSyntaxCorrect(@Nonnull final String text) {
     try {
       new KStreamsTopologyDescriptionParser(text);
@@ -336,7 +341,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   @Override
   protected void addCustomComponents(@Nonnull final JPanel panel, @Nonnull final GridBagConstraints gbdata) {
     final JButton buttonClipboardText = new JButton(ICON_PLANTUML);
-    buttonClipboardText.setToolTipText("Copy PlantUML script to clipboard");
+    buttonClipboardText.setToolTipText("Copy formed PlantUML script to clipboard");
     buttonClipboardText.addActionListener((ActionEvent e) -> {
       Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(preprocessEditorText(editor.getText())), null);
     });

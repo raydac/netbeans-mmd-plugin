@@ -551,7 +551,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
 
   private void setMenuItemsEnable(final boolean enable) {
     for (final Component c : this.menu.getComponents()) {
-      if (c instanceof JButton) {
+      if (!(c instanceof JLabel)) {
         c.setEnabled(enable);
       }
     }
