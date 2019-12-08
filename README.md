@@ -16,7 +16,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.7 (SNAPSHOT)__
-- SR:  added support of KStreams topology rendering through PlantUML (kstpl file extenstion)
+- SR:  [added support of KStreams topology rendering through PlantUML (kstpl file extenstion)](https://twitter.com/IgorMaznitsa/status/1203732675971948545)
 - SR:  fixed application icon and title under some OS
 - ALL: added recognition of text presented dragged URI link as URI link
 - ALL: improved color chooser
