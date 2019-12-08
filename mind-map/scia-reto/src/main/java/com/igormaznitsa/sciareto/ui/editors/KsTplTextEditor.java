@@ -19,12 +19,12 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static com.igormaznitsa.sciareto.ui.UiUtils.loadIcon;
 import static java.lang.String.format;
 import static net.sourceforge.plantuml.StringUtils.unicode;
 
 
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.GridBagConstraints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -61,7 +61,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   private volatile boolean modeGroupTopics;
   private volatile boolean modeGroupStores;
 
-  private static final Icon ICON_PLANTUML = new ImageIcon(UiUtils.loadIcon("plantuml16.png"));
+  private static final Icon ICON_PLANTUML = new ImageIcon(loadIcon("clipboard_plantuml16.png"));
 
   @Override
   protected boolean isPageAllowed() {
