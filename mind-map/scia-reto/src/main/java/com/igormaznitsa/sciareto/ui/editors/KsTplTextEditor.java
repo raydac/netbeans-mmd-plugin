@@ -284,7 +284,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
         }
 
         if (bufferOthers.length() > 0) {
-          builder.append("package \"Others\" {\n");
+          builder.append("package \"Others\" #DDDDDD {\n");
           builder.append(bufferOthers.toString());
           builder.append("}\n");
         }
