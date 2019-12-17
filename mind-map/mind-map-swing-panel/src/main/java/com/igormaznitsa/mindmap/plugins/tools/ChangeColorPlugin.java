@@ -19,7 +19,7 @@ package com.igormaznitsa.mindmap.plugins.tools;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
-public class ChangeColorPlugin extends AbstractPopupMenuItem {
+public class ChangeColorPlugin extends AbstractPopupMenuItem implements ExternallyExecutedPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CHANGECOLOR);
 
@@ -43,7 +43,7 @@ public class ChangeColorPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic) {
     JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(
         context.getSelectedTopics().length > 0 ?
             Texts.getString("MMDGraphEditor.makePopUp.miColorsForSelected") :
@@ -53,9 +53,7 @@ public class ChangeColorPlugin extends AbstractPopupMenuItem {
     result.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        if (customProcessor != null) {
-          customProcessor.doJob(context, ChangeColorPlugin.this);
-        }
+        context.processPluginActivation(ChangeColorPlugin.this, topic);
       }
     });
     return result;

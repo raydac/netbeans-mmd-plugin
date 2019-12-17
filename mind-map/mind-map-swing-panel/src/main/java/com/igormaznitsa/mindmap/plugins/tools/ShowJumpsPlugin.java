@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.plugins.tools;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -38,7 +37,7 @@ public class ShowJumpsPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic) {
     JMenuItem result = UI_COMPO_FACTORY.makeCheckboxMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miShowJumps"), ICO, context.getPanel().isShowJumps());
     result.addActionListener(new ActionListener() {
       @Override

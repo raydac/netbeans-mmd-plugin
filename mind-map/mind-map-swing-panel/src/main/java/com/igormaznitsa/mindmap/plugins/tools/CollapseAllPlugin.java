@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.plugins.tools;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -37,7 +36,7 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"), ICO);
     result.setEnabled(context.getPanel().getModel().getRoot() != null);
     result.addActionListener(new ActionListener() {

@@ -19,6 +19,20 @@
 package com.igormaznitsa.sciareto.plugins.services;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
+
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
+import com.igormaznitsa.mindmap.print.MMDPrintPanel;
+import com.igormaznitsa.mindmap.print.PrintableObject;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Window;
@@ -30,19 +44,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
-import com.igormaznitsa.mindmap.print.MMDPrintPanel;
-import com.igormaznitsa.mindmap.print.PrintableObject;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
 

@@ -46,7 +46,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic, @Nullable final CustomJob processor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
     result.setToolTipText(getReference(context, activeTopic));
 
@@ -56,7 +56,9 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         try {
-          if (processor == null) {
+          if (theInstance instanceof ExternallyExecutedPlugin) {
+            context.processPluginActivation((ExternallyExecutedPlugin) theInstance, activeTopic);
+          } else {
             final JComponent options = makeOptions();
             if (options != null && !context.getDialogProvider().msgOkCancel(null, getName(context, activeTopic), options)) {
               return;
@@ -68,8 +70,6 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
               LOGGER.info("Export map into clipboard:" + AbstractExporter.this);
               doExportToClipboard(context, options);
             }
-          } else {
-            processor.doJob(context, theInstance);
           }
         } catch (Exception ex) {
           LOGGER.error("Error during map export", ex); //NOI18N

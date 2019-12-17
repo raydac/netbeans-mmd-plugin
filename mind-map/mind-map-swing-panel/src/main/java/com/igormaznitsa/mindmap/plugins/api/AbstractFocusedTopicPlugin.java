@@ -35,22 +35,19 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
   @Nullable
   public JMenuItem makeMenuItem(
       @Nonnull final PluginContext context,
-      @Nullable final Topic activeTopic,
-      @Nullable final CustomJob customProcessor) {
+      @Nullable final Topic activeTopic) {
 
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
 
     result.setToolTipText(getReference());
 
-    final AbstractFocusedTopicPlugin theInstance = this;
-
     result.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        if (customProcessor == null) {
-          doActionForTopic(context, activeTopic);
+        if (AbstractFocusedTopicPlugin.this instanceof ExternallyExecutedPlugin) {
+          context.processPluginActivation((ExternallyExecutedPlugin) AbstractFocusedTopicPlugin.this, activeTopic);
         } else {
-          customProcessor.doJob(context, theInstance);
+          doActionForTopic(context, activeTopic);
         }
       }
     });

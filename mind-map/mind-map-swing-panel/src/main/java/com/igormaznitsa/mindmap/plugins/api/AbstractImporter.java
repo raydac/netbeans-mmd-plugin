@@ -55,8 +55,7 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   @Nullable
   public JMenuItem makeMenuItem(
       @Nonnull final PluginContext context,
-      @Nullable final Topic activeTopic,
-      @Nullable final CustomJob processor
+      @Nullable final Topic activeTopic
   ) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context), getIcon(context));
     result.setToolTipText(getReference(context));
@@ -67,7 +66,9 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         try {
-          if (processor == null) {
+          if (AbstractImporter.this instanceof ExternallyExecutedPlugin) {
+            context.processPluginActivation((ExternallyExecutedPlugin) AbstractImporter.this, activeTopic);
+          } else {
             context.getPanel().removeAllSelection();
             final MindMap map = doImport(context);
             if (map != null) {
@@ -82,8 +83,6 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
                 }
               });
             }
-          } else {
-            processor.doJob(context, theInstance);
           }
         } catch (Exception ex) {
           LOGGER.error("Error during map import", ex); //NOI18N

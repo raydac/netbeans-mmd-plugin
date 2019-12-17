@@ -22,7 +22,6 @@ import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -43,7 +42,7 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("Emoticons.MenuTitle"), ICON);
     result.setToolTipText(BUNDLE.getString("Emoticons.MenuTooltip"));
     result.addActionListener(new ActionListener() {

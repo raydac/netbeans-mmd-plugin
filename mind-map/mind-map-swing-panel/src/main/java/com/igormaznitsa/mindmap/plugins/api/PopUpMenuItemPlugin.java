@@ -33,7 +33,7 @@ public interface PopUpMenuItemPlugin extends MindMapPlugin {
 
   @Weight(Weight.Unit.LIGHT)
   @Nullable
-  JMenuItem makeMenuItem(@Nonnull PluginContext context, @Nullable Topic activeTopic, @Nullable CustomJob customJob);
+  JMenuItem makeMenuItem(@Nonnull PluginContext context, @Nullable Topic activeTopic);
 
   @Nonnull
   PopUpSection getSection();

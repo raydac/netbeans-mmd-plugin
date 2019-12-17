@@ -47,5 +47,5 @@ public interface PluginContext {
   @MustNotContainNull
   Topic[] getSelectedTopics();
 
-
+  void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin, @Nullable Topic activeTopic);
 }

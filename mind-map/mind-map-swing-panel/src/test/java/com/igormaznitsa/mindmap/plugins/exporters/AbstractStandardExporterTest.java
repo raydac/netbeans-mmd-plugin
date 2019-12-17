@@ -24,12 +24,15 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import org.junit.Test;
 
@@ -47,10 +50,14 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
 
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     
-    final PluginContext context = new PluginContext(){
+    final PluginContext context = new PluginContext() {
       @Override
       public MindMapPanelConfig getPanelConfig() {
         return config;
+      }
+
+      @Override
+      public void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin, @Nullable Topic activeTopic) {
       }
 
       @Override

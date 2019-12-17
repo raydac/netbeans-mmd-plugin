@@ -18,26 +18,45 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
+
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
-import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
-import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
-import com.igormaznitsa.mindmap.model.*;
-import com.igormaznitsa.mindmap.model.Extra.ExtraType;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MindMapController;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.swing.panel.*;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
+import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
@@ -46,6 +65,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -56,16 +76,20 @@ import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import org.apache.commons.io.FileUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
@@ -76,16 +100,25 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
-import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
-import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 public final class MMDEditor extends AbstractEditor implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
@@ -377,8 +410,6 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     config.loadFrom(PreferencesManager.getInstance().getPreferences());
     return config;
   }
-
-  private transient Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors = null;
 
   @Nonnull
   public MindMapPanel getMindMapPanel() {

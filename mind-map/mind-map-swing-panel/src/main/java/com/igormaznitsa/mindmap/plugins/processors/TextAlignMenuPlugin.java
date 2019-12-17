@@ -21,7 +21,6 @@ import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
-import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.TextAlign;
@@ -49,7 +48,7 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
     final JMenu result = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("TextAlign.Plugin.MenuTitle"));
     result.setIcon(ICON);
 
