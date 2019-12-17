@@ -46,7 +46,7 @@ public interface VisualAttributePlugin extends AttributePlugin {
    * @param clickCount detected number of mouse clicks
    * @return true if the map was changed for the operation, false otherwise
    */
-  boolean onClick(@Nonnull PluginContext context,@Nonnull Topic topic, int clickCount);
+  boolean onClick(@Nonnull PluginContext context, @Nonnull Topic topic, int clickCount);
 
   /**
    * Get tool-tip for image represents the attribute.

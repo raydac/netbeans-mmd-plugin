@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
 import com.igormaznitsa.mindmap.model.Topic;
@@ -22,7 +23,6 @@ import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.Renderable;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Image;

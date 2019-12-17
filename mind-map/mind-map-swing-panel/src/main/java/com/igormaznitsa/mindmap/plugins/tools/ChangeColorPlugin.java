@@ -16,14 +16,11 @@
 
 package com.igormaznitsa.mindmap.plugins.tools;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -46,7 +43,7 @@ public class ChangeColorPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context,@Nullable final Topic topic, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic, @Nullable final CustomJob customProcessor) {
     JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(
         context.getSelectedTopics().length > 0 ?
             Texts.getString("MMDGraphEditor.makePopUp.miColorsForSelected") :

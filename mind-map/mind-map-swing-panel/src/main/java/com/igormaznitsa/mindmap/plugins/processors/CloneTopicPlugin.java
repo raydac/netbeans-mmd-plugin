@@ -16,13 +16,10 @@
 
 package com.igormaznitsa.mindmap.plugins.processors;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -52,7 +49,7 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
   }
 
   @Override
-  protected void doActionForTopic(@Nonnull final PluginContext context,@Nullable final Topic activeTopic) {
+  protected void doActionForTopic(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
     final Topic toClone = context.getSelectedTopics().length > 0 ? context.getSelectedTopics()[0] : activeTopic;
 
     if (toClone != null) {
@@ -77,8 +74,8 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
 
   @Override
   public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    return (context.getSelectedTopics().length == 1 
-            && !context.getSelectedTopics()[0].isRoot()) || (context.getSelectedTopics().length == 0 && activeTopic != null && !activeTopic.isRoot());
+    return (context.getSelectedTopics().length == 1
+        && !context.getSelectedTopics()[0].isRoot()) || (context.getSelectedTopics().length == 0 && activeTopic != null && !activeTopic.isRoot());
   }
 
   @Override

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -104,14 +105,14 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
             final AtomicInteger selectedItem = new AtomicInteger(-1);
 
-            if (context.getDialogProvider().msgOkCancel(null, BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[]{BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
+            if (context.getDialogProvider().msgOkCancel(null, BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[] {BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
               lastSelectedImportIndex = selectedItem.get();
 
               if (selectedItem.get() == 0) {
                 try {
                   final String rescaledImageAsBase64 = Utils.rescaleImageAndEncodeAsBase64((Image) transferable.getTransferData(DataFlavor.imageFlavor), Utils.getMaxImageSize());
                   final String filePath = null;
-                  setAttribute(rescaledImageAsBase64,  activeTopic, filePath, context);
+                  setAttribute(rescaledImageAsBase64, activeTopic, filePath, context);
                   context.getPanel().doNotifyModelChanged(true);
                 } catch (final IllegalArgumentException ex) {
                   context.getDialogProvider().msgError(null, BUNDLE.getString("Images.Plugin.Error"));
@@ -128,7 +129,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
           }
 
           if (loadFromFile) {
-            final File selected = context.getDialogProvider().msgOpenFileDialog(null, "select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, new FileFilter[]{IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
+            final File selected = context.getDialogProvider().msgOpenFileDialog(null, "select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, new FileFilter[] {IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
             if (selected != null) {
               lastSelectedFile = selected;
               try {

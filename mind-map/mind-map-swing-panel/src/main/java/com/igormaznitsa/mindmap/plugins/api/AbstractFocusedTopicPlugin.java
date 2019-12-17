@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.Topic;
@@ -33,9 +34,9 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
   @Override
   @Nullable
   public JMenuItem makeMenuItem(
-          @Nonnull final PluginContext context, 
-          @Nullable final Topic activeTopic,
-          @Nullable final CustomJob customProcessor) {
+      @Nonnull final PluginContext context,
+      @Nullable final Topic activeTopic,
+      @Nullable final CustomJob customProcessor) {
 
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
 

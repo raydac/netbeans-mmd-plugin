@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.colorpicker;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -51,18 +52,17 @@ public final class ColorChooser {
   private static final int PALETTE_ROWS = 10;
   private final ColorPickerPanel colorPicker;
   private final ColorPickerPanel presentedColors;
-  private Color tunedColor;
   private final JLabel sampleDarkFill;
   private final JLabel sampleLightFill;
   private final JLabel sampleDarkText;
   private final JLabel sampleLightText;
   private final JPanel panel;
-
   private final Icon COLOR_WHEEL_ICON = new ImageIcon(ColorChooser.class.getResource("/com/igormaznitsa/mindmap/swing/panel/icons/color_wheel32.png"));
+  private Color tunedColor;
 
   public ColorChooser(
-          @Nullable @MustNotContainNull final List<Color> mapColors,
-          @Nullable final Color selectedColor
+      @Nullable @MustNotContainNull final List<Color> mapColors,
+      @Nullable final Color selectedColor
   ) {
     final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
     this.panel = componentFactory.makePanel();
@@ -155,11 +155,11 @@ public final class ColorChooser {
         Color choosedColor = null;
         try {
           choosedColor = (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class, Color.class, boolean.class)
-                  .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground(), false);
+              .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground(), false);
         } catch (Exception ex) {
           try {
             choosedColor = (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class, Color.class)
-                    .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground());
+                .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground());
           } catch (Exception exx) {
             choosedColor = null;
             JOptionPane.showMessageDialog(panel, exx.getMessage(), "Internal error", JOptionPane.ERROR_MESSAGE);

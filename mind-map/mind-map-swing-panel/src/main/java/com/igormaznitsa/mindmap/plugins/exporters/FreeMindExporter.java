@@ -20,7 +20,6 @@ package com.igormaznitsa.mindmap.plugins.exporters;
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_COLLAPSED;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
+
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
@@ -247,7 +249,7 @@ public final class MindMapUtils {
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
-    return panel.getController().getDialogProvider(panel).msgSaveFileDialog(null, "user-dir", title, home, true, new FileFilter[]{new FileFilter() { //NOI18N
+    return panel.getController().getDialogProvider(panel).msgSaveFileDialog(null, "user-dir", title, home, true, new FileFilter[] {new FileFilter() { //NOI18N
       @Override
       public boolean accept(@Nonnull final File f) {
         return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
@@ -267,7 +269,7 @@ public final class MindMapUtils {
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
-    return panel.getController().getDialogProvider(panel).msgOpenFileDialog(null, "user-dir", title, home, true, new FileFilter[]{new FileFilter() { //NOI18N
+    return panel.getController().getDialogProvider(panel).msgOpenFileDialog(null, "user-dir", title, home, true, new FileFilter[] {new FileFilter() { //NOI18N
       @Override
       public boolean accept(@Nonnull final File f) {
         return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
@@ -331,7 +333,7 @@ public final class MindMapUtils {
    * Generate sub tree for whitespace offsets in text lines.
    *
    * @param topic topic to be root for generated text
-   * @param text text source to make topics
+   * @param text  text source to make topics
    * @return same root topic provided as argument
    * @since 1.4.7
    */

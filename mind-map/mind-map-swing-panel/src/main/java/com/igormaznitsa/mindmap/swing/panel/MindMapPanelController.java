@@ -45,7 +45,7 @@ public interface MindMapPanelController {
 
   @Nonnull
   PluginContext makePluginContext(@Nonnull MindMapPanel source);
-  
+
   @Nonnull
   MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull MindMapPanel source);
 

@@ -54,8 +54,8 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   @Override
   @Nullable
   public JMenuItem makeMenuItem(
-          @Nonnull final PluginContext context,
-          @Nullable final Topic activeTopic,
+      @Nonnull final PluginContext context,
+      @Nullable final Topic activeTopic,
       @Nullable final CustomJob processor
   ) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context), getIcon(context));

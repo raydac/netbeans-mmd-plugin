@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
+
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
+
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.awt.Dimension;

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
 
 /**
  * Interface describes context where executed or activated plug-in.
+ *
  * @since 1.4.7
  */
 public interface PluginContext {
@@ -34,16 +36,16 @@ public interface PluginContext {
 
   @Nonnull
   MindMapController getController();
-  
+
   @Nonnull
   MindMapPanel getPanel();
 
-  @Nonnull 
+  @Nonnull
   DialogProvider getDialogProvider();
-          
+
   @Nullable
-  @MustNotContainNull 
+  @MustNotContainNull
   Topic[] getSelectedTopics();
-  
-  
+
+
 }

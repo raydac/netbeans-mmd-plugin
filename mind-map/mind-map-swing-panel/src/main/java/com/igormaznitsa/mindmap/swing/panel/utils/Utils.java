@@ -27,8 +27,6 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
@@ -70,7 +68,6 @@ import java.util.zip.ZipFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
-import javax.naming.Context;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -775,7 +772,7 @@ public final class Utils {
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> findPopupMenuItems(
-          @Nonnull final PluginContext context,
+      @Nonnull final PluginContext context,
       @Nonnull final PopUpSection section,
       final boolean fullScreenModeActive,
       @Nonnull @MayContainNull final List<JMenuItem> list,
@@ -845,7 +842,7 @@ public final class Utils {
 
   @Nonnull
   public static JPopupMenu makePopUp(
-          @Nonnull final PluginContext context,
+      @Nonnull final PluginContext context,
       final boolean fullScreenModeActive,
       @Nullable final Topic topicUnderMouse,
       @Nonnull Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors

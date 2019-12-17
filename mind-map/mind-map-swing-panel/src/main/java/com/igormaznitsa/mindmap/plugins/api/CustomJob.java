@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.plugins.api;
 
 import javax.annotation.Nonnull;
@@ -30,10 +31,10 @@ public interface CustomJob {
    * Business logic for the job.
    *
    * @param context the execution context
-   * @param plugin the plug-in calling the job.
+   * @param plugin  the plug-in calling the job.
    */
   void doJob(
-          @Nonnull PluginContext context,
-          @Nonnull PopUpMenuItemPlugin plugin);
+      @Nonnull PluginContext context,
+      @Nonnull PopUpMenuItemPlugin plugin);
 
 }

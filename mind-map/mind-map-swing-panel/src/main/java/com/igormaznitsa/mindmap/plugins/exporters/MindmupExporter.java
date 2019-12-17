@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.plugins.exporters;
 import static com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin.ATTR_KEY;
 
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;

@@ -47,8 +47,8 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   @Override
   @Nullable
   public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic, @Nullable final CustomJob processor) {
-    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context,activeTopic), getIcon(context, activeTopic));
-    result.setToolTipText(getReference(context,activeTopic));
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
+    result.setToolTipText(getReference(context, activeTopic));
 
     final AbstractPopupMenuItem theInstance = this;
 
@@ -58,7 +58,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
         try {
           if (processor == null) {
             final JComponent options = makeOptions();
-            if (options != null && !context.getDialogProvider().msgOkCancel(null, getName(context,activeTopic), options)) {
+            if (options != null && !context.getDialogProvider().msgOkCancel(null, getName(context, activeTopic), options)) {
               return;
             }
             if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
