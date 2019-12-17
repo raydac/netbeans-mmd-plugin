@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
-
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.awt.Dimension;
@@ -45,7 +40,7 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic, @Nullable final CustomJob customProcessor) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("Emoticons.MenuTitle"), ICON);
     result.setToolTipText(BUNDLE.getString("Emoticons.MenuTooltip"));
     result.addActionListener(new ActionListener() {
@@ -57,17 +52,17 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
         scrollPane.getVerticalScrollBar().setBlockIncrement(96);
         scrollPane.setPreferredSize(new Dimension(512, 400));
         scrollPane.setViewportView(iconPanel);
-        if (dialogProvider.msgOkCancel(null, BUNDLE.getString("Emoticons.DialogTitle"), scrollPane)) {
+        if (context.getDialogProvider().msgOkCancel(null, BUNDLE.getString("Emoticons.DialogTitle"), scrollPane)) {
           final String emoticonName = iconPanel.getSelectedName();
           if (emoticonName != null) {
             final boolean changed;
             if ("empty".equals(emoticonName)) {
-              changed = setAttribute(null, topic, selectedTopics);
+              changed = setAttribute(null, context, activeTopic);
             } else {
-              changed = setAttribute(emoticonName, topic, selectedTopics);
+              changed = setAttribute(emoticonName, context, activeTopic);
             }
             if (changed) {
-              panel.doNotifyModelChanged(true);
+              context.getPanel().doNotifyModelChanged(true);
             }
           }
         }
@@ -76,16 +71,16 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
     return result;
   }
 
-  private boolean setAttribute(@Nullable final String value, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] topics) {
+  private boolean setAttribute(@Nullable final String value, @Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
     boolean changed = false;
-    if (topic != null) {
-      final String old = topic.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
+    if (activeTopic != null) {
+      final String old = activeTopic.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
       if (!safeObjectEquals(old, value)) {
-        topic.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
+        activeTopic.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
         changed = true;
       }
     }
-    for (final Topic t : topics) {
+    for (final Topic t : context.getSelectedTopics()) {
       final String old = t.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
       if (!safeObjectEquals(old, value)) {
         t.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);

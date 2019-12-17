@@ -23,6 +23,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -48,27 +49,27 @@ public class RemoveTopicPlugin extends AbstractFocusedTopicPlugin {
 
   @Override
   @Nullable
-  protected Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  protected Icon getIcon(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
     return ICO;
   }
 
   @Override
   @Nonnull
-  protected String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return selectedTopics.length > 0 ? Texts.getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") : Texts.getString("MMDGraphEditor.makePopUp.miRemoveTheTopic");
+  protected String getName(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+    return context.getSelectedTopics().length > 0 ? Texts.getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") : Texts.getString("MMDGraphEditor.makePopUp.miRemoveTheTopic");
   }
 
   @Override
-  protected void doActionForTopic(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    if (panel.hasSelectedTopics()) {
-      panel.deleteSelectedTopics(false);
+  protected void doActionForTopic(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+    if (context.getPanel().hasSelectedTopics()) {
+      context.getPanel().deleteSelectedTopics(false);
     } else {
-      panel.deleteTopics(false, assertNotNull(actionTopic));
+      context.getPanel().deleteTopics(false, assertNotNull(activeTopic));
     }
   }
 
   @Override
-  public boolean isEnabled(@Nonnull final MindMapPanel panel, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  public boolean isEnabled(@Nonnull final PluginContext context,@Nullable final Topic activeTopic) {
     return true;
   }
 

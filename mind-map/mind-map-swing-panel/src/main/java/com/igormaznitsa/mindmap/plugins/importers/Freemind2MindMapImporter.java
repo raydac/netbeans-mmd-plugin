@@ -31,6 +31,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -179,8 +180,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
   @Override
   @Nullable
-  public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-    final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.Freemind2MindMap.openDialogTitle"), "mm", "Freemind files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
+  public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
+    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Freemind2MindMap.openDialogTitle"), "mm", "Freemind files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
@@ -312,19 +313,19 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
   @Override
   @Nonnull
-  public String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  public String getName(@Nonnull final PluginContext context) {
     return Texts.getString("MMDImporters.Freemind2MindMap.Name");
   }
 
   @Override
   @Nonnull
-  public String getReference(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  public String getReference(@Nonnull final PluginContext context) {
     return Texts.getString("MMDImporters.Freemind2MindMap.Reference");
   }
 
   @Override
   @Nonnull
-  public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  public Icon getIcon(@Nonnull final PluginContext context) {
     return ICO;
   }
 

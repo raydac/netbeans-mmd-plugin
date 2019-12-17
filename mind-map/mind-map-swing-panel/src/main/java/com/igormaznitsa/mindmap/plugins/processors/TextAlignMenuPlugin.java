@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.TextAlign;
@@ -49,17 +50,17 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic, @Nullable final CustomJob customProcessor) {
     final JMenu result = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("TextAlign.Plugin.MenuTitle"));
     result.setIcon(ICON);
 
     final ButtonGroup buttonGroup = UI_COMPO_FACTORY.makeButtonGroup();
 
     final Topic[] workTopics;
-    if (topic == null) {
-      workTopics = selectedTopics;
+    if (activeTopic == null) {
+      workTopics = context.getSelectedTopics();
     } else {
-      workTopics = ArrayUtils.append(topic, selectedTopics);
+      workTopics = ArrayUtils.append(activeTopic, context.getSelectedTopics());
     }
 
     final TextAlign sharedTextAlign = findSharedTextAlign(workTopics);
@@ -79,21 +80,21 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
     menuLeft.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        setAlignValue(panel, workTopics, TextAlign.LEFT);
+        setAlignValue(context.getPanel(), workTopics, TextAlign.LEFT);
       }
     });
 
     menuCenter.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        setAlignValue(panel, workTopics, TextAlign.CENTER);
+        setAlignValue(context.getPanel(), workTopics, TextAlign.CENTER);
       }
     });
 
     menuRight.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        setAlignValue(panel, workTopics, TextAlign.RIGHT);
+        setAlignValue(context.getPanel(), workTopics, TextAlign.RIGHT);
       }
     });
 

@@ -17,7 +17,6 @@
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,7 +46,7 @@ public interface VisualAttributePlugin extends AttributePlugin {
    * @param clickCount detected number of mouse clicks
    * @return true if the map was changed for the operation, false otherwise
    */
-  boolean onClick(@Nonnull MindMapPanel panel, @Nonnull Topic topic, int clickCount);
+  boolean onClick(@Nonnull PluginContext context,@Nonnull Topic topic, int clickCount);
 
   /**
    * Get tool-tip for image represents the attribute.
@@ -57,7 +56,7 @@ public interface VisualAttributePlugin extends AttributePlugin {
    * @return text to be shown as tool-tip or null if nothing
    */
   @Nullable
-  String getToolTip(@Nonnull MindMapPanel panel, @Nonnull Topic topic);
+  String getToolTip(@Nonnull PluginContext context, @Nonnull Topic topic);
 
   /**
    * Is the visual attribute clickable one.
@@ -66,5 +65,5 @@ public interface VisualAttributePlugin extends AttributePlugin {
    * @param topic the topic
    * @return true if the attribute is clickable one, false otherwise
    */
-  boolean isClickable(@Nonnull MindMapPanel panel, @Nonnull Topic topic);
+  boolean isClickable(@Nonnull PluginContext context, @Nonnull Topic topic);
 }

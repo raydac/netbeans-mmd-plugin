@@ -22,8 +22,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.CustomJob;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -72,8 +71,8 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
   @Override
   @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics, @Nullable final CustomJob customProcessor) {
-    final boolean hasAttribute = containAttribute(topic, selectedTopics);
+  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic, @Nullable final CustomJob customJob) {
+    final boolean hasAttribute = containAttribute(context, activeTopic);
 
     final JMenuItem result;
     if (hasAttribute) {
@@ -82,10 +81,10 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
       result.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          if (dialogProvider.msgConfirmYesNo(null, BUNDLE.getString("Images.Plugin.Remove.Dialog.Title"), BUNDLE.getString("Images.Plugin.Remove.Dialog.Text"))) {//NOI18N
-            setAttribute(null, topic, selectedTopics);
+          if (context.getDialogProvider().msgConfirmYesNo(null, BUNDLE.getString("Images.Plugin.Remove.Dialog.Title"), BUNDLE.getString("Images.Plugin.Remove.Dialog.Text"))) {//NOI18N
+            setAttribute(null, activeTopic, null, context);
             ImageVisualAttributePlugin.clearCachedImages();
-            panel.doNotifyModelChanged(true);
+            context.getPanel().doNotifyModelChanged(true);
           }
         }
       });
@@ -105,18 +104,20 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
             final AtomicInteger selectedItem = new AtomicInteger(-1);
 
-            if (dialogProvider.msgOkCancel(null, BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[]{BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
+            if (context.getDialogProvider().msgOkCancel(null, BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[]{BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
               lastSelectedImportIndex = selectedItem.get();
 
               if (selectedItem.get() == 0) {
                 try {
-                  setAttribute(Utils.rescaleImageAndEncodeAsBase64((Image) transferable.getTransferData(DataFlavor.imageFlavor), Utils.getMaxImageSize()), topic, selectedTopics);
-                  panel.doNotifyModelChanged(true);
+                  final String rescaledImageAsBase64 = Utils.rescaleImageAndEncodeAsBase64((Image) transferable.getTransferData(DataFlavor.imageFlavor), Utils.getMaxImageSize());
+                  final String filePath = null;
+                  setAttribute(rescaledImageAsBase64,  activeTopic, filePath, context);
+                  context.getPanel().doNotifyModelChanged(true);
                 } catch (final IllegalArgumentException ex) {
-                  dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
+                  context.getDialogProvider().msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                   LOGGER.error("Can't import from clipboard image", ex); //NOI18N
                 } catch (final Exception ex) {
-                  dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
+                  context.getDialogProvider().msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                   LOGGER.error("Unexpected error during image import from clipboard", ex); //NOI18N
                 }
                 loadFromFile = false;
@@ -127,17 +128,19 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
           }
 
           if (loadFromFile) {
-            final File selected = dialogProvider.msgOpenFileDialog(null, "select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, new FileFilter[]{IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
+            final File selected = context.getDialogProvider().msgOpenFileDialog(null, "select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, new FileFilter[]{IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
             if (selected != null) {
               lastSelectedFile = selected;
               try {
-                setAttribute(Utils.rescaleImageAndEncodeAsBase64(selected, Utils.getMaxImageSize()), topic, selectedTopics);
-                panel.doNotifyModelChanged(true);
+                final String rescaledImageAsBase64 = Utils.rescaleImageAndEncodeAsBase64(selected, Utils.getMaxImageSize());
+                final String filePath = selected.getAbsolutePath();
+                setAttribute(rescaledImageAsBase64, activeTopic, filePath, context);
+                context.getPanel().doNotifyModelChanged(true);
               } catch (final IllegalArgumentException ex) {
-                dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
+                context.getDialogProvider().msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                 LOGGER.warn("Can't load image file : " + selected); //NOI18N
               } catch (final Exception ex) {
-                dialogProvider.msgError(null, BUNDLE.getString("Images.Plugin.Error"));
+                context.getDialogProvider().msgError(null, BUNDLE.getString("Images.Plugin.Error"));
                 LOGGER.error("Unexpected error during loading of image file : " + selected, ex); //NOI18N
               }
             }
@@ -188,13 +191,13 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     return panel;
   }
 
-  private boolean containAttribute(@Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] topics) {
+  private boolean containAttribute(@Nonnull PluginContext context, @Nullable final Topic activeTopic) {
     boolean result = false;
-    if (topic != null) {
-      result |= topic.getAttribute(ImageVisualAttributePlugin.ATTR_KEY) != null;
+    if (activeTopic != null) {
+      result |= activeTopic.getAttribute(ImageVisualAttributePlugin.ATTR_KEY) != null;
     }
     if (!result) {
-      for (final Topic t : topics) {
+      for (final Topic t : context.getSelectedTopics()) {
         result |= t.getAttribute(ImageVisualAttributePlugin.ATTR_KEY) != null;
         if (result) {
           break;
@@ -204,12 +207,14 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     return result;
   }
 
-  private void setAttribute(@Nullable final String value, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] topics) {
-    if (topic != null) {
-      topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, value);
+  private void setAttribute(@Nullable final String packedImage, @Nullable final Topic activeTopic, @Nullable final String imageFilePath, @Nullable final PluginContext context) {
+    if (activeTopic != null) {
+      activeTopic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
+      activeTopic.setAttribute(ImageVisualAttributePlugin.ATTR_FILE_KEY, imageFilePath);
     }
-    for (final Topic t : topics) {
-      t.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, value);
+    for (final Topic t : context.getSelectedTopics()) {
+      t.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
+      t.setAttribute(ImageVisualAttributePlugin.ATTR_FILE_KEY, imageFilePath);
     }
   }
 

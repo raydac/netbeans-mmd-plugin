@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.annotation.Nonnull;
@@ -37,12 +33,12 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
   @Override
   @Nullable
   public JMenuItem makeMenuItem(
-      @Nonnull final MindMapPanel panel,
-      @Nonnull final DialogProvider dialogProvider,
-      @Nullable final Topic actionTopic,
-      @Nonnull @MustNotContainNull final Topic[] selectedTopics,
-      @Nullable final CustomJob customProcessor) {
-    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
+          @Nonnull final PluginContext context, 
+          @Nullable final Topic activeTopic,
+          @Nullable final CustomJob customProcessor) {
+
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
+
     result.setToolTipText(getReference());
 
     final AbstractFocusedTopicPlugin theInstance = this;
@@ -51,9 +47,9 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         if (customProcessor == null) {
-          doActionForTopic(panel, dialogProvider, actionTopic, selectedTopics);
+          doActionForTopic(context, activeTopic);
         } else {
-          customProcessor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
+          customProcessor.doJob(context, theInstance);
         }
       }
     });
@@ -71,10 +67,10 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
   }
 
   @Nonnull
-  protected abstract Icon getIcon(@Nonnull MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
+  protected abstract Icon getIcon(@Nonnull PluginContext context, @Nullable Topic activeTopic);
 
   @Nonnull
-  protected abstract String getName(@Nonnull MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
+  protected abstract String getName(@Nonnull PluginContext context, @Nullable Topic activeTopic);
 
   @Nullable
   protected String getReference() {
@@ -82,10 +78,10 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
   }
 
   @Override
-  public boolean isEnabled(@Nonnull final MindMapPanel panel, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-    return selectedTopics.length == 1 || (selectedTopics.length == 0 && topic != null);
+  public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+    return context.getSelectedTopics().length == 1 || (context.getSelectedTopics().length == 0 && activeTopic != null);
   }
 
-  protected abstract void doActionForTopic(@Nonnull MindMapPanel panel, @Nonnull DialogProvider dialogProvider, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
+  protected abstract void doActionForTopic(@Nonnull PluginContext context, @Nullable Topic actionTopic);
 
 }

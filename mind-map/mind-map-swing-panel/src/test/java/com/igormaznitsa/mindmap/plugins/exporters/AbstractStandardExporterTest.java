@@ -21,7 +21,11 @@ import static org.mockito.Mockito.when;
 
 
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MindMapController;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import java.io.ByteArrayOutputStream;
@@ -42,7 +46,42 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
     when(panel.getConfiguration()).thenReturn(config);
 
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    exporter.doExport(panel, prepareOptions(), buffer);
+    
+    final PluginContext context = new PluginContext(){
+      @Override
+      public MindMapPanelConfig getPanelConfig() {
+        return config;
+      }
+
+      @Override
+      public MindMapController getController() {
+        return new MindMapController() {
+          @Override
+          public boolean canBeDeletedSilently(MindMap map, Topic topic) {
+            return true;
+          }
+        };
+      }
+
+      @Override
+      public MindMapPanel getPanel() {
+        return panel;
+      }
+
+      @Override
+      public DialogProvider getDialogProvider() {
+        throw new UnsupportedOperationException("Not supported.");
+      }
+
+      @Override
+      public Topic[] getSelectedTopics() {
+        return new Topic[0];
+      }
+      
+    };
+    
+    
+    exporter.doExport(context, prepareOptions(), buffer);
     return buffer.toByteArray();
   }
 

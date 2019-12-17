@@ -21,6 +21,7 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -44,12 +45,12 @@ public class Text2MindMapImporter extends AbstractImporter {
 
   @Override
   @Nullable
-  public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-    final File file = this.selectFileForExtension(panel, Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), "txt", "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
+  public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
+    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), "txt", "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
     MindMap result = null;
     if (file != null) {
       final List<String> lines = FileUtils.readLines(file, "UTF-8");
-      result = makeFromLines(lines, panel.getModel().getController());
+      result = makeFromLines(lines, context.getController());
     }
     return result;
   }
@@ -160,19 +161,19 @@ public class Text2MindMapImporter extends AbstractImporter {
 
   @Override
   @Nonnull
-  public String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  public String getName(@Nonnull final PluginContext context) {
     return Texts.getString("MMDImporters.Text2MindMap.Name");
   }
 
   @Override
   @Nonnull
-  public String getReference(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  public String getReference(@Nonnull final PluginContext context) {
     return Texts.getString("MMDImporters.Text2MindMap.Reference");
   }
 
   @Override
   @Nonnull
-  public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  public Icon getIcon(@Nonnull final PluginContext context) {
     return ICO;
   }
 

@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -194,7 +195,7 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   @Nonnull
-  private String makeContent(@Nonnull final MindMapPanel panel, @Nullable final JComponent options) throws IOException {
+  private String makeContent(@Nonnull final PluginContext context, @Nullable final JComponent options) throws IOException {
     if (options instanceof HasOptions) {
       final HasOptions opts = (HasOptions) options;
       this.flagExpandAllNodes = Boolean.parseBoolean(opts.getOption(Options.KEY_EXPAND_ALL));
@@ -212,14 +213,14 @@ public class SVGImageExporter extends AbstractExporter {
       }
     }
 
-    final MindMap workMap = new MindMap(panel.getModel(), null);
+    final MindMap workMap = new MindMap(context.getPanel().getModel(), null);
     workMap.resetPayload();
 
     if (this.flagExpandAllNodes) {
       MindMapUtils.removeCollapseAttr(workMap);
     }
 
-    final MindMapPanelConfig newConfig = new MindMapPanelConfig(panel.getConfiguration(), false);
+    final MindMapPanelConfig newConfig = new MindMapPanelConfig(context.getPanelConfig(), false);
     final String[] mappedFont = LOCAL_FONT_MAP.get(newConfig.getFont().getFamily().toLowerCase(Locale.ENGLISH));
     if (mappedFont != null) {
       final Font adaptedFont = new Font(mappedFont[1], newConfig.getFont().getStyle(), newConfig.getFont().getSize());
@@ -255,8 +256,8 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
-    final String text = makeContent(panel, options);
+  public void doExportToClipboard(@Nonnull final PluginContext context, @Nonnull final JComponent options) throws IOException {
+    final String text = makeContent(context, options);
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -269,14 +270,14 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
-    final String text = makeContent(panel, options);
+  public void doExport(@Nonnull final PluginContext context, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+    final String text = makeContent(context, options);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(panel, Texts.getString("SvgExporter.saveDialogTitle"), ".svg", Texts.getString("SvgExporter.filterDescription"), Texts.getString("SvgExporter.approveButtonText"));
-      fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".svg");//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("SvgExporter.saveDialogTitle"), ".svg", Texts.getString("SvgExporter.filterDescription"), Texts.getString("SvgExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".svg");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
@@ -301,19 +302,19 @@ public class SVGImageExporter extends AbstractExporter {
 
   @Override
   @Nonnull
-  public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getName(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return Texts.getString("SvgExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getReference(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return Texts.getString("SvgExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public Icon getIcon(@Nonnull final PluginContext panel, @Nullable Topic actionTopic) {
     return ICO;
   }
 

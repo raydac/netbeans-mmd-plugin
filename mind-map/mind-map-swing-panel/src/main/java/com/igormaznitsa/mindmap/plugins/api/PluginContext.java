@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Igor Maznitsa.
+ * Copyright 2019 Igor Maznitsa.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,35 @@
  */
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.Weight;
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JMenuItem;
 
 /**
- * Interface describing a plug-in to be shown in the mind map panel pop-up menu
- * as an item.
- *
- * @since 1.2
+ * Interface describes context where executed or activated plug-in.
+ * @since 1.4.7
  */
-public interface PopUpMenuItemPlugin extends MindMapPlugin {
-
-  @Weight(Weight.Unit.LIGHT)
-  @Nullable
-  JMenuItem makeMenuItem(@Nonnull PluginContext context, @Nullable Topic activeTopic, @Nullable CustomJob customJob);
+public interface PluginContext {
+  @Nonnull
+  MindMapPanelConfig getPanelConfig();
 
   @Nonnull
-  PopUpSection getSection();
+  MindMapController getController();
+  
+  @Nonnull
+  MindMapPanel getPanel();
 
-  boolean needsTopicUnderMouse();
-
-  boolean needsSelectedTopics();
-
-  boolean isEnabled(@Nonnull PluginContext context, @Nullable Topic activeTopic);
-
-  boolean isCompatibleWithFullScreenMode();
+  @Nonnull 
+  DialogProvider getDialogProvider();
+          
+  @Nullable
+  @MustNotContainNull 
+  Topic[] getSelectedTopics();
+  
+  
 }

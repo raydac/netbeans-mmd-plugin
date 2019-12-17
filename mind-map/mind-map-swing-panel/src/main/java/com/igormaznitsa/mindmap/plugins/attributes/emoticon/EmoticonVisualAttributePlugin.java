@@ -18,10 +18,10 @@ package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.Renderable;
 import com.igormaznitsa.mindmap.plugins.api.RenderableImage;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -54,18 +54,18 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean onClick(@Nonnull MindMapPanel panel, @Nonnull final Topic topic, int clickCount) {
+  public boolean onClick(@Nonnull PluginContext context, @Nonnull final Topic topic, int clickCount) {
     return false;
   }
 
   @Override
   @Nullable
-  public String getToolTip(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic) {
+  public String getToolTip(@Nonnull final PluginContext context, @Nonnull final Topic topic) {
     return topic.getAttribute(ATTR_KEY);
   }
 
   @Override
-  public boolean isClickable(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic) {
+  public boolean isClickable(@Nonnull final PluginContext context, @Nonnull final Topic topic) {
     return false;
   }
 

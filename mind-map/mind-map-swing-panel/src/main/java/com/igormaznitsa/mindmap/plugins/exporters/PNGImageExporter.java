@@ -23,6 +23,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -113,7 +114,7 @@ public final class PNGImageExporter extends AbstractExporter {
   }
 
   @Nullable
-  private BufferedImage makeImage(@Nonnull final MindMapPanel panel, @Nullable final JComponent options) throws IOException {
+  private BufferedImage makeImage(@Nonnull final PluginContext context, @Nullable final JComponent options) throws IOException {
     if (options instanceof HasOptions) {
       final HasOptions opts = (HasOptions) options;
       this.flagExpandAllNodes = Boolean.parseBoolean(opts.getOption(Options.KEY_EXPAND_ALL));
@@ -131,16 +132,16 @@ public final class PNGImageExporter extends AbstractExporter {
       }
     }
 
-    final MindMapPanelConfig newConfig = new MindMapPanelConfig(panel.getConfiguration(), false);
+    final MindMapPanelConfig newConfig = new MindMapPanelConfig(context.getPanelConfig(), false);
     newConfig.setDrawBackground(this.flagDrawBackground);
     newConfig.setScale(1.0f);
 
-    return MindMapPanel.renderMindMapAsImage(panel.getModel(), newConfig, flagExpandAllNodes, RenderQuality.QUALITY);
+    return MindMapPanel.renderMindMapAsImage(context.getPanel().getModel(), newConfig, flagExpandAllNodes, RenderQuality.QUALITY);
   }
 
   @Override
-  public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
-    final BufferedImage image = makeImage(panel, options);
+  public void doExportToClipboard(@Nonnull final PluginContext context, @Nonnull final JComponent options) throws IOException {
+    final BufferedImage image = makeImage(context, options);
     if (image != null) {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
@@ -155,13 +156,13 @@ public final class PNGImageExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
-    final RenderedImage image = makeImage(panel, options);
+  public void doExport(@Nonnull final PluginContext context, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+    final RenderedImage image = makeImage(context, options);
 
     if (image == null) {
       if (out == null) {
         LOGGER.error("Can't render map as image");
-        panel.getController().getDialogProvider(panel).msgError(null, Texts.getString("PNGImageExporter.msgErrorDuringRendering"));
+        context.getDialogProvider().msgError(null, Texts.getString("PNGImageExporter.msgErrorDuringRendering"));
         return;
       } else {
         throw new IOException("Can't render image");
@@ -176,8 +177,8 @@ public final class PNGImageExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(panel, Texts.getString("PNGImageExporter.saveDialogTitle"), ".png", Texts.getString("PNGImageExporter.filterDescription"), Texts.getString("PNGImageExporter.approveButtonText"));
-      fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".png");//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("PNGImageExporter.saveDialogTitle"), ".png", Texts.getString("PNGImageExporter.filterDescription"), Texts.getString("PNGImageExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".png");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
@@ -199,19 +200,19 @@ public final class PNGImageExporter extends AbstractExporter {
 
   @Override
   @Nonnull
-  public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getName(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return Texts.getString("PNGImageExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getReference(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return Texts.getString("PNGImageExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public Icon getIcon(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return ICO;
   }
 

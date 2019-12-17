@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -230,8 +231,8 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
-    final String text = makeContent(panel);
+  public void doExportToClipboard(@Nonnull final PluginContext context, @Nonnull final JComponent options) throws IOException {
+    final String text = makeContent(context.getPanel());
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -244,14 +245,14 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options, @Nullable final OutputStream out) throws IOException {
-    final String text = makeContent(panel);
+  public void doExport(@Nonnull final PluginContext context, @Nonnull final JComponent options, @Nullable final OutputStream out) throws IOException {
+    final String text = makeContent(context.getPanel());
 
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(panel, Texts.getString("MDExporter.saveDialogTitle"), ".MD", Texts.getString("MDExporter.filterDescription"), Texts.getString("MDExporter.approveButtonText"));
-      fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".MD");//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("MDExporter.saveDialogTitle"), ".MD", Texts.getString("MDExporter.filterDescription"), Texts.getString("MDExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".MD");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
@@ -273,19 +274,19 @@ public class MDExporter extends AbstractExporter {
 
   @Override
   @Nonnull
-  public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getName(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return Texts.getString("MDExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getReference(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return Texts.getString("MDExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public Icon getIcon(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return ICO;
   }
 

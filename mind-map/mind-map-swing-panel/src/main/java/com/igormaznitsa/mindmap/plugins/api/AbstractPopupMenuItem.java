@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import javax.annotation.Nonnull;
@@ -62,7 +59,7 @@ public abstract class AbstractPopupMenuItem implements PopUpMenuItemPlugin {
   }
 
   @Override
-  public boolean isEnabled(@Nonnull final MindMapPanel panel, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+  public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
     return true;
   }
 

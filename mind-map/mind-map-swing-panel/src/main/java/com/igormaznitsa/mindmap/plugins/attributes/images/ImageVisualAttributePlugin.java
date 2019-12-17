@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.Renderable;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -36,6 +36,7 @@ import javax.imageio.ImageIO;
 public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   public static final String ATTR_KEY = "mmd.image";
+  public static final String ATTR_FILE_KEY = "mmd.image.file";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageVisualAttributePlugin.class);
   private static final Map<Topic, Renderable> CACHED_IMAGES = new WeakHashMap<Topic, Renderable>();
@@ -46,11 +47,11 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   @Nullable
-  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config, @Nonnull final Topic topic) {
-    Renderable result = CACHED_IMAGES.get(topic);
+  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config, @Nonnull final Topic activeTopic) {
+    Renderable result = CACHED_IMAGES.get(activeTopic);
     if (result == null) {
-      result = new ScalableRenderableImage(extractImage(topic));
-      CACHED_IMAGES.put(topic, result);
+      result = new ScalableRenderableImage(extractImage(activeTopic));
+      CACHED_IMAGES.put(activeTopic, result);
     }
     return result;
   }
@@ -70,19 +71,25 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean onClick(@Nonnull MindMapPanel panel, @Nonnull final Topic topic, final int clickCount) {
+  public boolean onClick(@Nonnull PluginContext context, @Nonnull final Topic activeTopic, final int clickCount) {
+    if (clickCount > 1) {
+      final String imageFilePath = activeTopic.getAttribute(ATTR_FILE_KEY);
+      if (imageFilePath != null) {
+      }
+    }
     return false;
   }
 
   @Override
   @Nullable
-  public String getToolTip(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic) {
-    return null;
+  public String getToolTip(@Nonnull final PluginContext context, @Nonnull final Topic activeTopic) {
+    return activeTopic.getAttribute(ATTR_FILE_KEY);
   }
 
   @Override
-  public boolean isClickable(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic) {
-    return false;
+  public boolean isClickable(@Nonnull final PluginContext context, @Nonnull final Topic activeTopic) {
+    final String imageFilePath = activeTopic.getAttribute(ATTR_FILE_KEY);
+    return imageFilePath != null;
   }
 
   @Override

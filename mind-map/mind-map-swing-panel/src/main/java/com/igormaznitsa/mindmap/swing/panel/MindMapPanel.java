@@ -36,6 +36,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.api.ModelAwarePlugin;
 import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
@@ -460,14 +461,15 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 break;
                 case VISUAL_ATTRIBUTES: {
                   final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
+                  final PluginContext context = controller.makePluginContext(theInstance);
                   if (plugin != null) {
                     final Topic theTopic = element.getModel();
-                    if (plugin.isClickable(theInstance, theTopic)) {
+                    if (plugin.isClickable(context, theTopic)) {
                       setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     } else {
                       setCursor(null);
                     }
-                    setToolTipText(plugin.getToolTip(theInstance, theTopic));
+                    setToolTipText(plugin.getToolTip(context, theTopic));
                   } else {
                     setCursor(null);
                     setToolTipText(null);
@@ -717,10 +719,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                     final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock().findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(), e.getPoint().getY() - element.getBounds().getY());
                     boolean processedByPlugin = false;
                     if (plugin != null) {
-                      if (plugin.isClickable(theInstance, element.getModel())) {
+                      final PluginContext context = controller.makePluginContext(theInstance);
+                      if (plugin.isClickable(context, element.getModel())) {
                         processedByPlugin = true;
                         try {
-                          if (plugin.onClick(theInstance, element.getModel(), e.getClickCount())) {
+                          if (plugin.onClick(context, element.getModel(), e.getClickCount())) {
                             doLayout();
                             revalidate();
                             repaint();

@@ -17,6 +17,7 @@
 package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import java.awt.Point;
@@ -42,6 +43,9 @@ public interface MindMapPanelController {
 
   boolean isMouseClickProcessingAllowed(@Nonnull MindMapPanel source);
 
+  @Nonnull
+  PluginContext makePluginContext(@Nonnull MindMapPanel source);
+  
   @Nonnull
   MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull MindMapPanel source);
 

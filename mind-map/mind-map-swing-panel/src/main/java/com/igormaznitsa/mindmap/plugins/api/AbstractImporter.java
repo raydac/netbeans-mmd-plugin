@@ -16,15 +16,11 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.MayContainNull;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import java.awt.event.ActionEvent;
@@ -58,13 +54,12 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   @Override
   @Nullable
   public JMenuItem makeMenuItem(
-      @Nonnull final MindMapPanel panel,
-      @Nonnull final DialogProvider dialogProvider,
-      @Nullable final Topic actionTopic,
-      @Nonnull @MayContainNull final Topic[] selectedTopics,
-      @Nullable final CustomJob processor) {
-    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(panel, actionTopic, selectedTopics), getIcon(panel, actionTopic, selectedTopics));
-    result.setToolTipText(getReference(panel, actionTopic, selectedTopics));
+          @Nonnull final PluginContext context,
+          @Nullable final Topic activeTopic,
+      @Nullable final CustomJob processor
+  ) {
+    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context), getIcon(context));
+    result.setToolTipText(getReference(context));
 
     final AbstractPopupMenuItem theInstance = this;
 
@@ -73,26 +68,26 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
       public void actionPerformed(@Nonnull final ActionEvent e) {
         try {
           if (processor == null) {
-            panel.removeAllSelection();
-            final MindMap map = doImport(panel, dialogProvider, actionTopic, selectedTopics);
+            context.getPanel().removeAllSelection();
+            final MindMap map = doImport(context);
             if (map != null) {
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                  panel.setModel(map, false);
+                  context.getPanel().setModel(map, false);
                   final Topic root = map.getRoot();
                   if (root != null) {
-                    panel.focusTo(root);
+                    context.getPanel().focusTo(root);
                   }
                 }
               });
             }
           } else {
-            processor.doJob(theInstance, panel, dialogProvider, actionTopic, selectedTopics);
+            processor.doJob(context, theInstance);
           }
         } catch (Exception ex) {
           LOGGER.error("Error during map import", ex); //NOI18N
-          dialogProvider.msgError(null, Texts.getString("MMDGraphEditor.makePopUp.errMsgCantImport"));
+          context.getDialogProvider().msgError(null, Texts.getString("MMDGraphEditor.makePopUp.errMsgCantImport"));
         }
       }
     });
@@ -116,8 +111,8 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   }
 
   @Nullable
-  protected File selectFileForExtension(@Nonnull final MindMapPanel panel, @Nonnull final String dialogTitle, @Nonnull final String fileExtension, @Nonnull final String fileFilterDescription, @Nonnull final String approveButtonText) {
-    return MindMapUtils.selectFileToOpenForFileFilter(panel, dialogTitle, normalizeExtension(fileExtension), fileFilterDescription, approveButtonText);
+  protected File selectFileForExtension(@Nonnull final PluginContext context, @Nonnull final String dialogTitle, @Nonnull final String fileExtension, @Nonnull final String fileFilterDescription, @Nonnull final String approveButtonText) {
+    return MindMapUtils.selectFileToOpenForFileFilter(context.getPanel(), dialogTitle, normalizeExtension(fileExtension), fileFilterDescription, approveButtonText);
   }
 
   @Nullable
@@ -127,19 +122,16 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   }
 
   @Nullable
-  public abstract MindMap doImport(@Nonnull final MindMapPanel panel,
-                                   @Nonnull final DialogProvider dialogProvider,
-                                   @Nullable final Topic actionTopic,
-                                   @Nonnull @MayContainNull final Topic[] selectedTopics) throws Exception;
+  public abstract MindMap doImport(@Nonnull final PluginContext context) throws Exception;
 
   @Nonnull
-  public abstract String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
+  public abstract String getName(@Nonnull final PluginContext context);
 
   @Nonnull
-  public abstract String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
+  public abstract String getReference(@Nonnull final PluginContext context);
 
   @Nonnull
-  public abstract Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics);
+  public abstract Icon getIcon(@Nonnull final PluginContext context);
 
 
 }

@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -199,8 +200,8 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(@Nonnull final MindMapPanel panel, @Nonnull final JComponent options) throws IOException {
-    final String text = makeContent(panel);
+  public void doExportToClipboard(@Nonnull final PluginContext context, @Nonnull final JComponent options) throws IOException {
+    final String text = makeContent(context.getPanel());
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -214,14 +215,14 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
-    final String text = makeContent(panel);
+  public void doExport(@Nonnull final PluginContext context, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+    final String text = makeContent(context.getPanel());
 
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(panel, Texts.getString("FreeMindExporter.saveDialogTitle"), ".mm", Texts.getString("FreeMindExporter.filterDescription"), Texts.getString("FreeMindExporter.approveButtonText"));
-      fileToSaveMap = MindMapUtils.checkFileAndExtension(panel, fileToSaveMap, ".mm");//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("FreeMindExporter.saveDialogTitle"), ".mm", Texts.getString("FreeMindExporter.filterDescription"), Texts.getString("FreeMindExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mm");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
@@ -247,19 +248,19 @@ public class FreeMindExporter extends AbstractExporter {
 
   @Override
   @Nonnull
-  public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getName(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return Texts.getString("FreeMindExporter.exporterName");
   }
 
   @Override
   @Nonnull
-  public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public String getReference(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return Texts.getString("FreeMindExporter.exporterReference");
   }
 
   @Override
   @Nonnull
-  public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+  public Icon getIcon(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
     return ICO;
   }
 
