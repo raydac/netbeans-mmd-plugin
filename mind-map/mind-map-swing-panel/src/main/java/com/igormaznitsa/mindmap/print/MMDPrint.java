@@ -88,7 +88,7 @@ public class MMDPrint {
 
         cfg.setPaperMargins(2);
 
-        theModel = new MindMap(printableObject.getPanel().getModel(), null);
+        theModel = new MindMap(printableObject.getPanel().getModel());
 
         cfg.setScale(scale);
       } else {

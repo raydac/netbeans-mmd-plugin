@@ -43,6 +43,8 @@ public interface MindMapPanelController {
 
   boolean isMouseClickProcessingAllowed(@Nonnull MindMapPanel source);
 
+  boolean canTopicBeDeleted(@Nonnull MindMapPanel source, @Nonnull Topic topic);
+
   @Nonnull
   PluginContext makePluginContext(@Nonnull MindMapPanel source);
 

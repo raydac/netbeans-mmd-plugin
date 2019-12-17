@@ -34,19 +34,19 @@ public class Text2MindMapImporterTest {
 
   @Test
   public void testDoImport_Empty() throws Exception {
-    final MindMap result = INSTANCE.makeFromLines(asList("          "), null);
+    final MindMap result = INSTANCE.makeFromLines(asList("          "));
     assertNull(result.getRoot());
   }
 
   @Test
   public void testDoImport_OnlyRoot() throws Exception {
-    final MindMap result = INSTANCE.makeFromLines(asList("\tSolar system   "), null);
+    final MindMap result = INSTANCE.makeFromLines(asList("\tSolar system   "));
     assertEquals("Solar system", result.getRoot().getText());
   }
 
   @Test
   public void testDoImport_Multilevel() throws Exception {
-    final MindMap result = INSTANCE.makeFromLines(asList("Solar system", "\tMercury", "\tVenus", "\tEarth", "\t\tMoon", "\tMars", "\t\tFobos", "\t\tDemos", "Jupiter"), null);
+    final MindMap result = INSTANCE.makeFromLines(asList("Solar system", "\tMercury", "\tVenus", "\tEarth", "\t\tMoon", "\tMars", "\t\tFobos", "\t\tDemos", "Jupiter"));
     assertEquals("Solar system", result.getRoot().getText());
     assertEquals(5, result.getRoot().getChildren().size());
     final Topic mars = result.getRoot().getChildren().get(3);
@@ -59,7 +59,7 @@ public class Text2MindMapImporterTest {
 
   @Test
   public void testDoImport_Multilevel2() throws Exception {
-    final MindMap result = INSTANCE.makeFromLines(asList("solar system", "\tjupiter", "\tmars", " \t\tfobos", "\t\tdeimos", "\tpluto", "\tsaturn"), null);
+    final MindMap result = INSTANCE.makeFromLines(asList("solar system", "\tjupiter", "\tmars", " \t\tfobos", "\t\tdeimos", "\tpluto", "\tsaturn"));
     assertEquals("solar system", result.getRoot().getText());
     assertEquals(4, result.getRoot().getChildren().size());
     final Topic root = result.getRoot();
@@ -78,7 +78,7 @@ public class Text2MindMapImporterTest {
     final File file = new File(Text2MindMapImporter.class.getResource("tabbedtext.txt").getFile());
     assertTrue(file.isFile());
     final List<String> lines = FileUtils.readLines(file, "UTF-8");
-    final MindMap result = INSTANCE.makeFromLines(lines, null);
+    final MindMap result = INSTANCE.makeFromLines(lines);
     assertEquals(5, result.getRoot().getChildren().size());
   }
 

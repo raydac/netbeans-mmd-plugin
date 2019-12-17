@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.plugins.importers;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
@@ -48,14 +47,14 @@ public class Text2MindMapImporter extends AbstractImporter {
     MindMap result = null;
     if (file != null) {
       final List<String> lines = FileUtils.readLines(file, "UTF-8");
-      result = makeFromLines(lines, context.getController());
+      result = makeFromLines(lines);
     }
     return result;
   }
 
   @Nonnull
-  MindMap makeFromLines(@Nonnull @MustNotContainNull final List<String> lines, @Nullable final MindMapController controller) {
-    final MindMap result = new MindMap(controller, false);
+  MindMap makeFromLines(@Nonnull @MustNotContainNull final List<String> lines) {
+    final MindMap result = new MindMap(false);
     final Iterator<String> iterator = lines.iterator();
     final List<TopicData> topicStack = new ArrayList<TopicData>();
     while (true) {

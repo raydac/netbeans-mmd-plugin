@@ -196,7 +196,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
     final Map<String, Topic> idTopicMap = new HashMap<>();
     final Map<String, String> linksMap = new HashMap<>();
-    final MindMap resultedMap = new MindMap(null, true);
+    final MindMap resultedMap = new MindMap(true);
     resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
     final List<Element> list = Utils.findDirectChildrenForName(rootElement, "node");

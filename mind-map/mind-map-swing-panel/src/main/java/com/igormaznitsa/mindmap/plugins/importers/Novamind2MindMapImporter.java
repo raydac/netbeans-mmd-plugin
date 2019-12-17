@@ -202,7 +202,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     final Manifest manifest = new Manifest(zipFile, "manifest.xml");
     final ParsedContent content = new ParsedContent(zipFile, "content.xml");
 
-    final MindMap result = new MindMap(null, true);
+    final MindMap result = new MindMap(true);
     result.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
     assertNotNull(result.getRoot()).setText("Empty map");

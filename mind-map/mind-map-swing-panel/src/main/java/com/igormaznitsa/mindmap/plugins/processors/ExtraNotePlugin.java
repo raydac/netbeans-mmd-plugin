@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
+import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -28,7 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
 
-public class ExtraNotePlugin extends AbstractFocusedTopicPlugin {
+public class ExtraNotePlugin extends AbstractFocusedTopicPlugin implements ExternallyExecutedPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_TEXT);
 
@@ -51,10 +52,6 @@ public class ExtraNotePlugin extends AbstractFocusedTopicPlugin {
     }
     return activeTopic.getExtras().containsKey(Extra.ExtraType.NOTE) ? Texts.getString("MMDGraphEditor.makePopUp.miEditNote") :
         Texts.getString("MMDGraphEditor.makePopUp.miAddNote");
-  }
-
-  @Override
-  protected void doActionForTopic(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
   }
 
   @Override

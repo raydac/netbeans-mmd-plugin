@@ -16,7 +16,6 @@
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
 import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;

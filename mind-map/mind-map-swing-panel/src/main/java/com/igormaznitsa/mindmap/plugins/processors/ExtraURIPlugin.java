@@ -16,23 +16,20 @@
 
 package com.igormaznitsa.mindmap.plugins.processors;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
-
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
+import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
-import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
 
-public class ExtraURIPlugin extends AbstractFocusedTopicPlugin {
+public class ExtraURIPlugin extends AbstractFocusedTopicPlugin implements ExternallyExecutedPlugin {
 
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_URI);
 
@@ -56,13 +53,6 @@ public class ExtraURIPlugin extends AbstractFocusedTopicPlugin {
     }
     return activeTopic.getExtras().containsKey(Extra.ExtraType.LINK) ? Texts.getString("MMDGraphEditor.makePopUp.miEditURI") :
         Texts.getString("MMDGraphEditor.makePopUp.miAddURI");
-  }
-
-  @Override
-  protected void doActionForTopic(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    if (activeTopic != null) {
-      context.getPanel().startEdit(assertNotNull((AbstractElement) activeTopic.getPayload()));
-    }
   }
 
   @Override

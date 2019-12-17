@@ -52,7 +52,7 @@ public class MMDTopicsTransferable implements Transferable {
   public MMDTopicsTransferable(@Nonnull @MustNotContainNull final Topic... topics) {
     this.topics = new Topic[topics.length];
 
-    final MindMap fakeMap = new MindMap(null, false);
+    final MindMap fakeMap = new MindMap(false);
 
     for (int i = 0; i < topics.length; i++) {
       this.topics[i] = new Topic(fakeMap, topics[i], true);

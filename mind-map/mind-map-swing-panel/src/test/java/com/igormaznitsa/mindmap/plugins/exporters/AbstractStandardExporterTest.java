@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 
 
 import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
@@ -61,16 +60,6 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
       }
 
       @Override
-      public MindMapController getController() {
-        return new MindMapController() {
-          @Override
-          public boolean canBeDeletedSilently(MindMap map, Topic topic) {
-            return true;
-          }
-        };
-      }
-
-      @Override
       public MindMapPanel getPanel() {
         return panel;
       }
@@ -100,7 +89,7 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
 
   @Test
   public void testNoExceptionForExportOfEmptyMap() throws Exception {
-    final MindMap map = new MindMap(null, new StringReader("Empty Mind Map\n---"));
+    final MindMap map = new MindMap(new StringReader("Empty Mind Map\n---"));
     final String exported = new String(export(map, null), "UTF-8");
     System.out.println(exported);
   }

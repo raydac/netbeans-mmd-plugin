@@ -121,7 +121,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
 
     final Document document = Utils.loadXmlDocument(new FileInputStream(file), "UTF-8", true);
 
-    final MindMap result = new MindMap(null, true);
+    final MindMap result = new MindMap(true);
     Assertions.assertNotNull(result.getRoot()).setText("Empty");
 
     final Element root = document.getDocumentElement();

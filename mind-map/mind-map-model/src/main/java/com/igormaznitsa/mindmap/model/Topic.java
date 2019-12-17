@@ -360,29 +360,6 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
-  private boolean canBeDeletedSilently() {
-    final MindMapController controller = this.map.getController();
-    return controller == null ? true : controller.canBeDeletedSilently(this.map, this);
-  }
-
-  public boolean canBeLost() {
-    this.map.lock();
-    try {
-      boolean noImportantContent = this.text.trim().isEmpty() && this.extras.isEmpty() && canBeDeletedSilently();
-      if (noImportantContent) {
-        for (final Topic t : this.children) {
-          noImportantContent &= t.canBeLost();
-          if (!noImportantContent) {
-            break;
-          }
-        }
-      }
-      return noImportantContent;
-    } finally {
-      this.map.unlock();
-    }
-  }
-
   @Nullable
   public Topic getFirst() {
     return this.children.isEmpty() ? null : this.children.get(0);

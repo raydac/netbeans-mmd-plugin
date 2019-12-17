@@ -80,7 +80,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     if (formatVersion == null) {
       context.getDialogProvider().msgError(null, Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
     } else {
-      resultedMap = new MindMap(null, true);
+      resultedMap = new MindMap(true);
       resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
       final Topic mindMapRoot = Assertions.assertNotNull(resultedMap.getRoot());

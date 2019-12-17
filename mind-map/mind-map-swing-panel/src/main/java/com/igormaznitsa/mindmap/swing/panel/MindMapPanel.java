@@ -223,7 +223,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               e.consume();
               final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
               endEdit(false);
-              if (edited != null && edited.canBeLost()) {
+              if (edited != null && controller.canTopicBeDeleted(MindMapPanel.this, edited)) {
                 deleteTopics(false, edited);
                 if (pathToPrevTopicBeforeEdit != null) {
                   final int[] path = pathToPrevTopicBeforeEdit;
@@ -1125,7 +1125,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   @Nullable
   public static Dimension2D calculateSizeOfMapInPixels(@Nonnull final MindMap model, @Nullable final Graphics2D graphicsContext, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll, @Nonnull final RenderQuality quality) {
-    final MindMap workMap = new MindMap(model, null);
+    final MindMap workMap = new MindMap(model);
     workMap.resetPayload();
 
     Graphics2D g = graphicsContext;
@@ -1159,7 +1159,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   @Nullable
   public static BufferedImage renderMindMapAsImage(@Nonnull final MindMap model, @Nonnull final MindMapPanelConfig cfg, final boolean expandAll, @Nonnull final RenderQuality quality) {
-    final MindMap workMap = new MindMap(model, null);
+    final MindMap workMap = new MindMap(model);
     workMap.resetPayload();
 
     if (expandAll) {

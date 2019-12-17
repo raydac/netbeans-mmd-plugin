@@ -229,7 +229,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
     final MindMap result;
 
     if (sheets.isEmpty()) {
-      result = new MindMap(null, true);
+      result = new MindMap(true);
       Assertions.assertNotNull(result.getRoot()).setText("Empty");
     } else {
       result = convertSheet(styles, zipFile, sheets.get(0));
@@ -240,7 +240,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
   @Nonnull
   private MindMap convertSheet(@Nonnull final XMindStyles styles, @Nonnull final ZipFile file, @Nonnull final Element sheet) throws Exception {
-    final MindMap resultedMap = new MindMap(null, true);
+    final MindMap resultedMap = new MindMap(true);
     resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
     final Topic rootTopic = Assertions.assertNotNull(resultedMap.getRoot());

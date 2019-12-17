@@ -26,7 +26,7 @@ public class MindmupExporterTest extends AbstractStandardExporterTest<MindmupExp
 
   @Test
   public void testNoExceptionsAndResultPresented() throws Exception {
-    final MindMap map = new MindMap(null, true);
+    final MindMap map = new MindMap(true);
     map.getRoot().setText("Hello World!");
     final String text = new String(export(map, null), "UTF-8");
     System.out.print("JSON\n----------------\n" + text + "\n----------------\n");

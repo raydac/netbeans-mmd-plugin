@@ -55,26 +55,23 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   private final transient Lock locker = new ReentrantLock();
   private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
   private final transient List<MindMapModelEventListener> modelEventListeners = new CopyOnWriteArrayList<MindMapModelEventListener>();
-  private final MindMapController controller;
+
   @Nullable
   private Topic root;
 
-  public MindMap(@Nullable final MindMapController nullableController, final boolean makeRoot) {
-    this.controller = nullableController;
+  public MindMap(final boolean makeRoot) {
     if (makeRoot) {
       this.root = new Topic(this, null, "");
     }
   }
 
-  public MindMap(@Nonnull final MindMap map, @Nullable final MindMapController nullableController) {
+  public MindMap(@Nonnull final MindMap map) {
     this.attributes.putAll(map.attributes);
     final Topic rootTopic = map.getRoot();
     this.root = rootTopic == null ? null : rootTopic.makeCopy(this, null);
-    this.controller = nullableController;
   }
 
-  public MindMap(@Nullable final MindMapController nullableController, @Nonnull final Reader reader) throws IOException {
-    this.controller = nullableController;
+  public MindMap(@Nonnull final Reader reader) throws IOException {
     final String text = IOUtils.toString(Assertions.assertNotNull(reader));
 
     final MindMapLexer lexer = new MindMapLexer();
@@ -223,11 +220,6 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
     } finally {
       this.locker.unlock();
     }
-  }
-
-  @Nullable
-  public MindMapController getController() {
-    return this.controller;
   }
 
   @Override

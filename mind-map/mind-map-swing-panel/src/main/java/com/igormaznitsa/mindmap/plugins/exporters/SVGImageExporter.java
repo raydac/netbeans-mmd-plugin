@@ -212,7 +212,7 @@ public class SVGImageExporter extends AbstractExporter {
       }
     }
 
-    final MindMap workMap = new MindMap(context.getPanel().getModel(), null);
+    final MindMap workMap = new MindMap(context.getPanel().getModel());
     workMap.resetPayload();
 
     if (this.flagExpandAllNodes) {
