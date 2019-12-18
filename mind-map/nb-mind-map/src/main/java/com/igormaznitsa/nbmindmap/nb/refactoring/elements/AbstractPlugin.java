@@ -23,7 +23,15 @@ import com.igormaznitsa.nbmindmap.nb.refactoring.RefactoringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.netbeans.api.fileinfo.NonRecursiveFolder;
 import org.netbeans.api.java.source.TreePathHandle;
@@ -221,7 +229,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
   protected boolean doesMindMapContainFileLink(final Project project, final FileObject mindMap, final MMapURI fileToCheck) throws IOException {
     final FileObject baseFolder = project.getProjectDirectory();
     try {
-      final MindMap parsedMap = new MindMap(null,new StringReader(mindMap.asText("UTF-8"))); //NOI18N
+      final MindMap parsedMap = new MindMap(new StringReader(mindMap.asText("UTF-8"))); //NOI18N
       return parsedMap.doesContainFileLink(FileUtil.toFile(baseFolder), fileToCheck);
     }
     catch (IllegalArgumentException ex) {

@@ -26,7 +26,6 @@ import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispat
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
@@ -40,7 +39,8 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
@@ -106,11 +106,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -164,14 +162,14 @@ import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 @MultiViewElement.Registration(
-        displayName = "#MMDGraphEditor.displayName",
-        mimeType = MMDDataObject.MIME,
-        persistenceType = PERSISTENCE_NEVER,
-        iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
-        preferredID = MMDGraphEditor.ID,
-        position = 1
+    displayName = "#MMDGraphEditor.displayName",
+    mimeType = MMDDataObject.MIME,
+    persistenceType = PERSISTENCE_NEVER,
+    iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png",
+    preferredID = MMDGraphEditor.ID,
+    position = 1
 )
-public final class MMDGraphEditor extends CloneableEditor implements AdjustmentListener, MindMapController, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, FlavorListener, ClipboardListener {
+public final class MMDGraphEditor extends CloneableEditor implements AdjustmentListener, PluginContext, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, FlavorListener, ClipboardListener {
 
   private static final long serialVersionUID = -8776707243607267446L;
 
@@ -304,6 +302,36 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
     this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
+  }
+
+  @Nonnull
+  @Override
+  public MindMapPanelConfig getPanelConfig() {
+    return this.mindMapPanel.getConfiguration();
+  }
+
+  @Nonnull
+  @Override
+  public MindMapPanel getPanel() {
+    return this.mindMapPanel;
+  }
+
+  @Nonnull
+  @Override
+  public DialogProvider getDialogProvider() {
+    return this.getDialogProvider(this.mindMapPanel);
+  }
+
+  @Nullable
+  @Override
+  public Topic[] getSelectedTopics() {
+    return this.mindMapPanel.getSelectedTopics();
+  }
+
+  @Nonnull
+  @Override
+  public PluginContext makePluginContext(@Nonnull MindMapPanel source) {
+    return this;
   }
 
   public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
@@ -537,9 +565,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         try {
           if (text.isEmpty()) {
             LOGGER.warn("Detected empty text document as mind map, the default mind map will be created");
-            this.mindMapPanel.setModel(new MindMap(this, true), false);
+            this.mindMapPanel.setModel(new MindMap(true), false);
           } else {
-            this.mindMapPanel.setModel(new MindMap(this, new StringReader(text)), false);
+            this.mindMapPanel.setModel(new MindMap(new StringReader(text)), false);
           }
         } catch (IllegalArgumentException ex) {
           LOGGER.warn("Can't detect mind map"); //NOI18N
@@ -564,7 +592,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     boolean topicsNotImportant = true;
 
     for (final Topic t : topics) {
-      topicsNotImportant &= t.canBeLost();
+      topicsNotImportant &= this.canTopicBeDeleted(source, t);
       if (!topicsNotImportant) {
         break;
       }
@@ -1485,70 +1513,40 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
   }
 
   @Override
+  public void processPluginActivation(@Nonnull final ExternallyExecutedPlugin plugin, @Nullable final Topic activeTopic) {
+    if (plugin instanceof ExtraNotePlugin) {
+      editTextForTopic(activeTopic);
+      this.mindMapPanel.requestFocus();
+    } else if (plugin instanceof ExtraFilePlugin) {
+      editFileLinkForTopic(activeTopic);
+      this.mindMapPanel.requestFocus();
+    } else if (plugin instanceof ExtraURIPlugin) {
+      editLinkForTopic(activeTopic);
+      this.mindMapPanel.requestFocus();
+    } else if (plugin instanceof ExtraJumpPlugin) {
+      editTopicLinkForTopic(activeTopic);
+      this.mindMapPanel.requestFocus();
+    } else if (plugin instanceof ChangeColorPlugin) {
+      final Topic[] selectedTopics = this.getSelectedTopics();
+      processColorDialogForTopics(this.mindMapPanel, selectedTopics.length > 0 ? selectedTopics : new Topic[] {activeTopic});
+    } else if (plugin instanceof AboutPlugin) {
+      NbUtils.plainMessageOk(null, BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
+    } else if (plugin instanceof OptionsPlugin) {
+      OptionsDisplayer.getDefault().open("nb-mmd-config-main"); //NOI18N
+    }
+  }
+
+  @Override
   public MindMapPanelConfig provideConfigForMindMapPanel(final MindMapPanel source) {
     final MindMapPanelConfig config = new MindMapPanelConfig();
     config.loadFrom(NbUtils.getPreferences());
     return config;
   }
 
-  private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> customProcessors = null;
-
-  private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> getCustomProcessors() {
-    if (this.customProcessors == null) {
-      this.customProcessors = new HashMap<Class<? extends PopUpMenuItemPlugin>, CustomJob>();
-      this.customProcessors.put(ExtraNotePlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          editTextForTopic(topic);
-          panel.requestFocus();
-        }
-      });
-      this.customProcessors.put(ExtraFilePlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          editFileLinkForTopic(topic);
-          panel.requestFocus();
-        }
-      });
-      this.customProcessors.put(ExtraURIPlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          editLinkForTopic(topic);
-          panel.requestFocus();
-        }
-      });
-      this.customProcessors.put(ExtraJumpPlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          editTopicLinkForTopic(topic);
-          panel.requestFocus();
-        }
-      });
-      this.customProcessors.put(ChangeColorPlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
-        }
-      });
-      this.customProcessors.put(AboutPlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          NbUtils.plainMessageOk(null, BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
-        }
-      });
-      this.customProcessors.put(OptionsPlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          OptionsDisplayer.getDefault().open("nb-mmd-config-main"); //NOI18N
-        }
-      });
-    }
-    return this.customProcessors;
-  }
-
   @Override
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement element, @Nullable final ElementPart partUnderMouse) {
-    return Utils.makePopUp(source, false, DialogProviderManager.getInstance().getDialogProvider(), element == null ? null : element.getModel(), source.getSelectedTopics(), getCustomProcessors());
+    final PluginContext context = this.makePluginContext(source);
+    return Utils.makePopUp(context, false, element == null ? null : element.getModel());
   }
 
   private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {
@@ -1643,9 +1641,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     return true;
   }
 
+
   @Override
-  public boolean canBeDeletedSilently(final MindMap map, final Topic topic) {
+  public boolean canTopicBeDeleted(@Nonnull MindMapPanel source, @Nonnull Topic topic) {
     return topic.getText().isEmpty() && topic.getExtras().isEmpty() && doesContainOnlyStandardAttributes(topic);
   }
-
 }

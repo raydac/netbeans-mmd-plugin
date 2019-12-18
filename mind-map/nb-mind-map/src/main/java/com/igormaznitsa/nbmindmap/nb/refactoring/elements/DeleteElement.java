@@ -36,7 +36,7 @@ public class DeleteElement extends AbstractElement {
   public void performChange() {
     super.performChange();
     try{
-      final MindMap parsed = this.mindMapFile.asMindMap(null);
+      final MindMap parsed = this.mindMapFile.asMindMap();
       if (parsed.deleteAllLinksToFile(this.projectFolder, this.processedFile)){
         this.mindMapFile.writeMindMap();
       }

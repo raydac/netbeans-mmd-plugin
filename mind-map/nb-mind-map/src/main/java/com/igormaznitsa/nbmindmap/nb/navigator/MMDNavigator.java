@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.navigator;
 
 import com.igormaznitsa.mindmap.ide.commons.SortedTreeModelWrapper;
@@ -49,13 +50,13 @@ import org.openide.windows.TopComponent;
 public final class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupListener, FileChangeListener, Comparator<Object> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDNavigator.class);
-  
+
   private static final Lookup.Template<MMDEditorSupport> MY_DATA = new Lookup.Template<MMDEditorSupport>(MMDEditorSupport.class);
   private static final long serialVersionUID = -4344090966601180253L;
 
   private final JTree mindMapTree;
   private SortedTreeModelWrapper treeModel;
-  
+
   private transient Lookup.Result<? extends MMDEditorSupport> context;
   private transient MMDEditorSupport currentSupport;
 
@@ -107,8 +108,7 @@ public final class MMDNavigator extends JScrollPane implements NavigatorPanel, L
 
     if (ctx == null) {
       this.currentSupport = null;
-    }
-    else {
+    } else {
       Collection<? extends MMDEditorSupport> clct = ctx.allInstances();
 
       if (clct.isEmpty()) {
@@ -120,8 +120,7 @@ public final class MMDNavigator extends JScrollPane implements NavigatorPanel, L
 
       if (clct.isEmpty()) {
         this.currentSupport = null;
-      }
-      else {
+      } else {
         this.currentSupport = clct.iterator().next();
         if (this.currentSupport != null) {
           this.currentSupport.getDataObject().getPrimaryFile().removeFileChangeListener(this);
@@ -142,23 +141,21 @@ public final class MMDNavigator extends JScrollPane implements NavigatorPanel, L
   }
 
   private void updateContent() {
-    if (this.treeModel!=null){
+    if (this.treeModel != null) {
       this.treeModel.dispose();
     }
-    
+
     final String text = getDocumentText();
     if (text != null) {
       try {
-        this.treeModel = new SortedTreeModelWrapper(new MindMap(null,new StringReader(text)), this);
+        this.treeModel = new SortedTreeModelWrapper(new MindMap(new StringReader(text)), this);
         this.mindMapTree.setModel(this.treeModel);
         Utils.foldUnfoldTree(this.mindMapTree, true);
-      }
-      catch (IOException ex) {
+      } catch (IOException ex) {
         LOGGER.error("Can't parse mind map text", ex); //NOI18N
         this.mindMapTree.setModel(null);
       }
-    }
-    else {
+    } else {
       this.mindMapTree.setModel(null);
     }
   }
@@ -172,8 +169,8 @@ public final class MMDNavigator extends JScrollPane implements NavigatorPanel, L
     if (this.currentSupport != null) {
       this.currentSupport.getDataObject().getPrimaryFile().removeFileChangeListener(this);
     }
-    
-    if(this.treeModel!=null){
+
+    if (this.treeModel != null) {
       this.treeModel.dispose();
     }
     this.mindMapTree.setModel(null);
