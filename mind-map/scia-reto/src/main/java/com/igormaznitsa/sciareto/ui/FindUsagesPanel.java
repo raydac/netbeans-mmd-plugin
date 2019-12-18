@@ -18,6 +18,14 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.misc.NodeListRenderer;
+import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
+import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,14 +44,6 @@ import javax.swing.event.ListDataListener;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.ui.misc.NodeListRenderer;
-import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
-import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 
 public class FindUsagesPanel extends javax.swing.JPanel {
 
@@ -163,7 +163,7 @@ public class FindUsagesPanel extends javax.swing.JPanel {
               Reader reader = null;
               try {
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8")); //NOI18N
-                final MindMap map = new MindMap(null, reader);
+                final MindMap map = new MindMap(reader);
                 if (!MapUtils.findTopicsRelatedToFile(project.getFolder(), nodeFileToSearch, map).isEmpty()) {
                   addFileIntoList(file);
                 }

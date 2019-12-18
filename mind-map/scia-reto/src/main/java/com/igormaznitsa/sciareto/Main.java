@@ -28,9 +28,11 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
+import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.HasMnemonic;
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
@@ -118,22 +120,22 @@ public class Main {
 
   private static final class LocalMMDImporter extends AbstractImporter {
 
-    @Override
     @Nullable
-    public MindMap doImport(@Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) throws Exception {
-      final File fileToImport = dialogProvider.msgOpenFileDialog(null, "", "", null, true, new FileFilter[0], ""); //NOI18N
-      return new MindMap(null, new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
+    @Override
+    public MindMap doImport(@Nonnull PluginContext context) throws Exception {
+      final File fileToImport = context.getDialogProvider().msgOpenFileDialog(null, "", "", null, true, new FileFilter[0], ""); //NOI18N
+      return new MindMap(new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
     }
 
-    @Override
     @Nonnull
-    public String getName(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+    @Override
+    public String getName(@Nonnull PluginContext context) {
       return "MMDImporter"; //NOI18N
     }
 
-    @Override
     @Nonnull
-    public String getReference(final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+    @Override
+    public String getReference(@Nonnull PluginContext context) {
       return "MMDImporter"; //NOI18N
     }
 
@@ -142,9 +144,9 @@ public class Main {
       return "mmd"; //NOI18N
     }
 
-    @Override
     @Nonnull
-    public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable final Topic actionTopic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
+    @Override
+    public Icon getIcon(@Nonnull PluginContext context) {
       return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_INDEXED));
     }
 
@@ -158,42 +160,39 @@ public class Main {
   private static final class LocalMMDExporter extends AbstractExporter {
 
     @Override
-    public void doExport(@Nonnull final MindMapPanel panel, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
-      final MindMap map = panel.getModel();
+    public void doExport(@Nonnull PluginContext context, @Nullable JComponent options, @Nullable OutputStream out) throws IOException {
+      final MindMap map = context.getPanel().getModel();
       IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
     }
 
     @Override
-    public void doExportToClipboard(MindMapPanel panel, JComponent options) throws IOException {
-      final MindMap map = panel.getModel();
+    public void doExportToClipboard(@Nonnull PluginContext context, @Nullable JComponent options) throws IOException {
+      final MindMap map = context.getPanel().getModel();
       final StringWriter writer = map.write(new StringWriter());
       final String text = writer.toString();
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-          if (clipboard != null) {
-            clipboard.setContents(new StringSelection(text), panel);
-          }
+      SwingUtilities.invokeLater(() -> {
+        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard != null) {
+          clipboard.setContents(new StringSelection(text), context.getPanel());
         }
       });
     }
 
     @Nonnull
     @Override
-    public String getName(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    public String getName(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
       return "MMDExporter"; //NOI18N
     }
 
     @Nonnull
     @Override
-    public String getReference(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    public String getReference(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
       return "MMDExporter"; //NOI18N
     }
 
     @Nonnull
     @Override
-    public Icon getIcon(@Nonnull final MindMapPanel panel, @Nullable Topic actionTopic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
+    public Icon getIcon(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
       return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_INDEXED));
     }
 
@@ -653,6 +652,47 @@ public class Main {
           };
 
           final MindMapPanel panel = new MindMapPanel(new MindMapPanelController() {
+
+            @Override
+            public boolean canTopicBeDeleted(@Nonnull MindMapPanel source, @Nonnull Topic topic) {
+              return true;
+            }
+
+            @Nonnull
+            @Override
+            public PluginContext makePluginContext(@Nonnull MindMapPanel source) {
+              return new PluginContext() {
+                @Nonnull
+                @Override
+                public MindMapPanelConfig getPanelConfig() {
+                  return config;
+                }
+
+                @Nonnull
+                @Override
+                public MindMapPanel getPanel() {
+                  return source;
+                }
+
+                @Nonnull
+                @Override
+                public DialogProvider getDialogProvider() {
+                  return dialog;
+                }
+
+                @Nullable
+                @Override
+                public Topic[] getSelectedTopics() {
+                  return new Topic[0];
+                }
+
+                @Override
+                public void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin, @Nullable Topic activeTopic) {
+
+                }
+              };
+            }
+
             @Override
             public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
               return false;
@@ -718,17 +758,10 @@ public class Main {
 
           });
 
-          MindMap map = new MindMap(new MindMapController() {
-            private static final long serialVersionUID = -5276000656494506314L;
-
-            @Override
-            public boolean canBeDeletedSilently(@Nonnull final MindMap map, @Nonnull final Topic topic) {
-              return true;
-            }
-          }, false);
+          MindMap map = new MindMap(false);
           panel.setModel(map);
 
-          map = fromFormat.doImport(panel, dialog, null, new Topic[0]);
+          map = fromFormat.doImport(panel.getController().makePluginContext(panel));
           if (map != null) {
             panel.setModel(map);
           } else {
@@ -754,7 +787,7 @@ public class Main {
 
           final FileOutputStream result = new FileOutputStream(to, false);
           try {
-            toFormat.doExport(panel, optionsComponent, result);
+            toFormat.doExport(panel.getController().makePluginContext(panel), optionsComponent, result);
             result.flush();
           } finally {
             IOUtils.closeQuietly(result);

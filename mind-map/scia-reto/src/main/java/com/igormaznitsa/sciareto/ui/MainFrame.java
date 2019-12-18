@@ -18,6 +18,9 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
+
+
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
@@ -34,7 +37,6 @@ import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
-import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
 import com.igormaznitsa.sciareto.ui.editors.AbstractPlUmlEditor;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
@@ -1746,7 +1748,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       final String text;
 
       if (choosenFilter == filerMindMap) {
-        final MindMap model = new MindMap(null, true);
+        final MindMap model = new MindMap(true);
         model.setAttribute("showJumps", "true"); //NOI18N
         final Topic root = model.getRoot();
         if (root != null) {
@@ -1854,7 +1856,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         DialogProviderManager.getInstance().getDialogProvider().msgError(this, "File '" + file + "' already exists!");
       } else {
         try {
-          final MindMap mindMap = new MindMap(null, true);
+          final MindMap mindMap = new MindMap(true);
           final String text = mindMap.write(new StringWriter()).toString();
           SystemUtils.saveUTFText(file, text);
           result = file;

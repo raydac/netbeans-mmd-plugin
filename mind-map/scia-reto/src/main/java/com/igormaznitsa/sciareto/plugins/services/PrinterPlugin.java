@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,28 +16,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.plugins.services;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
@@ -53,27 +50,22 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
 
   @Nullable
   @Override
-  public JMenuItem makeMenuItem(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic,
-      @Nullable @MustNotContainNull final Topic[] topics, @Nullable final CustomJob mindMapPopUpItemCustomProcessor) {
-
+  public JMenuItem makeMenuItem(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
     final MMDPrintPanel.Adaptor adaptor = this;
 
     final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), new ImageIcon(ICON_PRINTER));
-    printAction.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        Main.getApplicationFrame().endFullScreenIfActive();
-        final MMDPrintPanel panel = new MMDPrintPanel(dialogProvider, adaptor, PrintableObject.newBuild().mmdpanel(mindMapPanel).build());
-        UiUtils.makeOwningDialogResizable(panel);
-        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(mindMapPanel), panel, "Print mind map", JOptionPane.PLAIN_MESSAGE);
-      }
+    printAction.addActionListener(e -> {
+      Main.getApplicationFrame().endFullScreenIfActive();
+      final MMDPrintPanel panel = new MMDPrintPanel(context.getDialogProvider(), adaptor, PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
+      UiUtils.makeOwningDialogResizable(panel);
+      JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(context.getPanel()), panel, "Print mind map", JOptionPane.PLAIN_MESSAGE);
     });
     return printAction;
   }
 
   @Override
-  public boolean isEnabled(@Nonnull MindMapPanel panel, @Nullable Topic topic, @Nonnull @MustNotContainNull Topic[] selectedTopics) {
-    return !panel.getModel().isEmpty();
+  public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+    return !context.getPanel().getModel().isEmpty();
   }
 
   @Nonnull

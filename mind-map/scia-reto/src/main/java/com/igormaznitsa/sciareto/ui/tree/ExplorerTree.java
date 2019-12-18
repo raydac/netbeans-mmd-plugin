@@ -663,7 +663,7 @@ public final class ExplorerTree extends JScrollPane {
         } else {
           switch (extension) {
             case "mmd": { //NOI18N
-              final MindMap model = new MindMap(null, true);
+              final MindMap model = new MindMap(true);
               model.setAttribute("showJumps", "true"); //NOI18N
               final Topic root = model.getRoot();
               if (root != null) {

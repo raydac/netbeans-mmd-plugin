@@ -18,17 +18,8 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nonnull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import javax.annotation.Nullable;
-import org.apache.commons.io.FileUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -38,11 +29,20 @@ import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.apache.commons.io.FileUtils;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
@@ -108,7 +108,7 @@ public class NodeProject extends NodeFileOrFolder {
     final List<File> result = new ArrayList<>();
     FileUtils.listFiles(baseFolder, new String[]{"mmd", "MMD"}, true).forEach((mindMapFile) -> {
       try {
-        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(mindMapFile, StandardCharsets.UTF_8))); //NOI18N
+        final MindMap map = new MindMap(new StringReader(FileUtils.readFileToString(mindMapFile, StandardCharsets.UTF_8))); //NOI18N
         if (!MapUtils.findTopicsRelatedToFile(baseFolder, changedFile, map).isEmpty()) {
           result.add(mindMapFile);
         }
@@ -129,7 +129,7 @@ public class NodeProject extends NodeFileOrFolder {
 
     listOfFilesToProcess.stream().filter((file) -> (file.isFile())).forEachOrdered((file) -> {
       try {
-        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
+        final MindMap map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
         if (map.deleteAllLinksToFile(baseFolder, fileURI)) {
           SystemUtils.saveUTFText(file, map.packToString());
           affectedFiles.add(file);
@@ -181,7 +181,7 @@ public class NodeProject extends NodeFileOrFolder {
 
     listOfFilesToProcess.stream().filter((file) -> (file.isFile())).forEachOrdered((file) -> {
       try {
-        final MindMap map = new MindMap(null, new StringReader(FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
+        final MindMap map = new MindMap(new StringReader(FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
         if (map.replaceAllLinksToFile(baseFolder, oldFileURI, newFileURI)) {
           SystemUtils.saveUTFText(file, map.packToString());
           affectedFiles.add(file);

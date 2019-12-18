@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
@@ -44,7 +45,8 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
@@ -100,10 +102,8 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -120,7 +120,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-public final class MMDEditor extends AbstractEditor implements MindMapPanelController, MindMapController, MindMapListener, DropTargetListener {
+public final class MMDEditor extends AbstractEditor implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
@@ -197,9 +197,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
     final MindMap map;
     if (file == null || file.length() == 0L) {
-      map = new MindMap(this, true);
+      map = new MindMap(true);
     } else {
-      map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
+      map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
     }
 
     this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
@@ -249,9 +249,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
     if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-            || e.getKeyCode() == KeyEvent.VK_LEFT
-            || e.getKeyCode() == KeyEvent.VK_RIGHT
-            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+        || e.getKeyCode() == KeyEvent.VK_LEFT
+        || e.getKeyCode() == KeyEvent.VK_RIGHT
+        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
       e.consume();
     }
   }
@@ -310,9 +310,9 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   public void loadContent(@Nullable File file) throws IOException {
     final MindMap map;
     if (file == null || file.length() == 0L) {
-      map = new MindMap(this, true);
+      map = new MindMap(true);
     } else {
-      map = new MindMap(this, new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
+      map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
     }
     this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
 
@@ -331,8 +331,8 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       File file = this.title.getAssociatedFile();
       if (file == null) {
         file = DialogProviderManager.getInstance()
-                .getDialogProvider()
-                .msgSaveFileDialog(Main.getApplicationFrame(), "mmd-editor-document", "Save Mind Map", null, true, new FileFilter[]{getFileFilter()}, "Save");
+            .getDialogProvider()
+            .msgSaveFileDialog(Main.getApplicationFrame(), "mmd-editor-document", "Save Mind Map", null, true, new FileFilter[] {getFileFilter()}, "Save");
         if (file == null) {
           return result;
         }
@@ -461,7 +461,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         this.undoStorage.addToUndo(this.currentModelState.getAndSet(this.undoStorage.fromRedo()));
         this.preventAddUndo.set(true);
         try {
-          this.mindMapPanel.setModel(new MindMap(this, new StringReader(this.currentModelState.get())), true);
+          this.mindMapPanel.setModel(new MindMap(new StringReader(this.currentModelState.get())), true);
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
         } catch (IOException ex) {
           LOGGER.error("Can't redo mind map", ex); //NOI18N
@@ -480,7 +480,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
         this.undoStorage.addToRedo(this.currentModelState.getAndSet(this.undoStorage.fromUndo()));
         this.preventAddUndo.set(true);
         try {
-          this.mindMapPanel.setModel(new MindMap(null, new StringReader(this.currentModelState.get())), true);
+          this.mindMapPanel.setModel(new MindMap(new StringReader(this.currentModelState.get())), true);
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
         } catch (IOException ex) {
           LOGGER.error("Can't redo mind map", ex); //NOI18N
@@ -531,12 +531,12 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
 
   @Override
   public void onScaledByMouse(
-          @Nonnull final MindMapPanel source,
-          @Nonnull final Point mousePoint,
-          final double oldScale,
-          final double newScale,
-          @Nonnull final Dimension oldSize,
-          @Nonnull final Dimension newSize
+      @Nonnull final MindMapPanel source,
+      @Nonnull final Point mousePoint,
+      final double oldScale,
+      final double newScale,
+      @Nonnull final Dimension oldSize,
+      @Nonnull final Dimension newSize
   ) {
     if (Double.compare(oldScale, newScale) != 0) {
       this.scrollPane.setViewportView(source);
@@ -630,7 +630,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     boolean topicsNotImportant = true;
 
     for (final Topic t : topics) {
-      topicsNotImportant &= t.canBeLost();
+      topicsNotImportant = canTopicBeDeleted(source, t);
       if (!topicsNotImportant) {
         break;
       }
@@ -853,36 +853,28 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     return result;
   }
 
-  @Nonnull
-  private Map<Class<? extends PopUpMenuItemPlugin>, CustomJob> getCustomProcessors() {
-    if (this.customProcessors == null) {
-      this.customProcessors = new HashMap<>();
-      this.customProcessors.put(ExtraNotePlugin.class, (CustomJob) (@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) -> {
-        if (topic != null) {
-          editTextForTopic(topic);
-          panel.requestFocus();
-        }
-      });
-      this.customProcessors.put(ExtraFilePlugin.class, new CustomJob() {
-        @Override
-        public void doJob(@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) {
-          editFileLinkForTopic(topic);
-          panel.requestFocus();
-        }
-      });
-      this.customProcessors.put(ExtraURIPlugin.class, (CustomJob) (@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) -> {
-        editLinkForTopic(topic);
-        panel.requestFocus();
-      });
-      this.customProcessors.put(ExtraJumpPlugin.class, (CustomJob) (@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) -> {
-        editTopicLinkForTopic(topic);
-        panel.requestFocus();
-      });
-      this.customProcessors.put(ChangeColorPlugin.class, (CustomJob) (@Nonnull final PopUpMenuItemPlugin plugin, @Nonnull final MindMapPanel panel, @Nonnull final DialogProvider dialogProvider, @Nullable final Topic topic, @Nonnull @MustNotContainNull final Topic[] selectedTopics) -> {
-        processColorDialogForTopics(panel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
-      });
+  @Override
+  public void processPluginActivation(@Nonnull final ExternallyExecutedPlugin plugin, @Nullable final Topic topic) {
+    if (plugin instanceof ExtraNotePlugin) {
+      if (topic != null) {
+        editTextForTopic(topic);
+        this.mindMapPanel.requestFocus();
+      }
+    } else if (plugin instanceof ExtraURIPlugin) {
+      editLinkForTopic(topic);
+      this.mindMapPanel.requestFocus();
+    } else if (plugin instanceof ExtraFilePlugin) {
+      editFileLinkForTopic(topic);
+      this.mindMapPanel.requestFocus();
+    } else if (plugin instanceof ExtraJumpPlugin) {
+      editTopicLinkForTopic(topic);
+      this.mindMapPanel.requestFocus();
+    } else if (plugin instanceof ChangeColorPlugin) {
+      final Topic[] selectedTopics = this.getSelectedTopics();
+      processColorDialogForTopics(this.mindMapPanel, selectedTopics.length > 0 ? selectedTopics : new Topic[] {topic});
+    } else {
+      throw new Error("Unexpected plugin: " + plugin.getClass().getName());
     }
-    return this.customProcessors;
   }
 
   private void editTextForTopic(@Nonnull final Topic topic) {
@@ -938,8 +930,8 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
       if (currentFilePath == null) {
         final FileEditPanel.DataContainer prefilled = new FileEditPanel.DataContainer(null, this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
         dataContainer = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
-                this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
-                prefilled);
+            this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
+            prefilled);
         if (dataContainer != null) {
           this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, dataContainer.isShowWithSystemTool());
         }
@@ -1117,7 +1109,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   @Override
   @Nonnull
   public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement elementUnderMouse, @Nullable final ElementPart elementPartUnderMouse) {
-    return Utils.makePopUp(source, Main.getApplicationFrame().isFullScreenActive(), DialogProviderManager.getInstance().getDialogProvider(), elementUnderMouse == null ? null : elementUnderMouse.getModel(), source.getSelectedTopics(), getCustomProcessors());
+    return Utils.makePopUp(this, Main.getApplicationFrame().isFullScreenActive(), elementUnderMouse == null ? null : elementUnderMouse.getModel());
   }
 
   @Override
@@ -1145,7 +1137,7 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   }
 
   @Override
-  public boolean canBeDeletedSilently(@Nonnull final MindMap map, @Nonnull final Topic topic) {
+  public boolean canTopicBeDeleted(@Nonnull MindMapPanel source, @Nonnull Topic topic) {
     return topic.getText().isEmpty() && topic.getExtras().isEmpty() && doesContainOnlyStandardAttributes(topic);
   }
 
@@ -1249,8 +1241,8 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     return this.mindMapPanel.hasSelectedTopics()
-            && (Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR)
-            || Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor));
+        && (Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR)
+        || Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor));
   }
 
   @Override
@@ -1265,4 +1257,34 @@ public final class MMDEditor extends AbstractEditor implements MindMapPanelContr
     return this.mindMapPanel.pasteTopicsFromClipboard();
   }
 
+  @Nonnull
+  @Override
+  public MindMapPanelConfig getPanelConfig() {
+    return this.mindMapPanel.getConfiguration();
+  }
+
+  @Nonnull
+  @Override
+  public MindMapPanel getPanel() {
+    return this.mindMapPanel;
+  }
+
+  @Nonnull
+  @Override
+  public DialogProvider getDialogProvider() {
+    return this.getDialogProvider(this.mindMapPanel);
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  @Override
+  public Topic[] getSelectedTopics() {
+    return this.mindMapPanel.getSelectedTopics();
+  }
+
+  @Nonnull
+  @Override
+  public PluginContext makePluginContext(@Nonnull MindMapPanel source) {
+    return this;
+  }
 }
