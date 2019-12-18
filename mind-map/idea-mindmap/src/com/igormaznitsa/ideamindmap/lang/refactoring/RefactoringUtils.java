@@ -44,7 +44,7 @@ public final class RefactoringUtils {
       throw new NullPointerException("Project folder is not found for " + mindMapFile);
     }
 
-    final MindMap parsedMap = new MindMap(null, new StringReader(mindMapFile.getContainingFile().getText()));
+    final MindMap parsedMap = new MindMap(new StringReader(mindMapFile.getContainingFile().getText()));
     parsedMap.replaceAllLinksToFile(projectFolder, oldFile, newFile);
 
     return parsedMap.write(new StringWriter(16384)).toString();

@@ -19,7 +19,6 @@ package com.igormaznitsa.ideamindmap.editor;
 import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
 
@@ -40,7 +39,6 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.MindMapController;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -129,7 +127,7 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEditor, MindMapController, MindMapListener, DropTargetListener, Committable, DataProvider, CopyProvider, CutProvider, PasteProvider {
+public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEditor, MindMapListener, DropTargetListener, Committable, DataProvider, CopyProvider, CutProvider, PasteProvider {
   private static final long serialVersionUID = -8185230144865144686L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapDocumentEditor.class);
@@ -223,6 +221,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   public void onComponentElementsLayouted(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final Graphics2D graphics2D) {
   }
 
+
   @Override
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source, @Nonnull final Topic topic, final boolean beforeAction) {
     if (!beforeAction) {
@@ -289,9 +288,9 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
               try {
                 if (documentText.isEmpty()) {
                   LOGGER.warn("Detected empty text document, default mind-map will be created");
-                  mindMapPanel.setModel(new MindMap(editorIstance, true));
+                  mindMapPanel.setModel(new MindMap(true));
                 } else {
-                  mindMapPanel.setModel(new MindMap(editorIstance, new StringReader(documentText)));
+                  mindMapPanel.setModel(new MindMap(new StringReader(documentText)));
                 }
               } catch (Exception ex) {
                 LOGGER.error("Can't parse MindMap text", ex);
@@ -572,11 +571,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   @Override
-  public boolean canBeDeletedSilently(@Nonnull MindMap mindMap, @Nonnull Topic topic) {
-    return topic.getText().isEmpty() && topic.getExtras().isEmpty() && doesContainOnlyStandardAttributes(topic);
-  }
-
-  @Override
   public void onMindMapModelChanged(@Nonnull final MindMapPanel mindMapPanel, final boolean saveToHistory) {
     if (saveToHistory) {
       saveMindMapToDocument();
@@ -791,7 +785,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     boolean topicsNotImportant = true;
 
     for (final Topic t : topics) {
-      topicsNotImportant &= t.canBeLost();
+      topicsNotImportant &= this.panelController.canTopicBeDeleted(this.mindMapPanel, t);
       if (!topicsNotImportant) {
         break;
       }

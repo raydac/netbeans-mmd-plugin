@@ -41,7 +41,7 @@ public interface VisualAttributePlugin extends AttributePlugin {
   /**
    * Process click on image represents the attribute,
    *
-   * @param panel      the panel
+   * @param context    the plugin context
    * @param topic      the topic
    * @param clickCount detected number of mouse clicks
    * @return true if the map was changed for the operation, false otherwise
@@ -51,8 +51,8 @@ public interface VisualAttributePlugin extends AttributePlugin {
   /**
    * Get tool-tip for image represents the attribute.
    *
-   * @param panel the panel
-   * @param topic the topic
+   * @param context the plugin context
+   * @param topic   the topic
    * @return text to be shown as tool-tip or null if nothing
    */
   @Nullable
@@ -61,8 +61,8 @@ public interface VisualAttributePlugin extends AttributePlugin {
   /**
    * Is the visual attribute clickable one.
    *
-   * @param panel the panel
-   * @param topic the topic
+   * @param context the plugin context
+   * @param topic   the topic
    * @return true if the attribute is clickable one, false otherwise
    */
   boolean isClickable(@Nonnull PluginContext context, @Nonnull Topic topic);

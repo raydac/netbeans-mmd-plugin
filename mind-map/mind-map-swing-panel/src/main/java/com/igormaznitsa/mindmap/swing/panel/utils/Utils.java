@@ -167,11 +167,12 @@ public final class Utils {
    * Load and parse XML document from input stream.
    *
    * @param inStream  stream to read document
+   * @param charset   charset to be used for loading, can be null
    * @param autoClose true if stream must be closed, false otherwise
    * @return parsed document
-   * @throws IOException
-   * @throws ParserConfigurationException
-   * @throws SAXException
+   * @throws IOException                  will be thrown if transport error
+   * @throws ParserConfigurationException will be thrown if parsing error
+   * @throws SAXException                 will be thrown if SAX error
    * @since 1.4.0
    */
   @Nonnull

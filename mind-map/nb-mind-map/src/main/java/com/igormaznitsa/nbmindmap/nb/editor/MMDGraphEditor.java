@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.editor;
 
 import static com.igormaznitsa.mindmap.ide.commons.FilePathWithLine.strToLine;
@@ -779,7 +780,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
                       NbUtils.SelectIn browserType = NbUtils.SelectIn.PROJECTS;
 
                       if (!openProjects.isProjectOpen(project)) {
-                        openProjects.open(new Project[]{project}, false);
+                        openProjects.open(new Project[] {project}, false);
                       } else {
                         final FileObject mapProjectFolder = getProjectFolderAsFileObject();
                         if (mapProjectFolder != null && mapProjectFolder.equals(fileObj)) {
@@ -801,10 +802,10 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
                 if (manager.isProject(fileObj)) {
                   final Project project = manager.findProject(fileObj);
                   if (project != null && !openManager.isProjectOpen(project)) {
-                    openManager.open(new Project[]{project}, false, true);
+                    openManager.open(new Project[] {project}, false, true);
                   }
                 } else if (projectOwner != null) {
-                  openManager.open(new Project[]{projectOwner}, false);
+                  openManager.open(new Project[] {projectOwner}, false);
 
                   if (!NbUtils.isInProjectKnowledgeFolder(projectOwner, fileObj)) {
                     if (NbUtils.isFileInProjectScope(projectOwner, fileObj)) {
@@ -929,12 +930,12 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   @Override
   public void onScaledByMouse(
-          @Nonnull final MindMapPanel source,
-          @Nonnull final Point mousePoint,
-          final double oldScale,
-          final double newScale,
-          @Nonnull final Dimension oldSize,
-          @Nonnull final Dimension newSize
+      @Nonnull final MindMapPanel source,
+      @Nonnull final Point mousePoint,
+      final double oldScale,
+      final double newScale,
+      @Nonnull final Dimension oldSize,
+      @Nonnull final Dimension newSize
   ) {
     if (Double.compare(oldScale, newScale) != 0) {
       final JViewport viewport = this.mainScrollPane.getViewport();
@@ -1246,8 +1247,8 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       if (currentFilePath == null) {
         final FileEditPanel.DataContainer prefilled = new FileEditPanel.DataContainer(null, this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
         dataContainer = NbUtils.editFilePath(null, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
-                this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
-                prefilled);
+            this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
+            prefilled);
         if (dataContainer != null) {
           this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, dataContainer.isShowWithSystemTool());
         }
@@ -1533,6 +1534,8 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
       NbUtils.plainMessageOk(null, BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
     } else if (plugin instanceof OptionsPlugin) {
       OptionsDisplayer.getDefault().open("nb-mmd-config-main"); //NOI18N
+    } else {
+      throw new Error("Unexpected plugin call: " + plugin.getClass().getName());
     }
   }
 
