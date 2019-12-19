@@ -250,7 +250,13 @@ public class MDExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("MDExporter.saveDialogTitle"), ".MD", Texts.getString("MDExporter.filterDescription"), Texts.getString("MDExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
+          context.getPanel(),
+          Texts.getString("MDExporter.saveDialogTitle"),
+          null,
+          ".MD",
+          Texts.getString("MDExporter.filterDescription"),
+          Texts.getString("MDExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".MD");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

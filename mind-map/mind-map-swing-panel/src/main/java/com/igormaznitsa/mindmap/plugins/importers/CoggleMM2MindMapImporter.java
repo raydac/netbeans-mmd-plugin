@@ -113,7 +113,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.CoggleMM2MindMap.openDialogTitle"), "mm", "Coggle MM files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
+    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.CoggleMM2MindMap.openDialogTitle"), null, "mm", "Coggle MM files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;

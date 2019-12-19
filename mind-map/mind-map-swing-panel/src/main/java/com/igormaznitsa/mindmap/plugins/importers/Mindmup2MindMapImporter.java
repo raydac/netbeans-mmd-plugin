@@ -65,7 +65,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), "mup", "Mindmup files (.MUP)", Texts.getString("MMDImporters.ApproveImport"));
+    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), null, "mup", "Mindmup files (.MUP)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;

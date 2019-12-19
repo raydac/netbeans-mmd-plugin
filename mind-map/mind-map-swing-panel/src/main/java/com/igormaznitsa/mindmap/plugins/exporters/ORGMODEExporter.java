@@ -335,7 +335,13 @@ public class ORGMODEExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("ORGMODEExporter.saveDialogTitle"), ".org", Texts.getString("ORGMODEExporter.filterDescription"), Texts.getString("ORGMODEExporter.approveButtonText"));//NOI18N
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
+          context.getPanel(),
+          Texts.getString("ORGMODEExporter.saveDialogTitle"),
+          null,
+          ".org",
+          Texts.getString("ORGMODEExporter.filterDescription"),
+          Texts.getString("ORGMODEExporter.approveButtonText"));//NOI18N
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".org");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

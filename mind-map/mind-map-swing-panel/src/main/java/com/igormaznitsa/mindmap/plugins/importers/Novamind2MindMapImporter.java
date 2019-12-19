@@ -192,7 +192,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Novamind2MindMap.openDialogTitle"), "nm5", "Novamind files (.NM5)", Texts.getString("MMDImporters.ApproveImport"));
+    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Novamind2MindMap.openDialogTitle"), null, "nm5", "Novamind files (.NM5)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;

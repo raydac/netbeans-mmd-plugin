@@ -249,7 +249,13 @@ public class MindmupExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("MindmupExporter.saveDialogTitle"), ".mup", Texts.getString("MindmupExporter.filterDescription"), Texts.getString("MindmupExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
+          context.getPanel(),
+          Texts.getString("MindmupExporter.saveDialogTitle"),
+          null,
+          ".mup",
+          Texts.getString("MindmupExporter.filterDescription"),
+          Texts.getString("MindmupExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mup");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

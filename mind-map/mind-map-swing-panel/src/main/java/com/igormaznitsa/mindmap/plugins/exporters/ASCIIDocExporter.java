@@ -166,7 +166,13 @@ public class ASCIIDocExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("ASCIIDOCExporter.saveDialogTitle"), ".asciidoc", Texts.getString("ASCIIDOCExporter.filterDescription"), Texts.getString("ASCIIDOCExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
+          context.getPanel(),
+          Texts.getString("ASCIIDOCExporter.saveDialogTitle"),
+          null,
+          ".asciidoc",
+          Texts.getString("ASCIIDOCExporter.filterDescription"),
+          Texts.getString("ASCIIDOCExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".asciidoc");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

@@ -204,7 +204,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.XMind2MindMap.openDialogTitle"), "xmind", "XMind files (.XMIND)", Texts.getString("MMDImporters.ApproveImport"));
+    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.XMind2MindMap.openDialogTitle"), null, "xmind", "XMind files (.XMIND)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;

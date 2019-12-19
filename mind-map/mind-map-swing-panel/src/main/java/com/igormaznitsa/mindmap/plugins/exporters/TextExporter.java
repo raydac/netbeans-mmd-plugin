@@ -244,7 +244,13 @@ public class TextExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("TextExporter.saveDialogTitle"), ".txt", Texts.getString("TextExporter.filterDescription"), Texts.getString("TextExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
+          context.getPanel(),
+          Texts.getString("TextExporter.saveDialogTitle"),
+          null,
+          ".txt",
+          Texts.getString("TextExporter.filterDescription"),
+          Texts.getString("TextExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".txt");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

@@ -768,7 +768,7 @@ public class Main {
             dialog.msgError(MAIN_FRAME, "Can't import map");
           }
 
-          final JComponent optionsComponent = toFormat.makeOptions();
+          final JComponent optionsComponent = toFormat.makeOptions(panel.getController().makePluginContext(panel));
 
           if (!options.isEmpty()) {
             if (optionsComponent instanceof HasOptions) {

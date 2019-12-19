@@ -59,8 +59,8 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
           if (theInstance instanceof ExternallyExecutedPlugin) {
             context.processPluginActivation((ExternallyExecutedPlugin) theInstance, activeTopic);
           } else {
-            final JComponent options = makeOptions();
-            if (options != null && !context.getDialogProvider().msgOkCancel(null, getName(context, activeTopic), options)) {
+            final JComponent options = makeOptions(context);
+            if (options != null && !context.getDialogProvider().msgOkCancel(context.getPanel(), getName(context, activeTopic), options)) {
               return;
             }
             if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
@@ -97,7 +97,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   }
 
   @Nullable
-  public JComponent makeOptions() {
+  public JComponent makeOptions(@Nonnull final PluginContext context) {
     return null;
   }
 

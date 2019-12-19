@@ -155,7 +155,7 @@ public class SVGImageExporter extends AbstractExporter {
 
   @Override
   @Nullable
-  public JComponent makeOptions() {
+  public JComponent makeOptions(@Nonnull final PluginContext context) {
     final Options options = new Options(flagExpandAllNodes, flagDrawBackground);
     final JPanel panel = UI_FACTORY.makePanelWithOptions(options);
     final JCheckBox checkBoxExpandAll = UI_FACTORY.makeCheckBox();
@@ -275,7 +275,10 @@ public class SVGImageExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("SvgExporter.saveDialogTitle"), ".svg", Texts.getString("SvgExporter.filterDescription"), Texts.getString("SvgExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
+          context.getPanel(),
+          Texts.getString("SvgExporter.saveDialogTitle"), null,
+          ".svg", Texts.getString("SvgExporter.filterDescription"), Texts.getString("SvgExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".svg");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

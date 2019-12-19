@@ -220,7 +220,13 @@ public class FreeMindExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("FreeMindExporter.saveDialogTitle"), ".mm", Texts.getString("FreeMindExporter.filterDescription"), Texts.getString("FreeMindExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
+          context.getPanel(),
+          Texts.getString("FreeMindExporter.saveDialogTitle"),
+          null,
+          ".mm",
+          Texts.getString("FreeMindExporter.filterDescription"),
+          Texts.getString("FreeMindExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mm");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

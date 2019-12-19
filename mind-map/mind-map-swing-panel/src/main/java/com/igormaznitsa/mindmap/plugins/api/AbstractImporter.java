@@ -110,8 +110,17 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   }
 
   @Nullable
-  protected File selectFileForExtension(@Nonnull final PluginContext context, @Nonnull final String dialogTitle, @Nonnull final String fileExtension, @Nonnull final String fileFilterDescription, @Nonnull final String approveButtonText) {
-    return MindMapUtils.selectFileToOpenForFileFilter(context.getPanel(), dialogTitle, normalizeExtension(fileExtension), fileFilterDescription, approveButtonText);
+  protected File selectFileForExtension(@Nonnull final PluginContext context,
+                                        @Nonnull final String dialogTitle,
+                                        @Nullable final File defaultFolder,
+                                        @Nonnull final String fileExtension,
+                                        @Nonnull final String fileFilterDescription,
+                                        @Nonnull final String approveButtonText) {
+    return MindMapUtils.selectFileToOpenForFileFilter(
+        context.getPanel(),
+        dialogTitle,
+        defaultFolder,
+        normalizeExtension(fileExtension), fileFilterDescription, approveButtonText);
   }
 
   @Nullable

@@ -43,7 +43,7 @@ public class Text2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), "txt", "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
+    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), null, "txt", "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
     MindMap result = null;
     if (file != null) {
       final List<String> lines = FileUtils.readLines(file, "UTF-8");

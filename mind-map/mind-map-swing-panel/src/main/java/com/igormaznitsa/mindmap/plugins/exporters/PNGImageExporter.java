@@ -74,7 +74,7 @@ public final class PNGImageExporter extends AbstractExporter {
 
   @Override
   @Nullable
-  public JComponent makeOptions() {
+  public JComponent makeOptions(@Nonnull final PluginContext context) {
     final Options options = new Options(flagExpandAllNodes, flagDrawBackground);
 
     final JPanel panel = UI_FACTORY.makePanelWithOptions(options);
@@ -177,7 +177,13 @@ public final class PNGImageExporter extends AbstractExporter {
     File fileToSaveMap = null;
     OutputStream theOut = out;
     if (theOut == null) {
-      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(context.getPanel(), Texts.getString("PNGImageExporter.saveDialogTitle"), ".png", Texts.getString("PNGImageExporter.filterDescription"), Texts.getString("PNGImageExporter.approveButtonText"));
+      fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
+          context.getPanel(),
+          Texts.getString("PNGImageExporter.saveDialogTitle"),
+          null,
+          ".png",
+          Texts.getString("PNGImageExporter.filterDescription"),
+          Texts.getString("PNGImageExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".png");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
