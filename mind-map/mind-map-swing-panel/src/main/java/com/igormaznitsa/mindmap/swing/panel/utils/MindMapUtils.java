@@ -275,18 +275,22 @@ public final class MindMapUtils {
 
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
-    return panel.getController().getDialogProvider(panel).msgOpenFileDialog(panel, "user-dir", title, defaultFolderForDialogOpen, true, new FileFilter[] {new FileFilter() { //NOI18N
-      @Override
-      public boolean accept(@Nonnull final File f) {
-        return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
-      }
+    return panel.getController().getDialogProvider(panel).msgOpenFileDialog(
+        panel,
+        "user-dir",
+        title,
+        defaultFolderForDialogOpen, true, new FileFilter[] {new FileFilter() { //NOI18N
+          @Override
+          public boolean accept(@Nonnull final File f) {
+            return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
+          }
 
-      @Override
-      @Nonnull
-      public String getDescription() {
-        return filterDescription;
-      }
-    }}, approveButtonText);
+          @Override
+          @Nonnull
+          public String getDescription() {
+            return filterDescription;
+          }
+        }}, approveButtonText);
   }
 
   @Nullable

@@ -19,6 +19,9 @@
 package com.igormaznitsa.sciareto.ui;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.GetUtils;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.sciareto.Main;
 import java.awt.Component;
 import java.io.File;
 import java.util.Collections;
@@ -29,10 +32,8 @@ import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
-import com.igormaznitsa.meta.common.utils.GetUtils;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.sciareto.Main;
 
 public final class DialogProviderManager {
 
@@ -106,7 +107,11 @@ public final class DialogProviderManager {
       fileChooser.setMultiSelectionEnabled(false);
 
       File result = null;
-      if (fileChooser.showDialog(GetUtils.ensureNonNull(parentComponent, Main.getApplicationFrame()), approveButtonText) == JFileChooser.APPROVE_OPTION) {
+      if (fileChooser.showDialog(GetUtils.ensureNonNull(
+          parentComponent == null ? null : SwingUtilities.windowForComponent(parentComponent),
+          Main.getApplicationFrame()),
+          approveButtonText) == JFileChooser.APPROVE_OPTION
+      ) {
         result = fileChooser.getSelectedFile();
         if (result != null) {
           CACHE_ID_FILE.put(id, result);
@@ -140,7 +145,10 @@ public final class DialogProviderManager {
       fileChooser.setMultiSelectionEnabled(false);
 
       File result = null;
-      if (fileChooser.showDialog(GetUtils.ensureNonNull(parentComponent, Main.getApplicationFrame()), approveButtonText) == JFileChooser.APPROVE_OPTION) {
+      if (fileChooser.showDialog(GetUtils.ensureNonNull(
+          parentComponent == null ? null : SwingUtilities.windowForComponent(parentComponent),
+          Main.getApplicationFrame()),
+          approveButtonText) == JFileChooser.APPROVE_OPTION) {
         result = fileChooser.getSelectedFile();
         if (result != null) {
           CACHE_ID_FILE.put(id, result);
