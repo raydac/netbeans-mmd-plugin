@@ -222,6 +222,7 @@ public class FreeMindExporter extends AbstractExporter {
     if (theOut == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
+          this.getClass().getName(),
           Texts.getString("FreeMindExporter.saveDialogTitle"),
           null,
           ".mm",

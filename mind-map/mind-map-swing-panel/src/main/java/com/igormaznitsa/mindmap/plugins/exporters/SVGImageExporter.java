@@ -277,6 +277,7 @@ public class SVGImageExporter extends AbstractExporter {
     if (theOut == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
+          this.getClass().getName(),
           Texts.getString("SvgExporter.saveDialogTitle"), null,
           ".svg", Texts.getString("SvgExporter.filterDescription"), Texts.getString("SvgExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".svg");//NOI18N

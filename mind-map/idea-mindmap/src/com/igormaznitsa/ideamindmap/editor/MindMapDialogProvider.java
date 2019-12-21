@@ -18,6 +18,7 @@ package com.igormaznitsa.ideamindmap.editor;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.utils.IdToFileMap;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.WindowManager;
@@ -32,6 +33,9 @@ import javax.swing.filechooser.FileFilter;
 public class MindMapDialogProvider implements DialogProvider {
 
   private final Project project;
+
+  private final IdToFileMap cacheOpenFileThroughDialog = new IdToFileMap();
+  private final IdToFileMap cacheSaveFileThroughDialog = new IdToFileMap();
 
   public MindMapDialogProvider(final Project project) {
     this.project = project;
@@ -83,7 +87,7 @@ public class MindMapDialogProvider implements DialogProvider {
           @Nullable @MustNotContainNull final FileFilter[] fileFilters,
           @Nonnull final String approveButtonText) {
 
-    final JFileChooser fileChooser = new JFileChooser(defaultFolder);
+    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheOpenFileThroughDialog.find(id) : defaultFolder);
     fileChooser.setDialogTitle(title);
     for (final FileFilter f : fileFilters) {
       fileChooser.addChoosableFileFilter(f);
@@ -93,7 +97,7 @@ public class MindMapDialogProvider implements DialogProvider {
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
     if (fileChooser.showOpenDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
-      return fileChooser.getSelectedFile();
+      return cacheOpenFileThroughDialog.register(id, fileChooser.getSelectedFile());
     } else {
       return null;
     }
@@ -107,7 +111,7 @@ public class MindMapDialogProvider implements DialogProvider {
           final boolean fileOnly,
           @Nullable @MustNotContainNull final FileFilter[] fileFilters,
           @Nonnull final String approveButtonText) {
-    final JFileChooser fileChooser = new JFileChooser(defaultFolder);
+    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheSaveFileThroughDialog.find(id) : defaultFolder);
     fileChooser.setDialogTitle(title);
     for (final FileFilter f : fileFilters) {
       fileChooser.addChoosableFileFilter(f);
@@ -117,7 +121,7 @@ public class MindMapDialogProvider implements DialogProvider {
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
     if (fileChooser.showSaveDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
-      return fileChooser.getSelectedFile();
+      return cacheSaveFileThroughDialog.register(id, fileChooser.getSelectedFile());
     } else {
       return null;
     }

@@ -168,6 +168,7 @@ public class ASCIIDocExporter extends AbstractExporter {
     if (theOut == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
+          this.getClass().getName(),
           Texts.getString("ASCIIDOCExporter.saveDialogTitle"),
           null,
           ".asciidoc",

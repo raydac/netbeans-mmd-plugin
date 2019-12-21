@@ -118,6 +118,7 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
                                         @Nonnull final String approveButtonText) {
     return MindMapUtils.selectFileToOpenForFileFilter(
         context.getPanel(),
+        this.getClass().getName(),
         dialogTitle,
         defaultFolder,
         normalizeExtension(fileExtension), fileFilterDescription, approveButtonText);

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,17 +16,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.utils.IdToFileMap;
 import com.igormaznitsa.sciareto.Main;
 import java.awt.Component;
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -37,10 +36,10 @@ import javax.swing.filechooser.FileFilter;
 
 public final class DialogProviderManager {
 
-  private static final Map<String, File> CACHE_ID_FILE = Collections.synchronizedMap(new HashMap<String, File>());
-
   private static final DialogProviderManager INSTANCE = new DialogProviderManager();
   private static final DialogProvider PROVIDER = new DialogProvider() {
+    private final IdToFileMap cacheOpenFileThroughDialog = new IdToFileMap();
+    private final IdToFileMap cacheSaveFileThroughDialog = new IdToFileMap();
 
     @Override
     public void msgError(@Nullable final Component parentComponent, @Nonnull final String text) {
@@ -88,7 +87,7 @@ public final class DialogProviderManager {
     public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull @MustNotContainNull final FileFilter[] fileFilters, @Nonnull final String approveButtonText) {
       final File folderToUse;
       if (defaultFolder == null) {
-        folderToUse = CACHE_ID_FILE.get(id);
+        folderToUse = cacheSaveFileThroughDialog.find(id);
       } else {
         folderToUse = defaultFolder;
       }
@@ -112,10 +111,7 @@ public final class DialogProviderManager {
           Main.getApplicationFrame()),
           approveButtonText) == JFileChooser.APPROVE_OPTION
       ) {
-        result = fileChooser.getSelectedFile();
-        if (result != null) {
-          CACHE_ID_FILE.put(id, result);
-        }
+        result = cacheSaveFileThroughDialog.register(id, fileChooser.getSelectedFile());
       }
 
       return result;
@@ -126,7 +122,7 @@ public final class DialogProviderManager {
     public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull @MustNotContainNull FileFilter[] fileFilters, @Nonnull String approveButtonText) {
       final File folderToUse;
       if (defaultFolder == null) {
-        folderToUse = CACHE_ID_FILE.get(id);
+        folderToUse = cacheOpenFileThroughDialog.find(id);
       } else {
         folderToUse = defaultFolder;
       }
@@ -149,10 +145,7 @@ public final class DialogProviderManager {
           parentComponent == null ? null : SwingUtilities.windowForComponent(parentComponent),
           Main.getApplicationFrame()),
           approveButtonText) == JFileChooser.APPROVE_OPTION) {
-        result = fileChooser.getSelectedFile();
-        if (result != null) {
-          CACHE_ID_FILE.put(id, result);
-        }
+        result = cacheOpenFileThroughDialog.register(id, fileChooser.getSelectedFile());
       }
 
       return result;

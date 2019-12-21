@@ -244,16 +244,13 @@ public final class MindMapUtils {
   }
 
   @Nullable
-  public static File selectFileToSaveForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
-    final File defaultFolderForDialogOpen = defaultFolder == null ? new File(System.getProperty("user.home")) : defaultFolder;//NOI18N
-
+  public static File selectFileToSaveForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String dialogId, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
-
     return panel.getController().getDialogProvider(panel).msgSaveFileDialog(
         panel,
-        "user-dir",
+        dialogId,
         title,
-        defaultFolderForDialogOpen,
+        defaultFolder,
         true,
         new FileFilter[] {new FileFilter() { //NOI18N
           @Override
@@ -270,16 +267,16 @@ public final class MindMapUtils {
   }
 
   @Nullable
-  public static File selectFileToOpenForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
-    final File defaultFolderForDialogOpen = defaultFolder == null ? new File(System.getProperty("user.home")) : defaultFolder;//NOI18N
-
+  public static File selectFileToOpenForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String dialogId, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
     return panel.getController().getDialogProvider(panel).msgOpenFileDialog(
         panel,
-        "user-dir",
+        dialogId,
         title,
-        defaultFolderForDialogOpen, true, new FileFilter[] {new FileFilter() { //NOI18N
+        defaultFolder,
+        true,
+        new FileFilter[] {new FileFilter() {
           @Override
           public boolean accept(@Nonnull final File f) {
             return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
