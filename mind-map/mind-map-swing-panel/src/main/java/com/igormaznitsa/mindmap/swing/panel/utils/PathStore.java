@@ -6,7 +6,13 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class IdToFileMap {
+/**
+ * Auxiliary thread safe class allows to keep some non-null file folder path associated
+ * with non-null string based id. If there is not any associated folder then user.home in use.
+ *
+ * @since 1.4.7
+ */
+public class PathStore {
   private final Map<String, File> internalMap = new HashMap<>();
   private static final File USER_HOME = new File(System.getProperty("user.home"));
 
@@ -17,7 +23,7 @@ public class IdToFileMap {
   }
 
   @Nullable
-  public synchronized File register(@Nonnull final String id, @Nullable File file) {
+  public synchronized File put(@Nonnull final String id, @Nullable File file) {
     if (file == null) {
       return null;
     }

@@ -22,7 +22,7 @@ package com.igormaznitsa.sciareto.ui;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.utils.IdToFileMap;
+import com.igormaznitsa.mindmap.swing.panel.utils.PathStore;
 import com.igormaznitsa.sciareto.Main;
 import java.awt.Component;
 import java.io.File;
@@ -38,8 +38,8 @@ public final class DialogProviderManager {
 
   private static final DialogProviderManager INSTANCE = new DialogProviderManager();
   private static final DialogProvider PROVIDER = new DialogProvider() {
-    private final IdToFileMap cacheOpenFileThroughDialog = new IdToFileMap();
-    private final IdToFileMap cacheSaveFileThroughDialog = new IdToFileMap();
+    private final PathStore cacheOpenFileThroughDialog = new PathStore();
+    private final PathStore cacheSaveFileThroughDialog = new PathStore();
 
     @Override
     public void msgError(@Nullable final Component parentComponent, @Nonnull final String text) {
@@ -111,7 +111,7 @@ public final class DialogProviderManager {
           Main.getApplicationFrame()),
           approveButtonText) == JFileChooser.APPROVE_OPTION
       ) {
-        result = cacheSaveFileThroughDialog.register(id, fileChooser.getSelectedFile());
+        result = cacheSaveFileThroughDialog.put(id, fileChooser.getSelectedFile());
       }
 
       return result;
@@ -145,7 +145,7 @@ public final class DialogProviderManager {
           parentComponent == null ? null : SwingUtilities.windowForComponent(parentComponent),
           Main.getApplicationFrame()),
           approveButtonText) == JFileChooser.APPROVE_OPTION) {
-        result = cacheOpenFileThroughDialog.register(id, fileChooser.getSelectedFile());
+        result = cacheOpenFileThroughDialog.put(id, fileChooser.getSelectedFile());
       }
 
       return result;

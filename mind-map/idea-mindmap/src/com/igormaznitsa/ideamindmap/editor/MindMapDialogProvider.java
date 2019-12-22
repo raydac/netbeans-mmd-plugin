@@ -18,7 +18,7 @@ package com.igormaznitsa.ideamindmap.editor;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.utils.IdToFileMap;
+import com.igormaznitsa.mindmap.swing.panel.utils.PathStore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.WindowManager;
@@ -34,8 +34,8 @@ public class MindMapDialogProvider implements DialogProvider {
 
   private final Project project;
 
-  private final IdToFileMap cacheOpenFileThroughDialog = new IdToFileMap();
-  private final IdToFileMap cacheSaveFileThroughDialog = new IdToFileMap();
+  private final PathStore cacheOpenFileThroughDialog = new PathStore();
+  private final PathStore cacheSaveFileThroughDialog = new PathStore();
 
   public MindMapDialogProvider(final Project project) {
     this.project = project;
@@ -97,7 +97,7 @@ public class MindMapDialogProvider implements DialogProvider {
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
     if (fileChooser.showOpenDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
-      return cacheOpenFileThroughDialog.register(id, fileChooser.getSelectedFile());
+      return cacheOpenFileThroughDialog.put(id, fileChooser.getSelectedFile());
     } else {
       return null;
     }
@@ -121,7 +121,7 @@ public class MindMapDialogProvider implements DialogProvider {
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
     if (fileChooser.showSaveDialog(WindowManager.getInstance().findVisibleFrame()) == JFileChooser.APPROVE_OPTION) {
-      return cacheSaveFileThroughDialog.register(id, fileChooser.getSelectedFile());
+      return cacheSaveFileThroughDialog.put(id, fileChooser.getSelectedFile());
     } else {
       return null;
     }
