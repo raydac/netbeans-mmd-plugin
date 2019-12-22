@@ -368,6 +368,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   public void setState(@Nonnull FileEditorState fileEditorState) {
   }
 
+  @Nonnull
+  public VirtualFile getFile() {
+    return this.file;
+  }
+
   @Override
   public boolean isModified() {
     return FileDocumentManager.getInstance().isFileModified(this.file);

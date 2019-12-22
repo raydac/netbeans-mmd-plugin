@@ -21,6 +21,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -38,6 +39,12 @@ public interface PluginContext {
 
   @Nonnull
   DialogProvider getDialogProvider();
+
+  @Nullable
+  File getProjectFolder();
+
+  @Nullable
+  File getMindMapFile();
 
   @Nullable
   @MustNotContainNull

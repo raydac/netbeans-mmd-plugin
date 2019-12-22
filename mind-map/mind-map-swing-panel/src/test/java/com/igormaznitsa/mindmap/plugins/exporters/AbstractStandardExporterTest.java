@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.StringReader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -69,11 +70,23 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
         throw new UnsupportedOperationException("Not supported.");
       }
 
+      @Nullable
+      @Override
+      public File getProjectFolder() {
+        return null;
+      }
+
+      @Nullable
+      @Override
+      public File getMindMapFile() {
+        return null;
+      }
+
       @Override
       public Topic[] getSelectedTopics() {
         return new Topic[0];
       }
-      
+
     };
     
     

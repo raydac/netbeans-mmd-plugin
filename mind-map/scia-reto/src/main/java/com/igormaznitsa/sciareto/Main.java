@@ -682,6 +682,18 @@ public class Main {
 
                 @Nullable
                 @Override
+                public File getMindMapFile() {
+                  return from;
+                }
+
+                @Nullable
+                @Override
+                public File getProjectFolder() {
+                  return new File(".");
+                }
+
+                @Nullable
+                @Override
                 public Topic[] getSelectedTopics() {
                   return new Topic[0];
                 }

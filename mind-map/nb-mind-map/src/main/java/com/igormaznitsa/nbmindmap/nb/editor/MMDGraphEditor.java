@@ -325,6 +325,12 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
 
   @Nullable
   @Override
+  public File getMindMapFile() {
+    return this.editorSupport.getPrimaryFileObjectAsFile();
+  }
+
+  @Nullable
+  @Override
   public Topic[] getSelectedTopics() {
     return this.mindMapPanel.getSelectedTopics();
   }

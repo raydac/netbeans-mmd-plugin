@@ -60,6 +60,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.vfs.VfsUtil;
 import java.awt.Color;
 import java.awt.Point;
 import java.io.File;
@@ -85,6 +86,12 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
   public MindMapDialogProvider getDialogProvider() {
     return this.dialogProvider;
+  }
+
+  @Nullable
+  @Override
+  public File getMindMapFile() {
+    return VfsUtil.virtualToIoFile(this.editor.getFile());
   }
 
   public MindMapDocumentEditor getEditor() {

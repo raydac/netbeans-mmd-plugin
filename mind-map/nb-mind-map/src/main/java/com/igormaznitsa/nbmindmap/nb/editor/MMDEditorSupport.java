@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.editor;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -38,6 +39,7 @@ import org.openide.cookies.OpenCookie;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.loaders.DataObject;
 import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
 import org.openide.windows.CloneableTopComponent;
@@ -58,6 +60,16 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Nullable
   public Project getProject() {
     return FileOwnerQuery.getOwner(getDataObject().getPrimaryFile());
+  }
+
+  @Nullable
+  public File getPrimaryFileObjectAsFile() {
+    final DataObject obj = this.getDataObject();
+    if (obj == null) {
+      return null;
+    }
+    final FileObject fileObj = obj.getPrimaryFile();
+    return fileObj == null ? null : FileUtil.toFile(fileObj);
   }
 
   public File getProjectDirectory() {

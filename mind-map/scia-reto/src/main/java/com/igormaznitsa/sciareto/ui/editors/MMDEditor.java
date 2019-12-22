@@ -910,7 +910,7 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
   }
 
   @Nullable
-  private File getProjectFolder() {
+  public File getProjectFolder() {
     File result = null;
     final File associatedFile = this.title.getAssociatedFile();
     if (associatedFile != null) {
@@ -1273,6 +1273,12 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
   @Override
   public DialogProvider getDialogProvider() {
     return this.getDialogProvider(this.mindMapPanel);
+  }
+
+  @Nullable
+  @Override
+  public File getMindMapFile() {
+    return this.title.getAssociatedFile();
   }
 
   @Nonnull
