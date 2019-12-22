@@ -61,6 +61,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import java.awt.Color;
 import java.awt.Point;
 import java.io.File;
@@ -480,6 +481,13 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     }
     return result;
 
+  }
+
+  @Nullable
+  @Override
+  public File getProjectFolder() {
+    final VirtualFile vfile = this.getEditor().findRootFolderForEditedFile();
+    return vfile == null ? null : VfsUtil.virtualToIoFile(vfile);
   }
 
   @Override
