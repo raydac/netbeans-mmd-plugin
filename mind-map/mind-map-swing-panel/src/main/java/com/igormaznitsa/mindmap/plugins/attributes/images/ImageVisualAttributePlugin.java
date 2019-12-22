@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -27,6 +28,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Image;
 import java.io.ByteArrayInputStream;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.WeakHashMap;
 import javax.annotation.Nonnull;
@@ -36,7 +38,7 @@ import javax.imageio.ImageIO;
 public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   public static final String ATTR_KEY = "mmd.image";
-  public static final String ATTR_FILE_KEY = "mmd.image.file";
+  public static final String ATTR_IMAGE_URI_KEY = "mmd.image.uri";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageVisualAttributePlugin.class);
   private static final Map<Topic, Renderable> CACHED_IMAGES = new WeakHashMap<Topic, Renderable>();
@@ -73,8 +75,13 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   @Override
   public boolean onClick(@Nonnull PluginContext context, @Nonnull final Topic activeTopic, final int clickCount) {
     if (clickCount > 1) {
-      final String imageFilePath = activeTopic.getAttribute(ATTR_FILE_KEY);
-      if (imageFilePath != null) {
+      final String imageFilePathUri = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
+      if (imageFilePathUri != null) {
+        try {
+          context.openFile(new MMapURI(imageFilePathUri).asFile(context.getProjectFolder()), false);
+        } catch (URISyntaxException ex) {
+          context.getDialogProvider().msgWarn(context.getPanel(), "URI syntax exception: " + imageFilePathUri);
+        }
       }
     }
     return false;
@@ -83,12 +90,12 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   @Override
   @Nullable
   public String getToolTip(@Nonnull final PluginContext context, @Nonnull final Topic activeTopic) {
-    return activeTopic.getAttribute(ATTR_FILE_KEY);
+    return activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
   }
 
   @Override
   public boolean isClickable(@Nonnull final PluginContext context, @Nonnull final Topic activeTopic) {
-    final String imageFilePath = activeTopic.getAttribute(ATTR_FILE_KEY);
+    final String imageFilePath = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
     return imageFilePath != null;
   }
 

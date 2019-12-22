@@ -335,6 +335,26 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     return this.mindMapPanel.getSelectedTopics();
   }
 
+  @Override
+  public void openFile(@Nonnull final File file, final boolean preferSystemBrowser) {
+    if (preferSystemBrowser) {
+      NbUtils.openInSystemViewer(this, file);
+    } else {
+      Openable openable;
+      try {
+        openable = DataObject.find(FileUtil.toFileObject(file)).getLookup().lookup(Openable.class);
+      } catch (Exception ex) {
+        LOGGER.error("Can't open file in IDE", ex);
+        openable = null;
+      }
+      if (openable == null) {
+        NbUtils.openInSystemViewer(this, file);
+      } else {
+        openable.open();
+      }
+    }
+  }
+
   @Nonnull
   @Override
   public PluginContext makePluginContext(@Nonnull MindMapPanel source) {

@@ -50,5 +50,7 @@ public interface PluginContext {
   @MustNotContainNull
   Topic[] getSelectedTopics();
 
+  void openFile(@Nonnull final File file, boolean preferSystemBrowser);
+
   void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin, @Nullable Topic activeTopic);
 }

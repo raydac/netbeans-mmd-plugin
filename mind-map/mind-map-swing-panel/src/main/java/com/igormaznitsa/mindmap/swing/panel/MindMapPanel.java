@@ -94,6 +94,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -151,6 +152,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient MouseSelectedArea mouseDragSelection = null;
   private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
+  private final UUID uuid = UUID.randomUUID();
+
+  @Nonnull
+  public UUID getUuid() {
+    return this.uuid;
+  }
 
   public MindMapPanel(@Nonnull final MindMapPanelController controller) {
     super();

@@ -309,7 +309,7 @@ public final class IdeaUtils {
     return project == null || file == null ? null : ModuleUtil.findModuleForFile(file, project);
   }
 
-  public static boolean browseURI(final URI uri, final boolean useInsideBrowser) {
+  public static boolean browseURI(final URI uri, final boolean useInternalBrowser) {
     try {
       BrowserUtil.browse(uri);
     } catch (Exception ex) {

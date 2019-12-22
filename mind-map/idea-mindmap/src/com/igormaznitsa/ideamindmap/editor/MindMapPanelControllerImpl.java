@@ -59,6 +59,8 @@ import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -203,6 +205,19 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   @Override
   public Topic[] getSelectedTopics() {
     return this.editor.getMindMapPanel().getSelectedTopics();
+  }
+
+  @Override
+  public void openFile(@Nonnull final File file, final boolean preferSystemBrowser) {
+    final VirtualFile virtualFile = VfsUtil.findFileByIoFile(file, true);
+    if (preferSystemBrowser) {
+      IdeaUtils.openInSystemViewer(this.dialogProvider, virtualFile);
+    } else {
+      final Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
+      if (document == null) {
+        IdeaUtils.openInSystemViewer(this.dialogProvider, virtualFile);
+      }
+    }
   }
 
   @Override

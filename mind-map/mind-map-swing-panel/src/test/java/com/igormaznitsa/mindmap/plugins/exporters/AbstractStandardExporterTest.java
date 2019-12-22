@@ -61,6 +61,10 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
       }
 
       @Override
+      public void openFile(@Nonnull File file, boolean preferSystemBrowser) {
+      }
+
+      @Override
       public MindMapPanel getPanel() {
         return panel;
       }

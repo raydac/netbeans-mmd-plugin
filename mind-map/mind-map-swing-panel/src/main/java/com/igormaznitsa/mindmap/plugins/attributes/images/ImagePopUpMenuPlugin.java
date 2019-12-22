@@ -17,12 +17,14 @@
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.panel.utils.PathStore;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -45,6 +47,7 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
@@ -66,7 +69,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     }
 
   };
-  private static File lastSelectedFile = null;
+  private static final PathStore PATH_STORE = new PathStore();
   private static int lastSelectedImportIndex = 0;
 
   @Override
@@ -104,7 +107,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
             final AtomicInteger selectedItem = new AtomicInteger(-1);
 
-            if (context.getDialogProvider().msgOkCancel(null, BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[] {BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
+            if (context.getDialogProvider().msgOkCancel(SwingUtilities.windowForComponent(context.getPanel()), BUNDLE.getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(new String[] {BUNDLE.getString("Images.Plugin.Select.FromClipboard"), BUNDLE.getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
               lastSelectedImportIndex = selectedItem.get();
 
               if (selectedItem.get() == 0) {
@@ -128,12 +131,17 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
           }
 
           if (loadFromFile) {
-            final File selected = context.getDialogProvider().msgOpenFileDialog(null, "select-image-file", BUNDLE.getString("Images.Plugin.Load.DialogTitle"), lastSelectedFile, true, new FileFilter[] {IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open")); //NOI18N
+            final File selected = PATH_STORE.put(context.getPanel().getUuid().toString(),
+                context.getDialogProvider().msgOpenFileDialog(context.getPanel(), ImagePopUpMenuPlugin.class.getName(), BUNDLE.getString("Images.Plugin.Load.DialogTitle"), PATH_STORE.find(context.getPanel().getUuid().toString()), true, new FileFilter[] {IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open"))); //NOI18N
             if (selected != null) {
-              lastSelectedFile = selected;
               try {
                 final String rescaledImageAsBase64 = Utils.rescaleImageAndEncodeAsBase64(selected, Utils.getMaxImageSize());
-                final String filePath = selected.getAbsolutePath();
+                final String filePath;
+                if (context.getDialogProvider().msgConfirmYesNo(SwingUtilities.windowForComponent(context.getPanel()), BUNDLE.getString("Images.Plugin.Question.AddFilePath.Title"), BUNDLE.getString("Images.Plugin.Question.AddFilePath"))) {
+                  filePath = MMapURI.makeFromFilePath(context.getProjectFolder(), selected.getAbsolutePath(), null).toString();
+                } else {
+                  filePath = null;
+                }
                 setAttribute(rescaledImageAsBase64, activeTopic, filePath, context);
                 context.getPanel().doNotifyModelChanged(true);
               } catch (final IllegalArgumentException ex) {
@@ -210,11 +218,11 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
   private void setAttribute(@Nullable final String packedImage, @Nullable final Topic activeTopic, @Nullable final String imageFilePath, @Nullable final PluginContext context) {
     if (activeTopic != null) {
       activeTopic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
-      activeTopic.setAttribute(ImageVisualAttributePlugin.ATTR_FILE_KEY, imageFilePath);
+      activeTopic.setAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_URI_KEY, imageFilePath);
     }
     for (final Topic t : context.getSelectedTopics()) {
       t.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
-      t.setAttribute(ImageVisualAttributePlugin.ATTR_FILE_KEY, imageFilePath);
+      t.setAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_URI_KEY, imageFilePath);
     }
   }
 

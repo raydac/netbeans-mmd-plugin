@@ -686,6 +686,11 @@ public class Main {
                   return from;
                 }
 
+                @Override
+                public void openFile(@Nonnull File file, boolean preferSystemBrowser) {
+
+                }
+
                 @Nullable
                 @Override
                 public File getProjectFolder() {

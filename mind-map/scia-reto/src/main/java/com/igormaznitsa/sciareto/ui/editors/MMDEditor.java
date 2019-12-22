@@ -854,6 +854,13 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
   }
 
   @Override
+  public void openFile(@Nonnull File file, final boolean preferSystemBrowser) {
+    if (preferSystemBrowser || !this.context.openFileAsTab(file, -1)) {
+      UiUtils.openInSystemViewer(file);
+    }
+  }
+
+  @Override
   public void processPluginActivation(@Nonnull final ExternallyExecutedPlugin plugin, @Nullable final Topic topic) {
     if (plugin instanceof ExtraNotePlugin) {
       if (topic != null) {
