@@ -132,7 +132,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
           if (loadFromFile) {
             final File selected = PATH_STORE.put(context.getPanel().getUuid().toString(),
-                context.getDialogProvider().msgOpenFileDialog(context.getPanel(), ImagePopUpMenuPlugin.class.getName(), BUNDLE.getString("Images.Plugin.Load.DialogTitle"), PATH_STORE.find(context.getPanel().getUuid().toString()), true, new FileFilter[] {IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open"))); //NOI18N
+                context.getDialogProvider().msgOpenFileDialog(context.getPanel(), ImagePopUpMenuPlugin.class.getName(), BUNDLE.getString("Images.Plugin.Load.DialogTitle"), PATH_STORE.find(context, context.getPanel().getUuid().toString()), true, new FileFilter[] {IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open"))); //NOI18N
             if (selected != null) {
               try {
                 final String rescaledImageAsBase64 = Utils.rescaleImageAndEncodeAsBase64(selected, Utils.getMaxImageSize());

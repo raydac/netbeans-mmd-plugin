@@ -87,7 +87,7 @@ public final class DialogProviderManager {
     public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull @MustNotContainNull final FileFilter[] fileFilters, @Nonnull final String approveButtonText) {
       final File folderToUse;
       if (defaultFolder == null) {
-        folderToUse = cacheSaveFileThroughDialog.find(id);
+        folderToUse = cacheSaveFileThroughDialog.find(null, id);
       } else {
         folderToUse = defaultFolder;
       }
@@ -122,7 +122,7 @@ public final class DialogProviderManager {
     public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull @MustNotContainNull FileFilter[] fileFilters, @Nonnull String approveButtonText) {
       final File folderToUse;
       if (defaultFolder == null) {
-        folderToUse = cacheOpenFileThroughDialog.find(id);
+        folderToUse = cacheOpenFileThroughDialog.find(null, id);
       } else {
         folderToUse = defaultFolder;
       }

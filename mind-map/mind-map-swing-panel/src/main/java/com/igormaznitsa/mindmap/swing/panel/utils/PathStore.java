@@ -1,5 +1,6 @@
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,9 +18,13 @@ public class PathStore {
   private static final File USER_HOME = new File(System.getProperty("user.home"));
 
   @Nonnull
-  public synchronized File find(@Nonnull final String id) {
-    final File result = internalMap.get(id);
-    return result == null ? USER_HOME : result;
+  public synchronized File find(@Nullable final PluginContext context, @Nonnull final String id) {
+    File result = internalMap.get(id);
+    final File projectFolder = context == null ? null : context.getProjectFolder();
+    if (result == null) {
+      result = projectFolder == null ? USER_HOME : projectFolder;
+    }
+    return result;
   }
 
   @Nullable
