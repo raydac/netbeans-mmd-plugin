@@ -87,7 +87,7 @@ public class MindMapDialogProvider implements DialogProvider {
           @Nullable @MustNotContainNull final FileFilter[] fileFilters,
           @Nonnull final String approveButtonText) {
 
-    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheOpenFileThroughDialog.find(id) : defaultFolder);
+    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheOpenFileThroughDialog.find(null, id) : defaultFolder);
     fileChooser.setDialogTitle(title);
     for (final FileFilter f : fileFilters) {
       fileChooser.addChoosableFileFilter(f);
@@ -111,7 +111,7 @@ public class MindMapDialogProvider implements DialogProvider {
           final boolean fileOnly,
           @Nullable @MustNotContainNull final FileFilter[] fileFilters,
           @Nonnull final String approveButtonText) {
-    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheSaveFileThroughDialog.find(id) : defaultFolder);
+    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheSaveFileThroughDialog.find(null, id) : defaultFolder);
     fileChooser.setDialogTitle(title);
     for (final FileFilter f : fileFilters) {
       fileChooser.addChoosableFileFilter(f);
