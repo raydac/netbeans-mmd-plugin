@@ -105,12 +105,12 @@ public class MindMapDialogProvider implements DialogProvider {
 
   @Override
   public File msgSaveFileDialog(@Nullable final Component parentComponent,
-          @Nonnull final String id,
-          @Nonnull final String title,
-          @Nullable final File defaultFolder,
-          final boolean fileOnly,
-          @Nullable @MustNotContainNull final FileFilter[] fileFilters,
-          @Nonnull final String approveButtonText) {
+                                @Nonnull final String id,
+                                @Nonnull final String title,
+                                @Nullable final File defaultFolder,
+                                final boolean fileOnly,
+                                @Nonnull @MustNotContainNull final FileFilter[] fileFilters,
+                                @Nonnull final String approveButtonText) {
     final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheSaveFileThroughDialog.find(null, id) : defaultFolder);
     fileChooser.setDialogTitle(title);
     for (final FileFilter f : fileFilters) {
