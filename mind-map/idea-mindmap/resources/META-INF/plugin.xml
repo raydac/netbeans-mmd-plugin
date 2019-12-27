@@ -23,7 +23,7 @@
           <li>added support of "smart text paste" with splitting to topics (inactive by default)</li>
           <li>improved color chooser, added precise tuning panel</li>
           <li>added recognition of URI represented as text as URI link</li>
-          <li>improved picture plugin, can add file link to be opened through thumbnail clicks</li>
+          <li>improved image plugin to open original file through thumbnail clicks</li>
         </ul>
         <p>1.4.6 (26-may-2019)</p>
         <ul>
