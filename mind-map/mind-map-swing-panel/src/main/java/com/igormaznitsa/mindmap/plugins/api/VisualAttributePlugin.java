@@ -41,12 +41,14 @@ public interface VisualAttributePlugin extends AttributePlugin {
   /**
    * Process click on image represents the attribute,
    *
-   * @param context    the plugin context
-   * @param topic      the topic
-   * @param clickCount detected number of mouse clicks
+   * @param context             the plugin context
+   * @param topic               the topic
+   * @param activeGroupModifier true if any modifier to work with topic group (like SHIFT or CTRL) is active
+   * @param clickCount          detected number of mouse clicks
    * @return true if the map was changed for the operation, false otherwise
+   * @since 1.4.7
    */
-  boolean onClick(@Nonnull PluginContext context, @Nonnull Topic topic, int clickCount);
+  boolean onClick(@Nonnull PluginContext context, @Nonnull Topic topic, boolean activeGroupModifier, int clickCount);
 
   /**
    * Get tool-tip for image represents the attribute.

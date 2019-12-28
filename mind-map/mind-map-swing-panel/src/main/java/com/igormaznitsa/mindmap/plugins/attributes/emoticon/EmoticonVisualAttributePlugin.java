@@ -54,7 +54,7 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean onClick(@Nonnull PluginContext context, @Nonnull final Topic topic, int clickCount) {
+  public boolean onClick(final @Nonnull PluginContext context, final @Nonnull Topic topic, final boolean activeGroupModifier, final int clickCount) {
     return false;
   }
 

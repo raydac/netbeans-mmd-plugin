@@ -730,7 +730,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                       if (plugin.isClickable(context, element.getModel())) {
                         processedByPlugin = true;
                         try {
-                          if (plugin.onClick(context, element.getModel(), e.getClickCount())) {
+                          if (plugin.onClick(context, element.getModel(), e.isShiftDown() || e.isControlDown(), e.getClickCount())) {
                             doLayout();
                             revalidate();
                             repaint();

@@ -73,9 +73,9 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean onClick(@Nonnull PluginContext context, @Nonnull final Topic activeTopic, final int clickCount) {
+  public boolean onClick(@Nonnull final PluginContext context, @Nonnull final Topic topic, final boolean activeGroupModifier, final int clickCount) {
     if (clickCount > 1) {
-      final String imageFilePathUri = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
+      final String imageFilePathUri = topic.getAttribute(ATTR_IMAGE_URI_KEY);
       if (imageFilePathUri != null) {
         try {
           context.openFile(new MMapURI(imageFilePathUri).asFile(context.getProjectFolder()), false);
@@ -84,7 +84,10 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
         }
       }
     } else {
-      context.getPanel().select(activeTopic, false);
+      if (!activeGroupModifier) {
+        context.getPanel().removeAllSelection();
+      }
+      context.getPanel().select(topic, false);
     }
     return false;
   }
