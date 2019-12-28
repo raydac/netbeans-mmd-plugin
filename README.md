@@ -16,6 +16,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.7 (28-dec-2019)__
+- ALL: fixed loosing of focus for new edited topic under some JDK versions
 - ALL: improved image plugin to open original file through thumbnail clicks
 - SR:  [added support of KStreams topology rendering through PlantUML (kstpl file extenstion)](https://twitter.com/IgorMaznitsa/status/1203732675971948545)
 - SR:  fixed application icon and title under some OS

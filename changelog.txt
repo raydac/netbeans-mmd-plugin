@@ -1,4 +1,5 @@
 __1.4.7 (28-dec-2019)__
+- ALL: fixed loosing of focus over new edited topic under some JDK versions
 - ALL: improved image plugin to open original file through thumbnail clicks
 - SR:  added support of KStreams topology rendering through PlantUML (kstpl file extenstion)
 - SR:  fixed application icon and title under some OS

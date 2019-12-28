@@ -20,6 +20,7 @@
     <change-notes><![CDATA[
         <p>1.4.7 (28-dec-2019)</p>
         <ul>
+          <li>fixed loosing of focus over new edited topic under some JDK versions</li>
           <li>added support of "smart text paste" with splitting to topics (inactive by default)</li>
           <li>improved color chooser, added precise tuning panel</li>
           <li>added recognition of URI represented as text as URI link</li>
