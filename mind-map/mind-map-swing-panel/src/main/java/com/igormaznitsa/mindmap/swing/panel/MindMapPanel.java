@@ -1939,7 +1939,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       try {
         if (this.elementUnderEdit != null) {
           final AbstractElement editedElement = this.elementUnderEdit;
-          final Topic editedTopic = this.elementUnderEdit.getModel();
+          Topic editedTopic = this.elementUnderEdit.getModel();
+
+          final int[] pathToEditedTopic = editedTopic.getPositionPath();
 
           if (commit) {
             this.pathToPrevTopicBeforeEdit = null;
@@ -1967,6 +1969,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               fireNotificationMindMapChanged(true);
             }
 
+            editedTopic = this.model.findForPositionPath(pathToEditedTopic);
             this.focusTo(editedTopic);
           } else {
             if (this.removeEditedTopicForRollback.get()) {
@@ -2509,7 +2512,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       try {
         if (theTopic != null) {
           final AbstractElement element = (AbstractElement) theTopic.getPayload();
-          if (element != null && element instanceof AbstractCollapsableElement) {
+          if (element instanceof AbstractCollapsableElement) {
             final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
             if (MindMapUtils.ensureVisibility(cel.getModel())) {
               doLayout();

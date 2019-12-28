@@ -83,6 +83,8 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
           context.getDialogProvider().msgWarn(context.getPanel(), "URI syntax exception: " + imageFilePathUri);
         }
       }
+    } else {
+      context.getPanel().select(activeTopic, false);
     }
     return false;
   }

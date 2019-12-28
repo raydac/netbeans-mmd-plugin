@@ -668,7 +668,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   @Override
   @Nonnull
   public String toString() {
-    return "MindMapTopic('" + this.text + "')"; //NOI18N
+    return "MindMapTopic('" + this.text + ':' + this.getLocalUid() + "')"; //NOI18N
   }
 
   public long getLocalUid() {

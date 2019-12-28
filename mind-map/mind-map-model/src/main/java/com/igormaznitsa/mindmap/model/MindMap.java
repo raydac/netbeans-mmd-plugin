@@ -373,6 +373,21 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
+  @Override
+  @Nonnull
+  public String toString() {
+    final StringBuilder builder = new StringBuilder();
+    builder.append("MindMap[");
+    String delim = "";
+    for (final Topic t : this) {
+      builder.append(delim);
+      builder.append(t);
+      delim = ",";
+    }
+    builder.append(']');
+    return builder.toString();
+  }
+
   @Nonnull
   public String packToString() {
     final StringWriter writer;
