@@ -15,6 +15,9 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.4.8 (SNAPSHOT)__
+- SR:  PlantUML updated to 1.2020.0
+
 __1.4.7 (28-dec-2019)__
 - ALL: fixed loosing of focus for new edited topic under some JDK versions
 - ALL: improved image plugin to open original file through thumbnail clicks
@@ -26,24 +29,6 @@ __1.4.7 (28-dec-2019)__
 - SR:  embedded Java updated to 11.0.5+11
 - SR:  PlantUML updated to 1.2019.13
 - SR:  fixed autofocusing in topic edit dialogs [#56](https://github.com/raydac/netbeans-mmd-plugin/issues/56)
-
-__1.4.6 (26-may-2019)__
-- ALL:  Swing color chooser is replaced by custom one
-- SR:  Unable to find files for Chinese characters [#52](https://github.com/raydac/netbeans-mmd-plugin/issues/52)
-- ALL: added plug-in to align topic text (by default text still aligned as `center`)
-- SR:  fixed support of AscIIMath and JLatexMath in standalone versions with JRE image
-- SR:  updated PlantUML version to 1.2019.6
-- ALL: minor refactoring and fixes
-
-__1.4.5 (03-mar-2019)__
-- ALL: pressed CTRL during export makes export into system clipboard
-- IJ:  [#50](https://github.com/raydac/netbeans-mmd-plugin/issues/50) fixed exception in IDEA 2019.1
-- ALL: Reworked MindMup import-export
-- ALL: Improved import from FreeMind XHTML format
-- ALL: Paste plain text to add a new node [#48](https://github.com/raydac/netbeans-mmd-plugin/issues/48)
-- ALL: improved procesing of fold/unfold keyboard shortcuts to fold and unfold all children [#17](https://github.com/raydac/netbeans-mmd-plugin/issues/17)
-- SR:  improved distributives, added prepared embedded OpenJDK image
-- SR:  updated PlantUML version to 1.2019.2
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
