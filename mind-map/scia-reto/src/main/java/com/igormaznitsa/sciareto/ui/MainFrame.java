@@ -97,6 +97,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
@@ -1350,7 +1351,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public void editPreferences() {
     final PreferencesPanel configPanel = new PreferencesPanel(this);
     configPanel.load(PreferencesManager.getInstance().getPreferences());
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "Preferences", configPanel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "Preferences", new JScrollPane(configPanel))) {
       configPanel.save();
       for (final TabTitle t : this.tabPane) {
         t.getProvider().updateConfiguration();
