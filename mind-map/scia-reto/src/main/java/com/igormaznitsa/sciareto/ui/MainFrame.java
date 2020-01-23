@@ -45,6 +45,7 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlTextEditor;
 import com.igormaznitsa.sciareto.ui.editors.SourceTextEditor;
+import com.igormaznitsa.sciareto.ui.editors.TextFileBackuper;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.FileLinkGraphPanel;
@@ -195,7 +196,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
         if (doClosing()) {
-          dispose();
+          try {
+            dispose();
+          } finally {
+            TextFileBackuper.getInstance().finish();
+          }
         }
       }
     });

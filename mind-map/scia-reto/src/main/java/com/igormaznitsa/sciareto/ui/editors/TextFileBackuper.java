@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boon,
  * MA 02110-1301  USA
  */
 
@@ -45,6 +45,8 @@ import org.apache.commons.io.IOUtils;
 public class TextFileBackuper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TextFileBackuper.class);
+
+  private static final BackupContent END_WORK = new BackupContent(new File("/some/non-existing/fake/file"), null);
 
   private static void writeLong(final long value, @Nonnull final OutputStream out) throws IOException {
     final byte[] splitted = new byte[8];
@@ -116,6 +118,10 @@ public class TextFileBackuper {
     public String asText() {
       return new String(this.content, 0, this.content.length, StandardCharsets.UTF_8);
     }
+  }
+
+  public void finish() {
+    this.add(END_WORK);
   }
 
   @Nullable
@@ -229,6 +235,9 @@ public class TextFileBackuper {
       try {
         final BackupContent item = this.contentQueue.poll(5, TimeUnit.SECONDS);
         if (item != null) {
+          if (item == END_WORK) {
+            break;
+          }
           if (item.content == null) {
             removeBackup(item.originalFile);
           } else {
