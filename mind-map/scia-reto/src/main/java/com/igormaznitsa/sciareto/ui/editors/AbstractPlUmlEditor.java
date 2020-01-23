@@ -409,6 +409,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       public void insertUpdate(@Nonnull final DocumentEvent e) {
         if (!ignoreChange) {
           title.setChanged(true);
+          backup();
         }
         context.notifyUpdateRedoUndo();
       }
@@ -708,7 +709,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         try {
           reader.outputImage(buffer, this.pageNumberToRender - 1, option);
           final byte[] bytearray = buffer.toByteArray();
-          if (bytearray.length < 10000 && new String(bytearray, "UTF-8").contains("java.lang.UnsupportedOperationException:")) {
+          if (bytearray.length < 10000 && new String(bytearray, StandardCharsets.UTF_8).contains("java.lang.UnsupportedOperationException:")) {
             throw new IOException("Detected exception footstep in generated file!");
           }
           FileUtils.writeByteArrayToFile(lastExportedFile, buffer.toByteArray());
@@ -725,14 +726,15 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
 
   }
 
+  @Nullable
+  @Override
+  protected String getContentAsText() {
+    return this.editor.getText();
+  }
+
   @Override
   public void focusToEditor(final int line) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        imageComponent.requestFocusInWindow();
-      }
-    });
+    SwingUtilities.invokeLater(() -> imageComponent.requestFocusInWindow());
   }
 
   @Override
@@ -760,6 +762,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
+            backup();
             startRenderScript();
           }
         });
@@ -779,6 +782,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
+            backup();
             startRenderScript();
           }
         });
@@ -825,7 +829,13 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
     this.ignoreChange = true;
     try {
       if (file != null) {
-        this.editor.setText(FileUtils.readFileToString(file, "UTF-8")); //NOI18N
+        final String restoredContent = this.restoreFromBackup(file);
+        if (restoredContent == null) {
+          this.editor.setText(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+        } else {
+          this.editor.setText(restoredContent);
+          this.getTabTitle().setChanged(true);
+        }
         this.editor.setCaretPosition(0);
         startRenderScript();
       }
@@ -855,6 +865,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       }
       SystemUtils.saveUTFText(file, this.editor.getText());
       this.title.setChanged(false);
+      this.deleteBackup();
       result = true;
       startRenderScript();
     } else {

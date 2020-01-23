@@ -268,6 +268,12 @@ public final class SourceTextEditor extends AbstractEditor {
     return SRC_FILE_FILTER;
   }
 
+  @Nullable
+  @Override
+  protected String getContentAsText() {
+    return this.editor.getText();
+  }
+
   public SourceTextEditor(@Nonnull final Context context, @Nullable File file, final int line, final boolean noSyntax) throws IOException {
     super();
     this.editor = new ScalableRsyntaxTextArea();
@@ -368,6 +374,7 @@ public final class SourceTextEditor extends AbstractEditor {
       public void insertUpdate(@Nonnull final DocumentEvent e) {
         if (!ignoreChange) {
           title.setChanged(!originalText.equals(editor.getText()));
+          backup();
         }
         context.notifyUpdateRedoUndo();
       }
@@ -376,6 +383,7 @@ public final class SourceTextEditor extends AbstractEditor {
       public void removeUpdate(@Nonnull final DocumentEvent e) {
         if (!ignoreChange) {
           title.setChanged(!originalText.equals(editor.getText()));
+          backup();
         }
         context.notifyUpdateRedoUndo();
       }
@@ -384,6 +392,7 @@ public final class SourceTextEditor extends AbstractEditor {
       public void changedUpdate(@Nonnull final DocumentEvent e) {
         if (!ignoreChange) {
           title.setChanged(!originalText.equals(editor.getText()));
+          backup();
         }
         context.notifyUpdateRedoUndo();
       }
@@ -493,7 +502,12 @@ public final class SourceTextEditor extends AbstractEditor {
     this.ignoreChange = true;
     try {
       if (file != null) {
-        this.editor.setText(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+        final String restoredContent = this.restoreFromBackup(file);
+        if (restoredContent == null) {
+          this.editor.setText(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+        } else {
+          this.editor.setText(restoredContent);
+        }
         this.originalText = this.editor.getText();
         this.editor.setCaretPosition(0);
       }
@@ -524,6 +538,7 @@ public final class SourceTextEditor extends AbstractEditor {
       SystemUtils.saveUTFText(file, this.editor.getText());
       this.originalText = this.editor.getText();
       this.title.setChanged(false);
+      this.deleteBackup();
       result = true;
     } else {
       result = true;

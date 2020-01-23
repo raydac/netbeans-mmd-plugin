@@ -18,30 +18,6 @@
  */
 package com.igormaznitsa.sciareto.ui.tabs;
 
-import java.awt.Cursor;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
-
-import org.apache.commons.lang.StringEscapeUtils;
-
-import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Paths;
@@ -52,6 +28,23 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public final class TabTitle extends JPanel {
 
@@ -123,12 +116,7 @@ public final class TabTitle extends JPanel {
     this.closeButton.setMargin(new Insets(0, 0, 0, 0));
     this.closeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     this.closeButton.setOpaque(false);
-    this.closeButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        doSafeClose();
-      }
-    });
+    this.closeButton.addActionListener(e -> doSafeClose());
     constraints.fill = GridBagConstraints.BOTH;
     constraints.weightx = 0.0d;
     constraints.insets = new Insets(2, 8, 2, 0);
@@ -207,7 +195,8 @@ public final class TabTitle extends JPanel {
   }
 
   public void doSafeClose() {
-    final boolean close = !this.changed || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(Main.getApplicationFrame(), "Non saved file", "Close unsaved document '" + makeName() + "\'?");
+    final boolean close = !this.changed
+        || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(Main.getApplicationFrame(), "Non saved file", "Close unsaved document '" + makeName() + "\'?");
     if (close) {
       this.context.closeTab(this);
     }
@@ -232,20 +221,17 @@ public final class TabTitle extends JPanel {
     return this.changed;
   }
 
-  public void disposeEditor() {
-    final JComponent compo = this.parent.getMainComponent();
-    if (compo instanceof Disposable) {
-      ((Disposable) compo).dispose();
-    }
+  public void dispose() {
+    this.parent.getEditor().dispose();
   }
 
   public boolean reload(final boolean askUserConfirmationIfChanged) {
     boolean reloaded = false;
-  
+
     if (askUserConfirmationIfChanged && isChanged() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(Main.getApplicationFrame(), "File changed", String.format("File '%s' is changed, reload?", (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
       return reloaded;
     }
-    
+
     final File file = getAssociatedFile();
     if (file != null && file.isFile()){
       try{

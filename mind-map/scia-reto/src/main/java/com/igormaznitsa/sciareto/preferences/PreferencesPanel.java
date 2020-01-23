@@ -18,14 +18,25 @@
  */
 package com.igormaznitsa.sciareto.preferences;
 
-import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.KeyShortCutEditPanel;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.FontSelector;
-import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
+import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.metrics.MetricsService;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.editors.ScalableRsyntaxTextArea;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.FontSelector;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.KeyShortCutEditPanel;
+import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
+import com.igormaznitsa.sciareto.ui.misc.SysFileExtensionEditorPanel;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -37,25 +48,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-import org.apache.commons.io.FileUtils;
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.meta.common.utils.GetUtils;
-import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.metrics.MetricsService;
-import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.editors.ScalableRsyntaxTextArea;
-import com.igormaznitsa.sciareto.ui.misc.SysFileExtensionEditorPanel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FileUtils;
 
 public final class PreferencesPanel extends javax.swing.JPanel {
 
@@ -215,6 +215,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     checkboxTrimTopicText = new javax.swing.JCheckBox();
     checkBoxShowHiddenFiles = new javax.swing.JCheckBox();
     checkBoxSmartTextPaste = new javax.swing.JCheckBox();
+    checkBoxBackupLastEdit = new javax.swing.JCheckBox();
     jPanel9 = new javax.swing.JPanel();
     buttonAbout = new javax.swing.JButton();
     donateButton1 = new com.igormaznitsa.sciareto.ui.misc.DonateButton();
@@ -890,7 +891,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1000.0;
     jPanel1.add(jPanel7, gridBagConstraints);
@@ -946,7 +947,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 10;
+    gridBagConstraints.gridy = 11;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     jPanel1.add(jPanel8, gridBagConstraints);
 
@@ -995,6 +996,19 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     jPanel1.add(checkBoxSmartTextPaste, gridBagConstraints);
+
+    checkBoxBackupLastEdit.setText("Backup last edit before save");
+    checkBoxBackupLastEdit.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        checkBoxBackupLastEditActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 9;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    jPanel1.add(checkBoxBackupLastEdit, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -1461,6 +1475,12 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     }
   }//GEN-LAST:event_checkBoxSmartTextPasteActionPerformed
 
+  private void checkBoxBackupLastEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxBackupLastEditActionPerformed
+    if (this.changeNotificationAllowed) {
+      this.changed = true;
+    }
+  }//GEN-LAST:event_checkBoxBackupLastEditActionPerformed
+
   public void load(@Nonnull final Preferences preferences) {
     this.config.loadFrom(preferences);
     loadFrom(this.config, preferences);
@@ -1540,6 +1560,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
       this.fontTextEditor = Assertions.assertNotNull(PreferencesManager.getInstance().getFont(prefs, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, ScalableRsyntaxTextArea.DEFAULT_FONT));
       updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
+      this.checkBoxBackupLastEdit.setSelected(PreferencesManager.getInstance().getFlag(prefs, SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, false));
     } finally {
       this.changeNotificationAllowed = true;
     }
@@ -1605,6 +1626,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     }
 
     PreferencesManager.getInstance().setFont(preferences, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, fontTextEditor);
+    PreferencesManager.getInstance().setFlag(preferences, SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, this.checkBoxBackupLastEdit.isSelected());
 
     // Metrics
     MetricsService.getInstance().setEnabled(this.checkboxMetricsAllowed.isSelected());
@@ -1650,6 +1672,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private javax.swing.JButton buttonImportFromFile;
   private javax.swing.JButton buttonOpenShortcutEditor;
   private javax.swing.JButton buttonResetToDefault;
+  private javax.swing.JCheckBox checkBoxBackupLastEdit;
   private javax.swing.JCheckBox checkBoxCopyColorInfoToNewAllowed;
   private javax.swing.JCheckBox checkBoxDropShadow;
   private javax.swing.JCheckBox checkBoxKnowledgeFolderAutogenerationAllowed;

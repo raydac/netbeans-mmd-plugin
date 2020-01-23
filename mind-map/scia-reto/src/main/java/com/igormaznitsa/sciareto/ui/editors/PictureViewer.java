@@ -29,7 +29,6 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import static com.igormaznitsa.sciareto.ui.editors.AbstractEditor.loadMenuIcon;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -38,18 +37,27 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.apache.commons.io.FilenameUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FilenameUtils;
 
 public final class PictureViewer extends AbstractEditor {
 
@@ -185,6 +193,7 @@ public final class PictureViewer extends AbstractEditor {
       if (SUPPORTED_FORMATS.contains(ext)) {
         try {
           ImageIO.write(this.image, ext, docFile);
+          deleteBackup();
           result = true;
         } catch (Exception ex) {
           if (ex instanceof IOException) {
@@ -196,6 +205,7 @@ public final class PictureViewer extends AbstractEditor {
         try {
           LOGGER.warn("unsupported image format, will be saved as png : " + ext); //NOI18N
           ImageIO.write(this.image, "png", docFile); //NOI18N
+          deleteBackup();
           result = true;
         } catch (Exception ex) {
           if (ex instanceof IOException) {
@@ -229,6 +239,12 @@ public final class PictureViewer extends AbstractEditor {
   @Nonnull
   public TabTitle getTabTitle() {
     return this.title;
+  }
+
+  @Nullable
+  @Override
+  protected String getContentAsText() {
+    return null;
   }
 
   @Override

@@ -21,17 +21,16 @@ package com.igormaznitsa.sciareto.preferences;
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import org.apache.commons.codec.binary.Base64;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Font;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.apache.commons.codec.binary.Base64;
 
 public class PreferencesManager {
 
@@ -103,6 +102,24 @@ public class PreferencesManager {
         this.localCache.put(key, font);
         pref.put(key, packed);
       }
+    }
+  }
+
+  public boolean getFlag(@Nonnull final Preferences pref, @Nonnull final String key, final boolean dflt) {
+    synchronized (this.localCache) {
+      Boolean result = (Boolean) this.localCache.get(key);
+      if (result == null) {
+        result = Boolean.parseBoolean(pref.get(key, Boolean.toString(dflt)));
+        this.localCache.put(key, result);
+      }
+      return result;
+    }
+  }
+
+  public void setFlag(@Nonnull final Preferences pref, @Nonnull final String key, final boolean flag) {
+    synchronized (this.localCache) {
+      this.localCache.put(key, Boolean.valueOf(flag));
+      pref.put(key, Boolean.toString(flag));
     }
   }
 

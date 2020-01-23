@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,21 +16,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
-import javax.swing.JComponent;
 import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 public abstract class AbstractEditor implements TabProvider, Disposable {
@@ -50,7 +55,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   public boolean saveDocumentAs() throws IOException {
     final DialogProvider dialogProvider = DialogProviderManager.getInstance().getDialogProvider();
     final File file = this.getTabTitle().getAssociatedFile();
-    File fileToSave = dialogProvider.msgSaveFileDialog(Main.getApplicationFrame(), "save-as", "Save as", file, true, new FileFilter[]{getFileFilter()}, "Save");
+    File fileToSave = dialogProvider.msgSaveFileDialog(Main.getApplicationFrame(), "save-as", "Save as", file, true, new FileFilter[] {getFileFilter()}, "Save");
     if (fileToSave != null) {
       if (!fileToSave.getName().contains(".")) {
         final Boolean result = dialogProvider.msgConfirmYesNoCancel(Main.getApplicationFrame(), "Add extension", String.format("Add file extenstion '%s'?", this.getDefaultExtension()));
@@ -68,6 +73,38 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     return false;
   }
 
+  protected boolean isAutoBackupAllowed() {
+    final PreferencesManager manager = PreferencesManager.getInstance();
+    return manager.getFlag(manager.getPreferences(), SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, false);
+  }
+
+  protected void deleteBackup() {
+    if (this.isEditable() && !this.isDisposed()) {
+      final File associatedFile = this.getTabTitle().getAssociatedFile();
+      if (isAutoBackupAllowed() && associatedFile != null) {
+        TextFileBackuper.getInstance().add(new TextFileBackuper.BackupContent(associatedFile, null));
+      }
+    }
+  }
+
+  protected void backup(@Nullable final String text) {
+    if (this.isEditable() && !this.isDisposed()) {
+      if (text != null) {
+        final File associatedFile = this.getTabTitle().getAssociatedFile();
+        if (isAutoBackupAllowed() && associatedFile != null) {
+          TextFileBackuper.getInstance().add(new TextFileBackuper.BackupContent(associatedFile, text));
+        }
+      }
+    }
+  }
+
+  protected void backup() {
+    this.backup(this.getContentAsText());
+  }
+
+  @Nullable
+  protected abstract String getContentAsText();
+
   @Nonnull
   public abstract String getDefaultExtension();
 
@@ -80,17 +117,55 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   @Override
   public final void dispose() {
     if (disposeFlag.compareAndSet(false, true)) {
-      this.doDispose();
+      if (this.isEditable()) {
+        final File associatedFile = this.getTabTitle().getAssociatedFile();
+        if (associatedFile != null) {
+          TextFileBackuper.getInstance().add(new TextFileBackuper.BackupContent(associatedFile, null));
+        }
+      }
+      try {
+        final JComponent editComponent = this.getMainComponent();
+        if (editComponent instanceof Disposable) {
+          ((Disposable) editComponent).dispose();
+        }
+      } finally {
+        this.doDispose();
+      }
     }
   }
 
   protected void doDispose() {
-
   }
 
   @Override
   public boolean isDisposed() {
     return this.disposeFlag.get();
+  }
+
+  @Nullable
+  protected String restoreFromBackup(@Nonnull final File file) {
+    if (!SwingUtilities.isEventDispatchThread()) {
+      throw new Error("Must be called only from Swing UI thread");
+    }
+
+    final File backupFile = TextFileBackuper.findBackupForFile(file);
+    if (backupFile == null) {
+      return null;
+    }
+
+    if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(this.getContainerToShow(), "Restore from backup?",
+        String.format("Detected backup '%s', restore content?", backupFile.getName()))) {
+      try {
+        final String result = new TextFileBackuper.Restored(backupFile).asText();
+        DialogProviderManager.getInstance().getDialogProvider().msgWarn(this.getContainerToShow(), "Restored from backup file: " + backupFile.getName());
+        return result;
+      } catch (IOException ex) {
+        DialogProviderManager.getInstance().getDialogProvider().msgError(this.getContainerToShow(), "Can't restore backup file for error: " + ex.getMessage());
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   @Nonnull

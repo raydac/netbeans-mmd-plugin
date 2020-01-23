@@ -309,10 +309,19 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
   @Override
   public void loadContent(@Nullable File file) throws IOException {
     final MindMap map;
-    if (file == null || file.length() == 0L) {
+    if (file == null) {
       map = new MindMap(true);
     } else {
-      map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
+      final String restored = this.restoreFromBackup(file);
+      if (restored == null) {
+        if (file.length() == 0L) {
+          map = new MindMap(true);
+        } else {
+          map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
+        }
+      } else {
+        map = new MindMap(new StringReader(restored)); //NOI18N
+      }
     }
     this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
 
@@ -339,6 +348,7 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
       }
       FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false); //NOI18N
       this.title.setChanged(false);
+      this.deleteBackup();
       result = true;
       this.undoStorage.setFlagThatSomeStateLost();
     } else {
@@ -433,10 +443,17 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
     return this;
   }
 
+  @Nullable
+  @Override
+  protected String getContentAsText() {
+    return this.mindMapPanel.getModel().packToString();
+  }
+
   @Override
   public void onMindMapModelChanged(@Nonnull final MindMapPanel source, final boolean addToHistory) {
     if (addToHistory && !this.preventAddUndo.get() && this.currentModelState.get() != null) {
       final String state = this.currentModelState.getAndSet(source.getModel().packToString());
+      backup(state);
       this.undoStorage.addToUndo(state);
       this.undoStorage.clearRedo();
       if (addToHistory) {
