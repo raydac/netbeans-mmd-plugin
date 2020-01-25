@@ -1075,7 +1075,7 @@
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="checkBoxBackupLastEdit">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Backup last edit before save"/>
+                    <Property name="text" type="java.lang.String" value="Auto-backup last edit"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxBackupLastEditActionPerformed"/>

@@ -997,7 +997,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     jPanel1.add(checkBoxSmartTextPaste, gridBagConstraints);
 
-    checkBoxBackupLastEdit.setText("Backup last edit before save");
+    checkBoxBackupLastEdit.setText("Auto-backup last edit");
     checkBoxBackupLastEdit.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         checkBoxBackupLastEditActionPerformed(evt);
