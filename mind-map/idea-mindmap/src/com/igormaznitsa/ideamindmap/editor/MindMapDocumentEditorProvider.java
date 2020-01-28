@@ -17,6 +17,7 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.filetype.MindMapFileType;
+import com.igormaznitsa.ideamindmap.lang.MMLanguage;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
@@ -24,14 +25,40 @@ import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import java.lang.reflect.Method;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jdom.Element;
 
 public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware {
 
+  /**
+   * Keep calls through reflection to save compatibility with early versions of IDE!
+   *
+   * @param virtualFile virtual file to check
+   * @return true if mind map file, false otherwise or if error
+   */
+  private static boolean isScratchFileType(@Nullable final VirtualFile virtualFile) {
+    if (virtualFile == null) {
+      return false;
+    }
+    try {
+      final Class<?> klazz = Class.forName("com.intellij.ide.scratch.ScratchFileService");
+      final Method methodInstance = klazz.getMethod("getInstance");
+      final Method methodGetScratchesMapping = klazz.getMethod("getScratchesMapping");
+      final Object mapping = methodGetScratchesMapping.invoke(methodInstance.invoke(null));
+      return mapping.getClass().getMethod("getMapping", VirtualFile.class).invoke(mapping, virtualFile) instanceof MMLanguage;
+    } catch (ClassNotFoundException ex) {
+      return false;
+    } catch (NoSuchMethodException ex) {
+      throw new
+      return false;
+    }
+  }
+
   @Override
   public boolean accept(@Nonnull Project project, @Nonnull VirtualFile virtualFile) {
-    return virtualFile.getFileType() instanceof MindMapFileType;
+    return virtualFile.getFileType() instanceof MindMapFileType || isScratchFileType(virtualFile);
   }
 
   @Nonnull
