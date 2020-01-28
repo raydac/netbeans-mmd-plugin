@@ -25,6 +25,7 @@ import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +34,7 @@ import org.jdom.Element;
 public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAware {
 
   /**
-   * Keep calls through reflection to save compatibility with early versions of IDE!
+   * Keep calls through reflection to save compatibility with early versions of IDE.
    *
    * @param virtualFile virtual file to check
    * @return true if mind map file, false otherwise or if error
@@ -50,9 +51,8 @@ public class MindMapDocumentEditorProvider implements FileEditorProvider, DumbAw
       return mapping.getClass().getMethod("getMapping", VirtualFile.class).invoke(mapping, virtualFile) instanceof MMLanguage;
     } catch (ClassNotFoundException ex) {
       return false;
-    } catch (NoSuchMethodException ex) {
-      throw new
-      return false;
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+      throw new RuntimeException("Can't find or invoke expected method, may be some changes in Scratch API!", ex);
     }
   }
 
