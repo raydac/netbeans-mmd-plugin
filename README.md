@@ -16,9 +16,10 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.8 (SNAPSHOT)__
-- IJ:  Added support of Scratch [#61](https://github.com/raydac/netbeans-mmd-plugin/issues/61)
-- SR:  Added auto-backup of last edit (turned off by default) [#60](https://github.com/raydac/netbeans-mmd-plugin/issues/60)
-- SR:  PlantUML updated to 1.2020.0
+- IJ: Added support of Scratch [#61](https://github.com/raydac/netbeans-mmd-plugin/issues/61)
+- SR: Added auto-backup of last edit (turned off by default) [#60](https://github.com/raydac/netbeans-mmd-plugin/issues/60)
+- SR: PlantUML updated to 1.2020.0
+- SR: embedded JDK version updated to 11.0.6+10
 
 __1.4.7 (28-dec-2019)__
 - ALL: fixed loosing of focus for new edited topic under some JDK versions
