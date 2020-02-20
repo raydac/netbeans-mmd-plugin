@@ -412,7 +412,6 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     final ColorAttributePanel panel = new ColorAttributePanel(source.getModel(), getDialogProvider(), borderColor, fillColor, textColor);
     if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
       ColorAttributePanel.Result result = panel.getResult();
-
       if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
         Utils.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(), Utils.color2html(result.getBorderColor(), false), topics);
       }
@@ -427,6 +426,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
       source.doLayout();
       source.requestFocus();
+      this.editor.onMindMapModelChanged(this.editor.getMindMapPanel(), true);
     }
   }
 
