@@ -390,7 +390,6 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
             }
           } else {
             dialogProvider.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPathWithLine().getPath()));
-            changed = false;
           }
         }
 

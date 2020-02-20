@@ -45,11 +45,10 @@ public class ChangeColorPlugin extends AbstractPopupMenuItem implements External
   @Nullable
   public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic) {
     JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(
-        context.getSelectedTopics().length > 0 ?
-            Texts.getString("MMDGraphEditor.makePopUp.miColorsForSelected") :
+        context.getSelectedTopics() != null && context.getSelectedTopics().length > 0
+            ? Texts.getString("MMDGraphEditor.makePopUp.miColorsForSelected") :
             Texts.getString("MMDGraphEditor.makePopUp.miColorsForTopic"), ICO);
 
-    final ChangeColorPlugin theInstance = this;
     result.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
