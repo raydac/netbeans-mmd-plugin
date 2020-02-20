@@ -16,6 +16,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.8 (SNAPSHOT)__
+- IJ: Fixed mind map save after topic color change [#63](https://github.com/raydac/netbeans-mmd-plugin/issues/63)
 - IJ: Added support of Scratch [#61](https://github.com/raydac/netbeans-mmd-plugin/issues/61)
 - SR: Added auto-backup of last edit (turned off by default) [#60](https://github.com/raydac/netbeans-mmd-plugin/issues/60)
 - SR: PlantUML updated to 1.2020.1
