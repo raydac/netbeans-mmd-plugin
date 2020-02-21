@@ -21,6 +21,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import java.awt.event.ActionEvent;
@@ -60,8 +61,6 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context), getIcon(context));
     result.setToolTipText(getReference(context));
 
-    final AbstractPopupMenuItem theInstance = this;
-
     result.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -75,10 +74,19 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                  context.getPanel().setModel(map, false);
+                  context.getPanel().setModel(map, true);
+                }
+              });
+              SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
                   final Topic root = map.getRoot();
                   if (root != null) {
-                    context.getPanel().focusTo(root);
+                    final MindMapPanel panel = context.getPanel();
+                    panel.doLayout();
+                    panel.revalidate();
+                    panel.focusTo(root);
+                    panel.repaint();
                   }
                 }
               });

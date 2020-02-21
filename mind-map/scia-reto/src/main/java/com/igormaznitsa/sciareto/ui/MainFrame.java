@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
@@ -197,9 +198,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void windowClosing(@Nonnull final WindowEvent e) {
         if (doClosing()) {
           try {
-            dispose();
+            for (final TabTitle t : tabPane) {
+              t.getProvider().getEditor().deleteBackup();
+            }
           } finally {
-            TextFileBackuper.getInstance().finish();
+            try {
+              dispose();
+            } finally {
+              TextFileBackuper.getInstance().finish();
+            }
           }
         }
       }
@@ -577,7 +584,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           SwingUtilities.invokeLater(() -> {
             ((AbstractPlUmlEditor) tab.getProvider()).hideTextPanel();
           });
-        } 
+        }
       }
     } catch (IOException ex) {
       LOGGER.error("Can't restore state", ex); //NOI18N
@@ -923,9 +930,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
         menuFileMenuCanceled(evt);
       }
+
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuFileMenuDeselected(evt);
       }
+
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuFileMenuSelected(evt);
       }
@@ -1028,9 +1037,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
         menuEditMenuCanceled(evt);
       }
+
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuEditMenuDeselected(evt);
       }
+
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuEditMenuSelected(evt);
       }
@@ -1145,8 +1156,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuNavigate.addMenuListener(new javax.swing.event.MenuListener() {
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
       }
+
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
       }
+
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuNavigateMenuSelected(evt);
       }
@@ -1292,27 +1305,27 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     LOGGER.info("Starting asyncronous loading of " + project.toString());
 
     project.initLoading(Mono.just(project)
-            .map(proj -> {
-              SwingUtilities.invokeLater(() -> ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), proj));
-              return proj;
-            })
-            .flatMap(proj -> proj.readSubtree(PrefUtils.isShowHiddenFilesAndFolders()))
-            .doOnError(error -> {
-              LOGGER.error("Can't open project", error);
-              SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(rootPane, "Can't open project : " + error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-              });
-            })
-            .doOnTerminate(() -> {
-              ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
-              if (invokeLater != null && invokeLater.length > 0) {
-                for (final Runnable r : invokeLater) {
-                  SwingUtilities.invokeLater(r);
-                }
-              }
-            })
-            .subscribeOn(REACTOR_SCHEDULER)
-            .subscribe());
+        .map(proj -> {
+          SwingUtilities.invokeLater(() -> ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), proj));
+          return proj;
+        })
+        .flatMap(proj -> proj.readSubtree(PrefUtils.isShowHiddenFilesAndFolders()))
+        .doOnError(error -> {
+          LOGGER.error("Can't open project", error);
+          SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(rootPane, "Can't open project : " + error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          });
+        })
+        .doOnTerminate(() -> {
+          ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
+          if (invokeLater != null && invokeLater.length > 0) {
+            for (final Runnable r : invokeLater) {
+              SwingUtilities.invokeLater(r);
+            }
+          }
+        })
+        .subscribeOn(REACTOR_SCHEDULER)
+        .subscribe());
     return project;
   }
 
@@ -1381,13 +1394,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
     final File file = DialogProviderManager.getInstance()
-            .getDialogProvider()
-            .msgOpenFileDialog(null, "open-file", "Open file", null, true, new FileFilter[]{
-      MMDEditor.MMD_FILE_FILTER,
-      PlantUmlTextEditor.SRC_FILE_FILTER,
-      KsTplTextEditor.SRC_FILE_FILTER,
-      SourceTextEditor.SRC_FILE_FILTER
-    }, "Open");
+        .getDialogProvider()
+        .msgOpenFileDialog(null, "open-file", "Open file", null, true, new FileFilter[] {
+            MMDEditor.MMD_FILE_FILTER,
+            PlantUmlTextEditor.SRC_FILE_FILTER,
+            KsTplTextEditor.SRC_FILE_FILTER,
+            SourceTextEditor.SRC_FILE_FILTER
+        }, "Open");
     if (file != null) {
       if (openFileAsTab(file, -1)) {
         try {

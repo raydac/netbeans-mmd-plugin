@@ -78,14 +78,14 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     return manager.getFlag(manager.getPreferences(), SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, false);
   }
 
-  protected void deleteBackup() {
-    if (this.isEditable() && !this.isDisposed()) {
-      final File associatedFile = this.getTabTitle().getAssociatedFile();
-      if (isAutoBackupAllowed() && associatedFile != null) {
-        TextFileBackuper.getInstance().add(new TextFileBackuper.BackupContent(associatedFile, null));
-      }
-    }
-  }
+ public void deleteBackup() {
+   if (this.isEditable() && !this.isDisposed()) {
+     final File associatedFile = this.getTabTitle().getAssociatedFile();
+     if (isAutoBackupAllowed() && associatedFile != null) {
+       TextFileBackuper.getInstance().add(new TextFileBackuper.BackupContent(associatedFile, null));
+     }
+   }
+ }
 
   protected void backup(@Nullable final String text) {
     if (this.isEditable() && !this.isDisposed()) {
@@ -152,6 +152,8 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     if (backupFile == null) {
       return null;
     }
+
+    Main.disposeSplash();
 
     if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(this.getContainerToShow(), "Restore from backup?",
         String.format("Detected backup '%s', restore content?", backupFile.getName()))) {

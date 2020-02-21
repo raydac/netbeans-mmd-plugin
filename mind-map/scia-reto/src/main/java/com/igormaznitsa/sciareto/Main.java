@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto;
 
 import com.igormaznitsa.commons.version.Version;
@@ -99,6 +100,8 @@ import org.apache.commons.io.IOUtils;
 
 public class Main {
 
+  private static final AtomicReference<SplashScreen> splash = new AtomicReference<>();
+
   public static final String APP_TITLE = "Scia Reto";
   public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
 
@@ -108,7 +111,7 @@ public class Main {
 
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[]{1L, 4L, 8L}, null); //NOI18N
+  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 4L, 8L}, null); //NOI18N
 
   public static final Random RND = new Random();
 
@@ -155,6 +158,17 @@ public class Main {
       return 0;
     }
 
+  }
+
+  public static void disposeSplash() {
+    final SplashScreen splashScr = splash.getAndSet(null);
+    if (splashScr != null) {
+      if (SwingUtilities.isEventDispatchThread()) {
+        splashScr.dispose();
+      } else {
+        SwingUtilities.invokeLater(splashScr::dispose);
+      }
+    }
   }
 
   private static final class LocalMMDExporter extends AbstractExporter {
@@ -271,8 +285,6 @@ public class Main {
     LOGGER.info("os.arch = " + System.getProperty("os.arch", "unknown")); //NOI18N
     LOGGER.info("os.version = " + System.getProperty("os.version", "unknown")); //NOI18N
 
-    final AtomicReference<SplashScreen> splash = new AtomicReference<>();
-
     final long timeTakenBySplashStart;
 
     if (args.length == 0) {
@@ -280,18 +292,15 @@ public class Main {
       try {
         final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
 
-        SwingUtilities.invokeAndWait(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              splash.set(new SplashScreen(splashImage));
-              splash.get().setVisible(true);
-            } catch (Exception ex) {
-              LOGGER.error("Splash can't be shown", ex); //NOI18N
-              if (splash.get() != null) {
-                splash.get().dispose();
-                splash.set(null);
-              }
+        SwingUtilities.invokeAndWait(() -> {
+          try {
+            splash.set(new SplashScreen(splashImage));
+            splash.get().setVisible(true);
+          } catch (Exception ex) {
+            LOGGER.error("Splash can't be shown", ex); //NOI18N
+            if (splash.get() != null) {
+              splash.get().dispose();
+              splash.set(null);
             }
           }
         });
@@ -389,64 +398,50 @@ public class Main {
       MindMapPluginRegistry.getInstance().unregisterPluginForClass(AboutPlugin.class);
       MindMapPluginRegistry.getInstance().unregisterPluginForClass(OptionsPlugin.class);
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-          final int width = gd.getDisplayMode().getWidth();
-          final int height = gd.getDisplayMode().getHeight();
+      SwingUtilities.invokeLater(() -> {
+        final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        final int width = gd.getDisplayMode().getWidth();
+        final int height = gd.getDisplayMode().getHeight();
 
-          if (PlatformProvider.isErrorDetected()) {
-            final SplashScreen splashScr = splash.getAndSet(null);
-            if (splashScr != null) {
-              splashScr.dispose();
-            }
-            JOptionPane.showMessageDialog(null, "Can't init the Platform dependent layer, the default one will be used instead.\n"
-                    + "Check that you have installed Java correctly to avoid the warning", "Warning", JOptionPane.WARNING_MESSAGE);
-          }
-
-          try {
-            MAIN_FRAME = new MainFrame(args);
-          } catch (IOException ex) {
-            LOGGER.error("Can't create frame", ex);
-            JOptionPane.showMessageDialog(null, "Can't create frame : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
-          }
-          MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
-
-          if (splash.get() != null) {
-            final long delay = (2000L + timeTakenBySplashStart) - (System.currentTimeMillis() - UPSTART);
-            if (delay > 0L) {
-              final Timer timer = new Timer((int) delay, new ActionListener() {
-                @Override
-                public void actionPerformed(@Nonnull final ActionEvent e) {
-                  splash.get().dispose();
-                  splash.set(null);
-                }
-              });
-              timer.setRepeats(false);
-              timer.start();
-            } else {
-              splash.get().dispose();
-              splash.set(null);
-            }
-          }
-
-          MAIN_FRAME.setVisible(true);
-
-          MAIN_FRAME.setExtendedState(MAIN_FRAME.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-          final JHtmlLabel label = new JHtmlLabel("<html>You use the application already for some time. If you like it then you could support its author and <a href=\"http://www.google.com\"><b>make some donation</b></a>.</html>");
-          label.addLinkListener(new JHtmlLabel.LinkListener() {
-            @Override
-            public void onLinkActivated(@Nonnull final JHtmlLabel source, @Nonnull final String link) {
-              try {
-                UiUtils.browseURI(new URI(link), false);
-              } catch (URISyntaxException ex) {
-                LOGGER.error("Can't make URI", ex); //NOI18N
-              }
-            }
-          });
+        if (PlatformProvider.isErrorDetected()) {
+          disposeSplash();
+          JOptionPane.showMessageDialog(null, "Can't init the Platform dependent layer, the default one will be used instead.\n"
+              + "Check that you have installed Java correctly to avoid the warning", "Warning", JOptionPane.WARNING_MESSAGE);
         }
+
+        try {
+          MAIN_FRAME = new MainFrame(args);
+        } catch (IOException ex) {
+          LOGGER.error("Can't create frame", ex);
+          JOptionPane.showMessageDialog(null, "Can't create frame : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          System.exit(1);
+        }
+        MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
+
+        if (splash.get() != null) {
+          final long delay = (2000L + timeTakenBySplashStart) - (System.currentTimeMillis() - UPSTART);
+          if (delay > 0L) {
+            final Timer timer = new Timer((int) delay, e -> {
+              disposeSplash();
+            });
+            timer.setRepeats(false);
+            timer.start();
+          } else {
+            disposeSplash();
+          }
+        }
+
+        MAIN_FRAME.setVisible(true);
+
+        MAIN_FRAME.setExtendedState(MAIN_FRAME.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        final JHtmlLabel label = new JHtmlLabel("<html>You use the application already for some time. If you like it then you could support its author and <a href=\"http://www.google.com\"><b>make some donation</b></a>.</html>");
+        label.addLinkListener((source, link) -> {
+          try {
+            UiUtils.browseURI(new URI(link), false);
+          } catch (URISyntaxException ex) {
+            LOGGER.error("Can't make URI", ex); //NOI18N
+          }
+        });
       });
 
       new MessagesService().execute();
