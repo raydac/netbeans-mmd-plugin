@@ -15,6 +15,7 @@
   <properties>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
+    <gradle.executable>gradle</gradle.executable>
   </properties>
 
   <build>
@@ -104,78 +105,30 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
+        <artifactId>exec-maven-plugin</artifactId>
         <executions>
           <execution>
-            <goals>
-              <goal>set-system-properties</goal>
-            </goals>
-            <configuration>
-              <properties>
-                <property>
-                  <name>gradle.prop.jsoup_version</name>
-                  <value>${jsoup.version}</value>
-                </property>
-                <property>
-                  <name>gradle.prop.commonsio_version</name>
-                  <value>${commons.io.version}</value>
-                </property>
-                <property>
-                  <name>gradle.prop.commonslang_version</name>
-                  <value>${commons.lang.version}</value>
-                </property>
-                <property>
-                  <name>gradle.prop.iharder_version</name>
-                  <value>${iharder.version}</value>
-                </property>
-                <property>
-                  <name>gradle.prop.json_version</name>
-                  <value>${json.version}</value>
-                </property>
-                <property>
-                  <name>gradle.prop.mm_plugin_version</name>
-                  <value>${project.version}</value>
-                </property>
-                <property>
-                  <name>gradle.prop.mm_model_version</name>
-                  <value>${mindmap.model.version}</value>
-                </property>
-                <property>
-                  <name>gradle.prop.mm_ide_common_version</name>
-                  <value>${project.version}</value>
-                </property>
-                <property>
-                  <name>gradle.prop.mm_panel_version</name>
-                  <value>${project.version}</value>
-                </property>
-              </properties>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.fortasoft</groupId>
-        <artifactId>gradle-maven-plugin</artifactId>
-        <version>1.0.8</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.gradle</groupId>
-            <artifactId>gradle-tooling-api</artifactId>
-            <version>5.2</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <gradleVersion>5.2</gradleVersion>
-          <tasks>
-            <task>clean</task>
-            <task>build</task>
-          </tasks>
-        </configuration>
-        <executions>
-          <execution>
+            <id>gradle</id>
             <phase>compile</phase>
+            <configuration>
+              <executable>${gradle.executable}</executable>
+              <arguments>
+                <argument>clean</argument>
+                <argument>build</argument>
+                <argument>-i</argument>
+                <argument>-S</argument>
+                <argument>-Pjsoup_version=${jsoup.version}</argument>
+                <argument>-Pcommonsio_version=${commons.io.version}</argument>
+                <argument>-Pcommonslang_version=${commons.lang.version}</argument>
+                <argument>-Piharder_version=${iharder.version}</argument>
+                <argument>-Pmm_plugin_version=${project.version}</argument>
+                <argument>-Pmm_model_version=${mindmap.model.version}sadasdsa</argument>
+                <argument>-Pmm_ide_common_version=${project.version}</argument>
+                <argument>-Pmm_panel_version=${project.version}</argument>
+              </arguments>
+            </configuration>
             <goals>
-              <goal>invoke</goal>
+              <goal>exec</goal>
             </goals>
           </execution>
         </executions>
@@ -187,15 +140,8 @@
   <repositories>
     <repository>
       <id>gradle-repository</id>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
       <url>https://repo.gradle.org/gradle/libs-releases-local/</url>
     </repository>
   </repositories>
-
 
 </project>
