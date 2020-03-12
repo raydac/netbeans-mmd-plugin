@@ -16,16 +16,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -33,6 +36,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.JComponent;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 
 final class ScalableImage extends JComponent implements ScaleStatusIndicator.Scalable {
 
@@ -55,6 +63,8 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
   public ScalableImage() {
     super();
     final ScalableImage theInstance = this;
+
+    this.config.loadFrom(PreferencesManager.getInstance().getPreferences());
 
     final MouseAdapter adapter = new MouseAdapter() {
       @Override
@@ -192,6 +202,7 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
 
   public void updateConfig() {
     this.config.loadFrom(PreferencesManager.getInstance().getPreferences());
+    this.repaint();
   }
 
   @Nonnull
@@ -229,9 +240,7 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
   @Override
   public void paintComponent(@Nonnull final Graphics g) {
     final Graphics2D gfx = (Graphics2D) g;
-    gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-    gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-    gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+    this.config.getRenderQuality().prepare(gfx);
 
     final Rectangle bounds = this.getBounds();
     if (this.image == null) {
