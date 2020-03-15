@@ -52,6 +52,7 @@ cake
 cancel
 car
 cat
+caution_biohazard
 ceo
 chameleon
 chart
@@ -94,7 +95,9 @@ emotion_injured
 emotion_kiss
 emotion_lol
 emotion_mad
+emotion_medic
 emotion_nerd
+emotion_sick
 entity
 envelope
 error
@@ -105,6 +108,7 @@ film
 filter
 find
 fire
+flag_red_cross
 flamingo
 flashdisk
 flask
@@ -140,6 +144,7 @@ holly
 home_page
 horn
 horoscopes
+hospital
 hotjobs
 hot
 hourglass
@@ -175,6 +180,7 @@ map
 mario
 mask
 measure
+medical_record
 menu
 metro
 module
