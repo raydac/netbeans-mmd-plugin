@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.tree;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -28,6 +29,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.MainFrame;
+import com.sun.istack.internal.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -39,6 +41,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,19 +63,17 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   protected final List<NodeFileOrFolder> children;
   protected final boolean folderFlag;
-
+  private final boolean readonly;
   protected volatile String name;
   private volatile boolean noAccess;
-  private final boolean readonly;
-
   private volatile boolean disposed = false;
 
   public NodeFileOrFolder(
-          @Nullable final NodeFileOrFolder parent,
-          final boolean folder,
-          @Nullable final String name,
-          final boolean showHiddenFiles,
-          final boolean readOnly
+      @Nullable final NodeFileOrFolder parent,
+      final boolean folder,
+      @Nullable final String name,
+      final boolean showHiddenFiles,
+      final boolean readOnly
   ) {
     this.parent = parent;
     this.name = name;
@@ -86,6 +87,14 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     }
 
     this.readonly = readOnly;
+  }
+
+  protected static boolean isFileHidden(@Nonnull final Path path) {
+    try {
+      return Files.isHidden(path);
+    } catch (IOException ex) {
+      throw Exceptions.propagate(ex);
+    }
   }
 
   public boolean isLoading() {
@@ -165,66 +174,58 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     }
   }
 
-  protected static boolean isFileHidden(@Nonnull final Path path) {
-    try {
-      return Files.isHidden(path);
-    } catch (IOException ex) {
-      throw Exceptions.propagate(ex);
-    }
-  }
-
   @Nonnull
   public Mono<NodeFileOrFolder> readSubtree(final boolean addHiddenFilesAndFolders) {
-      if (this.folderFlag) {
-          final boolean parentIsProjectGroup = this.parent instanceof NodeProjectGroup;
-          return Flux.using(() -> {
-              this.clearChildren();
-              final File nodeFile = makeFileForNode();
-              try {
-                  return Files.newDirectoryStream(nodeFile.toPath());
-              } catch (Exception ex) {
-                  LOGGER.warn("Error '" + ex.getClass().getCanonicalName() + "' during access to path: " + nodeFile.getPath());
-                  this.noAccess = true;
-                  return new DirectoryStream<Path>() {
-                      @Override
-                      public Iterator<Path> iterator() {
-                          return Collections.emptyIterator();
-                      }
+    if (this.folderFlag) {
+      final boolean parentIsProjectGroup = this.parent instanceof NodeProjectGroup;
+      return Flux.using(() -> {
+        this.clearChildren();
+        final File nodeFile = makeFileForNode();
+        try {
+          return new SynchroPathIterator(nodeFile.toPath());
+        } catch (Exception ex) {
+          LOGGER.warn("Error '" + ex.getClass().getCanonicalName() + "' during access to path: " + nodeFile.getPath());
+          this.noAccess = true;
+          return new DirectoryStream<Path>() {
+            @Override
+            public Iterator<Path> iterator() {
+              return Collections.emptyIterator();
+            }
 
-                      @Override
-                      public void close() throws IOException {
-                      }
-                  };
-              }
-          }, Flux::fromIterable, IOUtils::closeQuetly)
-                  .parallel()
-                  .runOn(MainFrame.REACTOR_SCHEDULER)
-                  .doOnError(error -> {
-                      LOGGER.warn("Error during path " + makeFileForNode().getName() + " opening: " + error.getMessage());
-                      this.noAccess = true;
-                  })
-                  .filter(f -> {
-                      if (parentIsProjectGroup) {
-                          return addHiddenFilesAndFolders || !isFileHidden(f) || Context.KNOWLEDGE_FOLDER.equals(f.getFileName().toString());
-                      } else {
-                          return addHiddenFilesAndFolders || !isFileHidden(f);
-                      }
-                  })
-                  .map(f -> {
-                      NodeFileOrFolder newItem = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(f));
-                      this.children.add(newItem);
-                      return newItem;
-                  })
-                  .flatMap(f -> f.readSubtree(addHiddenFilesAndFolders))
-                  .reduce((x, y) -> this)
-                  .doFinally(signalType -> {
-                      if (signalType == SignalType.ON_COMPLETE) {
-                          this.children.sort(this);
-                      }
-                  });
-      } else {
-          return Mono.empty();
-      }
+            @Override
+            public void close() throws IOException {
+            }
+          };
+        }
+      }, Flux::fromIterable, IOUtils::closeQuetly)
+          .parallel()
+          .runOn(MainFrame.REACTOR_SCHEDULER)
+          .doOnError(error -> {
+            LOGGER.warn("Error during path " + makeFileForNode().getName() + " opening: " + error.getMessage());
+            this.noAccess = true;
+          })
+          .filter(f -> {
+            if (parentIsProjectGroup) {
+              return addHiddenFilesAndFolders || !isFileHidden(f) || Context.KNOWLEDGE_FOLDER.equals(f.getFileName().toString());
+            } else {
+              return addHiddenFilesAndFolders || !isFileHidden(f);
+            }
+          })
+          .map(f -> {
+            NodeFileOrFolder newItem = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(f));
+            this.children.add(newItem);
+            return newItem;
+          })
+          .flatMap(f -> f.readSubtree(addHiddenFilesAndFolders))
+          .reduce((x, y) -> this)
+          .doFinally(signalType -> {
+            if (signalType == SignalType.ON_COMPLETE) {
+              this.children.sort(this);
+            }
+          });
+    } else {
+      return Mono.empty();
+    }
   }
 
   @Nullable
@@ -358,13 +359,13 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   public TreePath findPathToFile(@Nonnull final File file) {
     final File generatedFile = makeFileForNode();
     if (file.equals(generatedFile)) {
-      return new TreePath(new Object[]{this});
+      return new TreePath(new Object[] {this});
     }
     if (!this.isLeaf()) {
       for (final NodeFileOrFolder c : this.children) {
         final TreePath result = c.findPathToFile(file);
         if (result != null) {
-          return new TreePath(ArrayUtils.joinArrays(new Object[]{this}, result.getPath()));
+          return new TreePath(ArrayUtils.joinArrays(new Object[] {this}, result.getPath()));
         }
       }
     }
@@ -439,5 +440,44 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   protected void onDispose() {
 
+  }
+
+  private static final class SynchroPathIterator implements DirectoryStream<Path> {
+
+    private final Iterator<Path> iterator;
+    private final AtomicReference<DirectoryStream<Path>> directoryStream;
+
+    SynchroPathIterator(final Path path) throws IOException {
+      this.directoryStream = new AtomicReference<>(Files.newDirectoryStream(path));
+      this.iterator = directoryStream.get().iterator();
+    }
+
+    @Override
+    public void close() throws IOException {
+      final DirectoryStream<Path> ds = this.directoryStream.getAndSet(null);
+      if (ds != null) {
+        ds.close();
+      }
+    }
+
+    @Override
+    @NotNull
+    public Iterator<Path> iterator() {
+      return new Iterator<Path>() {
+        @Override
+        public boolean hasNext() {
+          synchronized (iterator) {
+            return iterator.hasNext();
+          }
+        }
+
+        @Override
+        public Path next() {
+          synchronized (iterator) {
+            return iterator.next();
+          }
+        }
+      };
+    }
   }
 }
