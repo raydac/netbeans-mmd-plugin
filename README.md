@@ -1,5 +1,4 @@
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/6cec4cb9ac42419aa003a27597c3c357)](https://www.codacy.com/app/rrg4400/netbeans-mmd-plugin)
 [![Java 8.0+](https://img.shields.io/badge/java-8.0%2b-green.svg)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 [![NetBeans](https://img.shields.io/badge/netbeans-8.0%2b-green.svg)](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
 [![Intellij IDEA](https://img.shields.io/badge/idea-14.0.5%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)
@@ -15,7 +14,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
-__1.4.8 (SNAPSHOT)__
+__1.4.8 (19-mar-2020)__
 - ALL: Added extra emoticons: `caution_biohazard`,`hospital`,`emoticon_medic`,`emoticon_mask` etc.
 - SR:  Fixed too high quality of PlantUML image render during scale [#64](https://github.com/raydac/netbeans-mmd-plugin/issues/64)
 - IJ: Fixed mind map save after topic color change [#63](https://github.com/raydac/netbeans-mmd-plugin/issues/63)
