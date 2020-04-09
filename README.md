@@ -14,14 +14,17 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.4.9 (SNAPSHOT)__
+- SR:  embedded PlantUml updated to 1.2020.6
+
 __1.4.8 (19-mar-2020)__
 - ALL: Added extra emoticons: `caution_biohazard`,`hospital`,`emoticon_medic`,`emoticon_mask` etc.
 - SR:  Fixed too high quality of PlantUML image render during scale [#64](https://github.com/raydac/netbeans-mmd-plugin/issues/64)
-- IJ: Fixed mind map save after topic color change [#63](https://github.com/raydac/netbeans-mmd-plugin/issues/63)
-- IJ: Added support of Scratch [#61](https://github.com/raydac/netbeans-mmd-plugin/issues/61)
-- SR: Added auto-backup of last edit (turned off by default) [#60](https://github.com/raydac/netbeans-mmd-plugin/issues/60)
-- SR: PlantUML updated to 1.2020.3
-- SR: embedded JDK version updated to 11.0.6+10
+- IJ:  Fixed mind map save after topic color change [#63](https://github.com/raydac/netbeans-mmd-plugin/issues/63)
+- IJ:  Added support of Scratch [#61](https://github.com/raydac/netbeans-mmd-plugin/issues/61)
+- SR:  Added auto-backup of last edit (turned off by default) [#60](https://github.com/raydac/netbeans-mmd-plugin/issues/60)
+- SR:  PlantUML updated to 1.2020.3
+- SR:  embedded JDK version updated to 11.0.6+10
 
 __1.4.7 (28-dec-2019)__
 - ALL: fixed loosing of focus for new edited topic under some JDK versions

@@ -1,3 +1,6 @@
+__1.4.9 (SNAPSHOT)__
+- SR:  embedded PlantUML updated to 1.2020.6
+
 __1.4.8 (19-mar-2020)__
 - ALL: Added extra emoticons: `caution_biohazard`,`hospital`,`emoticon_medic`,`emoticon_mask` etc.
 - SR:  Fixed too high quality of PlantUML image render during scale [#64](https://github.com/raydac/netbeans-mmd-plugin/issues/64)
