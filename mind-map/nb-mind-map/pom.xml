@@ -52,7 +52,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <version>1.18</version>
         <executions>
           <execution>
             <id>ensure-java-1.6-class-library</id>
