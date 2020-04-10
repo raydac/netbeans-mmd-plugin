@@ -15,6 +15,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.9 (SNAPSHOT)__
+- SR:  shortcut for `Save` changed to `Ctrl+S` and shortcut `Save All` changed to `Ctrl+Shift+S` [#65](https://github.com/raydac/netbeans-mmd-plugin/issues/65)
 - SR:  embedded PlantUml updated to 1.2020.6
 
 __1.4.8 (19-mar-2020)__
