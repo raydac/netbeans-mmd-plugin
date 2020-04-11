@@ -35,3 +35,7 @@ buildNumber.properties
 /mind-map/idea-mindmap/idea-mindmap.iws
 /mind-map/idea-mindmap/idea-mindmap.ipr
 *.iml
+/mind-map/idea-mindmap/bin
+mind-map/idea-mindmap/.classpath
+mind-map/idea-mindmap/.project
+mind-map/idea-mindmap/.settings/org.eclipse.buildship.core.prefs
