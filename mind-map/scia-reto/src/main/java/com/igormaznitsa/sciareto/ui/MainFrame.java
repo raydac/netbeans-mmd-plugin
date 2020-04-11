@@ -410,6 +410,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuEditCopy.setEnabled(false);
       this.menuEditPaste.setEnabled(false);
       this.menuEditCut.setEnabled(false);
+      this.menuFindText.setEnabled(false);
     } else {
       if (provider.doesSupportCutCopyPaste()) {
         this.menuEditCopy.setEnabled(provider.isCopyAllowed());
@@ -421,6 +422,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         this.menuEditCut.setEnabled(false);
       }
 
+      this.menuFindText.setEnabled(provider.doesSupportTextSearch());
+      
       this.menuRedo.setEnabled(provider.isRedo());
       this.menuUndo.setEnabled(provider.isUndo());
 

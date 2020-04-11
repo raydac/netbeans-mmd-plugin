@@ -74,4 +74,6 @@ public interface TabProvider {
   boolean findNext(@Nonnull Pattern pattern, @Nonnull FindTextScopeProvider provider);
   boolean findPrev(@Nonnull Pattern pattern,@Nonnull FindTextScopeProvider provider);
   boolean doesSupportPatternSearch();
+
+  boolean doesSupportTextSearch();
 }

@@ -161,6 +161,11 @@ public final class PictureViewer extends AbstractEditor {
   }
 
   @Override
+  public boolean doesSupportTextSearch() {
+    return false;
+  }
+
+  @Override
   public void loadContent(@Nullable final File file) throws IOException {
     BufferedImage loaded = null;
     if (file != null) {
