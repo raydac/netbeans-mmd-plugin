@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
@@ -170,11 +171,6 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   }
 
   @Override
-  public boolean doesSupportTextSearch() {
-    return true;
-  }
-
-  @Override
   public void updateConfiguration() {
   }
 
@@ -295,6 +291,11 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     } else {
       return null;
     }
+  }
+
+  @Override
+  public boolean showSearchPane(@Nonnull final JPanel searchPanel) {
+    return false;
   }
 
   @Nonnull

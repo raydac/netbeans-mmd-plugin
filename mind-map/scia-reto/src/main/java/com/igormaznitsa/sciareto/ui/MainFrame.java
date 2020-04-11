@@ -16,11 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-
 package com.igormaznitsa.sciareto.ui;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
-
 
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -64,6 +62,7 @@ import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
 import com.igormaznitsa.sciareto.ui.tree.ProjectLoadingIconAnimationController;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.KeyEventDispatcher;
@@ -422,8 +421,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         this.menuEditCut.setEnabled(false);
       }
 
-      this.menuFindText.setEnabled(provider.doesSupportTextSearch());
-      
+      this.menuFindText.setEnabled(provider.doesSupportPatternSearch());
+
       this.menuRedo.setEnabled(provider.isRedo());
       this.menuUndo.setEnabled(provider.isUndo());
 
@@ -455,8 +454,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     } else {
       this.menuFindText.setEnabled(false);
-      hideFindTextPane();
     }
+    hideFindTextPane();
 
     enableAllMenuItems();
 
@@ -750,14 +749,29 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (current != null && this.tabPane.getCurrentTitle().getProvider().doesSupportPatternSearch()) {
 
       FindTextPanel panel = this.currentFindTextPanel.get();
-
       if (panel == null) {
         panel = new FindTextPanel(this, text);
         panel.updateUI(current);
-        this.mainPanel.add(panel, BorderLayout.SOUTH);
+      }
+      this.currentFindTextPanel.set(panel);
+
+      final Container currentParent = panel.getParent();
+      if (currentParent != null) {
+        currentParent.remove(panel);
+        currentParent.revalidate();
+        currentParent.repaint();
       }
 
-      this.currentFindTextPanel.set(panel);
+      final boolean mmdEditor = current.getProvider().getEditor().getEditorContentType() == EditorContentType.MINDMAP;
+      
+      panel.setEnableSearchFile(mmdEditor);
+      panel.setEnableSearchNote(mmdEditor);
+      panel.setEnableSearchURI(mmdEditor);
+      panel.setEnableSearchTopicText(mmdEditor);
+      
+      if (!this.tabPane.getCurrentTitle().getProvider().showSearchPane(panel)) {
+        this.mainPanel.add(panel, BorderLayout.SOUTH);
+      }
 
       this.mainPanel.revalidate();
       this.mainPanel.repaint();
@@ -768,12 +782,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   @Override
   public void hideFindTextPane() {
-    final FindTextPanel panel = this.currentFindTextPanel.get();
+    final FindTextPanel panel = this.currentFindTextPanel.getAndSet(null);
     if (panel != null) {
-      this.currentFindTextPanel.set(null);
-      this.mainPanel.remove(panel);
-      this.mainPanel.revalidate();
-      this.mainPanel.repaint();
+      final Container parent = panel.getParent();
+      if (parent != null) {
+        parent.remove(panel);
+        parent.revalidate();
+        parent.repaint();
+      }
     }
   }
 
@@ -1309,27 +1325,27 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     LOGGER.info("Starting asyncronous loading of " + project.toString());
 
     project.initLoading(Mono.just(project)
-        .map(proj -> {
-          SwingUtilities.invokeLater(() -> ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), proj));
-          return proj;
-        })
-        .flatMap(proj -> proj.readSubtree(PrefUtils.isShowHiddenFilesAndFolders()))
-        .doOnError(error -> {
-          LOGGER.error("Can't open project", error);
-          SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(rootPane, "Can't open project : " + error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-          });
-        })
-        .doOnTerminate(() -> {
-          ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
-          if (invokeLater != null && invokeLater.length > 0) {
-            for (final Runnable r : invokeLater) {
-              SwingUtilities.invokeLater(r);
-            }
-          }
-        })
-        .subscribeOn(REACTOR_SCHEDULER)
-        .subscribe());
+            .map(proj -> {
+              SwingUtilities.invokeLater(() -> ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), proj));
+              return proj;
+            })
+            .flatMap(proj -> proj.readSubtree(PrefUtils.isShowHiddenFilesAndFolders()))
+            .doOnError(error -> {
+              LOGGER.error("Can't open project", error);
+              SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(rootPane, "Can't open project : " + error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+              });
+            })
+            .doOnTerminate(() -> {
+              ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
+              if (invokeLater != null && invokeLater.length > 0) {
+                for (final Runnable r : invokeLater) {
+                  SwingUtilities.invokeLater(r);
+                }
+              }
+            })
+            .subscribeOn(REACTOR_SCHEDULER)
+            .subscribe());
     return project;
   }
 
@@ -1398,13 +1414,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
     final File file = DialogProviderManager.getInstance()
-        .getDialogProvider()
-        .msgOpenFileDialog(null, "open-file", "Open file", null, true, new FileFilter[] {
-            MMDEditor.MMD_FILE_FILTER,
-            PlantUmlTextEditor.SRC_FILE_FILTER,
-            KsTplTextEditor.SRC_FILE_FILTER,
-            SourceTextEditor.SRC_FILE_FILTER
-        }, "Open");
+            .getDialogProvider()
+            .msgOpenFileDialog(null, "open-file", "Open file", null, true, new FileFilter[]{
+      MMDEditor.MMD_FILE_FILTER,
+      PlantUmlTextEditor.SRC_FILE_FILTER,
+      KsTplTextEditor.SRC_FILE_FILTER,
+      SourceTextEditor.SRC_FILE_FILTER
+    }, "Open");
     if (file != null) {
       if (openFileAsTab(file, -1)) {
         try {

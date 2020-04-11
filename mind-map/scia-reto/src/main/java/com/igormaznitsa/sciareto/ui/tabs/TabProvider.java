@@ -27,6 +27,7 @@ import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
+import javax.swing.JPanel;
 
 public interface TabProvider {
 
@@ -75,5 +76,5 @@ public interface TabProvider {
   boolean findPrev(@Nonnull Pattern pattern,@Nonnull FindTextScopeProvider provider);
   boolean doesSupportPatternSearch();
 
-  boolean doesSupportTextSearch();
+  boolean showSearchPane(@Nonnull JPanel searchPanel); 
 }

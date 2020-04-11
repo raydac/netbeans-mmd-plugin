@@ -114,6 +114,22 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
     });
   }
   
+  public void setEnableSearchNote(final boolean flag) {
+    this.toggleButtonNote.setEnabled(flag);
+  }
+  
+  public void setEnableSearchFile(final boolean flag) {
+    this.toggleButtonFile.setEnabled(flag);
+  }
+  
+  public void setEnableSearchURI(final boolean flag) {
+    this.toggleButtonURI.setEnabled(flag);
+  }
+  
+  public void setEnableSearchTopicText(final boolean flag) {
+    this.toggleButtonTopicText.setEnabled(flag);
+  }
+  
   @Override
   public void requestFocus(){
     this.textFieldSearchText.requestFocus();

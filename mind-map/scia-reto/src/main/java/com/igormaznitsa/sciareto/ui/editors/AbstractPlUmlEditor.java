@@ -148,6 +148,8 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
   private final JCheckBox autoRefresh;
   private int pageNumberToRender = 0;
 
+  private final JPanel editorPanel;
+  
   private final JPanel menu;
 
   private final DirectProcessor<Boolean> eventProcessor = DirectProcessor.create();
@@ -393,7 +395,10 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
     this.renderedPanel.add(menu, BorderLayout.NORTH);
     this.renderedPanel.add(this.renderedScrollPane, BorderLayout.CENTER);
 
-    this.mainPanel.add(scrollPane);
+    this.editorPanel = new JPanel(new BorderLayout());
+    this.editorPanel.add(scrollPane, BorderLayout.CENTER);
+    
+    this.mainPanel.add(this.editorPanel);
     this.mainPanel.add(this.renderedPanel);
 
     this.mainPanel.setResizeWeight(0.0d);
@@ -464,6 +469,15 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
           }
         });
 
+  }
+
+  @Override
+  public boolean showSearchPane(@Nonnull final JPanel searchPanel) {
+    this.editorPanel.add(searchPanel, BorderLayout.NORTH);
+    if (this.mainPanel.getDividerLocation() < 96) {
+      this.mainPanel.setDividerLocation(96);
+    }
+    return true;
   }
 
   protected void addCustomComponents(@Nonnull final JPanel panel, @Nonnull final GridBagConstraints gbdata) {

@@ -543,6 +543,12 @@ public final class SourceTextEditor extends AbstractEditor {
   }
 
   @Override
+  public boolean showSearchPane(@Nonnull final JPanel searchPanel) {
+    this.mainPanel.add(searchPanel, BorderLayout.NORTH);
+    return true;
+  }
+
+  @Override
   @Nonnull
   public TabTitle getTabTitle() {
     return this.title;
