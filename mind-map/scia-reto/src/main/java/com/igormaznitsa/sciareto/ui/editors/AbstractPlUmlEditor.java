@@ -23,8 +23,6 @@ import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 
 import com.igormaznitsa.meta.annotation.UiThread;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
@@ -133,7 +131,6 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
 
   private volatile LastRendered lastSuccessfulyRenderedText = null;
 
-  protected final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
   private File lastExportedFile = null;
   protected final ScalableRsyntaxTextArea editor;
   private final TabTitle title;
@@ -346,9 +343,9 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
 
     this.autoRefresh.addActionListener((@Nonnull final ActionEvent e) -> {
       if (!autoRefresh.isSelected()) {
-        LOGGER.info("Auto-refresh is turned off");
+        logger.info("Auto-refresh is turned off");
       } else {
-        LOGGER.info("Auto-refresh is turned on");
+        logger.info("Auto-refresh is turned on");
       }
     });
 
@@ -512,7 +509,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       try {
         UiUtils.browseURI(new URI(uri), false);
       } catch (URISyntaxException ex) {
-        LOGGER.error("Can't open URI", ex);
+        logger.error("Can't open URI", ex);
       }
     }, toolTip, icon);
   }
@@ -527,7 +524,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         result = true;
       }
     } catch (Exception ex) {
-      LOGGER.warn("Detected exception in syntax check : " + ex.getMessage());
+      logger.warn("Detected exception in syntax check : " + ex.getMessage());
       result = false;
     }
     return result;
@@ -544,7 +541,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         try {
           eventProcessor.onNext(true);
         } catch (Exception ex) {
-          LOGGER.info("Exception on next event: " + ex.getMessage());
+          logger.info("Exception on next event: " + ex.getMessage());
         }
       }
     });
@@ -713,13 +710,13 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
             throw new IOException("Detected exception footstep in generated file!");
           }
           FileUtils.writeByteArrayToFile(lastExportedFile, buffer.toByteArray());
-          LOGGER.info("Exported plant uml image as file : " + lastExportedFile);
+          logger.info("Exported plant uml image as file : " + lastExportedFile);
         } catch (IOException ex) {
-          LOGGER.error("Can't export plant uml image", ex);
+          logger.error("Can't export plant uml image", ex);
           JOptionPane.showMessageDialog(this.mainPanel, "Can't export! May be the format is not supported by the diagram type!", "Error", JOptionPane.ERROR_MESSAGE);
         }
       } else {
-        LOGGER.warn("Page number is <= 0");
+        logger.warn("Page number is <= 0");
         JOptionPane.showMessageDialog(this.mainPanel, "Can't export! Page is not selected!", "Warning", JOptionPane.WARNING_MESSAGE);
       }
     }
@@ -757,7 +754,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       try {
         this.undoManager.redo();
       } catch (final CannotRedoException ex) {
-        LOGGER.warn("Can't make redo in plantUML editor : " + ex.getMessage());
+        logger.warn("Can't make redo in plantUML editor : " + ex.getMessage());
       } finally {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
@@ -777,7 +774,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       try {
         this.undoManager.undo();
       } catch (final CannotUndoException ex) {
-        LOGGER.warn("Can't make undo in plantUML editor : " + ex.getMessage());
+        logger.warn("Can't make undo in plantUML editor : " + ex.getMessage());
       } finally {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
@@ -993,7 +990,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         });
       }
     } catch (final Exception ex) {
-      LOGGER.error("Error of PlantUML script:" + ex);
+      logger.error("Error of PlantUML script:" + ex);
       SwingUtilities.invokeLater(() -> {
         final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + escapeHtml(ex.getMessage()) + "</h1></html>", JLabel.CENTER);
         errorLabel.setName("ERROR_LABEL");
@@ -1025,7 +1022,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       }
       return result;
     } catch (Exception ex) {
-      LOGGER.error("Can't export ASCII image", ex);
+      logger.error("Can't export ASCII image", ex);
       return null;
     }
   }
@@ -1153,7 +1150,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
         text = clipboard.getData(DataFlavor.stringFlavor).toString();
       }
     } catch (Exception ex) {
-      LOGGER.warn("Can't get data from clipboard : " + ex.getMessage()); //NOI18N
+      logger.warn("Can't get data from clipboard : " + ex.getMessage()); //NOI18N
     }
     if (text != null) {
       this.editor.replaceSelection(text);

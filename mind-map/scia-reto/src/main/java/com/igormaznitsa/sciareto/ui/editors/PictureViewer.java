@@ -18,8 +18,6 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
@@ -78,7 +76,6 @@ public final class PictureViewer extends AbstractEditor {
       return "Image file (*.png,*.jpg,*.gif)";
     }
   };
-  private static final Logger LOGGER = LoggerFactory.getLogger(PictureViewer.class);
   private final TabTitle title;
   private final JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
   private final JScrollPane scrollPane = new EditorScrollPanel();
@@ -170,7 +167,7 @@ public final class PictureViewer extends AbstractEditor {
       try {
         loaded = ImageIO.read(file);
       } catch (Exception ex) {
-        LOGGER.error("Can't load image", ex); //NOI18N
+        logger.error("Can't load image", ex); //NOI18N
         loaded = null;
       }
     }
@@ -203,7 +200,7 @@ public final class PictureViewer extends AbstractEditor {
         }
       } else {
         try {
-          LOGGER.warn("unsupported image format, will be saved as png : " + ext); //NOI18N
+          logger.warn("unsupported image format, will be saved as png : " + ext); //NOI18N
           ImageIO.write(this.image, "png", docFile); //NOI18N
           deleteBackup();
           result = true;

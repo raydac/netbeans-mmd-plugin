@@ -18,8 +18,6 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
@@ -74,8 +72,6 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
 
 public final class SourceTextEditor extends AbstractEditor {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SourceTextEditor.class);
 
   private final ScalableRsyntaxTextArea editor;
   private final TabTitle title;
@@ -303,7 +299,7 @@ public final class SourceTextEditor extends AbstractEditor {
         try {
           UiUtils.browseURI(e.getURL().toURI(), false);
         } catch (URISyntaxException ex) {
-          LOGGER.error("Can't browse link: " + e.getURL());
+          logger.error("Can't browse link: " + e.getURL());
         }
       }
     });
@@ -434,7 +430,7 @@ public final class SourceTextEditor extends AbstractEditor {
       try {
         this.editor.setCaretPosition(this.editor.getLineStartOffset(line - 1));
       } catch (Exception ex) {
-        LOGGER.warn("Can't focus to line : " + line);
+        logger.warn("Can't focus to line : " + line);
       }
     }
   }
@@ -679,7 +675,7 @@ public final class SourceTextEditor extends AbstractEditor {
         text = clipboard.getData(DataFlavor.stringFlavor).toString();
       }
     } catch (Exception ex) {
-      LOGGER.warn("Can't get data from clipboard : " + ex.getMessage()); //NOI18N
+      logger.warn("Can't get data from clipboard : " + ex.getMessage()); //NOI18N
     }
     if (text != null) {
       this.editor.replaceSelection(text);

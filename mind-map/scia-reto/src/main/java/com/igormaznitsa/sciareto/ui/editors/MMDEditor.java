@@ -43,8 +43,6 @@ import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
@@ -123,8 +121,6 @@ import org.apache.commons.io.FilenameUtils;
 public final class MMDEditor extends AbstractEditor implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(MMDEditor.class);
 
   private final MindMapPanel mindMapPanel;
 
@@ -481,7 +477,7 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
           this.mindMapPanel.setModel(new MindMap(new StringReader(this.currentModelState.get())), true);
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
         } catch (IOException ex) {
-          LOGGER.error("Can't redo mind map", ex); //NOI18N
+          logger.error("Can't redo mind map", ex); //NOI18N
         } finally {
           this.preventAddUndo.set(false);
         }
@@ -500,7 +496,7 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
           this.mindMapPanel.setModel(new MindMap(new StringReader(this.currentModelState.get())), true);
           this.title.setChanged(this.undoStorage.hasUndo() || this.undoStorage.hasRemovedUndoStateForFullBuffer());
         } catch (IOException ex) {
-          LOGGER.error("Can't redo mind map", ex); //NOI18N
+          logger.error("Can't redo mind map", ex); //NOI18N
         } finally {
           this.preventAddUndo.set(false);
         }
@@ -710,7 +706,7 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
           }
           break;
         } catch (final Exception ex) {
-          LOGGER.error("Can't extract file from DnD", ex); //NOI18N
+          logger.error("Can't extract file from DnD", ex); //NOI18N
         }
       }
     }
@@ -743,7 +739,7 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
       dtde.dropComplete(true);
 
     } catch (final Exception ex) {
-      LOGGER.error("Error during DnD processing", ex); //NOI18N
+      logger.error("Error during DnD processing", ex); //NOI18N
       dtde.dropComplete(false);
       return;
     }
@@ -983,7 +979,7 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
           }
           final MMapURI fileUri = MMapURI.makeFromFilePath(PreferencesManager.getInstance().getPreferences().getBoolean("makeRelativePathToProject", true) ? projectFolder : null, dataContainer.getFilePathWithLine().getPath(), props); //NOI18N
           final File theFile = fileUri.asFile(projectFolder);
-          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getFilePathWithLine(), fileUri.asString(false, true))); //NOI18N
+          logger.info(String.format("Path %s converted to uri: %s", dataContainer.getFilePathWithLine(), fileUri.asString(false, true))); //NOI18N
 
           if (theFile.exists()) {
             if (currentFilePath == null) {
