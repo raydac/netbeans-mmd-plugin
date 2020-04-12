@@ -37,8 +37,11 @@ import com.igormaznitsa.sciareto.ui.FindFilesForTextPanel;
 import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.editors.DotScriptEditor;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
+import com.igormaznitsa.sciareto.ui.editors.KsTplTextEditor;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
+import com.igormaznitsa.sciareto.ui.editors.PlantUmlTextEditor;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -298,47 +301,38 @@ public final class ExplorerTree extends JScrollPane {
       final JMenu makeNew = new JMenu("New...");
 
       JMenuItem item = new JMenuItem("Folder");
-      item.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          addChildTo(node, null);
-        }
+      item.addActionListener((@Nonnull final ActionEvent e) -> {
+        addChildTo(node, null);
       });
       makeNew.add(item);
 
       item = new JMenuItem("Mind map");
-      item.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          addChildTo(node, "mmd"); //NOI18N
-        }
+      item.addActionListener((@Nonnull final ActionEvent e) -> {
+        addChildTo(node, "mmd"); //NOI18N
       });
       makeNew.add(item);
 
       item = new JMenuItem("Text");
-      item.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          addChildTo(node, "txt"); //NOI18N
-        }
+      item.addActionListener((@Nonnull final ActionEvent e) -> {
+        addChildTo(node, "txt"); //NOI18N
       });
       makeNew.add(item);
 
       item = new JMenuItem("PlantUML");
-      item.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          addChildTo(node, "puml"); //NOI18N
-        }
+      item.addActionListener((@Nonnull final ActionEvent e) -> {
+        addChildTo(node, "puml"); //NOI18N
       });
       makeNew.add(item);
 
-      item = new JMenuItem("KStream topology");
-      item.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          addChildTo(node, "kstpl"); //NOI18N
-        }
+      item = new JMenuItem("KStreams topology");
+      item.addActionListener((@Nonnull final ActionEvent e) -> {
+        addChildTo(node, "kstpl"); //NOI18N
+      });
+      makeNew.add(item);
+
+      item = new JMenuItem("DOT script");
+      item.addActionListener((@Nonnull final ActionEvent e) -> {
+        addChildTo(node, "gv"); //NOI18N
       });
       makeNew.add(item);
 
@@ -679,10 +673,8 @@ public final class ExplorerTree extends JScrollPane {
             }
             break;
             case "puml": { //NOI18N
-              final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"), "\n");
-              final String text = "@startuml " + nextLine + nextLine + "@enduml";
               try {
-                FileUtils.write(file, text, "UTF-8"); //NOI18N
+                FileUtils.write(file, PlantUmlTextEditor.NEW_TEMPLATE, "UTF-8"); //NOI18N
                 ok = true;
               } catch (IOException ex) {
                 LOGGER.error("Can't create PUML file", ex); //NOI18N
@@ -691,10 +683,8 @@ public final class ExplorerTree extends JScrollPane {
             }
             break;
             case "kstpl": { //NOI18N
-              final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"), "\n");
-              final String text = "Topologies:\n  Sub-topology: 0\n" + nextLine;
               try {
-                FileUtils.write(file, text, "UTF-8"); //NOI18N
+                FileUtils.write(file, KsTplTextEditor.NEW_TEMPLATE, "UTF-8"); //NOI18N
                 ok = true;
               } catch (IOException ex) {
                 LOGGER.error("Can't create KSTPL file", ex); //NOI18N
@@ -705,6 +695,16 @@ public final class ExplorerTree extends JScrollPane {
             case "txt": { //NOI18N
               try {
                 FileUtils.write(file, "", "UTF-8"); //NOI18N
+                ok = true;
+              } catch (IOException ex) {
+                LOGGER.error("Can't create TXT file", ex); //NOI18N
+                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create txt file '" + fileName + "'!");
+              }
+            }
+            break;
+            case "gv": { //NOI18N
+              try {
+                FileUtils.write(file, DotScriptEditor.NEW_TEMPLATE, "UTF-8"); //NOI18N
                 ok = true;
               } catch (IOException ex) {
                 LOGGER.error("Can't create TXT file", ex); //NOI18N

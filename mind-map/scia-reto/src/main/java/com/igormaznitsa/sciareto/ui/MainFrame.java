@@ -38,6 +38,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
 import com.igormaznitsa.sciareto.ui.editors.AbstractPlUmlEditor;
+import com.igormaznitsa.sciareto.ui.editors.DotScriptEditor;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.editors.KsTplTextEditor;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
@@ -671,6 +672,16 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             result = true;
           } catch (IOException ex) {
             LOGGER.error("Can't load file as KStream topology text", ex); //NOI18N
+          } finally {
+            processTabChange();
+          }
+        } else if (DotScriptEditor.SUPPORTED_EXTENSIONS.contains(ext)) {
+          try {
+            final DotScriptEditor panel = new DotScriptEditor(this, file);
+            this.tabPane.createTab(panel);
+            result = true;
+          } catch (IOException ex) {
+            LOGGER.error("Can't load file as DOT script text", ex); //NOI18N
           } finally {
             processTabChange();
           }
@@ -1769,10 +1780,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     final Filter filerMindMap = new Filter("mmd", "Mind Map file (*.mmd)");
     final Filter filerText = new Filter("txt", "Text file (*.txt)");
     final Filter filerPuml = new Filter("puml", "PantUML file (*.puml)");
+    final Filter filerKstpl = new Filter("kstpl", "KStreams topology (*.kstpl)");
+    final Filter filerDot = new Filter("gv", "DOT script (*.gv)");
 
     fileChooser.addChoosableFileFilter(filerMindMap);
     fileChooser.addChoosableFileFilter(filerText);
     fileChooser.addChoosableFileFilter(filerPuml);
+    fileChooser.addChoosableFileFilter(filerKstpl);
+    fileChooser.addChoosableFileFilter(filerDot);
 
     fileChooser.setFileFilter(filerMindMap);
 
@@ -1800,8 +1815,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           throw new Error("Unexpected error", ex);
         }
       } else if (choosenFilter == filerPuml) {
-        final String nextLine = GetUtils.ensureNonNull(System.getProperty("line.separator"), "\n");
-        text = "@startuml " + nextLine + nextLine + "@enduml";
+        text = PlantUmlTextEditor.NEW_TEMPLATE;
+      } else if (choosenFilter == filerKstpl) {
+        text = KsTplTextEditor.NEW_TEMPLATE;
+      } else if (choosenFilter == filerDot) {
+        text = DotScriptEditor.NEW_TEMPLATE;
       } else {
         text = "";
       }

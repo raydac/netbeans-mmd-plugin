@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Igor Maznitsa.
+ * Copyright (C) 2020 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,6 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.ui.UiUtils;
-import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,18 +27,15 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 
-public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
-
-  public static final Set<String> SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList("pu", "puml", "plantuml")));
-  private static final String MIME = "text/plantuml";
-  public static final String NEW_TEMPLATE = "@startuml\n"
-          + "Alice->Alice: This is a signal to self.\\nIt also demonstrates\\nmultiline \\ntext\n"
-          + "@enduml";
+public class DotScriptEditor extends AbstractDotEditor {
+  
+  public static final Set<String> SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("gv","dot")));
+  public static final String MIME = "text/vnd.graphviz";
+  public static final String NEW_TEMPLATE = "digraph graphname {\na -> b -> c;\nb -> d;\n}";
 
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
@@ -55,42 +50,41 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
     @Override
     @Nonnull
     public String getDescription() {
-      return "PlantUML files (*.puml, *.pu, *.plantuml)";
+      return "DOT script files (*.gv,*.dot)";
     }
   };
 
-  @Override
-  protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel, @Nonnull final GridBagConstraints constraints) {
-    menuPanel.add(makeLinkLabel("PlantUML", () -> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), constraints);
-    menuPanel.add(makeLinkLabel("AsciiMath", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), constraints);
-//    this.menu.add(makeLinkLabel("LatexMath", "https://en.wikibooks.org/wiki/LaTeX/Mathematics", "Open LatexMath manual", ICON_INFO), gbdata);
+  public DotScriptEditor(@Nonnull final Context context, @Nonnull final File file) throws IOException {
+    super(context, file);
   }
 
   @Override
-  protected void doPutMapping(@Nonnull final AbstractTokenMakerFactory f) {
-    f.putMapping(MIME, "com.igormaznitsa.sciareto.ui.editors.PlantUmlTokenMaker");
+  protected boolean isPageAllowed() {
+    return false;
   }
 
   @Override
-  @Nonnull
+  protected int countNewPages(String text) {
+    return 1;
+  }
+
+  @Override
   protected String getSyntaxEditingStyle() {
     return MIME;
   }
 
-  public PlantUmlTextEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
-    super(context, file);
+  @Override
+  protected void doPutMapping(@Nonnull final AbstractTokenMakerFactory f) {
   }
 
-  @Nonnull
   @Override
   public String getDefaultExtension() {
-    return "puml";
+    return "gv";
   }
-
+  
   @Override
-  @Nonnull
   public FileFilter getFileFilter() {
     return SRC_FILE_FILTER;
   }
-
+  
 }

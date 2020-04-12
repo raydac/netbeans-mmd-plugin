@@ -270,23 +270,19 @@ public final class SourceTextEditor extends AbstractTextEditor {
     return this.editor.getText();
   }
 
-  public SourceTextEditor(@Nonnull final Context context, @Nullable File file, final int line, final boolean noSyntax) throws IOException {
+  public SourceTextEditor(@Nonnull final Context context, @Nonnull File file, final int line, final boolean noSyntax) throws IOException {
     super();
     this.editor = new ScalableRsyntaxTextArea();
     this.editor.setPopupMenu(null);
 
     final String syntaxType;
 
-    if (file == null) {
-      syntaxType = null;
-    } else {
-      final String lowerCaseName = file.getName().toLowerCase(Locale.ENGLISH);
-      String found = MAP_EXTENSION2TYPE.get(FilenameUtils.getExtension(lowerCaseName));
-      if (found == null) {
-        found = MAP_EXTENSION2TYPE.get("*" + lowerCaseName);
-      }
-      syntaxType = found;
+    final String lowerCaseName = file.getName().toLowerCase(Locale.ENGLISH);
+    String found = MAP_EXTENSION2TYPE.get(FilenameUtils.getExtension(lowerCaseName));
+    if (found == null) {
+      found = MAP_EXTENSION2TYPE.get("*" + lowerCaseName);
     }
+    syntaxType = found;
 
     this.editor.setSyntaxEditingStyle(noSyntax || syntaxType == null ? SyntaxConstants.SYNTAX_STYLE_NONE : syntaxType);
     this.editor.setAntiAliasingEnabled(true);

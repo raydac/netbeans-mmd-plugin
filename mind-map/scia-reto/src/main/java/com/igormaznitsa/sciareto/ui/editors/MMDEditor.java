@@ -161,7 +161,7 @@ public final class MMDEditor extends AbstractTextEditor implements PluginContext
     return MMD_FILE_FILTER;
   }
 
-  public MMDEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
+  public MMDEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
     super();
     this.context = context;
     this.title = new TabTitle(context, this, file);
@@ -191,7 +191,7 @@ public final class MMDEditor extends AbstractTextEditor implements PluginContext
     this.mindMapPanel.setDropTarget(new DropTarget(this.mindMapPanel, this));
 
     final MindMap map;
-    if (file == null || file.length() == 0L) {
+    if (file.length() == 0L) {
       map = new MindMap(true);
     } else {
       map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N

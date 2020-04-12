@@ -18,8 +18,6 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
-
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
@@ -67,9 +65,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -105,6 +106,7 @@ import net.sourceforge.plantuml.core.DiagramDescription;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import net.sourceforge.plantuml.error.PSystemError;
 import org.apache.commons.io.FileUtils;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -152,7 +154,16 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   private final DirectProcessor<Boolean> eventProcessor = DirectProcessor.create();
   private final Disposable eventChain;
 
-  public AbstractPlUmlEditor(@Nonnull final Context context, @Nullable File file) throws IOException {
+  public enum ExportType {
+    SVG,
+    PNG,
+    LATEX,
+    ASC;
+  }
+
+  private static final Set<ExportType> DEFAULT_EXPORT_TYPES = Collections.unmodifiableSet(EnumSet.<ExportType>allOf(ExportType.class));
+
+  public AbstractPlUmlEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
     super();
     initPlantUml();
 
@@ -453,17 +464,17 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
     this.hideTextPanel();
 
-    this.eventChain = eventProcessor.publishOn(MainFrame.REACTOR_SCHEDULER)
+    this.eventChain = eventProcessor
+            .publishOn(MainFrame.REACTOR_SCHEDULER)
             .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
             .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
-            .publishOn(UiUtils.SWING_SCHEDULER)
-            .subscribe(x -> {
+            .subscribe(x -> SwingUtilities.invokeLater(() -> {
               final String txt = editor.getText();
               final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
               if ((lastRendered == null || !txt.equals(lastRendered.editorText)) && isSyntaxCorrect(txt)) {
                 startRenderScript();
               }
-            });
+            }));
 
   }
 
@@ -493,15 +504,15 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   protected boolean isCopyAsAscIIImageInClipboardAllowed() {
-    return true;
+    return this.getAllowedExportTypes().contains(ExportType.ASC);
   }
 
   protected boolean isCopyImageToClipboardAllowed() {
-    return true;
+    return this.getAllowedExportTypes().contains(ExportType.PNG);
   }
 
   protected boolean isExportImageAsFileAllowed() {
-    return true;
+    return this.getAllowedExportTypes().contains(ExportType.ASC);
   }
 
   @Nonnull
@@ -615,6 +626,11 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     OptionFlags.getInstance().setDotExecutable(PrefUtils.getPlantUmlDotPath());
   }
 
+  @Nonnull
+  protected Set<ExportType> getAllowedExportTypes() {
+    return DEFAULT_EXPORT_TYPES;
+  }
+
   private void exportAsFile() {
     final JFileChooser fileChooser = new JFileChooser(lastExportedFile == null ? this.getTabTitle().getAssociatedFile().getParentFile() : lastExportedFile);
     fileChooser.setAcceptAllFileFilterUsed(false);
@@ -675,10 +691,20 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     fileChooser.setDialogTitle("Export PlantUML image as File");
     fileChooser.setMultiSelectionEnabled(false);
 
-    fileChooser.addChoosableFileFilter(fileFiterPNG);
-    fileChooser.addChoosableFileFilter(fileFiterSVG);
-    fileChooser.addChoosableFileFilter(fileFiterLTX);
-    fileChooser.addChoosableFileFilter(fileFiterASC);
+    final Set<ExportType> allowedExportTypes = this.getAllowedExportTypes();
+
+    if (allowedExportTypes.contains(ExportType.PNG)) {
+      fileChooser.addChoosableFileFilter(fileFiterPNG);
+    }
+    if (allowedExportTypes.contains(ExportType.SVG)) {
+      fileChooser.addChoosableFileFilter(fileFiterSVG);
+    }
+    if (allowedExportTypes.contains(ExportType.LATEX)) {
+      fileChooser.addChoosableFileFilter(fileFiterLTX);
+    }
+    if (allowedExportTypes.contains(ExportType.ASC)) {
+      fileChooser.addChoosableFileFilter(fileFiterASC);
+    }
 
     if (fileChooser.showSaveDialog(this.mainPanel) == JFileChooser.APPROVE_OPTION) {
       lastExportedFile = fileChooser.getSelectedFile();
@@ -907,14 +933,34 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.lastSuccessfulyRenderedText = null;
   }
 
-  protected void startRenderScript() {
+  protected boolean isCustomRendering() {
+    return false;
+  }
+
+  protected void doCustomRendering(final String text, final int pageIndex, final AtomicReference<BufferedImage> renderedImage, final AtomicReference<Exception> error) {
+
+  }
+
+  protected final void startRenderScript() {
     try {
       final String editorText = this.editor.getText();
       final String theText = this.preprocessEditorText(editorText);
 
-      final SourceStringReader reader = new SourceStringReader(theText, "UTF-8");
-      final int totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
-      final int imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
+      final boolean customRendering = this.isCustomRendering();
+
+      final SourceStringReader reader;
+      final int totalPages;
+      final int imageIndex;
+
+      if (customRendering) {
+        reader = null;
+        totalPages = countNewPages(theText);
+        imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
+      } else {
+        reader = new SourceStringReader(theText, "UTF-8");
+        totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
+        imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
+      }
 
       if (imageIndex != this.pageNumberToRender) {
         this.pageNumberToRender = imageIndex;
@@ -958,12 +1004,16 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             final AtomicReference<Exception> detectedError = new AtomicReference<>();
             final AtomicReference<BufferedImage> generatedImage = new AtomicReference<>();
 
-            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
-            try {
-              final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
-              generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
-            } catch (Exception ex) {
-              detectedError.set(ex);
+            if (customRendering) {
+              this.doCustomRendering(theText, imageIndex - 1, generatedImage, detectedError);
+            } else {
+              final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
+              try {
+                final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
+                generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
+              } catch (Exception ex) {
+                detectedError.set(ex);
+              }
             }
 
             SwingUtilities.invokeLater(() -> {
@@ -993,7 +1043,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
         });
       }
     } catch (final Exception ex) {
-      logger.error("Error of PlantUML script:" + ex);
+      logger.error("Error of script rendering:" + ex);
       SwingUtilities.invokeLater(() -> {
         final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + escapeHtml(ex.getMessage()) + "</h1></html>", JLabel.CENTER);
         errorLabel.setName("ERROR_LABEL");
