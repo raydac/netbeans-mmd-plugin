@@ -19,6 +19,7 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.meta.annotation.UiThread;
+import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
@@ -469,12 +470,12 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
             .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
             .subscribe(x -> SwingUtilities.invokeLater(() -> {
-              final String txt = editor.getText();
-              final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
-              if ((lastRendered == null || !txt.equals(lastRendered.editorText)) && isSyntaxCorrect(txt)) {
-                startRenderScript();
-              }
-            }));
+      final String txt = editor.getText();
+      final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
+      if ((lastRendered == null || !txt.equals(lastRendered.editorText)) && isSyntaxCorrect(txt)) {
+        startRenderScript();
+      }
+    }));
 
   }
 
@@ -631,6 +632,15 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     return DEFAULT_EXPORT_TYPES;
   }
 
+  @Nullable
+  protected byte[] makeCustomExport(
+          @Nonnull final ExportType exportType,
+          final int pageIndex, 
+          @Nonnull final String text
+  ) throws Exception {
+    return null;
+  }
+
   private void exportAsFile() {
     final JFileChooser fileChooser = new JFileChooser(lastExportedFile == null ? this.getTabTitle().getAssociatedFile().getParentFile() : lastExportedFile);
     fileChooser.setAcceptAllFileFilterUsed(false);
@@ -711,44 +721,63 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
       final FileFilter fileFilter = fileChooser.getFileFilter();
 
-      final SourceStringReader reader = new SourceStringReader(this.editor.getText());
+      final String textToRender = this.editor.getText();
 
       final FileFormatOption option;
 
       final String ext;
 
+      final ExportType exportType;
       if (fileFilter == fileFiterSVG) {
+        exportType = ExportType.SVG;
         option = new FileFormatOption(FileFormat.SVG);
         ext = ".svg";
       } else if (fileFilter == fileFiterPNG) {
+        exportType = ExportType.PNG;
         option = new FileFormatOption(FileFormat.PNG);
         ext = ".png";
       } else if (fileFilter == fileFiterLTX) {
+        exportType = ExportType.LATEX;
         option = new FileFormatOption(FileFormat.LATEX);
         ext = ".tex";
       } else if (fileFilter == fileFiterASC) {
+        exportType = ExportType.ASC;
         option = new FileFormatOption(FileFormat.ATXT);
         ext = ".txt";
       } else {
         throw new Error("Unexpected situation");
       }
 
-      final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
       if (!lastExportedFile.getName().contains(".") || !lastExportedFile.getName().endsWith(ext)) {
         lastExportedFile = new File(lastExportedFile.getParent(), lastExportedFile.getName() + ext);
       }
 
-      if (this.pageNumberToRender > 0) {
+      final int pageIndex = this.pageNumberToRender - 1;
+      if (pageIndex >= 0) {
+        final byte[] bytearray;
         try {
-          reader.outputImage(buffer, this.pageNumberToRender - 1, option);
-          final byte[] bytearray = buffer.toByteArray();
+          if (this.isCustomRendering()) {
+            bytearray = Assertions.assertNotNull("Unexpected NULL result", this.makeCustomExport(exportType, pageIndex, textToRender));
+          } else {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
+            final SourceStringReader reader = new SourceStringReader(textToRender);
+            reader.outputImage(buffer, pageIndex, option);
+            bytearray = buffer.toByteArray();
+          }
+        } catch (Exception ex) {
+          logger.error("Can't render script as image", ex);
+          JOptionPane.showMessageDialog(this.mainPanel, "Can't render script! Check syntax!", "Error", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+
+        try {
           if (bytearray.length < 10000 && new String(bytearray, StandardCharsets.UTF_8).contains("java.lang.UnsupportedOperationException:")) {
             throw new IOException("Detected exception footstep in generated file!");
           }
-          FileUtils.writeByteArrayToFile(lastExportedFile, buffer.toByteArray());
-          logger.info("Exported plant uml image as file : " + lastExportedFile);
+          FileUtils.writeByteArrayToFile(lastExportedFile, bytearray);
+          logger.info("Exported script as file : " + lastExportedFile);
         } catch (IOException ex) {
-          logger.error("Can't export plant uml image", ex);
+          logger.error("Can't export script as image", ex);
           JOptionPane.showMessageDialog(this.mainPanel, "Can't export! May be the format is not supported by the diagram type!", "Error", JOptionPane.ERROR_MESSAGE);
         }
       } else {
@@ -938,10 +967,10 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   protected void doCustomRendering(
-          @Nonnull final String text, 
-          final int pageIndex, 
+          @Nonnull final String text,
+          final int pageIndex,
           @Nonnull
-          final AtomicReference<BufferedImage> renderedImage, 
+          final AtomicReference<BufferedImage> renderedImage,
           @Nonnull
           final AtomicReference<Exception> error
   ) {

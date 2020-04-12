@@ -18,6 +18,7 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
@@ -31,6 +32,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.sourceforge.plantuml.cucadiagram.dot.ExeState;
 import net.sourceforge.plantuml.cucadiagram.dot.Graphviz;
@@ -39,7 +41,11 @@ import net.sourceforge.plantuml.cucadiagram.dot.ProcessState;
 
 public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
 
-  private static final Set<ExportType> DEFAULT_SUPPORTED_EXPORT_TYPES = Collections.unmodifiableSet(EnumSet.of(ExportType.SVG, ExportType.PNG, ExportType.LATEX));
+  private static final Set<ExportType> DEFAULT_SUPPORTED_EXPORT_TYPES = Collections.unmodifiableSet(
+          EnumSet.of(
+                  ExportType.SVG,
+                  ExportType.PNG
+          ));
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDotEditor.class);
 
@@ -62,8 +68,55 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
   }
 
   @Override
+  public boolean isExportImageAsFileAllowed() {
+    return true;
+  }
+
+  @Override
   public boolean isSyntaxCorrect(@Nonnull final String text) {
     return true;
+  }
+
+  @Override
+  @Nullable
+  protected byte[] makeCustomExport(
+          @Nonnull final ExportType exportType,
+          final int pageIndex,
+          @Nonnull final String text
+  ) throws Exception {
+    final String format;
+    switch (exportType) {
+      case SVG:
+        format = "svg";
+        break;
+      case PNG:
+        format = "png";
+        break;
+      default:
+        throw new IllegalArgumentException("Unsupported export type: " + exportType);
+    }
+    return this.executeDot(text, format);
+  }
+
+  @Nonnull
+  protected byte[] executeDot(@Nonnull final String script, @Nonnull final String type) throws Exception {
+    final Graphviz wizard = GraphvizUtils.create(null, script, type);
+
+    final ExeState state = wizard.getExeState();
+    if (state == ExeState.OK) {
+      final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+      final ProcessState processState = wizard.createFile3(bos);
+      final byte[] formedContent = bos.toByteArray();
+
+      if (formedContent.length == 0 || processState.differs(ProcessState.TERMINATED_OK())) {
+        throw new IllegalStateException("Can't render DOT script, buffer size = " + formedContent.length + ", state = " + processState);
+      } else {
+        return formedContent;
+      }
+    } else {
+      throw new IllegalStateException("Can't render DOT script: " + state.getTextMessage());
+    }
   }
 
   @Override
@@ -77,31 +130,13 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
       error.set(new IllegalArgumentException("There is no any DOT script"));
       return;
     }
-    
-    final Graphviz wizard = GraphvizUtils.create(null, text, "png");
 
-    final ExeState state = wizard.getExeState();
-    if (state == ExeState.OK) {
-      final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-      final ProcessState processState = wizard.createFile3(bos);
-      final byte[] formedContent = bos.toByteArray();
-
-      if (formedContent.length == 0 || processState.differs(ProcessState.TERMINATED_OK())) {
-        LOGGER.warn("Can't render DOT script");
-        error.set(new IllegalStateException("Can't render DOT script"));
-      } else {
-        LOGGER.info("GraphViz formed " + formedContent.length + " bytes");
-        try {
-          renderedImage.set(ImageIO.read(new ByteArrayInputStream(formedContent)));
-        } catch (final Exception ex) {
-          LOGGER.error("Can't read image from GraphViz content", ex);
-          error.set(new IllegalArgumentException("Can't parse result of GraphVoz"));
-        }
-      }
-    } else {
-      LOGGER.error("Problems with GraphViz installation, may be not installed (state="+state+']');
-      error.set(new IllegalStateException("Can't render DOT script: "+state.getTextMessage()));
+    try {
+      final byte[] image = this.executeDot(text, "png");
+      renderedImage.set(ImageIO.read(new ByteArrayInputStream(image)));
+    } catch (Exception ex) {
+      LOGGER.error("Can't render DOT script as PNG", ex);
+      error.set(ex);
     }
   }
 
