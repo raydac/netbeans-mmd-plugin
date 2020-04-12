@@ -937,7 +937,14 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     return false;
   }
 
-  protected void doCustomRendering(final String text, final int pageIndex, final AtomicReference<BufferedImage> renderedImage, final AtomicReference<Exception> error) {
+  protected void doCustomRendering(
+          @Nonnull final String text, 
+          final int pageIndex, 
+          @Nonnull
+          final AtomicReference<BufferedImage> renderedImage, 
+          @Nonnull
+          final AtomicReference<Exception> error
+  ) {
 
   }
 

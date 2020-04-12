@@ -48,6 +48,7 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
   }
 
   @Override
+  @Nonnull
   protected Set<ExportType> getAllowedExportTypes() {
     return DEFAULT_SUPPORTED_EXPORT_TYPES;
   }

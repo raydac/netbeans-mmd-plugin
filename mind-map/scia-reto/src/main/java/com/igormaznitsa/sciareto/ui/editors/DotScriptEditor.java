@@ -64,11 +64,12 @@ public class DotScriptEditor extends AbstractDotEditor {
   }
 
   @Override
-  protected int countNewPages(String text) {
+  protected int countNewPages(@Nonnull final String text) {
     return 1;
   }
 
   @Override
+  @Nonnull
   protected String getSyntaxEditingStyle() {
     return MIME;
   }
@@ -78,11 +79,13 @@ public class DotScriptEditor extends AbstractDotEditor {
   }
 
   @Override
+  @Nonnull
   public String getDefaultExtension() {
     return "gv";
   }
   
   @Override
+  @Nonnull
   public FileFilter getFileFilter() {
     return SRC_FILE_FILTER;
   }

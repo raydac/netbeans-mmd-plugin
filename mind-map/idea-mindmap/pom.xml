@@ -122,7 +122,7 @@
                 <argument>-Pcommonslang_version=${commons.lang.version}</argument>
                 <argument>-Piharder_version=${iharder.version}</argument>
                 <argument>-Pmm_plugin_version=${project.version}</argument>
-                <argument>-Pmm_model_version=${mindmap.model.version}sadasdsa</argument>
+                <argument>-Pmm_model_version=${mindmap.model.version}</argument>
                 <argument>-Pmm_ide_common_version=${project.version}</argument>
                 <argument>-Pmm_panel_version=${project.version}</argument>
               </arguments>
