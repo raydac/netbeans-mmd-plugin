@@ -62,7 +62,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   }
 
   @Override
-  public boolean saveDocumentAs() throws IOException {
+  public final boolean saveDocumentAs() throws IOException {
     final DialogProvider dialogProvider = DialogProviderManager.getInstance().getDialogProvider();
     final File file = this.getTabTitle().getAssociatedFile();
     File fileToSave = dialogProvider.msgSaveFileDialog(Main.getApplicationFrame(), "save-as", "Save as", file, true, new FileFilter[]{getFileFilter()}, "Save");
@@ -77,12 +77,30 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
         }
       }
       this.getTabTitle().setAssociatedFile(fileToSave);
+      this.onSelectedSaveDocumentAs(fileToSave);
       this.getTabTitle().setChanged(true);
       return this.saveDocument();
     }
     return false;
   }
 
+  protected boolean isOverwriteAllowed(@Nullable final TextFile textFile) throws IOException {
+    boolean result = true;
+    if (textFile != null
+            && !textFile.hasSameContent(textFile.getFile())
+            && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
+                    Main.getApplicationFrame(),
+                    "Detected file change",
+                    String.format("File '%s' has been changed externally, overwrite?", textFile.getFile().getName()))) {
+      result = false;
+    }
+    return result;
+  }
+  
+  protected void onSelectedSaveDocumentAs(@Nonnull final File selectedFile) {
+    
+  }
+  
   protected boolean isAutoBackupAllowed() {
     final PreferencesManager manager = PreferencesManager.getInstance();
     return manager.getFlag(manager.getPreferences(), SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, false);
@@ -153,7 +171,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   }
 
   @Nullable
-  protected String restoreFromBackup(@Nonnull final File file) {
+  protected TextFile restoreFromBackup(@Nonnull final File file) {
     if (!SwingUtilities.isEventDispatchThread()) {
       throw new Error("Must be called only from Swing UI thread");
     }
@@ -168,7 +186,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(this.getContainerToShow(), "Restore from backup?",
             String.format("Detected backup '%s', restore content?", backupFile.getName()))) {
       try {
-        final String result = new TextFileBackuper.Restored(backupFile).asText();
+        final TextFile result = new TextFileBackuper.Restored(backupFile).asTextFile();
         DialogProviderManager.getInstance().getDialogProvider().msgWarn(this.getContainerToShow(), "Restored from backup file: " + backupFile.getName());
         return result;
       } catch (IOException ex) {

@@ -16,11 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-
 package com.igormaznitsa.sciareto.ui.editors;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
-
 
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
@@ -118,7 +116,7 @@ import org.fife.ui.rtextarea.RUndoManager;
 import reactor.core.Disposable;
 import reactor.core.publisher.DirectProcessor;
 
-public abstract class AbstractPlUmlEditor extends AbstractEditor {
+public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   protected static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
   protected static final Icon ICON_WARNING = new ImageIcon(UiUtils.loadIcon("warning16.png"));
@@ -149,7 +147,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
   private int pageNumberToRender = 0;
 
   private final JPanel editorPanel;
-  
+
   private final JPanel menu;
 
   private final DirectProcessor<Boolean> eventProcessor = DirectProcessor.create();
@@ -282,7 +280,6 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
       buttonClipboardText = null;
     }
 
-
     if (isPageAllowed()) {
       this.buttonPrevPage = new JButton(loadMenuIcon("resultset_previous"));
       this.buttonPrevPage.setToolTipText("Previous page");
@@ -397,7 +394,7 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
 
     this.editorPanel = new JPanel(new BorderLayout());
     this.editorPanel.add(scrollPane, BorderLayout.CENTER);
-    
+
     this.mainPanel.add(this.editorPanel);
     this.mainPanel.add(this.renderedPanel);
 
@@ -458,16 +455,16 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
     this.hideTextPanel();
 
     this.eventChain = eventProcessor.publishOn(MainFrame.REACTOR_SCHEDULER)
-        .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
-        .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
-        .publishOn(UiUtils.SWING_SCHEDULER)
-        .subscribe(x -> {
-          final String txt = editor.getText();
-          final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
-          if ((lastRendered == null || !txt.equals(lastRendered.editorText)) && isSyntaxCorrect(txt)) {
-            startRenderScript();
-          }
-        });
+            .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
+            .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
+            .publishOn(UiUtils.SWING_SCHEDULER)
+            .subscribe(x -> {
+              final String txt = editor.getText();
+              final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
+              if ((lastRendered == null || !txt.equals(lastRendered.editorText)) && isSyntaxCorrect(txt)) {
+                startRenderScript();
+              }
+            });
 
   }
 
@@ -836,20 +833,12 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
   }
 
   @Override
-  public void loadContent(@Nullable final File file) throws IOException {
+  protected void onLoadContent(@Nonnull final TextFile textFile) throws IOException {
     this.ignoreChange = true;
     try {
-      if (file != null) {
-        final String restoredContent = this.restoreFromBackup(file);
-        if (restoredContent == null) {
-          this.editor.setText(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
-        } else {
-          this.editor.setText(restoredContent);
-          this.getTabTitle().setChanged(true);
-        }
-        this.editor.setCaretPosition(0);
-        startRenderScript();
-      }
+      this.editor.setText(textFile.readContentAsUtf8());
+      this.editor.setCaretPosition(0);
+      startRenderScript();
     } finally {
       this.ignoreChange = false;
     }
@@ -865,20 +854,21 @@ public abstract class AbstractPlUmlEditor extends AbstractEditor {
   public boolean saveDocument() throws IOException {
     boolean result = false;
     if (this.title.isChanged()) {
-      File file = this.title.getAssociatedFile();
-      if (file == null) {
-        file = DialogProviderManager.getInstance()
-            .getDialogProvider()
-            .msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, new FileFilter[] {getFileFilter()}, "Save");
+      final TextFile textFile = this.currentTextFile.get();
+      if (this.isOverwriteAllowed(textFile)) {
+        File file = this.title.getAssociatedFile();
         if (file == null) {
-          return result;
+          return this.saveDocumentAs();
         }
+
+        final byte[] content = this.editor.getText().getBytes(StandardCharsets.UTF_8);
+        FileUtils.writeByteArrayToFile(file, content);
+        this.currentTextFile.set(new TextFile(file, false, content));
+        this.title.setChanged(false);
+        this.deleteBackup();
+        result = true;
+        startRenderScript();
       }
-      SystemUtils.saveUTFText(file, this.editor.getText());
-      this.title.setChanged(false);
-      this.deleteBackup();
-      result = true;
-      startRenderScript();
     } else {
       result = true;
     }

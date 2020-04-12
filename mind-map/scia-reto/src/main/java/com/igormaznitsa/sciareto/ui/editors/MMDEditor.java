@@ -16,7 +16,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-
 package com.igormaznitsa.sciareto.ui.editors;
 
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
@@ -27,7 +26,6 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_T
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
-
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
@@ -99,6 +97,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -118,7 +117,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-public final class MMDEditor extends AbstractEditor implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener {
+public final class MMDEditor extends AbstractTextEditor implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046208L;
 
@@ -245,9 +244,9 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
     if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-        || e.getKeyCode() == KeyEvent.VK_LEFT
-        || e.getKeyCode() == KeyEvent.VK_RIGHT
-        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+            || e.getKeyCode() == KeyEvent.VK_LEFT
+            || e.getKeyCode() == KeyEvent.VK_RIGHT
+            || e.getKeyCode() == KeyEvent.VK_DOWN)) {
       e.consume();
     }
   }
@@ -303,22 +302,8 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
   }
 
   @Override
-  public void loadContent(@Nullable File file) throws IOException {
-    final MindMap map;
-    if (file == null) {
-      map = new MindMap(true);
-    } else {
-      final String restored = this.restoreFromBackup(file);
-      if (restored == null) {
-        if (file.length() == 0L) {
-          map = new MindMap(true);
-        } else {
-          map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
-        }
-      } else {
-        map = new MindMap(new StringReader(restored)); //NOI18N
-      }
-    }
+  protected void onLoadContent(@Nonnull final TextFile textFile) throws IOException {
+    final MindMap map = new MindMap(new StringReader(textFile.readContentAsUtf8()));
     this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
 
     this.undoStorage.clearRedo();
@@ -333,20 +318,22 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
   public boolean saveDocument() throws IOException {
     boolean result = false;
     if (this.title.isChanged()) {
-      File file = this.title.getAssociatedFile();
-      if (file == null) {
-        file = DialogProviderManager.getInstance()
-            .getDialogProvider()
-            .msgSaveFileDialog(Main.getApplicationFrame(), "mmd-editor-document", "Save Mind Map", null, true, new FileFilter[] {getFileFilter()}, "Save");
+      final TextFile textFile = this.currentTextFile.get();
+
+      if (this.isOverwriteAllowed(textFile)) {
+        File file = this.title.getAssociatedFile();
         if (file == null) {
-          return result;
+          return this.saveDocumentAs();
         }
+        
+        final byte [] content = this.mindMapPanel.getModel().write(new StringWriter(16384)).toString().getBytes(StandardCharsets.UTF_8);
+        FileUtils.writeByteArrayToFile(file, content);
+        this.currentTextFile.set(new TextFile(file, false, content)); 
+        this.title.setChanged(false);
+        this.deleteBackup();
+        result = true;
+        this.undoStorage.setFlagThatSomeStateLost();
       }
-      FileUtils.write(file, this.mindMapPanel.getModel().write(new StringWriter(16384)).toString(), "UTF-8", false); //NOI18N
-      this.title.setChanged(false);
-      this.deleteBackup();
-      result = true;
-      this.undoStorage.setFlagThatSomeStateLost();
     } else {
       result = true;
     }
@@ -544,12 +531,12 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
 
   @Override
   public void onScaledByMouse(
-      @Nonnull final MindMapPanel source,
-      @Nonnull final Point mousePoint,
-      final double oldScale,
-      final double newScale,
-      @Nonnull final Dimension oldSize,
-      @Nonnull final Dimension newSize
+          @Nonnull final MindMapPanel source,
+          @Nonnull final Point mousePoint,
+          final double oldScale,
+          final double newScale,
+          @Nonnull final Dimension oldSize,
+          @Nonnull final Dimension newSize
   ) {
     if (Double.compare(oldScale, newScale) != 0) {
       this.scrollPane.setViewportView(source);
@@ -891,7 +878,7 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
       this.mindMapPanel.requestFocus();
     } else if (plugin instanceof ChangeColorPlugin) {
       final Topic[] selectedTopics = this.getSelectedTopics();
-      processColorDialogForTopics(this.mindMapPanel, selectedTopics.length > 0 ? selectedTopics : new Topic[] {topic});
+      processColorDialogForTopics(this.mindMapPanel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{topic});
     } else {
       throw new Error("Unexpected plugin: " + plugin.getClass().getName());
     }
@@ -950,8 +937,8 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
       if (currentFilePath == null) {
         final FileEditPanel.DataContainer prefilled = new FileEditPanel.DataContainer(null, this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
         dataContainer = UiUtils.editFilePath(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
-            this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
-            prefilled);
+                this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class, projectFolder),
+                prefilled);
         if (dataContainer != null) {
           this.mindMapPanel.putSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, dataContainer.isShowWithSystemTool());
         }
@@ -1261,8 +1248,8 @@ public final class MMDEditor extends AbstractEditor implements PluginContext, Mi
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     return this.mindMapPanel.hasSelectedTopics()
-        && (Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR)
-        || Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor));
+            && (Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR)
+            || Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor));
   }
 
   @Override

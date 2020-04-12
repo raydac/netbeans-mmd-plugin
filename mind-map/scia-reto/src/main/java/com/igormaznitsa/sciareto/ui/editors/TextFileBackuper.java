@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -114,6 +115,11 @@ public class TextFileBackuper {
       return this.content;
     }
 
+    @Nonnull
+    public TextFile asTextFile() {
+      return new TextFile(new File("backup"), true, this.content);
+    }
+    
     @Nonnull
     public String asText() {
       return new String(this.content, 0, this.content.length, StandardCharsets.UTF_8);

@@ -18,6 +18,7 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.Main;
@@ -71,7 +72,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
 
-public final class SourceTextEditor extends AbstractEditor {
+public final class SourceTextEditor extends AbstractTextEditor {
 
   private final ScalableRsyntaxTextArea editor;
   private final TabTitle title;
@@ -494,19 +495,12 @@ public final class SourceTextEditor extends AbstractEditor {
   }
 
   @Override
-  public void loadContent(@Nullable final File file) throws IOException {
+  protected void onLoadContent(@Nonnull final TextFile textFile) throws IOException {
     this.ignoreChange = true;
     try {
-      if (file != null) {
-        final String restoredContent = this.restoreFromBackup(file);
-        if (restoredContent == null) {
-          this.editor.setText(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
-        } else {
-          this.editor.setText(restoredContent);
-        }
-        this.originalText = this.editor.getText();
-        this.editor.setCaretPosition(0);
-      }
+      this.editor.setText(textFile.readContentAsUtf8());
+      this.originalText = this.editor.getText();
+      this.editor.setCaretPosition(0);
     } finally {
       this.ignoreChange = false;
     }
@@ -519,23 +513,38 @@ public final class SourceTextEditor extends AbstractEditor {
   }
 
   @Override
+  protected void onSelectedSaveDocumentAs(@Nonnull final File selectedFile) {
+    this.currentTextFile.set(null);
+  }
+
+  @Override
   public boolean saveDocument() throws IOException {
     boolean result = false;
+
+    final TextFile textFile = this.currentTextFile.get();
+    final DialogProvider dialogProvider = DialogProviderManager.getInstance().getDialogProvider();
+
     if (this.title.isChanged()) {
-      File file = this.title.getAssociatedFile();
-      if (file == null) {
-        file = DialogProviderManager.getInstance()
-                .getDialogProvider()
-                .msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, new FileFilter[]{getFileFilter()}, "Save");
+      if (this.isOverwriteAllowed(textFile)) {
+        File file = this.title.getAssociatedFile();
         if (file == null) {
-          return result;
+          file = dialogProvider
+                  .msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, new FileFilter[]{getFileFilter()}, "Save");
+          if (file == null) {
+            return result;
+          }
         }
+
+        final String editorText = this.editor.getText();
+        final byte[] content = editorText.getBytes(StandardCharsets.UTF_8);
+        FileUtils.writeByteArrayToFile(file, content);
+        this.currentTextFile.set(new TextFile(file, false, content));
+
+        this.originalText = editorText;
+        this.title.setChanged(false);
+        this.deleteBackup();
+        result = true;
       }
-      SystemUtils.saveUTFText(file, this.editor.getText());
-      this.originalText = this.editor.getText();
-      this.title.setChanged(false);
-      this.deleteBackup();
-      result = true;
     } else {
       result = true;
     }
