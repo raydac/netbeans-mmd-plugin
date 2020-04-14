@@ -1045,7 +1045,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             final AtomicReference<BufferedImage> generatedImage = new AtomicReference<>();
 
             if (customRendering) {
-              this.doCustomRendering(theText, imageIndex - 1, generatedImage, detectedError);
+              this.doCustomRendering(currentText.editorText, imageIndex - 1, generatedImage, detectedError);
             } else {
               final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
               try {
@@ -1078,6 +1078,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             });
 
           } finally {
+            this.lastSuccessfulyRenderedText = null;
             BigLoaderIconAnimationConroller.getInstance().unregisterLabel(progressLabel);
           }
         });

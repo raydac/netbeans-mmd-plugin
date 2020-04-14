@@ -16,9 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
@@ -42,10 +43,10 @@ import net.sourceforge.plantuml.cucadiagram.dot.ProcessState;
 public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
 
   private static final Set<ExportType> DEFAULT_SUPPORTED_EXPORT_TYPES = Collections.unmodifiableSet(
-          EnumSet.of(
-                  ExportType.SVG,
-                  ExportType.PNG
-          ));
+      EnumSet.of(
+          ExportType.SVG,
+          ExportType.PNG
+      ));
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDotEditor.class);
 
@@ -80,9 +81,9 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
   @Override
   @Nullable
   protected byte[] makeCustomExport(
-          @Nonnull final ExportType exportType,
-          final int pageIndex,
-          @Nonnull final String text
+      @Nonnull final ExportType exportType,
+      final int pageIndex,
+      @Nonnull final String text
   ) throws Exception {
     final String format;
     switch (exportType) {
@@ -99,18 +100,20 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
   }
 
   @Nonnull
-  protected byte[] executeDot(@Nonnull final String script, @Nonnull final String type) throws Exception {
+  protected byte[] executeDot(@Nonnull final String script, @Nonnull final String type) {
     final Graphviz wizard = GraphvizUtils.create(null, script, type);
 
     final ExeState state = wizard.getExeState();
     if (state == ExeState.OK) {
       final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
       final ProcessState processState = wizard.createFile3(bos);
+      IOUtils.closeQuetly(bos);
       final byte[] formedContent = bos.toByteArray();
 
-      if (formedContent.length == 0 || processState.differs(ProcessState.TERMINATED_OK())) {
-        throw new IllegalStateException("Can't render DOT script, buffer size = " + formedContent.length + ", state = " + processState);
+      if (processState.differs(ProcessState.TERMINATED_OK())) {
+        throw new IllegalStateException("Can't render image, status is " + processState);
+      } else if (formedContent.length == 0) {
+        throw new IllegalArgumentException("Can't render, looks like script has syntax error");
       } else {
         return formedContent;
       }
@@ -121,10 +124,10 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
 
   @Override
   protected final void doCustomRendering(
-          @Nonnull final String text,
-          final int pageIndex,
-          @Nonnull final AtomicReference<BufferedImage> renderedImage,
-          @Nonnull final AtomicReference<Exception> error
+      @Nonnull final String text,
+      final int pageIndex,
+      @Nonnull final AtomicReference<BufferedImage> renderedImage,
+      @Nonnull final AtomicReference<Exception> error
   ) {
     if (text.trim().isEmpty()) {
       error.set(new IllegalArgumentException("There is no any DOT script"));
