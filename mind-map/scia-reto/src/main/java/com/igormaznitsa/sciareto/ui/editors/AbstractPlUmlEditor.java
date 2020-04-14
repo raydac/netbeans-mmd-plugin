@@ -18,6 +18,9 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+
+
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
@@ -107,7 +110,6 @@ import net.sourceforge.plantuml.core.DiagramDescription;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import net.sourceforge.plantuml.error.PSystemError;
 import org.apache.commons.io.FileUtils;
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -188,6 +190,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
     if (editorFont != null) {
       scheme.getStyle(Token.RESERVED_WORD).font = editorFont.deriveFont(Font.BOLD);
+      scheme.getStyle(Token.RESERVED_WORD_2).font = editorFont.deriveFont(Font.BOLD | Font.ITALIC);
+      scheme.getStyle(Token.OPERATOR).font = editorFont.deriveFont(Font.BOLD);
       scheme.getStyle(Token.IDENTIFIER).font = editorFont.deriveFont(Font.ITALIC);
     }
 

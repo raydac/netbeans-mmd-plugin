@@ -58,7 +58,7 @@ public final class TextFile {
   }
   
   @Nullable
-  public byte[] getConnent() {
+  public byte[] getContent() {
     return this.contentRef.get();
   }
   

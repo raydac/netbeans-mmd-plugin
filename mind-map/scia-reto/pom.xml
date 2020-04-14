@@ -646,6 +646,7 @@
               <checkNullable>true</checkNullable>
               <ignoreClasses>
                 <ignore>*.KStreamsTopologyTokenMaker</ignore>
+                <ignore>*.DotScriptTokenMaker</ignore>
                 <ignore>*.NoteEditor</ignore>
                 <ignore>*.ColorAttributePanel</ignore>
                 <ignore>*.UriEditPanel</ignore>

@@ -76,6 +76,7 @@ public class DotScriptEditor extends AbstractDotEditor {
 
   @Override
   protected void doPutMapping(@Nonnull final AbstractTokenMakerFactory f) {
+    f.putMapping(MIME, "com.igormaznitsa.sciareto.ui.editors.DotScriptTokenMaker");
   }
 
   @Override
