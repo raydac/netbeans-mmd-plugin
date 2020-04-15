@@ -1,4 +1,5 @@
 __1.4.9 (SNAPSHOT)__
+- SR:  embeeded JDK version updated to 11.0.6+10
 - SR:  added DOT script editor
 - SR:  added check on save for external file change
 - SR:  improved positioning of text search panel

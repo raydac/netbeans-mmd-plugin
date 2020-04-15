@@ -15,6 +15,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.9 (SNAPSHOT)__
+- SR:  embedded JDK version updated to 11.0.7+10
 - SR:  added DOT script editor
 - SR:  added check on save for external file change
 - SR:  improved positioning of text search panel
