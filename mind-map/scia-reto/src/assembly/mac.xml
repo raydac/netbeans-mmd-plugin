@@ -16,7 +16,9 @@
       <outputDirectory>${file.separator}</outputDirectory>
       <excludes>
         <exclude>SciaReto.app${file.separator}Contents${file.separator}MacOS${file.separator}sciareto</exclude>
-        <exclude>SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}sciareto.icns</exclude>
+        <exclude>SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}icon.icns</exclude>
+        <exclude>SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}icon.svg</exclude>
+        <exclude>SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}icon.png</exclude>
       </excludes>
       <includes>
        <include>*/**</include>
@@ -47,7 +49,15 @@
       <fileMode>0755</fileMode>
     </file>
     <file>
-      <source>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}mac${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}sciareto.icns</source>
+      <source>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}mac${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}icon.icns</source>
+      <outputDirectory>${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources</outputDirectory>
+    </file>
+    <file>
+      <source>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}mac${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}icon.png</source>
+      <outputDirectory>${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources</outputDirectory>
+    </file>
+    <file>
+      <source>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}mac${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources${file.separator}icon.svg</source>
       <outputDirectory>${file.separator}SciaReto.app${file.separator}Contents${file.separator}Resources</outputDirectory>
     </file>
     <file>

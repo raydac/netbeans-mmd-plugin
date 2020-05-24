@@ -1,4 +1,5 @@
 target/
+.idea/
 nb-configuration.xml
 nbactions.xml
 nbactions-publish.xml
@@ -39,6 +40,3 @@ buildNumber.properties
 mind-map/idea-mindmap/.classpath
 mind-map/idea-mindmap/.project
 mind-map/idea-mindmap/.settings/org.eclipse.buildship.core.prefs
-/.idea/modules.xml
-/.idea/vcs.xml
-/.idea/workspace.xml
