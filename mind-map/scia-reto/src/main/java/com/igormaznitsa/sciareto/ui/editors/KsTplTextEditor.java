@@ -56,8 +56,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   public static final String NEW_TEMPLATE = "Topology\n"
           + "Sub-topologies:\n"
           + "Sub-topology: 0\n"
-          + "	Source:  KSTREAM-SOURCE-0000000000 (topics: [conversation-meta])\n"
-          + "	--> KSTREAM-TRANSFORM-0000000001";
+          + "	Source:  KSTREAM-SOURCE-0000000000 (topics: [conversation-meta])\n";
 
   private volatile boolean modeOrtho;
   private volatile boolean modeHoriz;
