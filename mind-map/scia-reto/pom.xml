@@ -27,9 +27,9 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <jung.version>2.1.1</jung.version>
-    <batik.version>1.12</batik.version>
+    <batik.version>1.13</batik.version>
     <jlatexmath.version>1.0.7</jlatexmath.version>
-    <plantuml.version>1.2020.11</plantuml.version>
+    <plantuml.version>1.2020.12</plantuml.version>
     <rsyntax.version>3.1.1</rsyntax.version>
     <rsyntax.autocomplete.version>3.1.0</rsyntax.autocomplete.version>
     <mixpanel.version>1.4.4</mixpanel.version>
@@ -41,7 +41,7 @@
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-core</artifactId>
-        <version>3.3.3.RELEASE</version>
+        <version>3.3.5.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jung</groupId>
