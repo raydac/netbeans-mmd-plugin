@@ -436,10 +436,19 @@ public class XMind2MindMapImporter extends AbstractImporter {
     final JSONObject children =
         topicElement.has("children") ? topicElement.getJSONObject("children") : null;
     if (children != null) {
-      final JSONArray attached = children.getJSONArray("attached");
-      for (final Object c : attached) {
-        final JSONObject child = (JSONObject) c;
-        convertTopic(zipFile, map, topicToProcess, null, child, idTopicMap, linksBetweenTopics);
+      final JSONArray attached = children.has("attached") ? children.getJSONArray("attached") : null;
+      if (attached!=null) {
+        for (final Object c : attached) {
+          final JSONObject child = (JSONObject) c;
+          convertTopic(zipFile, map, topicToProcess, null, child, idTopicMap, linksBetweenTopics);
+        }
+      }
+      final JSONArray detached = children.has("detached") ? children.getJSONArray("detached") : null;
+      if (detached!=null) {
+        for (final Object c : detached) {
+          final JSONObject child = (JSONObject) c;
+          convertTopic(zipFile, map, topicToProcess, null, child, idTopicMap, linksBetweenTopics);
+        }
       }
     }
   }
