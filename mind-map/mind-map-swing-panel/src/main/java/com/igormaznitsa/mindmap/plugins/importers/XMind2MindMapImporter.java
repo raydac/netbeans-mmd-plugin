@@ -232,8 +232,6 @@ public class XMind2MindMapImporter extends AbstractImporter {
     final JSONObject notes = topic.has("notes") ? topic.getJSONObject("notes") : null;
     if (notes != null) {
       final String plain = extractTextContentFrom(notes, "plain");
-//      final String html = extractTextContentFrom(notes, "html");
-      final String html = "";
 
       if (result.length() > 0) {
         result.append('\n');
@@ -241,8 +239,6 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
       if (!plain.isEmpty()) {
         result.append(plain);
-      } else if (!html.isEmpty()) {
-        result.append(html);
       }
     }
 
@@ -269,8 +265,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private static String extractTextContentFrom(@Nonnull final JSONObject element,
                                                @Nonnull final String tag) {
     final StringBuilder result = new StringBuilder();
-    final JSONObject object = element.has(tag) ? element.getJSONObject(tag) : null;
-    if (object != null) {
+
+    if (element.has(tag)) {
+      final JSONObject object = element.getJSONObject(tag);
       final String found = object.getString("content");
       if (found != null && !found.isEmpty()) {
         result.append(found.replace("\r", ""));
@@ -378,8 +375,10 @@ public class XMind2MindMapImporter extends AbstractImporter {
       final JSONObject properties =
           style.has("properties") ? style.getJSONObject("properties") : null;
       if (properties != null) {
-        final String fillColor = properties.has("svg:fill") ? properties.getString("svg:fill") : null;
-        final String fontColor = properties.has("fo:color") ? properties.getString("fo:color"): null;
+        final String fillColor =
+            properties.has("svg:fill") ? properties.getString("svg:fill") : null;
+        final String fontColor =
+            properties.has("fo:color") ? properties.getString("fo:color") : null;
         final String textAlign =
             properties.has("fo:text-align") ? properties.getString("fo:text-align") : null;
         final String borderLineColor =
@@ -436,15 +435,17 @@ public class XMind2MindMapImporter extends AbstractImporter {
     final JSONObject children =
         topicElement.has("children") ? topicElement.getJSONObject("children") : null;
     if (children != null) {
-      final JSONArray attached = children.has("attached") ? children.getJSONArray("attached") : null;
-      if (attached!=null) {
+      final JSONArray attached =
+          children.has("attached") ? children.getJSONArray("attached") : null;
+      if (attached != null) {
         for (final Object c : attached) {
           final JSONObject child = (JSONObject) c;
           convertTopic(zipFile, map, topicToProcess, null, child, idTopicMap, linksBetweenTopics);
         }
       }
-      final JSONArray detached = children.has("detached") ? children.getJSONArray("detached") : null;
-      if (detached!=null) {
+      final JSONArray detached =
+          children.has("detached") ? children.getJSONArray("detached") : null;
+      if (detached != null) {
         for (final Object c : detached) {
           final JSONObject child = (JSONObject) c;
           convertTopic(zipFile, map, topicToProcess, null, child, idTopicMap, linksBetweenTopics);
