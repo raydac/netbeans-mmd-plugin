@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -347,14 +348,14 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return align;
   }
 
-  private static void convertTopic(@Nonnull ZipFile zipFile,
+  private static void convertTopic(@Nonnull final ZipFile zipFile,
+                                   @Nonnull final Map<String, XMindStyle> theme,
                                    @Nonnull final MindMap map,
                                    @Nullable final Topic parent,
                                    @Nullable Topic pregeneratedOne,
                                    @Nonnull final JSONObject topicElement,
                                    @Nonnull Map<String, Topic> idTopicMap,
-                                   @Nonnull final Map<String, String> linksBetweenTopics)
-      throws Exception {
+                                   @Nonnull final Map<String, String> linksBetweenTopics) {
     final Topic topicToProcess;
 
     if (pregeneratedOne == null) {
@@ -369,38 +370,70 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     idTopicMap.put(theTopicId, topicToProcess);
 
+    final String themeName;
+    switch (topicToProcess.getPath().length) {
+      case 1:
+        themeName = "centralTopic";
+        break;
+      case 2:
+        themeName = "mainTopic";
+        break;
+      default:
+        themeName = "subTopic";
+        break;
+    }
+
+    XMindStyle themeStyle = theme.get(themeName);
+    if (themeStyle == null) {
+      themeStyle = new XMindStyle();
+    }
+
     final JSONObject style = topicElement.has("style") ? topicElement.getJSONObject("style") : null;
-    if (style != null) {
-      final String styleId = assertNotNull(style.getString("id"));
+    final String fillColor;
+    final String fontColor;
+    final String borderLineColor;
+    final String textAlign;
+
+    if (style == null) {
+      fillColor = themeStyle.getBackgroundAsHtml(null);
+      fontColor = themeStyle.getForegroundAsHtml(null);
+      borderLineColor = themeStyle.getBorderColorAsHtml(null);
+      textAlign = themeStyle.getTextAlign(null);
+    } else {
       final JSONObject properties =
           style.has("properties") ? style.getJSONObject("properties") : null;
-      if (properties != null) {
-        final String fillColor =
-            properties.has("svg:fill") ? properties.getString("svg:fill") : null;
-        final String fontColor =
-            properties.has("fo:color") ? properties.getString("fo:color") : null;
-        final String textAlign =
-            properties.has("fo:text-align") ? properties.getString("fo:text-align") : null;
-        final String borderLineColor =
-            properties.has("border-line-color") ? properties.getString("border-line-color") : null;
-
-        if (fillColor != null) {
-          topicToProcess.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
-              fillColor);
-        }
-        if (fontColor != null) {
-          topicToProcess.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
-              fontColor);
-        }
-        if (borderLineColor != null) {
-          topicToProcess.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(),
-              borderLineColor);
-        }
-        if (textAlign != null) {
-          topicToProcess.setAttribute("align", convertTextAlign(textAlign));
-        }
+      if (properties == null) {
+        fillColor = themeStyle.getBackgroundAsHtml(null);
+        fontColor = themeStyle.getForegroundAsHtml(null);
+        borderLineColor = themeStyle.getBorderColorAsHtml(null);
+        textAlign = themeStyle.getTextAlign(null);
+      } else {
+        fillColor = themeStyle.getBackgroundAsHtml(
+            properties.has("svg:fill") ? properties.getString("svg:fill") : null);
+        fontColor = themeStyle.getForegroundAsHtml(
+            properties.has("fo:color") ? properties.getString("fo:color") : null);
+        textAlign = themeStyle.getTextAlign(
+            properties.has("fo:text-align") ? properties.getString("fo:text-align") : null);
+        borderLineColor = themeStyle.getBorderColorAsHtml(
+            properties.has("border-line-color") ? properties.getString("border-line-color") : null);
       }
     }
+    if (fillColor != null) {
+      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
+          fillColor);
+    }
+    if (fontColor != null) {
+      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
+          fontColor);
+    }
+    if (borderLineColor != null) {
+      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(),
+          borderLineColor);
+    }
+    if (textAlign != null) {
+      topicToProcess.setAttribute("align", convertTextAlign(textAlign));
+    }
+
 
     final String attachedImage = extractFirstAttachedImageAsBase64(zipFile, topicElement);
     if (attachedImage != null && !attachedImage.isEmpty()) {
@@ -434,13 +467,15 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     final JSONObject children =
         topicElement.has("children") ? topicElement.getJSONObject("children") : null;
+
     if (children != null) {
       final JSONArray attached =
           children.has("attached") ? children.getJSONArray("attached") : null;
       if (attached != null) {
         for (final Object c : attached) {
           final JSONObject child = (JSONObject) c;
-          convertTopic(zipFile, map, topicToProcess, null, child, idTopicMap, linksBetweenTopics);
+          convertTopic(zipFile, theme, map, topicToProcess, null, child, idTopicMap,
+              linksBetweenTopics);
         }
       }
       final JSONArray detached =
@@ -448,10 +483,27 @@ public class XMind2MindMapImporter extends AbstractImporter {
       if (detached != null) {
         for (final Object c : detached) {
           final JSONObject child = (JSONObject) c;
-          convertTopic(zipFile, map, topicToProcess, null, child, idTopicMap, linksBetweenTopics);
+          convertTopic(zipFile, theme, map, topicToProcess, null, child, idTopicMap,
+              linksBetweenTopics);
         }
       }
     }
+  }
+
+  @Nonnull
+  private Map<String, XMindStyle> extractThemes(@Nonnull final JSONObject sheet) {
+    final Map<String, XMindStyle> result = new HashMap<>();
+
+    if (sheet.has("theme")) {
+      final JSONObject themeObject = sheet.getJSONObject("theme");
+      final List<String> themeNames = Arrays.asList("centralTopic", "mainTopic", "subTopic");
+      for (final String name : themeNames) {
+        if (themeObject.has(name)) {
+          result.put(name, new XMindStyle(themeObject.getJSONObject(name)));
+        }
+      }
+    }
+    return result;
   }
 
   @Nonnull
@@ -463,12 +515,14 @@ public class XMind2MindMapImporter extends AbstractImporter {
     final Topic rootTopic = assertNotNull(resultedMap.getRoot());
     rootTopic.setText("Empty sheet");
 
+    final Map<String, XMindStyle> theme = extractThemes(sheet);
+
     final Map<String, Topic> topicIdMap = new HashMap<String, Topic>();
     final Map<String, String> linksBetweenTopics = new HashMap<String, String>();
 
     final JSONObject rootTopicObj = sheet.getJSONObject("rootTopic");
     if (rootTopicObj != null) {
-      convertTopic(file, resultedMap, null, rootTopic, rootTopicObj, topicIdMap,
+      convertTopic(file, theme, resultedMap, null, rootTopic, rootTopicObj, topicIdMap,
           linksBetweenTopics);
     }
 
@@ -606,17 +660,36 @@ public class XMind2MindMapImporter extends AbstractImporter {
     private final Color border;
     private final String textAlign;
 
-    private XMindStyle(@Nullable final Color background,
-                       @Nullable final Color front,
-                       @Nullable final Color border,
-                       @Nullable final String align) {
-      this.background = background;
-      this.foreground = front;
-      this.border = border;
-      this.textAlign = align;
+    XMindStyle(@Nonnull final JSONObject jsonObject) {
+      final JSONObject properties =
+          jsonObject.has("properties") ? jsonObject.getJSONObject("properties") : null;
+      if (properties == null) {
+        this.background = null;
+        this.foreground = null;
+        this.border = null;
+        this.textAlign = null;
+      } else {
+        this.background =
+            properties.has("svg:fill") ? Utils.html2color(properties.getString("svg:fill"), false) :
+                null;
+        this.foreground =
+            properties.has("fo:color") ? Utils.html2color(properties.getString("fo:color"), false) :
+                null;
+        this.border = properties.has("border-line-color") ?
+            Utils.html2color(properties.getString("border-line-color"), false) : null;
+        this.textAlign =
+            properties.has("fo:text-align") ? properties.getString("fo:text-align") : null;
+      }
     }
 
-    private XMindStyle(@Nonnull final Element style) {
+    XMindStyle() {
+      this.textAlign = null;
+      this.background = null;
+      this.border = null;
+      this.foreground = null;
+    }
+
+    XMindStyle(@Nonnull final Element style) {
       Color back = null;
       Color front = null;
       Color bord = null;
@@ -638,6 +711,38 @@ public class XMind2MindMapImporter extends AbstractImporter {
       this.background = back;
       this.border = bord;
       this.textAlign = align;
+    }
+
+    @Nullable
+    String getForegroundAsHtml(@Nullable final String preferred) {
+      if (preferred != null) {
+        return preferred;
+      }
+      return foreground == null ? null : Utils.color2html(this.foreground, false);
+    }
+
+    @Nullable
+    String getBackgroundAsHtml(@Nullable final String preferred) {
+      if (preferred != null) {
+        return preferred;
+      }
+      return background == null ? null : Utils.color2html(this.background, false);
+    }
+
+    @Nullable
+    String getBorderColorAsHtml(@Nullable final String preferred) {
+      if (preferred != null) {
+        return preferred;
+      }
+      return background == null ? null : Utils.color2html(this.background, false);
+    }
+
+    @Nullable
+    String getTextAlign(@Nullable final String preferred) {
+      if (preferred != null) {
+        return preferred;
+      }
+      return this.textAlign;
     }
 
     private void attachTo(@Nonnull final Topic topic) {
@@ -669,7 +774,6 @@ public class XMind2MindMapImporter extends AbstractImporter {
         final InputStream stylesXml = Utils.findInputStreamForResource(zipFile, "styles.xml");
         if (stylesXml != null) {
           final Document parsedStyles = Utils.loadXmlDocument(stylesXml, null, true);
-
           final Element root = parsedStyles.getDocumentElement();
 
           if ("xmap-styles".equals(root.getTagName())) {
