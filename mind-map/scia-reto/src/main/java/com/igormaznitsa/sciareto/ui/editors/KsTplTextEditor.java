@@ -22,6 +22,7 @@ import static com.igormaznitsa.sciareto.ui.UiUtils.loadIcon;
 import static java.lang.String.format;
 import static net.sourceforge.plantuml.StringUtils.unicode;
 
+
 import com.igormaznitsa.sciareto.Context;
 import java.awt.GridBagConstraints;
 import java.awt.Toolkit;
@@ -405,15 +406,15 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   }
 
   private enum KStreamType {
-    SOURCE(".*source.*", ".*kstream.*source.*", "rectangle \"%s\" as %s"),
-    TRANSFORM("", ".*kstream.*transform.*", "usecase \"%s\" as %s"),
+    SOURCE(".*source.*", ".*kstream.*source.*", "node \"%s\" as %s"),
+    TRANSFORM("", ".*kstream.*transform.*", "cloud \"%s\" as %s"),
     KEY_SELECT("", ".*kstream.*key.*select.*", "usecase \"%s\" as %s"),
-    FILTER("", ".*kstream.*filter.*", "usecase \"%s\" as %s"),
-    SINK(".*sink.*", ".*kstream.*sink.*", "rectangle \"%s\" as %s"),
+    FILTER("", ".*kstream.*filter.*", "rectangle \"%s\" as %s"),
+    SINK(".*sink.*", ".*kstream.*sink.*", "node \"%s\" as %s"),
     AGGREGATE("", ".*kstream.*aggregate.*", "usecase \"%s\" as %s"),
     TABLE_TOSTREAM("", ".*ktable.*to.*stream.*", "usecase \"%s\" as %s"),
     MERGE("", ".*kstrean.*merge.*", "usecase \"%s\" as %s"),
-    PROCESSOR("", ".*kstream.*processor.*", "usecase \"%s\" as %s");
+    PROCESSOR("", ".*kstream.*processor.*", "cloud \"%s\" as %s");
 
     private final Pattern patternType;
     private final Pattern patternId;
