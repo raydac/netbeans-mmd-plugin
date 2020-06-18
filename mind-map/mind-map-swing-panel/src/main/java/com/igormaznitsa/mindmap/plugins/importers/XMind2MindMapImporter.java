@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.zip.ZipFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -364,9 +365,10 @@ public class XMind2MindMapImporter extends AbstractImporter {
       topicToProcess = pregeneratedOne;
     }
 
-    topicToProcess.setText(assertNotNull(topicElement.getString("title")));
+    topicToProcess.setText(topicElement.has("title") ? topicElement.getString("title") : "");
 
-    final String theTopicId = assertNotNull(topicElement.getString("id"));
+    final String theTopicId =
+        topicElement.has("id") ? topicElement.getString("id") : UUID.randomUUID().toString();
 
     idTopicMap.put(theTopicId, topicToProcess);
 
