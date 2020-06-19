@@ -15,12 +15,14 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.9 (SNAPSHOT)__
-- SR:  embedded JDK version updated to 11.0.7+10
+- ALL: improved XMind importer to support XMind 2020 format [#67](https://github.com/raydac/netbeans-mmd-plugin/issues/67)
+- SR:  improved rendering of Kafka Streams topology
+- SR:  embeeded JDK version updated to 11.0.6+10
 - SR:  added DOT script editor
 - SR:  added check on save for external file change
 - SR:  improved positioning of text search panel
 - SR:  shortcut for `Save` changed to `Ctrl+S` and shortcut `Save All` changed to `Ctrl+Shift+S` [#65](https://github.com/raydac/netbeans-mmd-plugin/issues/65)
-- SR:  embedded PlantUml updated to 1.2020.12
+- SR:  embedded PlantUml updated to 1.2020.13
 
 __1.4.8 (19-mar-2020)__
 - ALL: Added extra emoticons: `caution_biohazard`,`hospital`,`emoticon_medic`,`emoticon_mask` etc.
