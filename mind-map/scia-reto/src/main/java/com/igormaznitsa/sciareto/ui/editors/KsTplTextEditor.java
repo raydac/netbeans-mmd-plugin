@@ -293,7 +293,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
         if (bufferStores.length() > 0) {
           final boolean groupStores = this.modeGroupStores;
           if (groupStores) {
-            builder.append("package \"Stores\" #FFDFDF {\n");
+            builder.append("package \"Stores\" #FED8B1 {\n");
           }
           builder.append(bufferStores.toString());
           if (groupStores) {
@@ -405,22 +405,59 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     panel.add(checkBoxHorizontal, gbdata);
   }
 
+  private enum PartitioningFlag {
+    INHERITED,
+    MAY_ON,
+    ON
+  }
+
   private enum KStreamType {
-    SOURCE(".*source.*", ".*kstream.*source.*", "node \"%s\" as %s"),
-    TRANSFORM("", ".*kstream.*transform.*", "cloud \"%s\" as %s"),
-    KEY_SELECT("", ".*kstream.*key.*select.*", "usecase \"%s\" as %s"),
-    FILTER("", ".*kstream.*filter.*", "rectangle \"%s\" as %s"),
-    SINK(".*sink.*", ".*kstream.*sink.*", "node \"%s\" as %s"),
-    AGGREGATE("", ".*kstream.*aggregate.*", "usecase \"%s\" as %s"),
-    TABLE_TOSTREAM("", ".*ktable.*to.*stream.*", "usecase \"%s\" as %s"),
-    MERGE("", ".*kstrean.*merge.*", "usecase \"%s\" as %s"),
-    PROCESSOR("", ".*kstream.*processor.*", "cloud \"%s\" as %s");
+    SOURCE(".*source.*", ".*kstream.*source.*", "node \"%s\" as %s %s", PartitioningFlag.INHERITED),
+    PRINT("", ".*kstream.*printer.*", "file \"%s\" as %s", PartitioningFlag.INHERITED),
+    SINK(".*sink.*", ".*kstream.*sink.*", "node \"%s\" as %s %s", PartitioningFlag.INHERITED),
+    PEEK("", ".*kstream.*peek.*", "file \"%s\" as %s %s", PartitioningFlag.INHERITED),
+    FOREACH("", ".*kstream.*foreach.*", "node \"%s\" as %s %s", PartitioningFlag.INHERITED),
+
+    PROCESSOR("", ".*kstream.*processor.*", "node \"%s\" as %s %s", PartitioningFlag.INHERITED),
+    TRANSFORMVALUES("", ".*kstream.*transformvalues.*", "cloud \"%s\" as %s %s",
+        PartitioningFlag.INHERITED),
+    TRANSFORM("", ".*kstream.*transform.*", "cloud \"%s\" as %s %s", PartitioningFlag.ON),
+
+    KEY_SELECT("", ".*kstream.*key.*select.*", "rectangle \"%s\" as %s %s", PartitioningFlag.ON),
+
+    FLATMAPVALUES("", ".*kstream.*flatmapvalues.*", "rectangle \"%s\" as %s %s",
+        PartitioningFlag.INHERITED),
+    FLATMAP("", ".*kstream.*flatmap.*", "rectangle \"%s\" as %s %s", PartitioningFlag.ON),
+    FILTER("", ".*kstream.*filter.*", "rectangle \"%s\" as %s %s", PartitioningFlag.INHERITED),
+
+    MAPVALUES("", ".*kstream.*mapvalues.*", "rectangle \"%s\" as %s %s",
+        PartitioningFlag.INHERITED),
+    MAP("", ".*kstream.*map.*", "rectangle \"%s\" as %s %s", PartitioningFlag.ON),
+    MERGE("", ".*kstream.*merge.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
+
+    WINDOWED("", ".*kstream.*windowed.*", "frame \"%s\" as %s %s", PartitioningFlag.INHERITED),
+    JOINTHIS("", ".*kstream.*jointhis.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
+    JOINOTHER("", ".*kstream.*joinother.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
+    JOIN("", ".*kstream.*join.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
+
+    OUTERTHIS("", ".*kstream.*outerthis.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
+    OUTEROTHER("", ".*kstream.*outerother.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
+
+    BRANCHCHILD("", ".*kstream.*branchchild.*", "usecase \"%s\" as %s %s",
+        PartitioningFlag.INHERITED),
+    BRANCH("", ".*kstream.*branch.*", "usecase \"%s\" as %s %s", PartitioningFlag.INHERITED);
 
     private final Pattern patternType;
     private final Pattern patternId;
     private final String pumlPattern;
+    private final PartitioningFlag partitioning;
 
-    KStreamType(final String patternType, final String patternId, final String pumlPattern) {
+    KStreamType(final String patternType,
+                final String patternId,
+                final String pumlPattern,
+                final PartitioningFlag partitioning
+    ) {
+      this.partitioning = partitioning;
       this.patternId = Pattern.compile(patternId, Pattern.CASE_INSENSITIVE);
       this.patternType = Pattern.compile(patternType, Pattern.CASE_INSENSITIVE);
       this.pumlPattern = pumlPattern;
@@ -435,11 +472,31 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
           return t;
         }
       }
-      return PROCESSOR;
+      return FILTER;
     }
 
-    String makePuml(final KStreamsTopologyDescriptionParser.TopologyElement element, @Nonnull final String alias) {
-      return format(this.pumlPattern, makePumlMultiline(unicode(element.id), 0), alias);
+    PartitioningFlag getPartitioning() {
+      return this.partitioning;
+    }
+
+    String makePuml(final KStreamsTopologyDescriptionParser.TopologyElement element,
+                    @Nonnull final String alias) {
+      final String color;
+      switch (this.partitioning) {
+        case ON:
+          color = "#FFDEDE";
+          break;
+        case MAY_ON:
+          color = "#FFFFBB";
+          break;
+        case INHERITED:
+          color = "#BBFFBB";
+          break;
+        default:
+          color = "#BBBBFF";
+          break;
+      }
+      return format(this.pumlPattern, makePumlMultiline(unicode(element.id), 0), alias, color);
     }
   }
 
