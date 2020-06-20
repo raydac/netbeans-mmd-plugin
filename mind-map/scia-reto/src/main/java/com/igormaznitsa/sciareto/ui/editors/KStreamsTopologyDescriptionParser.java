@@ -123,7 +123,7 @@ public class KStreamsTopologyDescriptionParser {
   public static String replaceProperties(@Nonnull final String script,
                                          @Nonnull final Properties properties) {
     final StringBuilder result = new StringBuilder();
-    result.append(properties2str(properties)).append(System.lineSeparator());
+    result.append(properties2str(properties));
     for (final String s : script.split("\\r?\\n")) {
       if (!s.trim().startsWith(PROPERTIES_PREFIX)) {
         result.append(System.lineSeparator()).append(s);
