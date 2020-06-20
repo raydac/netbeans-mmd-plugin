@@ -211,6 +211,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   }
 
   @Override
+  @Nonnull
   protected String getEditorTextForSave() {
     final String textInEditor = super.getEditorTextForSave();
     final Properties properties = new Properties();
