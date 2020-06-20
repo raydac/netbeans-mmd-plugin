@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,17 +17,35 @@ import javax.annotation.Nullable;
 
 public class KStreamsTopologyDescriptionParser {
 
-  private static final Pattern MAIN_PATTERN = Pattern.compile("^(?:(<-+|-+>)|(?:([\\w\\-\\s]+?):))(.*)$", Pattern.CASE_INSENSITIVE);
-  private static final Pattern ID_TAIL_PATTERN = Pattern.compile("^\\s*([\\S]+)(?:\\s+(.+?))?\\s*$");
-  private static final Pattern DATA_COMMENT_PATTERN = Pattern.compile("^\\s*(?:\\(([^)]*)\\))?(.*)\\s*$");
-  private static final Pattern DATA_FINDER = Pattern.compile(",?\\s*([a-z_\\-]+?)\\s*:\\s*(?:\\[(.*?)]|(.*))");
+  private static final Pattern MAIN_PATTERN =
+      Pattern.compile("^(?:(<-+|-+>)|(?:([\\w\\-\\s]+?):))(.*)$", Pattern.CASE_INSENSITIVE);
+  private static final Pattern ID_TAIL_PATTERN =
+      Pattern.compile("^\\s*([\\S]+)(?:\\s+(.+?))?\\s*$");
+  private static final Pattern DATA_COMMENT_PATTERN =
+      Pattern.compile("^\\s*(?:\\(([^)]*)\\))?(.*)\\s*$");
+  private static final Pattern DATA_FINDER =
+      Pattern.compile(",?\\s*([a-z_\\-]+?)\\s*:\\s*(?:\\[(.*?)]|(.*))");
   private static final String NONE = "none";
+  private static final String PROPERTIES_PREFIX = "//properties ";
   private final List<Topologies> topologies = new ArrayList<>();
+  private final Properties properties = new Properties();
 
   public KStreamsTopologyDescriptionParser(@Nonnull final String script) {
     final List<ParsedItem> foundItems = new ArrayList<>();
     for (final String s : script.split("\\n")) {
       String lineText = s.trim();
+
+      if (lineText.startsWith(PROPERTIES_PREFIX)) {
+        final String propertiesStr = lineText.substring(PROPERTIES_PREFIX.length()).trim();
+        for (final String p : propertiesStr.split("\\;")) {
+          final String[] parsed = p.split("\\=");
+          if (parsed.length == 2) {
+            this.properties.setProperty(parsed[0].trim(), parsed[1].trim());
+          }
+        }
+        lineText = "";
+      }
+
       if ("topology".equalsIgnoreCase(lineText) || "topology:".equalsIgnoreCase(lineText)) {
         lineText = "Topologies:";
       }
@@ -66,7 +85,7 @@ public class KStreamsTopologyDescriptionParser {
       }
     }
     final Map<String, TopologyElement> topologyElementMaps = new TreeMap<>();
-    for (final ParsedItem i : foundItems) {
+    foundItems.stream().map(i -> {
       final String lcName = i.name.toLowerCase(Locale.ENGLISH);
       final TopologyElement newElement;
       if ("topologies".equals(lcName)) {
@@ -88,15 +107,44 @@ public class KStreamsTopologyDescriptionParser {
         if (curTop.subTopologies.isEmpty()) {
           curTop.orphans.add(newElement);
         } else {
-          curTop.subTopologies.get(curTop.subTopologies.size() - 1).children.put(newElement.id, newElement);
+          curTop.subTopologies.get(curTop.subTopologies.size() - 1).children
+              .put(newElement.id, newElement);
         }
       }
-      if (newElement != null) {
-        topologyElementMaps.put(newElement.id, newElement);
-      }
-    }
+      return newElement;
+    }).filter(newElement -> (newElement != null)).forEachOrdered(newElement -> {
+      topologyElementMaps.put(newElement.id, newElement);
+    });
 
     this.topologies.forEach(x -> x.link(topologyElementMaps));
+  }
+
+  @Nonnull
+  public static String replaceProperties(@Nonnull final String script,
+                                         @Nonnull final Properties properties) {
+    final StringBuilder result = new StringBuilder();
+    result.append(properties2str(properties)).append(System.lineSeparator());
+    for (final String s : script.split("\\r?\\n")) {
+      if (!s.trim().startsWith(PROPERTIES_PREFIX)) {
+        result.append(System.lineSeparator()).append(s);
+      }
+    }
+    return result.toString();
+  }
+
+  @Nonnull
+  public static String properties2str(@Nonnull final Properties properties) {
+    final StringBuilder result = new StringBuilder();
+    result.append(PROPERTIES_PREFIX);
+    result.append(properties.stringPropertyNames().stream()
+        .map(key -> String.format("%s=%s", key, properties.getProperty(key)))
+        .collect(Collectors.joining(";")));
+    return result.toString();
+  }
+
+  @Nullable
+  public String getProperty(@Nonnull final String key, @Nullable final String dflt) {
+    return this.properties.getProperty(key, dflt);
   }
 
   public int size() {
@@ -137,7 +185,8 @@ public class KStreamsTopologyDescriptionParser {
     final List<String> to;
     final String orig;
 
-    public ParsedItem(@Nonnull final String orig, @Nonnull final String name, @Nonnull final String tail) {
+    public ParsedItem(@Nonnull final String orig, @Nonnull final String name,
+                      @Nonnull final String tail) {
       this.orig = orig;
       this.name = name;
       this.tail = tail;
@@ -177,11 +226,14 @@ public class KStreamsTopologyDescriptionParser {
                 final String foundDataList = dataFinder.group(2);
                 final String foundSingleData = dataFinder.group(3);
                 if (foundDataList != null) {
-                  final List<String> foundItems = Arrays.stream(foundDataList.split(",")).map(x -> x.trim()).filter(x -> !x.isEmpty()).collect(Collectors.toList());
+                  final List<String> foundItems =
+                      Arrays.stream(foundDataList.split(",")).map(x -> x.trim())
+                          .filter(x -> !x.isEmpty()).collect(Collectors.toList());
                   this.dataItems.put(foundType, foundItems);
                 }
                 if (foundSingleData != null) {
-                  this.dataItems.computeIfAbsent(foundType, (x) -> new ArrayList<>()).add(foundSingleData.trim());
+                  this.dataItems.computeIfAbsent(foundType, (x) -> new ArrayList<>())
+                      .add(foundSingleData.trim());
                 }
               }
             }
@@ -223,7 +275,8 @@ public class KStreamsTopologyDescriptionParser {
     @Override
     public String toString() {
       final StringBuilder builder = new StringBuilder();
-      builder.append(String.format("%s: %s '%s data: %s", this.id, this.type, this.comment, this.dataItems));
+      builder.append(
+          String.format("%s: %s '%s data: %s", this.id, this.type, this.comment, this.dataItems));
       return builder.toString();
     }
   }

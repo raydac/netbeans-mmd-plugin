@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
@@ -126,7 +127,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   protected static final Icon ICON_WARNING = new ImageIcon(UiUtils.loadIcon("warning16.png"));
   protected static final Icon ICON_INFO = new ImageIcon(UiUtils.loadIcon("info16.png"));
 
-  private static final Pattern NEWPAGE_PATTERN = Pattern.compile("^\\s*newpage($|\\s.*$)", Pattern.MULTILINE);
+  private static final Pattern NEWPAGE_PATTERN =
+      Pattern.compile("^\\s*newpage($|\\s.*$)", Pattern.MULTILINE);
 
   private static final int DELAY_AUTOREFRESH_SECONDS = 5;
   private final JLabel progressLabel = new JLabel(BigLoaderIconAnimationConroller.LOADING);
@@ -164,9 +166,11 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     ASC;
   }
 
-  private static final Set<ExportType> DEFAULT_EXPORT_TYPES = Collections.unmodifiableSet(EnumSet.<ExportType>allOf(ExportType.class));
+  private static final Set<ExportType> DEFAULT_EXPORT_TYPES =
+      Collections.unmodifiableSet(EnumSet.<ExportType>allOf(ExportType.class));
 
-  public AbstractPlUmlEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
+  public AbstractPlUmlEditor(@Nonnull final Context context, @Nonnull File file)
+      throws IOException {
     super();
     initPlantUml();
 
@@ -180,7 +184,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.editor.setBracketMatchingEnabled(true);
     this.editor.setCodeFoldingEnabled(false);
 
-    final AutoCompletion autoCompletion = new AutoCompletion(new PlantUmlTokenMaker().makeCompletionProvider());
+    final AutoCompletion autoCompletion =
+        new AutoCompletion(new PlantUmlTokenMaker().makeCompletionProvider());
     autoCompletion.setAutoActivationEnabled(true);
     autoCompletion.setAutoCompleteSingleChoices(false);
     autoCompletion.install(this.editor);
@@ -208,26 +213,33 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.renderedScrollPane = new EditorScrollPanel();
     this.imageComponent = new ScalableImage();
 
-    this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, (@Nonnull final PropertyChangeEvent evt) -> {
-      if (isTextEditorVisible()) {
-        editor.requestFocusInWindow();
-      } else {
-        imageComponent.requestFocusInWindow();
-      }
-    });
+    this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+        (@Nonnull final PropertyChangeEvent evt) -> {
+          if (isTextEditorVisible()) {
+            editor.requestFocusInWindow();
+          } else {
+            imageComponent.requestFocusInWindow();
+          }
+        });
 
     final ScaleStatusIndicator scaleLabel = new ScaleStatusIndicator(this.imageComponent);
     this.renderedScrollPane.setViewportView(this.imageComponent);
 
-    this.renderedScrollPane.getVerticalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
-    this.renderedScrollPane.getVerticalScrollBar().setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
-    this.renderedScrollPane.getHorizontalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
-    this.renderedScrollPane.getHorizontalScrollBar().setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
+    this.renderedScrollPane.getVerticalScrollBar()
+        .setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
+    this.renderedScrollPane.getVerticalScrollBar()
+        .setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
+    this.renderedScrollPane.getHorizontalScrollBar()
+        .setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
+    this.renderedScrollPane.getHorizontalScrollBar()
+        .setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
 
     this.renderedScrollPane.setWheelScrollingEnabled(true);
 
     this.menu = new JPanel(new GridBagLayout());
-    final GridBagConstraints gbdata = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.VERTICAL, new Insets(2, 0, 0, 0), 0, 0);
+    final GridBagConstraints gbdata =
+        new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.WEST,
+            GridBagConstraints.VERTICAL, new Insets(2, 0, 0, 0), 0, 0);
 
     final JButton buttonRefresh = new JButton(loadMenuIcon("arrow_refresh"));
     buttonRefresh.setToolTipText("Refresh image for text");
@@ -277,7 +289,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       buttonClipboardImage.addActionListener((ActionEvent e) -> {
         final BufferedImage image = imageComponent.getImage();
         if (image != null) {
-          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new ImageSelection(image), null);
+          Toolkit.getDefaultToolkit().getSystemClipboard()
+              .setContents(new ImageSelection(image), null);
         }
       });
     } else {
@@ -289,7 +302,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       buttonClipboardText = new JButton(loadMenuIcon("clipboard_text"));
       buttonClipboardText.setToolTipText("Copy script to clipboard");
       buttonClipboardText.addActionListener((ActionEvent e) -> {
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(editor.getText()), null);
+        Toolkit.getDefaultToolkit().getSystemClipboard()
+            .setContents(new StringSelection(editor.getText()), null);
       });
     } else {
       buttonClipboardText = null;
@@ -317,7 +331,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       this.labelPageNumber = null;
     }
 
-    this.labelWarningNoGraphwiz = makeLinkLabel("You should install Graphviz!", "https://www.graphviz.org/download/", "Open download page", ICON_WARNING);
+    this.labelWarningNoGraphwiz =
+        makeLinkLabel("You should install Graphviz!", "https://www.graphviz.org/download/",
+            "Open download page", ICON_WARNING);
 
     final JButton buttonPrintImage;
     if (isPrintImageAllowed()) {
@@ -325,9 +341,12 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       buttonPrintImage.setToolTipText("Print current page");
       buttonPrintImage.addActionListener((@Nonnull final ActionEvent e) -> {
         Main.getApplicationFrame().endFullScreenIfActive();
-        final MMDPrintPanel printPanel = new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null, PrintableObject.newBuild().image(imageComponent.getImage()).build());
+        final MMDPrintPanel printPanel =
+            new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
+                PrintableObject.newBuild().image(imageComponent.getImage()).build());
         UiUtils.makeOwningDialogResizable(printPanel);
-        JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image", JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image",
+            JOptionPane.PLAIN_MESSAGE);
       });
     } else {
       buttonPrintImage = null;
@@ -340,7 +359,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       buttonAscImageToClipboard.addActionListener((@Nonnull final ActionEvent e) -> {
         final String text = renderPageAsAscII();
         if (text == null) {
-          JOptionPane.showMessageDialog(mainPanel, "Can't generate ASCII for the diagram.\nMay be it is unsupported for such kind of diagrams.", "Can't generate", JOptionPane.WARNING_MESSAGE);
+          JOptionPane.showMessageDialog(mainPanel,
+              "Can't generate ASCII for the diagram.\nMay be it is unsupported for such kind of diagrams.",
+              "Can't generate", JOptionPane.WARNING_MESSAGE);
         } else {
           final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
           if (clipboard != null) {
@@ -353,7 +374,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     }
 
     this.autoRefresh = new JCheckBox("Auto-refresh", true);
-    this.autoRefresh.setToolTipText(String.format("Refresh rendered image during typing (in %d seconds)", DELAY_AUTOREFRESH_SECONDS));
+    this.autoRefresh.setToolTipText(String
+        .format("Refresh rendered image during typing (in %d seconds)", DELAY_AUTOREFRESH_SECONDS));
 
     this.autoRefresh.addActionListener((@Nonnull final ActionEvent e) -> {
       if (!autoRefresh.isSelected()) {
@@ -470,16 +492,17 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.hideTextPanel();
 
     this.eventChain = eventProcessor
-            .publishOn(MainFrame.REACTOR_SCHEDULER)
-            .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
-            .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
-            .subscribe(x -> SwingUtilities.invokeLater(() -> {
-      final String txt = editor.getText();
-      final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
-      if ((lastRendered == null || !txt.equals(lastRendered.editorText)) && isSyntaxCorrect(txt)) {
-        startRenderScript();
-      }
-    }));
+        .publishOn(MainFrame.REACTOR_SCHEDULER)
+        .buffer(Duration.ofSeconds(DELAY_AUTOREFRESH_SECONDS))
+        .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
+        .subscribe(x -> SwingUtilities.invokeLater(() -> {
+          final String txt = editor.getText();
+          final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
+          if ((lastRendered == null || !txt.equals(lastRendered.editorText)) &&
+              isSyntaxCorrect(txt)) {
+            startRenderScript();
+          }
+        }));
 
   }
 
@@ -492,7 +515,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     return true;
   }
 
-  protected void addCustomComponents(@Nonnull final JPanel panel, @Nonnull final GridBagConstraints gbdata) {
+  protected void addCustomComponents(@Nonnull final JPanel panel,
+                                     @Nonnull final GridBagConstraints gbdata) {
 
   }
 
@@ -525,12 +549,14 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   protected abstract void doPutMapping(@Nonnull AbstractTokenMakerFactory f);
 
-  protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel, @Nonnull final GridBagConstraints constraints) {
+  protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel,
+                                         @Nonnull final GridBagConstraints constraints) {
 
   }
 
   @Nonnull
-  protected JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final String uri, @Nonnull final String toolTip, @Nonnull final Icon icon) {
+  protected JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final String uri,
+                                 @Nonnull final String toolTip, @Nonnull final Icon icon) {
     return this.makeLinkLabel(text, () -> {
       try {
         UiUtils.browseURI(new URI(uri), false);
@@ -597,7 +623,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   @Nonnull
-  protected JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final Runnable onClick, @Nonnull final String toolTip, @Nonnull final Icon icon) {
+  protected JLabel makeLinkLabel(@Nonnull final String text, @Nonnull final Runnable onClick,
+                                 @Nonnull final String toolTip, @Nonnull final Icon icon) {
     final JLabel result = new JLabel(text, icon, JLabel.RIGHT);
     final Font font = result.getFont().deriveFont(Font.BOLD);
     final Map attributes = font.getAttributes();
@@ -638,15 +665,17 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   @Nullable
   protected byte[] makeCustomExport(
-          @Nonnull final ExportType exportType,
-          final int pageIndex, 
-          @Nonnull final String text
+      @Nonnull final ExportType exportType,
+      final int pageIndex,
+      @Nonnull final String text
   ) throws Exception {
     return null;
   }
 
   private void exportAsFile() {
-    final JFileChooser fileChooser = new JFileChooser(lastExportedFile == null ? this.getTabTitle().getAssociatedFile().getParentFile() : lastExportedFile);
+    final JFileChooser fileChooser = new JFileChooser(
+        lastExportedFile == null ? this.getTabTitle().getAssociatedFile().getParentFile() :
+            lastExportedFile);
     fileChooser.setAcceptAllFileFilterUsed(false);
 
     final FileFilter fileFiterSVG = new FileFilter() {
@@ -761,7 +790,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
         final byte[] bytearray;
         try {
           if (this.isCustomRendering()) {
-            bytearray = Assertions.assertNotNull("Unexpected NULL result", this.makeCustomExport(exportType, pageIndex, textToRender));
+            bytearray = Assertions.assertNotNull("Unexpected NULL result",
+                this.makeCustomExport(exportType, pageIndex, textToRender));
           } else {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
             final SourceStringReader reader = new SourceStringReader(textToRender);
@@ -770,23 +800,30 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
           }
         } catch (Exception ex) {
           logger.error("Can't render script as image", ex);
-          JOptionPane.showMessageDialog(this.mainPanel, "Can't render script! Check syntax!", "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane
+              .showMessageDialog(this.mainPanel, "Can't render script! Check syntax!", "Error",
+                  JOptionPane.ERROR_MESSAGE);
           return;
         }
 
         try {
-          if (bytearray.length < 10000 && new String(bytearray, StandardCharsets.UTF_8).contains("java.lang.UnsupportedOperationException:")) {
+          if (bytearray.length < 10000 && new String(bytearray, StandardCharsets.UTF_8)
+              .contains("java.lang.UnsupportedOperationException:")) {
             throw new IOException("Detected exception footstep in generated file!");
           }
           FileUtils.writeByteArrayToFile(lastExportedFile, bytearray);
           logger.info("Exported script as file : " + lastExportedFile);
         } catch (IOException ex) {
           logger.error("Can't export script as image", ex);
-          JOptionPane.showMessageDialog(this.mainPanel, "Can't export! May be the format is not supported by the diagram type!", "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(this.mainPanel,
+              "Can't export! May be the format is not supported by the diagram type!", "Error",
+              JOptionPane.ERROR_MESSAGE);
         }
       } else {
         logger.warn("Page number is <= 0");
-        JOptionPane.showMessageDialog(this.mainPanel, "Can't export! Page is not selected!", "Warning", JOptionPane.WARNING_MESSAGE);
+        JOptionPane
+            .showMessageDialog(this.mainPanel, "Can't export! Page is not selected!", "Warning",
+                JOptionPane.WARNING_MESSAGE);
       }
     }
 
@@ -890,12 +927,18 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.editor.repaint();
   }
 
+  protected void onEditorInitialSetText(@Nonnull final String editorText) {
+
+  }
+
   @Override
   protected void onLoadContent(@Nonnull final TextFile textFile) throws IOException {
     this.ignoreChange = true;
     try {
-      this.editor.setText(textFile.readContentAsUtf8());
+      final String content = textFile.readContentAsUtf8();
+      this.editor.setText(content);
       this.editor.setCaretPosition(0);
+      this.onEditorInitialSetText(content);
       startRenderScript();
     } finally {
       this.ignoreChange = false;
@@ -906,6 +949,11 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
     this.mainPanel.revalidate();
     this.mainPanel.repaint();
+  }
+
+  @Nonnull
+  protected String getEditorTextForSave() {
+    return this.editor.getText();
   }
 
   @Override
@@ -919,7 +967,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
           return this.saveDocumentAs();
         }
 
-        final byte[] content = this.editor.getText().getBytes(StandardCharsets.UTF_8);
+        final byte[] content = this.getEditorTextForSave().getBytes(StandardCharsets.UTF_8);
         FileUtils.writeByteArrayToFile(file, content);
         this.currentTextFile.set(new TextFile(file, false, content));
         this.title.setChanged(false);
@@ -971,12 +1019,10 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   protected void doCustomRendering(
-          @Nonnull final String text,
-          final int pageIndex,
-          @Nonnull
-          final AtomicReference<BufferedImage> renderedImage,
-          @Nonnull
-          final AtomicReference<Exception> error
+      @Nonnull final String text,
+      final int pageIndex,
+      @Nonnull final AtomicReference<BufferedImage> renderedImage,
+      @Nonnull final AtomicReference<Exception> error
   ) {
 
   }
@@ -1013,10 +1059,13 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
           updatePageNumberInfo(currentText.page, totalPages);
         }
 
-        final AtomicInteger dividerLocation = new AtomicInteger(Math.max(0, this.mainPanel.getDividerLocation()));
-        final PropertyChangeListener dividerListener = evt -> dividerLocation.set(Math.max(0, mainPanel.getDividerLocation()));
+        final AtomicInteger dividerLocation =
+            new AtomicInteger(Math.max(0, this.mainPanel.getDividerLocation()));
+        final PropertyChangeListener dividerListener =
+            evt -> dividerLocation.set(Math.max(0, mainPanel.getDividerLocation()));
 
-        this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
+        this.mainPanel
+            .addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
 
         MainFrame.REACTOR_SCHEDULER.schedule(() -> {
           BigLoaderIconAnimationConroller.getInstance().registerLabel(progressLabel);
@@ -1045,11 +1094,13 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             final AtomicReference<BufferedImage> generatedImage = new AtomicReference<>();
 
             if (customRendering) {
-              this.doCustomRendering(currentText.editorText, imageIndex - 1, generatedImage, detectedError);
+              this.doCustomRendering(currentText.editorText, imageIndex - 1, generatedImage,
+                  detectedError);
             } else {
               final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
               try {
-                final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1, new FileFormatOption(FileFormat.PNG, false));
+                final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1,
+                    new FileFormatOption(FileFormat.PNG, false));
                 generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
               } catch (Exception ex) {
                 detectedError.set(ex);
@@ -1068,7 +1119,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
                 renderedPanel.add(renderedScrollPane, BorderLayout.CENTER);
                 setMenuItemsEnable(true);
               } else {
-                final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + escapeHtml(error.getMessage()) + "</h1></html>", JLabel.CENTER);
+                final JLabel errorLabel = new JLabel(
+                    "<html><h1>ERROR: " + escapeHtml(error.getMessage()) + "</h1></html>",
+                    JLabel.CENTER);
                 errorLabel.setName("ERROR_LABEL");
                 renderedPanel.remove(progressLabel);
                 renderedPanel.add(errorLabel, BorderLayout.CENTER);
@@ -1086,7 +1139,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     } catch (final Exception ex) {
       logger.error("Error of script rendering:" + ex);
       SwingUtilities.invokeLater(() -> {
-        final JLabel errorLabel = new JLabel("<html><h1>ERROR: " + escapeHtml(ex.getMessage()) + "</h1></html>", JLabel.CENTER);
+        final JLabel errorLabel =
+            new JLabel("<html><h1>ERROR: " + escapeHtml(ex.getMessage()) + "</h1></html>",
+                JLabel.CENTER);
         errorLabel.setName("ERROR_LABEL");
         renderedPanel.remove(progressLabel);
         renderedPanel.add(errorLabel, BorderLayout.CENTER);
@@ -1109,7 +1164,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     final ByteArrayOutputStream utfBuffer = new ByteArrayOutputStream();
 
     try {
-      final DiagramDescription description = reader.outputImage(utfBuffer, imageIndex - 1, new FileFormatOption(FileFormat.ATXT, false));
+      final DiagramDescription description = reader
+          .outputImage(utfBuffer, imageIndex - 1, new FileFormatOption(FileFormat.ATXT, false));
       final String result = new String(utfBuffer.toByteArray(), StandardCharsets.UTF_8);
       if (result.contains("java.lang.UnsupportedOperationException: ATXT")) {
         throw new UnsupportedOperationException("ATXT is not supported for the diagram");
@@ -1131,7 +1187,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       this.pageNumberToRender = pageNumber;
       this.buttonPrevPage.setEnabled(pageNumber > 1);
       this.buttonNextPage.setEnabled(pageNumber < totalPages);
-      this.labelPageNumber.setText("<html><b>&nbsp;&nbsp;" + pageNumber + '/' + totalPages + "&nbsp;&nbsp;</b><html>");
+      this.labelPageNumber.setText(
+          "<html><b>&nbsp;&nbsp;" + pageNumber + '/' + totalPages + "&nbsp;&nbsp;</b><html>");
     }
   }
 
@@ -1153,7 +1210,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       int lastFound = -1;
       int lastFoundEnd = -1;
 
-      int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ? this.editor.getCaretPosition() : this.editor.getSelectionStart();
+      int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ?
+          this.editor.getCaretPosition() : this.editor.getSelectionStart();
 
       for (int i = 0; i < 2; i++) {
         while (matcher.find()) {
@@ -1181,12 +1239,14 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   @Override
-  public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+  public boolean findNext(@Nonnull final Pattern pattern,
+                          @Nonnull final FindTextScopeProvider provider) {
     return searchSubstring(pattern, true);
   }
 
   @Override
-  public boolean findPrev(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+  public boolean findPrev(@Nonnull final Pattern pattern,
+                          @Nonnull final FindTextScopeProvider provider) {
     return searchSubstring(pattern, false);
   }
 
