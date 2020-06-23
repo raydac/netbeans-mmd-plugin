@@ -6,7 +6,7 @@ LOG_FILE=$SCIARETO_HOME/console.log
 # uncomment the line below if graphics works slowly
 # JAVA_EXTRA_GFX_FLAGS="-Dsun.java2d.opengl=true"
 
-JAVA_FLAGS="-client -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED -Dsun.java2d.dpiaware=true -Dswing.aatext=true -Dawt.useSystemAAFontSettings=on"
+JAVA_FLAGS="-client -XX:+IgnoreUnrecognizedVMOptions -Xmx2G --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED -Dsun.java2d.dpiaware=true -Dswing.aatext=true -Dawt.useSystemAAFontSettings=on"
 
 if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
     echo detected JAVA_HOME variable

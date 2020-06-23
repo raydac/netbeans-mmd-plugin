@@ -41,7 +41,7 @@
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-core</artifactId>
-        <version>3.3.6.RELEASE</version>
+        <version>3.3.7.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jung</groupId>
@@ -347,6 +347,9 @@
                   <jar>.\scia-reto.jar</jar>
                   <jre>
                     <path>.\jre</path>
+                    <opts>
+                      <opt>-Xmx2G</opt>
+                    </opts>
                   </jre>
                 </configuration>
               </execution>
@@ -362,6 +365,9 @@
                   <jar>.\scia-reto.jar</jar>
                   <jre>
                     <minVersion>1.8</minVersion>
+                    <opts>
+                      <opt>-Xmx2G</opt>
+                    </opts>
                   </jre>
                 </configuration>
               </execution>
