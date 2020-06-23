@@ -6,7 +6,7 @@ __1.4.9 (SNAPSHOT)__
 - SR:  added check on save for external file change
 - SR:  improved positioning of text search panel
 - SR:  shortcut for `Save` changed to `Ctrl+S` and shortcut `Save All` changed to `Ctrl+Shift+S` [#65](https://github.com/raydac/netbeans-mmd-plugin/issues/65)
-- SR:  embedded PlantUml updated to 1.2020.13
+- SR:  embedded PlantUml updated to 1.2020.14
 
 __1.4.8 (19-mar-2020)__
 - ALL: Added extra emoticons: `caution_biohazard`,`hospital`,`emoticon_medic`,`emoticon_mask` etc.
