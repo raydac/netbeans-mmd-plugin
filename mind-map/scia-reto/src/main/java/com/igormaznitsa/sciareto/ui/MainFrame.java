@@ -20,10 +20,10 @@ package com.igormaznitsa.sciareto.ui;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
 
+
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
-import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -139,7 +139,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private int lastDividerLocation;
 
-  public static final Scheduler REACTOR_SCHEDULER = Schedulers.newParallel("sr-reactor", Runtime.getRuntime().availableProcessors() << 1, true);
+  public static final Scheduler REACTOR_SCHEDULER = Schedulers
+      .newBoundedElastic(Runtime.getRuntime().availableProcessors(), Integer.MAX_VALUE,
+          "sr-reactor", 15, true);
 
   public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
     super();
