@@ -15,6 +15,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.9 (SNAPSHOT)__
+- IJ:  fixed incompatibility in Scratch API processing for IntelliJ 2020.2 EAP [#69](https://github.com/raydac/netbeans-mmd-plugin/issues/69)
 - ALL: improved XMind importer to support XMind 2020 format [#67](https://github.com/raydac/netbeans-mmd-plugin/issues/67)
 - SR:  improved rendering of Kafka Streams topology
 - SR:  embeeded JDK version updated to 11.0.7+10
