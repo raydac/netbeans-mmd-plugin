@@ -42,6 +42,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -455,6 +456,12 @@ public class XMind2MindMapImporter extends AbstractImporter {
       } else {
         try {
           topicToProcess.setExtra(new ExtraLink(new MMapURI(URI.create(xlink))));
+        } catch (IllegalArgumentException ex) {
+          try {
+            topicToProcess.setExtra(new ExtraLink(new MMapURI(URLEncoder.encode(xlink, "UTF-8"))));
+          } catch (Exception e) {
+            LOGGER.error("Can't convert link: " + xlink, e);
+          }
         } catch (Exception ex) {
           LOGGER.error("Can't convert link : " + xlink, ex);
         }
