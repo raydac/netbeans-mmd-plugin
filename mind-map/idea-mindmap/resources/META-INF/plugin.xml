@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.4.9-SNAPSHOT</version>
+    <version>1.4.9</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -18,9 +18,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.4.9 (SNAPSHOT)</p>
+        <p>1.4.9 (28-jun-2020)</p>
         <ul>
-          <li></li>
+          <li>Fix in support of Scratches API to be compatible with IntelliJ 2020.2 EAP</li>
+          <li>Improved XMind import to support XMind 2020 format</li>
         </ul>
         <p>1.4.8 (19-mar-2020)</p>
         <ul>
