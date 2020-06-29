@@ -15,10 +15,10 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.9 (28-jun-2020)__
-- IJ:  fixed incompatibility in Scratch API processing for IntelliJ 2020.2 EAP [#69](https://github.com/raydac/netbeans-mmd-plugin/issues/69)
+- __IJ:  fixed incompatibility in Scratch API processing for IntelliJ 2020.2 EAP [#69](https://github.com/raydac/netbeans-mmd-plugin/issues/69)__
 - ALL: improved XMind importer to support XMind 2020 format [#67](https://github.com/raydac/netbeans-mmd-plugin/issues/67)
 - SR:  improved rendering of Kafka Streams topology
-- SR:  embeeded JDK version updated to 11.0.7+10
+- SR:  embedded JDK version updated to 11.0.7+10
 - SR:  added DOT script editor
 - SR:  added check on save for external file change
 - SR:  improved positioning of text search panel
