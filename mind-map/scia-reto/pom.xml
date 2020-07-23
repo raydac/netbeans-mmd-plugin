@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.4.9</version>
+    <version>1.4.10-SNAPSHOT</version>
   </parent>
 
   <artifactId>scia-reto</artifactId>
@@ -29,12 +29,12 @@
     <jung.version>2.1.1</jung.version>
     <batik.version>1.13</batik.version>
     <jlatexmath.version>1.0.7</jlatexmath.version>
-    <plantuml.version>1.2020.14</plantuml.version>
+    <plantuml.version>1.2020.15</plantuml.version>
     <rsyntax.version>3.1.1</rsyntax.version>
     <rsyntax.autocomplete.version>3.1.0</rsyntax.autocomplete.version>
     <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.5.0</jna.version>
-    <jre.version>11.0.7+10</jre.version>
+    <jre.version>11.0.8+10</jre.version>
   </properties>
 
   <dependencies>

@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.4.9</version>
+    <version>1.4.10</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -18,6 +18,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.4.10 (SNAPSHOT)</p>
         <p>1.4.9 (28-jun-2020)</p>
         <ul>
           <li>Fix in support of Scratches API to be compatible with IntelliJ 2020.2 EAP</li>
