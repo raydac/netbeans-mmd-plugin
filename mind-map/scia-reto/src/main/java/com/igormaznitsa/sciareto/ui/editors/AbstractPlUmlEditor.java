@@ -37,6 +37,7 @@ import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.misc.BigLoaderIconAnimationConroller;
+import com.igormaznitsa.sciareto.ui.misc.SplitPaneExt;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -205,7 +206,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
     this.editor.getCaret().setSelectionVisible(true);
 
-    this.mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+    this.mainPanel = new SplitPaneExt(JSplitPane.VERTICAL_SPLIT);
 
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
 

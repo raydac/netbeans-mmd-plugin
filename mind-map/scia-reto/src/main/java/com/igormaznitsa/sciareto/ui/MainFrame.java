@@ -50,6 +50,7 @@ import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.FileLinkGraphPanel;
 import com.igormaznitsa.sciareto.ui.misc.GoToFilePanel;
+import com.igormaznitsa.sciareto.ui.misc.SplitPaneExt;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
@@ -218,7 +219,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     this.explorerTree = new ExplorerTree(this);
 
-    this.mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    this.mainSplitPane = new SplitPaneExt(JSplitPane.HORIZONTAL_SPLIT);
     this.mainSplitPane.setOneTouchExpandable(true);
     this.mainSplitPane.setDividerLocation(250);
     this.mainSplitPane.setResizeWeight(0.0d);
