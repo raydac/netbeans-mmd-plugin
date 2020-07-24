@@ -295,19 +295,28 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         }
       }
 
+      private void callUpdateEditorPanelSize() {
+          SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+                  updateEditorPanelSize(textEditor.getPreferredSize());
+              }
+          });
+      }
+      
       @Override
       public void insertUpdate(@Nonnull final DocumentEvent e) {
-        updateEditorPanelSize(textEditor.getPreferredSize());
+          callUpdateEditorPanelSize();
       }
 
       @Override
       public void removeUpdate(@Nonnull final DocumentEvent e) {
-        updateEditorPanelSize(textEditor.getPreferredSize());
+          callUpdateEditorPanelSize();
       }
 
       @Override
       public void changedUpdate(@Nonnull final DocumentEvent e) {
-        updateEditorPanelSize(textEditor.getPreferredSize());
+          callUpdateEditorPanelSize();
       }
     });
 
