@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.tabs;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -189,7 +190,9 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
               title.save();
             } catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't save document, may be it is read-only! See log!");
+              DialogProviderManager.getInstance().getDialogProvider()
+                  .msgError(Main.getApplicationFrame(),
+                      "Can't save document, may be it is read-only! See log!");
             }
           }
         });
@@ -205,7 +208,9 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
               title.saveAs();
             } catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't save document, may be it is read-only! See log!");
+              DialogProviderManager.getInstance().getDialogProvider()
+                  .msgError(Main.getApplicationFrame(),
+                      "Can't save document, may be it is read-only! See log!");
             }
           }
         });
@@ -214,61 +219,46 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       result.add(new JSeparator());
 
       final JMenuItem closeItem = new JMenuItem("Close");
-      closeItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          title.doSafeClose();
-        }
+      closeItem.addActionListener((@Nonnull final ActionEvent e) -> {
+        title.doSafeClose();
       });
       result.add(closeItem);
 
       final JMenuItem closeOthers = new JMenuItem("Close Others");
-      closeOthers.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull ActionEvent e) {
-          final List<TabTitle> list = new ArrayList<>();
-          for (final TabTitle t : theInstance) {
-            if (title != t) {
-              list.add(t);
-            }
+      closeOthers.addActionListener((@Nonnull ActionEvent e) -> {
+        final List<TabTitle> list = new ArrayList<>();
+        for (final TabTitle t : theInstance) {
+          if (title != t) {
+            list.add(t);
           }
-          safeCloseTabs(list.toArray(new TabTitle[list.size()]));
         }
+        safeCloseTabs(list.toArray(new TabTitle[list.size()]));
       });
       result.add(closeOthers);
 
       final JMenuItem closeAll = new JMenuItem("Close All");
-      closeAll.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull ActionEvent e) {
-          final List<TabTitle> list = new ArrayList<>();
-          for (final TabTitle t : theInstance) {
-            list.add(t);
-          }
-          safeCloseTabs(list.toArray(new TabTitle[list.size()]));
+      closeAll.addActionListener((@Nonnull ActionEvent e) -> {
+        final List<TabTitle> list = new ArrayList<>();
+        for (final TabTitle t : theInstance) {
+          list.add(t);
         }
+        safeCloseTabs(list.toArray(new TabTitle[list.size()]));
       });
       result.add(closeAll);
 
       result.add(new JSeparator());
 
       final JMenuItem showInTree = new JMenuItem("Select in Tree");
-      showInTree.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          context.focusInTree(title);
-        }
+      showInTree.addActionListener((ActionEvent e) -> {
+        context.focusInTree(title);
       });
       result.add(showInTree);
 
       final JMenuItem openInSystem = new JMenuItem("Open in System");
-      openInSystem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          final File file = title.getAssociatedFile();
-          if (file != null && file.exists()) {
-            UiUtils.openInSystemViewer(file);
-          }
+      openInSystem.addActionListener((ActionEvent e) -> {
+        final File file = title.getAssociatedFile();
+        if (file != null && file.exists()) {
+          UiUtils.openInSystemViewer(file);
         }
       });
       result.add(openInSystem);
@@ -281,7 +271,10 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     for (final TabTitle t : titles) {
       foundUnsaved |= t.isChanged();
     }
-    if (!foundUnsaved || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(Main.getApplicationFrame(), "Detected unsaved", "Detected unsaved documents! Close anyway?")) {
+    if (!foundUnsaved
+        || DialogProviderManager.getInstance().getDialogProvider()
+        .msgConfirmOkCancel(Main.getApplicationFrame(),
+            "Detected unsaved", "Detected unsaved documents! Close anyway?")) {
       this.context.closeTab(titles);
     }
   }
@@ -304,11 +297,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     final int count = this.getTabCount() - 1;
     final TabTitle tabTitle = panel.getTabTitle();
     this.setTabComponentAt(count, tabTitle);
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        panel.getMainComponent().requestFocus();
-      }
+    SwingUtilities.invokeLater(() -> {
+      panel.getMainComponent().requestFocus();
     });
     this.setSelectedIndex(count);
     this.setToolTipTextAt(count, tabTitle.getToolTipText());
