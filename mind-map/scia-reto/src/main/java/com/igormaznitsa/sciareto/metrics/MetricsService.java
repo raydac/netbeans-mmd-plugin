@@ -25,9 +25,6 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.mixpanel.mixpanelapi.ClientDelivery;
-import com.mixpanel.mixpanelapi.MessageBuilder;
-import com.mixpanel.mixpanelapi.MixpanelAPI;
 
 public class MetricsService {
 
@@ -89,24 +86,6 @@ public class MetricsService {
   private void doFirstStartAction() throws Exception {
     try {
       final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
-
-      final MessageBuilder messageBuilder = new MessageBuilder(PROJECT_TOKEN);
-      final MixpanelAPI mixpanel = new MixpanelAPI();
-
-      final JSONObject statistics = new JSONObject();
-      
-      statistics.put("os.name", System.getProperty("os.name","unknown")); //NOI18N
-      statistics.put("os.arch", System.getProperty("os.arch","unknown")); //NOI18N
-      statistics.put("os.version", System.getProperty("os.version","unknown")); //NOI18N
-      statistics.put("java.vendor", System.getProperty("java.vendor","unknown")); //NOI18N
-      statistics.put("java.version", System.getProperty("java.version","unknown")); //NOI18N
-      
-      final JSONObject event = messageBuilder.event(installationUUID, "FirstStart", statistics); //NOI18N
-
-      final ClientDelivery delivery = new ClientDelivery();
-      delivery.addMessage(event);
-
-      mixpanel.deliver(delivery);
     } finally {
       PreferencesManager.getInstance().getPreferences().putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
       PreferencesManager.getInstance().flush();
@@ -116,19 +95,6 @@ public class MetricsService {
   private void doAction() throws Exception {
     try {
       final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
-
-      final MessageBuilder messageBuilder = new MessageBuilder(PROJECT_TOKEN);
-      final MixpanelAPI mixpanel = new MixpanelAPI();
-
-      final JSONObject statistics = new JSONObject();
-      statistics.put(Main.PROPERTY_TOTAL_UPSTART, PreferencesManager.getInstance().getPreferences().getLong(Main.PROPERTY_TOTAL_UPSTART, 0L));
-
-      final JSONObject event = messageBuilder.event(installationUUID, "Statistics", statistics); //NOI18N
-
-      final ClientDelivery delivery = new ClientDelivery();
-      delivery.addMessage(event);
-
-      mixpanel.deliver(delivery);
     } finally {
       PreferencesManager.getInstance().getPreferences().putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
       PreferencesManager.getInstance().flush();

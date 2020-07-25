@@ -32,7 +32,6 @@
     <plantuml.version>1.2020.15</plantuml.version>
     <rsyntax.version>3.1.1</rsyntax.version>
     <rsyntax.autocomplete.version>3.1.0</rsyntax.autocomplete.version>
-    <mixpanel.version>1.4.4</mixpanel.version>
     <jna.version>5.5.0</jna.version>
     <jre.version>11.0.8+10</jre.version>
   </properties>
@@ -88,17 +87,6 @@
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
         <version>1.14</version>
-    </dependency>
-    <dependency>
-      <groupId>com.mixpanel</groupId>
-      <artifactId>mixpanel-java</artifactId>
-      <version>${mixpanel.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.json</groupId>
-          <artifactId>json</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
