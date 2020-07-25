@@ -222,7 +222,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       });
       result.add(closeItem);
 
-      final JMenuItem closeOthers = new JMenuItem("Close Other");
+      final JMenuItem closeOthers = new JMenuItem("Close Others");
       closeOthers.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull ActionEvent e) {
