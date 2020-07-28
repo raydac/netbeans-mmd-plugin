@@ -32,7 +32,7 @@
     <plantuml.version>1.2020.15</plantuml.version>
     <rsyntax.version>3.1.1</rsyntax.version>
     <rsyntax.autocomplete.version>3.1.0</rsyntax.autocomplete.version>
-    <jna.version>5.5.0</jna.version>
+    <jna.version>5.6.0</jna.version>
     <jre.version>11.0.8+10</jre.version>
   </properties>
 
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-core</artifactId>
-        <version>3.3.7.RELEASE</version>
+        <version>3.3.8.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jung</groupId>
