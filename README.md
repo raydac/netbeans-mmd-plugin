@@ -16,7 +16,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 # Changelog
 __1.4.10 (SNAPSHOT)__
 - SR:  embedded JDK version updated to 11.0.8+10
-- SR:  embedded PlantUml updated to 1.2020.15
+- SR:  embedded PlantUml updated to 1.2020.17
 
 __1.4.9 (28-jun-2020)__
 - __IJ:  fixed incompatibility in Scratch API processing for IntelliJ 2020.2 EAP [#69](https://github.com/raydac/netbeans-mmd-plugin/issues/69)__
