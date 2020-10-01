@@ -191,7 +191,9 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
               }
 
               if (doIt) {
-                Files.move(origFile.toPath(), newFile.toPath());
+                if (!origFile.renameTo(newFile)) {
+                    throw new IOException("Can't rename " + origFile.getName() + " to " + newFile.getName());
+                }
                 editedNode.setName(newFile.getName());
 
                 final TreeModelEvent renamedEvent = new TreeModelEvent(this, editedNode.makeTreePath());
