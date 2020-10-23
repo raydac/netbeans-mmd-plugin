@@ -33,7 +33,7 @@
     <rsyntax.version>3.1.1</rsyntax.version>
     <rsyntax.autocomplete.version>3.1.0</rsyntax.autocomplete.version>
     <jna.version>5.6.0</jna.version>
-    <jre.version>11.0.8+10</jre.version>
+    <jre.version>11.0.9+11</jre.version>
   </properties>
 
   <dependencies>
