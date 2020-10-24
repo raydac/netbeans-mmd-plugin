@@ -161,6 +161,8 @@ import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
+import com.igormaznitsa.mindmap.model.TopicFinder;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 
 @MultiViewElement.Registration(
     displayName = "#MMDGraphEditor.displayName",
@@ -173,6 +175,9 @@ import org.openide.windows.WindowManager;
 public final class MMDGraphEditor extends CloneableEditor implements AdjustmentListener, PluginContext, PrintProvider, MultiViewElement, MindMapListener, DropTargetListener, MindMapPanelController, FlavorListener, ClipboardListener {
 
   private static final long serialVersionUID = -8776707243607267446L;
+
+  private static final Set<TopicFinder> TOPIC_FINDERS = MindMapPluginRegistry.getInstance()
+      .findAllTopicFinders();
 
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
@@ -382,9 +387,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     }
     final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
 
-    Topic found = this.mindMapPanel.getModel().findNext(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    Topic found = this.mindMapPanel.getModel().findNext(projectBaseFolder, startTopic, pattern, inTopicText, extras, TOPIC_FINDERS);
     if (found == null && startTopic != null) {
-      found = this.mindMapPanel.getModel().findNext(projectBaseFolder, null, pattern, inTopicText, extras);
+      found = this.mindMapPanel.getModel().findNext(projectBaseFolder, null, pattern, inTopicText, extras, TOPIC_FINDERS);
     }
 
     if (found != null) {
@@ -416,9 +421,9 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
     }
     final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
 
-    Topic found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    Topic found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, startTopic, pattern, inTopicText, extras, TOPIC_FINDERS);
     if (found == null && startTopic != null) {
-      found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, null, pattern, inTopicText, extras);
+      found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, null, pattern, inTopicText, extras, TOPIC_FINDERS);
     }
 
     if (found != null) {

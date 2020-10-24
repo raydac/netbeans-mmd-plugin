@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.attributes.images;
 
+import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -28,9 +29,12 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Image;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -46,6 +50,34 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   public static void clearCachedImages() {
     CACHED_IMAGES.clear();
+  }
+
+  @Override
+  public boolean doesTopicContentMatches(
+      @Nonnull Topic topic,
+      @Nullable File baseFolder,
+      @Nonnull Pattern pattern,
+      @Nullable Set<Extra.ExtraType> extraTypes
+  ) {
+    boolean result = false;
+    if (extraTypes != null && topic.getAttribute(ATTR_KEY) != null) {
+      if (extraTypes.contains(Extra.ExtraType.NOTE)) {
+        final String text = topic.getAttribute(ATTR_IMAGE_NAME);
+        if (text != null) {
+          result = pattern.matcher(text).find();
+        }
+      }
+      if (!result &&
+          (extraTypes.contains(Extra.ExtraType.LINK) ||
+              extraTypes.contains(Extra.ExtraType.FILE))) {
+        final String text = topic.getAttribute(ATTR_IMAGE_URI_KEY);
+        if (text != null) {
+          result =
+              pattern.matcher(MMapURI.makeFromFilePath(baseFolder, text, null).toString()).find();
+        }
+      }
+    }
+    return result;
   }
 
   @Override

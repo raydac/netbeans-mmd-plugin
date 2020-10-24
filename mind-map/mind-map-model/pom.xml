@@ -10,8 +10,7 @@
 
   <groupId>com.igormaznitsa</groupId>
   <artifactId>mind-map-model</artifactId>
-    <version>1.3.0</version>
-  <!--<version>${mindmap.model.version}</version>-->
+  <version>1.4.10-SNAPSHOT</version>
   <packaging>jar</packaging>
     
   <name>NB Mind Map model</name>

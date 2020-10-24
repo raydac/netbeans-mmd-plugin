@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
+import com.igormaznitsa.mindmap.model.TopicFinder;
 import javax.annotation.Nonnull;
 
 /**
@@ -23,7 +24,7 @@ import javax.annotation.Nonnull;
  *
  * @since 1.2
  */
-public interface AttributePlugin extends MindMapPlugin {
+public interface AttributePlugin extends MindMapPlugin, TopicFinder {
 
   /**
    * Attribute name which can be returned if plug-in doesn't process attributes.

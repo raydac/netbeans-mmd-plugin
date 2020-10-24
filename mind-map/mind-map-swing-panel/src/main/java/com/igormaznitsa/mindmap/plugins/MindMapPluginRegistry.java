@@ -20,6 +20,7 @@ import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.model.TopicFinder;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
@@ -61,9 +62,11 @@ import com.igormaznitsa.mindmap.plugins.tools.UnfoldAllPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -74,7 +77,8 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPluginRegistry.class);
   private static final MindMapPluginRegistry INSTANCE = new MindMapPluginRegistry();
   private final List<MindMapPlugin> pluginList = new ArrayList<MindMapPlugin>();
-  private final Map<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>> FIND_CACHE = new HashMap<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>>();
+  private final Map<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>> FIND_CACHE =
+      new HashMap<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>>();
 
   private MindMapPluginRegistry() {
     registerPlugin(new FreeMindExporter());
@@ -120,6 +124,18 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   }
 
   @Nonnull
+  public Set<TopicFinder> findAllTopicFinders() {
+    final Set<TopicFinder> result = new HashSet<>();
+    for (final MindMapPlugin p : this.pluginList) {
+      if (p instanceof TopicFinder) {
+        result.add((TopicFinder) p);
+      }
+    }
+
+    return result;
+  }
+
+  @Nonnull
   public static MindMapPluginRegistry getInstance() {
     return INSTANCE;
   }
@@ -139,7 +155,8 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
       while (iterator.hasNext()) {
         final MindMapPlugin plugin = iterator.next();
         if (pluginClass.isAssignableFrom(plugin.getClass())) {
-          LOGGER.info("Unregistered plugin " + plugin.getClass().getName() + " for class " + pluginClass.getName());
+          LOGGER.info("Unregistered plugin " + plugin.getClass().getName() + " for class " +
+              pluginClass.getName());
           iterator.remove();
         }
       }

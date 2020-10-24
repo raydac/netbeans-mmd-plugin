@@ -40,8 +40,10 @@ import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.TopicFinder;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
@@ -77,7 +79,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
 import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.fileEditor.FileEditorStateLevel;
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -144,6 +145,9 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private final DocumentListener documentListener;
   private final FindTextPanel findTextPanel;
   private boolean dragAcceptableType = false;
+
+  private static final Set<TopicFinder> TOPIC_FINDERS = MindMapPluginRegistry.getInstance()
+      .findAllTopicFinders();
 
   public MindMapDocumentEditor(
       final Project project,
@@ -464,9 +468,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     }
     final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
 
-    Topic found = this.mindMapPanel.getModel().findNext(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    Topic found = this.mindMapPanel.getModel()
+        .findNext(projectBaseFolder, startTopic, pattern, inTopicText, extras, TOPIC_FINDERS);
     if (found == null && startTopic != null) {
-      found = this.mindMapPanel.getModel().findNext(projectBaseFolder, null, pattern, inTopicText, extras);
+      found = this.mindMapPanel.getModel()
+          .findNext(projectBaseFolder, null, pattern, inTopicText, extras, TOPIC_FINDERS);
     }
 
     if (found != null) {
@@ -499,9 +505,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     }
     final boolean inTopicText = provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_TEXT);
 
-    Topic found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, startTopic, pattern, inTopicText, extras);
+    Topic found = this.mindMapPanel.getModel()
+        .findPrev(projectBaseFolder, startTopic, pattern, inTopicText, extras, TOPIC_FINDERS);
     if (found == null && startTopic != null) {
-      found = this.mindMapPanel.getModel().findPrev(projectBaseFolder, null, pattern, inTopicText, extras);
+      found = this.mindMapPanel.getModel()
+          .findPrev(projectBaseFolder, null, pattern, inTopicText, extras, TOPIC_FINDERS);
     }
 
     if (found != null) {

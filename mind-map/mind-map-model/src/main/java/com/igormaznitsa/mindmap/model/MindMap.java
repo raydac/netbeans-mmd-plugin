@@ -50,11 +50,14 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   private static final long serialVersionUID = 5929181596778047354L;
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMap.class);
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s(.+)$"); //NOI18N
-  private static final Pattern PATTERN_ATTRIBUTE = Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*(\\`+)(.*?)\\2"); //NOI18N
+  private static final Pattern PATTERN_ATTRIBUTE =
+      Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*(\\`+)(.*?)\\2"); //NOI18N
   private static final String GENERATOR_VERSION_NAME = "__version__"; //NOI18N
   private final transient Lock locker = new ReentrantLock();
-  private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
-  private final transient List<MindMapModelEventListener> modelEventListeners = new CopyOnWriteArrayList<MindMapModelEventListener>();
+  private final Map<String, String> attributes =
+      new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
+  private final transient List<MindMapModelEventListener> modelEventListeners =
+      new CopyOnWriteArrayList<MindMapModelEventListener>();
 
   @Nullable
   private Topic root;
@@ -84,7 +87,8 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
     while (process) {
       final int oldLexerPosition = lexer.getCurrentPosition().getOffset();
       lexer.advance();
-      final boolean lexerPositionWasNotChanged = oldLexerPosition == lexer.getCurrentPosition().getOffset();
+      final boolean lexerPositionWasNotChanged =
+          oldLexerPosition == lexer.getCurrentPosition().getOffset();
 
       final MindMapLexer.TokenType token = lexer.getTokenType();
       if (token == null || lexerPositionWasNotChanged) {
@@ -111,7 +115,8 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
     this.attributes.put(GENERATOR_VERSION_NAME, FORMAT_VERSION);
   }
 
-  static boolean fillMapByAttributes(@Nonnull final String line, @Nonnull final Map<String, String> map) {
+  static boolean fillMapByAttributes(@Nonnull final String line,
+                                     @Nonnull final Map<String, String> map) {
     final Matcher attrmatcher = PATTERN_ATTRIBUTES.matcher(line);
     if (attrmatcher.find()) {
       final Matcher attrParser = PATTERN_ATTRIBUTE.matcher(attrmatcher.group(1));
@@ -145,10 +150,31 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   }
 
   @Nullable
-  public Topic findNext(@Nullable final File baseFolder, @Nullable final Topic start, @Nonnull final Pattern pattern, final boolean findInTopicText, @Nullable final Set<Extra.ExtraType> extrasToFind) {
+  public Topic findNext(@Nullable final File baseFolder, @Nullable final Topic start,
+                        @Nonnull final Pattern pattern, final boolean findInTopicText,
+                        @Nullable final Set<Extra.ExtraType> extrasToFind) {
+    return this.findNext(baseFolder, start, pattern, findInTopicText, extrasToFind, null);
+  }
+
+  @Nullable
+  public Topic findNext(
+      @Nullable final File baseFolder,
+      @Nullable final Topic start,
+      @Nonnull final Pattern pattern,
+      final boolean findInTopicText,
+      @Nullable final Set<Extra.ExtraType> extrasToFind,
+      @Nullable final Set<TopicFinder> topicFinders
+  ) {
     if (start != null && start.getMap() != this) {
       throw new IllegalArgumentException("Topic doesn't belong to the mind map");
     }
+
+    final boolean findPluginNote = (extrasToFind != null && !extrasToFind.isEmpty())
+        && (topicFinders != null && !topicFinders.isEmpty())
+        && extrasToFind.contains(Extra.ExtraType.NOTE);
+    final boolean findPluginFile = (extrasToFind != null && !extrasToFind.isEmpty())
+        && (topicFinders != null && !topicFinders.isEmpty())
+        && extrasToFind.contains(Extra.ExtraType.FILE);
 
     Topic result = null;
 
@@ -159,6 +185,15 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
         if (startFound) {
           if (t.containsPattern(baseFolder, pattern, findInTopicText, extrasToFind)) {
             result = t;
+          } else if (topicFinders != null) {
+            for (TopicFinder f : topicFinders) {
+              if (f.doesTopicContentMatches(t, baseFolder, pattern, extrasToFind)) {
+                result = t;
+                break;
+              }
+            }
+          }
+          if (result != null) {
             break;
           }
         } else if (t == start) {
@@ -173,7 +208,21 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   }
 
   @Nullable
-  public Topic findPrev(@Nullable final File baseFolder, @Nullable final Topic start, @Nonnull final Pattern pattern, final boolean findInTopicText, @Nullable final Set<Extra.ExtraType> extrasForSearch) {
+  public Topic findPrev(@Nullable final File baseFolder, @Nullable final Topic start,
+                        @Nonnull final Pattern pattern, final boolean findInTopicText,
+                        @Nullable final Set<Extra.ExtraType> extrasToFind) {
+    return this.findPrev(baseFolder, start, pattern, findInTopicText, extrasToFind, null);
+  }
+
+  @Nullable
+  public Topic findPrev(
+      @Nullable final File baseFolder,
+      @Nullable final Topic start,
+      @Nonnull final Pattern pattern,
+      final boolean findInTopicText,
+      @Nullable final Set<Extra.ExtraType> extrasToFind,
+      @Nullable final Set<TopicFinder> topicFinders
+  ) {
     if (start != null && start.getMap() != this) {
       throw new IllegalArgumentException("Topic doesn't belong to the mind map");
     }
@@ -188,11 +237,17 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
         throw new IllegalArgumentException("It looks like that topic doesn't belong to the mind map");
       }
       if (startIndex > 0) {
-        while (startIndex > 0) {
+        while (startIndex > 0 && result == null) {
           final Topic candidate = plain.get(--startIndex);
-          if (candidate.containsPattern(baseFolder, pattern, findInTopicText, extrasForSearch)) {
+          if (candidate.containsPattern(baseFolder, pattern, findInTopicText, extrasToFind)) {
             result = candidate;
-            break;
+          } else if (topicFinders != null) {
+            for (TopicFinder f : topicFinders) {
+              if (f.doesTopicContentMatches(candidate, baseFolder, pattern, extrasToFind)) {
+                result = candidate;
+                break;
+              }
+            }
           }
         }
       }
@@ -270,14 +325,16 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
 
   private void fireModelChanged() {
     final Topic rootTopic = this.root;
-    final MindMapModelEvent evt = new MindMapModelEvent(this, rootTopic == null ? null : rootTopic.getPath());
+    final MindMapModelEvent evt =
+        new MindMapModelEvent(this, rootTopic == null ? null : rootTopic.getPath());
     for (final MindMapModelEventListener l : this.modelEventListeners) {
       l.onMindMapStructureChanged(evt);
     }
   }
 
   private void fireTopicChanged(@Nullable final Topic topic) {
-    final MindMapModelEvent evt = new MindMapModelEvent(this, topic == null ? null : topic.getPath());
+    final MindMapModelEvent evt =
+        new MindMapModelEvent(this, topic == null ? null : topic.getPath());
     for (final MindMapModelEventListener l : this.modelEventListeners) {
       l.onMindMapNodesChanged(evt);
     }
@@ -345,7 +402,8 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
 
   @Nonnull
   @MustNotContainNull
-  public List<Topic> removeNonExistingTopics(@Nonnull @MustNotContainNull final List<Topic> origList) {
+  public List<Topic> removeNonExistingTopics(
+      @Nonnull @MustNotContainNull final List<Topic> origList) {
     final List<Topic> result = new ArrayList<Topic>();
     final Topic rootTopic = this.root;
     if (rootTopic != null) {
@@ -412,7 +470,8 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
       out.append("Mind Map generated by NB MindMap plugin").append(NEXT_PARAGRAPH); //NOI18N
       this.attributes.put(GENERATOR_VERSION_NAME, FORMAT_VERSION);
       if (!this.attributes.isEmpty()) {
-        out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE); //NOI18N
+        out.append("> ").append(MindMap.allAttributesAsString(this.attributes))
+            .append(NEXT_LINE); //NOI18N
       }
       out.append("---").append(NEXT_LINE); //NOI18N
       final Topic rootTopic = this.root;
@@ -516,7 +575,9 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
     return result;
   }
 
-  private void _findAllTopicsForExtraType(@Nonnull final Topic topic, @Nonnull final Extra.ExtraType type, @Nonnull @MustNotContainNull final List<Topic> result) {
+  private void _findAllTopicsForExtraType(@Nonnull final Topic topic,
+                                          @Nonnull final Extra.ExtraType type,
+                                          @Nonnull @MustNotContainNull final List<Topic> result) {
     if (topic.getExtras().containsKey(type)) {
       result.add(topic);
     }
@@ -538,7 +599,8 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
     return !node.hasChildren();
   }
 
-  public void valueForPathChanged(@Nonnull @MustNotContainNull final Topic[] path, @Nullable final String newValue) {
+  public void valueForPathChanged(@Nonnull @MustNotContainNull final Topic[] path,
+                                  @Nullable final String newValue) {
     if (path.length > 0) {
       final Topic target = path[path.length - 1];
       target.setText(GetUtils.ensureNonNull(newValue, ""));
@@ -589,7 +651,9 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
     return changed;
   }
 
-  public boolean replaceAllLinksToFile(@Nonnull final File baseFolder, @Nonnull final MMapURI oldFile, @Nonnull final MMapURI newFile) {
+  public boolean replaceAllLinksToFile(@Nonnull final File baseFolder,
+                                       @Nonnull final MMapURI oldFile,
+                                       @Nonnull final MMapURI newFile) {
     boolean changed = false;
     final Topic rootTopic = this.root;
     if (rootTopic != null) {

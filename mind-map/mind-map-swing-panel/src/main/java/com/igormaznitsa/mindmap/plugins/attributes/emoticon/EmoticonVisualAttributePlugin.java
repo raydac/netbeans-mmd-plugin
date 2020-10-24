@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
+import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
@@ -26,8 +27,11 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Image;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -39,7 +43,8 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   @Nullable
-  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config, @Nonnull final Topic topic) {
+  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config,
+                                   @Nonnull final Topic topic) {
     final String name = topic.getAttribute(ATTR_KEY);
     if (name == null) {
       return null;
@@ -54,7 +59,24 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean onClick(final @Nonnull PluginContext context, final @Nonnull Topic topic, final boolean activeGroupModifier, final int clickCount) {
+  public boolean doesTopicContentMatches(@Nonnull Topic topic, @Nullable File baseFolder,
+                                         @Nonnull Pattern pattern,
+                                         @Nullable Set<Extra.ExtraType> extraTypes) {
+
+    boolean result = false;
+    if (extraTypes != null && extraTypes.contains(Extra.ExtraType.NOTE)) {
+      final String name = topic.getAttribute(ATTR_KEY);
+      if (name != null) {
+        result = pattern.matcher(name).find();
+      }
+    }
+    return result;
+  }
+
+
+  @Override
+  public boolean onClick(final @Nonnull PluginContext context, final @Nonnull Topic topic,
+                         final boolean activeGroupModifier, final int clickCount) {
     return false;
   }
 
