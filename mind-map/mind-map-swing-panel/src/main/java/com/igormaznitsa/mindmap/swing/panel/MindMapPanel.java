@@ -117,6 +117,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class MindMapPanel extends JComponent implements ClipboardOwner {
 
+  private static final int MIN_DISTANCE_FOR_TOPIC_DRAGGING_START = 8;  
+    
   public static final long serialVersionUID = 2783412123454232L;
   public static final String ATTR_SHOW_JUMPS = "showJumps";
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanel.class);
@@ -153,7 +155,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
   private final UUID uuid = UUID.randomUUID();
-
+  private Point lastMousePressed = null;
+  
   @Nonnull
   public UUID getUuid() {
     return this.uuid;
@@ -513,7 +516,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       @Override
       public void mousePressed(@Nonnull final MouseEvent e) {
         if (!e.isConsumed() && lockIfNotDisposed()) {
-          try {
+            lastMousePressed = e.getPoint();
+            try {
             if (!controller.isMouseClickProcessingAllowed(theInstance)) {
               return;
             }
@@ -603,6 +607,18 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         return part != ElementPart.COLLAPSATOR;
       }
 
+      private boolean isDraggedDistanceReached(@Nonnull final MouseEvent dragEvent) {
+          boolean result = false;
+          if (lastMousePressed != null) {
+              final Point dragPoint = dragEvent.getPoint();
+              final int dx = lastMousePressed.x - dragEvent.getX();
+              final int dy = lastMousePressed.y - dragEvent.getY();
+              final double distance = Math.sqrt(dx*dx+dy*dy);
+              result = distance >= MIN_DISTANCE_FOR_TOPIC_DRAGGING_START;
+          }
+          return result;
+      }
+      
       @Override
       public void mouseDragged(@Nonnull final MouseEvent e) {
         if (!e.isConsumed() && lockIfNotDisposed()) {
@@ -624,7 +640,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                     }
                   }
                 } else if (controller.isElementDragAllowed(theInstance)) {
-                  if (elementUnderMouse.isMoveable() && isNonOverCollapsator(e, elementUnderMouse)) {
+                  if (elementUnderMouse.isMoveable() && isNonOverCollapsator(e, elementUnderMouse) && isDraggedDistanceReached(e)) {
                     selectedTopics.clear();
 
                     final Point mouseOffset = new Point((int) Math.round(e.getPoint().getX() - elementUnderMouse.getBounds().getX()), (int) Math.round(e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
