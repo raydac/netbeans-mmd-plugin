@@ -38,6 +38,7 @@ import javax.imageio.ImageIO;
 public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   public static final String ATTR_KEY = "mmd.image";
+  public static final String ATTR_IMAGE_NAME = "mmd.image.name";
   public static final String ATTR_IMAGE_URI_KEY = "mmd.image.uri";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageVisualAttributePlugin.class);
@@ -49,7 +50,8 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   @Nullable
-  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config, @Nonnull final Topic activeTopic) {
+  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config,
+                                   @Nonnull final Topic activeTopic) {
     Renderable result = CACHED_IMAGES.get(activeTopic);
     if (result == null) {
       result = new ScalableRenderableImage(extractImage(activeTopic));
@@ -73,14 +75,16 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean onClick(@Nonnull final PluginContext context, @Nonnull final Topic topic, final boolean activeGroupModifier, final int clickCount) {
+  public boolean onClick(@Nonnull final PluginContext context, @Nonnull final Topic topic,
+                         final boolean activeGroupModifier, final int clickCount) {
     if (clickCount > 1) {
       final String imageFilePathUri = topic.getAttribute(ATTR_IMAGE_URI_KEY);
       if (imageFilePathUri != null) {
         try {
           context.openFile(new MMapURI(imageFilePathUri).asFile(context.getProjectFolder()), false);
         } catch (URISyntaxException ex) {
-          context.getDialogProvider().msgWarn(context.getPanel(), "URI syntax exception: " + imageFilePathUri);
+          context.getDialogProvider()
+              .msgWarn(context.getPanel(), "URI syntax exception: " + imageFilePathUri);
         }
       }
     } else {
@@ -95,11 +99,16 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   @Override
   @Nullable
   public String getToolTip(@Nonnull final PluginContext context, @Nonnull final Topic activeTopic) {
-    return activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
+    String result = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
+    if (result == null) {
+      result = activeTopic.getAttribute(ATTR_IMAGE_NAME);
+    }
+    return result;
   }
 
   @Override
-  public boolean isClickable(@Nonnull final PluginContext context, @Nonnull final Topic activeTopic) {
+  public boolean isClickable(@Nonnull final PluginContext context,
+                             @Nonnull final Topic activeTopic) {
     final String imageFilePath = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
     return imageFilePath != null;
   }

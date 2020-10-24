@@ -49,6 +49,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FilenameUtils;
 
 public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
@@ -85,7 +86,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
           if (context.getDialogProvider().msgConfirmYesNo(null, BUNDLE.getString("Images.Plugin.Remove.Dialog.Title"), BUNDLE.getString("Images.Plugin.Remove.Dialog.Text"))) {//NOI18N
-            setAttribute(null, activeTopic, null, context);
+            setAttribute(context, activeTopic, null, null, null);
             ImageVisualAttributePlugin.clearCachedImages();
             context.getPanel().doNotifyModelChanged(true);
           }
@@ -114,7 +115,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
                 try {
                   final String rescaledImageAsBase64 = Utils.rescaleImageAndEncodeAsBase64((Image) transferable.getTransferData(DataFlavor.imageFlavor), Utils.getMaxImageSize());
                   final String filePath = null;
-                  setAttribute(rescaledImageAsBase64, activeTopic, filePath, context);
+                  setAttribute(context, activeTopic, rescaledImageAsBase64, filePath, null);
                   context.getPanel().doNotifyModelChanged(true);
                 } catch (final IllegalArgumentException ex) {
                   context.getDialogProvider().msgError(null, BUNDLE.getString("Images.Plugin.Error"));
@@ -135,14 +136,16 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
                 context.getDialogProvider().msgOpenFileDialog(context.getPanel(), ImagePopUpMenuPlugin.class.getName(), BUNDLE.getString("Images.Plugin.Load.DialogTitle"), PATH_STORE.find(context, context.getPanel().getUuid().toString()), true, new FileFilter[] {IMAGE_FILE_FILTER}, BUNDLE.getString("Images.Plugin.Load.Dialog.Button.Open"))); //NOI18N
             if (selected != null) {
               try {
-                final String rescaledImageAsBase64 = Utils.rescaleImageAndEncodeAsBase64(selected, Utils.getMaxImageSize());
+                final String rescaledImageAsBase64 =
+                    Utils.rescaleImageAndEncodeAsBase64(selected, Utils.getMaxImageSize());
+                final String fileName = FilenameUtils.getBaseName(selected.getName());
                 final String filePath;
                 if (context.getDialogProvider().msgConfirmYesNo(SwingUtilities.windowForComponent(context.getPanel()), BUNDLE.getString("Images.Plugin.Question.AddFilePath.Title"), BUNDLE.getString("Images.Plugin.Question.AddFilePath"))) {
                   filePath = MMapURI.makeFromFilePath(context.getProjectFolder(), selected.getAbsolutePath(), null).toString();
                 } else {
                   filePath = null;
                 }
-                setAttribute(rescaledImageAsBase64, activeTopic, filePath, context);
+                setAttribute(context, activeTopic, rescaledImageAsBase64, filePath, fileName);
                 context.getPanel().doNotifyModelChanged(true);
               } catch (final IllegalArgumentException ex) {
                 context.getDialogProvider().msgError(null, BUNDLE.getString("Images.Plugin.Error"));
@@ -215,14 +218,28 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     return result;
   }
 
-  private void setAttribute(@Nullable final String packedImage, @Nullable final Topic activeTopic, @Nullable final String imageFilePath, @Nullable final PluginContext context) {
+  private void setAttributeToTopic(
+      @Nonnull final Topic topic,
+      @Nullable final String packedImage,
+      @Nullable final String imageFilePath,
+      @Nullable final String imageName
+  ) {
+    topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
+    topic.setAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_NAME, imageName);
+    topic.setAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_URI_KEY, imageFilePath);
+  }
+
+  private void setAttribute(@Nullable final PluginContext context,
+                            @Nullable final Topic activeTopic,
+                            @Nullable final String packedImage,
+                            @Nullable final String imageFilePath,
+                            @Nullable final String imageName
+  ) {
     if (activeTopic != null) {
-      activeTopic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
-      activeTopic.setAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_URI_KEY, imageFilePath);
+      setAttributeToTopic(activeTopic, packedImage, imageFilePath, imageName);
     }
     for (final Topic t : context.getSelectedTopics()) {
-      t.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
-      t.setAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_URI_KEY, imageFilePath);
+      this.setAttributeToTopic(t, packedImage, imageFilePath, imageName);
     }
   }
 
