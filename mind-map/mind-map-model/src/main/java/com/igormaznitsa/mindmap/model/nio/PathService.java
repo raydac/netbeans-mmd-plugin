@@ -22,8 +22,8 @@ import javax.annotation.Nonnull;
 
 public interface PathService {
   @Nonnull
-  public Path getForFile(@Nonnull File file);
+  Path getForFile(@Nonnull File file);
 
   @Nonnull
-  public Path getForPathItems(@Nonnull String first, @MustNotContainNull @Nonnull String... items);
+  Path getForPathItems(@Nonnull String first, @MustNotContainNull @Nonnull String... items);
 }

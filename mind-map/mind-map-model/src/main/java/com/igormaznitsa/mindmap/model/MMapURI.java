@@ -47,7 +47,8 @@ public class MMapURI implements Serializable {
   }
 
   public MMapURI(@Nonnull final URI uri) {
-    this.fileUriFlag = Assertions.assertNotNull(uri).getScheme() == null ? true : uri.getScheme().equalsIgnoreCase("file"); //NOI18N
+    this.fileUriFlag = Assertions.assertNotNull(uri).getScheme() == null ||
+        uri.getScheme().equalsIgnoreCase("file"); //NOI18N
 
     final URI preparedURI;
 
@@ -58,7 +59,8 @@ public class MMapURI implements Serializable {
         try {
           final String uriAsString = uri.toString();
           final int queryStart = uriAsString.lastIndexOf('?');
-          preparedURI = new URI(queryStart >= 0 ? uriAsString.substring(0, queryStart) : uriAsString);
+          preparedURI =
+              new URI(queryStart >= 0 ? uriAsString.substring(0, queryStart) : uriAsString);
         } catch (URISyntaxException ex) {
           throw new Error("Unexpected error", ex);
         }
@@ -72,13 +74,15 @@ public class MMapURI implements Serializable {
     this.uri = preparedURI;
   }
 
-  private MMapURI(@Nonnull final URI uri, final boolean isFile, @Nullable final Properties properties) {
+  private MMapURI(@Nonnull final URI uri, final boolean isFile,
+                  @Nullable final Properties properties) {
     this.uri = uri;
     this.fileUriFlag = isFile;
     this.parameters = properties == null ? new Properties() : (Properties) properties.clone();
   }
 
-  public MMapURI(@Nullable final File nullableBase, @Nonnull final File file, @Nullable final Properties nullableParameters) {
+  public MMapURI(@Nullable final File nullableBase, @Nonnull final File file,
+                 @Nullable final Properties nullableParameters) {
     this.fileUriFlag = true;
     this.parameters = new Properties();
     if (nullableParameters != null && !nullableParameters.isEmpty()) {
@@ -114,7 +118,8 @@ public class MMapURI implements Serializable {
 
   @SuppressWarnings("ConstantConditions")
   @Nonnull
-  public static MMapURI makeFromFilePath(@Nullable final File base, @Nonnull final String filePath, @Nullable final Properties properties) {
+  public static MMapURI makeFromFilePath(@Nullable final File base, @Nonnull final String filePath,
+                                         @Nullable final Properties properties) {
     return new MMapURI(base, ModelUtils.makeFileForPath(filePath), properties);
   }
 
@@ -151,7 +156,9 @@ public class MMapURI implements Serializable {
   }
 
   @Nonnull
-  public MMapURI replaceBaseInPath(final boolean replaceHost, @Nonnull final URI newBase, int currentNumberOfResourceItemsTheLasIsZero) throws URISyntaxException {
+  public MMapURI replaceBaseInPath(final boolean replaceHost, @Nonnull final URI newBase,
+                                   int currentNumberOfResourceItemsTheLasIsZero)
+      throws URISyntaxException {
     final String newURIPath = newBase.getPath();
     final String[] splittedNewPath = newURIPath.split("\\/");
     final String[] splittedOldPath = this.uri.getPath().split("\\/");
@@ -232,7 +239,8 @@ public class MMapURI implements Serializable {
   public URI asURI() {
     if (this.fileUriFlag) {
       try {
-        return new URI(this.uri.toASCIIString() + (this.parameters.isEmpty() ? "" : '?' + ModelUtils.makeQueryStringForURI(this.parameters)));
+        return new URI(this.uri.toASCIIString() + (this.parameters.isEmpty() ? "" :
+            '?' + ModelUtils.makeQueryStringForURI(this.parameters)));
       } catch (URISyntaxException ex) {
         throw new Error("Unexpected error during URI convertation"); //NOI18N
       }
@@ -261,7 +269,9 @@ public class MMapURI implements Serializable {
   @Nonnull
   public String asString(final boolean ascII, final boolean addPropertiesAsQuery) {
     if (this.fileUriFlag) {
-      return (ascII ? this.uri.toASCIIString() : this.uri.toString()) + (!addPropertiesAsQuery || this.parameters.isEmpty() ? "" : '?' + ModelUtils.makeQueryStringForURI(this.parameters)); //NOI18N
+      return (ascII ? this.uri.toASCIIString() : this.uri.toString()) +
+          (!addPropertiesAsQuery || this.parameters.isEmpty() ? "" :
+              '?' + ModelUtils.makeQueryStringForURI(this.parameters)); //NOI18N
     } else {
       return ascII ? this.uri.toASCIIString() : this.uri.toString();
     }

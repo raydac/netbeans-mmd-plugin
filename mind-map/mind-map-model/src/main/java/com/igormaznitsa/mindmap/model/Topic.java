@@ -30,7 +30,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +48,19 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   private static final long serialVersionUID = -4642569244907433215L;
   private static final AtomicLong LOCALUID_GENERATOR = new AtomicLong();
-  private static Logger logger = LoggerFactory.getLogger(Topic.class);
-  private final EnumMap<Extra.ExtraType, Extra<?>> extras = new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
-  private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras = Collections.unmodifiableMap(this.extras);
-  private final Map<String, String> attributes = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
-  private final Map<String, String> unmodifableAttributes = Collections.unmodifiableMap(this.attributes);
-  private final Map<String, String> codeSnippets = new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
-  private final Map<String, String> unmodifableCodeSnippets = Collections.unmodifiableMap(this.codeSnippets);
+  private static final Logger logger = LoggerFactory.getLogger(Topic.class);
+  private final EnumMap<Extra.ExtraType, Extra<?>> extras =
+      new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
+  private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras =
+      Collections.unmodifiableMap(this.extras);
+  private final Map<String, String> attributes =
+      new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
+  private final Map<String, String> unmodifableAttributes =
+      Collections.unmodifiableMap(this.attributes);
+  private final Map<String, String> codeSnippets =
+      new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
+  private final Map<String, String> unmodifableCodeSnippets =
+      Collections.unmodifiableMap(this.codeSnippets);
   @Nonnull
   private final List<Topic> children = new ArrayList<Topic>();
   @Nonnull
@@ -76,7 +84,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
    *                     false otherwise
    * @since 1.2.2
    */
-  public Topic(@Nonnull final MindMap mindMap, @Nonnull final Topic base, final boolean copyChildren) {
+  public Topic(@Nonnull final MindMap mindMap, @Nonnull final Topic base,
+               final boolean copyChildren) {
     this(mindMap, base.text);
     this.attributes.putAll(base.attributes);
     this.extras.putAll(base.extras);
@@ -91,7 +100,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
-  public Topic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final String text, @Nonnull @MayContainNull final Extra<?>... extras) {
+  public Topic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final String text,
+               @Nonnull @MayContainNull final Extra<?>... extras) {
     this(map, text, extras);
     this.parent = parent;
 
@@ -103,7 +113,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
-  private Topic(@Nonnull final MindMap map, @Nonnull final String text, @Nonnull @MayContainNull final Extra<?>... extras) {
+  private Topic(@Nonnull final MindMap map, @Nonnull final String text,
+                @Nonnull @MayContainNull final Extra<?>... extras) {
     this.map = Assertions.assertNotNull(map);
     this.text = Assertions.assertNotNull(text);
 
@@ -115,7 +126,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   @Nullable
-  public static Topic parse(@Nonnull final MindMap map, @Nonnull final MindMapLexer lexer) throws IOException {
+  public static Topic parse(@Nonnull final MindMap map, @Nonnull final MindMapLexer lexer)
+      throws IOException {
     map.lock();
     try {
       Topic topic = null;
@@ -131,7 +143,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       while (true) {
         final int oldLexerPosition = lexer.getCurrentPosition().getOffset();
         lexer.advance();
-        final boolean lexerPositionWasNotChanged = oldLexerPosition == lexer.getCurrentPosition().getOffset();
+        final boolean lexerPositionWasNotChanged =
+            oldLexerPosition == lexer.getCurrentPosition().getOffset();
 
         final MindMapLexer.TokenType token = lexer.getTokenType();
         if (token == null || lexerPositionWasNotChanged) {
@@ -203,9 +216,10 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
             if (topic != null && extraType != null) {
               try {
                 final String text = lexer.getTokenText();
-                final String groupPre = extraType.preprocessString(text.substring(5, text.length() - 6));
+                final String groupPre =
+                    extraType.preprocessString(text.substring(5, text.length() - 6));
                 if (groupPre != null) {
-                  topic.setExtra(extraType.parseLoaded(groupPre));
+                  topic.setExtra(extraType.parseLoaded(groupPre, topic.attributes));
                 } else {
                   logger.error("Detected invalid extra data " + extraType);
                 }
@@ -278,7 +292,9 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return result;
   }
 
-  public boolean containsPattern(final @Nullable File baseFolder, final @Nonnull Pattern pattern, final boolean findInTopicText, @Nullable final Set<Extra.ExtraType> extrasForSearch) {
+  public boolean containsPattern(final @Nullable File baseFolder, final @Nonnull Pattern pattern,
+                                 final boolean findInTopicText,
+                                 @Nullable final Set<Extra.ExtraType> extrasForSearch) {
     boolean result = false;
 
     if (findInTopicText && pattern.matcher(this.text).find()) {
@@ -389,7 +405,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   @MustNotContainNull
   public Extra<?>[] extrasToArray() {
     final Collection<Extra<?>> collection = this.unmodifableExtras.values();
-    return collection.toArray(new Extra<?>[collection.size()]);
+    return collection.toArray(new Extra<?>[0]);
   }
 
   @Nonnull
@@ -622,19 +638,38 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     ModelUtils.writeChar(out, '#', level);
     out.append(' ').append(ModelUtils.escapeMarkdownStr(this.text)).append(NEXT_LINE);
 
-    if (!this.attributes.isEmpty()) {
-      out.append("> ").append(MindMap.allAttributesAsString(this.attributes)).append(NEXT_LINE).append(NEXT_LINE); //NOI18N
+    if (!this.attributes.isEmpty() || !this.extras.isEmpty()) {
+      final Map<String, String> attributesToWrite = new HashMap<String, String>(this.attributes);
+      for (final Map.Entry<Extra.ExtraType, Extra<?>> e : this.extras.entrySet()) {
+        e.getValue().addAttributesForWrite(attributesToWrite);
+      }
+
+      if (!attributesToWrite.isEmpty()) {
+        out.append("> ").append(MindMap.allAttributesAsString(attributesToWrite)).append(NEXT_LINE)
+            .append(NEXT_LINE); //NOI18N
+      }
     }
 
-    for (final Map.Entry<Extra.ExtraType, Extra<?>> e : this.extras.entrySet()) {
-      e.getValue().write(out);
-      out.append(NEXT_LINE);
+    if (!this.extras.entrySet().isEmpty()) {
+      final List<Extra.ExtraType> types = new ArrayList<Extra.ExtraType>(this.extras.keySet());
+      Collections.sort(types, new Comparator<Extra.ExtraType>() {
+        @Override
+        public int compare(@Nonnull final Extra.ExtraType o1, @Nonnull final Extra.ExtraType o2) {
+          return o1.name().compareTo(o2.name());
+        }
+      });
+
+      for (final Extra.ExtraType e : types) {
+        this.extras.get(e).write(out);
+        out.append(NEXT_LINE);
+      }
     }
 
     if (!this.codeSnippets.isEmpty()) {
-      for (final Map.Entry<String, String> e : this.codeSnippets.entrySet()) {
-        final String language = e.getKey();
-        final String body = e.getValue();
+      final List<String> sortedKeys = new ArrayList<String>(this.codeSnippets.keySet());
+      Collections.sort(sortedKeys);
+      for (final String language : sortedKeys) {
+        final String body = this.codeSnippets.get(language);
         out.append("```").append(language).append(NEXT_LINE);
         out.append(body);
         if (!body.endsWith("\n")) {
@@ -728,7 +763,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   public boolean moveToNewParent(@Nullable final Topic newParent) {
     this.map.lock();
     try {
-      if (newParent == null || this == newParent || this.getParent() == newParent || this.children.contains(newParent)) {
+      if (newParent == null || this == newParent || this.getParent() == newParent ||
+          this.children.contains(newParent)) {
         return false;
       }
 
@@ -750,7 +786,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     this.map.lock();
     try {
       final Topic result = new Topic(this.map, this, GetUtils.ensureNonNull(text, "")); //NOI18N
-      if (afterTheTopic != null && this.children.indexOf(afterTheTopic) >= 0) {
+      if (afterTheTopic != null && this.children.contains(afterTheTopic)) {
         result.moveAfter(afterTheTopic);
       }
       return result;
@@ -872,14 +908,15 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       current = current.parent;
     }
     while (current != null);
-    return list.toArray(new Topic[list.size()]);
+    return list.toArray(new Topic[0]);
   }
 
   @Nonnull
   Topic makeCopy(@Nonnull final MindMap newMindMap, @Nullable final Topic parent) {
     this.map.lock();
     try {
-      final Topic result = new Topic(newMindMap, parent, this.text, this.extras.values().toArray(new Extra<?>[this.extras.values().size()]));
+      final Topic result = new Topic(newMindMap, parent, this.text,
+          this.extras.values().toArray(new Extra<?>[0]));
       for (final Topic c : this.children) {
         c.makeCopy(newMindMap, result);
       }
@@ -892,7 +929,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
-  public boolean removeExtraFromSubtree(@Nonnull @MustNotContainNull final Extra.ExtraType... type) {
+  public boolean removeExtraFromSubtree(
+      @Nonnull @MustNotContainNull final Extra.ExtraType... type) {
     boolean result = false;
 
     this.map.lock();
@@ -926,7 +964,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
-  public boolean deleteLinkToFileIfPresented(@Nonnull final File baseFolder, @Nonnull final MMapURI file) {
+  public boolean deleteLinkToFileIfPresented(@Nonnull final File baseFolder,
+                                             @Nonnull final MMapURI file) {
     boolean result = false;
     if (this.extras.containsKey(Extra.ExtraType.FILE)) {
       final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
@@ -940,7 +979,9 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return result;
   }
 
-  public boolean replaceLinkToFileIfPresented(@Nonnull final File baseFolder, @Nonnull final MMapURI oldFile, @Nonnull final MMapURI newFile) {
+  public boolean replaceLinkToFileIfPresented(@Nonnull final File baseFolder,
+                                              @Nonnull final MMapURI oldFile,
+                                              @Nonnull final MMapURI newFile) {
     boolean result = false;
     if (this.extras.containsKey(Extra.ExtraType.FILE)) {
       final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
@@ -1004,7 +1045,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
       @Override
       public boolean hasNext() {
-        return iter.hasNext() || this.childTopic != null || (this.childIterator != null && this.childIterator.hasNext());
+        return iter.hasNext() || this.childTopic != null ||
+            (this.childIterator != null && this.childIterator.hasNext());
       }
 
       @Nonnull
@@ -1037,7 +1079,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
    * @return true if code snippet is detected for any language, false otherwise
    * @since 1.3.1
    */
-  public boolean doesContainCodeSnippetForAnyLanguage(@Nonnull @MustNotContainNull String... languageNames) {
+  public boolean doesContainCodeSnippetForAnyLanguage(
+      @Nonnull @MustNotContainNull String... languageNames) {
     boolean result = false;
     if (!this.codeSnippets.isEmpty()) {
       for (final String s : languageNames) {

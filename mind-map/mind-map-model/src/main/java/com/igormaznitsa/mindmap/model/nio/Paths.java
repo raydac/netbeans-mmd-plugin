@@ -32,7 +32,8 @@ public final class Paths {
   private static final PathService PATH_SERVICE;
 
   static {
-    final ServiceLoader<PathService> service = ServiceLoader.load(PathService.class, Paths.class.getClassLoader());
+    final ServiceLoader<PathService> service =
+        ServiceLoader.load(PathService.class, Paths.class.getClassLoader());
     service.reload();
     final Iterator<PathService> iterator = service.iterator();
     PATH_SERVICE = iterator.hasNext() ? iterator.next() : new J7PathService();
@@ -46,7 +47,8 @@ public final class Paths {
   }
 
   @Nonnull
-  public static Path get(@Nonnull final String string, @Nonnull @MustNotContainNull final String[] next) {
+  public static Path get(@Nonnull final String string,
+                         @Nonnull @MustNotContainNull final String[] next) {
     return PATH_SERVICE.getForPathItems(string, next);
   }
 

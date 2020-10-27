@@ -41,7 +41,8 @@ public final class MindMapLexer {
     return this.tokenEnd;
   }
 
-  public void start(@Nonnull final CharSequence buffer, final int startOffset, final int endOffset, @Nonnull final MindMapLexer.TokenType initialState) {
+  public void start(@Nonnull final CharSequence buffer, final int startOffset, final int endOffset,
+                    @Nonnull final MindMapLexer.TokenType initialState) {
     this.buffer = buffer;
     this.tokenType = initialState;
     this.position.offset = startOffset;
@@ -117,7 +118,9 @@ public final class MindMapLexer {
                   tokenHasBeenCompleted = false;
                   inAction = false;
                 } else {
-                  this.position.state = readChar() == ' ' ? chr == '>' ? TokenType.ATTRIBUTE : TokenType.EXTRA_TYPE : TokenType.UNKNOWN_LINE;
+                  this.position.state =
+                      readChar() == ' ' ? chr == '>' ? TokenType.ATTRIBUTE : TokenType.EXTRA_TYPE :
+                          TokenType.UNKNOWN_LINE;
                 }
               }
               break;
@@ -211,7 +214,8 @@ public final class MindMapLexer {
         break;
         case UNKNOWN_LINE: {
           if (tokenStartsWith("```")) {
-            this.tokenType = isAllLineFromChars('`') ? TokenType.CODE_SNIPPET_END : TokenType.CODE_SNIPPET_START;
+            this.tokenType =
+                isAllLineFromChars('`') ? TokenType.CODE_SNIPPET_END : TokenType.CODE_SNIPPET_START;
             this.position.state = this.tokenType;
           }
         }

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,6 +40,9 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
 
   @Nonnull
   public abstract String getAsString();
+
+  void addAttributesForWrite(@Nonnull final Map<String, String> attributesForWrite) {
+  }
 
   @Nonnull
   public abstract String provideAsStringForSave();
@@ -86,15 +90,19 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
     }
 
     @Nonnull
-    public Extra<?> parseLoaded(@Nonnull final String text) throws URISyntaxException {
+    public Extra<?> parseLoaded(@Nonnull final String text, @Nonnull Map<String, String> attributes)
+        throws URISyntaxException {
       final String preprocessed = StringEscapeUtils.unescapeHtml(text);
       switch (this) {
         case FILE:
           return new ExtraFile(preprocessed);
         case LINK:
           return new ExtraLink(preprocessed);
-        case NOTE:
-          return new ExtraNote(preprocessed);
+        case NOTE: {
+          final boolean encrypted = Boolean.parseBoolean(attributes.get(ExtraNote.ATTR_ENCRYPTED));
+          final String passwordTip = attributes.get(ExtraNote.ATTR_PASSWORD_TIP);
+          return new ExtraNote(preprocessed, encrypted, passwordTip);
+        }
         case TOPIC:
           return new ExtraTopic(preprocessed);
         default:

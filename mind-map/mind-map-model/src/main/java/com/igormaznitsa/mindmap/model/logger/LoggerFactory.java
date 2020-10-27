@@ -28,11 +28,13 @@ public final class LoggerFactory {
   private static final LoggerService LOGGER_SERVICE;
 
   static {
-    final ServiceLoader<LoggerService> service = ServiceLoader.load(LoggerService.class, LoggerFactory.class.getClassLoader());
+    final ServiceLoader<LoggerService> service =
+        ServiceLoader.load(LoggerService.class, LoggerFactory.class.getClassLoader());
     service.reload();
     final Iterator<LoggerService> iterator = service.iterator();
     LOGGER_SERVICE = iterator.hasNext() ? iterator.next() : new JavaLoggerServiceImpl();
-    LOGGER_SERVICE.getLogger(LoggerFactory.class).info("Detected MindMap Logger Service: " + LOGGER_SERVICE.getClass().getName());
+    LOGGER_SERVICE.getLogger(LoggerFactory.class)
+        .info("Detected MindMap Logger Service: " + LOGGER_SERVICE.getClass().getName());
   }
 
   @Nonnull

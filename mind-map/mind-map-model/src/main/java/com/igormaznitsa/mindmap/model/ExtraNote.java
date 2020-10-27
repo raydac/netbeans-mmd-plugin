@@ -17,17 +17,50 @@
 package com.igormaznitsa.mindmap.model;
 
 import java.io.File;
+import java.util.Map;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ExtraNote extends Extra<String> {
-  private static final long serialVersionUID = 8612886872756838947L;
-
+  public static final String ATTR_ENCRYPTED = "extra.note.encrypted";
+  public static final String ATTR_PASSWORD_TIP = "extra.note.encrypted.tip";
+  private static final long serialVersionUID = 8612886872756838147L;
   private final String text;
+  private final boolean encrypted;
+  private final String tip;
 
   public ExtraNote(@Nonnull final String text) {
     this.text = text;
+    this.encrypted = false;
+    this.tip = null;
+  }
+
+  public ExtraNote(@Nonnull final String text,
+                   final boolean encrypted,
+                   @Nullable final String tip) {
+    this.text = text;
+    this.encrypted = encrypted;
+    this.tip = tip;
+  }
+
+  public boolean isEncrypted() {
+    return this.encrypted;
+  }
+
+  @Nullable
+  public String getTip() {
+    return this.tip;
+  }
+
+  @Override
+  void addAttributesForWrite(@Nonnull final Map<String, String> attributesForWrite) {
+    if (this.encrypted) {
+      attributesForWrite.put(ATTR_ENCRYPTED, "true");
+    }
+    if (this.tip != null) {
+      attributesForWrite.put(ATTR_PASSWORD_TIP, this.tip);
+    }
   }
 
   @Override
@@ -44,7 +77,10 @@ public class ExtraNote extends Extra<String> {
       return true;
     }
     if (that instanceof ExtraNote) {
-      return this.text.equals(((ExtraNote) that).text);
+      final ExtraNote thatNote = (ExtraNote) that;
+      return (this.tip == thatNote.tip || (this.tip != null && this.tip.equals(thatNote.tip)))
+          && this.encrypted == thatNote.encrypted
+          && this.text.equals(((ExtraNote) that).text);
     } else {
       return false;
     }

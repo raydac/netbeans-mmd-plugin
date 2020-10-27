@@ -28,7 +28,8 @@ public abstract class AbstractPath implements Path {
   public AbstractPath(@Nonnull final File file) {
   }
 
-  public AbstractPath(@Nonnull final String first, @Nonnull @MustNotContainNull final String... items) {
+  public AbstractPath(@Nonnull final String first,
+                      @Nonnull @MustNotContainNull final String... items) {
   }
 
 }

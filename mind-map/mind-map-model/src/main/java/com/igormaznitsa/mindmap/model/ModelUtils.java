@@ -47,14 +47,14 @@ public final class ModelUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(ModelUtils.class);
 
   private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>"); //NOI18N
-  private static final Pattern MD_ESCAPED_PATTERN = Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])"); //NOI18N
+  private static final Pattern MD_ESCAPED_PATTERN =
+      Pattern.compile("(\\\\[\\\\`*_{}\\[\\]()#<>+-.!])"); //NOI18N
   private static final String MD_ESCAPED_CHARS = "\\`*_{}[]()#<>+-.!"; //NOI18N
-  private static final Pattern URI_QUERY_PARAMETERS = Pattern.compile("\\&?([^=]+)=([^&]*)"); //NOI18N
+  private static final Pattern URI_QUERY_PARAMETERS = Pattern.compile("\\&?([^=]+)=([^&]*)");
+  //NOI18N
 
   private ModelUtils() {
   }
-
-  ;
 
   public static int calcCharsOnStart(final char chr, @Nonnull final String text) {
     int result = 0;
@@ -181,7 +181,8 @@ public final class ModelUtils {
     return result;
   }
 
-  public static void writeChar(@Nonnull final Appendable out, final char chr, final int times) throws IOException {
+  public static void writeChar(@Nonnull final Appendable out, final char chr, final int times)
+      throws IOException {
     for (int i = 0; i < times; i++) {
       out.append(chr);
     }
@@ -337,7 +338,8 @@ public final class ModelUtils {
     final String chars = "% :<>?"; //NOI18N
     String result = text;
     for (final char ch : chars.toCharArray()) {
-      result = result.replace(Character.toString(ch), "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH)); //NOI18N
+      result = result.replace(Character.toString(ch),
+          "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH)); //NOI18N
     }
 
     return result;
@@ -367,11 +369,13 @@ public final class ModelUtils {
   @Nonnull
   private static String normalizeFileURI(@Nonnull final String fileUri) {
     final int schemePosition = fileUri.indexOf(':');
-    final String scheme = schemePosition < 0 ? "" : fileUri.substring(0, schemePosition + 1); //NOI18N
+    final String scheme =
+        schemePosition < 0 ? "" : fileUri.substring(0, schemePosition + 1); //NOI18N
     final String chars = " :<>?"; //NOI18N
     String result = fileUri.substring(scheme.length());
     for (final char ch : chars.toCharArray()) {
-      result = result.replace(Character.toString(ch), "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH)); //NOI18N
+      result = result.replace(Character.toString(ch),
+          "%" + Integer.toHexString(ch).toUpperCase(Locale.ENGLISH)); //NOI18N
     }
     return scheme + result;
   }
@@ -434,7 +438,7 @@ public final class ModelUtils {
       pathItems.add(File.separator);
     }
 
-    final String[] fullArray = pathItems.toArray(new String[pathItems.size()]);
+    final String[] fullArray = pathItems.toArray(new String[0]);
     final String[] next = Arrays.copyOfRange(fullArray, 1, fullArray.length);
     return Paths.get(fullArray[0], next).toFile();
   }

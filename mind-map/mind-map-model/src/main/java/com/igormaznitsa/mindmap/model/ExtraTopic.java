@@ -37,13 +37,15 @@ public class ExtraTopic extends Extra<String> {
     if (topic != null) {
       String uid = topic.getAttribute(TOPIC_UID_ATTR);
       if (uid == null) {
-        String time = Long.toHexString(System.currentTimeMillis() & 0x7FFFFFFFFFFFFFFFL).toUpperCase(Locale.ENGLISH);
+        String time = Long.toHexString(System.currentTimeMillis() & 0x7FFFFFFFFFFFFFFFL)
+            .toUpperCase(Locale.ENGLISH);
         char extra = 'A';
         while (true) {
           uid = time + extra;
           if (map.findTopicForLink(new ExtraTopic(uid)) != null) {
             if (extra == 'Z') {
-              time = Long.toHexString(System.nanoTime() & 0x7FFFFFFFFFFFFFFFL).toUpperCase(Locale.ENGLISH);
+              time = Long.toHexString(System.nanoTime() & 0x7FFFFFFFFFFFFFFFL)
+                  .toUpperCase(Locale.ENGLISH);
               extra = 'A';
             } else {
               extra++;

@@ -53,7 +53,8 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
   @Override
   public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
-    final String filePathAsText = FilenameUtils.normalize(this.fileUri.asFile(baseFolder).getAbsolutePath());
+    final String filePathAsText =
+        FilenameUtils.normalize(this.fileUri.asFile(baseFolder).getAbsolutePath());
     return pattern.matcher(filePathAsText).find();
   }
 
@@ -126,18 +127,24 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   }
 
   @Nullable
-  public ExtraFile replaceParentPath(@Nullable final File baseFolder, @Nonnull final MMapURI oldFolder, @Nonnull final MMapURI newFolder) {
+  public ExtraFile replaceParentPath(@Nullable final File baseFolder,
+                                     @Nonnull final MMapURI oldFolder,
+                                     @Nonnull final MMapURI newFolder) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File oldFolderFile = oldFolder.asFile(baseFolder);
     final File newFolderFile = newFolder.asFile(baseFolder);
 
     final String theFilePath = FilenameUtils.normalize(theFile.getAbsolutePath());
-    final String oldFolderFilePath = ensureFolderPath(FilenameUtils.normalize(oldFolderFile.getAbsolutePath()));
-    final String newFolderFilePath = ensureFolderPath(FilenameUtils.normalize(newFolderFile.getAbsolutePath()));
+    final String oldFolderFilePath =
+        ensureFolderPath(FilenameUtils.normalize(oldFolderFile.getAbsolutePath()));
+    final String newFolderFilePath =
+        ensureFolderPath(FilenameUtils.normalize(newFolderFile.getAbsolutePath()));
 
     if (theFilePath.startsWith(oldFolderFilePath)) {
-      final String changedPath = newFolderFilePath + theFilePath.substring(oldFolderFilePath.length());
-      return new ExtraFile(new MMapURI(this.isAbsolute() ? null : baseFolder, new File(changedPath), this.fileUri.getParameters()));
+      final String changedPath =
+          newFolderFilePath + theFilePath.substring(oldFolderFilePath.length());
+      return new ExtraFile(new MMapURI(this.isAbsolute() ? null : baseFolder, new File(changedPath),
+          this.fileUri.getParameters()));
     } else {
       return null;
     }
@@ -148,7 +155,8 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     final File thatFile = folder.asFile(baseFolder);
 
     final String theFilePath = FilenameUtils.normalize(theFile.getAbsolutePath());
-    final String thatFilePath = ensureFolderPath(FilenameUtils.normalize(thatFile.getAbsolutePath()));
+    final String thatFilePath =
+        ensureFolderPath(FilenameUtils.normalize(thatFile.getAbsolutePath()));
 
     if (!theFilePath.equals(thatFilePath) && theFilePath.startsWith(thatFilePath)) {
       final String diff = theFilePath.substring(thatFilePath.length() - 1);
@@ -167,7 +175,8 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
     if (theFilePath.startsWith(thatFilePath)) {
       final String diff = theFilePath.substring(thatFilePath.length());
-      return diff.isEmpty() || diff.startsWith("\\") || diff.startsWith("/") || thatFilePath.endsWith("/") || thatFilePath.endsWith("\\");
+      return diff.isEmpty() || diff.startsWith("\\") || diff.startsWith("/") ||
+          thatFilePath.endsWith("/") || thatFilePath.endsWith("\\");
     } else {
       return false;
     }

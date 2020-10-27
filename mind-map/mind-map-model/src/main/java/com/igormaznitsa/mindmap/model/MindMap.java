@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -132,14 +133,19 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   static String allAttributesAsString(@Nonnull final Map<String, String> map) throws IOException {
     final StringBuilder buffer = new StringBuilder();
 
+    final List<String> attrNames = new ArrayList<String>();
+    attrNames.addAll(map.keySet());
+    Collections.sort(attrNames);
+
     boolean nonfirst = false;
-    for (final Map.Entry<String, String> e : map.entrySet()) {
+    for (final String k : attrNames) {
+      final String value = map.get(k);
       if (nonfirst) {
         buffer.append(',');
       } else {
         nonfirst = true;
       }
-      buffer.append(e.getKey()).append('=').append(ModelUtils.makeMDCodeBlock(e.getValue()));
+      buffer.append(k).append('=').append(ModelUtils.makeMDCodeBlock(value));
     }
 
     return buffer.toString();
@@ -234,7 +240,8 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
       final List<Topic> plain = this.makePlainList();
       int startIndex = start == null ? plain.size() : plain.indexOf(start);
       if (startIndex < 0) {
-        throw new IllegalArgumentException("It looks like that topic doesn't belong to the mind map");
+        throw new IllegalArgumentException(
+            "It looks like that topic doesn't belong to the mind map");
       }
       if (startIndex > 0) {
         while (startIndex > 0 && result == null) {
