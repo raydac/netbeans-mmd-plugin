@@ -13,6 +13,7 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.ui.components.JBPasswordField;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ButtonGroup;
@@ -26,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
@@ -170,6 +172,12 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
   @Override
   public JTextField makeTextField() {
     return new JBTextField();
+  }
+
+  @Nonnull
+  @Override
+  public JPasswordField makePasswordField() {
+    return new JBPasswordField();
   }
 
   private static class JOptionablePanel extends JBPanel implements HasOptions {

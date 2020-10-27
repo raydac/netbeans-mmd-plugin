@@ -31,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
@@ -121,6 +122,12 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
   @Nonnull
   public JTextArea makeTextArea() {
     return new JTextArea();
+  }
+
+  @Nonnull
+  @Override
+  public JPasswordField makePasswordField() {
+    return new JPasswordField();
   }
 
   @Override

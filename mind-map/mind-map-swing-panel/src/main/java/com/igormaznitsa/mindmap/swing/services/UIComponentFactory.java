@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
@@ -81,6 +82,9 @@ public interface UIComponentFactory {
 
   @Nonnull
   JTextArea makeTextArea();
+
+  @Nonnull
+  JPasswordField makePasswordField();
 
   @Nonnull
   JTextField makeTextField();
