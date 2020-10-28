@@ -46,8 +46,15 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box.Filler;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -65,7 +72,7 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
-public final class NoteEditor extends javax.swing.JPanel {
+public final class NoteEditor extends JPanel {
 
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
   private static final long serialVersionUID = -1715683034655322518L;
@@ -83,6 +90,7 @@ public final class NoteEditor extends javax.swing.JPanel {
           .getString("PlainTextEditor.fileFilter.description");
     }
   };
+  private final Focuser focuser;
   private Wrapping wrapping;
   private String password;
   private String tip;
@@ -104,15 +112,15 @@ public final class NoteEditor extends javax.swing.JPanel {
     }
 
   };
-  private javax.swing.JTextArea editorPane;
-  private javax.swing.Box.Filler filler1;
-  private javax.swing.JPanel jPanel1;
-  private javax.swing.JScrollPane jScrollPane2;
-  private javax.swing.JSeparator jSeparator1;
-  private javax.swing.JToolBar buttonToolBar;
-  private javax.swing.JLabel labelCursorPos;
-  private javax.swing.JLabel labelWrapMode;
-  private javax.swing.JToggleButton toggleButtonEncrypt;
+  private JTextArea editorPane;
+  private Filler filler1;
+  private JPanel jPanel1;
+  private JScrollPane jScrollPane2;
+  private JSeparator jSeparator1;
+  private JToolBar buttonToolBar;
+  private JLabel labelCursorPos;
+  private JLabel labelWrapMode;
+  private JToggleButton toggleButtonEncrypt;
 
   public NoteEditor(@Nonnull final NoteEditorData data) {
     initComponents();
@@ -255,7 +263,7 @@ public final class NoteEditor extends javax.swing.JPanel {
 
     UiUtils.makeOwningDialogResizable(this);
 
-    new Focuser(this.editorPane);
+    this.focuser = new Focuser(this.editorPane);
   }
 
   private static boolean isWhitespaceOrControl(final char c) {
@@ -415,7 +423,7 @@ public final class NoteEditor extends javax.swing.JPanel {
 
   private void initComponents() {
 
-    buttonToolBar = new javax.swing.JToolBar();
+    buttonToolBar = new JToolBar();
     buttonUndo = new javax.swing.JButton();
     buttonRedo = new javax.swing.JButton();
     buttonImport = new javax.swing.JButton();
@@ -424,16 +432,16 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonPaste = new javax.swing.JButton();
     buttonBrowse = new javax.swing.JButton();
     buttonClear = new javax.swing.JButton();
-    toggleButtonEncrypt = new javax.swing.JToggleButton();
-    jPanel1 = new javax.swing.JPanel();
-    labelCursorPos = new javax.swing.JLabel();
-    jSeparator1 = new javax.swing.JSeparator();
-    labelWrapMode = new javax.swing.JLabel();
+    toggleButtonEncrypt = new JToggleButton();
+    jPanel1 = new JPanel();
+    labelCursorPos = new JLabel();
+    jSeparator1 = new JSeparator();
+    labelWrapMode = new JLabel();
     filler1 =
-        new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0),
+        new Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0),
             new java.awt.Dimension(16, 32767));
-    jScrollPane2 = new javax.swing.JScrollPane();
-    editorPane = new javax.swing.JTextArea();
+    jScrollPane2 = new JScrollPane();
+    editorPane = new JTextArea();
 
     setLayout(new java.awt.BorderLayout());
 
