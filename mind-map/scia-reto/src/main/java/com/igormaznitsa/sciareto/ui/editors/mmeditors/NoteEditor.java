@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
@@ -37,6 +38,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -67,68 +69,9 @@ import org.apache.commons.lang.StringUtils;
 
 public final class NoteEditor extends javax.swing.JPanel {
 
-  private static final long serialVersionUID = -1715683034655322518L;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(NoteEditor.class);
-
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-
-  private final UndoManager undoManager = new UndoManager() {
-    private static final long serialVersionUID = -239961738072597268L;
-
-    @Override
-    public void undoableEditHappened(@Nonnull final UndoableEditEvent e) {
-      super.undoableEditHappened(e);
-      updateRedoUndoState();
-    }
-
-  };
-
-  private enum Wrapping {
-
-    NONE("none", "off"), //NOI18N
-    CHAR_WRAP("char", "char"), //NOI18N
-    WORD_WRAP("word", "word"); //NOI18N
-
-    private final String value;
-    private final String display;
-
-    private Wrapping(@Nonnull final String val, @Nonnull final String display) {
-      this.value = val;
-      this.display = display;
-    }
-
-    @Nonnull
-    public String getValue() {
-      return this.value;
-    }
-
-    @Nonnull
-    public String getDisplay() {
-      return this.display;
-    }
-
-    @Nonnull
-    public Wrapping next() {
-      final int index = this.ordinal() + 1;
-      if (index >= Wrapping.values().length) {
-        return NONE;
-      } else {
-        return Wrapping.values()[index];
-      }
-    }
-
-    @Nonnull
-    public static Wrapping findFor(@Nonnull final String text) {
-      for (final Wrapping w : Wrapping.values()) {
-        if (w.value.equalsIgnoreCase(text)) {
-          return w;
-        }
-      }
-      return NONE;
-    }
-  }
-
+  private static final long serialVersionUID = -1715683034655322518L;
+  private static final Logger LOGGER = LoggerFactory.getLogger(NoteEditor.class);
   private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -142,188 +85,33 @@ public final class NoteEditor extends javax.swing.JPanel {
           .getString("PlainTextEditor.fileFilter.description");
     }
   };
-
   private Wrapping wrapping;
   private String password;
   private String tip;
-
-  private static boolean isWhitespaceOrControl(final char c) {
-    return Character.isISOControl(c) || Character.isWhitespace(c);
-  }
-
-  private void updateRedoUndoState() {
-    this.buttonUndo.setEnabled(this.undoManager.canUndo());
-    this.buttonRedo.setEnabled(this.undoManager.canRedo());
-  }
-
-  private void doUndo() {
-    if (this.undoManager.canUndo()) {
-      this.undoManager.undo();
-    }
-    updateRedoUndoState();
-  }
-
-  private void doRedo() {
-    if (this.undoManager.canRedo()) {
-      this.undoManager.redo();
-    }
-    updateRedoUndoState();
-  }
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton buttonBrowse;
-
-  private void updateCaretPos() {
-    final int pos = this.editorPane.getCaretPosition();
-    final int col = getColumn(pos, this.editorPane);
-    final int row = getRow(pos, this.editorPane);
-    this.labelCursorPos.setText(row + ":" + col); //NOI18N
-
-    final String selectedText = this.editorPane.getSelectedText();
-    if (StringUtils.isEmpty(selectedText)) {
-      this.buttonCopy.setEnabled(false);
-      this.buttonBrowse.setEnabled(false);
-    } else {
-      this.buttonCopy.setEnabled(true);
-      try {
-        final URI uri = URI.create(selectedText.trim());
-        this.buttonBrowse.setEnabled(uri.isAbsolute());
-      } catch (Exception ex) {
-        this.buttonBrowse.setEnabled(false);
-      }
-    }
-  }
-
-  private static int getRow(final int pos, final JTextComponent editor) {
-    int rn = (pos == 0) ? 1 : 0;
-    try {
-      int offs = pos;
-      while (offs > 0) {
-        offs = Utilities.getRowStart(editor, offs) - 1;
-        rn++;
-      }
-    } catch (BadLocationException e) {
-      LOGGER.error("Bad location", e); //NOI18N
-    }
-    return rn;
-  }
-
-  private static int getColumn(final int pos, final JTextComponent editor) {
-    try {
-      return pos - Utilities.getRowStart(editor, pos) + 1;
-    } catch (BadLocationException e) {
-      LOGGER.error("Bad location", e); //NOI18N
-    }
-    return -1;
-  }
-
   private javax.swing.JButton buttonClear;
-
-  public void dispose() {
-
-  }
-
   private javax.swing.JButton buttonCopy;
-
-  private void labelCursorPosMouseClicked(
-      java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelCursorPosMouseClicked
-
-  }//GEN-LAST:event_labelCursorPosMouseClicked
-
-  private void labelWrapModeMouseClicked(
-      java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelWrapModeMouseClicked
-    this.wrapping = this.wrapping.next();
-    updateWrapping();
-  }//GEN-LAST:event_labelWrapModeMouseClicked
-
-  private void updateWrapping() {
-    this.editorPane.setWrapStyleWord(this.wrapping != Wrapping.CHAR_WRAP);
-    this.editorPane.setLineWrap(this.wrapping != Wrapping.NONE);
-    updateBottomPanel();
-  }
-
-  private void buttonImportActionPerformed(
-      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
-    final File toOpen = DialogProviderManager.getInstance().getDialogProvider()
-        .msgOpenFileDialog(null, "note-editor",
-            UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true,
-            new FileFilter[] {TEXT_FILE_FILTER}, "Open"); //NOI18N
-    if (toOpen != null) {
-      try {
-        final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
-        this.editorPane.setText(text);
-      } catch (Exception ex) {
-        LOGGER.error("Error during text file loading", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
-            UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
-      }
-    }
-
-  }//GEN-LAST:event_buttonImportActionPerformed
-
   private javax.swing.JButton buttonExport;
-
-  private void buttonCopyActionPerformed(
-      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCopyActionPerformed
-    StringSelection stringSelection = new StringSelection(this.editorPane.getSelectedText());
-    final Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-    clpbrd.setContents(stringSelection, null);
-  }//GEN-LAST:event_buttonCopyActionPerformed
-
-  private void buttonPasteActionPerformed(
-      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPasteActionPerformed
-    try {
-      this.editorPane.replaceSelection((String) Toolkit.getDefaultToolkit().getSystemClipboard()
-          .getData(DataFlavor.stringFlavor));
-    } catch (UnsupportedFlavorException ex) {
-      // no text data in clipboard
-    } catch (IOException ex) {
-      LOGGER.error("Error during paste from clipboard", ex); //NOI18N
-    }
-  }//GEN-LAST:event_buttonPasteActionPerformed
-
-  private void buttonClearActionPerformed(
-      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
-    this.editorPane.setText(""); //NOI18N
-  }//GEN-LAST:event_buttonClearActionPerformed
-
-  private void buttonBrowseActionPerformed(
-      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBrowseActionPerformed
-    final String selectedText = this.editorPane.getSelectedText().trim();
-    try {
-      UiUtils.browseURI(URI.create(selectedText), false);
-    } catch (Exception ex) {
-      LOGGER.error("Can't open link : " + selectedText); //NOI18N
-      DialogProviderManager.getInstance().getDialogProvider()
-          .msgError(Main.getApplicationFrame(), "Can't browse link : " + selectedText);
-    }
-  }//GEN-LAST:event_buttonBrowseActionPerformed
-
-  private void buttonUndoActionPerformed(
-      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUndoActionPerformed
-    doUndo();
-  }//GEN-LAST:event_buttonUndoActionPerformed
-
-  private void buttonRedoActionPerformed(
-      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRedoActionPerformed
-    doRedo();
-  }//GEN-LAST:event_buttonRedoActionPerformed
-
   private javax.swing.JButton buttonImport;
-
-  private void updateBottomPanel() {
-    this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
-  }
-
   private javax.swing.JButton buttonPaste;
   private javax.swing.JButton buttonRedo;
   private javax.swing.JButton buttonUndo;
+  private final UndoManager undoManager = new UndoManager() {
+    private static final long serialVersionUID = -239961738072597268L;
+
+    @Override
+    public void undoableEditHappened(@Nonnull final UndoableEditEvent e) {
+      super.undoableEditHappened(e);
+      updateRedoUndoState();
+    }
+
+  };
   private javax.swing.JTextArea editorPane;
   private javax.swing.Box.Filler filler1;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JSeparator jSeparator1;
-  private javax.swing.JToolBar jToolBar1;
+  private javax.swing.JToolBar buttonToolBar;
   private javax.swing.JLabel labelCursorPos;
   private javax.swing.JLabel labelWrapMode;
   private javax.swing.JToggleButton toggleButtonEncrypt;
@@ -344,7 +132,9 @@ public final class NoteEditor extends javax.swing.JPanel {
       }
     });
 
-    this.buttonUndo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "do-undo"); //NOI18N
+    this.buttonUndo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+        KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+        "do-undo"); //NOI18N
     this.buttonUndo.getActionMap().put("do-undo", new AbstractAction() { //NOI18N
       private static final long serialVersionUID = -5644390861803492172L;
 
@@ -354,75 +144,77 @@ public final class NoteEditor extends javax.swing.JPanel {
       }
     });
 
-    this.editorPane.setComponentPopupMenu(SwingUtils.addTextActions(UIComponentFactoryProvider.findInstance().makePopupMenu()));
+    this.editorPane.setComponentPopupMenu(
+        SwingUtils.addTextActions(UIComponentFactoryProvider.findInstance().makePopupMenu()));
 
-    this.editorPane.getActionMap().put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
-      private static final long serialVersionUID = -6477916799997545798L;
-      private final Action start = new TextAction("wordStart") { //NOI18N
-        private static final long serialVersionUID = 4377386270269629176L;
+    this.editorPane.getActionMap()
+        .put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
+          private static final long serialVersionUID = -6477916799997545798L;
+          private final Action start = new TextAction("wordStart") { //NOI18N
+            private static final long serialVersionUID = 4377386270269629176L;
 
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          final JTextComponent target = getTextComponent(e);
-          try {
-            if (target != null) {
-              int offs = target.getCaretPosition();
-              final Document doc = target.getDocument();
-              final String text = doc.getText(0, doc.getLength());
-              int startOffs = offs;
-              if (startOffs < text.length()) {
-                for (int i = offs; i >= 0; i--) {
-                  if (!isWhitespaceOrControl(text.charAt(i))) {
-                    startOffs = i;
-                  } else {
-                    break;
+            @Override
+            public void actionPerformed(@Nonnull final ActionEvent e) {
+              final JTextComponent target = getTextComponent(e);
+              try {
+                if (target != null) {
+                  int offs = target.getCaretPosition();
+                  final Document doc = target.getDocument();
+                  final String text = doc.getText(0, doc.getLength());
+                  int startOffs = offs;
+                  if (startOffs < text.length()) {
+                    for (int i = offs; i >= 0; i--) {
+                      if (!isWhitespaceOrControl(text.charAt(i))) {
+                        startOffs = i;
+                      } else {
+                        break;
+                      }
+                    }
+                    target.setCaretPosition(startOffs);
                   }
                 }
-                target.setCaretPosition(startOffs);
+              } catch (BadLocationException ex) {
+                UIManager.getLookAndFeel().provideErrorFeedback(target);
               }
             }
-          } catch (BadLocationException ex) {
-            UIManager.getLookAndFeel().provideErrorFeedback(target);
-          }
-        }
-      };
-      private final Action end = new TextAction("wordEnd") { //NOI18N
-        private static final long serialVersionUID = 4377386270269629176L;
+          };
+          private final Action end = new TextAction("wordEnd") { //NOI18N
+            private static final long serialVersionUID = 4377386270269629176L;
 
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          final JTextComponent target = getTextComponent(e);
-          try {
-            if (target != null) {
-              int offs = target.getCaretPosition();
+            @Override
+            public void actionPerformed(@Nonnull final ActionEvent e) {
+              final JTextComponent target = getTextComponent(e);
+              try {
+                if (target != null) {
+                  int offs = target.getCaretPosition();
 
-              final Document doc = target.getDocument();
-              final String text = doc.getText(0, doc.getLength());
-              int endOffs = offs;
-              for (int i = offs; i < text.length(); i++) {
-                endOffs = i;
-                if (isWhitespaceOrControl(text.charAt(i))) {
-                  break;
+                  final Document doc = target.getDocument();
+                  final String text = doc.getText(0, doc.getLength());
+                  int endOffs = offs;
+                  for (int i = offs; i < text.length(); i++) {
+                    endOffs = i;
+                    if (isWhitespaceOrControl(text.charAt(i))) {
+                      break;
+                    }
+                  }
+                  if (endOffs < text.length() && !isWhitespaceOrControl(text.charAt(endOffs))) {
+                    endOffs++;
+                  }
+                  target.moveCaretPosition(endOffs);
                 }
+              } catch (BadLocationException ex) {
+                UIManager.getLookAndFeel().provideErrorFeedback(target);
               }
-              if (endOffs < text.length() && !isWhitespaceOrControl(text.charAt(endOffs))) {
-                endOffs++;
-              }
-              target.moveCaretPosition(endOffs);
             }
-          } catch (BadLocationException ex) {
-            UIManager.getLookAndFeel().provideErrorFeedback(target);
+          };
+
+          @Override
+          public void actionPerformed(@Nonnull final ActionEvent e) {
+            this.start.actionPerformed(e);
+            this.end.actionPerformed(e);
           }
-        }
-      };
 
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        this.start.actionPerformed(e);
-        this.end.actionPerformed(e);
-      }
-
-    });
+        });
 
     this.setPreferredSize(new Dimension(640, 480));
     this.editorPane.setFont(PreferencesManager.getInstance()
@@ -476,21 +268,165 @@ public final class NoteEditor extends javax.swing.JPanel {
     new Focuser(this.editorPane);
   }
 
+  private static boolean isWhitespaceOrControl(final char c) {
+    return Character.isISOControl(c) || Character.isWhitespace(c);
+  }
+
+  private static int getRow(final int pos, final JTextComponent editor) {
+    int rn = (pos == 0) ? 1 : 0;
+    try {
+      int offs = pos;
+      while (offs > 0) {
+        offs = Utilities.getRowStart(editor, offs) - 1;
+        rn++;
+      }
+    } catch (BadLocationException e) {
+      LOGGER.error("Bad location", e); //NOI18N
+    }
+    return rn;
+  }
+
+  private static int getColumn(final int pos, final JTextComponent editor) {
+    try {
+      return pos - Utilities.getRowStart(editor, pos) + 1;
+    } catch (BadLocationException e) {
+      LOGGER.error("Bad location", e); //NOI18N
+    }
+    return -1;
+  }
+
+  private void updateRedoUndoState() {
+    this.buttonUndo.setEnabled(this.undoManager.canUndo());
+    this.buttonRedo.setEnabled(this.undoManager.canRedo());
+  }
+
+  private void doUndo() {
+    if (this.undoManager.canUndo()) {
+      this.undoManager.undo();
+    }
+    updateRedoUndoState();
+  }
+
+  private void doRedo() {
+    if (this.undoManager.canRedo()) {
+      this.undoManager.redo();
+    }
+    updateRedoUndoState();
+  }
+
+  private void updateCaretPos() {
+    final int pos = this.editorPane.getCaretPosition();
+    final int col = getColumn(pos, this.editorPane);
+    final int row = getRow(pos, this.editorPane);
+    this.labelCursorPos.setText(row + ":" + col); //NOI18N
+
+    final String selectedText = this.editorPane.getSelectedText();
+    if (StringUtils.isEmpty(selectedText)) {
+      this.buttonCopy.setEnabled(false);
+      this.buttonBrowse.setEnabled(false);
+    } else {
+      this.buttonCopy.setEnabled(true);
+      try {
+        final URI uri = URI.create(selectedText.trim());
+        this.buttonBrowse.setEnabled(uri.isAbsolute());
+      } catch (Exception ex) {
+        this.buttonBrowse.setEnabled(false);
+      }
+    }
+  }
+
+  public void dispose() {
+
+  }
+
+  private void labelCursorPosMouseClicked(MouseEvent evt) {
+  }
+
+  private void labelWrapModeMouseClicked(MouseEvent evt) {
+    this.wrapping = this.wrapping.next();
+    updateWrapping();
+  }
+
+  private void updateWrapping() {
+    this.editorPane.setWrapStyleWord(this.wrapping != Wrapping.CHAR_WRAP);
+    this.editorPane.setLineWrap(this.wrapping != Wrapping.NONE);
+    updateBottomPanel();
+  }
+
+  private void buttonImportActionPerformed(
+      ActionEvent evt) {
+    final File toOpen = DialogProviderManager.getInstance().getDialogProvider()
+        .msgOpenFileDialog(null, "note-editor",
+            UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true,
+            new FileFilter[] {TEXT_FILE_FILTER}, "Open"); //NOI18N
+    if (toOpen != null) {
+      try {
+        final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
+        this.editorPane.setText(text);
+      } catch (Exception ex) {
+        LOGGER.error("Error during text file loading", ex); //NOI18N
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+            UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
+      }
+    }
+
+  }
+
+  private void buttonCopyActionPerformed(
+      ActionEvent evt) {//GEN-FIRST:event_buttonCopyActionPerformed
+    StringSelection stringSelection = new StringSelection(this.editorPane.getSelectedText());
+    final Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+    clpbrd.setContents(stringSelection, null);
+  }//GEN-LAST:event_buttonCopyActionPerformed
+
+  private void buttonPasteActionPerformed(ActionEvent evt) {
+    try {
+      this.editorPane.replaceSelection((String) Toolkit.getDefaultToolkit().getSystemClipboard()
+          .getData(DataFlavor.stringFlavor));
+    } catch (UnsupportedFlavorException ex) {
+      // no text data in clipboard
+    } catch (IOException ex) {
+      LOGGER.error("Error during paste from clipboard", ex); //NOI18N
+    }
+  }
+
+  private void buttonClearActionPerformed(ActionEvent evt) {
+    this.editorPane.setText(""); //NOI18N
+  }
+
+  private void buttonBrowseActionPerformed(ActionEvent evt) {
+    final String selectedText = this.editorPane.getSelectedText().trim();
+    try {
+      UiUtils.browseURI(URI.create(selectedText), false);
+    } catch (Exception ex) {
+      LOGGER.error("Can't open link : " + selectedText); //NOI18N
+      DialogProviderManager.getInstance().getDialogProvider()
+          .msgError(Main.getApplicationFrame(), "Can't browse link : " + selectedText);
+    }
+  }
+
+  private void buttonUndoActionPerformed(
+      ActionEvent evt) {
+    doUndo();
+  }
+
+  private void buttonRedoActionPerformed(ActionEvent evt) {
+    doRedo();
+  }
+
+  private void updateBottomPanel() {
+    this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
+  }
+
   @Nonnull
   public NoteEditorData getData() {
     return new NoteEditorData(this.editorPane.getText(), this.password, this.tip);
   }
 
-  /**
-   * This method is called from within the constructor to initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is always
-   * regenerated by the Form Editor.
-   */
   @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jToolBar1 = new javax.swing.JToolBar();
+    buttonToolBar = new javax.swing.JToolBar();
     buttonUndo = new javax.swing.JButton();
     buttonRedo = new javax.swing.JButton();
     buttonImport = new javax.swing.JButton();
@@ -512,8 +448,8 @@ public final class NoteEditor extends javax.swing.JPanel {
 
     setLayout(new java.awt.BorderLayout());
 
-    jToolBar1.setFloatable(false);
-    jToolBar1.setRollover(true);
+    buttonToolBar.setFloatable(false);
+    buttonToolBar.setRollover(true);
 
     buttonUndo
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
@@ -523,12 +459,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonUndo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonUndo.setNextFocusableComponent(buttonRedo);
     buttonUndo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonUndo.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonUndoActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(buttonUndo);
+    buttonUndo.addActionListener(this::buttonUndoActionPerformed);
+    buttonToolBar.add(buttonUndo);
 
     buttonRedo
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
@@ -538,12 +470,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonRedo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonRedo.setNextFocusableComponent(buttonImport);
     buttonRedo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonRedo.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonRedoActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(buttonRedo);
+    buttonRedo.addActionListener(this::buttonRedoActionPerformed);
+    buttonToolBar.add(buttonRedo);
 
     buttonImport
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/disk16.png"))); // NOI18N
@@ -554,12 +482,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonImport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonImport.setNextFocusableComponent(buttonExport);
     buttonImport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonImport.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonImportActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(buttonImport);
+    buttonImport.addActionListener(this::buttonImportActionPerformed);
+    buttonToolBar.add(buttonImport);
 
     buttonExport.setIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/file_save16.png"))); // NOI18N
@@ -570,12 +494,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonExport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonExport.setNextFocusableComponent(buttonCopy);
     buttonExport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonExport.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonExportActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(buttonExport);
+    buttonExport.addActionListener(this::buttonExportActionPerformed);
+    buttonToolBar.add(buttonExport);
 
     buttonCopy.setIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
@@ -586,12 +506,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonCopy.setNextFocusableComponent(buttonPaste);
     buttonCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonCopy.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonCopyActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(buttonCopy);
+    buttonCopy.addActionListener(this::buttonCopyActionPerformed);
+    buttonToolBar.add(buttonCopy);
 
     buttonPaste.setIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
@@ -602,12 +518,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonPaste.setNextFocusableComponent(buttonBrowse);
     buttonPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonPaste.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonPasteActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(buttonPaste);
+    buttonPaste.addActionListener(this::buttonPasteActionPerformed);
+    buttonToolBar.add(buttonPaste);
 
     buttonBrowse
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/link16.png"))); // NOI18N
@@ -618,12 +530,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonBrowse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonBrowse.setNextFocusableComponent(buttonClear);
     buttonBrowse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonBrowse.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonBrowseActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(buttonBrowse);
+    buttonBrowse.addActionListener(this::buttonBrowseActionPerformed);
+    buttonToolBar.add(buttonBrowse);
 
     buttonClear
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
@@ -634,12 +542,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonClear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonClear.setNextFocusableComponent(editorPane);
     buttonClear.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonClear.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonClearActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(buttonClear);
+    buttonClear.addActionListener(this::buttonClearActionPerformed);
+    buttonToolBar.add(buttonClear);
 
     toggleButtonEncrypt.setIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/set_password16.png"))); // NOI18N
@@ -650,19 +554,19 @@ public final class NoteEditor extends javax.swing.JPanel {
     toggleButtonEncrypt.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     toggleButtonEncrypt.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     toggleButtonEncrypt.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+      public void actionPerformed(ActionEvent evt) {
         toggleButtonEncryptActionPerformed(evt);
       }
     });
-    jToolBar1.add(toggleButtonEncrypt);
+    buttonToolBar.add(toggleButtonEncrypt);
 
-    add(jToolBar1, java.awt.BorderLayout.NORTH);
+    add(buttonToolBar, java.awt.BorderLayout.NORTH);
 
     jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
     labelCursorPos.setText("...:...");
     labelCursorPos.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
+      public void mouseClicked(MouseEvent evt) {
         labelCursorPosMouseClicked(evt);
       }
     });
@@ -675,7 +579,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     labelWrapMode.setText("...");
     labelWrapMode.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     labelWrapMode.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
+      public void mouseClicked(MouseEvent evt) {
         labelWrapModeMouseClicked(evt);
       }
     });
@@ -690,11 +594,13 @@ public final class NoteEditor extends javax.swing.JPanel {
     jScrollPane2.setViewportView(editorPane);
 
     add(jScrollPane2, java.awt.BorderLayout.CENTER);
-  }// </editor-fold>//GEN-END:initComponents
+  }
 
-  private void buttonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportActionPerformed
+  private void buttonExportActionPerformed(ActionEvent evt) {
     final File toSave = DialogProviderManager.getInstance().getDialogProvider()
-            .msgSaveFileDialog(null, "note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null, true, new FileFilter[]{TEXT_FILE_FILTER}, "Save"); //NOI18N
+        .msgSaveFileDialog(null, "note-editor",
+            UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null,
+            true, new FileFilter[] {TEXT_FILE_FILTER}, "Save"); //NOI18N
     if (toSave != null) {
       try {
         final String text = this.editorPane.getText();
@@ -705,17 +611,59 @@ public final class NoteEditor extends javax.swing.JPanel {
             UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
+  }
 
-  }//GEN-LAST:event_buttonExportActionPerformed
-
-  private void toggleButtonEncryptActionPerformed(
-      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonEncryptActionPerformed
+  private void toggleButtonEncryptActionPerformed(ActionEvent evt) {
     final JToggleButton src = (JToggleButton) evt.getSource();
     if (src.isSelected()) {
 
     } else {
 
     }
-  }//GEN-LAST:event_toggleButtonEncryptActionPerformed
-  // End of variables declaration//GEN-END:variables
+  }
+
+  private enum Wrapping {
+
+    NONE("none", "off"), //NOI18N
+    CHAR_WRAP("char", "char"), //NOI18N
+    WORD_WRAP("word", "word"); //NOI18N
+
+    private final String value;
+    private final String display;
+
+    private Wrapping(@Nonnull final String val, @Nonnull final String display) {
+      this.value = val;
+      this.display = display;
+    }
+
+    @Nonnull
+    public static Wrapping findFor(@Nonnull final String text) {
+      for (final Wrapping w : Wrapping.values()) {
+        if (w.value.equalsIgnoreCase(text)) {
+          return w;
+        }
+      }
+      return NONE;
+    }
+
+    @Nonnull
+    public String getValue() {
+      return this.value;
+    }
+
+    @Nonnull
+    public String getDisplay() {
+      return this.display;
+    }
+
+    @Nonnull
+    public Wrapping next() {
+      final int index = this.ordinal() + 1;
+      if (index >= Wrapping.values().length) {
+        return NONE;
+      } else {
+        return Wrapping.values()[index];
+      }
+    }
+  }
 }
