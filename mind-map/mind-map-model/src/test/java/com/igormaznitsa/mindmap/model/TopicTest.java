@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
 import static org.junit.Assert.assertEquals;
@@ -39,142 +40,159 @@ public class TopicTest {
   public void test() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = new Topic(mm, null, "авы аыва вы Что то");
-    assertTrue(topic.containsPattern(null, Pattern.compile(Pattern.quote("Что"), Pattern.CASE_INSENSITIVE), true, null));
-    assertTrue(topic.containsPattern(null, Pattern.compile(Pattern.quote("что"), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE), true, null));
+    assertTrue(topic
+        .containsPattern(null, Pattern.compile(Pattern.quote("Что"), Pattern.CASE_INSENSITIVE),
+            true, null));
+    assertTrue(topic.containsPattern(null,
+        Pattern.compile(Pattern.quote("что"), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE),
+        true, null));
   }
-  
+
   @Test
   public void testParse_OnlyTopic() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Topic"));
-    assertEquals("Topic",topic.getText());
+    assertEquals("Topic", topic.getText());
     assertTrue(topic.getChildren().isEmpty());
   }
-  
+
   @Test
   public void testParse_OnlyTopicWithExtras() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"));
-    assertEquals("Topic",topic.getText());
-    assertEquals(1,topic.getChildren().size());
-    assertEquals(2,topic.getExtras().size());
-    assertEquals("Some\ntext",(String)topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
-    assertEquals(new URI("http://www.google.com"),((MMapURI)topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
+    final Topic topic = Topic.parse(mm, makeLexer(
+        "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"));
+    assertEquals("Topic", topic.getText());
+    assertEquals(1, topic.getChildren().size());
+    assertEquals(2, topic.getExtras().size());
+    assertEquals("Some\ntext", (String) topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+    assertEquals(new URI("http://www.google.com"),
+        ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
   }
-  
+
   @Test
   public void testParse_PairTopicsFirstContainsMultilineTextNoteAndMiscEOL() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Topic\r\n- NOTE\r\n<pre>   Some   \r\n    text     \n    line  \r\n  end \r\n   </pre>\r\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"));
-    assertEquals("Topic",topic.getText());
-    assertEquals(1,topic.getChildren().size());
-    assertEquals(2,topic.getExtras().size());
-    assertEquals("   Some   \r\n    text     \n    line  \r\n  end \r\n   ",(String)topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
-    assertEquals(new URI("http://www.google.com"),((MMapURI)topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
+    final Topic topic = Topic.parse(mm, makeLexer(
+        "# Topic\r\n- NOTE\r\n<pre>   Some   \r\n    text     \n    line  \r\n  end \r\n   </pre>\r\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"));
+    assertEquals("Topic", topic.getText());
+    assertEquals(1, topic.getChildren().size());
+    assertEquals(2, topic.getExtras().size());
+    assertEquals("   Some   \r\n    text     \n    line  \r\n  end \r\n   ",
+        (String) topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+    assertEquals(new URI("http://www.google.com"),
+        ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
     final Topic second = topic.getFirst();
     assertEquals("Topic2", second.getText());
   }
-  
+
   @Test
   public void testParse_TopicWithURLContainingSpaces() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>  http://www.google.com </pre>\n## Topic2"));
-    assertEquals("Topic",topic.getText());
-    assertEquals(1,topic.getChildren().size());
-    assertEquals(2,topic.getExtras().size());
-    assertEquals("Some\ntext",(String)topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
-    assertEquals(new URI("http://www.google.com"),((MMapURI)topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
+    final Topic topic = Topic.parse(mm, makeLexer(
+        "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>  http://www.google.com </pre>\n## Topic2"));
+    assertEquals("Topic", topic.getText());
+    assertEquals(1, topic.getChildren().size());
+    assertEquals(2, topic.getExtras().size());
+    assertEquals("Some\ntext", (String) topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+    assertEquals(new URI("http://www.google.com"),
+        ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
   }
-  
+
   @Test
   public void testParse_OnlyTopicWithExtrasAndAttributes() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n> attr1=`hello`,attr2=``wor`ld``"));
-    assertEquals("Topic",topic.getText());
+    final Topic topic = Topic.parse(mm, makeLexer(
+        "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n> attr1=`hello`,attr2=``wor`ld``"));
+    assertEquals("Topic", topic.getText());
     assertTrue(topic.getChildren().isEmpty());
-    assertEquals(2,topic.getExtras().size());
-    assertEquals("Some\ntext",(String)topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
-    assertEquals(new URI("http://www.google.com"),((MMapURI)topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
-    assertEquals(2,topic.getAttributes().size());
-    assertEquals("hello",topic.getAttribute("attr1"));
-    assertEquals("wor`ld",topic.getAttribute("attr2"));
+    assertEquals(2, topic.getExtras().size());
+    assertEquals("Some\ntext", (String) topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+    assertEquals(new URI("http://www.google.com"),
+        ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
+    assertEquals(2, topic.getAttributes().size());
+    assertEquals("hello", topic.getAttribute("attr1"));
+    assertEquals("wor`ld", topic.getAttribute("attr2"));
   }
-  
+
   @Test
   public void testParse_TopicAndChild() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Topic<br>Root\n ## Child<br/>Topic"));
-    assertEquals("Topic\nRoot",topic.getText());
-    assertEquals(1,topic.getChildren().size());
-    
+    assertEquals("Topic\nRoot", topic.getText());
+    assertEquals(1, topic.getChildren().size());
+
     final Topic child = topic.getChildren().get(0);
     assertEquals("Child\nTopic", child.getText());
     assertTrue(child.getChildren().isEmpty());
   }
 
   @Test
-  public void testParseRoot_CodeSnippetContainsThreeBackticksLine_withSpacesBefore() throws Exception {
+  public void testParseRoot_CodeSnippetContainsThreeBackticksLine_withSpacesBefore()
+      throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n ```\n```"));
-    assertEquals("System.exit(0);\n ```\n",topic.getCodeSnippet("Java"));
+    assertEquals("System.exit(0);\n ```\n", topic.getCodeSnippet("Java"));
   }
-  
+
   @Test
-  public void testParseRoot_CodeSnippetContainsThreeBackticksLine_withOneMoreBacktickAfterSpace() throws Exception {
+  public void testParseRoot_CodeSnippetContainsThreeBackticksLine_withOneMoreBacktickAfterSpace()
+      throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n``` `\n```"));
-    assertEquals("System.exit(0);\n``` `\n",topic.getCodeSnippet("Java"));
+    assertEquals("System.exit(0);\n``` `\n", topic.getCodeSnippet("Java"));
   }
-  
+
   @Test
   public void testParseRoot_CodeSnippetContainsThreeBackticksLine_manyBackticks() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n`````\n```"));
-    assertEquals("System.exit(0);\n`````\n",topic.getCodeSnippet("Java"));
+    assertEquals("System.exit(0);\n`````\n", topic.getCodeSnippet("Java"));
   }
-  
+
   @Test
-  public void testParseRoot_CodeSnippetContainsThreeBackticksLine_threeBacktickAndChar() throws Exception {
+  public void testParseRoot_CodeSnippetContainsThreeBackticksLine_threeBacktickAndChar()
+      throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n```a\n```"));
-    assertEquals("System.exit(0);\n```a\n",topic.getCodeSnippet("Java"));
+    assertEquals("System.exit(0);\n```a\n", topic.getCodeSnippet("Java"));
   }
-  
+
   @Test
-  public void testParseRoot_CodeSnippetContainsThreeBackticksLine_charAndThreeBacktick() throws Exception {
+  public void testParseRoot_CodeSnippetContainsThreeBackticksLine_charAndThreeBacktick()
+      throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\na```\n```"));
-    assertEquals("System.exit(0);\na```\n",topic.getCodeSnippet("Java"));
+    assertEquals("System.exit(0);\na```\n", topic.getCodeSnippet("Java"));
   }
-  
+
   @Test
   public void testParseRoot_emptyCodeSnippet() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\n```"));
-    assertEquals("",topic.getCodeSnippet("Java"));
+    assertEquals("", topic.getCodeSnippet("Java"));
   }
-  
+
   @Test
   public void testParseRoot_notClosedCodeSnippet_OnlyHeader() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\n"));
     assertNull(topic.getCodeSnippet("Java"));
   }
-  
+
   @Test
   public void testParseRoot_notClosedCodeSnippet_NotClosed() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.out.println();\n"));
     assertNull(topic.getCodeSnippet("Java"));
   }
-  
+
   @Test
   public void testParse_TopicAndTwoChildren() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer("# Topic\n ## Child1\n ## Child2\n"));
-    assertEquals("Topic",topic.getText());
-    assertEquals(2,topic.getChildren().size());
-    
+    assertEquals("Topic", topic.getText());
+    assertEquals(2, topic.getChildren().size());
+
     final Topic child1 = topic.getChildren().get(0);
     assertEquals("Child1", child1.getText());
     assertTrue(child1.getChildren().isEmpty());
@@ -187,15 +205,16 @@ public class TopicTest {
   @Test
   public void testParse_MultiLevels() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic root = Topic.parse(mm, makeLexer("# Level1\n## Level2.1\n### Level3.1\n## Level2.2\n### Level3.2\n#### Level4.2\n## Level2.3"));
-    assertEquals("Level1",root.getText());
+    final Topic root = Topic.parse(mm, makeLexer(
+        "# Level1\n## Level2.1\n### Level3.1\n## Level2.2\n### Level3.2\n#### Level4.2\n## Level2.3"));
+    assertEquals("Level1", root.getText());
     assertEquals(3, root.getChildren().size());
     assertEquals("Level2.1", root.getChildren().get(0).getText());
     assertEquals("Level2.2", root.getChildren().get(1).getText());
     assertEquals("Level2.3", root.getChildren().get(2).getText());
-    
+
     final Topic level32 = root.getChildren().get(1).getChildren().get(0);
-    
+
     assertEquals("Level3.2", level32.getText());
     assertEquals("Level4.2", level32.getChildren().get(0).getText());
   }
@@ -206,9 +225,9 @@ public class TopicTest {
     final Topic root = new Topic(mm, null, "Level1");
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("\n# Level1\n",writer.toString());
+    assertEquals("\n# Level1\n", writer.toString());
   }
-  
+
   @Test
   public void testParse_WriteOneLevelWithExtra() throws Exception {
     final MindMap mm = new MindMap(true);
@@ -216,7 +235,8 @@ public class TopicTest {
     root.setExtra(new ExtraLink("http://wwww.igormaznitsa.com"));
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("\n# Level1\n- LINK\n<pre>http://wwww.igormaznitsa.com</pre>\n",writer.toString());
+    assertEquals("\n# Level1\n- LINK\n<pre>http://wwww.igormaznitsa.com</pre>\n",
+        writer.toString());
   }
 
   @Test
@@ -228,9 +248,11 @@ public class TopicTest {
     root.setExtra(new ExtraLink("http://wwww.igormaznitsa.com"));
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("\n# Level1\n- LINK\n<pre>http://wwww.igormaznitsa.com</pre>\n```Java\nSystem.exit();\n```\n```Shell\nexit\n```\n",writer.toString());
+    assertEquals(
+        "\n# Level1\n- LINK\n<pre>http://wwww.igormaznitsa.com</pre>\n```Java\nSystem.exit();\n```\n```Shell\nexit\n```\n",
+        writer.toString());
   }
-  
+
   @Test
   public void testParse_WriteOneLevelWithExtraAndAttribute() throws Exception {
     final MindMap mm = new MindMap(true);
@@ -239,40 +261,42 @@ public class TopicTest {
     root.setExtra(new ExtraLink("http://wwww.igormaznitsa.com"));
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("\n# Level1\n> hello=``wor`ld``\n\n- LINK\n<pre>http://wwww.igormaznitsa.com</pre>\n",writer.toString());
+    assertEquals(
+        "\n# Level1\n> hello=``wor`ld``\n\n- LINK\n<pre>http://wwww.igormaznitsa.com</pre>\n",
+        writer.toString());
   }
-  
+
   @Test
   public void testParse_WriteOneLevelWithSpecialChars() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic root = new Topic(mm, null, "<Level1>\nNextText");
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("\n# \\<Level1\\><br/>NextText\n",writer.toString());
+    assertEquals("\n# \\<Level1\\><br/>NextText\n", writer.toString());
   }
-  
+
   @Test
   public void testParse_WriteTwoLevel() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic root = new Topic(mm, null, "Level1");
-    new Topic(mm,root, "Level2");
+    new Topic(mm, root, "Level2");
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("\n# Level1\n\n## Level2\n",writer.toString());
+    assertEquals("\n# Level1\n\n## Level2\n", writer.toString());
   }
-  
+
   @Test
   public void testParse_WriteThreeLevel() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic root = new Topic(mm, null, "Level1");
-    final Topic level2 = new Topic(mm,root, "Level2");
-    new Topic(mm,level2, "Level3");
-    new Topic(mm,root, "Level2.1");
+    final Topic level2 = new Topic(mm, root, "Level2");
+    new Topic(mm, level2, "Level3");
+    new Topic(mm, root, "Level2.1");
     final StringWriter writer = new StringWriter();
     root.write(writer);
-    assertEquals("\n# Level1\n\n## Level2\n\n### Level3\n\n## Level2\\.1\n",writer.toString());
+    assertEquals("\n# Level1\n\n## Level2\n\n### Level3\n\n## Level2\\.1\n", writer.toString());
   }
-  
+
   @Test
   public void testParse_EmptyTextAtMiddleLevel() throws Exception {
     final MindMap mm = new MindMap(true);
@@ -294,13 +318,33 @@ public class TopicTest {
     final String packedMap = mm.packToString();
     final MindMap parsed = new MindMap(new StringReader(packedMap));
     final Topic rootParsed = parsed.getRoot();
-    
-    assertEquals(1,rootParsed.getChildren().size());
+
+    assertEquals(1, rootParsed.getChildren().size());
     final Topic theTopic = rootParsed.getFirst();
-    assertEquals("#NewTopic",theTopic.getText());
+    assertEquals("#NewTopic", theTopic.getText());
     assertTrue(theTopic.getExtras().isEmpty());
   }
-  
+
+  @Test
+  public void testWriteParse_encryptedNote() throws Exception {
+    final MindMap mm = new MindMap(true);
+    final Topic root = new Topic(mm, null, "");
+    mm.setRoot(root, false);
+    root.setText("`Root\ntopic`");
+    root.setExtra(new ExtraNote("Encrypted world", true, "tip"));
+
+    final StringWriter writer = new StringWriter();
+    final String written = mm.write(writer).toString();
+
+    assertTrue(written.contains("> extras.note.encrypted=`true`,extras.note.encrypted.tip=`tip`"));
+
+    final MindMap parsed = new MindMap(new StringReader(written));
+    final Topic parsedRoot = parsed.getRoot();
+    final ExtraNote parsedNote = (ExtraNote) parsedRoot.getExtras().get(Extra.ExtraType.NOTE);
+    assertTrue(parsedNote.isEncrypted());
+    assertEquals("tip", parsedNote.getTip());
+  }
+
   @Test
   public void testParse_noteContainsTicks() throws Exception {
     final MindMap mm = new MindMap(true);
@@ -308,23 +352,24 @@ public class TopicTest {
     mm.setRoot(root, false);
     root.setText("`Root\ntopic`");
     root.setExtra(new ExtraNote("Hello world \n <br>```Some```"));
-    
+
     final StringWriter writer = new StringWriter();
     mm.write(writer);
     final String text = writer.toString();
-    
+
     assertEquals("Mind Map generated by NB MindMap plugin   \n"
-            + "> __version__=`1.1`\n"
-            + "---\n"
-            + "\n# \\`Root<br/>topic\\`\n"
-            + "- NOTE\n"
-            + "<pre>Hello world \n"
-            + " &lt;br&gt;```Some```</pre>\n", text);
+        + "> __version__=`1.1`\n"
+        + "---\n"
+        + "\n# \\`Root<br/>topic\\`\n"
+        + "- NOTE\n"
+        + "<pre>Hello world \n"
+        + " &lt;br&gt;```Some```</pre>\n", text);
 
     final MindMap parsed = new MindMap(new StringReader(text));
-    
-    assertEquals("`Root\ntopic`",parsed.getRoot().getText());
-    assertEquals("Hello world \n <br>```Some```",((ExtraNote)parsed.getRoot().getExtras().get(Extra.ExtraType.NOTE)).getValue());
+
+    assertEquals("`Root\ntopic`", parsed.getRoot().getText());
+    assertEquals("Hello world \n <br>```Some```",
+        ((ExtraNote) parsed.getRoot().getExtras().get(Extra.ExtraType.NOTE)).getValue());
   }
-  
+
 }

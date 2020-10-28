@@ -23,8 +23,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ExtraNote extends Extra<String> {
-  public static final String ATTR_ENCRYPTED = "extra.note.encrypted";
-  public static final String ATTR_PASSWORD_TIP = "extra.note.encrypted.tip";
+  public static final String ATTR_ENCRYPTED = "extras.note.encrypted";
+  public static final String ATTR_PASSWORD_TIP = "extras.note.encrypted.tip";
   private static final long serialVersionUID = 8612886872756838147L;
   private final String text;
   private final boolean encrypted;
