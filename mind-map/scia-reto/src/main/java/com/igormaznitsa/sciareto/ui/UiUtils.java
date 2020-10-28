@@ -18,11 +18,22 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
+
+
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.meta.common.utils.IOUtils;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.UriEditPanel;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -64,14 +75,6 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.apache.commons.lang.SystemUtils;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.meta.common.utils.IOUtils;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.Main;
 import reactor.core.Disposable;
 import reactor.core.scheduler.Scheduler;
 
@@ -375,11 +378,13 @@ public final class UiUtils {
   }
 
   @Nullable
-  public static String editText(@Nonnull final String title, @Nonnull final String text) {
-    final NoteEditor textEditor = new NoteEditor(text);
+  public static NoteEditorData editText(@Nonnull final String title,
+                                        @Nonnull final NoteEditorData data) {
+    final NoteEditor textEditor = new NoteEditor(data);
     try {
-      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(Main.getApplicationFrame(), title, textEditor)) {
-        return textEditor.getText();
+      if (DialogProviderManager.getInstance().getDialogProvider()
+          .msgOkCancel(Main.getApplicationFrame(), title, textEditor)) {
+        return textEditor.getData();
       } else {
         return null;
       }

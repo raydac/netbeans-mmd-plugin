@@ -18,7 +18,18 @@
  */
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
+import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.SpecificKeys;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.Focuser;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -34,6 +45,7 @@ import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -52,17 +64,6 @@ import javax.swing.text.Utilities;
 import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
-import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.Focuser;
-import com.igormaznitsa.sciareto.ui.UiUtils;
-import java.awt.Font;
 
 public final class NoteEditor extends javax.swing.JPanel {
 
@@ -137,11 +138,14 @@ public final class NoteEditor extends javax.swing.JPanel {
 
     @Override
     public String getDescription() {
-      return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("PlainTextEditor.fileFilter.description");
+      return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle")
+          .getString("PlainTextEditor.fileFilter.description");
     }
   };
 
   private Wrapping wrapping;
+  private String password;
+  private String tip;
 
   private static boolean isWhitespaceOrControl(final char c) {
     return Character.isISOControl(c) || Character.isWhitespace(c);
@@ -166,10 +170,171 @@ public final class NoteEditor extends javax.swing.JPanel {
     updateRedoUndoState();
   }
 
-  public NoteEditor(@Nonnull final String text) {
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonBrowse;
+
+  private void updateCaretPos() {
+    final int pos = this.editorPane.getCaretPosition();
+    final int col = getColumn(pos, this.editorPane);
+    final int row = getRow(pos, this.editorPane);
+    this.labelCursorPos.setText(row + ":" + col); //NOI18N
+
+    final String selectedText = this.editorPane.getSelectedText();
+    if (StringUtils.isEmpty(selectedText)) {
+      this.buttonCopy.setEnabled(false);
+      this.buttonBrowse.setEnabled(false);
+    } else {
+      this.buttonCopy.setEnabled(true);
+      try {
+        final URI uri = URI.create(selectedText.trim());
+        this.buttonBrowse.setEnabled(uri.isAbsolute());
+      } catch (Exception ex) {
+        this.buttonBrowse.setEnabled(false);
+      }
+    }
+  }
+
+  private static int getRow(final int pos, final JTextComponent editor) {
+    int rn = (pos == 0) ? 1 : 0;
+    try {
+      int offs = pos;
+      while (offs > 0) {
+        offs = Utilities.getRowStart(editor, offs) - 1;
+        rn++;
+      }
+    } catch (BadLocationException e) {
+      LOGGER.error("Bad location", e); //NOI18N
+    }
+    return rn;
+  }
+
+  private static int getColumn(final int pos, final JTextComponent editor) {
+    try {
+      return pos - Utilities.getRowStart(editor, pos) + 1;
+    } catch (BadLocationException e) {
+      LOGGER.error("Bad location", e); //NOI18N
+    }
+    return -1;
+  }
+
+  private javax.swing.JButton buttonClear;
+
+  public void dispose() {
+
+  }
+
+  private javax.swing.JButton buttonCopy;
+
+  private void labelCursorPosMouseClicked(
+      java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelCursorPosMouseClicked
+
+  }//GEN-LAST:event_labelCursorPosMouseClicked
+
+  private void labelWrapModeMouseClicked(
+      java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelWrapModeMouseClicked
+    this.wrapping = this.wrapping.next();
+    updateWrapping();
+  }//GEN-LAST:event_labelWrapModeMouseClicked
+
+  private void updateWrapping() {
+    this.editorPane.setWrapStyleWord(this.wrapping != Wrapping.CHAR_WRAP);
+    this.editorPane.setLineWrap(this.wrapping != Wrapping.NONE);
+    updateBottomPanel();
+  }
+
+  private void buttonImportActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
+    final File toOpen = DialogProviderManager.getInstance().getDialogProvider()
+        .msgOpenFileDialog(null, "note-editor",
+            UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true,
+            new FileFilter[] {TEXT_FILE_FILTER}, "Open"); //NOI18N
+    if (toOpen != null) {
+      try {
+        final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
+        this.editorPane.setText(text);
+      } catch (Exception ex) {
+        LOGGER.error("Error during text file loading", ex); //NOI18N
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+            UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
+      }
+    }
+
+  }//GEN-LAST:event_buttonImportActionPerformed
+
+  private javax.swing.JButton buttonExport;
+
+  private void buttonCopyActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCopyActionPerformed
+    StringSelection stringSelection = new StringSelection(this.editorPane.getSelectedText());
+    final Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+    clpbrd.setContents(stringSelection, null);
+  }//GEN-LAST:event_buttonCopyActionPerformed
+
+  private void buttonPasteActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPasteActionPerformed
+    try {
+      this.editorPane.replaceSelection((String) Toolkit.getDefaultToolkit().getSystemClipboard()
+          .getData(DataFlavor.stringFlavor));
+    } catch (UnsupportedFlavorException ex) {
+      // no text data in clipboard
+    } catch (IOException ex) {
+      LOGGER.error("Error during paste from clipboard", ex); //NOI18N
+    }
+  }//GEN-LAST:event_buttonPasteActionPerformed
+
+  private void buttonClearActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
+    this.editorPane.setText(""); //NOI18N
+  }//GEN-LAST:event_buttonClearActionPerformed
+
+  private void buttonBrowseActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBrowseActionPerformed
+    final String selectedText = this.editorPane.getSelectedText().trim();
+    try {
+      UiUtils.browseURI(URI.create(selectedText), false);
+    } catch (Exception ex) {
+      LOGGER.error("Can't open link : " + selectedText); //NOI18N
+      DialogProviderManager.getInstance().getDialogProvider()
+          .msgError(Main.getApplicationFrame(), "Can't browse link : " + selectedText);
+    }
+  }//GEN-LAST:event_buttonBrowseActionPerformed
+
+  private void buttonUndoActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUndoActionPerformed
+    doUndo();
+  }//GEN-LAST:event_buttonUndoActionPerformed
+
+  private void buttonRedoActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRedoActionPerformed
+    doRedo();
+  }//GEN-LAST:event_buttonRedoActionPerformed
+
+  private javax.swing.JButton buttonImport;
+
+  private void updateBottomPanel() {
+    this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
+  }
+
+  private javax.swing.JButton buttonPaste;
+  private javax.swing.JButton buttonRedo;
+  private javax.swing.JButton buttonUndo;
+  private javax.swing.JTextArea editorPane;
+  private javax.swing.Box.Filler filler1;
+  private javax.swing.JPanel jPanel1;
+  private javax.swing.JScrollPane jScrollPane2;
+  private javax.swing.JSeparator jSeparator1;
+  private javax.swing.JToolBar jToolBar1;
+  private javax.swing.JLabel labelCursorPos;
+  private javax.swing.JLabel labelWrapMode;
+  private javax.swing.JToggleButton toggleButtonEncrypt;
+
+  public NoteEditor(@Nonnull final NoteEditorData data) {
     initComponents();
 
-    this.buttonRedo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK), "do-redo"); //NOI18N
+    this.buttonRedo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+            .getKeyStroke(KeyEvent.VK_Z,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK),
+        "do-redo"); //NOI18N
     this.buttonRedo.getActionMap().put("do-redo", new AbstractAction() { //NOI18N
       private static final long serialVersionUID = -5644390861803492172L;
 
@@ -260,8 +425,17 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
 
     this.setPreferredSize(new Dimension(640, 480));
-    this.editorPane.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
-    this.editorPane.setText(text);
+    this.editorPane.setFont(PreferencesManager.getInstance()
+        .getFont(PreferencesManager.getInstance().getPreferences(),
+            SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
+    this.editorPane.setText(data.getText());
+
+    this.password = data.getPassword();
+    this.tip = data.getTip();
+    if (this.password != null) {
+      this.toggleButtonEncrypt.setSelected(true);
+    }
+
     this.addAncestorListener(new AncestorListener() {
       @Override
       public void ancestorAdded(@Nonnull final AncestorEvent event) {
@@ -302,57 +476,9 @@ public final class NoteEditor extends javax.swing.JPanel {
     new Focuser(this.editorPane);
   }
 
-  private void updateCaretPos() {
-    final int pos = this.editorPane.getCaretPosition();
-    final int col = getColumn(pos, this.editorPane);
-    final int row = getRow(pos, this.editorPane);
-    this.labelCursorPos.setText(row + ":" + col); //NOI18N
-
-    final String selectedText = this.editorPane.getSelectedText();
-    if (StringUtils.isEmpty(selectedText)) {
-      this.buttonCopy.setEnabled(false);
-      this.buttonBrowse.setEnabled(false);
-    } else {
-      this.buttonCopy.setEnabled(true);
-      try {
-        final URI uri = URI.create(selectedText.trim());
-        this.buttonBrowse.setEnabled(uri.isAbsolute());
-      } catch (Exception ex) {
-        this.buttonBrowse.setEnabled(false);
-      }
-    }
-  }
-
-  private static int getRow(final int pos, final JTextComponent editor) {
-    int rn = (pos == 0) ? 1 : 0;
-    try {
-      int offs = pos;
-      while (offs > 0) {
-        offs = Utilities.getRowStart(editor, offs) - 1;
-        rn++;
-      }
-    } catch (BadLocationException e) {
-      LOGGER.error("Bad location", e); //NOI18N
-    }
-    return rn;
-  }
-
-  private static int getColumn(final int pos, final JTextComponent editor) {
-    try {
-      return pos - Utilities.getRowStart(editor, pos) + 1;
-    } catch (BadLocationException e) {
-      LOGGER.error("Bad location", e); //NOI18N
-    }
-    return -1;
-  }
-
   @Nonnull
-  public String getText() {
-    return this.editorPane.getText();
-  }
-
-  public void dispose() {
-
+  public NoteEditorData getData() {
+    return new NoteEditorData(this.editorPane.getText(), this.password, this.tip);
   }
 
   /**
@@ -373,11 +499,14 @@ public final class NoteEditor extends javax.swing.JPanel {
     buttonPaste = new javax.swing.JButton();
     buttonBrowse = new javax.swing.JButton();
     buttonClear = new javax.swing.JButton();
+    toggleButtonEncrypt = new javax.swing.JToggleButton();
     jPanel1 = new javax.swing.JPanel();
     labelCursorPos = new javax.swing.JLabel();
     jSeparator1 = new javax.swing.JSeparator();
     labelWrapMode = new javax.swing.JLabel();
-    filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 32767));
+    filler1 =
+        new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0),
+            new java.awt.Dimension(16, 32767));
     jScrollPane2 = new javax.swing.JScrollPane();
     editorPane = new javax.swing.JTextArea();
 
@@ -386,7 +515,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
-    buttonUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
+    buttonUndo
+        .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
     buttonUndo.setMnemonic('u');
     buttonUndo.setText("Undo");
     buttonUndo.setFocusable(false);
@@ -400,7 +530,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonUndo);
 
-    buttonRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
+    buttonRedo
+        .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
     buttonRedo.setMnemonic('r');
     buttonRedo.setText("Redo");
     buttonRedo.setFocusable(false);
@@ -414,7 +545,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonRedo);
 
-    buttonImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/disk16.png"))); // NOI18N
+    buttonImport
+        .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/disk16.png"))); // NOI18N
     buttonImport.setMnemonic('i');
     buttonImport.setText("Import");
     buttonImport.setToolTipText("Import text content from UTF8 encoded text file");
@@ -429,7 +561,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonImport);
 
-    buttonExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_save16.png"))); // NOI18N
+    buttonExport.setIcon(
+        new javax.swing.ImageIcon(getClass().getResource("/icons/file_save16.png"))); // NOI18N
     buttonExport.setMnemonic('e');
     buttonExport.setText("Export");
     buttonExport.setToolTipText("Export text content into UTF8 encoded file");
@@ -444,7 +577,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonExport);
 
-    buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
+    buttonCopy.setIcon(
+        new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
     buttonCopy.setMnemonic('c');
     buttonCopy.setText("Copy");
     buttonCopy.setToolTipText("Copy selected text content into clipboard");
@@ -459,7 +593,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonCopy);
 
-    buttonPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
+    buttonPaste.setIcon(
+        new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
     buttonPaste.setMnemonic('p');
     buttonPaste.setText("Paste");
     buttonPaste.setToolTipText("Paste text content from clipboard into current position");
@@ -474,7 +609,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonPaste);
 
-    buttonBrowse.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/link16.png"))); // NOI18N
+    buttonBrowse
+        .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/link16.png"))); // NOI18N
     buttonBrowse.setMnemonic('b');
     buttonBrowse.setText("Browse");
     buttonBrowse.setToolTipText("Open selected link in browser");
@@ -489,7 +625,8 @@ public final class NoteEditor extends javax.swing.JPanel {
     });
     jToolBar1.add(buttonBrowse);
 
-    buttonClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
+    buttonClear
+        .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
     buttonClear.setMnemonic('a');
     buttonClear.setText("Clear All");
     buttonClear.setToolTipText("Clear all text content");
@@ -503,6 +640,21 @@ public final class NoteEditor extends javax.swing.JPanel {
       }
     });
     jToolBar1.add(buttonClear);
+
+    toggleButtonEncrypt.setIcon(
+        new javax.swing.ImageIcon(getClass().getResource("/icons/set_password16.png"))); // NOI18N
+    toggleButtonEncrypt.setText("Protect");
+    toggleButtonEncrypt.setToolTipText("Encrypt the note and set password");
+    toggleButtonEncrypt.setEnabled(false);
+    toggleButtonEncrypt.setFocusable(false);
+    toggleButtonEncrypt.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    toggleButtonEncrypt.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    toggleButtonEncrypt.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        toggleButtonEncryptActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(toggleButtonEncrypt);
 
     add(jToolBar1, java.awt.BorderLayout.NORTH);
 
@@ -540,110 +692,30 @@ public final class NoteEditor extends javax.swing.JPanel {
     add(jScrollPane2, java.awt.BorderLayout.CENTER);
   }// </editor-fold>//GEN-END:initComponents
 
-  private void labelCursorPosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelCursorPosMouseClicked
-
-  }//GEN-LAST:event_labelCursorPosMouseClicked
-
-  private void labelWrapModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelWrapModeMouseClicked
-    this.wrapping = this.wrapping.next();
-    updateWrapping();
-  }//GEN-LAST:event_labelWrapModeMouseClicked
-
-  private void updateWrapping() {
-    this.editorPane.setWrapStyleWord(this.wrapping != Wrapping.CHAR_WRAP);
-    this.editorPane.setLineWrap(this.wrapping != Wrapping.NONE);
-    updateBottomPanel();
-  }
-
-  private void buttonImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
-    final File toOpen = DialogProviderManager.getInstance().getDialogProvider()
-            .msgOpenFileDialog(null, "note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true, new FileFilter[]{TEXT_FILE_FILTER}, "Open"); //NOI18N
-    if (toOpen != null) {
-      try {
-        final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
-        this.editorPane.setText(text);
-      } catch (Exception ex) {
-        LOGGER.error("Error during text file loading", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
-      }
-    }
-
-  }//GEN-LAST:event_buttonImportActionPerformed
-
   private void buttonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportActionPerformed
     final File toSave = DialogProviderManager.getInstance().getDialogProvider()
             .msgSaveFileDialog(null, "note-editor", UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null, true, new FileFilter[]{TEXT_FILE_FILTER}, "Save"); //NOI18N
     if (toSave != null) {
       try {
-        final String text = getText();
+        final String text = this.editorPane.getText();
         FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
       } catch (Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+            UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
 
   }//GEN-LAST:event_buttonExportActionPerformed
 
-  private void buttonCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCopyActionPerformed
-    StringSelection stringSelection = new StringSelection(this.editorPane.getSelectedText());
-    final Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-    clpbrd.setContents(stringSelection, null);
-  }//GEN-LAST:event_buttonCopyActionPerformed
+  private void toggleButtonEncryptActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonEncryptActionPerformed
+    final JToggleButton src = (JToggleButton) evt.getSource();
+    if (src.isSelected()) {
 
-  private void buttonPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPasteActionPerformed
-    try {
-      this.editorPane.replaceSelection((String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor));
-    } catch (UnsupportedFlavorException ex) {
-      // no text data in clipboard
-    } catch (IOException ex) {
-      LOGGER.error("Error during paste from clipboard", ex); //NOI18N
+    } else {
+
     }
-  }//GEN-LAST:event_buttonPasteActionPerformed
-
-  private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
-    this.editorPane.setText(""); //NOI18N
-  }//GEN-LAST:event_buttonClearActionPerformed
-
-  private void buttonBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBrowseActionPerformed
-    final String selectedText = this.editorPane.getSelectedText().trim();
-    try {
-      UiUtils.browseURI(URI.create(selectedText), false);
-    } catch (Exception ex) {
-      LOGGER.error("Can't open link : " + selectedText); //NOI18N
-      DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't browse link : " + selectedText);
-    }
-  }//GEN-LAST:event_buttonBrowseActionPerformed
-
-  private void buttonUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUndoActionPerformed
-    doUndo();
-  }//GEN-LAST:event_buttonUndoActionPerformed
-
-  private void buttonRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRedoActionPerformed
-    doRedo();
-  }//GEN-LAST:event_buttonRedoActionPerformed
-
-  private void updateBottomPanel() {
-    this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
-  }
-
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton buttonBrowse;
-  private javax.swing.JButton buttonClear;
-  private javax.swing.JButton buttonCopy;
-  private javax.swing.JButton buttonExport;
-  private javax.swing.JButton buttonImport;
-  private javax.swing.JButton buttonPaste;
-  private javax.swing.JButton buttonRedo;
-  private javax.swing.JButton buttonUndo;
-  private javax.swing.JTextArea editorPane;
-  private javax.swing.Box.Filler filler1;
-  private javax.swing.JPanel jPanel1;
-  private javax.swing.JScrollPane jScrollPane2;
-  private javax.swing.JSeparator jSeparator1;
-  private javax.swing.JToolBar jToolBar1;
-  private javax.swing.JLabel labelCursorPos;
-  private javax.swing.JLabel labelWrapMode;
+  }//GEN-LAST:event_toggleButtonEncryptActionPerformed
   // End of variables declaration//GEN-END:variables
 }

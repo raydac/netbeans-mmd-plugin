@@ -73,6 +73,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
@@ -948,29 +949,30 @@ public final class MMDEditor extends AbstractTextEditor
 
   private void editTextForTopic(@Nonnull final Topic topic) {
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-    final String result;
+    final NoteEditorData result;
     if (note == null) {
       // create new
       result = UiUtils.editText(String
           .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
-              Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
+              Utils.makeShortTextVersion(topic.getText(), 16)), new NoteEditorData()); //NOI18N
     } else {
       // edit
       result = UiUtils.editText(String
-          .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
-              Utils.makeShortTextVersion(topic.getText(), 16)), note.getValue());
+              .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
+                  Utils.makeShortTextVersion(topic.getText(), 16)),
+          new NoteEditorData(note.getValue(), null, null));
     }
     if (result != null) {
       boolean changed = false;
 
-      if (result.isEmpty()) {
+      if (result.getText().isEmpty()) {
         if (note != null) {
           topic.removeExtra(Extra.ExtraType.NOTE);
           changed = true;
         }
       } else {
         if (note == null || !note.getValue().equals(result)) {
-          topic.setExtra(new ExtraNote(result));
+          topic.setExtra(new ExtraNote(result.getText()));
           changed = true;
         }
       }
