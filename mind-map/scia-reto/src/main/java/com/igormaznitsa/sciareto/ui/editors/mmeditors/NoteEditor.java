@@ -53,8 +53,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
@@ -231,12 +229,9 @@ public final class NoteEditor extends javax.swing.JPanel {
     this.addAncestorListener(new AncestorListener() {
       @Override
       public void ancestorAdded(@Nonnull final AncestorEvent event) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            editorPane.grabFocus();
-            updateCaretPos();
-          }
+        SwingUtilities.invokeLater(() -> {
+          editorPane.grabFocus();
+          updateCaretPos();
         });
       }
 
@@ -249,12 +244,7 @@ public final class NoteEditor extends javax.swing.JPanel {
       }
     });
 
-    this.editorPane.addCaretListener(new CaretListener() {
-      @Override
-      public void caretUpdate(@Nonnull final CaretEvent e) {
-        updateCaretPos();
-      }
-    });
+    this.editorPane.addCaretListener(e -> updateCaretPos());
 
     this.wrapping = Wrapping.WORD_WRAP;
     editorPane.setCaretPosition(0);
@@ -423,7 +413,6 @@ public final class NoteEditor extends javax.swing.JPanel {
     return new NoteEditorData(this.editorPane.getText(), this.password, this.tip);
   }
 
-  @SuppressWarnings("unchecked")
   private void initComponents() {
 
     buttonToolBar = new javax.swing.JToolBar();
@@ -553,11 +542,7 @@ public final class NoteEditor extends javax.swing.JPanel {
     toggleButtonEncrypt.setFocusable(false);
     toggleButtonEncrypt.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     toggleButtonEncrypt.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    toggleButtonEncrypt.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        toggleButtonEncryptActionPerformed(evt);
-      }
-    });
+    toggleButtonEncrypt.addActionListener(this::toggleButtonEncryptActionPerformed);
     buttonToolBar.add(toggleButtonEncrypt);
 
     add(buttonToolBar, java.awt.BorderLayout.NORTH);
