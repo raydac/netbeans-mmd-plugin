@@ -986,8 +986,7 @@ public final class MMDEditor extends AbstractTextEditor
       } else {
         result = UiUtils.editText(String
             .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
-                Utils.makeShortTextVersion(noteText.isEncrypted() ? "Encrypted" : topic.getText(),
-                    16)), noteText);
+                Utils.makeShortTextVersion(topic.getText(), 16)), noteText);
       }
     }
     if (result != null) {

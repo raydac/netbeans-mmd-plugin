@@ -602,7 +602,7 @@ public final class NoteEditor extends JPanel {
       try {
         final String text = this.editorPane.getText();
         FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
-      } catch (Exception ex) {
+      } catch (final Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
             UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
@@ -625,9 +625,12 @@ public final class NoteEditor extends JPanel {
         src.setSelected(false);
       }
     } else {
-      if (!DialogProviderManager.getInstance().getDialogProvider()
+      if (DialogProviderManager.getInstance().getDialogProvider()
           .msgConfirmOkCancel(this, "Reset password",
               "Do you really want reset password for the note?")) {
+        this.password = null;
+        this.hint = null;
+      } else {
         src.setSelected(true);
       }
     }
