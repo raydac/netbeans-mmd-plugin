@@ -60,6 +60,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.utils.CryptoUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -74,6 +75,7 @@ import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.dialogs.PasswordPanel;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
@@ -949,6 +951,7 @@ public final class MMDEditor extends AbstractTextEditor
 
   private void editTextForTopic(@Nonnull final Topic topic) {
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
+
     final NoteEditorData result;
     if (note == null) {
       // create new
@@ -957,10 +960,35 @@ public final class MMDEditor extends AbstractTextEditor
               Utils.makeShortTextVersion(topic.getText(), 16)), new NoteEditorData()); //NOI18N
     } else {
       // edit
-      result = UiUtils.editText(String
-              .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
-                  Utils.makeShortTextVersion(topic.getText(), 16)),
-          new NoteEditorData(note.getValue(), null, null));
+      final NoteEditorData noteText;
+      if (note.isEncrypted()) {
+        final PasswordPanel passwordPanel =
+            new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
+        if (DialogProviderManager.getInstance().getDialogProvider()
+            .msgOkCancel(this.getMainComponent(), "Note password", passwordPanel)) {
+          final StringBuilder decrypted = new StringBuilder();
+          final String pass = new String(passwordPanel.getPassword()).trim();
+          if (CryptoUtils.decrypt(pass, note.getValue(), decrypted)) {
+            noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
+          } else {
+            DialogProviderManager.getInstance().getDialogProvider()
+                .msgError(this.getMainComponent(), "Wrong password!");
+            noteText = null;
+          }
+        } else {
+          noteText = null;
+        }
+      } else {
+        noteText = new NoteEditorData(note.getValue(), null, null);
+      }
+      if (noteText == null) {
+        result = null;
+      } else {
+        result = UiUtils.editText(String
+            .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
+                Utils.makeShortTextVersion(noteText.isEncrypted() ? "Encrypted" : topic.getText(),
+                    16)), noteText);
+      }
     }
     if (result != null) {
       boolean changed = false;
@@ -971,11 +999,20 @@ public final class MMDEditor extends AbstractTextEditor
           changed = true;
         }
       } else {
-        if (note == null || !note.getValue().equals(result)) {
-          topic.setExtra(new ExtraNote(result.getText()));
+        final String newNoteText;
+        if (result.isEncrypted()) {
+          newNoteText = CryptoUtils.encrypt(result.getPassword(), result.getText());
+        } else {
+          newNoteText = result.getText();
+        }
+
+        if (!newNoteText.equals(note.getValue())
+            || (note.isEncrypted() != result.isEncrypted())) {
+          topic.setExtra(new ExtraNote(newNoteText, result.isEncrypted(), result.getHint()));
           changed = true;
         }
       }
+
       if (changed) {
         this.mindMapPanel.invalidate();
         this.mindMapPanel.repaint();

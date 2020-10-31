@@ -336,7 +336,7 @@ public class TopicTest {
     final StringWriter writer = new StringWriter();
     final String written = mm.write(writer).toString();
 
-    assertTrue(written.contains("> extras.note.encrypted=`true`,extras.note.encrypted.tip=`tip`"));
+    assertTrue(written.contains("> extras.note.encrypted=`true`,extras.note.encrypted.hint=`tip`"));
 
     final MindMap parsed = new MindMap(new StringReader(written));
     final Topic parsedRoot = parsed.getRoot();

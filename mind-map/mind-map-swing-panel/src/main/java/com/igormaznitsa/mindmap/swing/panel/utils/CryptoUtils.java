@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -31,7 +32,10 @@ public final class CryptoUtils {
   }
 
   @Nonnull
-  public static String encrypt(@Nonnull final String pass, @Nonnull final String text) {
+  public static String encrypt(@Nullable final String pass, @Nonnull final String text) {
+    if (pass == null || pass.isEmpty()) {
+      return text;
+    }
     try {
       final byte[] textBytes = text.getBytes(StandardCharsets.UTF_8);
       final byte[] textHash = sha256(textBytes);

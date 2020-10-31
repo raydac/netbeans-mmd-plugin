@@ -29,6 +29,7 @@ import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.Focuser;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.editors.mmeditors.dialogs.PasswordPanel;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -93,7 +94,7 @@ public final class NoteEditor extends JPanel {
   private final Focuser focuser;
   private Wrapping wrapping;
   private String password;
-  private String tip;
+  private String hint;
   private javax.swing.JButton buttonBrowse;
   private javax.swing.JButton buttonClear;
   private javax.swing.JButton buttonCopy;
@@ -124,6 +125,10 @@ public final class NoteEditor extends JPanel {
 
   public NoteEditor(@Nonnull final NoteEditorData data) {
     initComponents();
+
+    if (data.isEncrypted()) {
+      this.toggleButtonEncrypt.setSelected(true);
+    }
 
     this.buttonRedo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
             .getKeyStroke(KeyEvent.VK_Z,
@@ -229,7 +234,7 @@ public final class NoteEditor extends JPanel {
     this.editorPane.setText(data.getText());
 
     this.password = data.getPassword();
-    this.tip = data.getTip();
+    this.hint = data.getHint();
     if (this.password != null) {
       this.toggleButtonEncrypt.setSelected(true);
     }
@@ -418,7 +423,7 @@ public final class NoteEditor extends JPanel {
 
   @Nonnull
   public NoteEditorData getData() {
-    return new NoteEditorData(this.editorPane.getText(), this.password, this.tip);
+    return new NoteEditorData(this.editorPane.getText(), this.password, this.hint);
   }
 
   private void initComponents() {
@@ -546,7 +551,6 @@ public final class NoteEditor extends JPanel {
         new javax.swing.ImageIcon(getClass().getResource("/icons/set_password16.png"))); // NOI18N
     toggleButtonEncrypt.setText("Protect");
     toggleButtonEncrypt.setToolTipText("Encrypt the note and set password");
-    toggleButtonEncrypt.setEnabled(false);
     toggleButtonEncrypt.setFocusable(false);
     toggleButtonEncrypt.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     toggleButtonEncrypt.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -609,9 +613,23 @@ public final class NoteEditor extends JPanel {
   private void toggleButtonEncryptActionPerformed(ActionEvent evt) {
     final JToggleButton src = (JToggleButton) evt.getSource();
     if (src.isSelected()) {
-
+      final PasswordPanel passwordPanel = new PasswordPanel();
+      if (DialogProviderManager.getInstance().getDialogProvider()
+          .msgOkCancel(this, "Set password", passwordPanel)) {
+        this.password = new String(passwordPanel.getPassword()).trim();
+        this.hint = passwordPanel.getHint();
+        if (this.password.isEmpty()) {
+          src.setSelected(false);
+        }
+      } else {
+        src.setSelected(false);
+      }
     } else {
-
+      if (!DialogProviderManager.getInstance().getDialogProvider()
+          .msgConfirmOkCancel(this, "Reset password",
+              "Do you really want reset password for the note?")) {
+        src.setSelected(true);
+      }
     }
   }
 
