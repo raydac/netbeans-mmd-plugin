@@ -24,24 +24,24 @@ import javax.annotation.Nullable;
 
 public class ExtraNote extends Extra<String> {
   public static final String ATTR_ENCRYPTED = "extras.note.encrypted";
-  public static final String ATTR_PASSWORD_TIP = "extras.note.encrypted.tip";
+  public static final String ATTR_PASSWORD_HINT = "extras.note.encrypted.hint";
   private static final long serialVersionUID = 8612886872756838147L;
   private final String text;
   private final boolean encrypted;
-  private final String tip;
+  private final String hint;
 
   public ExtraNote(@Nonnull final String text) {
     this.text = text;
     this.encrypted = false;
-    this.tip = null;
+    this.hint = null;
   }
 
   public ExtraNote(@Nonnull final String text,
                    final boolean encrypted,
-                   @Nullable final String tip) {
+                   @Nullable final String hint) {
     this.text = text;
     this.encrypted = encrypted;
-    this.tip = tip;
+    this.hint = hint;
   }
 
   public boolean isEncrypted() {
@@ -49,8 +49,8 @@ public class ExtraNote extends Extra<String> {
   }
 
   @Nullable
-  public String getTip() {
-    return this.tip;
+  public String getHint() {
+    return this.hint;
   }
 
   @Override
@@ -58,8 +58,8 @@ public class ExtraNote extends Extra<String> {
     if (this.encrypted) {
       attributesForWrite.put(ATTR_ENCRYPTED, "true");
     }
-    if (this.tip != null) {
-      attributesForWrite.put(ATTR_PASSWORD_TIP, this.tip);
+    if (this.hint != null) {
+      attributesForWrite.put(ATTR_PASSWORD_HINT, this.hint);
     }
   }
 
@@ -78,7 +78,7 @@ public class ExtraNote extends Extra<String> {
     }
     if (that instanceof ExtraNote) {
       final ExtraNote thatNote = (ExtraNote) that;
-      return (this.tip == thatNote.tip || (this.tip != null && this.tip.equals(thatNote.tip)))
+      return (this.hint == thatNote.hint || (this.hint != null && this.hint.equals(thatNote.hint)))
           && this.encrypted == thatNote.encrypted
           && this.text.equals(((ExtraNote) that).text);
     } else {

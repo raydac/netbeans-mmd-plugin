@@ -342,7 +342,7 @@ public class TopicTest {
     final Topic parsedRoot = parsed.getRoot();
     final ExtraNote parsedNote = (ExtraNote) parsedRoot.getExtras().get(Extra.ExtraType.NOTE);
     assertTrue(parsedNote.isEncrypted());
-    assertEquals("tip", parsedNote.getTip());
+    assertEquals("tip", parsedNote.getHint());
   }
 
   @Test

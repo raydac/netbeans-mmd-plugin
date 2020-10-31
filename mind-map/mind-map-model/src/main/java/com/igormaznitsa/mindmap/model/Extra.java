@@ -100,7 +100,7 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
           return new ExtraLink(preprocessed);
         case NOTE: {
           final boolean encrypted = Boolean.parseBoolean(attributes.get(ExtraNote.ATTR_ENCRYPTED));
-          final String passwordTip = attributes.get(ExtraNote.ATTR_PASSWORD_TIP);
+          final String passwordTip = attributes.get(ExtraNote.ATTR_PASSWORD_HINT);
           return new ExtraNote(preprocessed, encrypted, passwordTip);
         }
         case TOPIC:
