@@ -19,6 +19,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -28,6 +29,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
@@ -35,6 +38,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileFilter;
@@ -43,6 +47,7 @@ import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.io.FileUtils;
+import org.netbeans.api.annotations.common.NonNull;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.editor.BaseDocument;
 import org.netbeans.editor.Utilities;
@@ -104,6 +109,8 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
   private Component lastComponent;
   private JEditorPane lastEditor;
 
+  private String password;
+  private String hint;
   private final Wrapping oldWrapping;
   private Wrapping wrapping;
 
@@ -120,14 +127,18 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
     }
   };
 
-  public PlainTextEditor (final String text) {
+  public PlainTextEditor (@NonNull final NoteEditorData data) {
     initComponents();
+    this.toggleButtonProtect.setSelected(data.isEncrypted());
+    
+    this.password = data.getPassword();
+    this.hint = data.getHint();
 
     final JEditorPane editor = UI_COMPO_FACTORY.makeEditorPane();
     editor.setEditorKit(getEditorKit());
     this.document = Utilities.getDocument(editor);
 
-    setText(text);
+    setText(data.getText());
 
     final Preferences docPreferences = CodeStylePreferences.get(this.document).getPreferences();
     this.oldWrapping = Wrapping.findFor(docPreferences.get(SimpleValueNames.TEXT_LINE_WRAP, "none"));
@@ -139,8 +150,41 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
 
     this.labelWrapMode.setMinimumSize(new Dimension(55, this.labelWrapMode.getMinimumSize().height));
 
+    this.toggleButtonProtect.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(@NonNull final ActionEvent e) {
+            toggleButtonEncryptActionPerformed(e);
+        }
+    });
+    
     updateBottomPanel();
   }
+
+    private void toggleButtonEncryptActionPerformed(ActionEvent evt) {
+        final JToggleButton src = (JToggleButton) evt.getSource();
+        if (src.isSelected()) {
+            final PasswordPanel passwordPanel = new PasswordPanel();
+            if (DialogProviderManager.getInstance().getDialogProvider()
+                .msgOkCancel(this, "Set password", passwordPanel)) {
+                this.password = new String(passwordPanel.getPassword()).trim();
+                this.hint = passwordPanel.getHint();
+                if (this.password.isEmpty()) {
+                    src.setSelected(false);
+                }
+            } else {
+                src.setSelected(false);
+            }
+        } else {
+            if (DialogProviderManager.getInstance().getDialogProvider()
+                .msgConfirmOkCancel(this, "Reset password",
+                    "Do you really want reset password for the note?")) {
+                this.password = null;
+                this.hint = null;
+            } else {
+                src.setSelected(true);
+            }
+        }
+    }
 
   private Component makeEditorForText (final Document document) {
     if (this.lastEditor != null) {
@@ -173,9 +217,11 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
     return CloneableEditorSupport.getEditorKit("text/plain"); //NOI18N
   }
 
-  public String getText () {
+  public NoteEditorData getData () {
     try {
-      return this.document.getText(0, this.document.getLength());
+      final String text = this.document.getText(0, this.document.getLength());
+      final NoteEditorData result = new NoteEditorData(text, this.password, this.hint);
+      return result;
     }
     catch (BadLocationException e) {
       LOGGER.error("Can't get text", e); //NOI18N
@@ -203,115 +249,124 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
    * regenerated by the Form Editor.
    */
   @SuppressWarnings ("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-    mainToolBar = new javax.swing.JToolBar();
-    buttonLoad = new javax.swing.JButton();
-    buttonSave = new javax.swing.JButton();
-    buttonCopy = new javax.swing.JButton();
-    buttonPaste = new javax.swing.JButton();
-    buttonClearAll = new javax.swing.JButton();
-    jPanel1 = new javax.swing.JPanel();
-    labelCursorPos = new javax.swing.JLabel();
-    jSeparator2 = new javax.swing.JSeparator();
-    labelWrapMode = new javax.swing.JLabel();
-    filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 32767));
+        mainToolBar = new javax.swing.JToolBar();
+        buttonLoad = new javax.swing.JButton();
+        buttonSave = new javax.swing.JButton();
+        buttonCopy = new javax.swing.JButton();
+        buttonPaste = new javax.swing.JButton();
+        buttonClearAll = new javax.swing.JButton();
+        toggleButtonProtect = new javax.swing.JToggleButton();
+        jPanel1 = new javax.swing.JPanel();
+        labelCursorPos = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+        labelWrapMode = new javax.swing.JLabel();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 32767));
 
-    setLayout(new java.awt.BorderLayout());
+        setLayout(new java.awt.BorderLayout());
 
-    mainToolBar.setFloatable(false);
-    mainToolBar.setRollover(true);
+        mainToolBar.setFloatable(false);
+        mainToolBar.setRollover(true);
 
-    buttonLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/disk16.png"))); // NOI18N
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-    buttonLoad.setText(bundle.getString("PlainTextEditor.buttonImport")); // NOI18N
-    buttonLoad.setToolTipText(bundle.getString("PlainTextEditor.buttonLoad.toolTipText")); // NOI18N
-    buttonLoad.setFocusable(false);
-    buttonLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    buttonLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonLoad.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonLoadActionPerformed(evt);
-      }
-    });
-    mainToolBar.add(buttonLoad);
+        buttonLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/disk16.png"))); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        buttonLoad.setText(bundle.getString("PlainTextEditor.buttonImport")); // NOI18N
+        buttonLoad.setToolTipText(bundle.getString("PlainTextEditor.buttonLoad.toolTipText")); // NOI18N
+        buttonLoad.setFocusable(false);
+        buttonLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        buttonLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        buttonLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonLoadActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(buttonLoad);
 
-    buttonSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_save16.png"))); // NOI18N
-    buttonSave.setText(bundle.getString("PlaintextEditor.buttonExport")); // NOI18N
-    buttonSave.setToolTipText(bundle.getString("PlainTextEditor.buttonSave.toolTipText")); // NOI18N
-    buttonSave.setFocusable(false);
-    buttonSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    buttonSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonSave.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonSaveActionPerformed(evt);
-      }
-    });
-    mainToolBar.add(buttonSave);
+        buttonSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/file_save16.png"))); // NOI18N
+        buttonSave.setText(bundle.getString("PlaintextEditor.buttonExport")); // NOI18N
+        buttonSave.setToolTipText(bundle.getString("PlainTextEditor.buttonSave.toolTipText")); // NOI18N
+        buttonSave.setFocusable(false);
+        buttonSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        buttonSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        buttonSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonSaveActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(buttonSave);
 
-    buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/page_copy16.png"))); // NOI18N
-    buttonCopy.setText(bundle.getString("PlainTextEditor.buttonCopy.text")); // NOI18N
-    buttonCopy.setToolTipText(bundle.getString("PlainTextEditor.buttonCopy.toolTipText")); // NOI18N
-    buttonCopy.setFocusable(false);
-    buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    buttonCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonCopy.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonCopyActionPerformed(evt);
-      }
-    });
-    mainToolBar.add(buttonCopy);
+        buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/page_copy16.png"))); // NOI18N
+        buttonCopy.setText(bundle.getString("PlainTextEditor.buttonCopy.text")); // NOI18N
+        buttonCopy.setToolTipText(bundle.getString("PlainTextEditor.buttonCopy.toolTipText")); // NOI18N
+        buttonCopy.setFocusable(false);
+        buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        buttonCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        buttonCopy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonCopyActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(buttonCopy);
 
-    buttonPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/paste_plain16.png"))); // NOI18N
-    buttonPaste.setText(bundle.getString("PlainTextEditor.buttonPaste.text")); // NOI18N
-    buttonPaste.setToolTipText(bundle.getString("PlainTextEditor.buttonPaste.toolTipText")); // NOI18N
-    buttonPaste.setFocusable(false);
-    buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    buttonPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonPaste.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonPasteActionPerformed(evt);
-      }
-    });
-    mainToolBar.add(buttonPaste);
+        buttonPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/paste_plain16.png"))); // NOI18N
+        buttonPaste.setText(bundle.getString("PlainTextEditor.buttonPaste.text")); // NOI18N
+        buttonPaste.setToolTipText(bundle.getString("PlainTextEditor.buttonPaste.toolTipText")); // NOI18N
+        buttonPaste.setFocusable(false);
+        buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        buttonPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        buttonPaste.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPasteActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(buttonPaste);
 
-    buttonClearAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
-    buttonClearAll.setText(bundle.getString("PlainTextEditor.buttonClearAll.text")); // NOI18N
-    buttonClearAll.setToolTipText(bundle.getString("PlainTextEditor.buttonClearAll.toolTipText")); // NOI18N
-    buttonClearAll.setFocusable(false);
-    buttonClearAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    buttonClearAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonClearAll.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonClearAllActionPerformed(evt);
-      }
-    });
-    mainToolBar.add(buttonClearAll);
+        buttonClearAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/cross16.png"))); // NOI18N
+        buttonClearAll.setText(bundle.getString("PlainTextEditor.buttonClearAll.text")); // NOI18N
+        buttonClearAll.setToolTipText(bundle.getString("PlainTextEditor.buttonClearAll.toolTipText")); // NOI18N
+        buttonClearAll.setFocusable(false);
+        buttonClearAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        buttonClearAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        buttonClearAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonClearAllActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(buttonClearAll);
 
-    add(mainToolBar, java.awt.BorderLayout.PAGE_START);
+        toggleButtonProtect.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/set_password16.png"))); // NOI18N
+        toggleButtonProtect.setText("Protect"); // NOI18N
+        toggleButtonProtect.setToolTipText("Protect the note by password"); // NOI18N
+        toggleButtonProtect.setFocusable(false);
+        toggleButtonProtect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toggleButtonProtect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        mainToolBar.add(toggleButtonProtect);
 
-    jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        add(mainToolBar, java.awt.BorderLayout.PAGE_START);
 
-    labelCursorPos.setText("...:..."); // NOI18N
-    jPanel1.add(labelCursorPos);
+        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-    jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
-    jSeparator2.setPreferredSize(new java.awt.Dimension(8, 16));
-    jPanel1.add(jSeparator2);
+        labelCursorPos.setText("...:..."); // NOI18N
+        jPanel1.add(labelCursorPos);
 
-    labelWrapMode.setText("..."); // NOI18N
-    labelWrapMode.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-    labelWrapMode.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
-        labelWrapModeMouseClicked(evt);
-      }
-    });
-    jPanel1.add(labelWrapMode);
-    jPanel1.add(filler1);
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jSeparator2.setPreferredSize(new java.awt.Dimension(8, 16));
+        jPanel1.add(jSeparator2);
 
-    add(jPanel1, java.awt.BorderLayout.PAGE_END);
-  }// </editor-fold>//GEN-END:initComponents
+        labelWrapMode.setText("..."); // NOI18N
+        labelWrapMode.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        labelWrapMode.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                labelWrapModeMouseClicked(evt);
+            }
+        });
+        jPanel1.add(labelWrapMode);
+        jPanel1.add(filler1);
+
+        add(jPanel1, java.awt.BorderLayout.PAGE_END);
+    }// </editor-fold>//GEN-END:initComponents
 
   private void buttonLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadActionPerformed
     final File home = new File(System.getProperty("user.home")); //NOI18N
@@ -343,7 +398,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
         showSaveDialog();
     if (toSave != null) {
       try {
-        final String text = getText();
+        final String text = this.getData().getText();
         FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
       }
       catch (Exception ex) {
@@ -387,19 +442,20 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
   }//GEN-LAST:event_labelWrapModeMouseClicked
 
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton buttonClearAll;
-  private javax.swing.JButton buttonCopy;
-  private javax.swing.JButton buttonLoad;
-  private javax.swing.JButton buttonPaste;
-  private javax.swing.JButton buttonSave;
-  private javax.swing.Box.Filler filler1;
-  private javax.swing.JPanel jPanel1;
-  private javax.swing.JSeparator jSeparator2;
-  private javax.swing.JLabel labelCursorPos;
-  private javax.swing.JLabel labelWrapMode;
-  private javax.swing.JToolBar mainToolBar;
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonClearAll;
+    private javax.swing.JButton buttonCopy;
+    private javax.swing.JButton buttonLoad;
+    private javax.swing.JButton buttonPaste;
+    private javax.swing.JButton buttonSave;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel labelCursorPos;
+    private javax.swing.JLabel labelWrapMode;
+    private javax.swing.JToolBar mainToolBar;
+    private javax.swing.JToggleButton toggleButtonProtect;
+    // End of variables declaration//GEN-END:variables
 
   private void writeWrappingCode (final Wrapping code) {
     final Preferences docPreferences = CodeStylePreferences.get(this.document).getPreferences();

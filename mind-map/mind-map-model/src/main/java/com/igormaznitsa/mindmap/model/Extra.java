@@ -44,6 +44,14 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
   void addAttributesForWrite(@Nonnull final Map<String, String> attributesForWrite) {
   }
 
+  void attachedToTopic(@Nonnull final Topic topic) {
+
+  }
+
+  void detachedToTopic(@Nonnull final Topic topic) {
+
+  }
+
   @Nonnull
   public abstract String provideAsStringForSave();
 

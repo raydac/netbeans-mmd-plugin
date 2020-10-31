@@ -960,7 +960,7 @@ public final class MMDEditor extends AbstractTextEditor
               Utils.makeShortTextVersion(topic.getText(), 16)), new NoteEditorData()); //NOI18N
     } else {
       // edit
-      final NoteEditorData noteText;
+      NoteEditorData noteText = null;
       if (note.isEncrypted()) {
         final PasswordPanel passwordPanel =
             new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
@@ -968,15 +968,19 @@ public final class MMDEditor extends AbstractTextEditor
             .msgOkCancel(this.getMainComponent(), "Note password", passwordPanel)) {
           final StringBuilder decrypted = new StringBuilder();
           final String pass = new String(passwordPanel.getPassword()).trim();
-          if (CryptoUtils.decrypt(pass, note.getValue(), decrypted)) {
-            noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
-          } else {
+          try {
+            if (CryptoUtils.decrypt(pass, note.getValue(), decrypted)) {
+              noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
+            } else {
+              DialogProviderManager.getInstance().getDialogProvider()
+                  .msgError(this.getMainComponent(), "Wrong password!");
+            }
+          } catch (RuntimeException ex) {
             DialogProviderManager.getInstance().getDialogProvider()
-                .msgError(this.getMainComponent(), "Wrong password!");
-            noteText = null;
+                .msgError(this.getMainComponent(),
+                    "Can't decode encrypted text for error! May be broken data!");
+            logger.error("Can't decode encrypted note", ex);
           }
-        } else {
-          noteText = null;
         }
       } else {
         noteText = new NoteEditorData(note.getValue(), null, null);
@@ -1000,12 +1004,21 @@ public final class MMDEditor extends AbstractTextEditor
       } else {
         final String newNoteText;
         if (result.isEncrypted()) {
-          newNoteText = CryptoUtils.encrypt(result.getPassword(), result.getText());
+          try {
+            newNoteText = CryptoUtils.encrypt(result.getPassword(), result.getText());
+          } catch (RuntimeException ex) {
+            DialogProviderManager.getInstance().getDialogProvider()
+                .msgError(this.getMainComponent(),
+                    "Can't encrypt text for error! Examine log!");
+            logger.error("Can't encrypt note", ex);
+            return;
+          }
         } else {
           newNoteText = result.getText();
         }
 
-        if (!newNoteText.equals(note.getValue())
+        if (note == null
+            || !newNoteText.equals(note.getValue())
             || (note.isEncrypted() != result.isEncrypted())) {
           topic.setExtra(new ExtraNote(newNoteText, result.isEncrypted(), result.getHint()));
           changed = true;

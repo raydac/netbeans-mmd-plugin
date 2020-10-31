@@ -74,6 +74,7 @@ import org.openide.util.lookup.Lookups;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.nbmindmap.nb.swing.NoteEditorData;
 
 public final class NbUtils {
 
@@ -304,11 +305,11 @@ public final class NbUtils {
   }
 
   @Nullable
-  public static String editText (@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final String text) {
-    final PlainTextEditor textEditor = new PlainTextEditor(text);
+  public static NoteEditorData editText (@Nullable Component parentComponent, @Nonnull final String title, @Nonnull final NoteEditorData data) {
+    final PlainTextEditor textEditor = new PlainTextEditor(data);
     try {
       if (plainMessageOkCancel(parentComponent, title, textEditor)) {
-        return textEditor.getText();
+        return textEditor.getData();
       }
       else {
         return null;

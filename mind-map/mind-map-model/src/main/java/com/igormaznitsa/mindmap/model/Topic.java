@@ -498,7 +498,11 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     try {
       boolean result = false;
       for (final Extra.ExtraType e : Assertions.assertDoesntContainNull(types)) {
-        result |= this.extras.remove(e) != null;
+        final Extra<?> removed = this.extras.remove(e);
+        if (removed != null) {
+          removed.detachedToTopic(this);
+        }
+        result |= removed != null;
       }
       return result;
     } finally {
@@ -511,6 +515,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     try {
       for (final Extra<?> e : Assertions.assertDoesntContainNull(extras)) {
         this.extras.put(e.getType(), e);
+        e.attachedToTopic(this);
       }
     } finally {
       this.map.unlock();

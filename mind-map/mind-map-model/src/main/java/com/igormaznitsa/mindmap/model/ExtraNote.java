@@ -54,6 +54,23 @@ public class ExtraNote extends Extra<String> {
   }
 
   @Override
+  void attachedToTopic(@Nonnull final Topic topic) {
+    if (this.encrypted) {
+      topic.setAttribute(ATTR_ENCRYPTED, "true");
+      topic.setAttribute(ATTR_PASSWORD_HINT, this.hint);
+    } else {
+      topic.setAttribute(ATTR_ENCRYPTED, null);
+      topic.setAttribute(ATTR_PASSWORD_HINT, null);
+    }
+  }
+
+  @Override
+  void detachedToTopic(@Nonnull final Topic topic) {
+    topic.setAttribute(ATTR_ENCRYPTED, null);
+    topic.setAttribute(ATTR_PASSWORD_HINT, null);
+  }
+
+  @Override
   void addAttributesForWrite(@Nonnull final Map<String, String> attributesForWrite) {
     if (this.encrypted) {
       attributesForWrite.put(ATTR_ENCRYPTED, "true");
