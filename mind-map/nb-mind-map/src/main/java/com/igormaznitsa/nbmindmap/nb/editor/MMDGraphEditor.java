@@ -161,9 +161,9 @@ import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import com.igormaznitsa.mindmap.model.TopicFinder;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.CryptoUtils;
 import com.igormaznitsa.nbmindmap.nb.swing.NoteEditorData;
-import com.igormaznitsa.nbmindmap.nb.swing.PasswordPanel;
 
 @MultiViewElement.Registration(
     displayName = "#MMDGraphEditor.displayName",
@@ -1444,7 +1444,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
                 final PasswordPanel passwordPanel
                     = new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
                 if (DialogProviderManager.getInstance().getDialogProvider()
-                    .msgOkCancel(this, "Note password", passwordPanel)) {
+                    .msgOkCancel(this, BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
                     final StringBuilder decrypted = new StringBuilder();
                     final String pass = new String(passwordPanel.getPassword()).trim();
                     try {

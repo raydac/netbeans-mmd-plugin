@@ -18,6 +18,7 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

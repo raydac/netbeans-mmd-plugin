@@ -22,14 +22,15 @@ package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.Focuser;
+import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.dialogs.PasswordPanel;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -615,7 +616,7 @@ public final class NoteEditor extends JPanel {
     if (src.isSelected()) {
       final PasswordPanel passwordPanel = new PasswordPanel();
       if (DialogProviderManager.getInstance().getDialogProvider()
-          .msgOkCancel(this, "Set password", passwordPanel)) {
+          .msgOkCancel(this, Utils.BUNDLE.getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
         this.password = new String(passwordPanel.getPassword()).trim();
         this.hint = passwordPanel.getHint();
         if (this.password.isEmpty()) {

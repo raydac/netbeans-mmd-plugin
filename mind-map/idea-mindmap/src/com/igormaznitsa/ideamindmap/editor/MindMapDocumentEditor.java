@@ -21,6 +21,8 @@ import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
+
+import com.igormaznitsa.ideamindmap.swing.NoteEditorData;
 import com.intellij.openapi.module.Module;
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.findtext.FindTextPanel;
@@ -709,43 +711,15 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {
-          final MMapURI fileURI = (MMapURI) extra.getValue();
-          final boolean flagOpenFileLinkInSystemViewer = Boolean.parseBoolean(fileURI.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
-          final int lineNumber = FilePathWithLine.strToLine(fileURI.getParameters().getProperty(FILELINK_ATTR_LINE, null));
-
-          final VirtualFile rootFolder = findRootFolderForEditedFile();
-          final VirtualFile theFile = LocalFileSystem.getInstance().findFileByIoFile(fileURI.asFile(IdeaUtils.vfile2iofile(rootFolder)));
-
-          if (theFile == null) {
-            // file not found
-            LOGGER.warn("Can't find FileObject for " + fileURI);
-            getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI.toString()));
-          } else if (VfsUtilCore.isAncestor(rootFolder, theFile, false)) {
-            // inside project
-            if (flagOpenFileLinkInSystemViewer) {
-              SelectIn.SYSTEM.open(this, theFile, -1);
-            } else {
-              SelectIn.IDE.open(this, theFile, lineNumber);
-            }
-          } else {
-            // outside project
-            if (flagOpenFileLinkInSystemViewer) {
-              SelectIn.SYSTEM.open(this, theFile, -1);
-            } else {
-              SelectIn.IDE.open(this, theFile, lineNumber);
-            }
-          }
+          this.panelController.editFileLinkForTopic(topic);
         }
         break;
         case LINK: {
-          final MMapURI uri = ((ExtraLink) extra).getValue();
-          if (!IdeaUtils.browseURI(uri.asURI(), isUseInsideBrowser())) { //NOI18N
-            getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
-          }
+          this.panelController.editLinkForTopic(topic);
         }
         break;
         case NOTE: {
-          editTextForTopic(topic);
+            this.panelController.editTextForTopic(topic);
         }
         break;
         case TOPIC: {
@@ -813,44 +787,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
           String.format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"), topics.length));
     }
     return result;
-  }
-
-  private void editTextForTopic(final Topic topic) {
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(ExtraType.NOTE);
-    final String result;
-    if (note == null) {
-      // create new
-      result = IdeaUtils
-          .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)), ""); //NOI18N
-    } else {
-      // edit
-      result = IdeaUtils
-          .editText(this.project, String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
-              note.getValue());
-    }
-    if (result != null) {
-      boolean changed = false;
-
-      if (result.isEmpty()) {
-        if (note != null) {
-          changed = true;
-          topic.removeExtra(ExtraType.NOTE);
-        }
-      } else {
-        final ExtraNote newNote = new ExtraNote(result);
-        if (note == null || !note.equals(newNote)) {
-          changed = true;
-          topic.setExtra(newNote);
-        }
-      }
-
-      if (changed) {
-        this.mindMapPanel.doLayout();
-        onMindMapModelChanged(this.mindMapPanel, true);
-      }
-    }
-
-    this.mainScrollPane.requestFocus();
   }
 
   @Override

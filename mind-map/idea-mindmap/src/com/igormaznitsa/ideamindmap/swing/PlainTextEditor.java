@@ -16,11 +16,14 @@
 
 package com.igormaznitsa.ideamindmap.swing;
 
+import com.igormaznitsa.ideamindmap.editor.MindMapDialogProvider;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.openapi.application.ApplicationManager;
@@ -49,6 +52,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JToggleButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -62,6 +66,11 @@ public class PlainTextEditor extends JPanel {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
 
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
+
+  private final MindMapDialogProvider dialogProvider;
+  
+  private volatile String password;
+  private volatile String hint;
 
   private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {
 
@@ -77,8 +86,14 @@ public class PlainTextEditor extends JPanel {
   };
   private final EmptyTextEditor editor;
 
-  public PlainTextEditor(final Project project, final String text) {
+  public PlainTextEditor(final Project project, final NoteEditorData data) {
     super(new BorderLayout());
+    
+    this.dialogProvider = new MindMapDialogProvider(project);
+    
+    this.password = data.getPassword();
+    this.hint = data.getHint();
+
     this.editor = new EmptyTextEditor(project);
 
     final JToolBar menu = UI_COMPO_FACTORY.makeToolBar();
@@ -92,7 +107,7 @@ public class PlainTextEditor extends JPanel {
       public void actionPerformed(ActionEvent e) {
         final File home = new File(System.getProperty("user.home")); //NOI18N
 
-        final File toOpen = IdeaUtils.chooseFile(theInstance, true, BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), home, TEXT_FILE_FILTER);
+        final File toOpen = IdeaUtils.chooseFile(theInstance, true, Utils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), home, TEXT_FILE_FILTER);
 
         if (toOpen != null) {
           try {
@@ -115,7 +130,7 @@ public class PlainTextEditor extends JPanel {
         final File toSave = IdeaUtils.chooseFile(theInstance, true, BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), home, TEXT_FILE_FILTER);
         if (toSave != null) {
           try {
-            final String text = getText();
+            final String text = getData().getText();
             FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
           } catch (Exception ex) {
             LOGGER.error("Error during text file saving", ex); //NOI18N
@@ -158,11 +173,42 @@ public class PlainTextEditor extends JPanel {
       }
     });
 
+    final JToggleButton buttonProtect = makeToggleButton("Protect", AllIcons.Buttons.PROTECT);
+    buttonProtect.setSelected(data.isEncrypted());
+    buttonProtect.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final JToggleButton src = (JToggleButton) e.getSource();
+            if (src.isSelected()) {
+                final PasswordPanel passwordPanel = new PasswordPanel();
+                if (dialogProvider.msgOkCancel(PlainTextEditor.this, BUNDLE.getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
+                    password = new String(passwordPanel.getPassword()).trim();
+                    hint = passwordPanel.getHint();
+                    if (password.isEmpty()) {
+                        src.setSelected(false);
+                    }
+                } else {
+                    src.setSelected(false);
+                }
+            } else {
+                if (dialogProvider
+                    .msgConfirmOkCancel(PlainTextEditor.this, "Reset password",
+                        "Do you really want reset password for the note?")) {
+                    password = null;
+                    hint = null;
+                } else {
+                    src.setSelected(true);
+                }
+            }
+        }
+    });
+    
     menu.add(buttonImport);
     menu.add(buttonExport);
     menu.add(buttonCopy);
     menu.add(buttonPaste);
     menu.add(buttonClearAll);
+    menu.add(buttonProtect);
 
     this.add(menu, BorderLayout.NORTH);
     this.add(editor, BorderLayout.CENTER);
@@ -171,7 +217,7 @@ public class PlainTextEditor extends JPanel {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        editor.replaceSelection(text);
+        editor.replaceSelection(data.getText());
       }
     });
   }
@@ -184,8 +230,16 @@ public class PlainTextEditor extends JPanel {
     return result;
   }
 
-  public String getText() {
-    return this.editor.getText();
+  @Nonnull
+  private JToggleButton makeToggleButton(@Nullable final String text, @Nullable final Icon icon) {
+    final JToggleButton result = UI_COMPO_FACTORY.makeToggleButton();
+    result.setText(text);
+    result.setIcon(icon);
+    return result;
+  }
+
+  public NoteEditorData getData() {
+    return new NoteEditorData(this.editor.getText(),this.password, this.hint);
   }
 
   public EmptyTextEditor getEditor() {

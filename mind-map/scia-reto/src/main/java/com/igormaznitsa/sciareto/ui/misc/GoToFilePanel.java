@@ -34,7 +34,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import com.igormaznitsa.sciareto.ui.Focuser;
+import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;

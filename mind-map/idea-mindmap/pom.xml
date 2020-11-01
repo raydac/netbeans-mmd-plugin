@@ -18,7 +18,28 @@
     <gradle.executable>gradle</gradle.executable>
   </properties>
 
+  <dependencies>
+      <dependency>
+          <groupId>com.igormaznitsa</groupId>
+          <artifactId>mind-map-ide-common</artifactId>
+          <version>${main.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>com.igormaznitsa</groupId>
+          <artifactId>mind-map-swing-panel</artifactId>
+          <version>${main.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>com.igormaznitsa</groupId>
+          <artifactId>mind-map-model</artifactId>
+          <version>${mindmap.model.version}</version>
+      </dependency>
+  </dependencies>    
+
   <build>
+      <sourceDirectory>
+        ${project.basedir}${file.separator}src
+      </sourceDirectory>  
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

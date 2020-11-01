@@ -71,6 +71,7 @@ public class AllIcons {
     public static final Icon COPY = IconLoader.getIcon("/icons/page_copy.png");
     public static final Icon PASTE = IconLoader.getIcon("/icons/paste_plain.png");
     public static final Icon CLEARALL = IconLoader.getIcon("/icons/cross.png");
+    public static final Icon PROTECT = IconLoader.getIcon("/icons/set_password.png");
   }
 
   public static class PopUp {

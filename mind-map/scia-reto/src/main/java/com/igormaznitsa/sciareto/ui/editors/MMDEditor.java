@@ -60,6 +60,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
+import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.CryptoUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -75,7 +76,6 @@ import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.dialogs.PasswordPanel;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
@@ -965,7 +965,7 @@ public final class MMDEditor extends AbstractTextEditor
         final PasswordPanel passwordPanel =
             new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
         if (DialogProviderManager.getInstance().getDialogProvider()
-            .msgOkCancel(this.getMainComponent(), "Note password", passwordPanel)) {
+            .msgOkCancel(this.getMainComponent(), Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
           final StringBuilder decrypted = new StringBuilder();
           final String pass = new String(passwordPanel.getPassword()).trim();
           try {

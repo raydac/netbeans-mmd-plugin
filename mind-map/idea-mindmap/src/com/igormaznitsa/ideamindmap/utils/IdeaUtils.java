@@ -22,6 +22,7 @@ import com.igormaznitsa.ideamindmap.lang.MMDFile;
 import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
+import com.igormaznitsa.ideamindmap.swing.NoteEditorData;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -393,13 +394,13 @@ public final class IdeaUtils {
     }
   }
 
-  public static String editText(final Project project, final String title, final String text) {
-    final PlainTextEditor editor = new PlainTextEditor(project, text);
+  public static NoteEditorData editText(final Project project, final String title, final NoteEditorData data) {
+    final PlainTextEditor editor = new PlainTextEditor(project, data);
     editor.setPreferredSize(new Dimension(550, 450));
 
     final DialogComponent dialog = new DialogComponent(project, title, editor, editor.getEditor(), false);
 
-    return dialog.showAndGet() ? editor.getEditor().getText() : null;
+    return dialog.showAndGet() ? editor.getData() : null;
   }
 
   public static boolean plainMessageOkCancel(final Project project, final String title, final JComponent centerComponent) {

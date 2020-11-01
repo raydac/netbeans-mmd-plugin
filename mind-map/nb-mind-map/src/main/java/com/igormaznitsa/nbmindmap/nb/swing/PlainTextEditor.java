@@ -17,6 +17,7 @@ package com.igormaznitsa.nbmindmap.nb.swing;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;

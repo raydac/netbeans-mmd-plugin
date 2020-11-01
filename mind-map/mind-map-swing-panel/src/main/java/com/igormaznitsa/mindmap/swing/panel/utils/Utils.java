@@ -92,12 +92,13 @@ import org.xml.sax.SAXException;
 
 public final class Utils {
 
+  public static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
+
   public static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   public static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
   public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size"; //NOI18N
   public static final boolean LTR_LANGUAGE = ComponentOrientation.getOrientation(new Locale(System.getProperty("user.language"))).isLeftToRight();
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
   private static final Pattern URI_PATTERN = Pattern.compile("^(?:([^:\\s]+):)(?://(?:[^?/@\\s]*@)?([^/?\\s]*)/?)?([^?\\s]+)?(?:\\?([^#\\s]*))?(?:#\\S*)?$");
   private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
   private static final Pattern STRIP_PATTERN = Pattern.compile("^(\\s*)(.*[^\\s])(\\s*)$");

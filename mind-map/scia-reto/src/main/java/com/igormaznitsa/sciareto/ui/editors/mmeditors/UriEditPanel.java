@@ -30,7 +30,7 @@ import javax.swing.event.DocumentListener;
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import com.igormaznitsa.sciareto.ui.Focuser;
+import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 
 public final class UriEditPanel extends javax.swing.JPanel  {
 

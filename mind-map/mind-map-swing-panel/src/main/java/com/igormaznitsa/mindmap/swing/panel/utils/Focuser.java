@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package com.igormaznitsa.sciareto.ui;
+package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import java.awt.Window;
 import java.awt.event.WindowAdapter;

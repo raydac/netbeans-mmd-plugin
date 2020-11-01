@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import javax.swing.JFileChooser;
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import com.igormaznitsa.sciareto.ui.Focuser;
+import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 
 public final class FileEditPanel extends javax.swing.JPanel {
 
