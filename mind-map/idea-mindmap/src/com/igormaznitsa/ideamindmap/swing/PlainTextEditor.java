@@ -181,7 +181,7 @@ public class PlainTextEditor extends JPanel {
             final JToggleButton src = (JToggleButton) e.getSource();
             if (src.isSelected()) {
                 final PasswordPanel passwordPanel = new PasswordPanel();
-                if (dialogProvider.msgOkCancel(PlainTextEditor.this, BUNDLE.getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
+                if (dialogProvider.msgOkCancel(PlainTextEditor.this, Utils.BUNDLE.getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
                     password = new String(passwordPanel.getPassword()).trim();
                     hint = passwordPanel.getHint();
                     if (password.isEmpty()) {

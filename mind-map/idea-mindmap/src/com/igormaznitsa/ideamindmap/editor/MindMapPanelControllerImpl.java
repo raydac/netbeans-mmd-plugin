@@ -446,7 +446,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
             if (note.isEncrypted()) {
                 final PasswordPanel passwordPanel
                     = new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
-                if (this.dialogProvider.msgOkCancel(this.getPanel(), BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
+                if (this.dialogProvider.msgOkCancel(this.getPanel(), Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
                     final StringBuilder decrypted = new StringBuilder();
                     final String pass = new String(passwordPanel.getPassword()).trim();
                     try {
