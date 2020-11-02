@@ -342,6 +342,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
         toggleButtonProtect.setToolTipText("Protect the note by password"); // NOI18N
         toggleButtonProtect.setFocusable(false);
         toggleButtonProtect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toggleButtonProtect.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/set_password16on.png"))); // NOI18N
         toggleButtonProtect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         mainToolBar.add(toggleButtonProtect);
 

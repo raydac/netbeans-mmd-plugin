@@ -134,6 +134,9 @@
             <Property name="toolTipText" type="java.lang.String" value="Protect the note by password" noResource="true"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="selectedIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/com/igormaznitsa/nbmindmap/icons/set_password16on.png"/>
+            </Property>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
         </Component>

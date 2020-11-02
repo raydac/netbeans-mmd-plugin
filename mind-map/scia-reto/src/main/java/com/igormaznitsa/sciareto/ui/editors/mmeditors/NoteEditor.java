@@ -550,6 +550,8 @@ public final class NoteEditor extends JPanel {
 
     toggleButtonEncrypt.setIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/set_password16.png"))); // NOI18N
+    toggleButtonEncrypt.setSelectedIcon(
+        new javax.swing.ImageIcon(getClass().getResource("/icons/set_password16on.png"))); // NOI18N
     toggleButtonEncrypt.setText("Protect");
     toggleButtonEncrypt.setToolTipText("Encrypt the note and set password");
     toggleButtonEncrypt.setFocusable(false);

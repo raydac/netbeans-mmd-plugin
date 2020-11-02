@@ -173,7 +173,7 @@ public class PlainTextEditor extends JPanel {
       }
     });
 
-    final JToggleButton buttonProtect = makeToggleButton("Protect", AllIcons.Buttons.PROTECT);
+    final JToggleButton buttonProtect = makeToggleButton("Protect", AllIcons.Buttons.PROTECT_OFF, AllIcons.Buttons.PROTECT_ON);
     buttonProtect.setSelected(data.isEncrypted());
     buttonProtect.addActionListener(new ActionListener() {
         @Override
@@ -231,10 +231,11 @@ public class PlainTextEditor extends JPanel {
   }
 
   @Nonnull
-  private JToggleButton makeToggleButton(@Nullable final String text, @Nullable final Icon icon) {
+  private JToggleButton makeToggleButton(@Nullable final String text, @Nullable final Icon icon, @Nullable final Icon selectedIcon) {
     final JToggleButton result = UI_COMPO_FACTORY.makeToggleButton();
     result.setText(text);
     result.setIcon(icon);
+    result.setSelectedIcon(selectedIcon);
     return result;
   }
 

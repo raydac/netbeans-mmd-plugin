@@ -965,7 +965,7 @@ public final class MMDEditor extends AbstractTextEditor
         final PasswordPanel passwordPanel =
             new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
         if (DialogProviderManager.getInstance().getDialogProvider()
-            .msgOkCancel(this.getMainComponent(), Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
+            .msgOkCancel(Main.getApplicationFrame(), Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
           final StringBuilder decrypted = new StringBuilder();
           final String pass = new String(passwordPanel.getPassword()).trim();
           try {
@@ -973,11 +973,11 @@ public final class MMDEditor extends AbstractTextEditor
               noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
             } else {
               DialogProviderManager.getInstance().getDialogProvider()
-                  .msgError(this.getMainComponent(), "Wrong password!");
+                  .msgError(Main.getApplicationFrame(), "Wrong password!");
             }
           } catch (RuntimeException ex) {
             DialogProviderManager.getInstance().getDialogProvider()
-                .msgError(this.getMainComponent(),
+                .msgError(Main.getApplicationFrame(),
                     "Can't decode encrypted text for error! May be broken data!");
             logger.error("Can't decode encrypted note", ex);
           }
