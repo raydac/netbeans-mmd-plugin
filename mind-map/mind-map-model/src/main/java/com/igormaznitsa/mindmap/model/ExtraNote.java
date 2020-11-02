@@ -82,7 +82,7 @@ public class ExtraNote extends Extra<String> {
 
   @Override
   public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
-    return pattern.matcher(this.text).find();
+    return this.encrypted ? false : pattern.matcher(this.text).find();
   }
 
   @Override
