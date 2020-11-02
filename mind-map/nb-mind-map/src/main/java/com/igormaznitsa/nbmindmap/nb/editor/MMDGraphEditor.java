@@ -1444,7 +1444,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
                 final PasswordPanel passwordPanel
                     = new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
                 if (DialogProviderManager.getInstance().getDialogProvider()
-                    .msgOkCancel(this, BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
+                    .msgOkCancel(this, Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
                     final StringBuilder decrypted = new StringBuilder();
                     final String pass = new String(passwordPanel.getPassword()).trim();
                     try {
