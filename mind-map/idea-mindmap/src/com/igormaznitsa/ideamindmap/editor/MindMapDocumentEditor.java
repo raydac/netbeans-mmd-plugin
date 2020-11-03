@@ -706,16 +706,52 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     return rootFolder;
   }
 
+  private void processClicksExtraFile(@Nonnull final Topic topic, @Nonnull final ExtraFile extra) {
+    final MMapURI fileURI = extra.getValue();
+    final boolean flagOpenFileLinkInSystemViewer = Boolean.parseBoolean(fileURI.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"));
+    final int lineNumber = FilePathWithLine.strToLine(fileURI.getParameters().getProperty(FILELINK_ATTR_LINE, null));
+
+    final VirtualFile rootFolder = findRootFolderForEditedFile();
+    final VirtualFile theFile = LocalFileSystem.getInstance().findFileByIoFile(fileURI.asFile(IdeaUtils.vfile2iofile(rootFolder)));
+
+    if (theFile == null) {
+      // file not found
+      LOGGER.warn("Can't find FileObject for " + fileURI);
+      getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI.toString()));
+    } else if (VfsUtilCore.isAncestor(rootFolder, theFile, false)) {
+      // inside project
+      if (flagOpenFileLinkInSystemViewer) {
+        SelectIn.SYSTEM.open(this, theFile, -1);
+      } else {
+        SelectIn.IDE.open(this, theFile, lineNumber);
+      }
+    } else {
+      // outside project
+      if (flagOpenFileLinkInSystemViewer) {
+        SelectIn.SYSTEM.open(this, theFile, -1);
+      } else {
+        SelectIn.IDE.open(this, theFile, lineNumber);
+      }
+    }
+  }
+  
+  private void processClicksExtraLink(@Nonnull final Topic topic, @Nonnull final ExtraLink extra) {
+      final MMapURI uri = extra.getValue();
+      if (!IdeaUtils.browseURI(uri.asURI(), isUseInsideBrowser())) { //NOI18N
+          getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+      }
+  }
+  
   @Override
   public void onClickOnExtra(@Nonnull final MindMapPanel source, final int modifiers, final int clicks, @Nonnull final Topic topic, @Nonnull final Extra<?> extra) {
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {
-          this.panelController.editFileLinkForTopic(topic);
+          processClicksExtraFile(topic, (ExtraFile)extra);
         }
         break;
         case LINK: {
-          this.panelController.editLinkForTopic(topic);
+          processClicksExtraLink(topic, (ExtraLink) extra);
         }
         break;
         case NOTE: {
