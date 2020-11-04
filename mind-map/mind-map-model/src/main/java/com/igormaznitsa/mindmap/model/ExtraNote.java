@@ -44,6 +44,11 @@ public class ExtraNote extends Extra<String> {
     this.hint = hint;
   }
 
+  @Override
+  public boolean isExportable() {
+    return !this.encrypted;
+  }
+
   public boolean isEncrypted() {
     return this.encrypted;
   }

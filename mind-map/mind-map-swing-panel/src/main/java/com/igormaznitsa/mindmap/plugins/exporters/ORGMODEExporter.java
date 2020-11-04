@@ -87,7 +87,8 @@ public class ORGMODEExporter extends AbstractExporter {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private static void writeTopic(@Nonnull final Topic topic, @Nonnull final String listPosition, @Nonnull final State state) throws IOException {
+  private void writeTopic(@Nonnull final Topic topic, @Nonnull final String listPosition,
+                          @Nonnull final State state) throws IOException {
     final int level = topic.getTopicLevel();
 
     String prefix = "";//NOI18N
@@ -97,7 +98,8 @@ public class ORGMODEExporter extends AbstractExporter {
       state.append(headerPrefix).append(' ').append(escapeStr(topic.getText(), true)).nextLine();
     } else {
       final String headerPrefix = generateString('*', STARTING_INDEX_FOR_NUMERATION + 1);//NOI18N
-      state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ').append(escapeStr(topic.getText(), true)).nextLine();
+      state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ')
+          .append(escapeStr(topic.getText(), true)).nextLine();
     }
 
     final String topicUid = getTopicUid(topic);
@@ -107,10 +109,10 @@ public class ORGMODEExporter extends AbstractExporter {
       state.append(":END:").nextLine();//NOI18N
     }
 
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-    final ExtraTopic jump = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+    final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
+    final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
+    final ExtraNote note = (ExtraNote) this.findExtra(topic, Extra.ExtraType.NOTE);
+    final ExtraTopic jump = (ExtraTopic) this.findExtra(topic, Extra.ExtraType.TOPIC);
 
     boolean extrasPrinted = false;
 

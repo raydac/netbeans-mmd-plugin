@@ -41,6 +41,10 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
   @Nonnull
   public abstract String getAsString();
 
+  public boolean isExportable() {
+    return true;
+  }
+
   void addAttributesForWrite(@Nonnull final Map<String, String> attributesForWrite) {
   }
 

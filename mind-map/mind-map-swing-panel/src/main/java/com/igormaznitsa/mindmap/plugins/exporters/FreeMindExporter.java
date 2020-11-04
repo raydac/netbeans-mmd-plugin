@@ -80,11 +80,14 @@ public class FreeMindExporter extends AbstractExporter {
     return buffer.toString();
   }
 
-  private static void writeTopicRecursively(@Nonnull final Topic topic, @Nonnull final MindMapPanelConfig cfg, int shift, @Nonnull final State state) {
+  private void writeTopicRecursively(@Nonnull final Topic topic,
+                                     @Nonnull final MindMapPanelConfig cfg, int shift,
+                                     @Nonnull final State state) {
     final String mainShiftStr = generateString(' ', shift);
 
 //    final Color edge = cfg.getConnectorColor();
-    String position = topic.getTopicLevel() == 1 ? (AbstractCollapsableElement.isLeftSidedTopic(topic) ? "left" : "right") : ""; //NOI18N
+    String position = topic.getTopicLevel() == 1 ?
+        (AbstractCollapsableElement.isLeftSidedTopic(topic) ? "left" : "right") : ""; //NOI18N
 
     state.append(mainShiftStr)
         .append("<node CREATED=\"") //NOI18N
@@ -94,7 +97,8 @@ public class FreeMindExporter extends AbstractExporter {
         .append("\" COLOR=\"") //NOI18N
         .append(assertNotNull(Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false))) //NOI18N
         .append("\" BACKGROUND_COLOR=\"") //NOI18N
-        .append(assertNotNull(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false))) //NOI18N
+        .append(assertNotNull(
+            Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false))) //NOI18N
         .append("\" ") //NOI18N
         .append(position.isEmpty() ? " " : String.format("POSITION=\"%s\"", position)) //NOI18N
         .append(" ID=\"") //NOI18N
@@ -104,9 +108,9 @@ public class FreeMindExporter extends AbstractExporter {
         .append(escapeXML(topic.getText()))
         .append("\" "); //NOI18N
 
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-    final ExtraTopic transition = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+    final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
+    final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
+    final ExtraTopic transition = (ExtraTopic) this.findExtra(topic, Extra.ExtraType.TOPIC);
 
     final String thelink;
 

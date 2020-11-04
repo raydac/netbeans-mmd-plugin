@@ -98,13 +98,14 @@ public class MindmupExporter extends AbstractExporter {
     final int topicId = idCounter.getAndIncrement();
     stringer.key("id").value(topicId);
 
-    final String uuid = GetUtils.ensureNonNull(topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR), "genlink_" + topicId);
+    final String uuid =
+        GetUtils.ensureNonNull(topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR), "genlink_" + topicId);
     uuidMap.put(uuid, new TopicId(topicId, uuid, topic));
 
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-    final ExtraTopic jump = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+    final ExtraNote note = (ExtraNote) this.findExtra(topic, Extra.ExtraType.NOTE);
+    final ExtraTopic jump = (ExtraTopic) this.findExtra(topic, Extra.ExtraType.TOPIC);
+    final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
+    final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
 
     final String encodedImage = topic.getAttribute(ATTR_KEY);
 

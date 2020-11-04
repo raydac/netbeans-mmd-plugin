@@ -76,7 +76,8 @@ public class ASCIIDocExporter extends AbstractExporter {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private static void writeTopic(@Nonnull final Topic topic, @Nonnull final State state) throws IOException {
+  private void writeTopic(@Nonnull final Topic topic, @Nonnull final State state)
+      throws IOException {
     final int level = topic.getTopicLevel();
     final String uid = getTopicUid(topic);
 
@@ -92,10 +93,10 @@ public class ASCIIDocExporter extends AbstractExporter {
     }
     state.appendNextLine();
 
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-    final ExtraTopic transition = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+    final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
+    final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
+    final ExtraNote note = (ExtraNote) this.findExtra(topic, Extra.ExtraType.NOTE);
+    final ExtraTopic transition = (ExtraTopic) this.findExtra(topic, Extra.ExtraType.TOPIC);
 
     if (note != null) {
       state.appendParagraphText(note.getValue());
@@ -104,8 +105,10 @@ public class ASCIIDocExporter extends AbstractExporter {
 
     if (file != null) {
       final MMapURI fileURI = file.getValue();
-      final String filePathAsText = fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString();
-      state.append("link:++").append(filePathAsText).append("++[File]").appendNextLine().appendNextLine();
+      final String filePathAsText =
+          fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString();
+      state.append("link:++").append(filePathAsText).append("++[File]").appendNextLine()
+          .appendNextLine();
     }
 
     if (link != null) {

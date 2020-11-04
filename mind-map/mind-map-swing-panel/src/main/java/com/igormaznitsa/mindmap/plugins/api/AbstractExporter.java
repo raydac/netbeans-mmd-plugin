@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
+import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -84,6 +85,12 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.EXPORT;
+  }
+
+  @Nullable
+  protected Extra<?> findExtra(@Nonnull final Topic topic, @Nonnull final Extra.ExtraType type) {
+    final Extra<?> result = topic.getExtras().get(type);
+    return result == null ? null : (result.isExportable() ? result : null);
   }
 
   @Override

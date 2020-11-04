@@ -87,7 +87,8 @@ public class MDExporter extends AbstractExporter {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private static void writeTopic(@Nonnull final Topic topic, @Nonnull final String listPosition, @Nonnull final State state) throws IOException {
+  private void writeTopic(@Nonnull final Topic topic, @Nonnull final String listPosition,
+                          @Nonnull final State state) throws IOException {
     final int level = topic.getTopicLevel();
 
     String prefix = "";//NOI18N
@@ -99,16 +100,18 @@ public class MDExporter extends AbstractExporter {
 
     if (level < STARTING_INDEX_FOR_NUMERATION) {
       final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);//NOI18N
-      state.append(headerPrefix).append(' ').append(ModelUtils.escapeMarkdownStr(topic.getText())).nextLine();
+      state.append(headerPrefix).append(' ').append(ModelUtils.escapeMarkdownStr(topic.getText()))
+          .nextLine();
     } else {
       final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION + 1);//NOI18N
-      state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ').append(ModelUtils.escapeMarkdownStr(topic.getText())).nextLine();
+      state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ')
+          .append(ModelUtils.escapeMarkdownStr(topic.getText())).nextLine();
     }
 
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-    final ExtraTopic transition = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+    final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
+    final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
+    final ExtraNote note = (ExtraNote) this.findExtra(topic, Extra.ExtraType.NOTE);
+    final ExtraTopic transition = (ExtraTopic) this.findExtra(topic, Extra.ExtraType.TOPIC);
 
     boolean extrasPrinted = false;
 

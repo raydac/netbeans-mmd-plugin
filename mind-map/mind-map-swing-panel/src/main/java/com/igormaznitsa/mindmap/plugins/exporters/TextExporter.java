@@ -114,14 +114,16 @@ public class TextExporter extends AbstractExporter {
     return max;
   }
 
-  private static void writeTopic(@Nonnull final Topic topic, final char ch, final int shift, @Nonnull final State state) {
+  private void writeTopic(@Nonnull final Topic topic, final char ch, final int shift,
+                          @Nonnull final State state) {
     final int maxLen = getMaxLineWidth(topic.getText());
-    state.append(shiftString(topic.getText(), ' ', shift)).nextLine().append(shiftString(generateString(ch, maxLen + 2), ' ', shift)).nextLine();//NOI18N
+    state.append(shiftString(topic.getText(), ' ', shift)).nextLine()
+        .append(shiftString(generateString(ch, maxLen + 2), ' ', shift)).nextLine();//NOI18N
 
-    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    final ExtraLink link = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
-    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-    final ExtraTopic transition = (ExtraTopic) topic.getExtras().get(Extra.ExtraType.TOPIC);
+    final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
+    final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
+    final ExtraNote note = (ExtraNote) this.findExtra(topic, Extra.ExtraType.NOTE);
+    final ExtraTopic transition = (ExtraTopic) this.findExtra(topic, Extra.ExtraType.TOPIC);
 
     boolean hasExtras = false;
     boolean extrasPrinted = false;
