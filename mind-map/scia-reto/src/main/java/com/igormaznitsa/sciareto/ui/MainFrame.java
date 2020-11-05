@@ -65,10 +65,12 @@ import com.igormaznitsa.sciareto.ui.tree.ProjectLoadingIconAnimationController;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1404,10 +1406,25 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   @Override
   public void editPreferences() {
-    final PreferencesPanel configPanel = new PreferencesPanel(this);
-    configPanel.load(PreferencesManager.getInstance().getPreferences());
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "Preferences", new JScrollPane(configPanel))) {
-      configPanel.save();
+    final PreferencesPanel preferencesPanel = new PreferencesPanel(this);
+    preferencesPanel.load(PreferencesManager.getInstance().getPreferences());
+    preferencesPanel.doLayout();
+    final JScrollPane preferenceScrollPane = new JScrollPane(preferencesPanel);
+    preferenceScrollPane.doLayout();
+    final Dimension prefSize = new Dimension(preferenceScrollPane.getPreferredSize().width, preferenceScrollPane.getPreferredSize().height);
+    
+    final int possibleScrollBarSpace = 48;
+    prefSize.width += possibleScrollBarSpace;
+    prefSize.height += possibleScrollBarSpace;
+    final Rectangle graphicsBounds = this.getGraphicsConfiguration().getBounds();
+
+    preferenceScrollPane.setPreferredSize(new Dimension(
+        Math.min(prefSize.width, (graphicsBounds.width << 1) / 3), 
+        Math.min(prefSize.height, (graphicsBounds.height << 1) / 3)
+    ));
+
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "Preferences", preferenceScrollPane)) {
+      preferencesPanel.save();
       for (final TabTitle t : this.tabPane) {
         t.getProvider().updateConfiguration();
       }
