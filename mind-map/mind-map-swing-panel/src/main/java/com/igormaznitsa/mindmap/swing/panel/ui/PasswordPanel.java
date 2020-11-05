@@ -25,7 +25,7 @@ import javax.swing.SwingConstants;
 
 public final class PasswordPanel extends JPanel {
 
-  private static final int COLUMNS = 16;
+  private static final int COLUMNS = 24;
   private final JTextField textFieldHint;
   private final JLabel textLabelHint;
   private final JPasswordField textFieldPassword;
@@ -93,6 +93,7 @@ public final class PasswordPanel extends JPanel {
     gbc.gridx = 1;
     gbc.gridy = 2;
     gbc.anchor = GridBagConstraints.EAST;
+    gbc.fill = GridBagConstraints.NONE;
     final JCheckBox showPasswordCheckbox = uifactory.makeCheckBox();
     showPasswordCheckbox.setText(Utils.BUNDLE.getString("PasswordPanel.checkboxShowPassword.text"));
     showPasswordCheckbox
