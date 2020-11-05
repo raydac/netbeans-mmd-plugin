@@ -42,6 +42,7 @@ import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -132,8 +133,8 @@ public final class UiUtils {
 
     private final Image image;
 
-    public SplashScreen(@Nonnull final Image image) {
-      super();
+    public SplashScreen(@Nullable final GraphicsConfiguration gfc, @Nonnull final Image image) {
+      super(gfc);
       this.setAlwaysOnTop(true);
 
       this.image = image;

@@ -55,6 +55,7 @@ import com.igormaznitsa.sciareto.ui.UiUtils.SplashScreen;
 import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import java.awt.Component;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -111,7 +112,8 @@ public class Main {
 
   private static MainFrame MAIN_FRAME;
 
-  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 4L, 10L}, null); //NOI18N
+  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 4L, 10L}, null);
+      //NOI18N
 
   public static final Random RND = new Random();
 
@@ -126,8 +128,10 @@ public class Main {
     @Nullable
     @Override
     public MindMap doImport(@Nonnull PluginContext context) throws Exception {
-      final File fileToImport = context.getDialogProvider().msgOpenFileDialog(null, "", "", null, true, new FileFilter[0], ""); //NOI18N
-      return new MindMap(new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
+      final File fileToImport = context.getDialogProvider()
+          .msgOpenFileDialog(null, "", "", null, true, new FileFilter[0], ""); //NOI18N
+      return new MindMap(
+          new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
     }
 
     @Nonnull
@@ -174,13 +178,15 @@ public class Main {
   private static final class LocalMMDExporter extends AbstractExporter {
 
     @Override
-    public void doExport(@Nonnull PluginContext context, @Nullable JComponent options, @Nullable OutputStream out) throws IOException {
+    public void doExport(@Nonnull PluginContext context, @Nullable JComponent options,
+                         @Nullable OutputStream out) throws IOException {
       final MindMap map = context.getPanel().getModel();
       IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
     }
 
     @Override
-    public void doExportToClipboard(@Nonnull PluginContext context, @Nullable JComponent options) throws IOException {
+    public void doExportToClipboard(@Nonnull PluginContext context, @Nullable JComponent options)
+        throws IOException {
       final MindMap map = context.getPanel().getModel();
       final StringWriter writer = map.write(new StringWriter());
       final String text = writer.toString();
@@ -260,7 +266,19 @@ public class Main {
     }
   }
 
+  @Nullable
+  private static GraphicsConfiguration findPrimaryScreen() {
+    final GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsConfiguration result = null;
+    if (environment != null) {
+      result = environment.getDefaultScreenDevice().getDefaultConfiguration();
+    }
+    return result;
+  }
+
   public static void main(@Nonnull @MustNotContainNull final String... args) {
+    final GraphicsConfiguration primaryScreen = findPrimaryScreen();
+
     // -- Properties for MAC OSX --  
     System.setProperty("apple.awt.fileDialogForDirectories", "true"); //NOI18N
     System.setProperty("apple.laf.useScreenMenuBar", "true"); //NOI18N
@@ -277,7 +295,8 @@ public class Main {
 
     PlatformProvider.getPlatform().init();
 
-    final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences().get(PROPERTY_LOOKANDFEEL, PlatformProvider.getPlatform().getDefaultLFClassName());
+    final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences()
+        .get(PROPERTY_LOOKANDFEEL, PlatformProvider.getPlatform().getDefaultLFClassName());
 
     LOGGER.info("java.vendor = " + System.getProperty("java.vendor", "unknown")); //NOI18N
     LOGGER.info("java.version = " + System.getProperty("java.version", "unknown")); //NOI18N
@@ -294,7 +313,7 @@ public class Main {
 
         SwingUtilities.invokeAndWait(() -> {
           try {
-            splash.set(new SplashScreen(splashImage));
+            splash.set(new SplashScreen(primaryScreen, splashImage));
             splash.get().setVisible(true);
           } catch (Exception ex) {
             LOGGER.error("Splash can't be shown", ex); //NOI18N
@@ -312,7 +331,9 @@ public class Main {
       timeTakenBySplashStart = 0L;
     }
 
-    if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences().getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis() + STATISTICS_DELAY)) >= STATISTICS_DELAY) {
+    if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences()
+        .getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME,
+            System.currentTimeMillis() + STATISTICS_DELAY)) >= STATISTICS_DELAY) {
       LOGGER.info("Statistics scheduled"); //NOI18N
 
       final Timer timer = new Timer(45000, new ActionListener() {
@@ -330,7 +351,8 @@ public class Main {
       public void run() {
         try {
           final Preferences prefs = PreferencesManager.getInstance().getPreferences();
-          prefs.putLong(PROPERTY_TOTAL_UPSTART, prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (System.currentTimeMillis() - UPSTART));
+          prefs.putLong(PROPERTY_TOTAL_UPSTART,
+              prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (System.currentTimeMillis() - UPSTART));
           PreferencesManager.getInstance().flush();
         } finally {
           PlatformProvider.getPlatform().dispose();
@@ -376,7 +398,8 @@ public class Main {
       } else if ("--exportsettings".equalsIgnoreCase(args[0])) { //NOI18N
         doShowGUI = false;
 
-        final File file = args.length > 1 ? new File(args[1]) : new File("sciaretosettings.properties"); //NOI18N
+        final File file =
+            args.length > 1 ? new File(args[1]) : new File("sciaretosettings.properties"); //NOI18N
 
         if (!exportSettings(file)) {
           System.exit(1);
@@ -399,27 +422,32 @@ public class Main {
       MindMapPluginRegistry.getInstance().unregisterPluginForClass(OptionsPlugin.class);
 
       SwingUtilities.invokeLater(() -> {
-        final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        final GraphicsDevice gd =
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         final int width = gd.getDisplayMode().getWidth();
         final int height = gd.getDisplayMode().getHeight();
 
         if (PlatformProvider.isErrorDetected()) {
           disposeSplash();
-          JOptionPane.showMessageDialog(null, "Can't init the Platform dependent layer, the default one will be used instead.\n"
-              + "Check that you have installed Java correctly to avoid the warning", "Warning", JOptionPane.WARNING_MESSAGE);
+          JOptionPane.showMessageDialog(null,
+              "Can't init the Platform dependent layer, the default one will be used instead.\n"
+                  + "Check that you have installed Java correctly to avoid the warning", "Warning",
+              JOptionPane.WARNING_MESSAGE);
         }
 
         try {
-          MAIN_FRAME = new MainFrame(args);
+          MAIN_FRAME = new MainFrame(primaryScreen, args);
         } catch (IOException ex) {
           LOGGER.error("Can't create frame", ex);
-          JOptionPane.showMessageDialog(null, "Can't create frame : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(null, "Can't create frame : " + ex.getMessage(), "Error",
+              JOptionPane.ERROR_MESSAGE);
           System.exit(1);
         }
         MAIN_FRAME.setSize(Math.round(width * 0.75f), Math.round(height * 0.75f));
 
         if (splash.get() != null) {
-          final long delay = (2000L + timeTakenBySplashStart) - (System.currentTimeMillis() - UPSTART);
+          final long delay =
+              (2000L + timeTakenBySplashStart) - (System.currentTimeMillis() - UPSTART);
           if (delay > 0L) {
             final Timer timer = new Timer((int) delay, e -> {
               disposeSplash();
@@ -434,7 +462,8 @@ public class Main {
         MAIN_FRAME.setVisible(true);
 
         MAIN_FRAME.setExtendedState(MAIN_FRAME.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        final JHtmlLabel label = new JHtmlLabel("<html>You use the application already for some time. If you like it then you could support its author and <a href=\"http://www.google.com\"><b>make some donation</b></a>.</html>");
+        final JHtmlLabel label = new JHtmlLabel(
+            "<html>You use the application already for some time. If you like it then you could support its author and <a href=\"http://www.google.com\"><b>make some donation</b></a>.</html>");
         label.addLinkListener((source, link) -> {
           try {
             UiUtils.browseURI(new URI(link), false);
@@ -517,8 +546,10 @@ public class Main {
       if (allOk) {
         final File inFile = new File(params[IN_FILE]);
         final File outFile = new File(params[OUT_FILE]);
-        final AbstractImporter importer = MindMapPluginRegistry.getInstance().findImporterForMnemonic(params[IN_TYPE]);
-        final AbstractExporter exporter = MindMapPluginRegistry.getInstance().findExporterForMnemonic(params[OUT_TYPE]);
+        final AbstractImporter importer =
+            MindMapPluginRegistry.getInstance().findImporterForMnemonic(params[IN_TYPE]);
+        final AbstractExporter exporter =
+            MindMapPluginRegistry.getInstance().findExporterForMnemonic(params[OUT_TYPE]);
 
         if (importer == null) {
           LOGGER.error("Unknown importer : " + params[IN_TYPE]); //NOI18N
@@ -533,7 +564,8 @@ public class Main {
           final MindMapPanelConfig config = new MindMapPanelConfig();
           if (settingsFile != null) {
             try {
-              config.loadFrom(new PropertiesPreferences(FileUtils.readFileToString(settingsFile, "UTF-8")));
+              config.loadFrom(
+                  new PropertiesPreferences(FileUtils.readFileToString(settingsFile, "UTF-8")));
             } catch (IOException ex) {
               LOGGER.error("Can't load settings file : " + settingsFile, ex); //NOI18N
               allOk = false;
@@ -564,7 +596,8 @@ public class Main {
     final MindMapPanelConfig config = new MindMapPanelConfig();
     config.loadFrom(PreferencesManager.getInstance().getPreferences());
 
-    final PropertiesPreferences prefs = new PropertiesPreferences("Exported configuration for SciaReto editor https://github.com/raydac/netbeans-mmd-plugin"); //NOI18N
+    final PropertiesPreferences prefs = new PropertiesPreferences(
+        "Exported configuration for SciaReto editor https://github.com/raydac/netbeans-mmd-plugin"); //NOI18N
     config.saveTo(prefs);
 
     try {
@@ -580,7 +613,8 @@ public class Main {
   private static boolean importSettings(@Nonnull final File settingsFile) {
     boolean result = true;
     try {
-      final PropertiesPreferences prefs = new PropertiesPreferences(FileUtils.readFileToString(settingsFile, "UTF-8"));
+      final PropertiesPreferences prefs =
+          new PropertiesPreferences(FileUtils.readFileToString(settingsFile, "UTF-8"));
       final MindMapPanelConfig config = new MindMapPanelConfig();
       config.loadFrom(prefs);
       config.saveTo(PreferencesManager.getInstance().getPreferences());
@@ -593,7 +627,12 @@ public class Main {
     return result;
   }
 
-  private static void makeConversion(@Nonnull final File from, @Nonnull final AbstractImporter fromFormat, @Nonnull final File to, @Nonnull final AbstractExporter toFormat, @Nonnull final MindMapPanelConfig config, @Nonnull final Properties options) throws Exception {
+  private static void makeConversion(@Nonnull final File from,
+                                     @Nonnull final AbstractImporter fromFormat,
+                                     @Nonnull final File to,
+                                     @Nonnull final AbstractExporter toFormat,
+                                     @Nonnull final MindMapPanelConfig config,
+                                     @Nonnull final Properties options) throws Exception {
     final AtomicReference<Exception> error = new AtomicReference<>();
     SwingUtilities.invokeAndWait(new Runnable() {
       @Override
@@ -601,47 +640,68 @@ public class Main {
         try {
           final DialogProvider dialog = new DialogProvider() {
             @Override
-            public void msgError(@Nullable final Component parentComponent, @Nonnull final String text) {
+            public void msgError(@Nullable final Component parentComponent,
+                                 @Nonnull final String text) {
               LOGGER.error(text);
             }
 
             @Override
-            public void msgInfo(@Nullable final Component parentComponent, @Nonnull final String text) {
+            public void msgInfo(@Nullable final Component parentComponent,
+                                @Nonnull final String text) {
               LOGGER.info(text);
             }
 
             @Override
-            public void msgWarn(@Nullable final Component parentComponent, @Nonnull final String text) {
+            public void msgWarn(@Nullable final Component parentComponent,
+                                @Nonnull final String text) {
               LOGGER.warn(text);
             }
 
             @Override
-            public boolean msgConfirmOkCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
+            public boolean msgConfirmOkCancel(@Nullable final Component parentComponent,
+                                              @Nonnull final String title,
+                                              @Nonnull final String question) {
               throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
-            public boolean msgOkCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final JComponent component) {
+            public boolean msgOkCancel(@Nullable final Component parentComponent,
+                                       @Nonnull final String title,
+                                       @Nonnull final JComponent component) {
               throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
-            public boolean msgConfirmYesNo(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
+            public boolean msgConfirmYesNo(@Nullable final Component parentComponent,
+                                           @Nonnull final String title,
+                                           @Nonnull final String question) {
               throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
-            public Boolean msgConfirmYesNoCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
+            public Boolean msgConfirmYesNoCancel(@Nullable final Component parentComponent,
+                                                 @Nonnull final String title,
+                                                 @Nonnull final String question) {
               throw new UnsupportedOperationException("Not supported yet."); //NOI18N
             }
 
             @Override
-            public File msgSaveFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull @MustNotContainNull final FileFilter[] fileFilter, @Nonnull final String approveButtonText) {
+            public File msgSaveFileDialog(@Nullable final Component parentComponent,
+                                          @Nonnull final String id, @Nonnull final String title,
+                                          @Nullable final File defaultFolder,
+                                          final boolean filesOnly, @Nonnull @MustNotContainNull
+                                          final FileFilter[] fileFilter,
+                                          @Nonnull final String approveButtonText) {
               return to;
             }
 
             @Override
-            public File msgOpenFileDialog(@Nullable final Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final File defaultFolder, final boolean filesOnly, @Nonnull @MustNotContainNull final FileFilter[] fileFilter, @Nonnull final String approveButtonText) {
+            public File msgOpenFileDialog(@Nullable final Component parentComponent,
+                                          @Nonnull final String id, @Nonnull final String title,
+                                          @Nullable final File defaultFolder,
+                                          final boolean filesOnly, @Nonnull @MustNotContainNull
+                                          final FileFilter[] fileFilter,
+                                          @Nonnull final String approveButtonText) {
               return from;
             }
           };
@@ -699,7 +759,8 @@ public class Main {
                 }
 
                 @Override
-                public void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin, @Nullable Topic activeTopic) {
+                public void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin,
+                                                    @Nullable Topic activeTopic) {
 
                 }
               };
@@ -711,7 +772,8 @@ public class Main {
             }
 
             @Override
-            public boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull final MindMapPanel source) {
+            public boolean isCopyColorInfoFromParentToNewChildAllowed(
+                @Nonnull final MindMapPanel source) {
               return false;
             }
 
@@ -747,13 +809,18 @@ public class Main {
 
             @Override
             @Nonnull
-            public MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull final MindMapPanel source) {
+            public MindMapPanelConfig provideConfigForMindMapPanel(
+                @Nonnull final MindMapPanel source) {
               return config;
             }
 
             @Override
             @Nullable
-            public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement elementUnderMouse, @Nullable final ElementPart elementPartUnderMouse) {
+            public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source,
+                                                       @Nonnull final Point point, @Nullable
+                                                       final AbstractElement elementUnderMouse,
+                                                       @Nullable
+                                                       final ElementPart elementPartUnderMouse) {
               return null;
             }
 
@@ -764,7 +831,10 @@ public class Main {
             }
 
             @Override
-            public boolean processDropTopicToAnotherTopic(@Nonnull final MindMapPanel source, @Nonnull final Point dropPoint, @Nonnull final Topic draggedTopic, @Nonnull final Topic destinationTopic) {
+            public boolean processDropTopicToAnotherTopic(@Nonnull final MindMapPanel source,
+                                                          @Nonnull final Point dropPoint,
+                                                          @Nonnull final Topic draggedTopic,
+                                                          @Nonnull final Topic destinationTopic) {
               return false;
             }
 
@@ -780,7 +850,8 @@ public class Main {
             dialog.msgError(MAIN_FRAME, "Can't import map");
           }
 
-          final JComponent optionsComponent = toFormat.makeOptions(panel.getController().makePluginContext(panel));
+          final JComponent optionsComponent =
+              toFormat.makeOptions(panel.getController().makePluginContext(panel));
 
           if (!options.isEmpty()) {
             if (optionsComponent instanceof HasOptions) {
@@ -789,17 +860,22 @@ public class Main {
                 if (optionable.doesSupportKey(k)) {
                   optionable.setOption(k, options.getProperty(k));
                 } else {
-                  throw new IllegalArgumentException("Exporter " + toFormat.getMnemonic() + " doesn't support option '" + k + "\', it provides options " + Arrays.toString(optionable.getOptionKeys())); //NOI18N
+                  throw new IllegalArgumentException(
+                      "Exporter " + toFormat.getMnemonic() + " doesn't support option '" + k +
+                          "\', it provides options " +
+                          Arrays.toString(optionable.getOptionKeys())); //NOI18N
                 }
               }
             } else {
-              throw new IllegalArgumentException("Exporter " + toFormat.getMnemonic() + " doesn't support options"); //NOI18N
+              throw new IllegalArgumentException(
+                  "Exporter " + toFormat.getMnemonic() + " doesn't support options"); //NOI18N
             }
           }
 
           final FileOutputStream result = new FileOutputStream(to, false);
           try {
-            toFormat.doExport(panel.getController().makePluginContext(panel), optionsComponent, result);
+            toFormat
+                .doExport(panel.getController().makePluginContext(panel), optionsComponent, result);
             result.flush();
           } finally {
             IOUtils.closeQuietly(result);
@@ -815,7 +891,8 @@ public class Main {
   }
 
   @Nonnull
-  private static String makeMnemonicList(@Nonnull @MustNotContainNull final List<? extends MindMapPlugin> plugins) {
+  private static String makeMnemonicList(
+      @Nonnull @MustNotContainNull final List<? extends MindMapPlugin> plugins) {
     final StringBuilder result = new StringBuilder();
     for (final MindMapPlugin p : plugins) {
       if (p instanceof HasMnemonic) {
@@ -836,25 +913,33 @@ public class Main {
     out.println("Project page : https://github.com/raydac/netbeans-mmd-plugin"); //NOI18N
     out.println();
     out.println("Usage from command line:"); //NOI18N
-    out.println("   java -jar sciareto.jar [--help|--importsettings FILE|--exportsettings FILE|--convert <>]|[FILE FILE ... FILE]"); //NOI18N
+    out.println(
+        "   java -jar sciareto.jar [--help|--importsettings FILE|--exportsettings FILE|--convert <>]|[FILE FILE ... FILE]"); //NOI18N
     out.println();
     printConversionHelp(out);
   }
 
   private static void printConversionHelp(@Nonnull final PrintStream out) {
-    final String allowedFormatsFrom = makeMnemonicList(MindMapPluginRegistry.getInstance().findFor(AbstractImporter.class));
-    final String allowedFormatsTo = makeMnemonicList(MindMapPluginRegistry.getInstance().findFor(AbstractExporter.class));
+    final String allowedFormatsFrom =
+        makeMnemonicList(MindMapPluginRegistry.getInstance().findFor(AbstractImporter.class));
+    final String allowedFormatsTo =
+        makeMnemonicList(MindMapPluginRegistry.getInstance().findFor(AbstractExporter.class));
     out.println();
     out.println("Usage in converter mode:"); //NOI18N
-    out.println(String.format(" --convert --in IN_FILE [--from (%s)] --out OUT_FILE [--to (%s)] [--settings FILE] [--option NAME=VALUE...]", allowedFormatsFrom, allowedFormatsTo)); //NOI18N
+    out.println(String.format(
+        " --convert --in IN_FILE [--from (%s)] --out OUT_FILE [--to (%s)] [--settings FILE] [--option NAME=VALUE...]",
+        allowedFormatsFrom, allowedFormatsTo)); //NOI18N
     out.println();
     out.println("   --convert - command to make conversion, must be the first argument"); //NOI18N
     out.println("   --in FILE - file to be converted"); //NOI18N
-    out.println("   --from FORMAT - type of source format, be default 'mmd' (allowed " + allowedFormatsFrom + ')'); //NOI18N
+    out.println("   --from FORMAT - type of source format, be default 'mmd' (allowed " +
+        allowedFormatsFrom + ')'); //NOI18N
     out.println("   --out FILE - destination file, if file exists it will be overrided"); //NOI18N
-    out.println("   --to FORMAT - type of destination format, bye default 'mmd' (allowed " + allowedFormatsTo + ')'); //NOI18N
+    out.println("   --to FORMAT - type of destination format, bye default 'mmd' (allowed " +
+        allowedFormatsTo + ')'); //NOI18N
     out.println("   --settings FILE - use graphic settings defined in Java property file"); //NOI18N
-    out.println("   --option NAME=VALUE - an option to tune export process, specific for each exporter, see documentation"); //NOI18N
+    out.println(
+        "   --option NAME=VALUE - an option to tune export process, specific for each exporter, see documentation"); //NOI18N
     out.println();
   }
 }

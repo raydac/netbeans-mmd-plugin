@@ -144,8 +144,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       .newBoundedElastic(Runtime.getRuntime().availableProcessors(), Integer.MAX_VALUE,
           "sr-reactor", 15, true);
 
-  public MainFrame(@Nonnull @MustNotContainNull final String... args) throws IOException {
-    super();
+  public MainFrame(@Nullable final GraphicsConfiguration gfc, @Nonnull @MustNotContainNull final String... args) throws IOException {
+    super(gfc);
     initComponents();
 
     if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.ABOUT, this)) {
