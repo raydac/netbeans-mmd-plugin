@@ -19,7 +19,7 @@ __1.4.10 (SNAPSHOT)__
 - ALL: decreased topic dragging start sensitivity [#77](https://github.com/raydac/netbeans-mmd-plugin/issues/77)
 - ALL: emoticons and images included into search scope by their names [#76](https://github.com/raydac/netbeans-mmd-plugin/issues/76)
 - SR:  fixed file rename [#74](https://github.com/raydac/netbeans-mmd-plugin/issues/74)
-- SR:  embedded JDK version updated to 11.0.9+12
+- SR:  embedded JDK version updated to 11.0.9.1+1
 - SR:  embedded PlantUml updated to 1.2020.19
 
 __1.4.9 (28-jun-2020)__
