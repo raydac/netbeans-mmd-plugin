@@ -113,6 +113,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileView;
+import javax.swing.tree.TreeNode;
 import org.apache.commons.io.FilenameUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -1357,10 +1358,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             })
             .doOnTerminate(() -> {
               ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
-              if (invokeLater != null && invokeLater.length > 0) {
-                for (final Runnable r : invokeLater) {
-                  SwingUtilities.invokeLater(r);
-                }
+              for (final Runnable r : invokeLater) {
+                SwingUtilities.invokeLater(r);
               }
             })
             .subscribeOn(REACTOR_SCHEDULER)
@@ -1374,20 +1373,24 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (folder.isDirectory()) {
       final NodeProject alreadyOpened = findProjectForFile(folder);
       if (alreadyOpened == null || enforceSeparatedProject) {
-        final boolean firstProject = this.explorerTree.getCurrentGroup().getChildCount() == 0;
+        final boolean unfoldFirstProject = this.explorerTree.getCurrentGroup().getChildCount() == 0;
 
         final NodeProject node;
         try {
-          node = asyncReloadProject(this.explorerTree.getCurrentGroup().addProjectFolder(folder), null);
+          node = asyncReloadProject(this.explorerTree.getCurrentGroup().addProjectFolder(folder), () -> {
+              SwingUtilities.invokeLater(()->{
+                  if (unfoldFirstProject) {
+                      final NodeProject opened = (NodeProject)this.explorerTree.getCurrentGroup().getChildAt(0);
+                      this.explorerTree.unfoldProject(opened);
+                  }                  
+              });
+          });
         } catch (final IOException ex) {
           JOptionPane.showMessageDialog(this.rootPane, "Can't open project : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
           LOGGER.error("Can't open project", ex);
           return false;
         }
 
-        if (firstProject) {
-          this.explorerTree.unfoldProject(node);
-        }
         try {
           FileHistoryManager.getInstance().registerOpenedProject(folder);
         } catch (IOException ex) {
