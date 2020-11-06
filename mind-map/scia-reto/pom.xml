@@ -310,7 +310,7 @@
                 <mutexName>sciaretoeditor</mutexName>
               </singleInstance>
               <versionInfo>
-                <fileVersion>1.4.9.0</fileVersion>
+                <fileVersion>1.4.10.0</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
                 <fileDescription>SciaReto Mind Map editor</fileDescription>
                   <copyright>2016-2020 Igor Maznitsa</copyright>
