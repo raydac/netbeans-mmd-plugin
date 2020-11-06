@@ -1382,6 +1382,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                   if (unfoldFirstProject) {
                       final NodeProject opened = (NodeProject)this.explorerTree.getCurrentGroup().getChildAt(0);
                       this.explorerTree.unfoldProject(opened);
+                      this.explorerTree.focusToFirstElement();
                   }                  
               });
           });
