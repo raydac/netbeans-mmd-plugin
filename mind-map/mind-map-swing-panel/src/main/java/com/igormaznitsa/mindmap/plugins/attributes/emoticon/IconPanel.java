@@ -17,7 +17,6 @@
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
@@ -60,7 +59,8 @@ public final class IconPanel extends JPanel {
   }
 
   @Nonnull
-  private JToggleButton makeIconButton(@Nonnull final ButtonGroup group, @Nonnull final String name) {
+  private JToggleButton makeIconButton(@Nonnull final ButtonGroup group,
+                                       @Nonnull final String name) {
     final JToggleButton result = Utils.UI_COMPO_FACTORY.makeToggleButton();
 
     final Color panelColor = this.getBackground();
@@ -75,7 +75,8 @@ public final class IconPanel extends JPanel {
 
     result.setBackground(panelColor.darker());
 
-    result.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+    result.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+        BorderFactory.createEmptyBorder(3, 3, 3, 3)));
     result.setIcon(new ImageIcon(MiscIcons.findForName(name)));
     result.setName(name);
     result.setFocusPainted(false);
