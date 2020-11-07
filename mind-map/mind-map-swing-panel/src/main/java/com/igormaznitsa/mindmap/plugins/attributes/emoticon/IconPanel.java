@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
@@ -37,7 +39,7 @@ public final class IconPanel extends JPanel {
 
   private final ButtonGroup group = Utils.UI_COMPO_FACTORY.makeButtonGroup();
 
-  public IconPanel() {
+  public IconPanel(@Nonnull final PluginContext context) {
     super(new GridLayout(0, 6));
     add(makeIconButton(group, "empty"));
     for (final String s : MiscIcons.getNames()) {

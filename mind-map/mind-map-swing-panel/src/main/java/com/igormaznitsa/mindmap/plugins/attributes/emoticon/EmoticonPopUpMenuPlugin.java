@@ -48,7 +48,7 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
     result.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        final IconPanel iconPanel = new IconPanel();
+        final IconPanel iconPanel = new IconPanel(context);
         final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
         scrollPane.getVerticalScrollBar().setUnitIncrement(32);
         scrollPane.getVerticalScrollBar().setBlockIncrement(96);
