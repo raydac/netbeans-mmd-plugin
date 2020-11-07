@@ -34,6 +34,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -288,6 +290,15 @@ public final class SourceTextEditor extends AbstractTextEditor {
     this.editor.setAntiAliasingEnabled(true);
     this.editor.setBracketMatchingEnabled(true);
     this.editor.setCodeFoldingEnabled(true);
+    this.editor.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(@Nonnull final KeyEvent e) {
+        if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+          e.consume();
+          context.hideFindTextPane();
+        }
+      }
+    });
 
     this.editor.getCaret().setSelectionVisible(true);
     this.editor.addHyperlinkListener((HyperlinkEvent e) -> {

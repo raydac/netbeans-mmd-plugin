@@ -256,12 +256,23 @@ public final class MMDEditor extends AbstractTextEditor
 
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e,
-                                    @Nonnull final KeyEventType type) {
-    if (type == KeyEventType.PRESSED && e.getModifiers() == 0 && (e.getKeyCode() == KeyEvent.VK_UP
-        || e.getKeyCode() == KeyEvent.VK_LEFT
-        || e.getKeyCode() == KeyEvent.VK_RIGHT
-        || e.getKeyCode() == KeyEvent.VK_DOWN)) {
-      e.consume();
+      @Nonnull final KeyEventType type) {
+    if (!e.isConsumed()) {
+      if (type == KeyEventType.PRESSED && e.getModifiers() == 0) {
+        switch (e.getKeyCode()) {
+          case KeyEvent.VK_UP:
+          case KeyEvent.VK_LEFT:
+          case KeyEvent.VK_RIGHT:
+          case KeyEvent.VK_DOWN:
+            e.consume();
+            break;
+          case KeyEvent.VK_ESCAPE: {
+            e.consume();
+            this.context.hideFindTextPane();
+          }
+          break;
+        }
+      }
     }
   }
 

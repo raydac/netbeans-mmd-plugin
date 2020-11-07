@@ -56,6 +56,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
@@ -185,6 +186,16 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.editor.setBracketMatchingEnabled(true);
     this.editor.setCodeFoldingEnabled(false);
 
+    this.editor.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(@Nonnull final KeyEvent e) {
+        if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+          e.consume();
+          context.hideFindTextPane();
+        }
+      }
+    });
+    
     final AutoCompletion autoCompletion =
         new AutoCompletion(new PlantUmlTokenMaker().makeCompletionProvider());
     autoCompletion.setAutoActivationEnabled(true);
