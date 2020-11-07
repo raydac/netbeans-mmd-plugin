@@ -37,9 +37,11 @@ public final class IconPanel extends JPanel {
   private static final long serialVersionUID = 4823626757838675154L;
 
   private final ButtonGroup group = Utils.UI_COMPO_FACTORY.makeButtonGroup();
+  private final PluginContext context;
 
   public IconPanel(@Nonnull final PluginContext context) {
     super(new GridLayout(0, 6));
+    this.context = context;
     add(makeIconButton(group, "empty"));
     for (final String s : MiscIcons.getNames()) {
       add(makeIconButton(group, s));
