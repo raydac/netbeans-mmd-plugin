@@ -33,14 +33,15 @@
 }
 
 .info-block a {
-    color: cyan;    
+    color: cyan;
 }
 
 .info-block a:hover {
-    color: yellow;    
+    color: yellow;
 }
 
-.info-block p,li {
+.info-block li,
+.info-block p {
     color: whitesmoke;
     text-align: justify;
 }
@@ -63,7 +64,13 @@ body footer {
     box-shadow: 0px 8px 8px -6px rgba(0, 0, 0, .5);
 }
 
-.carousel-caption h3,p {
+.carousel-caption h3 {
+    color: cyan;
+    font-weight: bolder;
+    text-shadow: 4px 4px 2px #505050;
+}
+
+.carousel-caption p {
     color: cyan;
     font-weight: bolder;
     text-shadow: 4px 4px 2px #505050;
@@ -71,8 +78,8 @@ body footer {
 
 .carousel-indicators li {
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 12px;
+    height: 12px;
     background-color: whitesmoke;
 }
 
@@ -97,7 +104,7 @@ body footer {
 }
 
 .download-item {
-    background-color: #33414e !important; 
+    background-color: #33414e !important;
     color: #7b9dbd;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
 }
