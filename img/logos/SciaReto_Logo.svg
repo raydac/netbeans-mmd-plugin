@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="145.34mm" height="145.34mm" version="1.1" viewBox="0 0 515 515" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g stroke-linecap="round" stroke-linejoin="round">
+  <rect x="7.5" y="7.5" width="500" height="500" ry="68.571" fill="#610000" stroke="#a05a2c" stroke-width="15" style="mix-blend-mode:normal"/>
+  <g transform="matrix(.54253 0 0 .54253 78.73 70.74)" fill="none" stroke="#0ff" stroke-width="15.841">
+   <path d="m234.38 24.991 231.29 1e-5 167.06 300.7-167.06 300.7-231.29-2e-5"/>
+   <path d="m271.47 132.27h144.09l104.08 187.33-104.08 187.33h-144.09"/>
+   <path d="m292.95 208.41h82.44l59.546 107.18-59.546 107.18h-82.44"/>
+   <path d="m375.02 206.21 139.97-282"/>
+   <path d="m525.7 765.01-154.25-344.33"/>
+   <path d="m752.07 321.24-317.06-4.4526"/>
+  </g>
+  <g transform="matrix(.54253 0 0 .54253 78.73 70.74)" fill="none" stroke="#f55" stroke-width="15.841">
+   <path d="m367.81 84.547h-181.93l-131.41 236.53 131.41 236.53 181.93-3e-5"/>
+   <path d="m344.41 169.24-113.34 1e-5 -81.867 147.35 81.867 147.35h113.34"/>
+   <path d="m323.34 229.39-64.847 1e-5 -46.839 84.306 46.839 84.306h64.847"/>
+   <path d="m259.57 229.77-151.8-308.15"/>
+   <path d="m79.433 766.86 178.1-371.54"/>
+   <path d="m210.56 315.38-303.63 1.2764"/>
+  </g>
+ </g>
+</svg>

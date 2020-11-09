@@ -1,0 +1,118 @@
+.stickey-menu {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
+}
+
+.navbar {
+    background-color: #617b94;
+    box-shadow: 0px 8px 8px -6px rgba(0, 0, 0, .5);
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    z-index: 1000;
+}
+
+.carousel-inner img {
+    width: 100%;
+    height: 100%;
+}
+
+.link-on-dark {
+    color: aqua;
+}
+
+.link-on-dark:hover {
+    color: antiquewhite;
+}
+
+.info-block h1 {
+    color: orange;
+    font-weight: bolder;
+}
+
+.info-block h2 {
+    color: orange;
+}
+
+.info-block a {
+    color: cyan;    
+}
+
+.info-block a:hover {
+    color: yellow;    
+}
+
+.info-block p,li {
+    color: whitesmoke;
+    font-size: large;
+    text-align: justify;
+}
+
+.nav-item a {
+    color: antiquewhite;
+}
+
+.nav-item a:hover {
+    color: #617b94;
+    background-color: antiquewhite;
+}
+
+body {
+    background-color: #46596b;
+}
+
+body footer {
+    background-color: #29343f;
+    box-shadow: 0px 8px 8px -6px rgba(0, 0, 0, .5);
+}
+
+.carousel-caption h3,p {
+    color: cyan;
+    font-weight: bolder;
+    text-shadow: 4px 4px 2px #505050;
+}
+
+.carousel-indicators li {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: whitesmoke;
+}
+
+.nav-important {
+    background-color: red;
+}
+
+.copyright {
+    width: 100%;
+    margin-right: 5%;
+    color: white;
+    font-size: small;
+    text-align: right;
+}
+
+.donate-part {
+    border: white;
+}
+
+.code code {
+    color: white;
+}
+
+.download-item {
+    background-color: #33414e !important; 
+    color: #7b9dbd;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
+}
+
+.code {
+    background-color: black;
+    color: white;
+}
+
+.card {
+    background-color: #00000000;
+}
+
+.card-pricing {
+    z-index: 1;
+    border: 3px solid #95b0cc;
+}
