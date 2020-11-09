@@ -10,6 +10,15 @@
     z-index: 1000;
 }
 
+.dropdown-menu {
+    background-color: #617b94;
+}
+
+.dd-a:hover {
+    color: #8bb0d3 !important;
+    background-color: #46596b !important;
+}
+
 .carousel-inner img {
     width: 100%;
     height: 100%;

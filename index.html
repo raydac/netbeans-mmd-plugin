@@ -178,9 +178,13 @@
               <h5 class="text-center">SciaReto</h5>
               <img src="img/logos/SciaReto_Logo.svg" height="64" />
             </div>
-            <div class="card-body pt-0">
-              <a href="https://github.com/raydac/netbeans-mmd-plugin/releases/tag/1.4.9"
-              target="_blank" class="btn btn-success mb-3">Download</a>
+            <div class="card-body pt-0 dropdown show">
+              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownDownload" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
+              <div class="dropdown-menu" aria-labelledby="dropdownDownload">
+                <a class="dd-a dropdown-item" href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-windows-x64-openjdk.zip">Windows</a>
+                <a class="dd-a dropdown-item" href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-macos-x64-openjdk.zip">MacOS</a>
+                <a class="dd-a dropdown-item" href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-linux-x64-openjdk.tar.gz">Linux</a>
+              </div>
             </div>
           </div>
 
@@ -254,6 +258,7 @@
 </body>
 
 <script src="js/jquery-3.5.1.min.js"></script>
+<script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 
 <!--[if lt IE 9]>
