@@ -1,172 +1,24 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   width="32"
-   height="32"
-   version="1.1"
-   id="svg46">
-  <defs
-     id="defs50" />
-  <metadata
-     id="metadata2">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     transform="matrix(0.1111,0,0,-0.13801,-2.5975348,52.657075)"
-     stroke="#000000"
-     stroke-linecap="square"
-     stroke-linejoin="round"
-     stroke-width="2.9"
-     id="g40-3"
-     style="fill:#333333;stroke:none">
-    <g
-       fill="#44d4fc"
-       id="g36-6"
-       style="fill:#333333;stroke:none">
-      <rect
-         transform="scale(1,-1)"
-         x="227.5"
-         y="-283.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect26-7"
-         style="fill:#333333;stroke:none" />
-      <rect
-         transform="scale(1,-1)"
-         x="36.5"
-         y="-335.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect28-5"
-         style="fill:#333333;stroke:none" />
-      <rect
-         transform="scale(1,-1)"
-         x="181"
-         y="-370.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect30-3"
-         style="fill:#333333;stroke:none" />
-      <rect
-         transform="scale(1,-1)"
-         x="180.5"
-         y="-194.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect32-5"
-         style="fill:#333333;stroke:none" />
-      <rect
-         transform="scale(1,-1)"
-         x="37.5"
-         y="-227.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect34-6"
-         style="fill:#333333;stroke:none" />
-    </g>
-    <rect
-       transform="scale(1,-1)"
-       x="120.5"
-       y="-295.5"
-       width="90"
-       height="60"
-       ry="10"
-       fill="#0000ff"
-       id="rect38-2"
-       style="fill:#333333;stroke:none" />
-  </g>
-  <g
-     transform="matrix(0.1111,0,0,-0.13801,-3.39,51.81)"
-     fill="none"
-     stroke="#808080"
-     stroke-width="4"
-     id="g10">
-    <path
-       d="m 74.5,318.5 c 55.136,8.2335 83.507,-12.592 92,-55 0.31909,55.528 22.276,79.5 54.5,88.5"
-       id="path4" />
-    <path
-       d="M 270,264.5 166.5,264 c -12.954,-38.988 -35.309,-66.696 -88,-58"
-       id="path6" />
-    <path
-       d="m 167.5,263.5 c -1.9855,-53.877 19.664,-77.226 49.5,-90"
-       id="path8" />
-  </g>
-  <g
-     transform="matrix(0.1111,0,0,-0.13801,-3.3917403,51.806529)"
-     stroke="#000000"
-     stroke-linecap="square"
-     stroke-linejoin="round"
-     stroke-width="2.9"
-     id="g40">
-    <g
-       fill="#44d4fc"
-       id="g36">
-      <rect
-         transform="scale(1,-1)"
-         x="227.5"
-         y="-283.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect26" />
-      <rect
-         transform="scale(1,-1)"
-         x="36.5"
-         y="-335.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect28" />
-      <rect
-         transform="scale(1,-1)"
-         x="181"
-         y="-370.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect30" />
-      <rect
-         transform="scale(1,-1)"
-         x="180.5"
-         y="-194.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect32" />
-      <rect
-         transform="scale(1,-1)"
-         x="37.5"
-         y="-227.5"
-         width="80"
-         height="40"
-         ry="10"
-         id="rect34" />
-    </g>
-    <rect
-       transform="scale(1,-1)"
-       x="120.5"
-       y="-295.5"
-       width="90"
-       height="60"
-       ry="10"
-       fill="#0000ff"
-       id="rect38" />
-  </g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="145.34mm" height="145.34mm" version="1.1" viewBox="0 0 515 515" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <path transform="scale(.93753)" d="m158.66 26.846c-5.0934-0.11752-10.285 1.2184-15.037 4.1641-13.825 8.5691-18.528 27.416-10.547 42.258l25.805 47.984-65.867 122.49h-51.611c-15.963 0-28.814 13.797-28.814 30.936s12.851 30.936 28.814 30.936h51.629l65.857 122.47-25.812 48c-7.9816 14.842-3.2776 33.691 10.547 42.26 13.824 8.5692 31.378 3.518 39.359-11.324l25.818-48.01h131.71l25.818 48.01c7.9816 14.842 25.535 19.893 39.359 11.324 13.825-8.5691 18.53-27.418 10.549-42.26l-25.814-48.004 65.857-122.47h51.631c15.963 0 28.812-13.797 28.812-30.936s-12.849-30.936-28.812-30.936h-51.613l-65.867-122.48 25.807-47.988c7.9816-14.842 3.2757-33.689-10.549-42.258-13.824-8.5691-31.378-3.5199-39.359 11.322l-25.801 47.979h-131.75l-25.801-47.979c-5.2379-9.7402-14.598-15.262-24.322-15.486z" fill="#00aad4" stroke="#006680" stroke-linecap="round" stroke-linejoin="round" stroke-width="7.526"/>
+ <path transform="scale(.93753)" d="m391.47 46.576a9.8436 9.3581 0 0 0-8.7656 5.3105l-48.195 95.584h-89.189a9.8436 9.3581 0 0 0-9.8438 9.3574 9.8436 9.3581 0 0 0 9.8438 9.3594h79.752l-13.336 26.447h-54.549a9.8436 9.3581 0 0 0-9.8438 9.3574 9.8436 9.3581 0 0 0 9.8438 9.3594h45.113l-6.5938 13.076h-27.832a9.8436 9.3581 0 0 0-9.8438 9.3574 9.8436 9.3581 0 0 0 9.8438 9.3594h27.098l17.479 29.904h-0.00977l-17.504 29.949h-27.098a9.8436 9.3581 0 0 0-9.8438 9.3594 9.8436 9.3581 0 0 0 9.8438 9.3574h27.832l6.5938 13.076h-45.113a9.8436 9.3581 0 0 0-9.8438 9.3594 9.8436 9.3581 0 0 0 9.8438 9.3574h54.549l13.336 26.447h-79.752a9.8436 9.3581 0 0 0-9.8438 9.3594 9.8436 9.3581 0 0 0 9.8438 9.3574h89.189l48.195 95.584a9.8436 9.3581 0 0 0 13.131 4.3926 9.8436 9.3581 0 0 0 4.6211-12.484l-50.117-99.395 61.098-104.55 67.594 0.26953a9.8436 9.3581 0 0 0 9.8848-9.3184 9.8436 9.3581 0 0 0 0-0.08008h0.03516a9.8436 9.3581 0 0 0 0-0.125 9.8436 9.3581 0 0 0-9.8848-9.3184l-67.594 0.26953-61.098-104.55 50.117-99.395a9.8436 9.3581 0 0 0-4.6211-12.484 9.8436 9.3581 0 0 0-4.3652-0.91797zm-51.562 133.48 49.061 83.949-26.729 0.10742-34.74-59.445 12.408-24.611zm22.297 101.96 26.729 0.10742-49.061 83.949-12.408-24.611 34.74-59.445z" fill="#d5f6ff"/>
+ <g fill="#5df">
+  <ellipse cx="259.67" cy="49.729" rx="56.16" ry="19.613"/>
+  <ellipse transform="rotate(-60)" cx="-98.625" cy="558.84" rx="56.16" ry="19.613"/>
+  <ellipse transform="matrix(-.5 -.86603 -.86603 .5 0 0)" cx="-343.22" cy="-303.74" rx="56.16" ry="19.613"/>
+ </g>
+ <g fill="#08a">
+  <ellipse cx="259.67" cy="472.65" rx="56.16" ry="19.613"/>
+  <ellipse transform="matrix(-.5 -.86603 -.86603 .5 0 0)" cx="-356.45" cy="112.28" rx="56.16" ry="19.613" opacity=".99198"/>
+  <ellipse transform="rotate(-60)" cx="-84.083" cy="145.09" rx="56.16" ry="19.613" opacity=".99198"/>
+ </g>
 </svg>
