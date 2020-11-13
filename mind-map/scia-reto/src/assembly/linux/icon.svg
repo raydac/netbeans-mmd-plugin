@@ -1,24 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="145.34mm" height="145.34mm" version="1.1" viewBox="0 0 515 515" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-  <filter id="filter4313" color-interpolation-filters="sRGB">
-   <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" result="flood"/>
-   <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
-   <feGaussianBlur in="composite1" result="blur" stdDeviation="13.4"/>
-   <feOffset dx="12.9" dy="12.0968" result="offset"/>
-   <feComposite in="SourceGraphic" in2="offset" result="fbSourceGraphic"/>
-   <feColorMatrix in="fbSourceGraphic" result="fbSourceGraphicAlpha" values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"/>
-   <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" in="fbSourceGraphic" result="flood"/>
-   <feComposite in="flood" in2="fbSourceGraphic" operator="in" result="composite1"/>
-   <feGaussianBlur in="composite1" result="blur" stdDeviation="8.6"/>
-   <feOffset dx="12.9" dy="12.1" result="offset"/>
-   <feComposite in="fbSourceGraphic" in2="offset" result="composite2"/>
-  </filter>
-  <linearGradient id="linearGradient4192" x1="602.25" x2="143.46" y1="593.51" y2="144" gradientUnits="userSpaceOnUse">
-   <stop stop-color="#800000" offset="0"/>
-   <stop stop-color="#fff" offset="1"/>
-  </linearGradient>
- </defs>
+<svg width="145.34mm" height="145.34mm" version="1.1" viewBox="0 0 515 515" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
  <metadata>
   <rdf:RDF>
    <cc:Work rdf:about="">
@@ -29,8 +10,8 @@
   </rdf:RDF>
  </metadata>
  <g transform="translate(-115.36 -107.72)" stroke-linecap="round" stroke-linejoin="round">
-  <rect x="122.86" y="115.22" width="500" height="500" ry="68.571" fill="url(#linearGradient4192)" stroke="#a05a2c" stroke-width="15"/>
-  <g transform="matrix(.54253 0 0 .54253 194.09 178.46)" fill="none" filter="url(#filter4313)" stroke="#0ff" stroke-width="12.902">
+  <rect x="122.86" y="115.22" width="500" height="500" ry="68.571" fill="#000080" stroke="#a00" stroke-width="15"/>
+  <g transform="matrix(.54253 0 0 .54253 194.09 178.46)" fill="none" stroke="#0ff" stroke-width="17.28">
    <path d="m234.38 24.991 231.29 1e-5 167.06 300.7-167.06 300.7-231.29-2e-5"/>
    <path d="m271.47 132.27h144.09l104.08 187.33-104.08 187.33h-144.09"/>
    <path d="m292.95 208.41h82.44l59.546 107.18-59.546 107.18h-82.44"/>
@@ -38,7 +19,7 @@
    <path d="m525.7 765.01-154.25-344.33"/>
    <path d="m752.07 321.24-317.06-4.4526"/>
   </g>
-  <g transform="matrix(.54253 0 0 .54253 194.09 178.46)" fill="none" filter="url(#filter4313)" stroke="#f55" stroke-width="12.902">
+  <g transform="matrix(.54253 0 0 .54253 194.09 178.46)" fill="none" stroke="#f55" stroke-width="17.396">
    <path d="m367.81 84.547h-181.93l-131.41 236.53 131.41 236.53 181.93-3e-5"/>
    <path d="m344.41 169.24-113.34 1e-5 -81.867 147.35 81.867 147.35h113.34"/>
    <path d="m323.34 229.39-64.847 1e-5 -46.839 84.306 46.839 84.306h64.847"/>
