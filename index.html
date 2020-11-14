@@ -118,15 +118,13 @@
       <div class="col-lg-2 col-md-2 col-sm-0"></div>
       <div id="about" class="info-block col-lg-8 col-md-8 col-sm-12">
         <h1>About</h1>
-        <p>I very often see projects which don't have any documentation and description. Unfortunately I see more and
-          more such projects. In 2016 I found that it would be nice to keep project documentation among its source code
-          with links to the project code and files with minor description. I implemented minimalistic mind map editor
-          which could be integrated into IDE. Because NetBeans IDE was my main working tool, the solution was
-          implemented as a NetBeans plug-in. Then I made adapted version of the plug-in for IntellijIDEA. But some of my
-          friends didn't have any business with programming world at all but had needs to produce mind maps, for them I
-          implemented standalone version of the plug-in as a specialized editor and called it "Scia Reto" (it is an
-          esperanto phrase). Because in my job I also had to have some business with UML, later I added support of
-          PlantUML library.</p>
+        <p>It is very often now to meet projects without any documentation (or hear phrase that "all our documentation
+          in confluence"). I was not happy to work with such projects and found mind mapping as a good way to resolve
+          the problem. In 2016 I decided to develop plug-in for NetBeans (my main work tool in that time) to keep mind
+          map based documentation just directly among project source files. It allowed to keep documentation very close
+          to the work processes and have better synchronization of it. Later Intellij IDEA plug-in was developed and
+          then the standalone editor "Scia Reto" was created to provide some independend way to work with mind maps in
+          projects for either non-programmers or non-Java people.</p>
       </div>
     </div>
     <div class="row">
@@ -135,7 +133,8 @@
         <h1>Features</h1>
         <p>The editor allows create mind maps as trees. In opposite to many another mind map editors, it doesn't allows
           cyclic and multi-root mind maps, only canonic single-root trees. Each mind map node has title but also several
-          extra details like icon, note, file link and link to another topic can be set. Rich set of icons is provided with the editor but custom images also can be used to be shown at topics.
+          extra details like icon, note, file link and link to another topic can be set. Rich set of icons is provided
+          with the editor but custom images also can be used to be shown at topics.
         </p>
         <h2>Format</h2>
         <p>The editor keeps all information as a single human-readable
@@ -179,11 +178,15 @@
               <img src="img/logos/SciaReto_Logo.svg" height="64" />
             </div>
             <div class="card-body pt-0 dropdown show">
-              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownDownload" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
+              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownDownload"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
               <div class="dropdown-menu" aria-labelledby="dropdownDownload">
-                <a class="dd-a dropdown-item" href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-windows-x64-openjdk.zip">Windows</a>
-                <a class="dd-a dropdown-item" href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-macos-x64-openjdk.zip">MacOS</a>
-                <a class="dd-a dropdown-item" href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-linux-x64-openjdk.tar.gz">Linux</a>
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-windows-x64-openjdk.zip">Windows</a>
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-macos-x64-openjdk.zip">MacOS</a>
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.9/sciareto-1.4.9-linux-x64-openjdk.tar.gz">Linux</a>
               </div>
             </div>
           </div>
@@ -194,8 +197,8 @@
               <img src="img/logos/IntelliJ_IDEA_Logo.svg" height="64" />
             </div>
             <div class="card-body pt-0">
-              <a href="https://plugins.jetbrains.com/plugin/8045-idea-mind-map"
-              target="_blank" class="btn btn-success mb-3">Download</a>
+              <a href="https://plugins.jetbrains.com/plugin/8045-idea-mind-map" target="_blank"
+                class="btn btn-success mb-3">Download</a>
             </div>
           </div>
 
@@ -205,8 +208,8 @@
               <img src="img/logos/Apache NetBeans Logo.svg" height="64" />
             </div>
             <div class="card-body pt-0">
-              <a href="http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor"
-              target="_blank" class="btn btn-success mb-3">Download</a>
+              <a href="http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor" target="_blank"
+                class="btn btn-success mb-3">Download</a>
             </div>
           </div>
 
