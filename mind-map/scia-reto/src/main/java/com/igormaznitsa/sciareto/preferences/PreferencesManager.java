@@ -36,12 +36,9 @@ public class PreferencesManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesManager.class);
   private static final PreferencesManager INSTANCE = new PreferencesManager();
-
+  private static final String PROPERTY_UUID = "installation.uuid"; //NOI18N
   private final Preferences prefs;
   private final UUID installationUUID;
-
-  private static final String PROPERTY_UUID = "installation.uuid"; //NOI18N
-
   private final Map<String, Object> localCache = new HashMap<>();
 
   private PreferencesManager() {
@@ -55,12 +52,9 @@ public class PreferencesManager {
         this.prefs.flush();
         LOGGER.info("Generated new installation UUID : " + newUUID.toString()); //NOI18N
 
-        final Thread thread = new Thread(new Runnable() {
-          @Override
-          public void run() {
-            LOGGER.info("Send first start metrics"); //NOI18N
-            com.igormaznitsa.sciareto.metrics.MetricsService.getInstance().onFirstStart();
-          }
+        final Thread thread = new Thread(() -> {
+          LOGGER.info("Send first start metrics"); //NOI18N
+          com.igormaznitsa.sciareto.metrics.MetricsService.getInstance().onFirstStart();
         }, "SCIARETO_FIRST_START_METRICS"); //NOI18N
         thread.setDaemon(true);
         thread.start();
@@ -76,6 +70,11 @@ public class PreferencesManager {
       LOGGER.error("Can't decode UUID", ex); //NOI18N
       throw new Error("Unexpected error", ex); //NOI18N
     }
+  }
+
+  @Nonnull
+  public static PreferencesManager getInstance() {
+    return INSTANCE;
   }
 
   @Nullable
@@ -118,7 +117,7 @@ public class PreferencesManager {
 
   public void setFlag(@Nonnull final Preferences pref, @Nonnull final String key, final boolean flag) {
     synchronized (this.localCache) {
-      this.localCache.put(key, Boolean.valueOf(flag));
+      this.localCache.put(key, flag);
       pref.put(key, Boolean.toString(flag));
     }
   }
@@ -126,11 +125,6 @@ public class PreferencesManager {
   @Nonnull
   public UUID getInstallationUUID() {
     return this.installationUUID;
-  }
-
-  @Nonnull
-  public static PreferencesManager getInstance() {
-    return INSTANCE;
   }
 
   @Nonnull
