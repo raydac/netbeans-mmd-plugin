@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui;
 
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
@@ -82,7 +83,8 @@ import reactor.core.scheduler.Scheduler;
 public final class UiUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UiUtils.class);
-  public static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+  public static final ResourceBundle BUNDLE =
+      java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
   public static final MMapURI EMPTY_URI;
   public static final boolean DARK_THEME;
@@ -102,8 +104,9 @@ public final class UiUtils {
   }
 
   public static final Scheduler SWING_SCHEDULER = new Scheduler() {
-    private final Disposable nullDisposable = () -> {};
-            
+    private final Disposable nullDisposable = () -> {
+    };
+
     private final Worker worker = new Worker() {
       @Override
       public Disposable schedule(@Nonnull final Runnable task) {
@@ -126,6 +129,11 @@ public final class UiUtils {
       return this.worker;
     }
   };
+
+  public static double getScale(@Nullable final GraphicsDevice device) {
+    return device == null ? 1.0d : device.getDisplayMode().getWidth() /
+        (double) device.getDefaultConfiguration().getBounds().width;
+  }
 
   public static final class SplashScreen extends JWindow {
 
@@ -154,7 +162,8 @@ public final class UiUtils {
   }
 
   public static void assertSwingThread() {
-    Assertions.assertTrue("Mus be called only from Swing Dispatcher!", SwingUtilities.isEventDispatchThread());
+    Assertions.assertTrue("Mus be called only from Swing Dispatcher!",
+        SwingUtilities.isEventDispatchThread());
   }
 
   @Nullable
@@ -177,7 +186,8 @@ public final class UiUtils {
     return null;
   }
 
-  public static boolean closeCurrentDialogWithResult(@Nonnull final Component component, @Nullable final Object exitOption) {
+  public static boolean closeCurrentDialogWithResult(@Nonnull final Component component,
+                                                     @Nullable final Object exitOption) {
     boolean result = false;
     final Window w = SwingUtilities.getWindowAncestor(component);
     if (w instanceof JDialog) {
@@ -192,7 +202,9 @@ public final class UiUtils {
     return result;
   }
 
-  public static void makeOwningDialogResizable(@Nonnull final Component component, @Nonnull @MustNotContainNull final Runnable... extraActions) {
+  public static void makeOwningDialogResizable(@Nonnull final Component component,
+                                               @Nonnull @MustNotContainNull
+                                               final Runnable... extraActions) {
     final HierarchyListener listener = new HierarchyListener() {
       @Override
       public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
@@ -217,16 +229,20 @@ public final class UiUtils {
   public static Point getPointForCentering(@Nonnull final Window window) {
     try {
       final Point mousePoint = MouseInfo.getPointerInfo().getLocation();
-      final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+      final GraphicsDevice[] devices =
+          GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 
       for (final GraphicsDevice device : devices) {
         final Rectangle bounds = device.getDefaultConfiguration().getBounds();
-        if (mousePoint.x >= bounds.x && mousePoint.y >= bounds.y && mousePoint.x <= (bounds.x + bounds.width) && mousePoint.y <= (bounds.y + bounds.height)) {
+        if (mousePoint.x >= bounds.x && mousePoint.y >= bounds.y &&
+            mousePoint.x <= (bounds.x + bounds.width) &&
+            mousePoint.y <= (bounds.y + bounds.height)) {
           int screenWidth = bounds.width;
           int screenHeight = bounds.height;
           int width = window.getWidth();
           int height = window.getHeight();
-          return new Point(((screenWidth - width) / 2) + bounds.x, ((screenHeight - height) / 2) + bounds.y);
+          return new Point(((screenWidth - width) / 2) + bounds.x,
+              ((screenHeight - height) / 2) + bounds.y);
         }
       }
     } catch (final Exception e) {
@@ -234,14 +250,17 @@ public final class UiUtils {
     }
 
     final Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
-    return new Point((scrSize.width - window.getWidth()) / 2, (scrSize.height - window.getHeight()) / 2);
+    return new Point((scrSize.width - window.getWidth()) / 2,
+        (scrSize.height - window.getHeight()) / 2);
   }
 
   @Nullable
   @MustNotContainNull
-  public static List<File> showSelectAffectedFiles(@Nonnull @MustNotContainNull final List<File> files) {
+  public static List<File> showSelectAffectedFiles(
+      @Nonnull @MustNotContainNull final List<File> files) {
     final FileListPanel panel = new FileListPanel(files);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Affected files", panel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider()
+        .msgOkCancel(null, "Affected files", panel)) {
       return panel.getSelectedFiles();
     }
     return null;
@@ -249,7 +268,7 @@ public final class UiUtils {
 
   public static int calculateBrightness(@Nonnull final Color color) {
     return (int) Math.sqrt(
-            color.getRed() * color.getRed() * .241d
+        color.getRed() * color.getRed() * .241d
             + color.getGreen() * color.getGreen() * .691d
             + color.getBlue() * color.getBlue() * .068d);
   }
@@ -280,8 +299,10 @@ public final class UiUtils {
     final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     final Graphics gfx = result.getGraphics();
     try {
-      gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
-      gfx.drawImage(badge, width - badge.getWidth(null) - 1, height - badge.getHeight(null) - 1, null);
+      gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2,
+          null);
+      gfx.drawImage(badge, width - badge.getWidth(null) - 1, height - badge.getHeight(null) - 1,
+          null);
     } finally {
       gfx.dispose();
     }
@@ -295,7 +316,8 @@ public final class UiUtils {
     final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     final Graphics gfx = result.getGraphics();
     try {
-      gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2, null);
+      gfx.drawImage(base, (width - base.getWidth(null)) / 2, (height - base.getHeight(null)) / 2,
+          null);
       gfx.drawImage(badge, width - badge.getWidth(null) - 1, 1, null);
     } finally {
       gfx.dispose();
@@ -305,7 +327,8 @@ public final class UiUtils {
 
   @Nullable
   public static Image loadIcon(@Nonnull final String name) {
-    final InputStream inStream = UiUtils.class.getClassLoader().getResourceAsStream("icons/" + name); //NOI18N
+    final InputStream inStream =
+        UiUtils.class.getClassLoader().getResourceAsStream("icons/" + name); //NOI18N
     Image result = null;
     if (inStream != null) {
       try {
@@ -321,12 +344,14 @@ public final class UiUtils {
 
   @Nullable
   public static MMapURI editURI(@Nonnull final String title, @Nullable final MMapURI uri) {
-    final UriEditPanel textEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
+    final UriEditPanel textEditor =
+        new UriEditPanel(uri == null ? null : uri.asString(false, false));
 
     textEditor.doLayout();
     textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));
 
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, title, textEditor)) {
+    if (DialogProviderManager.getInstance().getDialogProvider()
+        .msgOkCancel(null, title, textEditor)) {
       final String text = textEditor.getText();
       if (text.isEmpty()) {
         return EMPTY_URI;
@@ -334,7 +359,8 @@ public final class UiUtils {
       try {
         return new MMapURI(text.trim());
       } catch (URISyntaxException ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+            String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     } else {
@@ -343,11 +369,14 @@ public final class UiUtils {
   }
 
   public static boolean msgOkCancel(@Nonnull final String title, @Nonnull final Object component) {
-    return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), component, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION;
+    return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), component, title,
+        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION;
   }
 
   @Nullable
-  public static Color extractCommonColorForColorChooserButton(@Nonnull final String colorAttribute, @Nonnull @MustNotContainNull final Topic[] topics) {
+  public static Color extractCommonColorForColorChooserButton(@Nonnull final String colorAttribute,
+                                                              @Nonnull @MustNotContainNull
+                                                              final Topic[] topics) {
     Color result = null;
     for (final Topic t : topics) {
       final Color color = html2color(t.getAttribute(colorAttribute), false);
@@ -361,17 +390,23 @@ public final class UiUtils {
   }
 
   @Nullable
-  public static FileEditPanel.DataContainer editFilePath(@Nonnull final String title, @Nullable final File projectFolder, @Nullable final FileEditPanel.DataContainer data) {
+  public static FileEditPanel.DataContainer editFilePath(@Nonnull final String title,
+                                                         @Nullable final File projectFolder,
+                                                         @Nullable
+                                                         final FileEditPanel.DataContainer data) {
     final FileEditPanel filePathEditor = new FileEditPanel(projectFolder, data);
 
     filePathEditor.doLayout();
     filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
 
     FileEditPanel.DataContainer result = null;
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(Main.getApplicationFrame(), title, filePathEditor)) {
+    if (DialogProviderManager.getInstance().getDialogProvider()
+        .msgOkCancel(Main.getApplicationFrame(), title, filePathEditor)) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getFilePathWithLine().getPath()));
+        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+            String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                result.getFilePathWithLine().getPath()));
         result = null;
       }
     }
@@ -396,7 +431,9 @@ public final class UiUtils {
 
   public static void openLocalResource(@Nonnull final String resource) {
     try {
-      final File folderPath = new File(MainFrame.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+      final File folderPath =
+          new File(MainFrame.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+              .getParentFile();
       SwingUtilities.invokeLater(() -> {
         if (Desktop.isDesktopSupported()) {
           final Desktop desktop = Desktop.getDesktop();
@@ -405,7 +442,7 @@ public final class UiUtils {
               desktop.open(new File(folderPath, resource.replace('/', File.separatorChar)));
             } catch (IOException ex) {
               LOGGER.error("Can't open in desktop: " + resource, ex);
-            } catch (IllegalArgumentException ex){
+            } catch (IllegalArgumentException ex) {
               LOGGER.error("Can't use file as argument to be opened in desktop: " + resource, ex);
             }
           }
@@ -434,7 +471,9 @@ public final class UiUtils {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't open file in system viewer! See the log!");//NOI18N
+            DialogProviderManager.getInstance().getDialogProvider()
+                .msgError(Main.getApplicationFrame(),
+                    "Can't open file in system viewer! See the log!");//NOI18N
             Toolkit.getDefaultToolkit().beep();
           }
         });
@@ -442,7 +481,8 @@ public final class UiUtils {
     };
     final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
     thr.setUncaughtExceptionHandler((final Thread t, final Throwable e) -> {
-      LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e); //NOI18N
+      LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file,
+          e); //NOI18N
     });
 
     thr.setDaemon(true);
@@ -481,7 +521,8 @@ public final class UiUtils {
 
   }
 
-  public static boolean browseURI(@Nonnull final URI uri, final boolean preferInsideBrowserIfPossible) {
+  public static boolean browseURI(@Nonnull final URI uri,
+                                  final boolean preferInsideBrowserIfPossible) {
     try {
       if (preferInsideBrowserIfPossible) {
         showURL(uri.toURL());

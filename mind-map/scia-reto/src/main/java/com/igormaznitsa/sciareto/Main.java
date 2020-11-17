@@ -69,7 +69,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -298,22 +297,20 @@ public class Main {
 
     SystemUtils.setDebugLevelForJavaLogger(Level.WARNING);
 
+    final double screenScale =
+        UiUtils.getScale(primaryScreen == null ? null : primaryScreen.getDevice());
+
     PlatformProvider.getPlatform().init();
+    final boolean foundScaling = Math.abs(screenScale - 1.0d) >
+        0.00001d;
 
-    final AffineTransform screenTransform =
-        primaryScreen == null ? null : primaryScreen.getDefaultTransform();
-
-    final boolean screenScaled = screenTransform != null &&
-        Math.abs(1.0d - (screenTransform.getScaleX() + screenTransform.getScaleY()) / 2) >
-            0.0000001d;
-
-    if (screenScaled) {
-      LOGGER.info("Detected screen scale: " + screenTransform);
+    if (foundScaling) {
+      LOGGER.info("Detected screen scale: " + screenScale);
     }
 
     final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences()
         .get(PROPERTY_LOOKANDFEEL,
-            !IS_OS_WINDOWS || !screenScaled ? PlatformProvider.getPlatform().getDefaultLFClassName()
+            !IS_OS_WINDOWS || !foundScaling ? PlatformProvider.getPlatform().getDefaultLFClassName()
                 : UIManager.getCrossPlatformLookAndFeelClassName());
 
     LOGGER.info("java.vendor = " + System.getProperty("java.vendor", "unknown")); //NOI18N
