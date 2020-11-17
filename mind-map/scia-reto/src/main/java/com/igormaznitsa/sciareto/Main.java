@@ -19,6 +19,10 @@
 
 package com.igormaznitsa.sciareto;
 
+import static java.lang.System.currentTimeMillis;
+import static org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS;
+
+
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -65,6 +69,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -106,14 +111,14 @@ public class Main {
   public static final String APP_TITLE = "Scia Reto";
   public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
 
-  public static final long UPSTART = System.currentTimeMillis();
+  public static final long UPSTART = currentTimeMillis();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
   private static MainFrame MAIN_FRAME;
 
   public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 4L, 10L}, null);
-      //NOI18N
+  //NOI18N
 
   public static final Random RND = new Random();
 
@@ -295,8 +300,21 @@ public class Main {
 
     PlatformProvider.getPlatform().init();
 
+    final AffineTransform screenTransform =
+        primaryScreen == null ? null : primaryScreen.getDefaultTransform();
+
+    final boolean screenScaled = screenTransform != null &&
+        Math.abs(1.0d - (screenTransform.getScaleX() + screenTransform.getScaleY()) / 2) >
+            0.0000001d;
+
+    if (screenScaled) {
+      LOGGER.info("Detected screen scale: " + screenTransform);
+    }
+
     final String selectedLookAndFeel = PreferencesManager.getInstance().getPreferences()
-        .get(PROPERTY_LOOKANDFEEL, PlatformProvider.getPlatform().getDefaultLFClassName());
+        .get(PROPERTY_LOOKANDFEEL,
+            !IS_OS_WINDOWS || !screenScaled ? PlatformProvider.getPlatform().getDefaultLFClassName()
+                : UIManager.getCrossPlatformLookAndFeelClassName());
 
     LOGGER.info("java.vendor = " + System.getProperty("java.vendor", "unknown")); //NOI18N
     LOGGER.info("java.version = " + System.getProperty("java.version", "unknown")); //NOI18N
@@ -307,7 +325,7 @@ public class Main {
     final long timeTakenBySplashStart;
 
     if (args.length == 0) {
-      final long splashTimerStart = System.currentTimeMillis();
+      final long splashTimerStart = currentTimeMillis();
       try {
         final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
 
@@ -326,14 +344,14 @@ public class Main {
       } catch (final Exception ex) {
         LOGGER.error("Error during splash processing", ex); //NOI18N
       }
-      timeTakenBySplashStart = System.currentTimeMillis() - splashTimerStart;
+      timeTakenBySplashStart = currentTimeMillis() - splashTimerStart;
     } else {
       timeTakenBySplashStart = 0L;
     }
 
-    if ((System.currentTimeMillis() - PreferencesManager.getInstance().getPreferences()
+    if ((currentTimeMillis() - PreferencesManager.getInstance().getPreferences()
         .getLong(MetricsService.PROPERTY_METRICS_SENDING_LAST_TIME,
-            System.currentTimeMillis() + STATISTICS_DELAY)) >= STATISTICS_DELAY) {
+            currentTimeMillis() + STATISTICS_DELAY)) >= STATISTICS_DELAY) {
       LOGGER.info("Statistics scheduled"); //NOI18N
 
       final Timer timer = new Timer(45000, new ActionListener() {
@@ -352,7 +370,7 @@ public class Main {
         try {
           final Preferences prefs = PreferencesManager.getInstance().getPreferences();
           prefs.putLong(PROPERTY_TOTAL_UPSTART,
-              prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (System.currentTimeMillis() - UPSTART));
+              prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (currentTimeMillis() - UPSTART));
           PreferencesManager.getInstance().flush();
         } finally {
           PlatformProvider.getPlatform().dispose();
@@ -447,7 +465,7 @@ public class Main {
 
         if (splash.get() != null) {
           final long delay =
-              (2000L + timeTakenBySplashStart) - (System.currentTimeMillis() - UPSTART);
+              (2000L + timeTakenBySplashStart) - (currentTimeMillis() - UPSTART);
           if (delay > 0L) {
             final Timer timer = new Timer((int) delay, e -> {
               disposeSplash();
