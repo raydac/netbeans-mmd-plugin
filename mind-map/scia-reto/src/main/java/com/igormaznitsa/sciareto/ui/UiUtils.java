@@ -54,6 +54,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -130,9 +131,10 @@ public final class UiUtils {
     }
   };
 
-  public static double getScale(@Nullable final GraphicsDevice device) {
-    return device == null ? 1.0d : device.getDisplayMode().getWidth() /
-        (double) device.getDefaultConfiguration().getBounds().width;
+  public static double findDeviceScale(@Nullable final GraphicsDevice device) {
+    final AffineTransform transform =
+        device == null ? null : device.getDefaultConfiguration().getDefaultTransform();
+    return transform == null ? 1.0d : Math.max(transform.getScaleX(), transform.getScaleY());
   }
 
   public static final class SplashScreen extends JWindow {

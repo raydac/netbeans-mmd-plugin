@@ -298,7 +298,7 @@ public class Main {
     SystemUtils.setDebugLevelForJavaLogger(Level.WARNING);
 
     final double screenScale =
-        UiUtils.getScale(primaryScreen == null ? null : primaryScreen.getDevice());
+        UiUtils.findDeviceScale(primaryScreen == null ? null : primaryScreen.getDevice());
 
     PlatformProvider.getPlatform().init();
     final boolean foundScaling = Math.abs(screenScale - 1.0d) >
