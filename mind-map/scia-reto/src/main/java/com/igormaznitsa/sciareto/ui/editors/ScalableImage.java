@@ -46,7 +46,6 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
 
   private static final long serialVersionUID = 6804581090800919466L;
   private static final float SCALE_STEP = 0.05f;
-  private final MindMapPanelConfig config = new MindMapPanelConfig();
   private BufferedImage image;
   private float scale = 1.0f;
 
@@ -60,11 +59,12 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
 
   private final java.util.List<ActionListener> scalableListeners = new CopyOnWriteArrayList<>();
 
-  public ScalableImage() {
-    super();
-    final ScalableImage theInstance = this;
+  private MindMapPanelConfig config;
 
-    this.config.loadFrom(PreferencesManager.getInstance().getPreferences());
+  public ScalableImage(@Nonnull final MindMapPanelConfig config) {
+    super();
+    this.config = config;
+    final ScalableImage theInstance = this;
 
     final MouseAdapter adapter = new MouseAdapter() {
       @Override
@@ -200,9 +200,24 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
     }
   }
 
-  public void updateConfig() {
-    this.config.loadFrom(PreferencesManager.getInstance().getPreferences());
+  public void updateConfig(@Nonnull final MindMapPanelConfig config) {
+    this.config = config;
     this.repaint();
+  }
+
+  @Override
+  public void doZoomIn() {
+    this.setScale(this.scale + SCALE_STEP);
+  }
+
+  @Override
+  public void doZoomOut() {
+    this.setScale(this.scale - SCALE_STEP);
+  }
+
+  @Override
+  public void doZoomReset() {
+    this.setScale(1.0f);
   }
 
   @Nonnull

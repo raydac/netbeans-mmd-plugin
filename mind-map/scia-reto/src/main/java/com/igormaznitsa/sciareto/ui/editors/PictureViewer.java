@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
@@ -59,7 +60,8 @@ import org.apache.commons.io.FilenameUtils;
 
 public final class PictureViewer extends AbstractEditor {
 
-  public static final Set<String> SUPPORTED_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif"))); //NOI18N
+  public static final Set<String> SUPPORTED_FORMATS =
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif"))); //NOI18N
   public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
     @Override
     public boolean accept(@Nonnull final File f) {
@@ -86,10 +88,11 @@ public final class PictureViewer extends AbstractEditor {
 
   private final JLabel imageInfoLabel;
 
-  public PictureViewer(@Nonnull final Context context, @Nonnull final File file) throws IOException {
+  public PictureViewer(@Nonnull final Context context, @Nonnull final File file)
+      throws IOException {
     super();
     this.title = new TabTitle(context, this, file);
-    this.imageViewer = new ScalableImage();
+    this.imageViewer = new ScalableImage(this.mindMapPanelConfig);
     this.scaleLabel = new ScaleStatusIndicator(this.imageViewer);
 
     this.scrollPane.getVerticalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
@@ -108,9 +111,12 @@ public final class PictureViewer extends AbstractEditor {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
         Main.getApplicationFrame().endFullScreenIfActive();
-        final MMDPrintPanel printPanel = new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null, PrintableObject.newBuild().image(imageViewer.getImage()).build());
+        final MMDPrintPanel printPanel =
+            new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
+                PrintableObject.newBuild().image(imageViewer.getImage()).build());
         UiUtils.makeOwningDialogResizable(printPanel);
-        JOptionPane.showMessageDialog(mainPanel, printPanel, "Print image", JOptionPane.PLAIN_MESSAGE);
+        JOptionPane
+            .showMessageDialog(mainPanel, printPanel, "Print image", JOptionPane.PLAIN_MESSAGE);
       }
     });
 
@@ -122,12 +128,14 @@ public final class PictureViewer extends AbstractEditor {
       public void actionPerformed(ActionEvent e) {
         final BufferedImage image = imageViewer.getImage();
         if (image != null) {
-          Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new ImageSelection(image), null);
+          Toolkit.getDefaultToolkit().getSystemClipboard()
+              .setContents(new ImageSelection(image), null);
         }
       }
     });
 
-    final GridBagConstraints bc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
+    final GridBagConstraints bc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 1, 1,
+        GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
 
     toolbar.add(buttonClipboardImage, bc);
     toolbar.add(buttonPrintImage, bc);
@@ -144,6 +152,21 @@ public final class PictureViewer extends AbstractEditor {
     loadContent(file);
   }
 
+  @Override
+  public void doZoomReset() {
+    this.scaleLabel.doZoomReset();
+  }
+
+  @Override
+  public void doZoomOut() {
+    this.scaleLabel.doZoomOut();
+  }
+
+  @Override
+  public void doZoomIn() {
+    this.scaleLabel.doZoomIn();
+  }
+  
   @Nonnull
   @Override
   public String getDefaultExtension() {
@@ -174,7 +197,9 @@ public final class PictureViewer extends AbstractEditor {
 
     this.image = loaded;
 
-    this.imageInfoLabel.setText(String.format("<html><b>&nbsp;Width=%d px,&nbsp;Height=%d px</b></html>", this.image.getWidth(null), this.image.getHeight(null)));
+    this.imageInfoLabel.setText(String
+        .format("<html><b>&nbsp;Width=%d px,&nbsp;Height=%d px</b></html>",
+            this.image.getWidth(null), this.image.getHeight(null)));
 
     this.imageViewer.setImage(this.image, true);
     this.scrollPane.setViewportView(this.imageViewer);
@@ -186,7 +211,8 @@ public final class PictureViewer extends AbstractEditor {
     boolean result = false;
     final File docFile = this.title.getAssociatedFile();
     if (docFile != null) {
-      final String ext = FilenameUtils.getExtension(docFile.getName()).trim().toLowerCase(Locale.ENGLISH);
+      final String ext =
+          FilenameUtils.getExtension(docFile.getName()).trim().toLowerCase(Locale.ENGLISH);
       if (SUPPORTED_FORMATS.contains(ext)) {
         try {
           ImageIO.write(this.image, ext, docFile);
@@ -216,8 +242,8 @@ public final class PictureViewer extends AbstractEditor {
   }
 
   @Override
-  public void updateConfiguration() {
-    this.imageViewer.updateConfig();
+  public void doUpdateConfiguration() {
+    this.imageViewer.updateConfig(this.mindMapPanelConfig);
     this.scrollPane.revalidate();
     this.scrollPane.repaint();
   }
@@ -289,12 +315,14 @@ public final class PictureViewer extends AbstractEditor {
   }
 
   @Override
-  public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+  public boolean findNext(@Nonnull final Pattern pattern,
+                          @Nonnull final FindTextScopeProvider provider) {
     return false;
   }
 
   @Override
-  public boolean findPrev(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+  public boolean findPrev(@Nonnull final Pattern pattern,
+                          @Nonnull final FindTextScopeProvider provider) {
     return false;
   }
 

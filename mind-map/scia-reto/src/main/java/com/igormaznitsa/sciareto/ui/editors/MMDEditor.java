@@ -145,10 +145,10 @@ public final class MMDEditor extends AbstractTextEditor
 
   private final JScrollPane scrollPane;
 
-  public void refreshConfig() {
-    this.mindMapPanel.refreshConfiguration();
-  }
-
+  private static final double SCALE_MIN = 0.1d;
+  private static final double SCALE_MAX = 5.0d;
+  private static final double SCALE_STEP = 0.3d;
+  
   private static final Set<TopicFinder> TOPIC_FINDERS = MindMapPluginRegistry.getInstance()
       .findAllTopicFinders();
 
@@ -214,6 +214,33 @@ public final class MMDEditor extends AbstractTextEditor
     this.currentModelState.set(this.mindMapPanel.getModel().packToString());
   }
 
+  @Override
+  public void doZoomReset() {
+    this.mindMapPanel.setScale(1.0f, true);
+    this.mindMapPanel.doLayout();
+    this.mindMapPanel.revalidate();
+    this.scrollPane.revalidate();
+    this.scrollPane.repaint();
+  }
+
+  @Override
+  public void doZoomOut() {
+    this.mindMapPanel.setScale(Math.max(this.mindMapPanel.getScale() - SCALE_STEP, SCALE_MIN), true);
+    this.mindMapPanel.doLayout();
+    this.mindMapPanel.revalidate();
+    this.scrollPane.revalidate();
+    this.scrollPane.repaint();
+  }
+
+  @Override
+  public void doZoomIn() {
+    this.mindMapPanel.setScale(Math.min(this.mindMapPanel.getScale() + SCALE_STEP, SCALE_MAX), true);
+    this.mindMapPanel.doLayout();
+    this.mindMapPanel.revalidate();
+    this.scrollPane.revalidate();
+    this.scrollPane.repaint();
+  }
+  
   public void rootToCentre() {
     final Topic root = this.mindMapPanel.getModel().getRoot();
     if (root != null) {
@@ -430,9 +457,12 @@ public final class MMDEditor extends AbstractTextEditor
   @Override
   @Nonnull
   public MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull final MindMapPanel source) {
-    final MindMapPanelConfig config = new MindMapPanelConfig();
-    config.loadFrom(PreferencesManager.getInstance().getPreferences());
-    return config;
+    return this.mindMapPanelConfig;
+  }
+
+  @Override
+  public void doUpdateConfiguration() {
+    this.mindMapPanel.refreshConfiguration();
   }
 
   @Nonnull

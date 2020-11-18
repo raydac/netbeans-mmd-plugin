@@ -274,7 +274,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
 
   public SourceTextEditor(@Nonnull final Context context, @Nonnull File file, final int line, final boolean noSyntax) throws IOException {
     super();
-    this.editor = new ScalableRsyntaxTextArea();
+    this.editor = new ScalableRsyntaxTextArea(this.mindMapPanelConfig);
     this.editor.setPopupMenu(null);
 
     final String syntaxType;
@@ -432,6 +432,21 @@ public final class SourceTextEditor extends AbstractTextEditor {
     return "txt";
   }
 
+  @Override
+  public void doZoomReset() {
+    this.editor.doZoomReset();
+  }
+
+  @Override
+  public void doZoomOut() {
+    this.editor.doZoomOut();
+  }
+
+  @Override
+  public void doZoomIn() {
+    this.editor.doZoomIn();
+  }
+  
   private void gotoLine(final int line) {
     if (line > 0) {
       try {
@@ -496,8 +511,8 @@ public final class SourceTextEditor extends AbstractTextEditor {
   }
 
   @Override
-  public void updateConfiguration() {
-    this.editor.updateConfig();
+  public void doUpdateConfiguration() {
+    this.editor.updateConfig(this.mindMapPanelConfig);
   }
 
   @Override

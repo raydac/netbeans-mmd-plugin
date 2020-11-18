@@ -56,7 +56,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
@@ -161,6 +160,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   private final DirectProcessor<Boolean> eventProcessor = DirectProcessor.create();
   private final Disposable eventChain;
 
+  private final ScaleStatusIndicator scaleLabel;
+  
   public enum ExportType {
     SVG,
     PNG,
@@ -176,7 +177,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     super();
     initPlantUml();
 
-    this.editor = new ScalableRsyntaxTextArea();
+    this.editor = new ScalableRsyntaxTextArea(this.mindMapPanelConfig);
     this.editor.setPopupMenu(null);
 
     doPutMapping((AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance());
@@ -223,7 +224,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
     this.renderedPanel = new JPanel(new BorderLayout());
     this.renderedScrollPane = new EditorScrollPanel();
-    this.imageComponent = new ScalableImage();
+    this.imageComponent = new ScalableImage(this.mindMapPanelConfig);
 
     this.mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
         (@Nonnull final PropertyChangeEvent evt) -> {
@@ -234,7 +235,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
           }
         });
 
-    final ScaleStatusIndicator scaleLabel = new ScaleStatusIndicator(this.imageComponent);
+    this.scaleLabel = new ScaleStatusIndicator(this.imageComponent);
     this.renderedScrollPane.setViewportView(this.imageComponent);
 
     this.renderedScrollPane.getVerticalScrollBar()
@@ -432,7 +433,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.menu.add(Box.createHorizontalBox(), gbdata);
     gbdata.weightx = 1;
     gbdata.fill = GridBagConstraints.VERTICAL;
-    this.menu.add(scaleLabel, gbdata);
+    this.menu.add(this.scaleLabel, gbdata);
     this.menu.add(Box.createHorizontalStrut(16), gbdata);
 
     addComponentsToLeftPart(this.menu, gbdata);
@@ -518,6 +519,33 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   }
 
+  @Override
+  public void doZoomReset() {
+    if (this.isTextEditorVisible()) {
+      this.editor.doZoomReset();
+    } else {
+      this.scaleLabel.doZoomReset();
+    }
+  }
+
+  @Override
+  public void doZoomOut() {
+    if (this.isTextEditorVisible()) {
+      this.editor.doZoomOut();
+    } else {
+      this.scaleLabel.doZoomOut();
+    }
+  }
+
+  @Override
+  public void doZoomIn() {
+    if (this.isTextEditorVisible()) {
+      this.editor.doZoomIn();
+    } else {
+      this.scaleLabel.doZoomIn();
+    }
+  }
+  
   @Override
   public boolean showSearchPane(@Nonnull final JPanel searchPanel) {
     this.editorPanel.add(searchPanel, BorderLayout.NORTH);
@@ -923,11 +951,11 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   @Override
-  public void updateConfiguration() {
+  public void doUpdateConfiguration() {
     initPlantUml();
     updateGraphvizLabelVisibility();
-    this.imageComponent.updateConfig();
-    this.editor.updateConfig();
+    this.imageComponent.updateConfig(this.mindMapPanelConfig);
+    this.editor.updateConfig(this.mindMapPanelConfig);
 
     final SyntaxScheme scheme = this.editor.getSyntaxScheme();
     final Font editorFont = this.editor.getFont();

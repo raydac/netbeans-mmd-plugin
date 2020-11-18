@@ -22,6 +22,7 @@ import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
@@ -47,9 +48,12 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
 
   protected final Logger logger;
 
+  protected MindMapPanelConfig mindMapPanelConfig;
+
   public AbstractEditor() {
     super();
     this.logger = LoggerFactory.getLogger(this.getClass());
+    this.mindMapPanelConfig = loadMindMapConfigFromPreferences();
   }
 
   @Override
@@ -57,8 +61,37 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
+  @Nonnull
+  protected static MindMapPanelConfig loadMindMapConfigFromPreferences() {
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    config.loadFrom(PreferencesManager.getInstance().getPreferences());
+    return config;
+  }
+
   @Override
-  public void updateConfiguration() {
+  public final void updateConfiguration() {
+    this.mindMapPanelConfig = loadMindMapConfigFromPreferences();
+    this.doUpdateConfiguration();
+  }
+
+  public void doUpdateConfiguration() {
+
+  }
+
+  public boolean isZoomable() {
+    return true;
+  }
+
+  public void doZoomIn() {
+
+  }
+
+  public void doZoomOut() {
+
+  }
+
+  public void doZoomReset() {
+
   }
 
   @Override

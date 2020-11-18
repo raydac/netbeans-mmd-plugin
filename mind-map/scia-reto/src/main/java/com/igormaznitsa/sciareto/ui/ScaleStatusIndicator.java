@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -33,17 +34,6 @@ import javax.swing.JLabel;
 
 public class ScaleStatusIndicator extends JLabel {
 
-  public interface Scalable {
-
-    float getScale();
-
-    void setScale(float scale);
-
-    void addScaleListener(ActionListener scaleListener);
-
-    void removeScaleListener(ActionListener scaleListener);
-  }
-
   private final Scalable observableObject;
 
   public ScaleStatusIndicator(@Nonnull final Scalable observableObject) {
@@ -59,7 +49,7 @@ public class ScaleStatusIndicator extends JLabel {
     this.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(@Nonnull final MouseEvent e) {
-        observableObject.setScale(1.0f);
+        observableObject.doZoomReset();;
       }
     });
 
@@ -70,6 +60,18 @@ public class ScaleStatusIndicator extends JLabel {
       }
     });
     updateTextForScale();
+  }
+
+  public void doZoomIn() {
+     this.observableObject.doZoomIn();
+  }
+
+  public void doZoomOut() {
+    this.observableObject.doZoomOut();
+  }
+
+  public void doZoomReset() {
+    this.observableObject.doZoomReset();
   }
 
   @Override
@@ -87,9 +89,27 @@ public class ScaleStatusIndicator extends JLabel {
 
   private void updateTextForScale() {
     final float scale = this.observableObject.getScale();
-    this.setText(String.format("<html><b>&nbsp;Scale: %d%%&nbsp;</b></html>", Math.round(scale * 100.0f)));
+    this.setText(
+        String.format("<html><b>&nbsp;Scale: %d%%&nbsp;</b></html>", Math.round(scale * 100.0f)));
 
     this.repaint();
+  }
+
+  public interface Scalable {
+
+    float getScale();
+
+    void doZoomIn();
+
+    void doZoomOut();
+
+    void doZoomReset();
+
+    void setScale(float scale);
+
+    void addScaleListener(ActionListener scaleListener);
+
+    void removeScaleListener(ActionListener scaleListener);
   }
 
 }

@@ -823,9 +823,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public void notifyReloadConfig() {
     for (final TabTitle t : this.tabPane) {
       final AbstractEditor editor = t.getProvider().getEditor();
-      if (editor instanceof MMDEditor) {
-        ((MMDEditor) editor).refreshConfig();
-      }
+        editor.doUpdateConfiguration();
     }
   }
 
@@ -951,6 +949,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuView = new javax.swing.JMenu();
     menuFullScreen = new javax.swing.JMenuItem();
     menuLookAndFeel = new javax.swing.JMenu();
+    menuViewZoom = new javax.swing.JMenu();
+    menuViewZoomIn = new javax.swing.JMenuItem();
+    menuViewZoomOut = new javax.swing.JMenuItem();
+    menuViewZoomReset = new javax.swing.JMenuItem();
     menuNavigate = new javax.swing.JMenu();
     menuGoToFile = new javax.swing.JMenuItem();
     menuNavigateLinksGraph = new javax.swing.JMenuItem();
@@ -970,11 +972,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
         menuFileMenuCanceled(evt);
       }
-
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuFileMenuDeselected(evt);
       }
-
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuFileMenuSelected(evt);
       }
@@ -1077,11 +1077,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
         menuEditMenuCanceled(evt);
       }
-
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
         menuEditMenuDeselected(evt);
       }
-
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuEditMenuSelected(evt);
       }
@@ -1175,6 +1173,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     menuView.setMnemonic('v');
     menuView.setText("View");
+    menuView.addMenuListener(new javax.swing.event.MenuListener() {
+      public void menuCanceled(javax.swing.event.MenuEvent evt) {
+      }
+      public void menuDeselected(javax.swing.event.MenuEvent evt) {
+      }
+      public void menuSelected(javax.swing.event.MenuEvent evt) {
+        menuViewMenuSelected(evt);
+      }
+    });
 
     menuFullScreen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/monitor.png"))); // NOI18N
     menuFullScreen.setText("Full screen");
@@ -1189,6 +1196,38 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuLookAndFeel.setText("Look and Feel");
     menuView.add(menuLookAndFeel);
 
+    menuViewZoom.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom.png"))); // NOI18N
+    menuViewZoom.setText("Zoom");
+
+    menuViewZoomIn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_in.png"))); // NOI18N
+    menuViewZoomIn.setText("In");
+    menuViewZoomIn.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuViewZoomInActionPerformed(evt);
+      }
+    });
+    menuViewZoom.add(menuViewZoomIn);
+
+    menuViewZoomOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_out.png"))); // NOI18N
+    menuViewZoomOut.setText("Out");
+    menuViewZoomOut.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuViewZoomOutActionPerformed(evt);
+      }
+    });
+    menuViewZoom.add(menuViewZoomOut);
+
+    menuViewZoomReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_actual.png"))); // NOI18N
+    menuViewZoomReset.setText("Reset");
+    menuViewZoomReset.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        menuViewZoomResetActionPerformed(evt);
+      }
+    });
+    menuViewZoom.add(menuViewZoomReset);
+
+    menuView.add(menuViewZoom);
+
     mainMenu.add(menuView);
 
     menuNavigate.setMnemonic('n');
@@ -1196,10 +1235,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     menuNavigate.addMenuListener(new javax.swing.event.MenuListener() {
       public void menuCanceled(javax.swing.event.MenuEvent evt) {
       }
-
       public void menuDeselected(javax.swing.event.MenuEvent evt) {
       }
-
       public void menuSelected(javax.swing.event.MenuEvent evt) {
         menuNavigateMenuSelected(evt);
       }
@@ -1869,6 +1906,30 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     UiUtils.openLocalResource("help/index.html");
   }//GEN-LAST:event_menuHelpHelpActionPerformed
 
+  private void menuViewMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuViewMenuSelected
+    final AbstractEditor editor = this.tabPane.getCurrentEditor();
+    this.menuViewZoom.setEnabled(editor != null && editor.isZoomable());
+  }//GEN-LAST:event_menuViewMenuSelected
+
+  private void menuViewZoomInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuViewZoomInActionPerformed
+    final AbstractEditor editor = this.tabPane.getCurrentEditor();
+    if (editor != null && editor.isZoomable()) editor.doZoomIn();
+  }//GEN-LAST:event_menuViewZoomInActionPerformed
+
+  private void menuViewZoomOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuViewZoomOutActionPerformed
+    final AbstractEditor editor = this.tabPane.getCurrentEditor();
+    if (editor != null && editor.isZoomable()) {
+      editor.doZoomOut();
+    }
+  }//GEN-LAST:event_menuViewZoomOutActionPerformed
+
+  private void menuViewZoomResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuViewZoomResetActionPerformed
+    final AbstractEditor editor = this.tabPane.getCurrentEditor();
+    if (editor != null && editor.isZoomable()) {
+      editor.doZoomReset();
+    }
+  }//GEN-LAST:event_menuViewZoomResetActionPerformed
+
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
     for (final Component c : menu.getMenuComponents()) {
@@ -1992,6 +2053,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private javax.swing.JMenuItem menuSaveAs;
   private javax.swing.JMenuItem menuUndo;
   private javax.swing.JMenu menuView;
+  private javax.swing.JMenu menuViewZoom;
+  private javax.swing.JMenuItem menuViewZoomIn;
+  private javax.swing.JMenuItem menuViewZoomOut;
+  private javax.swing.JMenuItem menuViewZoomReset;
   private javax.swing.JPopupMenu.Separator separatorExitSection;
   // End of variables declaration//GEN-END:variables
 }
