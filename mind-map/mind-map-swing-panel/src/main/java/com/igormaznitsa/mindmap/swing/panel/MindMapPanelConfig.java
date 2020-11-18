@@ -71,7 +71,8 @@ public final class MindMapPanelConfig implements Serializable {
 
   private static final long serialVersionUID = -4273687011484460064L;
   @MustNotContainNull
-  private transient final List<WeakReference<MindMapConfigListener>> listeners = new ArrayList<WeakReference<MindMapConfigListener>>();
+  private transient final List<WeakReference<MindMapConfigListener>> listeners =
+      new ArrayList<WeakReference<MindMapConfigListener>>();
   private transient final Map<String, KeyShortcut> mapShortCut = new HashMap<String, KeyShortcut>();
   private int collapsatorSize = 16;
   private int textMargins = 10;
@@ -122,58 +123,103 @@ public final class MindMapPanelConfig implements Serializable {
   public MindMapPanelConfig() {
     if (SystemUtils.IS_OS_MAC) {
       // key map for MAC
-      this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT, new KeyShortcut(KEY_ADD_CHILD_AND_START_EDIT, KeyEvent.VK_TAB, 0));
-      this.mapShortCut.put(KEY_ADD_SIBLING_AND_START_EDIT, new KeyShortcut(KEY_ADD_SIBLING_AND_START_EDIT, KeyEvent.VK_ENTER, 0));
-      this.mapShortCut.put(KEY_CANCEL_EDIT, new KeyShortcut(KEY_CANCEL_EDIT, KeyEvent.VK_ESCAPE, 0));
+      this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT,
+          new KeyShortcut(KEY_ADD_CHILD_AND_START_EDIT, KeyEvent.VK_TAB, 0));
+      this.mapShortCut.put(KEY_ADD_SIBLING_AND_START_EDIT,
+          new KeyShortcut(KEY_ADD_SIBLING_AND_START_EDIT, KeyEvent.VK_ENTER, 0));
+      this.mapShortCut
+          .put(KEY_CANCEL_EDIT, new KeyShortcut(KEY_CANCEL_EDIT, KeyEvent.VK_ESCAPE, 0));
       this.mapShortCut.put(KEY_TOPIC_FOLD, new KeyShortcut(KEY_TOPIC_FOLD, KeyEvent.VK_MINUS, 0));
-      this.mapShortCut.put(KEY_TOPIC_FOLD_ALL, new KeyShortcut(KEY_TOPIC_FOLD_ALL, KeyEvent.VK_MINUS, KeyEvent.ALT_MASK));
-      this.mapShortCut.put(KEY_TOPIC_UNFOLD, new KeyShortcut(KEY_TOPIC_UNFOLD, KeyEvent.VK_EQUALS, 0));
-      this.mapShortCut.put(KEY_TOPIC_UNFOLD_ALL, new KeyShortcut(KEY_TOPIC_UNFOLD_ALL, KeyEvent.VK_EQUALS, KeyEvent.ALT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_ROOT_OR_START_EDIT, new KeyShortcut(KEY_FOCUS_ROOT_OR_START_EDIT, KeyEvent.VK_SPACE, KeyEvent.ALT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN, new KeyShortcut(KEY_FOCUS_MOVE_DOWN, KeyEvent.VK_DOWN, 0));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_UP, new KeyShortcut(KEY_FOCUS_MOVE_UP, KeyEvent.VK_UP, 0));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT, new KeyShortcut(KEY_FOCUS_MOVE_LEFT, KeyEvent.VK_LEFT, 0));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT, KeyEvent.VK_RIGHT, 0));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, KeyEvent.VK_DOWN, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_UP_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_UP_ADD_FOCUSED, KeyEvent.VK_UP, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, KeyEvent.VK_LEFT, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, KeyEvent.VK_RIGHT, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_DELETE_TOPIC, new KeyShortcut(KEY_DELETE_TOPIC, KeyEvent.VK_DELETE, 0));
-      this.mapShortCut.put(KEY_TOPIC_TEXT_NEXT_LINE, new KeyShortcut(KEY_TOPIC_TEXT_NEXT_LINE, KeyEvent.VK_ENTER, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, KeyEvent.VK_PLUS, KeyEvent.CTRL_MASK));
-      this.mapShortCut.put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, KeyEvent.VK_MINUS, KeyEvent.CTRL_MASK));
-      this.mapShortCut.put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, KeyEvent.VK_0, KeyEvent.CTRL_MASK));
-      this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
+      this.mapShortCut.put(KEY_TOPIC_FOLD_ALL,
+          new KeyShortcut(KEY_TOPIC_FOLD_ALL, KeyEvent.VK_MINUS, KeyEvent.ALT_MASK));
+      this.mapShortCut
+          .put(KEY_TOPIC_UNFOLD, new KeyShortcut(KEY_TOPIC_UNFOLD, KeyEvent.VK_EQUALS, 0));
+      this.mapShortCut.put(KEY_TOPIC_UNFOLD_ALL,
+          new KeyShortcut(KEY_TOPIC_UNFOLD_ALL, KeyEvent.VK_EQUALS, KeyEvent.ALT_MASK));
+      this.mapShortCut.put(KEY_FOCUS_ROOT_OR_START_EDIT,
+          new KeyShortcut(KEY_FOCUS_ROOT_OR_START_EDIT, KeyEvent.VK_SPACE, KeyEvent.ALT_MASK));
+      this.mapShortCut
+          .put(KEY_FOCUS_MOVE_DOWN, new KeyShortcut(KEY_FOCUS_MOVE_DOWN, KeyEvent.VK_DOWN, 0));
+      this.mapShortCut
+          .put(KEY_FOCUS_MOVE_UP, new KeyShortcut(KEY_FOCUS_MOVE_UP, KeyEvent.VK_UP, 0));
+      this.mapShortCut
+          .put(KEY_FOCUS_MOVE_LEFT, new KeyShortcut(KEY_FOCUS_MOVE_LEFT, KeyEvent.VK_LEFT, 0));
+      this.mapShortCut
+          .put(KEY_FOCUS_MOVE_RIGHT, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT, KeyEvent.VK_RIGHT, 0));
+      this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
+          new KeyShortcut(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, KeyEvent.VK_DOWN, KeyEvent.SHIFT_MASK));
+      this.mapShortCut.put(KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+          new KeyShortcut(KEY_FOCUS_MOVE_UP_ADD_FOCUSED, KeyEvent.VK_UP, KeyEvent.SHIFT_MASK));
+      this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+          new KeyShortcut(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, KeyEvent.VK_LEFT, KeyEvent.SHIFT_MASK));
+      this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
+          new KeyShortcut(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, KeyEvent.VK_RIGHT,
+              KeyEvent.SHIFT_MASK));
+      this.mapShortCut
+          .put(KEY_DELETE_TOPIC, new KeyShortcut(KEY_DELETE_TOPIC, KeyEvent.VK_DELETE, 0));
+      this.mapShortCut.put(KEY_TOPIC_TEXT_NEXT_LINE,
+          new KeyShortcut(KEY_TOPIC_TEXT_NEXT_LINE, KeyEvent.VK_ENTER, KeyEvent.SHIFT_MASK));
+      this.mapShortCut
+          .put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, KeyEvent.VK_EQUALS, KeyEvent.CTRL_MASK));
+      this.mapShortCut
+          .put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, KeyEvent.VK_MINUS, KeyEvent.CTRL_MASK));
+      this.mapShortCut
+          .put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, KeyEvent.VK_0, KeyEvent.CTRL_MASK));
+      this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE,
+          KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
     } else {
       // key map for Linux and Windows
-      this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT, new KeyShortcut(KEY_ADD_CHILD_AND_START_EDIT, KeyEvent.VK_TAB, 0));
-      this.mapShortCut.put(KEY_ADD_SIBLING_AND_START_EDIT, new KeyShortcut(KEY_ADD_SIBLING_AND_START_EDIT, KeyEvent.VK_ENTER, 0));
-      this.mapShortCut.put(KEY_CANCEL_EDIT, new KeyShortcut(KEY_CANCEL_EDIT, KeyEvent.VK_ESCAPE, 0));
+      this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT,
+          new KeyShortcut(KEY_ADD_CHILD_AND_START_EDIT, KeyEvent.VK_TAB, 0));
+      this.mapShortCut.put(KEY_ADD_SIBLING_AND_START_EDIT,
+          new KeyShortcut(KEY_ADD_SIBLING_AND_START_EDIT, KeyEvent.VK_ENTER, 0));
+      this.mapShortCut
+          .put(KEY_CANCEL_EDIT, new KeyShortcut(KEY_CANCEL_EDIT, KeyEvent.VK_ESCAPE, 0));
       this.mapShortCut.put(KEY_TOPIC_FOLD, new KeyShortcut(KEY_TOPIC_FOLD, KeyEvent.VK_MINUS, 0));
-      this.mapShortCut.put(KEY_TOPIC_FOLD_ALL, new KeyShortcut(KEY_TOPIC_FOLD_ALL, KeyEvent.VK_MINUS, KeyEvent.ALT_MASK));
-      this.mapShortCut.put(KEY_TOPIC_UNFOLD, new KeyShortcut(KEY_TOPIC_UNFOLD, KeyEvent.VK_EQUALS, 0));
-      this.mapShortCut.put(KEY_TOPIC_UNFOLD_ALL, new KeyShortcut(KEY_TOPIC_UNFOLD_ALL, KeyEvent.VK_EQUALS, KeyEvent.ALT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_ROOT_OR_START_EDIT, new KeyShortcut(KEY_FOCUS_ROOT_OR_START_EDIT, KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN, new KeyShortcut(KEY_FOCUS_MOVE_DOWN, KeyEvent.VK_DOWN, 0));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_UP, new KeyShortcut(KEY_FOCUS_MOVE_UP, KeyEvent.VK_UP, 0));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT, new KeyShortcut(KEY_FOCUS_MOVE_LEFT, KeyEvent.VK_LEFT, 0));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT, KeyEvent.VK_RIGHT, 0));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, KeyEvent.VK_DOWN, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_UP_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_UP_ADD_FOCUSED, KeyEvent.VK_UP, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, KeyEvent.VK_LEFT, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, KeyEvent.VK_RIGHT, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_DELETE_TOPIC, new KeyShortcut(KEY_DELETE_TOPIC, KeyEvent.VK_DELETE, 0));
-      this.mapShortCut.put(KEY_TOPIC_TEXT_NEXT_LINE, new KeyShortcut(KEY_TOPIC_TEXT_NEXT_LINE, KeyEvent.VK_ENTER, KeyEvent.SHIFT_MASK));
-      this.mapShortCut.put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, KeyEvent.VK_PLUS, KeyEvent.CTRL_MASK));
-      this.mapShortCut.put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, KeyEvent.VK_MINUS, KeyEvent.CTRL_MASK));
-      this.mapShortCut.put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, KeyEvent.VK_0, KeyEvent.CTRL_MASK));
-      this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
+      this.mapShortCut.put(KEY_TOPIC_FOLD_ALL,
+          new KeyShortcut(KEY_TOPIC_FOLD_ALL, KeyEvent.VK_MINUS, KeyEvent.ALT_MASK));
+      this.mapShortCut
+          .put(KEY_TOPIC_UNFOLD, new KeyShortcut(KEY_TOPIC_UNFOLD, KeyEvent.VK_EQUALS, 0));
+      this.mapShortCut.put(KEY_TOPIC_UNFOLD_ALL,
+          new KeyShortcut(KEY_TOPIC_UNFOLD_ALL, KeyEvent.VK_EQUALS, KeyEvent.ALT_MASK));
+      this.mapShortCut.put(KEY_FOCUS_ROOT_OR_START_EDIT,
+          new KeyShortcut(KEY_FOCUS_ROOT_OR_START_EDIT, KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK));
+      this.mapShortCut
+          .put(KEY_FOCUS_MOVE_DOWN, new KeyShortcut(KEY_FOCUS_MOVE_DOWN, KeyEvent.VK_DOWN, 0));
+      this.mapShortCut
+          .put(KEY_FOCUS_MOVE_UP, new KeyShortcut(KEY_FOCUS_MOVE_UP, KeyEvent.VK_UP, 0));
+      this.mapShortCut
+          .put(KEY_FOCUS_MOVE_LEFT, new KeyShortcut(KEY_FOCUS_MOVE_LEFT, KeyEvent.VK_LEFT, 0));
+      this.mapShortCut
+          .put(KEY_FOCUS_MOVE_RIGHT, new KeyShortcut(KEY_FOCUS_MOVE_RIGHT, KeyEvent.VK_RIGHT, 0));
+      this.mapShortCut.put(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
+          new KeyShortcut(KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED, KeyEvent.VK_DOWN, KeyEvent.SHIFT_MASK));
+      this.mapShortCut.put(KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+          new KeyShortcut(KEY_FOCUS_MOVE_UP_ADD_FOCUSED, KeyEvent.VK_UP, KeyEvent.SHIFT_MASK));
+      this.mapShortCut.put(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+          new KeyShortcut(KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED, KeyEvent.VK_LEFT, KeyEvent.SHIFT_MASK));
+      this.mapShortCut.put(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
+          new KeyShortcut(KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED, KeyEvent.VK_RIGHT,
+              KeyEvent.SHIFT_MASK));
+      this.mapShortCut
+          .put(KEY_DELETE_TOPIC, new KeyShortcut(KEY_DELETE_TOPIC, KeyEvent.VK_DELETE, 0));
+      this.mapShortCut.put(KEY_TOPIC_TEXT_NEXT_LINE,
+          new KeyShortcut(KEY_TOPIC_TEXT_NEXT_LINE, KeyEvent.VK_ENTER, KeyEvent.SHIFT_MASK));
+      this.mapShortCut
+          .put(KEY_ZOOM_IN, new KeyShortcut(KEY_ZOOM_IN, KeyEvent.VK_EQUALS, KeyEvent.CTRL_MASK));
+      this.mapShortCut
+          .put(KEY_ZOOM_OUT, new KeyShortcut(KEY_ZOOM_OUT, KeyEvent.VK_MINUS, KeyEvent.CTRL_MASK));
+      this.mapShortCut
+          .put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, KeyEvent.VK_0, KeyEvent.CTRL_MASK));
+      this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE,
+          KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
     }
   }
 
-  public boolean isKeyEvent(@Nonnull final String id, @Nonnull final KeyEvent event, final int modifiersMask) {
+  public boolean isKeyEvent(@Nonnull final String id, @Nonnull final KeyEvent event,
+                            final int modifiersMask) {
     final KeyShortcut shortCut = this.mapShortCut.get(id);
-    return shortCut == null ? false : shortCut.isEvent(event, modifiersMask);
+    return shortCut != null && shortCut.isEvent(event, modifiersMask);
   }
 
   public boolean isKeyEvent(@Nonnull final String id, @Nonnull final KeyEvent event) {
@@ -206,7 +252,7 @@ public final class MindMapPanelConfig implements Serializable {
         if (thisValue == null && thatValue == null) {
           continue;
         }
-        if (thisValue == null || thatValue == null || !thisValue.equals(thatValue)) {
+        if (thisValue == null || !thisValue.equals(thatValue)) {
           return true;
         }
 
@@ -220,7 +266,7 @@ public final class MindMapPanelConfig implements Serializable {
     final Map<String, KeyShortcut> thisShortcuts = this.mapShortCut;
     final Map<String, KeyShortcut> thatShortcuts = etalon.mapShortCut;
 
-    if (thatShortcuts.size() != thatShortcuts.size()) {
+    if (thisShortcuts.size() != thatShortcuts.size()) {
       return true;
     }
     for (final Map.Entry<String, KeyShortcut> e : thisShortcuts.entrySet()) {
@@ -372,7 +418,8 @@ public final class MindMapPanelConfig implements Serializable {
     return Float.compare(result, minimal) >= 0 ? result : minimal;
   }
 
-  public void makeFullCopyOf(@Nullable final MindMapPanelConfig src, final boolean copyListeners, final boolean makeNotification) {
+  public void makeFullCopyOf(@Nullable final MindMapPanelConfig src, final boolean copyListeners,
+                             final boolean makeNotification) {
     if (src != null) {
       for (final Field f : MindMapPanelConfig.class.getDeclaredFields()) {
         if (f.getName().equals("listeners")) { //NOI18N
@@ -442,7 +489,9 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public boolean isKeyEventDetected(@Nonnull final KeyEvent event, @Nonnull final int effectiveModifiers, @Nonnull @MustNotContainNull final String... shortCutIDs) {
+  public boolean isKeyEventDetected(@Nonnull final KeyEvent event,
+                                    @Nonnull final int effectiveModifiers,
+                                    @Nonnull @MustNotContainNull final String... shortCutIDs) {
     for (final String k : shortCutIDs) {
       final KeyShortcut shortCut = this.mapShortCut.get(k);
       if (shortCut != null && shortCut.isEvent(event, effectiveModifiers)) {
@@ -452,7 +501,8 @@ public final class MindMapPanelConfig implements Serializable {
     return false;
   }
 
-  public boolean isKeyEventDetected(@Nonnull final KeyEvent event, @Nonnull @MustNotContainNull final String... shortCutIDs) {
+  public boolean isKeyEventDetected(@Nonnull final KeyEvent event,
+                                    @Nonnull @MustNotContainNull final String... shortCutIDs) {
     for (final String k : shortCutIDs) {
       final KeyShortcut shortCut = this.mapShortCut.get(k);
       if (shortCut != null && shortCut.isEvent(event, KeyShortcut.ALL_MODIFIERS_MASK)) {
