@@ -2697,6 +2697,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
     if (this.lockIfNotDisposed()) {
       try {
+        this.endEdit(true);
         if (topics.length > 0) {
           final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
           clipboard.setContents(new MMDTopicsTransferable(topics), this);
@@ -2732,6 +2733,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           try {
             final NBMindMapTopicsContainer container = (NBMindMapTopicsContainer) clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
             if (container != null && !container.isEmpty()) {
+              this.endEdit(true);
 
               final Topic[] selected = this.getSelectedTopics();
 
@@ -2762,35 +2764,40 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             String clipboardText = (String) clipboard.getContents(null).getTransferData(DataFlavor.stringFlavor);
 
             if (clipboardText != null) {
-              if (this.getConfiguration().isSmartTextPaste()) {
-                for (final Topic t : this.getSelectedTopics()) {
-                  MindMapUtils.makeSubTreeFromText(t, clipboardText);
-                }
+              if (this.textEditor != null) {
+                this.textEditor.insert(clipboardText, this.textEditor.getCaretPosition());
               } else {
-                clipboardText = clipboardText.trim();
-
-                final String topicText;
-                final String extraNoteText;
-
-                if (clipboardText.length() > MAX_TEXT_LEN) {
-                  topicText = clipboardText.substring(0, MAX_TEXT_LEN) + "...";
-                  extraNoteText = clipboardText;
+                if (this.getConfiguration().isSmartTextPaste()) {
+                  for (final Topic t : this.getSelectedTopics()) {
+                    MindMapUtils.makeSubTreeFromText(t, clipboardText);
+                  }
                 } else {
-                  topicText = clipboardText;
-                  extraNoteText = null;
-                }
+                  clipboardText = clipboardText.trim();
 
-                final Topic[] selectedTopics = this.getSelectedTopics();
+                  final String topicText;
+                  final String extraNoteText;
 
-                if (selectedTopics.length > 0) {
-                  for (final Topic s : selectedTopics) {
-                    final Topic newTopic;
-                    if (extraNoteText == null) {
-                      newTopic = new Topic(this.model, s, topicText);
-                    } else {
-                      newTopic = new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
+                  if (clipboardText.length() > MAX_TEXT_LEN) {
+                    topicText = clipboardText.substring(0, MAX_TEXT_LEN) + "...";
+                    extraNoteText = clipboardText;
+                  } else {
+                    topicText = clipboardText;
+                    extraNoteText = null;
+                  }
+
+                  final Topic[] selectedTopics = this.getSelectedTopics();
+
+                  if (selectedTopics.length > 0) {
+                    for (final Topic s : selectedTopics) {
+                      final Topic newTopic;
+                      if (extraNoteText == null) {
+                        newTopic = new Topic(this.model, s, topicText);
+                      } else {
+                        newTopic =
+                            new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
+                      }
+                      MindMapUtils.ensureVisibility(newTopic);
                     }
-                    MindMapUtils.ensureVisibility(newTopic);
                   }
                 }
               }
