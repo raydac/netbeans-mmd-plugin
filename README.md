@@ -15,6 +15,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.10 (SNAPSHOT)__
+- SR:  added View-Zoom into the main menu toolbar
 - ALL: added password protection for notes (AES-256)
 - ALL: decreased topic dragging start sensitivity [#77](https://github.com/raydac/netbeans-mmd-plugin/issues/77)
 - ALL: emoticons and images included into search scope by their names [#76](https://github.com/raydac/netbeans-mmd-plugin/issues/76)
