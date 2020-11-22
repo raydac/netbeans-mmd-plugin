@@ -9,16 +9,22 @@
 
     <description><![CDATA[
       <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshotIdeaThumb.jpg"><br>
-      IDE-integrated mind map editor, it is ported version of <a href="http://www.igormaznitsa.com/netbeans-mmd-plugin/">the NetBeans Mind Map editor</a>. It allows to create and edit mind maps represented by MMD files. The Editor allows to keep simple text notes, web links and links to files just in mind map topics.<br>
+      IDEA-adapted version of <a href="https://sciareto.org">SciaReto editor</a> mind map part. It allows to create, edit and keep mind maps and keep then together with project source code. Mind maps are saved as text files in Markdown compatible format (MMD). A mind map provides way to keep semantically linked text notes, web links and file links. Also it is possible to have password protected notes.<br>
       <ul>
-        <li><a href="http://www.sciareto.org/">The Project home page</a></li>
-        <li><a href="https://github.com/raydac/netbeans-mmd-plugin">The Github project sources</a></li>
-        <li><a href="https://www.youtube.com/watch?v=7TUU25dsOfM">The Screencast about the NetBeans version</a></li>
+        <li><a href="https://www.sciareto.org/">Project home page</a></li>
+        <li><a href="https://github.com/raydac/netbeans-mmd-plugin">Github project sources</a></li>
+        <li><a href="https://www.youtube.com/watch?v=7TUU25dsOfM">Screencast about the NetBeans version</a></li>
       </ul>
     ]]></description>
 
     <change-notes><![CDATA[
         <p>1.4.10 (SNAPSHOT)</p>
+        <ul>
+          <li>minor bugfix and refactoring</li>
+          <li>added password protection for notes (AES-256)</li>
+          <li>decreased topic dragging start sensitivity</li>
+          <li>emoticons and images included into search scope by their names</li>
+        </ul>
         <p>1.4.9 (28-jun-2020)</p>
         <ul>
           <li>Fix in support of Scratches API to be compatible with IntelliJ 2020.2 EAP</li>
