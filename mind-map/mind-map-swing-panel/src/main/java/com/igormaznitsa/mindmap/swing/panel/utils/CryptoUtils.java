@@ -44,13 +44,18 @@ public final class CryptoUtils {
       outputStream.write(textHash);
       outputStream.write(textBytes);
 
-      final byte[] data = outputStream.toByteArray();
+      final byte[] originalData = outputStream.toByteArray();
 
       final byte[] key = sha256(pass.getBytes(StandardCharsets.UTF_8));
       Key aesKey = new SecretKeySpec(key, "AES");
       Cipher cipher = Cipher.getInstance("AES");
       cipher.init(Cipher.ENCRYPT_MODE, aesKey);
-      return Base64.encodeBytes(cipher.doFinal(data));
+      final byte[] encodedData = cipher.doFinal(originalData);
+      if (Arrays.equals(originalData, encodedData)) {
+        throw new IllegalStateException(
+            "Data can't be encrypted! Check encryption provider and settings!");
+      }
+      return Base64.encodeBytes(encodedData);
     } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | IOException ex) {
       throw new RuntimeException(ex);
     }
