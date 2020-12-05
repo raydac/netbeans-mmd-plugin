@@ -50,7 +50,7 @@ public class AboutForm {
         }
       }
     });
-    this.mainPanel.setPreferredSize(new Dimension(600, 345));
+    this.mainPanel.setPreferredSize(new Dimension(600, 400));
   }
 
   public static void show(final Component parent) {
