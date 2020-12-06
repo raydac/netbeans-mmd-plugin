@@ -9,7 +9,7 @@
 
     <description><![CDATA[
       <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshotIdeaThumb.jpg"><br>
-      IDEA-adapted version of <a href="https://sciareto.org">SciaReto editor</a> mind map part. It allows to create, edit and keep mind maps and keep then together with project source code. Mind maps are saved as text files in Markdown compatible format (MMD). A mind map provides way to keep semantically linked text notes, web links and file links. Also it is possible to have password protected notes.<br>
+      IDEA-adapted version of <a href="https://sciareto.org">SciaReto editor</a> mind map part. It allows to create, edit mind maps. Mind maps are saved as plaint-text files in a Markdown compatible format (MMD). A mind map provides way to keep semantically linked text notes, web links and file links. Also provides way to have password-protected notes.<br>
       <ul>
         <li><a href="https://www.sciareto.org/">Project home page</a></li>
         <li><a href="https://github.com/raydac/netbeans-mmd-plugin">Github project sources</a></li>
