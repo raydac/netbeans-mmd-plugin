@@ -8,8 +8,7 @@
     <category>Knowledge management</category>
 
     <description><![CDATA[
-      <img src="https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/assets/screenshotIdeaThumb.jpg"><br>
-      Mind map editor (<a href="https://sciareto.org">adapted part of SciaReto editor</a>). It allows create and edit mind maps directly in IDE and keep them among project files with internal project links. Mind maps are saved as plain-text files in a Markdown compatible format (MMD). A mind map can have semantically linked text notes, web links and file links. Also it provides way to have strongly password-protected notes.<br>
+      Mind map editor is adapted part of (<a href="https://sciareto.org">SciaReto editor</a>). It allows create and edit mind maps directly in IDE and keep them among project files with internal project links. Mind maps are saved as plain-text files in a Markdown compatible format (MMD). A mind map can have semantically linked text notes, web links and file links. Also it provides way to have strongly password-protected notes.<br>
       <ul>
         <li><a href="https://www.sciareto.org/">Project home page</a></li>
         <li><a href="https://github.com/raydac/netbeans-mmd-plugin">Github project sources</a></li>
