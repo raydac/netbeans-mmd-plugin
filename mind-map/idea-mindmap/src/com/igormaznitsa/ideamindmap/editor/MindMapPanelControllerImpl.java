@@ -432,86 +432,96 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     }
   }
 
-    public void editTextForTopic(final Topic topic) {
-        final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-        final NoteEditorData result;
-        if (note == null) {
-            // create new
-            result = IdeaUtils
-                .editText(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"), Utils.makeShortTextVersion(topic.getText(), 16)),
-                    new NoteEditorData()); //NOI18N
+  public void editTextForTopic(final Topic topic) {
+    try {
+      final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
+      final NoteEditorData result;
+      if (note == null) {
+        // create new
+        result = IdeaUtils
+            .editText(this.editor.getProject(), String
+                    .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
+                        Utils.makeShortTextVersion(topic.getText(), 16)),
+                new NoteEditorData()); //NOI18N
+      } else {
+        // edit
+        NoteEditorData noteText = null;
+        if (note.isEncrypted()) {
+          final PasswordPanel passwordPanel
+              = new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
+          if (this.dialogProvider.msgOkCancel(this.getPanel(),
+              Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"),
+              passwordPanel)) {
+            final StringBuilder decrypted = new StringBuilder();
+            final String pass = new String(passwordPanel.getPassword()).trim();
+            try {
+              if (CryptoUtils.decrypt(pass, note.getValue(), decrypted)) {
+                noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
+              } else {
+                this.dialogProvider.msgError(this.getPanel(), "Wrong password!");
+              }
+            } catch (RuntimeException ex) {
+              this.dialogProvider.msgError(this.getPanel(),
+                  "Can't decode encrypted text for error! May be broken data!");
+              LOGGER.error("Can't decode encrypted note", ex);
+            }
+          }
         } else {
-            // edit
-            NoteEditorData noteText = null;
-            if (note.isEncrypted()) {
-                final PasswordPanel passwordPanel
-                    = new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
-                if (this.dialogProvider.msgOkCancel(this.getPanel(), Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"), passwordPanel)) {
-                    final StringBuilder decrypted = new StringBuilder();
-                    final String pass = new String(passwordPanel.getPassword()).trim();
-                    try {
-                        if (CryptoUtils.decrypt(pass, note.getValue(), decrypted)) {
-                            noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
-                        } else {
-                            this.dialogProvider.msgError(this.getPanel(), "Wrong password!");
-                        }
-                    } catch (RuntimeException ex) {
-                        this.dialogProvider.msgError(this.getPanel(),
-                            "Can't decode encrypted text for error! May be broken data!");
-                        LOGGER.error("Can't decode encrypted note", ex);
-                    }
-                }
-            } else {
-                noteText = new NoteEditorData(note.getValue(), null, null);
-            }
-            
-            if (noteText == null) {
-                result = null;
-            } else {
-                result = IdeaUtils
-                    .editText(this.editor.getProject(), 
-                        String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"), 
-                            Utils.makeShortTextVersion(topic.getText(), 16)), noteText);
-            }
+          noteText = new NoteEditorData(note.getValue(), null, null);
         }
 
-        if (result != null) {
-            boolean changed = false;
-
-            if (result.getText().isEmpty()) {
-                if (note != null) {
-                    topic.removeExtra(Extra.ExtraType.NOTE);
-                    changed = true;
-                }
-            } else {
-                final String newNoteText;
-                if (result.isEncrypted()) {
-                    try {
-                        newNoteText = CryptoUtils.encrypt(result.getPassword(), result.getText());
-                    } catch (RuntimeException ex) {
-                        this.dialogProvider.msgError(this.getPanel(), "Can't encrypt text for error! Examine log!");
-                        LOGGER.error("Can't encrypt note", ex);
-                        return;
-                    }
-                } else {
-                    newNoteText = result.getText();
-                }
-
-                if (note == null
-                    || !newNoteText.equals(note.getValue())
-                    || (note.isEncrypted() != result.isEncrypted())) {
-                    topic.setExtra(new ExtraNote(newNoteText, result.isEncrypted(), result.getHint()));
-                    changed = true;
-                }
-            }
-
-            if (changed) {
-                this.editor.getMindMapPanel().invalidate();
-                this.editor.getMindMapPanel().repaint();
-                this.editor.onMindMapModelChanged(this.editor.getMindMapPanel(), true);
-            }
+        if (noteText == null) {
+          result = null;
+        } else {
+          result = IdeaUtils
+              .editText(this.editor.getProject(),
+                  String.format(
+                      BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
+                      Utils.makeShortTextVersion(topic.getText(), 16)), noteText);
         }
+      }
+
+      if (result != null) {
+        boolean changed = false;
+
+        if (result.getText().isEmpty()) {
+          if (note != null) {
+            topic.removeExtra(Extra.ExtraType.NOTE);
+            changed = true;
+          }
+        } else {
+          final String newNoteText;
+          if (result.isEncrypted()) {
+            try {
+              newNoteText = CryptoUtils.encrypt(result.getPassword(), result.getText());
+            } catch (RuntimeException ex) {
+              this.dialogProvider
+                  .msgError(this.getPanel(), "Can't encrypt text for error! Examine log!");
+              LOGGER.error("Can't encrypt note", ex);
+              return;
+            }
+          } else {
+            newNoteText = result.getText();
+          }
+
+          if (note == null
+              || !newNoteText.equals(note.getValue())
+              || (note.isEncrypted() != result.isEncrypted())) {
+            topic.setExtra(new ExtraNote(newNoteText, result.isEncrypted(), result.getHint()));
+            changed = true;
+          }
+        }
+
+        if (changed) {
+          this.editor.getMindMapPanel().invalidate();
+          this.editor.getMindMapPanel().repaint();
+          this.editor.onMindMapModelChanged(this.editor.getMindMapPanel(), true);
+        }
+      }
+    } finally {
+      Runtime.getRuntime().gc();
     }
+  }
 
   public void showAbout() {
     AboutForm.show(this.editor.getProject());
