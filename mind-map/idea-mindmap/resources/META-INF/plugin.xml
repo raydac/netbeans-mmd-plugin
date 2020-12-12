@@ -12,7 +12,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.4.10 (SNAPSHOT)</p>
+        <p>1.4.10 (14-dec-2020)</p>
         <ul>
           <li>minor bugfix and refactoring</li>
           <li>added password protection for notes (AES-256)</li>

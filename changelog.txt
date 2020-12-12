@@ -1,4 +1,4 @@
-__1.4.10 (SNAPSHOT)__
+__1.4.10 (14-dec-2020)__
 - SR:  added View-Zoom into the main menu toolbar
 - ALL: added password protection for notes (AES-256)
 - ALL: decreased topic dragging start sensitivity [#77](https://github.com/raydac/netbeans-mmd-plugin/issues/77)
