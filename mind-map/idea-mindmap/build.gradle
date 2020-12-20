@@ -9,7 +9,7 @@ repositories {
     mavenLocal()
 }
 
-version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.4.10"
+version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.4.11-SNAPSHOT"
 
 intellij {
     version 'IC-139.1803.20'

@@ -5,12 +5,12 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.4.10</version>
+    <version>1.4.11-SNAPSHOT</version>
   </parent>
 
   <groupId>com.igormaznitsa</groupId>
   <artifactId>mind-map-model</artifactId>
-  <version>1.4.10</version>
+  <version>1.4.11-SNAPSHOT</version>
   <packaging>jar</packaging>
     
   <name>NB Mind Map model</name>
