@@ -18,15 +18,16 @@
   <meta property="og:article:modified_time" content="2020-12-15T10:00:12+00:00" />
   <meta property="og:article:author" content="Igor Maznitsa" />
   <meta property="og:title" content="Scia-Reto, free mind-map editor" />
-  <meta property="og:description" content="Free open-source cross-platform mind map editor with plugins for Intellij IDEA and NetBeans" />
+  <meta property="og:description"
+    content="Free open-source cross-platform mind map editor with plugins for Intellij IDEA and NetBeans" />
   <meta property="og:url" content="https://sciareto.org">
   <meta property="og:site_name" content="Igor Maznitsa" />
-  <meta property="og:image"
-    content="https://www.igormaznitsa.com/netbeans-mmd-plugin/img/banner.jpg" />
+  <meta property="og:image" content="https://www.igormaznitsa.com/netbeans-mmd-plugin/img/banner.jpg" />
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Scia-Reto, free mind-map editor">
-  <meta name="twitter:description" content="Free open-source cross-platform mind map editor with plugins for Intellij IDEA and NetBeans">
+  <meta name="twitter:description"
+    content="Free open-source cross-platform mind map editor with plugins for Intellij IDEA and NetBeans">
   <meta name="twitter:site" content="IgorMaznitsa" />
   <meta name="twitter:creator" content="IgorMaznitsa" />
 
@@ -173,8 +174,8 @@
       <div class="col-lg-2 col-md-2 col-sm-0"></div>
       <div id="download" class="info-block col-lg-8 col-md-8 col-sm-12">
         <h1>Download</h1>
-        <div class="pricing card-deck flex-column flex-md-row mb-3">
-          <div class="download-item card card-pricing text-center px-3 mb-4">
+        <div class="card-deck flex-column flex-md-row mb-3">
+          <div class="download-item card text-center px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">SciaReto</h5>
               <img src="img/logos/SciaReto_Logo.svg" height="64" />
@@ -189,29 +190,51 @@
                   href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.10/sciareto-1.4.10-macos-x64-openjdk.zip">MacOS</a>
                 <a class="dd-a dropdown-item"
                   href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.10/sciareto-1.4.10-linux-x64-openjdk.tar.gz">Linux</a>
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.11-S/sciareto-1.4.11-SNAPSHOT-windows-x64-openjdk.zip">Snapshot Windows</a>
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.11-S/sciareto-1.4.11-SNAPSHOT-macos-x64-openjdk.zip">Snapshot MacOS</a>
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.11-S/sciareto-1.4.11-SNAPSHOT-linux-x64-openjdk.tar.gz">Snapshot Linux</a>
               </div>
             </div>
           </div>
 
-          <div class="download-item card card-pricing text-center px-3 mb-4">
+          <div class="download-item card text-center px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">Intellij</h5>
               <img src="img/logos/IntelliJ_IDEA_Logo.svg" height="64" />
             </div>
-            <div class="card-body pt-0">
-              <a href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.10/idea-mindmap-1.4.10.zip"
-                target="_blank" class="btn btn-success mb-3">Download</a>
+            <div class="card-body pt-0 dropdown show">
+              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownDownload"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
+              <div class="dropdown-menu" aria-labelledby="dropdownDownload">
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.10/idea-mindmap-1.4.10.zip">Release</a>
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.11-S/idea-mindmap-1.4.11-SNAPSHOT.zip">Snapshot</a>
+                <a class="dd-a dropdown-item" href="https://plugins.jetbrains.com/plugin/8045-idea-mind-map">JetBrains
+                  marketplace</a>
+              </div>
             </div>
           </div>
 
-          <div class="download-item card card-pricing text-center px-3 mb-4">
+          <div class="download-item card text-center px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">NetBeans</h5>
               <img src="img/logos/Apache NetBeans Logo.svg" height="64" />
             </div>
-            <div class="card-body pt-0">
-              <a href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.10/nb-mind-map-1.4.10.nbm"
-                target="_blank" class="btn btn-success mb-3">Download</a>
+            <div class="card-body pt-0 dropdown show">
+              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownDownload"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
+              <div class="dropdown-menu" aria-labelledby="dropdownDownload">
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.10/nb-mind-map-1.4.10.nbm">Release</a>
+                <a class="dd-a dropdown-item"
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.4.11-S/nb-mind-map-1.4.11-SNAPSHOT.nbm">Snapshot</a>
+                <a class="dd-a dropdown-item" href="http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor">NetBeans
+                  portal</a>
+              </div>
             </div>
           </div>
 
@@ -256,7 +279,7 @@
 
   <footer class="container-fluid bg-darkgray">
     <div class="row">
-      <div class="copyright">Copyright &copy; 2016-2020 All Rights Reserved by <a class="link-on-dark"
+      <div class="copyright">Copyright &copy; 2015-2021 All Rights Reserved by <a class="link-on-dark"
           href="https://igormaznitsa.com">Igor Maznitsa</a>.</div>
     </div>
   </footer>

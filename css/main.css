@@ -118,8 +118,9 @@ body footer {
 }
 
 .download-item {
-    background-color: #33414e !important;
+    background-color: #25496b !important;
     color: #7b9dbd;
+    border: 3px solid #c8e3ff;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
 }
 
