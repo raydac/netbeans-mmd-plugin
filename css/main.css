@@ -1,6 +1,11 @@
+.top-quote {
+    background-color: rgb(191, 253, 253) !important;
+    box-shadow: 0px 8px 8px -6px rgba(0, 0, 0, .5);
+}
+
 .blockquote-custom {
     position: relative;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
 }
 
 .blockquote-custom-icon {
