@@ -425,7 +425,7 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.2527155"
+     inkscape:zoom="0.30740573"
      inkscape:cx="932.77281"
      inkscape:cy="820.28391"
      inkscape:document-units="px"
@@ -435,8 +435,8 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1600"
-     inkscape:window-height="830"
+     inkscape:window-width="2560"
+     inkscape:window-height="1370"
      inkscape:window-x="0"
      inkscape:window-y="33"
      inkscape:window-maximized="1"
@@ -555,15 +555,15 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:328.503px;line-height:1.25;font-family:sans-serif;fill:#008000;fill-opacity:1;stroke:none;stroke-width:8.21261;"
-       x="274.82294"
+       style="font-style:normal;font-weight:normal;font-size:328.503px;line-height:1.25;font-family:sans-serif;fill:#008000;fill-opacity:1;stroke:none;stroke-width:8.21261"
+       x="327.32294"
        y="864.46515"
        id="text937"><tspan
          sodipodi:role="line"
          id="tspan935"
-         x="274.82294"
+         x="327.32294"
          y="864.46515"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Stitch Warrior';-inkscape-font-specification:'Stitch Warrior';fill:#008000;stroke-width:8.21261;">1.4.10</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Stitch Warrior';-inkscape-font-specification:'Stitch Warrior';fill:#008000;stroke-width:8.21261">1.4.11</tspan></text>
     <g
        id="g1717"
        transform="matrix(1.8302576,0,0,1.8302576,-795.93948,-93.231496)"
