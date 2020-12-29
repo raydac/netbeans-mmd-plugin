@@ -98,7 +98,9 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   public final boolean saveDocumentAs() throws IOException {
     final DialogProvider dialogProvider = DialogProviderManager.getInstance().getDialogProvider();
     final File file = this.getTabTitle().getAssociatedFile();
-    File fileToSave = dialogProvider.msgSaveFileDialog(Main.getApplicationFrame(), "save-as", "Save as", file, true, new FileFilter[]{getFileFilter()}, "Save");
+    File fileToSave = dialogProvider.msgSaveFileDialog(Main.getApplicationFrame(),
+        null,
+        "save-as", "Save as", file, true, new FileFilter[]{getFileFilter()}, "Save");
     if (fileToSave != null) {
       if (!fileToSave.getName().contains(".")) {
         final Boolean result = dialogProvider.msgConfirmYesNoCancel(Main.getApplicationFrame(), "Add extension", String.format("Add file extenstion '%s'?", this.getDefaultExtension()));

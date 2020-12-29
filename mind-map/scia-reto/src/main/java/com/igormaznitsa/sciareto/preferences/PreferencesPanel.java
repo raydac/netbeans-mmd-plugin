@@ -1386,7 +1386,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private void buttonExportToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportToFileActionPerformed
     File file = DialogProviderManager.getInstance()
             .getDialogProvider()
-            .msgSaveFileDialog(this, "exportProperties", "Export settings", null, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
+            .msgSaveFileDialog(this, null,"exportProperties", "Export settings", null, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
     if (file != null) {
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) { //NOI18N
         final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel(this, "Add extension", "Add '.properties' extension?");
@@ -1418,7 +1418,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     final File file = DialogProviderManager
             .getInstance()
             .getDialogProvider()
-            .msgOpenFileDialog(this, "importProperties", "Import settings", null, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
+            .msgOpenFileDialog(this, null, "importProperties", "Import settings", null, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
     if (file != null) {
       try {
         load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file, "UTF-8")));

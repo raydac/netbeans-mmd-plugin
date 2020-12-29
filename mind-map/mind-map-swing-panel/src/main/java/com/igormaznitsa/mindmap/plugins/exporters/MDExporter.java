@@ -255,6 +255,7 @@ public class MDExporter extends AbstractExporter {
     if (theOut == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
+          context,
           this.getClass().getName(),
           Texts.getString("MDExporter.saveDialogTitle"),
           null,

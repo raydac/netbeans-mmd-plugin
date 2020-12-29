@@ -20,12 +20,14 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_B
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_COLLAPSED;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
+import static javax.swing.SwingUtilities.windowForComponent;
 
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -40,6 +42,7 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 public final class MindMapUtils {
@@ -244,10 +247,13 @@ public final class MindMapUtils {
   }
 
   @Nullable
-  public static File selectFileToSaveForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String dialogId, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
+  public static File selectFileToSaveForFileFilter(@Nonnull final MindMapPanel panel,
+                                                   @Nullable final PluginContext pluginContext,
+                                                   @Nonnull final String dialogId, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
     return panel.getController().getDialogProvider(panel).msgSaveFileDialog(
-        panel,
+        windowForComponent(panel),
+        pluginContext,
         dialogId,
         title,
         defaultFolder,
@@ -267,11 +273,12 @@ public final class MindMapUtils {
   }
 
   @Nullable
-  public static File selectFileToOpenForFileFilter(@Nonnull final MindMapPanel panel, @Nonnull final String dialogId, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
+  public static File selectFileToOpenForFileFilter(@Nonnull final MindMapPanel panel, @Nullable final PluginContext pluginContext, @Nonnull final String dialogId, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
     return panel.getController().getDialogProvider(panel).msgOpenFileDialog(
-        panel,
+        windowForComponent(panel),
+        pluginContext,
         dialogId,
         title,
         defaultFolder,

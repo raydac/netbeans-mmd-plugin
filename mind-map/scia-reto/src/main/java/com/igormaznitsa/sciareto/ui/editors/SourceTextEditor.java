@@ -550,7 +550,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
         File file = this.title.getAssociatedFile();
         if (file == null) {
           file = dialogProvider
-                  .msgSaveFileDialog(Main.getApplicationFrame(), "sources-editor", "Save sources", null, true, new FileFilter[]{getFileFilter()}, "Save");
+                  .msgSaveFileDialog(Main.getApplicationFrame(), null,"sources-editor", "Save sources", null, true, new FileFilter[]{getFileFilter()}, "Save");
           if (file == null) {
             return result;
           }

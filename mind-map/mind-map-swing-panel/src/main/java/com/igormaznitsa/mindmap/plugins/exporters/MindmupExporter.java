@@ -252,6 +252,7 @@ public class MindmupExporter extends AbstractExporter {
     if (theOut == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
+          context,
           this.getClass().getName(),
           Texts.getString("MindmupExporter.saveDialogTitle"),
           null,

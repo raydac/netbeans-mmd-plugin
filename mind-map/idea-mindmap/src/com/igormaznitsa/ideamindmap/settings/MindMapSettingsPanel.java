@@ -139,7 +139,7 @@ public class MindMapSettingsPanel {
     buttonImportSettings.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final File file = controller.getDialogProvider().msgOpenFileDialog(null, "importSettings", "Import settings", lastImportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
+        final File file = controller.getDialogProvider().msgOpenFileDialog(null, null,  "importSettings", "Import settings", lastImportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
         if (file != null) {
           lastImportedSettingsFile = file;
           try {
@@ -158,7 +158,7 @@ public class MindMapSettingsPanel {
     buttonExportSettings.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        File file = controller.getDialogProvider().msgSaveFileDialog(null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
+        File file = controller.getDialogProvider().msgSaveFileDialog(null, null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
         if (file != null) {
           lastExportedSettingsFile = file;
           if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {

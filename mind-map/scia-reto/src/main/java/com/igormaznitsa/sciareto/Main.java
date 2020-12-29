@@ -133,7 +133,7 @@ public class Main {
     @Override
     public MindMap doImport(@Nonnull PluginContext context) throws Exception {
       final File fileToImport = context.getDialogProvider()
-          .msgOpenFileDialog(null, "", "", null, true, new FileFilter[0], ""); //NOI18N
+          .msgOpenFileDialog(null, context,"", "", null, true, new FileFilter[0], ""); //NOI18N
       return new MindMap(
           new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
     }
@@ -702,6 +702,7 @@ public class Main {
 
             @Override
             public File msgSaveFileDialog(@Nullable final Component parentComponent,
+                                          @Nullable final PluginContext pluginContext,
                                           @Nonnull final String id, @Nonnull final String title,
                                           @Nullable final File defaultFolder,
                                           final boolean filesOnly, @Nonnull @MustNotContainNull
@@ -712,6 +713,7 @@ public class Main {
 
             @Override
             public File msgOpenFileDialog(@Nullable final Component parentComponent,
+                                          @Nullable final PluginContext pluginContext,
                                           @Nonnull final String id, @Nonnull final String title,
                                           @Nullable final File defaultFolder,
                                           final boolean filesOnly, @Nonnull @MustNotContainNull

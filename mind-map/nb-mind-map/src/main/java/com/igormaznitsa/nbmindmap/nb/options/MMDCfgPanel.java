@@ -1277,7 +1277,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
 
   private void buttonExportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportSettingsActionPerformed
     File file = DialogProviderManager.getInstance().getDialogProvider()
-            .msgSaveFileDialog(null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
+            .msgSaveFileDialog(null, null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
     if (file != null) {
       lastExportedSettingsFile = file;
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
@@ -1309,7 +1309,7 @@ final class MMDCfgPanel extends javax.swing.JPanel {
   private void buttonImportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportSettingsActionPerformed
     final File file = DialogProviderManager.getInstance()
             .getDialogProvider()
-            .msgOpenFileDialog(null, "importSettings", "Import settings", lastImportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
+            .msgOpenFileDialog(null, null, "importSettings", "Import settings", lastImportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
     if (file != null) {
       lastImportedSettingsFile = file;
       try {

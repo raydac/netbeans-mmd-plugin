@@ -17,6 +17,7 @@
 package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import java.awt.Component;
 import java.io.File;
 import javax.annotation.Nonnull;
@@ -42,8 +43,8 @@ public interface DialogProvider {
   Boolean msgConfirmYesNoCancel(@Nullable Component parentComponent, @Nonnull String title, @Nonnull final String question);
 
   @Nullable
-  File msgSaveFileDialog(@Nullable Component parentComponent, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull @MustNotContainNull FileFilter[] fileFilter, @Nonnull String approveButtonText);
+  File msgSaveFileDialog(@Nullable Component parentComponent, @Nullable PluginContext pluginContext, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull @MustNotContainNull FileFilter[] fileFilter, @Nonnull String approveButtonText);
 
   @Nullable
-  File msgOpenFileDialog(@Nullable Component parentComponent, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull @MustNotContainNull FileFilter[] fileFilter, @Nonnull String approveButtonText);
+  File msgOpenFileDialog(@Nullable Component parentComponent, @Nullable PluginContext pluginContext, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull @MustNotContainNull FileFilter[] fileFilter, @Nonnull String approveButtonText);
 }

@@ -15,6 +15,7 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import java.awt.Component;
 import java.io.File;
 import javax.annotation.Nonnull;
@@ -63,7 +64,9 @@ public final class DialogProviderManager {
     }
 
     @Override
-    public File msgSaveFileDialog(final Component parentComponent, final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter[] fileFilters, final String approveButtonText) {
+    public File msgSaveFileDialog(final Component parentComponent, 
+        final PluginContext pluginContext,
+        final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter[] fileFilters, final String approveButtonText) {
       final FileChooserBuilder builder = new FileChooserBuilder(id)
               .setTitle(title)
               .setDefaultWorkingDirectory(defaultFolder)
@@ -82,7 +85,9 @@ public final class DialogProviderManager {
     }
 
     @Override
-    public File msgOpenFileDialog(final Component parentComponent, final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter[] fileFilters, final String approveButtonText) {
+    public File msgOpenFileDialog(final Component parentComponent, 
+        final PluginContext pluginContext,
+        final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter[] fileFilters, final String approveButtonText) {
       final FileChooserBuilder builder = new FileChooserBuilder(id)
               .setTitle(title)
               .setDefaultWorkingDirectory(defaultFolder)

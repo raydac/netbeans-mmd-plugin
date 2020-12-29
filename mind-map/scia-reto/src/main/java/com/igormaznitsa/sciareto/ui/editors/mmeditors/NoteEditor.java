@@ -360,7 +360,7 @@ public final class NoteEditor extends JPanel {
   private void buttonImportActionPerformed(
       ActionEvent evt) {
     final File toOpen = DialogProviderManager.getInstance().getDialogProvider()
-        .msgOpenFileDialog(null, "note-editor",
+        .msgOpenFileDialog(null, null, "note-editor",
             UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true,
             new FileFilter[] {TEXT_FILE_FILTER}, "Open"); //NOI18N
     if (toOpen != null) {
@@ -598,7 +598,7 @@ public final class NoteEditor extends JPanel {
 
   private void buttonExportActionPerformed(ActionEvent evt) {
     final File toSave = DialogProviderManager.getInstance().getDialogProvider()
-        .msgSaveFileDialog(null, "note-editor",
+        .msgSaveFileDialog(null, null,"note-editor",
             UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null,
             true, new FileFilter[] {TEXT_FILE_FILTER}, "Save"); //NOI18N
     if (toSave != null) {

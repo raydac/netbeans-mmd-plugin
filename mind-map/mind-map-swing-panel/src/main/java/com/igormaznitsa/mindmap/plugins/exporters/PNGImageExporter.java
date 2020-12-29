@@ -179,6 +179,7 @@ public final class PNGImageExporter extends AbstractExporter {
     if (theOut == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
+          context,
           this.getClass().getName(),
           Texts.getString("PNGImageExporter.saveDialogTitle"),
           null,

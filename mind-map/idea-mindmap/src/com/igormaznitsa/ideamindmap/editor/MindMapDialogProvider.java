@@ -16,6 +16,7 @@
 package com.igormaznitsa.ideamindmap.editor;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.utils.PathStore;
@@ -80,6 +81,7 @@ public class MindMapDialogProvider implements DialogProvider {
   @Nullable
   @Override
   public File msgOpenFileDialog(@Nullable final Component parentComponent,
+          @Nullable final PluginContext pluginContext,
           @Nonnull final String id,
           @Nonnull final String title,
           @Nullable final File defaultFolder,
@@ -87,7 +89,7 @@ public class MindMapDialogProvider implements DialogProvider {
           @Nullable @MustNotContainNull final FileFilter[] fileFilters,
           @Nonnull final String approveButtonText) {
 
-    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheOpenFileThroughDialog.find(null, id) : defaultFolder);
+    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheOpenFileThroughDialog.find(pluginContext, id) : defaultFolder);
     fileChooser.setDialogTitle(title);
     for (final FileFilter f : fileFilters) {
       fileChooser.addChoosableFileFilter(f);
@@ -105,13 +107,14 @@ public class MindMapDialogProvider implements DialogProvider {
 
   @Override
   public File msgSaveFileDialog(@Nullable final Component parentComponent,
+                                @Nullable final PluginContext pluginContext,
                                 @Nonnull final String id,
                                 @Nonnull final String title,
                                 @Nullable final File defaultFolder,
                                 final boolean fileOnly,
                                 @Nonnull @MustNotContainNull final FileFilter[] fileFilters,
                                 @Nonnull final String approveButtonText) {
-    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheSaveFileThroughDialog.find(null, id) : defaultFolder);
+    final JFileChooser fileChooser = new JFileChooser(defaultFolder == null ? cacheSaveFileThroughDialog.find(pluginContext, id) : defaultFolder);
     fileChooser.setDialogTitle(title);
     for (final FileFilter f : fileFilters) {
       fileChooser.addChoosableFileFilter(f);
