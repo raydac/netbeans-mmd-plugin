@@ -62,7 +62,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
             context.processPluginActivation((ExternallyExecutedPlugin) theInstance, activeTopic);
           } else {
             final JComponent options = makeOptions(context);
-            if (options != null && !context.getDialogProvider().msgOkCancel(SwingUtilities.getWindowAncestor(context.getPanel()), getName(context, activeTopic), options)) {
+            if (options != null && !context.getDialogProvider().msgOkCancel(null, getName(context, activeTopic), options)) {
               return;
             }
             if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
