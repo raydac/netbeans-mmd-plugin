@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
 /**
  * Abstract auxiliary class automates way to implement an abstract exporter.
@@ -61,7 +62,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
             context.processPluginActivation((ExternallyExecutedPlugin) theInstance, activeTopic);
           } else {
             final JComponent options = makeOptions(context);
-            if (options != null && !context.getDialogProvider().msgOkCancel(context.getPanel(), getName(context, activeTopic), options)) {
+            if (options != null && !context.getDialogProvider().msgOkCancel(SwingUtilities.getWindowAncestor(context.getPanel()), getName(context, activeTopic), options)) {
               return;
             }
             if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
