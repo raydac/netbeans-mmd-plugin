@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -113,8 +114,12 @@ public class MMDTopicsTransferable implements Transferable {
       for (final Map.Entry<Extra.ExtraType, Extra<?>> e : topic.getExtras().entrySet()) {
         switch (e.getKey()) {
           case NOTE: {
-            for (final String s : e.getValue().getAsString().split("\\n")) {
-              result.append(otherIndentString).append(s.trim()).append(END_OF_LINE);
+            if (Boolean.parseBoolean(topic.getAttributes().get(ExtraNote.ATTR_ENCRYPTED))) {
+              result.append(otherIndentString).append("<ENCRYPTED NOTE>").append(END_OF_LINE);
+            } else {
+              for (final String s : e.getValue().getAsString().split("\\n")) {
+                result.append(otherIndentString).append(s.trim()).append(END_OF_LINE);
+              }
             }
           }
           break;
