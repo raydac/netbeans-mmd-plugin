@@ -37,6 +37,25 @@ public class TopicTest {
   }
 
   @Test
+  public void testFindMaxChildPathLength() throws Exception {
+    final MindMap map = new MindMap(true);
+    final Topic t1 = new Topic(map, map.getRoot(), "t1");
+
+    final Topic t2 = new Topic(map, map.getRoot(), "t2");
+    final Topic t21 = new Topic(map, t2, "t21");
+    final Topic t22 = new Topic(map, t21, "t22");
+
+    final Topic t3 = new Topic(map, map.getRoot(), "t3");
+    final Topic t31 = new Topic(map, t3, "t31");
+    final Topic t32 = new Topic(map, t31, "t32");
+    final Topic t33 = new Topic(map, t32, "t33");
+
+    assertEquals(0, t1.findMaxChildPathLength());
+    assertEquals(2, t2.findMaxChildPathLength());
+    assertEquals(4, map.getRoot().findMaxChildPathLength());
+  }
+
+  @Test
   public void test() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = new Topic(mm, null, "авы аыва вы Что то");

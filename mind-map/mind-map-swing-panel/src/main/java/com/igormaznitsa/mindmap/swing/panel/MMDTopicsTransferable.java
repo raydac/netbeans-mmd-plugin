@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.datatransfer.DataFlavor;
@@ -36,15 +37,18 @@ public class MMDTopicsTransferable implements Transferable {
 
   public static final DataFlavor MMD_DATA_FLAVOR;
 
+  private static final DataFlavor[] FLAVORS =
+      new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
+
   static {
     try {
-      MMD_DATA_FLAVOR = new DataFlavor(DataFlavor.javaSerializedObjectMimeType + ";class=\"" + NBMindMapTopicsContainer.class.getName() + "\"", "nb-mindmap-topic-list", NBMindMapTopicsContainer.class.getClassLoader());
+      MMD_DATA_FLAVOR = new DataFlavor(DataFlavor.javaSerializedObjectMimeType + ";class=\"" +
+          NBMindMapTopicsContainer.class.getName() + "\"", "nb-mindmap-topic-list",
+          NBMindMapTopicsContainer.class.getClassLoader());
     } catch (ClassNotFoundException ex) {
       throw new Error("Can't find class", ex);
     }
   }
-
-  private static final DataFlavor[] FLAVORS = new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
   private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
   private final Topic[] topics;
@@ -60,33 +64,89 @@ public class MMDTopicsTransferable implements Transferable {
   }
 
   @Nonnull
-  private static String convertTopicToText(@Nonnull final Topic topic) {
+  private static String oneLineTitle(@Nonnull final Topic topic) {
+    return topic.getText().replace("\n", " ").trim();
+  }
+
+  @Nonnull
+  private static String convertTopicToText(@Nonnull final Topic topic, final int level) {
     final StringBuilder result = new StringBuilder();
 
-    result.append(topic.getText());
+    for (int i = 0; i < level; i++) {
+      if (i == level - 1) {
+        result.append("+");
+      } else {
+        result.append('|');
+      }
+    }
+    final String firstIndentString = result.toString();
+    result.setLength(0);
 
-    boolean addedExtras = false;
+    for (int i = 0; i < level; i++) {
+      result.append('|');
+    }
+    final String otherIndentString = result.toString();
+    result.setLength(0);
 
-    result.append(END_OF_LINE).append("--------------------");
+    result.append(firstIndentString)
+        .append('[').append(oneLineTitle(topic)).append(']')
+        .append(END_OF_LINE);
+
+    boolean hasExtras = false;
+    Topic linkedTopic = null;
+    for (final Map.Entry<Extra.ExtraType, Extra<?>> e : topic.getExtras().entrySet()) {
+      if (e.getKey() == Extra.ExtraType.TOPIC) {
+        final ExtraTopic topicLink = ((ExtraTopic) e.getValue());
+        final Topic root = topic.findRoot();
+        linkedTopic =
+            root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, topicLink.getValue());
+      } else {
+        hasExtras = true;
+      }
+    }
+
+    if (hasExtras || linkedTopic != null) {
+      result.append(otherIndentString).append("--------------------").append(END_OF_LINE);
+    }
+
     if (!topic.getExtras().isEmpty()) {
-      addedExtras = true;
       for (final Map.Entry<Extra.ExtraType, Extra<?>> e : topic.getExtras().entrySet()) {
-        result.append(END_OF_LINE).append(e.getKey().name()).append('=').append(e.getValue().getAsString());
+        switch (e.getKey()) {
+          case NOTE: {
+            for (final String s : e.getValue().getAsString().split("\\n")) {
+              result.append(otherIndentString).append(s.trim()).append(END_OF_LINE);
+            }
+          }
+          break;
+          case TOPIC: {
+            if (linkedTopic != null) {
+              result.append(otherIndentString).append("#(").append(oneLineTitle(linkedTopic))
+                  .append(')')
+                  .append(END_OF_LINE);
+            }
+          }
+          break;
+          case FILE: {
+            result.append(otherIndentString).append("FILE=").append(e.getValue().getAsString())
+                .append(END_OF_LINE);
+          }
+          break;
+          case LINK: {
+            result.append(otherIndentString).append(e.getValue().getAsString())
+                .append(END_OF_LINE);
+          }
+          break;
+        }
       }
     }
-
-    if (!topic.getAttributes().isEmpty()) {
-      if (addedExtras) {
-        result.append(END_OF_LINE);
-      }
-      for (final Map.Entry<String, String> e : topic.getAttributes().entrySet()) {
-        result.append(END_OF_LINE).append(e.getKey()).append('=').append(e.getValue());
-      }
+    if (hasExtras) {
+      result.append(otherIndentString).append("--------------------").append(END_OF_LINE);
     }
-    result.append(END_OF_LINE).append("--------------------");
-
-    for (final Topic c : topic.getChildren()) {
-      result.append(END_OF_LINE).append(END_OF_LINE).append(convertTopicToText(c));
+    result.append(otherIndentString).append(END_OF_LINE);
+    if (topic.hasChildren()) {
+      for (final Topic c : topic.getChildren()) {
+        result.append(convertTopicToText(c, level + 1));
+      }
     }
 
     return result.toString();
@@ -106,7 +166,8 @@ public class MMDTopicsTransferable implements Transferable {
 
   @Override
   @Nonnull
-  public Object getTransferData(@Nonnull final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+  public Object getTransferData(@Nonnull final DataFlavor flavor)
+      throws UnsupportedFlavorException, IOException {
     if (flavor.isFlavorTextType()) {
       final StringBuilder result = new StringBuilder();
 
@@ -114,7 +175,7 @@ public class MMDTopicsTransferable implements Transferable {
         if (result.length() > 0) {
           result.append(END_OF_LINE).append(END_OF_LINE);
         }
-        result.append(convertTopicToText(t));
+        result.append(convertTopicToText(t, 1));
       }
 
       return result.toString();

@@ -247,6 +247,15 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
+  @Nonnull
+  public Topic findRoot() {
+    Topic result = this;
+    while (!result.isRoot()) {
+      result = result.getParent();
+    }
+    return result;
+  }
+
   public boolean containTopic(@Nonnull final Topic topic) {
     boolean result = false;
 
@@ -866,6 +875,21 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     } finally {
       this.map.unlock();
     }
+  }
+
+  /**
+   * Find max length of children chain. It doesn't count the root topic.
+   *
+   * @return max length of child chain, 0 if no children.
+   * @since 1.4.11
+   */
+  public int findMaxChildPathLength() {
+    int len = 0;
+    for (final Topic t : this.getChildren()) {
+      final int childLen = t.findMaxChildPathLength();
+      len = Math.max(len, childLen + 1);
+    }
+    return len;
   }
 
   @Nullable
