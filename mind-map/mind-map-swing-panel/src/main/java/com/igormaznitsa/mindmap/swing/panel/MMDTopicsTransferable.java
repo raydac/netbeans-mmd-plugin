@@ -49,7 +49,7 @@ public class MMDTopicsTransferable implements Transferable {
   }
 
   private static final DataFlavor[] FLAVORS
-      = new DataFlavor[]{DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
+      = new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
   private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
   private final Topic[] topics;
