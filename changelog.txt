@@ -1,3 +1,6 @@
+__1.4.11 (SNAPSHOT)__
+- ALL: improved text representation of maind map for clipboard
+
 __1.4.10 (14-dec-2020)__
 - SR:  added View-Zoom into the main menu toolbar
 - ALL: added password protection for notes (AES-256)

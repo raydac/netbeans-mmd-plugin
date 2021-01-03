@@ -14,6 +14,9 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.4.11 (SNAPSHOT)__
+- ALL: improved text representation of maind map for clipboard
+
 __1.4.10 (14-dec-2020)__
 - SR:  added View-Zoom into the main menu toolbar
 - ALL: added password protection for notes (AES-256)
@@ -22,39 +25,6 @@ __1.4.10 (14-dec-2020)__
 - SR:  fixed file rename [#74](https://github.com/raydac/netbeans-mmd-plugin/issues/74)
 - SR:  embedded JDK version updated to 11.0.9.1+1
 - SR:  embedded PlantUml updated to 1.2020.22
-
-__1.4.9 (28-jun-2020)__
-- __IJ:  fixed incompatibility in Scratch API processing for IntelliJ 2020.2 EAP [#69](https://github.com/raydac/netbeans-mmd-plugin/issues/69)__
-- ALL: improved XMind importer to support XMind 2020 format [#67](https://github.com/raydac/netbeans-mmd-plugin/issues/67)
-- SR:  improved rendering of Kafka Streams topology
-- SR:  embedded JDK version updated to 11.0.7+10
-- SR:  added DOT script editor
-- SR:  added check on save for external file change
-- SR:  improved positioning of text search panel
-- SR:  shortcut for `Save` changed to `Ctrl+S` and shortcut `Save All` changed to `Ctrl+Shift+S` [#65](https://github.com/raydac/netbeans-mmd-plugin/issues/65)
-- SR:  embedded PlantUml updated to 1.2020.14
-
-__1.4.8 (19-mar-2020)__
-- ALL: Added extra emoticons: `caution_biohazard`,`hospital`,`emoticon_medic`,`emoticon_mask` etc.
-- SR:  Fixed too high quality of PlantUML image render during scale [#64](https://github.com/raydac/netbeans-mmd-plugin/issues/64)
-- IJ:  Fixed mind map save after topic color change [#63](https://github.com/raydac/netbeans-mmd-plugin/issues/63)
-- IJ:  Added support of Scratch [#61](https://github.com/raydac/netbeans-mmd-plugin/issues/61)
-- SR:  Added auto-backup of last edit (turned off by default) [#60](https://github.com/raydac/netbeans-mmd-plugin/issues/60)
-- SR:  PlantUML updated to 1.2020.3
-- SR:  embedded JDK version updated to 11.0.6+10
-
-__1.4.7 (28-dec-2019)__
-- ALL: fixed loosing of focus for new edited topic under some JDK versions
-- ALL: improved image plugin to open original file through thumbnail clicks
-- SR:  [added support of KStreams topology rendering through PlantUML (kstpl file extenstion)](https://twitter.com/IgorMaznitsa/status/1203732675971948545)
-- SR:  fixed application icon and title under some OS
-- ALL: added recognition of text presented dragged URI link as URI link
-- ALL: improved color chooser
-- ALL: added support of "smart text paste" with splitting to topics (inactive by default)
-- SR:  embedded Java updated to 11.0.5+11
-- SR:  PlantUML updated to 1.2019.13
-- SR:  fixed autofocusing in topic edit dialogs [#56](https://github.com/raydac/netbeans-mmd-plugin/issues/56)
-
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
 # Implementation
