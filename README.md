@@ -16,6 +16,9 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 # Changelog
 __1.4.11 (SNAPSHOT)__
 - ALL: improved text representation of maind map for clipboard
+- ALL: improved folder processing in import-export plugins
+- SR: updated RSyntax panel version to 3.1.2
+- SR: updated PlantUML version to 1.2020.26
 
 __1.4.10 (14-dec-2020)__
 - SR:  added View-Zoom into the main menu toolbar
