@@ -28,6 +28,7 @@ __1.4.10 (14-dec-2020)__
 - SR:  fixed file rename [#74](https://github.com/raydac/netbeans-mmd-plugin/issues/74)
 - SR:  embedded JDK version updated to 11.0.9.1+1
 - SR:  embedded PlantUml updated to 1.2020.22
+
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
 # Implementation
