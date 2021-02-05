@@ -1,8 +1,10 @@
 __1.4.11 (SNAPSHOT)__
+- IJ:  fixed resource bundle loading under Intellij IDEA 2021.1 EAP
 - ALL: improved text representation of maind map for clipboard
 - ALL: improved folder processing in import-export plugins
+- SR: embedded JDK version updated to 11.0.10+9
 - SR: updated RSyntax panel version to 3.1.2
-- SR: updated PlantUML version to 1.2020.26
+- SR: updated PlantUML version to 1.2021.1
 
 __1.4.10 (14-dec-2020)__
 - SR:  added View-Zoom into the main menu toolbar
