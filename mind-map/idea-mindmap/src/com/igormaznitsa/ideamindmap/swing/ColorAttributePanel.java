@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 public class ColorAttributePanel extends JPanel {
   private static final long serialVersionUID = -3436912869455827455L;
 
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
   private final DialogProvider dialogProvider;
   private JButton buttonResetBorder;
   private JButton buttonResetFill;

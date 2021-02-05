@@ -95,7 +95,7 @@ public final class IdeaUtils {
   public static final MMapURI EMPTY_URI;
   public static final String PROJECT_KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
   private static final Logger LOGGER = LoggerFactory.getLogger(IdeaUtils.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
   private static final boolean ALLOWS_TRANSACTION_GUARD = true;
 
   static {

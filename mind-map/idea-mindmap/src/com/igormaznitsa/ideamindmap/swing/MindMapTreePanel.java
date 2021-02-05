@@ -42,7 +42,7 @@ import javax.swing.tree.TreeSelectionModel;
 public final class MindMapTreePanel extends javax.swing.JPanel implements Comparator<Object>, HasPreferredFocusComponent {
 
   private static final long serialVersionUID = 2652308291444091807L;
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
   private final MindMapTreeCellRenderer cellRenderer = new MindMapTreeCellRenderer();
   private final SortedTreeModelWrapper sortedModel;
   private JButton buttonCollapseAll;

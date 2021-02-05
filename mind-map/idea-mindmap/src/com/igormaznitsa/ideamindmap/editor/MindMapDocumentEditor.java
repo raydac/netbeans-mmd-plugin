@@ -134,7 +134,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private static final long serialVersionUID = -8185230144865144686L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapDocumentEditor.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
 
   private final JPanel mainPanel;
   private final JScrollPane mainScrollPane;

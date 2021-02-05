@@ -47,7 +47,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
   private static final long serialVersionUID = -8892558469392323517L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FileEditPanel.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
 
   private final List<KeyShortcut> listOfKeys;
   private final List<TableModelListener> listeners = new ArrayList<TableModelListener>();

@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import javax.swing.JMenuItem;
 
 public class PrinterPlugin extends AbstractPopupMenuItem {
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
 
   @Nullable
   @Override

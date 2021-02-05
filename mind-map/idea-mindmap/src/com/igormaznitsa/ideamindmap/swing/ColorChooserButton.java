@@ -43,7 +43,7 @@ public class ColorChooserButton extends JButton {
   public static final Color DIFF_COLORS = new Color(0, true);
   private static final long serialVersionUID = -354752410805059103L;
   private static final Logger LOGGER = LoggerFactory.getLogger(ColorChooserButton.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
   private final java.util.List<Color> usedColors = new CopyOnWriteArrayList<>();
   private Color value = null;
   private volatile boolean lastResultOk;

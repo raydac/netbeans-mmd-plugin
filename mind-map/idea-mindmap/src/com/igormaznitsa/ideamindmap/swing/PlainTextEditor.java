@@ -63,7 +63,7 @@ public class PlainTextEditor extends JPanel {
   private static final long serialVersionUID = -125160747070513137L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PlainTextEditor.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
 
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
 

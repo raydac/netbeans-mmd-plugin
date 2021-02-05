@@ -38,7 +38,7 @@ import javax.swing.event.DocumentListener;
 
 public final class UriEditPanel extends javax.swing.JPanel implements HasPreferredFocusComponent {
   private static final Logger LOGGER = LoggerFactory.getLogger(UriEditPanel.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
 
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
 

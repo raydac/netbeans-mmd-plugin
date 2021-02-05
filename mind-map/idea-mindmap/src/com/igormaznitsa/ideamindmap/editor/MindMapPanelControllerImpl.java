@@ -78,7 +78,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 public class MindMapPanelControllerImpl implements MindMapPanelController, MindMapConfigListener, PluginContext {
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("/i18n/Bundle");
+  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanelControllerImpl.class);
 
   private final MindMapDocumentEditor editor;
