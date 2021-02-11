@@ -200,7 +200,6 @@
                                   implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
         <lang.elementManipulator forClass="com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile"
                                  implementationClass="com.igormaznitsa.ideamindmap.lang.refactoring.references.manipulators.PsiExtraFileManipulator"/>
-        <!--<moveFileHandler implementation="com.igormaznitsa.ideamindmap.lang.refactoring.move.FileMoveHandler"/>-->
     </extensions>
 
     <application-components>
