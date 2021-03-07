@@ -93,6 +93,7 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     RESERVED_WORDS.add("group");
     RESERVED_WORDS.add("note");
     RESERVED_WORDS.add("end");
+    RESERVED_WORDS.add("endnote");
     RESERVED_WORDS.add("over");
     RESERVED_WORDS.add("top");
     RESERVED_WORDS.add("bottom");
