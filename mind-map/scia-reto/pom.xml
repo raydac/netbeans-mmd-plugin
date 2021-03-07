@@ -27,20 +27,21 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <jung.version>2.1.1</jung.version>
-    <batik.version>1.13</batik.version>
+    <batik.version>1.14</batik.version>
     <jlatexmath.version>1.0.7</jlatexmath.version>
-    <plantuml.version>1.2021.1</plantuml.version>
+    <plantuml.version>1.2021.2</plantuml.version>
     <rsyntax.version>3.1.2</rsyntax.version>
-    <rsyntax.autocomplete.version>3.1.0</rsyntax.autocomplete.version>
-    <jna.version>5.6.0</jna.version>
+    <rsyntax.autocomplete.version>3.1.1</rsyntax.autocomplete.version>
+    <jna.version>5.7.0</jna.version>
     <jre.version>11.0.10+9</jre.version>
+    <reactor.project.version>3.4.3</reactor.project.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-core</artifactId>
-        <version>3.4.0</version>
+        <version>${reactor.project.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jung</groupId>
