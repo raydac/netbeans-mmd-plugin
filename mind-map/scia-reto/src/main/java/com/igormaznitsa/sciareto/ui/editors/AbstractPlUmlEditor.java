@@ -118,7 +118,6 @@ import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import org.fife.ui.rtextarea.RUndoManager;
 import reactor.core.Disposable;
 import reactor.core.publisher.DirectProcessor;
 
@@ -139,7 +138,6 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   private File lastExportedFile = null;
   protected final ScalableRsyntaxTextArea editor;
   private final TabTitle title;
-  private final RUndoManager undoManager;
   private final ScalableImage imageComponent;
   private final JSplitPane mainPanel;
   private final JPanel renderedPanel;
@@ -489,16 +487,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       }
     });
 
-    this.undoManager = new RUndoManager(this.editor);
-
     loadContent(file);
 
     this.editor.discardAllEdits();
-    this.undoManager.discardAllEdits();
-
-    this.undoManager.updateActions();
-
-    this.editor.getDocument().addUndoableEditListener(this.undoManager);
 
     updateGraphvizLabelVisibility();
 
@@ -882,12 +873,12 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   @Override
   public boolean isRedo() {
-    return this.undoManager.canRedo();
+    return this.editor.canRedo();
   }
 
   @Override
   public boolean isUndo() {
-    return this.undoManager.canUndo();
+    return this.editor.canUndo();
   }
 
   private boolean isTextEditorVisible() {
@@ -896,9 +887,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   @Override
   public boolean redo() {
-    if (this.undoManager.canRedo() && isTextEditorVisible()) {
+    if (this.editor.canRedo() && isTextEditorVisible()) {
       try {
-        this.undoManager.redo();
+        this.editor.redoLastAction();
       } catch (final CannotRedoException ex) {
         logger.warn("Can't make redo in plantUML editor : " + ex.getMessage());
       } finally {
@@ -911,14 +902,14 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
         });
       }
     }
-    return this.undoManager.canRedo();
+    return this.editor.canRedo();
   }
 
   @Override
   public boolean undo() {
-    if (this.undoManager.canUndo() && isTextEditorVisible()) {
+    if (this.editor.canUndo() && isTextEditorVisible()) {
       try {
-        this.undoManager.undo();
+        this.editor.undoLastAction();
       } catch (final CannotUndoException ex) {
         logger.warn("Can't make undo in plantUML editor : " + ex.getMessage());
       } finally {
@@ -931,7 +922,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
         });
       }
     }
-    return this.undoManager.canUndo();
+    return this.editor.canUndo();
   }
 
   @Override
@@ -984,7 +975,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       this.ignoreChange = false;
     }
 
-    this.undoManager.discardAllEdits();
+    this.editor.discardAllEdits();
     this.title.setChanged(false);
 
     this.mainPanel.revalidate();
