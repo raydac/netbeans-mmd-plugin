@@ -98,6 +98,7 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
         this.repaint();
     }
 
+    @Nonnull
     @Override
     protected RUndoManager createUndoManager() {
         return new RUndoManager(this) {
