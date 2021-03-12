@@ -24,76 +24,90 @@ import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import java.awt.Font;
 import java.awt.event.MouseWheelEvent;
 import javax.annotation.Nonnull;
+import javax.swing.event.UndoableEditEvent;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rtextarea.RUndoManager;
 
 public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
-  
-  public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-  
-  private float fontScale = 1.0f;
-  private float fontOriginalSize;
-  
-  private static final float SCALE_STEP = 0.5f;
-  private static final float SCALE_MIN = 0.03f;
-  private static final float SCALE_MAX = 10.0f;
 
-  private MindMapPanelConfig config;
+    public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
-  public ScalableRsyntaxTextArea(@Nonnull final MindMapPanelConfig mmConfig) {
-    super();
+    private float fontScale = 1.0f;
+    private float fontOriginalSize;
 
-    this.config = mmConfig;
+    private static final float SCALE_STEP = 0.5f;
+    private static final float SCALE_MIN = 0.03f;
+    private static final float SCALE_MAX = 10.0f;
 
-    this.setFont(PreferencesManager.getInstance()
-            .getFont(PreferencesManager.getInstance().getPreferences(),
-                    SpecificKeys.PROPERTY_TEXT_EDITOR_FONT,
-                    DEFAULT_FONT));
-    this.fontOriginalSize = this.getFont().getSize2D();
-    
-    this.addMouseWheelListener((@Nonnull final MouseWheelEvent e) -> {
-      if (!e.isConsumed() && ((e.getModifiers() & this.config.getScaleModifiers()) == this.config.getScaleModifiers())) {
-        e.consume();
-        this.fontScale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, this.fontScale + SCALE_STEP * -e.getWheelRotation()));
+    private MindMapPanelConfig config;
+
+    public ScalableRsyntaxTextArea(@Nonnull final MindMapPanelConfig mmConfig) {
+        super();
+
+        this.config = mmConfig;
+
+        this.setFont(PreferencesManager.getInstance()
+                .getFont(PreferencesManager.getInstance().getPreferences(),
+                        SpecificKeys.PROPERTY_TEXT_EDITOR_FONT,
+                        DEFAULT_FONT));
+        this.fontOriginalSize = this.getFont().getSize2D();
+
+        this.addMouseWheelListener((@Nonnull final MouseWheelEvent e) -> {
+            if (!e.isConsumed() && ((e.getModifiers() & this.config.getScaleModifiers()) == this.config.getScaleModifiers())) {
+                e.consume();
+                this.fontScale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, this.fontScale + SCALE_STEP * -e.getWheelRotation()));
+                updateFontForScale();
+            } else {
+                this.getParent().dispatchEvent(e);
+            }
+        });
+
         updateFontForScale();
-      } else {
-        this.getParent().dispatchEvent(e);
-      }
-    });
-    
-    updateFontForScale();
-  }
-  
-  public void doZoomIn() {
-    this.fontScale = Math.min(SCALE_MAX, this.fontScale + SCALE_STEP);
-    updateFontForScale();
-  }
-  
-  public void doZoomOut() {
-    this.fontScale = Math.max(SCALE_MIN, this.fontScale - SCALE_STEP);
-    updateFontForScale();
-  }
-  
-  public void doZoomReset() {
-    this.fontScale = 1.0f;
-    updateFontForScale();
-  }
-  
-  private void updateFontForScale() {
-    final Font newFont = this.getFont().deriveFont(this.fontScale * this.fontOriginalSize);
-    if (newFont.getSize() > 0) {
-      this.setFont(newFont);
-    } else {
-      this.setFont(this.getFont().deriveFont(1.0f));
     }
-  }
-  
-  public void updateConfig(@Nonnull final MindMapPanelConfig mmConfig) {
-    this.config = mmConfig;
-    this.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
-    this.fontOriginalSize = this.getFont().getSize2D();
-    updateFontForScale();
-    this.revalidate();
-    this.repaint();
-  }
-  
+
+    public void doZoomIn() {
+        this.fontScale = Math.min(SCALE_MAX, this.fontScale + SCALE_STEP);
+        updateFontForScale();
+    }
+
+    public void doZoomOut() {
+        this.fontScale = Math.max(SCALE_MIN, this.fontScale - SCALE_STEP);
+        updateFontForScale();
+    }
+
+    public void doZoomReset() {
+        this.fontScale = 1.0f;
+        updateFontForScale();
+    }
+
+    private void updateFontForScale() {
+        final Font newFont = this.getFont().deriveFont(this.fontScale * this.fontOriginalSize);
+        if (newFont.getSize() > 0) {
+            this.setFont(newFont);
+        } else {
+            this.setFont(this.getFont().deriveFont(1.0f));
+        }
+    }
+
+    public void updateConfig(@Nonnull final MindMapPanelConfig mmConfig) {
+        this.config = mmConfig;
+        this.setFont(PreferencesManager.getInstance().getFont(PreferencesManager.getInstance().getPreferences(), SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
+        this.fontOriginalSize = this.getFont().getSize2D();
+        updateFontForScale();
+        this.revalidate();
+        this.repaint();
+    }
+
+    @Override
+    protected RUndoManager createUndoManager() {
+        return new RUndoManager(this) {
+            @Override
+            public void undoableEditHappened(@Nonnull final UndoableEditEvent e) {
+                this.addEdit(e.getEdit());
+                this.updateActions();
+            }
+
+        };
+    }
+
 }
