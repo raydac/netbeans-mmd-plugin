@@ -210,6 +210,22 @@
                 </configuration>
               </execution>
               <execution>
+                <id>cache-macos-arm64-jdk</id>
+                <goals>
+                  <goal>cache-jdk</goal>
+                </goals>
+                <configuration>
+                  <jdkPathProperty>mvnjlink.jdk.macos.arm64.path</jdkPathProperty>
+                  <provider>BELLSOFT</provider>
+                  <providerConfig>
+                    <os>macos</os>
+                    <version>${jre.version}</version>
+                    <type>jdk</type>
+                    <arch>aarch64</arch>
+                  </providerConfig>
+                </configuration>
+              </execution>
+              <execution>
                 <id>call-jdeps</id>
                 <goals>
                   <goal>jdeps</goal>
@@ -292,6 +308,29 @@
                   </addModules>
                 </configuration>
               </execution>
+              <execution>
+                <id>make-jre-arm64-macos</id>
+                <goals>
+                  <goal>jlink</goal>
+                </goals>
+                <configuration>
+                  <toolJdk>${mvnjlink.jdk.work.path}</toolJdk>
+                  <jdepsReportPath>${project.build.directory}${file.separator}jdeps.out</jdepsReportPath>
+                  <output>${project.build.directory}${file.separator}jre_arm64_macos</output>
+                  <modulePaths>
+                    <path>${mvnjlink.jdk.macos.arm64.path}${file.separator}jmods</path>
+                  </modulePaths>
+                  <options>
+                    <option>--compress=2</option>
+                    <option>--no-header-files</option>
+                    <option>--no-man-pages</option>
+                  </options>
+                  <addModules>
+                    <module>jdk.scripting.nashorn</module>
+                    <module>jdk.localedata</module>
+                  </addModules>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
           <plugin>
@@ -314,7 +353,7 @@
                 <fileVersion>${main.version.raw}.0</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
                 <fileDescription>SciaReto Mind Map editor</fileDescription>
-                  <copyright>2016-2020 Igor Maznitsa</copyright>
+                  <copyright>2016-2021 Igor Maznitsa</copyright>
                 <productVersion>${main.version.raw}.0</productVersion>
                 <txtProductVersion>${project.version}</txtProductVersion>
                 <productName>${project.name}</productName>
@@ -374,7 +413,7 @@
                 </goals>
                 <configuration>
                   <appendAssemblyId>false</appendAssemblyId>
-                  <finalName>${app.name}-linux-x64-openjdk</finalName>
+                  <finalName>${app.name}-linux-x64-jdk</finalName>
                   <descriptors>
                     <descriptor>src${file.separator}assembly${file.separator}linux.xml</descriptor>
                   </descriptors>
@@ -402,7 +441,7 @@
                 </goals>
                 <configuration>
                   <appendAssemblyId>false</appendAssemblyId>
-                  <finalName>${app.name}-windows-x64-openjdk</finalName>
+                  <finalName>${app.name}-windows-x64-jdk</finalName>
                   <descriptors>
                     <descriptor>src${file.separator}assembly${file.separator}windows.xml</descriptor>
                   </descriptors>
@@ -430,9 +469,23 @@
                 </goals>
                 <configuration>
                   <appendAssemblyId>false</appendAssemblyId>
-                  <finalName>${project.build.finalName}-macos-x64-openjdk</finalName>
+                  <finalName>${project.build.finalName}-macos-x64-jdk</finalName>
                   <descriptors>
                     <descriptor>src${file.separator}assembly${file.separator}mac.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+              <execution>
+                <id>make-mac-arm64</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${project.build.finalName}-macos-arm64-jdk</finalName>
+                  <descriptors>
+                    <descriptor>src${file.separator}assembly${file.separator}mac-arm64.xml</descriptor>
                   </descriptors>
                 </configuration>
               </execution>
@@ -465,7 +518,7 @@
                 <phase>install</phase>
                 <configuration>
                   <fileset>
-                    <directory>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-openjdk.jar${file.separator}META-INF</directory>
+                    <directory>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-jdk.jar${file.separator}META-INF</directory>
                   </fileset>
                 </configuration>
               </execution>
@@ -495,8 +548,19 @@
                   <goal>rename</goal>
                 </goals>
                 <configuration>
-                  <sourceFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-openjdk.jar</sourceFile>
-                  <destinationFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-openjdk.zip</destinationFile>
+                  <sourceFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-jdk.jar</sourceFile>
+                  <destinationFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-x64-jdk.zip</destinationFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>rename-mac-arm64-jar-to-zip</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>rename</goal>
+                </goals>
+                <configuration>
+                  <sourceFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-arm64-jdk.jar</sourceFile>
+                  <destinationFile>${project.build.directory}${file.separator}${project.build.finalName}-macos-arm64-jdk.zip</destinationFile>
                 </configuration>
               </execution>
               <execution>
