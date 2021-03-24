@@ -336,11 +336,11 @@
           <plugin>
             <groupId>com.akathist.maven.plugins.launch4j</groupId>
             <artifactId>launch4j-maven-plugin</artifactId>
-            <version>1.7.25</version>
+            <version>2.0.1</version>
             <configuration>
               <headerType>gui</headerType>
               <outfile>${project.build.directory}/${app.name}.exe</outfile>
-              <downloadUrl>http://www.oracle.com/technetwork/java/javase/downloads</downloadUrl>
+              <downloadUrl>https://bell-sw.com/pages/downloads/#/java-8-lts</downloadUrl>
               <classPath>
                 <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
                 <preCp>anything</preCp>
@@ -372,9 +372,9 @@
                 <configuration>
                   <outfile>${project.build.directory}${file.separator}${app.name}.exe</outfile>
                   <dontWrapJar>true</dontWrapJar>
-                  <jar>.\scia-reto.jar</jar>
+                  <jar>scia-reto.jar</jar>
                   <jre>
-                    <path>.\jre</path>
+                    <path>%EXEDIR%\jre</path>
                     <opts>
                       <opt>-Xmx2G</opt>
                     </opts>
@@ -390,7 +390,7 @@
                 <configuration>
                   <outfile>${project.build.directory}${file.separator}${app.name}-nojre.exe</outfile>
                   <dontWrapJar>true</dontWrapJar>
-                  <jar>.\scia-reto.jar</jar>
+                  <jar>scia-reto.jar</jar>
                   <jre>
                     <minVersion>1.8</minVersion>
                     <opts>
