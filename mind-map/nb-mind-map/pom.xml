@@ -9,14 +9,13 @@
   </parent>
   
   <artifactId>nb-mind-map</artifactId>
-  <version>${main.version}</version>
   <packaging>nbm</packaging>
 
   <name>NetBeans Mind Map Editor plugin</name>
   <description>NetBeans editor plugin to create and edit mind maps within NetBeans IDE projects.</description>
 
   <properties>
-    <nb.platform>RELEASE80</nb.platform>
+    <nb.platform>RELEASE90</nb.platform>
   </properties>
 
   <profiles>
@@ -162,7 +161,7 @@
       <plugin>
           <groupId>org.apache.netbeans.utilities</groupId>
         <artifactId>nbm-maven-plugin</artifactId>
-          <version>4.5</version>
+          <version>4.6</version>
         <extensions>true</extensions>
         <configuration>
           <encoding>UTF-8</encoding>
@@ -246,7 +245,17 @@
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-util-ui</artifactId>
+      <version>${nb.platform}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-filesystems</artifactId>
+      <version>${nb.platform}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-filesystems-nb</artifactId>
       <version>${nb.platform}</version>
     </dependency>
     <dependency>
@@ -257,6 +266,11 @@
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-projectuiapi</artifactId>
+      <version>${nb.platform}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-projectuiapi-base</artifactId>
       <version>${nb.platform}</version>
     </dependency>
     <dependency>
@@ -373,6 +387,12 @@
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-java-source</artifactId>
+      <version>${nb.platform}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-java-source-base</artifactId>
       <version>${nb.platform}</version>
       <type>jar</type>
     </dependency>
