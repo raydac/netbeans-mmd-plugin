@@ -12,6 +12,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.4.11.1 (28-mar-2021)</p>
+        <ul>
+          <li>fixed incompatibility with IDEA 2021 View Panel API</li>
+        </ul>
         <p>1.4.11 (28-mar-2021)</p>
         <ul>
           <li>fixed incompatibility with IDEA 2021</li>

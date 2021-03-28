@@ -42,15 +42,17 @@ import com.intellij.util.Alarm;
 import com.intellij.util.SmartList;
 import com.intellij.util.messages.MessageBusConnection;
 import gnu.trove.THashSet;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import java.awt.datatransfer.Transferable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
 
@@ -74,12 +76,31 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
 
     PsiManager.getInstance(project).addPsiTreeChangeListener(createPsiTreeChangeListener(project), this);
     FileStatusManager.getInstance(project).addFileStatusListener(new MyFileStatusListener(), this);
-    CopyPasteManager.getInstance().addContentChangedListener(new CopyPasteUtil.DefaultCopyPasteListener(getUpdater()), this);
+    CopyPasteManager.getInstance().addContentChangedListener(
+            new CopyPasteManager.ContentChangedListener() {
+              final AbstractTreeUpdater myUpdater = getUpdater();
+
+              @Override
+              public void contentChanged(final Transferable oldTransferable, final Transferable newTransferable) {
+                this.updateByTransferable(oldTransferable);
+                this.updateByTransferable(newTransferable);
+              }
+
+              private void updateByTransferable(final Transferable transferable) {
+                PsiElement[] psiElements = CopyPasteUtil.getElementsInTransferable(transferable);
+                PsiElement[] array = psiElements;
+                for (int i = 0; i < psiElements.length; ++i) {
+                  PsiElement psiElement = array[i];
+                  if (!psiElement.getProject().isDisposed()) {
+                    this.myUpdater.addSubtreeToUpdateByElement(psiElement);
+                  }
+                }
+
+              }
+            });
 
     WolfTheProblemSolver.getInstance(project).addProblemListener(new MyProblemListener(), this);
-
     setCanYieldUpdate(true);
-
     initRootNode();
   }
 

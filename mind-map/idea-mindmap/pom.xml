@@ -9,7 +9,8 @@
   </parent>
 
   <artifactId>idea-mindmap</artifactId>
-  <version>${main.version}</version>
+<!--  <version>${main.version}</version>-->
+  <version>1.4.11.1</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -142,10 +143,14 @@
                 <argument>-Pcommonsio_version=${commons.io.version}</argument>
                 <argument>-Pcommonslang_version=${commons.lang.version}</argument>
                 <argument>-Piharder_version=${iharder.version}</argument>
-                <argument>-Pmm_plugin_version=${project.version}</argument>
-                <argument>-Pmm_model_version=${mindmap.model.version}</argument>
-                <argument>-Pmm_ide_common_version=${project.version}</argument>
-                <argument>-Pmm_panel_version=${project.version}</argument>
+<!--                <argument>-Pmm_plugin_version=${project.version}</argument>-->
+                <argument>-Pmm_plugin_version=1.4.11.1</argument>
+<!--                <argument>-Pmm_model_version=${mindmap.model.version}</argument>-->
+                <argument>-Pmm_model_version=1.4.11</argument>
+<!--                <argument>-Pmm_ide_common_version=${project.version}</argument>-->
+                <argument>-Pmm_ide_common_version=1.4.11</argument>
+<!--                <argument>-Pmm_panel_version=${project.version}</argument>-->
+                <argument>-Pmm_panel_version=1.4.11</argument>
               </arguments>
             </configuration>
             <goals>
