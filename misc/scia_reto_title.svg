@@ -12,9 +12,9 @@
    viewBox="0 0 1938.1429 1103.8572"
    id="svg4155"
    version="1.1"
-   inkscape:version="1.0.1 (1.0.1+r74)"
+   inkscape:version="1.0.2 (1.0.2+r75+1)"
    sodipodi:docname="scia_reto_title.svg"
-   inkscape:export-filename="/home/igorm/Projects/Projects_PET/MindMap/mind-map/scia-reto/src/main/resources/icons/splash.png"
+   inkscape:export-filename="/home/igorm/Projects/Projects_PET/netbeans-mmd-plugin/mind-map/scia-reto/src/main/resources/icons/splash.png"
    inkscape:export-xdpi="27.860001"
    inkscape:export-ydpi="27.860001">
   <defs
@@ -435,10 +435,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="2560"
-     inkscape:window-height="1370"
-     inkscape:window-x="0"
-     inkscape:window-y="33"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="1297"
+     inkscape:window-y="27"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -497,7 +497,7 @@
          x="1074.3152"
          y="985.11218"
          id="tspan4209"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">© 2016-2020 Igor A. Maznitsa</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">© 2016-2021 Igor A. Maznitsa</tspan></text>
     <g
        id="g949"
        transform="matrix(0.89825076,0,0,0.89825076,102.11561,-21.013131)"
@@ -555,15 +555,15 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:328.503px;line-height:1.25;font-family:sans-serif;fill:#008000;fill-opacity:1;stroke:none;stroke-width:8.21261"
-       x="327.32294"
-       y="864.46515"
+       style="font-style:normal;font-weight:normal;font-size:304.254px;line-height:1.25;font-family:sans-serif;fill:#004455;fill-opacity:1;stroke:none;stroke-width:7.60639"
+       x="337.08408"
+       y="817.59949"
        id="text937"><tspan
          sodipodi:role="line"
          id="tspan935"
-         x="327.32294"
-         y="864.46515"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Stitch Warrior';-inkscape-font-specification:'Stitch Warrior';fill:#008000;stroke-width:8.21261">1.4.11</tspan></text>
+         x="337.08408"
+         y="817.59949"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:7.60639">1.4.11</tspan></text>
     <g
        id="g1717"
        transform="matrix(1.8302576,0,0,1.8302576,-795.93948,-93.231496)"
