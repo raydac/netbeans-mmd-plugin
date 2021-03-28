@@ -16,6 +16,10 @@
             <includes>
               <include>*.nbm.asc</include>
               <include>*.nbm</include>
+              <include>*javadoc.jar.asc</include>
+              <include>*javadoc.jar</include>
+              <include>*sources.jar.asc</include>
+              <include>*sources.jar</include>
               <include>*.pom</include>
               <include>*.pom.asc</include>
             </includes>
