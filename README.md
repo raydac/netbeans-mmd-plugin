@@ -15,6 +15,8 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.11 (28-mar-2021)__
+- NB:  __stopped support NetBeans 8.0, minimal supported version 9.0__
+- NB:  NetBeans plugin published in Maven central
 - SR:  improved undo for RSyntax panel [#80](https://github.com/raydac/netbeans-mmd-plugin/issues/80) 
 - IJ:  fixed resource bundle loading under Intellij IDEA 2021.1 EAP
 - ALL: improved text representation of mind map for clipboard
