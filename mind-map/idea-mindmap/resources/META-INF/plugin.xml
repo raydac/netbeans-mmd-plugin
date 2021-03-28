@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.4.11-SNAPSHOT</version>
+    <version>1.4.11</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,8 +12,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.4.11 (SNAPSHOT)</p>
+        <p>1.4.11 (28-mar-2021)</p>
         <ul>
+          <li>fixed incompatibility with IDEA 2021</li>
+          <li>improved text representation of mind map for clipboard</li>
+          <li>improved folder processing in import-export plugins</li>
         </ul>
         <p>1.4.10 (14-dec-2020)</p>
         <ul>

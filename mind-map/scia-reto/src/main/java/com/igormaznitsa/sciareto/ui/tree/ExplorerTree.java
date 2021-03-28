@@ -611,11 +611,8 @@ public final class ExplorerTree extends JScrollPane {
 
         if (editor.getMindMapPanel().getSelectedTopics().length == 0 && createdTopic != null) {
           final Topic forfocus = createdTopic;
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
+          SwingUtilities.invokeLater(() -> {
               editor.getMindMapPanel().focusTo(forfocus);
-            }
           });
         }
 
