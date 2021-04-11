@@ -340,7 +340,7 @@
             <configuration>
               <headerType>gui</headerType>
               <outfile>${project.build.directory}/${app.name}.exe</outfile>
-              <downloadUrl>https://bell-sw.com/pages/downloads/#/java-8-lts</downloadUrl>
+              <downloadUrl>https://bell-sw.com/pages/downloads/#/java-11-lts</downloadUrl>
               <classPath>
                 <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
                 <preCp>anything</preCp>
