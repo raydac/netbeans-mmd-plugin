@@ -466,7 +466,7 @@
      id="layer1"
      transform="translate(843.35718,102.42351)">
     <rect
-       style="opacity:1;fill:#aaeeff;fill-opacity:1;stroke:#000080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#ffeeaa;fill-opacity:1;stroke:#000080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4059"
        width="1937.1428"
        height="1102.8572"
@@ -476,7 +476,7 @@
        inkscape:export-xdpi="23.807428"
        inkscape:export-ydpi="23.807428" />
     <ellipse
-       style="opacity:0.99464;fill:#80e5ff;stroke-width:17.8125;stroke-linecap:round;stroke-linejoin:round"
+       style="opacity:0.99464;fill:#ffe680;stroke-width:17.8125;stroke-linecap:round;stroke-linejoin:round"
        id="path929"
        cx="210.38875"
        cy="1012.5573"
@@ -555,15 +555,25 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:304.254px;line-height:1.25;font-family:sans-serif;fill:#004455;fill-opacity:1;stroke:none;stroke-width:7.60639"
-       x="337.08408"
-       y="817.59949"
+       style="font-style:normal;font-weight:normal;font-size:158.66px;line-height:1.25;font-family:sans-serif;fill:#004455;fill-opacity:1;stroke:none;stroke-width:3.96654"
+       x="342.03424"
+       y="737.9599"
        id="text937"><tspan
          sodipodi:role="line"
          id="tspan935"
-         x="337.08408"
-         y="817.59949"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:7.60639">1.4.11</tspan></text>
+         x="342.03424"
+         y="737.9599"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:3.96654">1.4.12-test</tspan><tspan
+         sodipodi:role="line"
+         x="342.03424"
+         y="948.33386"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:3.96654"
+         id="tspan930" /><tspan
+         sodipodi:role="line"
+         x="342.03424"
+         y="1158.7079"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:3.96654"
+         id="tspan928" /></text>
     <g
        id="g1717"
        transform="matrix(1.8302576,0,0,1.8302576,-795.93948,-93.231496)"
