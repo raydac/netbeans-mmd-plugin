@@ -20,7 +20,7 @@
     <jsoup.version>1.11.3</jsoup.version>
     <json.version>20180813</json.version>
     <iharder.version>2.3.9</iharder.version>
-    <commons.io.version>2.5</commons.io.version>
+    <commons.io.version>2.7</commons.io.version>
     <commons.lang.version>2.6</commons.lang.version>
   </properties>
 
