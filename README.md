@@ -14,6 +14,11 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.4.12 (SNAPSHOT)__
+- SR: updated PlantUML version to 1.2021.6
+- SR: improved processing of MMD files during "Find files for text" [#83](https://github.com/raydac/netbeans-mmd-plugin/issues/83) 
+- SR: Updated Launch4j starter
+
 __1.4.11 (28-mar-2021)__
 - NB:  __stopped support NetBeans 8.0, minimal supported version 9.0__
 - NB:  NetBeans plugin published in Maven central
