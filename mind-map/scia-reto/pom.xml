@@ -29,12 +29,12 @@
     <jung.version>2.1.1</jung.version>
     <batik.version>1.14</batik.version>
     <jlatexmath.version>1.0.7</jlatexmath.version>
-    <plantuml.version>1.2021.6</plantuml.version>
+    <plantuml.version>1.2021.7</plantuml.version>
     <rsyntax.version>3.1.2</rsyntax.version>
     <rsyntax.autocomplete.version>3.1.1</rsyntax.autocomplete.version>
     <jna.version>5.8.0</jna.version>
     <jre.version>11.0.10+9</jre.version>
-    <reactor.project.version>3.4.4</reactor.project.version>
+    <reactor.project.version>3.4.6</reactor.project.version>
   </properties>
 
   <dependencies>
@@ -336,7 +336,7 @@
           <plugin>
             <groupId>com.akathist.maven.plugins.launch4j</groupId>
             <artifactId>launch4j-maven-plugin</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.1</version>
             <configuration>
               <headerType>gui</headerType>
               <outfile>${project.build.directory}/${app.name}.exe</outfile>

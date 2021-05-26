@@ -15,7 +15,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.12 (SNAPSHOT)__
-- SR: updated PlantUML version to 1.2021.6
+- SR: updated PlantUML version to 1.2021.7
 - SR: improved processing of MMD files during "Find files for text" [#83](https://github.com/raydac/netbeans-mmd-plugin/issues/83) 
 - SR: Updated Launch4j starter
 
