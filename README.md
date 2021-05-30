@@ -15,6 +15,8 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.4.12 (SNAPSHOT)__
+- IJ: fixed incompatibility with Intellij IDEA 2021.2 EAP
+- IJ: __minimal Intellij IDEA platform version lifted up to 2018.1__
 - SR: updated PlantUML version to 1.2021.7
 - SR: improved processing of MMD files during "Find files for text" [#83](https://github.com/raydac/netbeans-mmd-plugin/issues/83) 
 - SR: Updated Launch4j starter
