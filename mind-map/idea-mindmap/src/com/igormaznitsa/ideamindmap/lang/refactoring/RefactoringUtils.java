@@ -6,8 +6,10 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.FileContentUtil;
 import java.io.File;
@@ -28,7 +30,7 @@ public final class RefactoringUtils {
       throw new NullPointerException("Project folder is not found for " + project);
     }
 
-    URI baseURI = VfsUtil.toUri(newFile);
+    URI baseURI = VfsUtil.toUri(IdeaUtils.vfile2iofile(newFile));
     if (baseURI.isAbsolute()) {
       final URI projectURI = VfsUtil.toUri(projectFolder);
       baseURI = projectURI.relativize(baseURI);

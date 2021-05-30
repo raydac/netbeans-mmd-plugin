@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.4.11</version>
+    <version>1.4.12-SNAPSHOT</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -14,6 +14,8 @@
     <change-notes><![CDATA[
         <p>1.4.12 (SNAPSHOT)</p>
         <ul>
+          <li>minimal supported Intellij IDEA platform lifted to 2018.1</li>
+          <li>minimal supported Java version lifted to 1.8</li>
         </ul>
         <p>1.4.11.1 (28-mar-2021)</p>
         <ul>
@@ -184,7 +186,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="139.1803"/>
+    <idea-version since-build="181.5684.4"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
@@ -214,8 +216,7 @@
 
     <application-components>
         <component>
-            <implementation-class>com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings
-            </implementation-class>
+            <implementation-class>com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings</implementation-class>
         </component>
     </application-components>
 

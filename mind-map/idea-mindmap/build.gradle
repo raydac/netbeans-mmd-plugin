@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "idea"
-    id "org.jetbrains.intellij" version "0.6.5"
+    id "org.jetbrains.intellij" version "0.7.3"
 }
 
 repositories {
@@ -12,13 +12,13 @@ repositories {
 version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.4.12-SNAPSHOT"
 
 intellij {
-    version 'IC-139.1803.20'
+    version 'IC-181.5684.4'
     type 'IC'
     downloadSources false
     updateSinceUntilBuild false
 }
 
-def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.4.11"
+def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.4.12-SNAPSHOT"
 def mindMapCommonVersion = project.hasProperty('mm_ide_common_version') ? project.getProperty('mm_ide_common_version') : project.version
 def mindMapPanelVersion = project.hasProperty('mm_panel_version') ? project.getProperty('mm_panel_version') : project.version
 def commonsIoVersion = project.hasProperty('commonsio_version') ? project.getProperty('commonsio_version') : "2.5"
@@ -27,8 +27,8 @@ def iharderVersion = project.hasProperty('iharder_version') ? project.getPropert
 def jsoupVersion = project.hasProperty('jsoup_version') ? project.getProperty('jsoup_version') : "1.11.3"
 def jsonVersion = project.hasProperty('json_version') ? project.getProperty('json_version') : "20180813"
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 defaultTasks 'clean', 'build'
 

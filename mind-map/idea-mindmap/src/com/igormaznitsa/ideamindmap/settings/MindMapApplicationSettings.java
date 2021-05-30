@@ -36,11 +36,11 @@ import java.lang.reflect.Field;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@State(name = "NBMindMapPlugin", storages = {@Storage(id = "nbmindmap", file = "$APP_CONFIG$/nbmindmapsettings.xml")})
+@State(name = "NBMindMapPlugin", storages = {@Storage(file = "$APP_CONFIG$/nbmindmapsettings.xml")})
 public class MindMapApplicationSettings implements ApplicationComponent, PersistentStateComponent<DeclaredFieldsSerializer>, DeclaredFieldsSerializer.Converter {
 
   private static final MindMapPanelConfig etalon = new MindMapPanelConfig();
-  private static final String PROPERTY = "nbmmd.plugin.folder";
+  private static final String PROPERTY = "idea.mindmap.plugin.folder";
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapApplicationSettings.class);
   private final MindMapPanelConfig editorConfig = new MindMapPanelConfig();
 
