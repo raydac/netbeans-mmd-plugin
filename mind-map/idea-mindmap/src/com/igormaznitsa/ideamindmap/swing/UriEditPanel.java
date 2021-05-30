@@ -26,8 +26,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ResourceBundle;
@@ -92,7 +90,6 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void initComponents() {
     java.awt.GridBagConstraints gridBagConstraints;
 
@@ -105,8 +102,7 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
     setLayout(new java.awt.GridBagLayout());
 
     labelBrowseCurrentLink.setIcon(AllIcons.Buttons.URL_LINK_BIG);
-    java.util.ResourceBundle bundle = BUNDLE;
-    labelBrowseCurrentLink.setToolTipText(bundle.getString("UriEditPanel.labelBrowseCurrentLink.toolTipText")); // NOI18N
+    labelBrowseCurrentLink.setToolTipText(BUNDLE.getString("UriEditPanel.labelBrowseCurrentLink.toolTipText")); // NOI18N
     labelBrowseCurrentLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     labelBrowseCurrentLink.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     labelBrowseCurrentLink.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -137,12 +133,7 @@ public final class UriEditPanel extends javax.swing.JPanel implements HasPreferr
 
     resetButton.setFocusable(false);
 
-    resetButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        textFieldURI.setText("");
-      }
-    });
+    resetButton.addActionListener(e -> textFieldURI.setText(""));
   }
 
   private void labelBrowseCurrentLinkMouseClicked(java.awt.event.MouseEvent evt) {

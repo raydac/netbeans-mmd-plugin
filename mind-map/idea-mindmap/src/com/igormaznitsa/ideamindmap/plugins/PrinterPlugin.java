@@ -13,8 +13,7 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.intellij.openapi.project.Project;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,12 +27,9 @@ public class PrinterPlugin extends AbstractPopupMenuItem {
   public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable Topic activeTopic) {
     final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), AllIcons.PopUp.PRINTER);
     final Project project = (Project) assertNotNull(context.getPanel().findTmpObject("project"));
-    printAction.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final MMDPrintPanel panel = new MMDPrintPanel(context.getDialogProvider(), new IdeaMMDPrintPanelAdaptor(project), PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
-        IdeaUtils.plainMessageClose(project, "Print mind map", panel);
-      }
+    printAction.addActionListener(e -> {
+      final MMDPrintPanel panel = new MMDPrintPanel(context.getDialogProvider(), new IdeaMMDPrintPanelAdaptor(project), PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
+      IdeaUtils.plainMessageClose(project, "Print mind map", panel);
     });
     return printAction;
   }

@@ -51,13 +51,10 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
 
   @Override
   public void onPrintTaskStarted(@Nonnull final MMDPrintPanel source) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final Window wnd = SwingUtilities.windowForComponent(source);
-        if (wnd != null) {
-          wnd.dispose();
-        }
+    SwingUtilities.invokeLater(() -> {
+      final Window wnd = SwingUtilities.windowForComponent(source);
+      if (wnd != null) {
+        wnd.dispose();
       }
     });
   }

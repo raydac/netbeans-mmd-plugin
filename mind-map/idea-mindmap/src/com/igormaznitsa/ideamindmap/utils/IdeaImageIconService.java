@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 public class IdeaImageIconService implements ImageIconService {
-  private static final Map<IconID, Icon> MAP = new EnumMap<IconID, Icon>(IconID.class);
+  private static final Map<IconID, Icon> MAP = new EnumMap<>(IconID.class);
 
   private static final DefaultImageIconService DELEGATE = new DefaultImageIconService();
 

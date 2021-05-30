@@ -19,6 +19,7 @@ package com.igormaznitsa.ideamindmap.facet;
 import com.intellij.util.Base64;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,10 +35,10 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class InMemoryPreferenceNode extends Preferences {
 
-  private final List<PreferenceChangeListener> preferenceChangeListeners = new ArrayList<PreferenceChangeListener>();
-  private final List<NodeChangeListener> nodeChangeListeners = new ArrayList<NodeChangeListener>();
+  private final List<PreferenceChangeListener> preferenceChangeListeners = new ArrayList<>();
+  private final List<NodeChangeListener> nodeChangeListeners = new ArrayList<>();
 
-  private final Map<String, String> storage = new HashMap<String, String>();
+  private final Map<String, String> storage = new HashMap<>();
 
   private void firePreferenceListeners(final String key, final String newValue) {
     final PreferenceChangeEvent event = new PreferenceChangeEvent(this, key, newValue);
@@ -66,7 +67,7 @@ public class InMemoryPreferenceNode extends Preferences {
 
   @Override
   public void clear() throws BackingStoreException {
-    final Map<String, String> copy = new HashMap<String, String>(this.storage);
+    final Map<String, String> copy = new HashMap<>(this.storage);
     this.storage.clear();
     for (final String k : copy.keySet()) {
       firePreferenceListeners(k, null);
@@ -161,7 +162,7 @@ public class InMemoryPreferenceNode extends Preferences {
 
   @Override
   public String[] keys() throws BackingStoreException {
-    return this.storage.keySet().toArray(new String[this.storage.size()]);
+    return this.storage.keySet().toArray(new String[0]);
   }
 
   @Override
@@ -245,7 +246,7 @@ public class InMemoryPreferenceNode extends Preferences {
     for (final Map.Entry<String, String> entry : this.storage.entrySet()) {
       builder.append(StringEscapeUtils.escapeCsv(entry.getKey())).append(',').append(StringEscapeUtils.escapeCsv(entry.getValue())).append('\n');
     }
-    os.write(builder.toString().getBytes("UTF-8"));
+    os.write(builder.toString().getBytes(StandardCharsets.UTF_8));
   }
 
   @Override

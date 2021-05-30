@@ -66,13 +66,13 @@ public class MMHighlighter extends SyntaxHighlighterBase {
       "MMD.FILE",
       DefaultLanguageHighlighterColors.GLOBAL_VARIABLE
   );
-  public static final Map<TextAttributesKey, Pair<String, HighlightSeverity>> DISPLAY_NAMES = new THashMap<TextAttributesKey, Pair<String, HighlightSeverity>>(6);
+  public static final Map<TextAttributesKey, Pair<String, HighlightSeverity>> DISPLAY_NAMES = new THashMap<>(6);
   private static final Map<IElementType, TextAttributesKey> keys1;
   private static final Map<IElementType, TextAttributesKey> keys2;
 
   static {
-    keys1 = new THashMap<IElementType, TextAttributesKey>();
-    keys2 = new THashMap<IElementType, TextAttributesKey>();
+    keys1 = new THashMap<>();
+    keys2 = new THashMap<>();
 
     keys1.put(MMTokens.HEADER_LINE, MMD_HEADER_LINE);
     keys1.put(MMTokens.HEADER_DELIMITER, MMD_HEADER_DELIMITER);

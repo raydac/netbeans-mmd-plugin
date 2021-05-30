@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
-  public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<MindMapFacet>("NBMindMap");
+  public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<>("NBMindMap");
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapFacet.class);
 
   public MindMapFacet(@Nonnull final FacetType facetType, @Nonnull final Module module,
@@ -37,14 +37,7 @@ public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
     super(facetType, module, name, configuration, underlyingFacet);
 
     if (!this.getConfiguration().isDisableAutoCreateProjectKnowledgeFolder()) {
-      ApplicationManager.getApplication().invokeLater(new Runnable() {
-
-        @Override
-        public void run() {
-          IdeaUtils.findKnowledgeFolderForModule(module, true);
-        }
-
-      });
+      ApplicationManager.getApplication().invokeLater(() -> IdeaUtils.findKnowledgeFolderForModule(module, true));
     }
   }
 

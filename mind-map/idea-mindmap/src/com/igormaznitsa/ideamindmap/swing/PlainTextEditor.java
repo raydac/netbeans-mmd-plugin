@@ -42,8 +42,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
@@ -102,103 +100,83 @@ public class PlainTextEditor extends JPanel {
     final JButton buttonImport = makeButton("Import", AllIcons.Buttons.IMPORT);
     final PlainTextEditor theInstance = this;
 
-    buttonImport.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final File home = new File(System.getProperty("user.home")); //NOI18N
+    buttonImport.addActionListener(e -> {
+      final File home = new File(System.getProperty("user.home")); //NOI18N
 
-        final File toOpen = IdeaUtils.chooseFile(theInstance, true, Utils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), home, TEXT_FILE_FILTER);
+      final File toOpen = IdeaUtils.chooseFile(theInstance, true, Utils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), home, TEXT_FILE_FILTER);
 
-        if (toOpen != null) {
-          try {
-            final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
-            editor.setText(text);
-          } catch (Exception ex) {
-            LOGGER.error("Error during text file loading", ex); //NOI18N
-            Messages.showErrorDialog(BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"), "Error");
-          }
+      if (toOpen != null) {
+        try {
+          final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
+          editor.setText(text);
+        } catch (Exception ex) {
+          LOGGER.error("Error during text file loading", ex); //NOI18N
+          Messages.showErrorDialog(BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"), "Error");
         }
-
       }
+
     });
 
     final JButton buttonExport = makeButton("Export", AllIcons.Buttons.EXPORT);
-    buttonExport.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final File home = new File(System.getProperty("user.home")); //NOI18N
-        final File toSave = IdeaUtils.chooseFile(theInstance, true, BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), home, TEXT_FILE_FILTER);
-        if (toSave != null) {
-          try {
-            final String text = getData().getText();
-            FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
-          } catch (Exception ex) {
-            LOGGER.error("Error during text file saving", ex); //NOI18N
-            Messages.showErrorDialog(BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"), "Error");
-          }
+    buttonExport.addActionListener(e -> {
+      final File home = new File(System.getProperty("user.home")); //NOI18N
+      final File toSave = IdeaUtils.chooseFile(theInstance, true, BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), home, TEXT_FILE_FILTER);
+      if (toSave != null) {
+        try {
+          final String text = getData().getText();
+          FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
+        } catch (Exception ex) {
+          LOGGER.error("Error during text file saving", ex); //NOI18N
+          Messages.showErrorDialog(BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"), "Error");
         }
       }
     });
 
     final JButton buttonCopy = makeButton("Copy", AllIcons.Buttons.COPY);
-    buttonCopy.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final StringSelection stringSelection = new StringSelection(editor.getSelectedText());
-        final Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clpbrd.setContents(stringSelection, null);
-      }
+    buttonCopy.addActionListener(e -> {
+      final StringSelection stringSelection = new StringSelection(editor.getSelectedText());
+      final Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+      clpbrd.setContents(stringSelection, null);
     });
 
     final JButton buttonPaste = makeButton("Paste", AllIcons.Buttons.PASTE);
-    buttonPaste.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          final String clipboardText = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-          editor.replaceSelection(clipboardText);
-        } catch (UnsupportedFlavorException ex) {
-          // no text data in clipboard
-        } catch (IOException ex) {
-          LOGGER.error("Error during paste from clipboard", ex); //NOI18N
-        }
+    buttonPaste.addActionListener(e -> {
+      try {
+        final String clipboardText = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+        editor.replaceSelection(clipboardText);
+      } catch (UnsupportedFlavorException ex) {
+        // no text data in clipboard
+      } catch (IOException ex) {
+        LOGGER.error("Error during paste from clipboard", ex); //NOI18N
       }
     });
 
     final JButton buttonClearAll = makeButton("Clear All", AllIcons.Buttons.CLEARALL);
-    buttonClearAll.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        editor.clear();
-      }
-    });
+    buttonClearAll.addActionListener(e -> editor.clear());
 
     final JToggleButton buttonProtect = makeToggleButton("Protect", AllIcons.Buttons.PROTECT_OFF, AllIcons.Buttons.PROTECT_ON);
     buttonProtect.setSelected(data.isEncrypted());
-    buttonProtect.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final JToggleButton src = (JToggleButton) e.getSource();
-            if (src.isSelected()) {
-                final PasswordPanel passwordPanel = new PasswordPanel();
-                if (dialogProvider.msgOkCancel(PlainTextEditor.this, Utils.BUNDLE.getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
-                    password = new String(passwordPanel.getPassword()).trim();
-                    hint = passwordPanel.getHint();
-                    if (password.isEmpty()) {
-                        src.setSelected(false);
-                    }
-                } else {
+    buttonProtect.addActionListener(e -> {
+        final JToggleButton src = (JToggleButton) e.getSource();
+        if (src.isSelected()) {
+            final PasswordPanel passwordPanel = new PasswordPanel();
+            if (dialogProvider.msgOkCancel(PlainTextEditor.this, Utils.BUNDLE.getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
+                password = new String(passwordPanel.getPassword()).trim();
+                hint = passwordPanel.getHint();
+                if (password.isEmpty()) {
                     src.setSelected(false);
                 }
             } else {
-                if (dialogProvider
-                    .msgConfirmOkCancel(PlainTextEditor.this, "Reset password",
-                        "Do you really want reset password for the note?")) {
-                    password = null;
-                    hint = null;
-                } else {
-                    src.setSelected(true);
-                }
+                src.setSelected(false);
+            }
+        } else {
+            if (dialogProvider
+                .msgConfirmOkCancel(PlainTextEditor.this, "Reset password",
+                    "Do you really want reset password for the note?")) {
+                password = null;
+                hint = null;
+            } else {
+                src.setSelected(true);
             }
         }
     });
@@ -214,12 +192,7 @@ public class PlainTextEditor extends JPanel {
     this.add(editor, BorderLayout.CENTER);
 
     // I made so strange trick to move the caret into the start of document, all other ways didn't work :(
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        editor.replaceSelection(data.getText());
-      }
-    });
+    SwingUtilities.invokeLater(() -> editor.replaceSelection(data.getText()));
   }
 
   @Nonnull
@@ -271,21 +244,13 @@ public class PlainTextEditor extends JPanel {
     }
 
     public void replaceSelection(@Nonnull final String clipboardText) {
-      ApplicationManager.getApplication().runWriteAction(new Runnable() {
-        @Override
-        public void run() {
-          CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-            @Override
-            public void run() {
-              final SelectionModel model = Assertions.assertNotNull(getEditor()).getSelectionModel();
-              final int start = model.getSelectionStart();
-              final int end = model.getSelectionEnd();
-              getDocument().replaceString(start, end, "");
-              getDocument().insertString(start, clipboardText);
-            }
-          }, null, null, UndoConfirmationPolicy.DEFAULT, getDocument());
-        }
-      });
+      ApplicationManager.getApplication().runWriteAction(() -> CommandProcessor.getInstance().executeCommand(getProject(), () -> {
+        final SelectionModel model = Assertions.assertNotNull(getEditor()).getSelectionModel();
+        final int start = model.getSelectionStart();
+        final int end = model.getSelectionEnd();
+        getDocument().replaceString(start, end, "");
+        getDocument().insertString(start, clipboardText);
+      }, null, null, UndoConfirmationPolicy.DEFAULT, getDocument()));
     }
 
     public void clear() {

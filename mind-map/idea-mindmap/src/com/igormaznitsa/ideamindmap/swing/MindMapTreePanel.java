@@ -112,7 +112,6 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
     return selected == null ? null : (Topic) selected.getLastPathComponent();
   }
 
-  @SuppressWarnings("unchecked")
   private void initComponents() {
 
     treeScrollPane = new JBScrollPane();
@@ -137,11 +136,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
     buttonExpandAll.setFocusable(false);
     buttonExpandAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonExpandAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonExpandAll.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonExpandAllActionPerformed(evt);
-      }
-    });
+    buttonExpandAll.addActionListener(this::buttonExpandAllActionPerformed);
     toolBar.add(buttonExpandAll);
 
     buttonCollapseAll.setIcon(AllIcons.Buttons.COLLAPSEALL);
@@ -149,11 +144,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
     buttonCollapseAll.setFocusable(false);
     buttonCollapseAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonCollapseAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonCollapseAll.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonCollapseAllActionPerformed(evt);
-      }
-    });
+    buttonCollapseAll.addActionListener(this::buttonCollapseAllActionPerformed);
     toolBar.add(buttonCollapseAll);
 
     buttonUnselect.setIcon(AllIcons.Buttons.SELECT);
@@ -161,11 +152,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
     buttonUnselect.setFocusable(false);
     buttonUnselect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonUnselect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    buttonUnselect.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonUnselectActionPerformed(evt);
-      }
-    });
+    buttonUnselect.addActionListener(this::buttonUnselectActionPerformed);
     toolBar.add(buttonUnselect);
 
     add(toolBar, java.awt.BorderLayout.PAGE_START);

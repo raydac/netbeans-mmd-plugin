@@ -56,7 +56,7 @@ public class KnowledgeViewProjectNode extends AbstractProjectNode {
   @Nonnull
   @Override
   public Collection<? extends AbstractTreeNode> getChildren() {
-    final ArrayList<AbstractTreeNode> result = new ArrayList<AbstractTreeNode>();
+    final ArrayList<AbstractTreeNode> result = new ArrayList<>();
     final PsiManager psiManager = PsiManager.getInstance(getProject());
 
     for (final Module m : ModuleManager.getInstance(myProject).getModules()) {

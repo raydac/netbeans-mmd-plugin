@@ -28,14 +28,14 @@ import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.util.ui.JBUI;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
@@ -163,15 +163,12 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     labelClose = UI_COMPO_FACTORY.makeLabel();
     filler1 = new Box.Filler(new java.awt.Dimension(0, 0), new Dimension(0, 0), new Dimension(32767, 0));
 
-    final ActionListener stateListener = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        stateCaseSensitive = toggleButtonCaseSensitive.isSelected();
-        stateInTopicText = toggleButtonTopicText.isSelected();
-        stateInFile = toggleButtonFile.isSelected();
-        stateInNote = toggleButtonNote.isSelected();
-        stateInURI = toggleButtonURI.isSelected();
-      }
+    final ActionListener stateListener = e -> {
+      stateCaseSensitive = toggleButtonCaseSensitive.isSelected();
+      stateInTopicText = toggleButtonTopicText.isSelected();
+      stateInFile = toggleButtonFile.isSelected();
+      stateInNote = toggleButtonNote.isSelected();
+      stateInURI = toggleButtonURI.isSelected();
     };
 
     toggleButtonCaseSensitive = new FindTextToggleButton(AllIcons.FindText.CASE, "Case-sensetive search", stateListener); // NOI18N
@@ -189,7 +186,7 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.fill = GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 10.0;
-    gridBagConstraints.insets = new Insets(0, 16, 0, 8);
+    gridBagConstraints.insets = JBUI.insets(0, 16, 0, 8);
     add(labelTitle, gridBagConstraints);
 
     textFieldSearchText.setFocusTraversalPolicyProvider(true);
@@ -203,16 +200,12 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 0, 0, 16);
+    gridBagConstraints.insets = JBUI.insetsRight(16);
     add(textFieldSearchText, gridBagConstraints);
 
     buttonPrev.setToolTipText("Find previous (SHIFT+ENTER)"); // NOI18N
     buttonPrev.setFocusable(false);
-    buttonPrev.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(final ActionEvent evt) {
-        buttonPrevActionPerformed(evt);
-      }
-    });
+    buttonPrev.addActionListener(this::buttonPrevActionPerformed);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.fill = GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 10.0;
@@ -220,15 +213,11 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
 
     buttonNext.setToolTipText("Find next (ENTER)"); // NOI18N
     buttonNext.setFocusable(false);
-    buttonNext.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonNextActionPerformed(evt);
-      }
-    });
+    buttonNext.addActionListener(this::buttonNextActionPerformed);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 10.0;
-    gridBagConstraints.insets = new Insets(0, 0, 0, 16);
+    gridBagConstraints.insets = JBUI.insetsRight(16);
     add(buttonNext, gridBagConstraints);
 
     labelClose.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -245,7 +234,7 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     gridBagConstraints.gridx = 7;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = GridBagConstraints.BOTH;
-    gridBagConstraints.insets = new Insets(0, 0, 0, 8);
+    gridBagConstraints.insets = JBUI.insetsRight(8);
     add(labelClose, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 6;
@@ -258,7 +247,7 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     gridBagConstraints.gridx = 4;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.insets = new Insets(0, 0, 0, 8);
+    gridBagConstraints.insets = JBUI.insetsRight(8);
     add(toggleButtonCaseSensitive, gridBagConstraints);
 
     panelButtonsForMap.setLayout(new java.awt.GridBagLayout());

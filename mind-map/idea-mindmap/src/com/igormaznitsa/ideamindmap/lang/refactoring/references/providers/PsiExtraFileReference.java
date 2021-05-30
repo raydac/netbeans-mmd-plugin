@@ -56,19 +56,10 @@ public class PsiExtraFileReference extends PsiReferenceBase<PsiExtraFile> {
 
       final Document document = FileDocumentManager.getInstance().getDocument(containingFile.getVirtualFile());
 
-      CommandProcessor.getInstance().executeCommand(containingFile.getProject(), new Runnable() {
-        @Override
-        public void run() {
-          ApplicationManager.getApplication().runWriteAction(new Runnable() {
-            @Override
-            public void run() {
-              final String packedMindMap = packedNewMindMap;
-              document.setText(packedMindMap);
-              FileDocumentManager.getInstance().saveDocument(document);
-            }
-          });
-        }
-      }, null, null, document);
+      CommandProcessor.getInstance().executeCommand(containingFile.getProject(), () -> ApplicationManager.getApplication().runWriteAction(() -> {
+        document.setText(packedNewMindMap);
+        FileDocumentManager.getInstance().saveDocument(document);
+      }), null, null, document);
 
       extraFile.setMMapURI(newUri);
 

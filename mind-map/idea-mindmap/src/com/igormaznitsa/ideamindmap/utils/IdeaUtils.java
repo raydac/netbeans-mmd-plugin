@@ -107,7 +107,6 @@ public final class IdeaUtils {
   }
 
   @Nullable
-  @SuppressWarnings("unchecked")
   public static VirtualFile findMavenProjectRootForFile(@Nonnull final Project mainProject, @Nonnull final VirtualFile targetFile) {
     VirtualFile result = null;
     try {
@@ -174,10 +173,7 @@ public final class IdeaUtils {
 
     boolean result = false;
     if (transactionGuardInstance != null) {
-      result = safeInvokeMethodNoResult(transactionGuardInstance, "submitTransactionLater", new Class<?>[] {Disposable.class, Runnable.class}, new Object[] {new Disposable() {
-        @Override
-        public void dispose() {
-        }
+      result = safeInvokeMethodNoResult(transactionGuardInstance, "submitTransactionLater", new Class<?>[] {Disposable.class, Runnable.class}, new Object[] {(Disposable) () -> {
       }, runnable});
     }
 
@@ -185,24 +181,9 @@ public final class IdeaUtils {
   }
 
   public static void executeWriteAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
-    final Runnable wrapper = new Runnable() {
-      @Override
-      public void run() {
-        CommandProcessor.getInstance().executeCommand(project, new Runnable() {
-          @Override
-          public void run() {
-            ApplicationManager.getApplication().runWriteAction(action);
-          }
-        }, "MMD.executeWriteAction", null, document);
-      }
-    };
+    final Runnable wrapper = () -> CommandProcessor.getInstance().executeCommand(project, () -> ApplicationManager.getApplication().runWriteAction(action), "MMD.executeWriteAction", null, document);
 
-    if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(new Runnable() {
-      @Override
-      public void run() {
-        wrapper.run();
-      }
-    })) {
+    if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(wrapper::run)) {
       LOGGER.info("Using TransactionGuard for write action");
     } else {
       LOGGER.info("Using CommandProcessor for write action");
@@ -211,24 +192,9 @@ public final class IdeaUtils {
   }
 
   public static void executeReadAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
-    final Runnable wrapper = new Runnable() {
-      @Override
-      public void run() {
-        CommandProcessor.getInstance().executeCommand(project, new Runnable() {
-          @Override
-          public void run() {
-            ApplicationManager.getApplication().runReadAction(action);
-          }
-        }, "MMD>executeReadAction", null, document);
-      }
-    };
+    final Runnable wrapper = () -> CommandProcessor.getInstance().executeCommand(project, () -> ApplicationManager.getApplication().runReadAction(action), "MMD>executeReadAction", null, document);
 
-    if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(new Runnable() {
-      @Override
-      public void run() {
-        wrapper.run();
-      }
-    })) {
+    if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(wrapper::run)) {
       LOGGER.info("Using TransactionGuard for read action");
     } else {
       LOGGER.info("Using CommandProcessor for read action");
@@ -276,27 +242,19 @@ public final class IdeaUtils {
   @Nullable
   public static VirtualFile findKnowledgeFolderForModule(@Nullable final Module module, final boolean createIfMissing) {
     final VirtualFile rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
-    final AtomicReference<VirtualFile> result = new AtomicReference<VirtualFile>();
+    final AtomicReference<VirtualFile> result = new AtomicReference<>();
     if (rootFolder != null) {
       result.set(rootFolder.findChild(PROJECT_KNOWLEDGE_FOLDER_NAME));
       if (result.get() == null || !result.get().isDirectory()) {
         if (createIfMissing) {
-          CommandProcessor.getInstance().executeCommand(module.getProject(), new Runnable() {
-            @Override
-            public void run() {
-              ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                @Override
-                public void run() {
-                  try {
-                    result.set(VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
-                    LOGGER.info("Created knowledge folder for " + module);
-                  } catch (IOException ex) {
-                    LOGGER.error("Can't create knowledge folder for " + module, ex);
-                  }
-                }
-              });
+          CommandProcessor.getInstance().executeCommand(module.getProject(), () -> ApplicationManager.getApplication().runWriteAction(() -> {
+            try {
+              result.set(VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
+              LOGGER.info("Created knowledge folder for " + module);
+            } catch (IOException ex) {
+              LOGGER.error("Can't create knowledge folder for " + module, ex);
             }
-          }, null, null);
+          }), null, null);
         } else {
           result.set(null);
         }
@@ -327,39 +285,28 @@ public final class IdeaUtils {
       LOGGER.error("Can't find file to open, null provided");
       dialogProvider.msgError(null, "Can't find file to open");
     } else {
-      final Runnable startEdit = new Runnable() {
-        @Override
-        public void run() {
-          boolean ok = false;
-          if (Desktop.isDesktopSupported()) {
-            final Desktop dsk = Desktop.getDesktop();
-            if (dsk.isSupported(Desktop.Action.OPEN)) {
-              try {
-                dsk.open(file);
-                ok = true;
-              } catch (Throwable ex) {
-                LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
-              }
+      final Runnable startEdit = () -> {
+        boolean ok = false;
+        if (Desktop.isDesktopSupported()) {
+          final Desktop dsk = Desktop.getDesktop();
+          if (dsk.isSupported(Desktop.Action.OPEN)) {
+            try {
+              dsk.open(file);
+              ok = true;
+            } catch (Throwable ex) {
+              LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
             }
           }
-          if (!ok) {
-            SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-                dialogProvider.msgError(null, "Can't open file in system viewer! See the log!");//NOI18N
-                Toolkit.getDefaultToolkit().beep();
-              }
-            });
-          }
+        }
+        if (!ok) {
+          SwingUtilities.invokeLater(() -> {
+            dialogProvider.msgError(null, "Can't open file in system viewer! See the log!");//NOI18N
+            Toolkit.getDefaultToolkit().beep();
+          });
         }
       };
       final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
-      thr.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(final Thread t, final Throwable e) {
-          LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e);
-        }
-      });
+      thr.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e));
 
       thr.setDaemon(true);
       thr.start();
@@ -514,17 +461,14 @@ public final class IdeaUtils {
   }
 
   public static void showPopup(@Nonnull final String text, @Nonnull final MessageType type) {
-    SwingUtils.safeSwing(new Runnable() {
-      @Override
-      public void run() {
-        final JBPopupFactory factory = JBPopupFactory.getInstance();
-        final BalloonBuilder builder = factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml(text), type, null);
-        final Balloon balloon = builder.createBalloon();
-        balloon.setAnimationEnabled(true);
-        final Component frame = WindowManager.getInstance().findVisibleFrame();
-        if (frame != null) {
-          balloon.show(new RelativePoint(frame, new Point(frame.getWidth(), frame.getHeight())), Balloon.Position.below);
-        }
+    SwingUtils.safeSwing(() -> {
+      final JBPopupFactory factory = JBPopupFactory.getInstance();
+      final BalloonBuilder builder = factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml(text), type, null);
+      final Balloon balloon = builder.createBalloon();
+      balloon.setAnimationEnabled(true);
+      final Component frame = WindowManager.getInstance().findVisibleFrame();
+      if (frame != null) {
+        balloon.show(new RelativePoint(frame, new Point(frame.getWidth(), frame.getHeight())), Balloon.Position.below);
       }
     });
   }
@@ -546,7 +490,7 @@ public final class IdeaUtils {
   }
 
   public static List<PsiExtraFile> findPsiFileLinksForProjectScope(final Project project) {
-    List<PsiExtraFile> result = new ArrayList<PsiExtraFile>();
+    List<PsiExtraFile> result = new ArrayList<>();
     Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MindMapFileType.INSTANCE,
         GlobalSearchScope.allScope(project));
     for (VirtualFile virtualFile : virtualFiles) {

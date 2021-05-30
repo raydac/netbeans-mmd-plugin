@@ -64,7 +64,6 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
     return this.textFieldFilePath;
   }
 
-  @SuppressWarnings("unchecked")
   private void initComponents() {
     java.awt.GridBagConstraints gridBagConstraints;
 
@@ -99,21 +98,13 @@ public final class FileEditPanel extends javax.swing.JPanel implements HasPrefer
     add(textFieldFilePath, gridBagConstraints);
 
     buttonChooseFile.setIcon(AllIcons.Buttons.FILE_MANAGER);
-    buttonChooseFile.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonChooseFileActionPerformed(evt);
-      }
-    });
+    buttonChooseFile.addActionListener(this::buttonChooseFileActionPerformed);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     add(buttonChooseFile, gridBagConstraints);
 
     buttonReset.setIcon(AllIcons.Buttons.CROSS);
-    buttonReset.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonResetActionPerformed(evt);
-      }
-    });
+    buttonReset.addActionListener(this::buttonResetActionPerformed);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     add(buttonReset, gridBagConstraints);

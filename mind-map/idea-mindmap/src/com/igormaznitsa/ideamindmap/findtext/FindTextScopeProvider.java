@@ -25,11 +25,11 @@ public interface FindTextScopeProvider {
 
   boolean toSearchIn(@Nonnull SearchTextScope scope);
 
-  public enum SearchTextScope {
+  enum SearchTextScope {
     IN_TOPIC_TEXT,
     IN_TOPIC_NOTES,
     IN_TOPIC_FILES,
     IN_TOPIC_URI,
-    CASE_INSENSETIVE;
+    CASE_INSENSETIVE
   }
 }

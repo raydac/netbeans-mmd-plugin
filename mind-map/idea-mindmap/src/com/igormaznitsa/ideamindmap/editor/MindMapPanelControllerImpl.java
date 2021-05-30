@@ -229,12 +229,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   private void startOptionsEdit() {
-    final Runnable action = new Runnable() {
-      @Override
-      public void run() {
-        ShowSettingsUtil.getInstance().showSettingsDialog(editor.getProject(), MindMapSettingsComponent.DISPLAY_NAME);
-      }
-    };
+    final Runnable action = () -> ShowSettingsUtil.getInstance().showSettingsDialog(editor.getProject(), MindMapSettingsComponent.DISPLAY_NAME);
 
     if (!IdeaUtils.submitTransactionLater(action)) {
       SwingUtilities.invokeLater(action);
@@ -360,7 +355,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         final int line = FilePathWithLine.strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null));
 
         final FileEditPanel.DataContainer origPath;
-        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath() + (line < 0 ? "" : ":" + Integer.toString(line)), flagOpenInSystem);
+        origPath = new FileEditPanel.DataContainer(uri.asFile(projectFolder).getAbsolutePath() + (line < 0 ? "" : ":" + line), flagOpenInSystem);
         dataContainer = IdeaUtils.editFilePath(this.editor, BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"), projectFolder, origPath);
       }
 

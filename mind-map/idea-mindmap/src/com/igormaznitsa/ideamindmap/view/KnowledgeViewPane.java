@@ -51,8 +51,6 @@ import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -143,12 +141,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
     ToolTipManager.sharedInstance().registerComponent(myTree);
     TreeUtil.installActions(myTree);
 
-    myTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-      @Override
-      public void valueChanged(TreeSelectionEvent e) {
-        fireTreeChangeListener();
-      }
-    });
+    myTree.getSelectionModel().addTreeSelectionListener(e -> fireTreeChangeListener());
     myTree.getModel().addTreeModelListener(new TreeModelListener() {
       @Override
       public void treeNodesChanged(TreeModelEvent e) {

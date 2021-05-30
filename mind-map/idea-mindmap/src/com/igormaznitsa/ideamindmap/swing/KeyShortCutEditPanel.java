@@ -36,8 +36,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -50,7 +48,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
 
   private final List<KeyShortcut> listOfKeys;
-  private final List<TableModelListener> listeners = new ArrayList<TableModelListener>();
+  private final List<TableModelListener> listeners = new ArrayList<>();
   private JToggleButton buttonEditKeyCode;
   private JBCheckBox checkBoxALT;
   private JBCheckBox checkBoxCTRL;
@@ -65,14 +63,9 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
   public KeyShortCutEditPanel(final List<KeyShortcut> list) {
     super();
     initComponents();
-    this.listOfKeys = new ArrayList<KeyShortcut>(list);
+    this.listOfKeys = new ArrayList<>(list);
     this.tableKeyShortcuts.setModel(this);
-    this.tableKeyShortcuts.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(final ListSelectionEvent e) {
-        updateForSelected();
-      }
-    });
+    this.tableKeyShortcuts.getSelectionModel().addListSelectionListener(e -> updateForSelected());
 
     this.tableKeyShortcuts.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter"); //NOI18N
     this.tableKeyShortcuts.getActionMap().put("Enter", new AbstractAction() { //NOI18N
@@ -91,33 +84,30 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
 
     final KeyShortCutEditPanel theInstance = this;
 
-    final ActionListener actionCheckBox = new ActionListener() {
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        final int selectedRow = tableKeyShortcuts.getSelectedRow();
-        if (selectedRow >= 0) {
-          final KeyShortcut oldShortCut = listOfKeys.get(selectedRow);
+    final ActionListener actionCheckBox = e -> {
+      final int selectedRow = tableKeyShortcuts.getSelectedRow();
+      if (selectedRow >= 0) {
+        final KeyShortcut oldShortCut = listOfKeys.get(selectedRow);
 
-          int modifiers = oldShortCut.getModifiers();
-          final JBCheckBox source = (JBCheckBox) e.getSource();
-          if (e.getSource() == checkBoxALT) {
-            modifiers = source.isSelected() ? modifiers | KeyEvent.ALT_MASK : modifiers & ~KeyEvent.ALT_MASK;
-          } else if (e.getSource() == checkBoxCTRL) {
-            modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
-          } else if (e.getSource() == checkBoxMeta) {
-            modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
-          } else if (e.getSource() == checkBoxSHIFT) {
-            modifiers = source.isSelected() ? modifiers | KeyEvent.SHIFT_MASK : modifiers & ~KeyEvent.SHIFT_MASK;
-          }
-
-          listOfKeys.set(selectedRow, new KeyShortcut(oldShortCut.getID(), oldShortCut.getKeyCode(), modifiers));
-
-          for (final TableModelListener l : listeners) {
-            l.tableChanged(new TableModelEvent(theInstance, selectedRow));
-          }
-
-          updateForSelected();
+        int modifiers = oldShortCut.getModifiers();
+        final JBCheckBox source = (JBCheckBox) e.getSource();
+        if (e.getSource() == checkBoxALT) {
+          modifiers = source.isSelected() ? modifiers | KeyEvent.ALT_MASK : modifiers & ~KeyEvent.ALT_MASK;
+        } else if (e.getSource() == checkBoxCTRL) {
+          modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
+        } else if (e.getSource() == checkBoxMeta) {
+          modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
+        } else if (e.getSource() == checkBoxSHIFT) {
+          modifiers = source.isSelected() ? modifiers | KeyEvent.SHIFT_MASK : modifiers & ~KeyEvent.SHIFT_MASK;
         }
+
+        listOfKeys.set(selectedRow, new KeyShortcut(oldShortCut.getID(), oldShortCut.getKeyCode(), modifiers));
+
+        for (final TableModelListener l : listeners) {
+          l.tableChanged(new TableModelEvent(theInstance, selectedRow));
+        }
+
+        updateForSelected();
       }
     };
 
@@ -132,7 +122,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
     if (index >= 0) {
       final KeyShortcut oldShortcut = this.listOfKeys.get(index);
       final int keyCode = evt.getKeyCode();
-      final int modifiers = evt.getModifiers() & (KeyEvent.META_MASK | KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK);
+      final int modifiers = evt.getModifiersEx() & (KeyEvent.META_MASK | KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK);
       final KeyShortcut newShortCut = new KeyShortcut(oldShortcut.getID(), keyCode, modifiers);
       this.listOfKeys.set(index, newShortCut);
       for (final TableModelListener l : this.listeners) {
@@ -188,7 +178,6 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
     return this.listOfKeys;
   }
 
-  @SuppressWarnings("unchecked")
   private void initComponents() {
 
     scrollPaneTable = new JBScrollPane();
@@ -238,11 +227,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
     });
 
     buttonEditKeyCode.setText(BUNDLE.getString("KeyShortCutEditPanel.buttonEditKeyCode.text")); // NOI18N
-    buttonEditKeyCode.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonEditKeyCodeActionPerformed(evt);
-      }
-    });
+    buttonEditKeyCode.addActionListener(this::buttonEditKeyCodeActionPerformed);
 
     javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
     mainPanel.setLayout(mainPanelLayout);

@@ -22,7 +22,6 @@ import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SY
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 
 
-import com.igormaznitsa.ideamindmap.swing.NoteEditorData;
 import com.intellij.openapi.module.Module;
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.findtext.FindTextPanel;
@@ -165,7 +164,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.mindMapPanel.putTmpObject("editor", this);
 
     this.mindMapPanel.addMindMapListener(this);
-    this.mainScrollPane = new JScrollPane(this.mindMapPanel, JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JBScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // NB! JBScrollPane sometime doesn't show scrollbars so that it replaced by swing panel
+    this.mainScrollPane = new JBScrollPane(this.mindMapPanel, JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JBScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // NB! JBScrollPane sometime doesn't show scrollbars so that it replaced by swing panel
 
     this.mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     this.mainScrollPane.getVerticalScrollBar().setBlockIncrement(128);
@@ -273,70 +272,39 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       final MindMap model = this.mindMapPanel.getModel();
       final Document document = getDocument();
       if (document != null && model != null) {
-        IdeaUtils.executeWriteAction(getProject(), document, new Runnable() {
-          @Override
-          public void run() {
-            document.setText(model.packToString());
-          }
-        });
+        IdeaUtils.executeWriteAction(getProject(), document, () -> document.setText(model.packToString()));
       }
     }
   }
 
   private Runnable makeRunnableSetDocumenttextAction(@Nonnull final MindMapDocumentEditor editorIstance, @Nonnull final String documentText) {
-    return new Runnable() {
-      @Override
-      public void run() {
-        safeSwing(new Runnable() {
-          @Override
-          public void run() {
-            if (!mindMapPanel.isDisposed()) {
-              try {
-                if (documentText.isEmpty()) {
-                  LOGGER.warn("Detected empty text document, default mind-map will be created");
-                  mindMapPanel.setModel(new MindMap(true));
-                } else {
-                  mindMapPanel.setModel(new MindMap(new StringReader(documentText)));
-                }
-              } catch (Exception ex) {
-                LOGGER.error("Can't parse MindMap text", ex);
-                editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
-              }
-            }
+    return () -> safeSwing(() -> {
+      if (!mindMapPanel.isDisposed()) {
+        try {
+          if (documentText.isEmpty()) {
+            LOGGER.warn("Detected empty text document, default mind-map will be created");
+            mindMapPanel.setModel(new MindMap(true));
+          } else {
+            mindMapPanel.setModel(new MindMap(new StringReader(documentText)));
           }
-        });
+        } catch (Exception ex) {
+          LOGGER.error("Can't parse MindMap text", ex);
+          editorIstance.mindMapPanel.setErrorText("Can't parse mind map content");
+        }
       }
-    };
+    });
   }
 
   private void loadMindMapFromDocument() {
     final MindMapDocumentEditor editorIstance = this;
-    SwingUtils.safeSwing(new Runnable() {
-      @Override
-      public void run() {
-        final Document document = getDocument();
+    SwingUtils.safeSwing(() -> {
+      final Document document = getDocument();
 
-        if (document != null) {
+      if (document != null) {
 
-          IdeaUtils.executeReadAction(getProject(), getDocument(), new Runnable() {
-            @Override
-            public void run() {
-              safeSwing(makeRunnableSetDocumenttextAction(editorIstance, document.getText()));
-            }
-          });
+        IdeaUtils.executeReadAction(getProject(), getDocument(), () -> safeSwing(makeRunnableSetDocumenttextAction(editorIstance, document.getText())));
 
-          CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-            @Override
-            public void run() {
-              ApplicationManager.getApplication().runReadAction(new Runnable() {
-                @Override
-                public void run() {
-                  safeSwing(makeRunnableSetDocumenttextAction(editorIstance, document.getText()));
-                }
-              });
-            }
-          }, null, null, document);
-        }
+        CommandProcessor.getInstance().executeCommand(getProject(), () -> ApplicationManager.getApplication().runReadAction(() -> safeSwing(makeRunnableSetDocumenttextAction(editorIstance, document.getText()))), null, null, document);
       }
     });
   }
@@ -495,7 +463,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     final VirtualFile baseFolder = findRootFolderForEditedFile();
     final File projectBaseFolder = baseFolder == null ? null : VfsUtil.virtualToIoFile(baseFolder);
 
-    final Set<ExtraType> extras = new HashSet<ExtraType>();
+    final Set<ExtraType> extras = new HashSet<>();
     if (provider.toSearchIn(FindTextScopeProvider.SearchTextScope.IN_TOPIC_NOTES)) {
       extras.add(ExtraType.NOTE);
     }
@@ -526,7 +494,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   @Override
   public void onNonConsumedKeyEvent(@Nonnull final MindMapPanel source, @Nonnull final KeyEvent e, @Nonnull final KeyEventType type) {
     if (type == KeyEventType.PRESSED) {
-      if (e.getModifiers() == 0) {
+      if (e.getModifiersEx() == 0) {
         switch (e.getKeyCode()) {
           case KeyEvent.VK_UP:
           case KeyEvent.VK_LEFT:
@@ -566,23 +534,13 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       activateTextSearchPanel();
     }
 
-    if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-      ApplicationManager.getApplication().invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          findTextPanel.deactivate();
-        }
-      });
+    if (!e.isConsumed() && e.getModifiersEx() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+      ApplicationManager.getApplication().invokeLater(findTextPanel::deactivate);
     }
   }
 
   public void activateTextSearchPanel() {
-    ApplicationManager.getApplication().invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        findTextPanel.activate();
-      }
-    });
+    ApplicationManager.getApplication().invokeLater(findTextPanel::activate);
   }
 
   @Override
@@ -631,12 +589,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         viewPos.x = Math.max(0, newMouseX - dx);
         viewPos.y = Math.max(0, newMouseY - dy);
 
-        source.scrollRectToVisible(viewPos);
       } else {
         viewPos.x = 0;
         viewPos.y = 0;
-        source.scrollRectToVisible(viewPos);
       }
+      source.scrollRectToVisible(viewPos);
 
       this.mainScrollPane.repaint();
     }
@@ -644,44 +601,36 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
   @Override
   public void onEnsureVisibilityOfTopic(@Nonnull final MindMapPanel mindMapPanel, @Nonnull final Topic topic) {
-    SwingUtilities.invokeLater(new Runnable() {
+    SwingUtilities.invokeLater(() -> {
 
-      @Override
-      public void run() {
+      mindMapPanel.doLayout();
 
-        mindMapPanel.doLayout();
-
-        final AbstractElement element = (AbstractElement) topic.getPayload();
-        if (element == null) {
-          return;
-        }
-
-        final Rectangle2D orig = element.getBounds();
-        final int GAP = 30;
-
-        final Rectangle bounds = orig.getBounds();
-        bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
-        bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
-
-        final JViewport viewport = mainScrollPane.getViewport();
-        final Rectangle visible = viewport.getViewRect();
-
-        if (visible.contains(bounds)) {
-          return;
-        }
-
-        bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
-
-        mainScrollPane.revalidate();
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            viewport.scrollRectToVisible(bounds);
-            mainScrollPane.repaint();
-          }
-        });
+      final AbstractElement element = (AbstractElement) topic.getPayload();
+      if (element == null) {
+        return;
       }
 
+      final Rectangle2D orig = element.getBounds();
+      final int GAP = 30;
+
+      final Rectangle bounds = orig.getBounds();
+      bounds.setLocation(Math.max(0, bounds.x - GAP), Math.max(0, bounds.y - GAP));
+      bounds.setSize(bounds.width + GAP * 2, bounds.height + GAP * 2);
+
+      final JViewport viewport = mainScrollPane.getViewport();
+      final Rectangle visible = viewport.getViewRect();
+
+      if (visible.contains(bounds)) {
+        return;
+      }
+
+      bounds.setLocation(bounds.x - visible.x, bounds.y - visible.y);
+
+      mainScrollPane.revalidate();
+      SwingUtilities.invokeLater(() -> {
+        viewport.scrollRectToVisible(bounds);
+        mainScrollPane.repaint();
+      });
     });
 
   }
@@ -717,7 +666,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     if (theFile == null) {
       // file not found
       LOGGER.warn("Can't find FileObject for " + fileURI);
-      getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI.toString()));
+      getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"), fileURI));
     } else if (VfsUtilCore.isAncestor(rootFolder, theFile, false)) {
       // inside project
       if (flagOpenFileLinkInSystemViewer) {
@@ -738,7 +687,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private void processClicksExtraLink(@Nonnull final Topic topic, @Nonnull final ExtraLink extra) {
       final MMapURI uri = extra.getValue();
       if (!IdeaUtils.browseURI(uri.asURI(), isUseInsideBrowser())) { //NOI18N
-          getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri.toString()));
+          getDialogProvider().msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"), uri));
       }
   }
   
@@ -883,7 +832,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void drop(final DropTargetDropEvent dtde) {
     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
@@ -1003,11 +951,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
     final int dropAction = dtde.getDropAction();
 
-    boolean result = false;
-
-    if (this.dragAcceptableType && (dropAction & DnDConstants.ACTION_COPY_OR_MOVE) != 0 && this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()) != null) {
-      result = true;
-    }
+    boolean result = this.dragAcceptableType && (dropAction & DnDConstants.ACTION_COPY_OR_MOVE) != 0 && this.mindMapPanel.findTopicUnderPoint(dtde.getLocation()) != null;
 
     return result;
   }

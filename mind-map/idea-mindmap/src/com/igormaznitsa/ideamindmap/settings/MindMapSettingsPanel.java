@@ -26,12 +26,11 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -62,12 +61,7 @@ public class MindMapSettingsPanel {
   private static File lastImportedSettingsFile;
   private final MindMapSettingsComponent controller;
   private final MindMapPanelConfig etalon = new MindMapPanelConfig();
-  private final Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<String, KeyShortcut>(new Comparator<String>() {
-    @Override
-    public int compare(String o1, String o2) {
-      return o1.compareTo(o2);
-    }
-  });
+  private final Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(Comparator.naturalOrder());
   private JPanel mainPanel;
   private JSpinner spinnerGridStep;
   private JCheckBox checkBoxShowGrid;
@@ -122,97 +116,75 @@ public class MindMapSettingsPanel {
     this.spinnerSelectionFrameGap.setModel(makeIntSpinnerModel(1, 500, 1));
     this.spinnerBorderWidth.setModel(makeFloatSpinnerModel(0.05f, 50.0f, 0.1f));
 
-    buttonAbout.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        AboutForm.show(mainPanel);
-      }
-    });
+    buttonAbout.addActionListener(e -> AboutForm.show(mainPanel));
 
-    buttonResetSettings.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        loadFieldsFrom(new MindMapPanelConfig());
-      }
-    });
+    buttonResetSettings.addActionListener(e -> loadFieldsFrom(new MindMapPanelConfig()));
 
-    buttonImportSettings.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final File file = controller.getDialogProvider().msgOpenFileDialog(null, null,  "importSettings", "Import settings", lastImportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
-        if (file != null) {
-          lastImportedSettingsFile = file;
-          try {
-            final Preferences prefs = (new PropertiesPreferences("IDEA MindMap plugin", FileUtils.readFileToString(file)));
-            final MindMapPanelConfig loadedConfig = new MindMapPanelConfig();
-            loadedConfig.loadFrom(prefs);
-            loadFieldsFrom(loadedConfig);
-          } catch (final Exception ex) {
-            LOGGER.error("Can't import settings", ex);
-            controller.getDialogProvider().msgError(null, "Can't import settings [" + ex.getMessage() + ']');
-          }
+    buttonImportSettings.addActionListener(e -> {
+      final File file = controller.getDialogProvider().msgOpenFileDialog(null, null,  "importSettings", "Import settings", lastImportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
+      if (file != null) {
+        lastImportedSettingsFile = file;
+        try {
+          final Preferences prefs = (new PropertiesPreferences("IDEA MindMap plugin", FileUtils.readFileToString(file)));
+          final MindMapPanelConfig loadedConfig = new MindMapPanelConfig();
+          loadedConfig.loadFrom(prefs);
+          loadFieldsFrom(loadedConfig);
+        } catch (final Exception ex) {
+          LOGGER.error("Can't import settings", ex);
+          controller.getDialogProvider().msgError(null, "Can't import settings [" + ex.getMessage() + ']');
         }
       }
     });
 
-    buttonExportSettings.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        File file = controller.getDialogProvider().msgSaveFileDialog(null, null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
-        if (file != null) {
-          lastExportedSettingsFile = file;
-          if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
-            final Boolean addExt = controller.getDialogProvider().msgConfirmYesNoCancel(null, "Add extension", "Add '.properties' extension?");
-            if (addExt == null) {
-              return;
-            }
-            if (addExt) {
-              file = new File(file.getAbsolutePath() + ".properties");
-            }
-          }
-
-          if (file.exists() && !controller.getDialogProvider().msgConfirmOkCancel(null, "Override file", String.format("File %s exists, to override it?", file.getName()))) {
+    buttonExportSettings.addActionListener(e -> {
+      File file = controller.getDialogProvider().msgSaveFileDialog(null, null, "exportSettings", "Export settings", lastExportedSettingsFile, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
+      if (file != null) {
+        lastExportedSettingsFile = file;
+        if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) {
+          final Boolean addExt = controller.getDialogProvider().msgConfirmYesNoCancel(null, "Add extension", "Add '.properties' extension?");
+          if (addExt == null) {
             return;
           }
-
-          final PropertiesPreferences prefs = new PropertiesPreferences("IDEA MindMap plugin");
-          final MindMapPanelConfig cfg = makeConfig();
-          cfg.saveTo(prefs);
-          try {
-            FileUtils.write(file, prefs.toString());
-          } catch (final Exception ex) {
-            LOGGER.error("Can't export settings", ex);
-            controller.getDialogProvider().msgError(null, "Can't export settings [" + ex.getMessage() + ']');
+          if (addExt) {
+            file = new File(file.getAbsolutePath() + ".properties");
           }
         }
 
-      }
-    });
-
-    buttonFont.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final FontSelector fontSelector = new FontSelector(theFont);
-        if (new DialogComponent(mainPanel, "Select font", fontSelector.getPanel()).showAndGet()) {
-          theFont = fontSelector.getValue();
-          updateFontButton();
+        if (file.exists() && !controller.getDialogProvider().msgConfirmOkCancel(null, "Override file", String.format("File %s exists, to override it?", file.getName()))) {
+          return;
         }
 
-      }
-    });
-    buttonEditKeyShortcuts.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent evt) {
-        final List<KeyShortcut> list = new ArrayList<KeyShortcut>();
-        for (final Map.Entry<String, KeyShortcut> e : mapKeyShortCuts.entrySet()) {
-          list.add(e.getValue());
+        final PropertiesPreferences prefs = new PropertiesPreferences("IDEA MindMap plugin");
+        final MindMapPanelConfig cfg = makeConfig();
+        cfg.saveTo(prefs);
+        try {
+          FileUtils.write(file, prefs.toString());
+        } catch (final Exception ex) {
+          LOGGER.error("Can't export settings", ex);
+          controller.getDialogProvider().msgError(null, "Can't export settings [" + ex.getMessage() + ']');
         }
+      }
 
-        final KeyShortCutEditPanel editPanel = new KeyShortCutEditPanel(list);
-        if (new DialogComponent(mainPanel, "Edit shortcuts", editPanel).showAndGet()) {
-          for (final KeyShortcut k : editPanel.getResult()) {
-            mapKeyShortCuts.put(k.getID(), k);
-          }
+    });
+
+    buttonFont.addActionListener(e -> {
+      final FontSelector fontSelector = new FontSelector(theFont);
+      if (new DialogComponent(mainPanel, "Select font", fontSelector.getPanel()).showAndGet()) {
+        theFont = fontSelector.getValue();
+        updateFontButton();
+      }
+
+    });
+    buttonEditKeyShortcuts.addActionListener(evt -> {
+      final List<KeyShortcut> list = new ArrayList<>();
+      for (final Map.Entry<String, KeyShortcut> e : mapKeyShortCuts.entrySet()) {
+        list.add(e.getValue());
+      }
+
+      final KeyShortCutEditPanel editPanel = new KeyShortCutEditPanel(list);
+      if (new DialogComponent(mainPanel, "Edit shortcuts", editPanel).showAndGet()) {
+        for (final KeyShortcut k : editPanel.getResult()) {
+          mapKeyShortCuts.put(k.getID(), k);
         }
       }
     });
@@ -313,6 +285,7 @@ public class MindMapSettingsPanel {
     return this.mainPanel;
   }
 
+  @SuppressWarnings("unchecked")
   private void createUIComponents() {
     colorButtonBackgroundColor = new ColorChooserButton();
     colorButtonGridColor = new ColorChooserButton();
@@ -329,7 +302,7 @@ public class MindMapSettingsPanel {
     colorButton2ndLevelFill = new ColorChooserButton();
     colorButton2ndLevelText = new ColorChooserButton();
 
-    comboBoxRenderQuality = new JComboBox(new DefaultComboBoxModel(RenderQuality.values()));
+    comboBoxRenderQuality = new ComboBox(new DefaultComboBoxModel(RenderQuality.values()));
   }
 
   public MindMapPanelConfig makeConfig() {

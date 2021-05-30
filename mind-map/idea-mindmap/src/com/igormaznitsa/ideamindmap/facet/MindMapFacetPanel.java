@@ -17,8 +17,7 @@
 package com.igormaznitsa.ideamindmap.facet;
 
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -37,12 +36,7 @@ public class MindMapFacetPanel {
 
   public MindMapFacetPanel(final MindMapFacetEditorTab controller) {
     this.controller = controller;
-    buttonAbout.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        AboutForm.show(mainPanel);
-      }
-    });
+    buttonAbout.addActionListener(e -> AboutForm.show(mainPanel));
   }
 
   public JPanel getPanel() {

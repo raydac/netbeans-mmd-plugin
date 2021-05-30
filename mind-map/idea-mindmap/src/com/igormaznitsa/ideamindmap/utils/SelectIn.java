@@ -70,12 +70,7 @@ public enum SelectIn {
 
     final ToolWindow toolwindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.PROJECT_VIEW);
     if (toolwindow != null) {
-      toolwindow.activate(new Runnable() {
-        @Override
-        public void run() {
-          view.select(null, file, true);
-        }
-      });
+      toolwindow.activate(() -> view.select(null, file, true));
     }
   }
 

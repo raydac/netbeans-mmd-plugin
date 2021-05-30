@@ -13,6 +13,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -20,7 +21,7 @@ public class PsiExtraFile extends AbstractExtraData {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PsiExtraFile.class);
 
-  private static final Charset UTF8 = Charset.forName("UTF-8");
+  private static final Charset UTF8 = StandardCharsets.UTF_8;
 
   private volatile MMapURI uri;
 

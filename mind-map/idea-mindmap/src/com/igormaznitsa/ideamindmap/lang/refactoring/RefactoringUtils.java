@@ -6,10 +6,8 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.FileContentUtil;
 import java.io.File;
@@ -53,11 +51,6 @@ public final class RefactoringUtils {
   }
 
   public static void reparseFile(final PsiFile file) {
-    ApplicationManager.getApplication().runReadAction(new Runnable() {
-      @Override
-      public void run() {
-        FileContentUtil.reparseFiles(file.getProject(), Collections.singletonList(file.getVirtualFile()), true);
-      }
-    });
+    ApplicationManager.getApplication().runReadAction(() -> FileContentUtil.reparseFiles(file.getProject(), Collections.singletonList(file.getVirtualFile()), true));
   }
 }

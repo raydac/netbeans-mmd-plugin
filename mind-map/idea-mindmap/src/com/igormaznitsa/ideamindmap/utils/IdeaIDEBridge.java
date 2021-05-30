@@ -84,23 +84,20 @@ public class IdeaIDEBridge implements IDEBridge {
       break;
     }
 
-    ApplicationManager.getApplication().invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final long timestamp = System.currentTimeMillis();
-        final Notification notification = new Notification(MMD_GROUP.getDisplayId(), StringEscapeUtils.escapeHtml(title), StringEscapeUtils.escapeHtml(text), ideType) {
-          @Nullable
-          @Override
-          public Icon getIcon() {
-            return AllIcons.Logo.MINDMAP;
-          }
+    ApplicationManager.getApplication().invokeLater(() -> {
+      final long timestamp = System.currentTimeMillis();
+      final Notification notification = new Notification(MMD_GROUP.getDisplayId(), StringEscapeUtils.escapeHtml(title), StringEscapeUtils.escapeHtml(text), ideType) {
+        @Nullable
+        @Override
+        public Icon getIcon() {
+          return AllIcons.Logo.MINDMAP;
+        }
 
-          public long getTimestamp() {
-            return timestamp;
-          }
-        };
-        Notifications.Bus.notify(notification);
-      }
+        public long getTimestamp() {
+          return timestamp;
+        }
+      };
+      Notifications.Bus.notify(notification);
     });
   }
 

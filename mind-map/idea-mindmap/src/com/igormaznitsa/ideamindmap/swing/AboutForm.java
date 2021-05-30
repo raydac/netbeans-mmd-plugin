@@ -40,14 +40,11 @@ public class AboutForm {
   public AboutForm() {
     final IdeaPluginDescriptor descriptor = PluginManager.getPlugin(PluginId.getId("nb-mind-map-idea"));
     this.htmlLabelText.setText(BUNDLE.getString("AboutText").replace("${version}", descriptor == null ? "<unknown>" : descriptor.getVersion()));
-    this.htmlLabelText.addLinkListener(new JHtmlLabel.LinkListener() {
-      @Override
-      public void onLinkActivated(final JHtmlLabel source, final String link) {
-        try {
-          IdeaUtils.browseURI(URI.create(link), false);
-        } catch (Exception ex) {
-          ex.printStackTrace();
-        }
+    this.htmlLabelText.addLinkListener((JHtmlLabel.LinkListener) (source, link) -> {
+      try {
+        IdeaUtils.browseURI(URI.create(link), false);
+      } catch (Exception ex) {
+        ex.printStackTrace();
       }
     });
     this.mainPanel.setPreferredSize(new Dimension(600, 400));

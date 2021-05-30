@@ -18,14 +18,15 @@ package com.igormaznitsa.ideamindmap.utils.logger;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerService;
-import com.intellij.util.containers.HashMap;
+
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
 public class IdeaLoggerService implements LoggerService {
 
-  private final Map<Class<?>, Logger> cacheForClass = new HashMap<Class<?>, Logger>();
-  private final Map<String, Logger> cacheForCategory = new HashMap<String, Logger>();
+  private final Map<Class<?>, Logger> cacheForClass = new HashMap<>();
+  private final Map<String, Logger> cacheForCategory = new HashMap<>();
 
   @Override
   @Nonnull

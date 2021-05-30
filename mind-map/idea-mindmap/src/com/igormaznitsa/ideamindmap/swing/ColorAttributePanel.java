@@ -63,7 +63,6 @@ public class ColorAttributePanel extends JPanel {
         this.colorChooserFill.getValue());
   }
 
-  @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">
   private void initComponents() {
 
@@ -85,25 +84,13 @@ public class ColorAttributePanel extends JPanel {
     colorChooserText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 
     buttonResetBorder.setIcon(AllIcons.Buttons.CROSS);
-    buttonResetBorder.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonResetBorderActionPerformed(evt);
-      }
-    });
+    buttonResetBorder.addActionListener(this::buttonResetBorderActionPerformed);
 
     buttonResetFill.setIcon(AllIcons.Buttons.CROSS);
-    buttonResetFill.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonResetFillActionPerformed(evt);
-      }
-    });
+    buttonResetFill.addActionListener(this::buttonResetFillActionPerformed);
 
     buttonResetText.setIcon(AllIcons.Buttons.CROSS);
-    buttonResetText.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonResetTextActionPerformed(evt);
-      }
-    });
+    buttonResetText.addActionListener(this::buttonResetTextActionPerformed);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);

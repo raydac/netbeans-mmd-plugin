@@ -20,7 +20,6 @@ import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.intellij.openapi.ui.Messages;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import javax.swing.JButton;
@@ -29,14 +28,11 @@ public class DonateButton extends JButton {
   private static final long serialVersionUID = -7732647214349379363L;
   private static final URI LINK = URI.create("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2");
 
-  private static final ActionListener LISTENER = new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      try {
-        IdeaUtils.browseURI(LINK, false);
-      } catch (Exception ex) {
-        Messages.showErrorDialog((Component) e.getSource(), "Can't open link! You can try to open it manually:\n" + LINK.toASCIIString(), "Error");
-      }
+  private static final ActionListener LISTENER = e -> {
+    try {
+      IdeaUtils.browseURI(LINK, false);
+    } catch (Exception ex) {
+      Messages.showErrorDialog((Component) e.getSource(), "Can't open link! You can try to open it manually:\n" + LINK.toASCIIString(), "Error");
     }
   };
 

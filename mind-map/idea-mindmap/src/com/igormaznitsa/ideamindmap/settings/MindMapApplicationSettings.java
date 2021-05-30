@@ -122,7 +122,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
       return Integer.toString(((Color) value).getRGB());
     } else if (fieldType == Font.class) {
       final Font font = (Font) value;
-      return font.getFamily() + ':' + Integer.toString(font.getStyle()) + ':' + Integer.toString(font.getSize());
+      return font.getFamily() + ':' + font.getStyle() + ':' + font.getSize();
     } else if (fieldType == RenderQuality.class) {
       final RenderQuality rq = (RenderQuality) value;
       return GetUtils.ensureNonNull(rq, RenderQuality.DEFAULT).name();

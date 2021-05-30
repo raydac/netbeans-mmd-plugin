@@ -16,8 +16,7 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
   @Override
   public ASTNode parse(@Nonnull final IElementType root, @Nonnull final PsiBuilder builder) {
     parseLight(root, builder);
-    final ASTNode result = builder.getTreeBuilt();
-    return result;
+    return builder.getTreeBuilt();
   }
 
   @Override
