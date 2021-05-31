@@ -48,6 +48,7 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.datatransfer.Transferable;
 import java.util.Collection;
 import java.util.Comparator;
@@ -134,7 +135,7 @@ public class KnowledgeViewTreeBuilder extends BaseProjectTreeBuilder {
     }
     if (containingFiles != null) {
       updateNode(rootNode);
-      Enumeration children = rootNode.children();
+      final Enumeration<TreeNode> children = rootNode.children();
       while (children.hasMoreElements()) {
         DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
         updateNodesContaining(containingFiles, child);

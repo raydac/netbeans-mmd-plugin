@@ -40,23 +40,17 @@ import com.intellij.util.EditSourceOnDoubleClickHandler;
 import com.intellij.util.OpenSourceUtil;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
-import java.awt.Font;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import org.jetbrains.annotations.NonNls;
+
 import javax.annotation.Nonnull;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.ToolTipManager;
+import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-import org.jetbrains.annotations.NonNls;
+import javax.swing.tree.*;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.MissingResourceException;
 
 public class KnowledgeViewPane extends AbstractProjectViewPane {
   @NonNls
@@ -111,15 +105,14 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
 
       @Override
       public void setFont(Font font) {
-        if (Registry.is("bigger.font.in.project.view")) {
-          font = font.deriveFont(font.getSize() + 1.0f);
+        try {
+          if (Registry.is("bigger.font.in.project.view")) {
+            font = font.deriveFont(font.getSize() + 1.0f);
+          }
+          super.setFont(font);
+        } catch (MissingResourceException ex) {
+          super.setFont(font);
         }
-        super.setFont(font);
-      }
-
-      @Override
-      public DefaultMutableTreeNode getSelectedNode() {
-        return null;
       }
     };
   }
