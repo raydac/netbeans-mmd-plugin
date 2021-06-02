@@ -63,7 +63,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
 
   @Override
   public String getTitle() {
-    return "Knowledge";
+    return "Knowledge folders";
   }
 
   @Override
