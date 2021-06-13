@@ -25,6 +25,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 
+import static java.util.Objects.requireNonNull;
+
 public abstract class AbstractTextEditor extends AbstractEditor {
 
   protected final AtomicReference<TextFile> currentTextFile = new AtomicReference<>();
@@ -40,7 +42,7 @@ public abstract class AbstractTextEditor extends AbstractEditor {
     if (foundBackupContent == null) {
       fileToLoad = new TextFile(file);
     } else {
-      fileToLoad = new TextFile(file, true, Objects.requireNonNull(foundBackupContent.getContent()));
+      fileToLoad = new TextFile(file, true, requireNonNull(foundBackupContent.getContent()));
     }
     this.currentTextFile.set(fileToLoad);
     this.onLoadContent(fileToLoad);
