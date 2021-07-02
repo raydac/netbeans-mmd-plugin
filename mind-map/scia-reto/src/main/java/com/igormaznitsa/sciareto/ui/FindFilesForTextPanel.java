@@ -45,6 +45,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+import org.apache.commons.lang.StringUtils;
 
 public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
@@ -70,9 +71,13 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
     private static final class TheLocale implements Comparable<TheLocale> {
 
         private final Locale locale;
-
+        private final String displayName;
+        
+        private static final int MAX_DISPLAY_LENGTH = 24;
+        
         public TheLocale(final Locale locale) {
             this.locale = locale;
+            this.displayName = StringUtils.abbreviate(this.locale.getDisplayName(), MAX_DISPLAY_LENGTH);
         }
 
         @Override
@@ -95,7 +100,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
         @Override
         public String toString() {
-            return this.locale.getDisplayName();
+            return this.displayName;
         }
 
         @Override
