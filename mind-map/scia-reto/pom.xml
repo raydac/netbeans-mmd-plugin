@@ -34,7 +34,7 @@
     <rsyntax.autocomplete.version>3.1.2</rsyntax.autocomplete.version>
     <jna.version>5.8.0</jna.version>
     <jre.version>11.0.10+9</jre.version>
-    <reactor.project.version>3.4.6</reactor.project.version>
+    <reactor.project.version>3.4.8</reactor.project.version>
   </properties>
 
   <dependencies>
