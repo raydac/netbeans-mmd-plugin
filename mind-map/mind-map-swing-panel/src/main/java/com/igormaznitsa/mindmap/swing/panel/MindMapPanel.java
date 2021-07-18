@@ -54,6 +54,8 @@ import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.awt.AWTEvent;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -113,7 +115,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import org.apache.commons.lang.StringEscapeUtils;
 
 public class MindMapPanel extends JComponent implements ClipboardOwner {
 
@@ -1364,19 +1365,19 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         final ExtraFile efile = (ExtraFile) extra;
         final String line = efile.getAsURI().getParameters().getProperty("line", null);
         if (line != null && !line.equals("0")) {
-          builder.append(String.format(BUNDLE.getString("MindMapPanel.tooltipOpenFileWithLine"), StringEscapeUtils.escapeHtml(efile.getAsString()), StringEscapeUtils.escapeHtml(line)));
+          builder.append(String.format(BUNDLE.getString("MindMapPanel.tooltipOpenFileWithLine"), StringEscapeUtils.escapeHtml3(efile.getAsString()), StringEscapeUtils.escapeHtml3(line)));
         } else {
-          builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenFile")).append(StringEscapeUtils.escapeHtml(efile.getAsString()));
+          builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenFile")).append(StringEscapeUtils.escapeHtml3(efile.getAsString()));
         }
       }
       break;
       case TOPIC: {
         final Topic topic = this.getModel().findTopicForLink((ExtraTopic) extra);
-        builder.append(BUNDLE.getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml(ModelUtils.makeShortTextVersion(topic == null ? "----" : topic.getText(), 32)));
+        builder.append(BUNDLE.getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml3(ModelUtils.makeShortTextVersion(topic == null ? "----" : topic.getText(), 32)));
       }
       break;
       case LINK: {
-        builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml(ModelUtils.makeShortTextVersion(((ExtraLink) extra).getAsString(), 48)));
+        builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml3(ModelUtils.makeShortTextVersion(((ExtraLink) extra).getAsString(), 48)));
       }
       break;
       case NOTE: {
@@ -1385,7 +1386,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenText")).append("#######");
         } else {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenText")).append(StringEscapeUtils
-              .escapeHtml(ModelUtils.makeShortTextVersion(((ExtraNote) extra).getAsString(), 64)));
+              .escapeHtml3(ModelUtils.makeShortTextVersion(((ExtraNote) extra).getAsString(), 64)));
         }
       }
       break;

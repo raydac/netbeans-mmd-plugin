@@ -19,7 +19,7 @@
 package com.igormaznitsa.sciareto.ui.platform;
 
 import javax.annotation.Nonnull;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 

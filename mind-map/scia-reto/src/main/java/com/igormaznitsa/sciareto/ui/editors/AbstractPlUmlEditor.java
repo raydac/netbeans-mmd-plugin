@@ -19,7 +19,7 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml3;
 
 
 import com.igormaznitsa.meta.annotation.UiThread;
@@ -1151,7 +1151,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
                 setMenuItemsEnable(true);
               } else {
                 final JLabel errorLabel = new JLabel(
-                    "<html><h1>ERROR: " + escapeHtml(error.getMessage()) + "</h1></html>",
+                    "<html><h1>ERROR: " + escapeHtml3(error.getMessage()) + "</h1></html>",
                     JLabel.CENTER);
                 errorLabel.setName("ERROR_LABEL");
                 renderedPanel.remove(progressLabel);
@@ -1171,7 +1171,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       logger.error("Error of script rendering:" + ex);
       SwingUtilities.invokeLater(() -> {
         final JLabel errorLabel =
-            new JLabel("<html><h1>ERROR: " + escapeHtml(ex.getMessage()) + "</h1></html>",
+            new JLabel("<html><h1>ERROR: " + escapeHtml3(ex.getMessage()) + "</h1></html>",
                 JLabel.CENTER);
         errorLabel.setName("ERROR_LABEL");
         renderedPanel.remove(progressLabel);

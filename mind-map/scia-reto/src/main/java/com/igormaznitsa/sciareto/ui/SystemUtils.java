@@ -46,7 +46,7 @@ public final class SystemUtils {
   }
   
   public static boolean isMac(){
-    return org.apache.commons.lang.SystemUtils.IS_OS_MAC;
+    return org.apache.commons.lang3.SystemUtils.IS_OS_MAC;
   }
   
   @Nonnull

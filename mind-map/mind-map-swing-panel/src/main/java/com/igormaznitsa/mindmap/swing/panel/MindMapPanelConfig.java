@@ -25,6 +25,8 @@ import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import org.apache.commons.lang3.SystemUtils;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -42,7 +44,6 @@ import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.KeyStroke;
-import org.apache.commons.lang.SystemUtils;
 
 public final class MindMapPanelConfig implements Serializable {
 

@@ -50,8 +50,8 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class MDExporter extends AbstractExporter {
 
@@ -163,7 +163,7 @@ public class MDExporter extends AbstractExporter {
       }
       state.append(prefix)
           .append("<pre>")//NOI18N
-          .append(StringEscapeUtils.escapeHtml(note.getValue()))
+          .append(StringEscapeUtils.escapeHtml3(note.getValue()))
           .append("</pre>")//NOI18N
           .nextLine();
     }

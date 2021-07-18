@@ -20,8 +20,8 @@
     <jsoup.version>1.11.3</jsoup.version>
     <json.version>20180813</json.version>
     <iharder.version>2.3.9</iharder.version>
-    <commons.io.version>2.5</commons.io.version>
-    <commons.lang.version>2.6</commons.lang.version>
+    <commons.io.version>2.11.0</commons.io.version>
+    <commons.lang.version>3.12.0</commons.lang.version>
   </properties>
 
   <modules>
@@ -92,8 +92,8 @@
         <version>${commons.io.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
         <version>${commons.lang.version}</version>
       </dependency>
       <dependency>
@@ -254,7 +254,7 @@
               <goal>check</goal>
             </goals>
             <configuration>
-              <restrictClassFormat><![CDATA[<8]]></restrictClassFormat>
+              <restrictClassFormat><![CDATA[<=8]]></restrictClassFormat>
               <checkMayContainNull>true</checkMayContainNull>
               <checkNullable>true</checkNullable>
             </configuration>

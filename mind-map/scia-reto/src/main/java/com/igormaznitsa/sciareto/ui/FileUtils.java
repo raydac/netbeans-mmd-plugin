@@ -43,7 +43,7 @@ public final class FileUtils {
       final String path = FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath());
       if (path.isEmpty()) {
         result = true;
-      } else if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS) {
+      } else if (org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS) {
         result = path.length() == 3 && path.endsWith(":\\"); //NOI18N
       } else {
         result = path.equals("/"); //NOI18N

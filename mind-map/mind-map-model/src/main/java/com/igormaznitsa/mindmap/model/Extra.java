@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.mindmap.model;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -26,7 +28,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class Extra<T> implements Serializable, Constants, Cloneable {
 
@@ -104,7 +105,7 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
     @Nonnull
     public Extra<?> parseLoaded(@Nonnull final String text, @Nonnull Map<String, String> attributes)
         throws URISyntaxException {
-      final String preprocessed = StringEscapeUtils.unescapeHtml(text);
+      final String preprocessed = StringEscapeUtils.unescapeHtml3(text);
       switch (this) {
         case FILE:
           return new ExtraFile(preprocessed);

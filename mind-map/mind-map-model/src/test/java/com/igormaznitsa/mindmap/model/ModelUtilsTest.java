@@ -19,15 +19,16 @@ import java.io.File;
 import java.net.URI;
 import java.util.Properties;
 import javax.annotation.Nonnull;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.SystemUtils;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ModelUtilsTest {
 
   private void assertEscapeUnescapePre(@Nonnull final String text) {
-    assertEquals(text, StringEscapeUtils.unescapeHtml(ModelUtils.escapeTextForPreBlock(text)));
+    assertEquals(text, StringEscapeUtils.unescapeHtml3(ModelUtils.escapeTextForPreBlock(text)));
   }
   
   @Test

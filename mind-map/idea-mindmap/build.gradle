@@ -21,8 +21,8 @@ intellij {
 def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.4.12-SNAPSHOT"
 def mindMapCommonVersion = project.hasProperty('mm_ide_common_version') ? project.getProperty('mm_ide_common_version') : project.version
 def mindMapPanelVersion = project.hasProperty('mm_panel_version') ? project.getProperty('mm_panel_version') : project.version
-def commonsIoVersion = project.hasProperty('commonsio_version') ? project.getProperty('commonsio_version') : "2.5"
-def commonsLangVersion = project.hasProperty('commonslang_version') ? project.getProperty('commonslang_version') : "2.6"
+def commonsIoVersion = project.hasProperty('commonsio_version') ? project.getProperty('commonsio_version') : "2.11.0"
+def commonsLangVersion = project.hasProperty('commonslang_version') ? project.getProperty('commonslang_version') : "3.12.0"
 def iharderVersion = project.hasProperty('iharder_version') ? project.getProperty('iharder_version') : "2.3.9"
 def jsoupVersion = project.hasProperty('jsoup_version') ? project.getProperty('jsoup_version') : "1.11.3"
 def jsonVersion = project.hasProperty('json_version') ? project.getProperty('json_version') : "20180813"
@@ -38,7 +38,7 @@ dependencies {
     compile 'com.igormaznitsa:meta-utils:1.1.3'
 
     compile 'commons-io:commons-io:' + commonsIoVersion
-    compile 'commons-lang:commons-lang:' + commonsLangVersion
+    compile 'org.apache.commons:commons-lang3:' + commonsLangVersion
     compile 'org.json:json:' + jsonVersion
     compile 'net.iharder:base64:' + iharderVersion
     compile 'org.jsoup:jsoup:' + jsoupVersion

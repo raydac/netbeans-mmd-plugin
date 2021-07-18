@@ -55,7 +55,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public class FreeMindExporter extends AbstractExporter {
 
@@ -155,9 +155,9 @@ public class FreeMindExporter extends AbstractExporter {
         htmlTextForNode.append("<li>"); //NOI18N
         if (e instanceof ExtraLinkable) {
           final String linkAsText = ((ExtraLinkable) e).getAsURI().asString(true, e.getType() != Extra.ExtraType.FILE);
-          htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml(e.getType().name())).append(": </b>").append("<a href=\"").append(linkAsText).append("\">").append(linkAsText).append("</a>"); //NOI18N
+          htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml3(e.getType().name())).append(": </b>").append("<a href=\"").append(linkAsText).append("\">").append(linkAsText).append("</a>"); //NOI18N
         } else {
-          htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml(e.getType().name())).append(": </b>").append(StringEscapeUtils.escapeHtml(e.getAsString())); //NOI18N
+          htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml3(e.getType().name())).append(": </b>").append(StringEscapeUtils.escapeHtml3(e.getAsString())); //NOI18N
         }
         htmlTextForNode.append("</li>"); //NOI18N
       }
@@ -165,7 +165,7 @@ public class FreeMindExporter extends AbstractExporter {
     }
 
     if (note != null) {
-      htmlTextForNode.append("<p><pre>").append(StringEscapeUtils.escapeHtml(note.getValue())).append("</pre></p>"); //NOI18N
+      htmlTextForNode.append("<p><pre>").append(StringEscapeUtils.escapeHtml3(note.getValue())).append("</pre></p>"); //NOI18N
     }
 
     if (htmlTextForNode.length() > 0) {

@@ -20,7 +20,7 @@
 package com.igormaznitsa.sciareto;
 
 import static java.lang.System.currentTimeMillis;
-import static org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS;
+import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 
 
 import com.igormaznitsa.commons.version.Version;

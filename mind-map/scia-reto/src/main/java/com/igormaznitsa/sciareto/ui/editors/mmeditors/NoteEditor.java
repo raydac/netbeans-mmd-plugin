@@ -72,7 +72,7 @@ import javax.swing.text.TextAction;
 import javax.swing.text.Utilities;
 import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public final class NoteEditor extends JPanel {
 

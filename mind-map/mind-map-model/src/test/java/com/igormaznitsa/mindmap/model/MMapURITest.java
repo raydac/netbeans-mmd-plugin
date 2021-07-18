@@ -18,7 +18,8 @@ package com.igormaznitsa.mindmap.model;
 import java.io.File;
 import java.net.URI;
 import java.util.Properties;
-import org.apache.commons.lang.SystemUtils;
+
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;

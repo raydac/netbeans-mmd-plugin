@@ -68,7 +68,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public final class FileLinkGraphPanel extends javax.swing.JPanel {
 
@@ -116,7 +116,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     public FileVertex(@Nonnull final File file, @Nonnull final FileVertexType type) {
       this.type = type;
       this.text = file.getName();
-      this.tooltip = "<html><b>" + type.toString() + "</b><br>" + StringEscapeUtils.unescapeHtml(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
+      this.tooltip = "<html><b>" + type.toString() + "</b><br>" + StringEscapeUtils.unescapeHtml3(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
       this.file = file;
     }
 

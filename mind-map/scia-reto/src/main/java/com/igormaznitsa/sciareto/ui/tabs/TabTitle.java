@@ -28,6 +28,8 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -44,7 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
-import org.apache.commons.lang.StringEscapeUtils;
 
 public final class TabTitle extends JPanel {
 
@@ -259,7 +260,7 @@ public final class TabTitle extends JPanel {
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
-        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml(makeName()) + (changed ? "</u></b>" : "") + "</html>"); //NOI18N
+        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml3(makeName()) + (changed ? "</u></b>" : "") + "</html>"); //NOI18N
         revalidate();
       }
     });
