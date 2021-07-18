@@ -201,9 +201,6 @@
               <goal>check</goal>
             </goals>
             <configuration>
-              <annotations>
-                <annotation>com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer</annotation>
-              </annotations>
               <signature>
                 <groupId>org.codehaus.mojo.signature</groupId>
                 <artifactId>java18</artifactId>
