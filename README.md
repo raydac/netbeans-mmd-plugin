@@ -14,7 +14,8 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
-__1.4.12 (SNAPSHOT)__
+__1.5.0 (SNAPSHOT)__
+- __minimal JDK version for mind map model lifted up to 1.8__
 - SR: RSyntaxTextPanel updated to 3.1.3, Kotlin syntax support added
 - IJ: fixed incompatibility with Intellij IDEA 2021.2 EAP
 - IJ: __minimal Intellij IDEA platform version lifted up to 2018.1__

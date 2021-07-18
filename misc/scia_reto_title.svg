@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="546.987mm"
-   height="311.53302mm"
-   viewBox="0 0 1938.1429 1103.8572"
-   id="svg4155"
-   version="1.1"
-   inkscape:version="1.0.2 (1.0.2+r75+1)"
-   sodipodi:docname="scia_reto_title.svg"
-   inkscape:export-filename="/home/igorm/Projects/Projects_PET/netbeans-mmd-plugin/mind-map/scia-reto/src/main/resources/icons/splash.png"
+   inkscape:export-ydpi="27.860001"
    inkscape:export-xdpi="27.860001"
-   inkscape:export-ydpi="27.860001">
+   inkscape:export-filename="/home/igorm/Projects/Projects_PET/netbeans-mmd-plugin/mind-map/scia-reto/src/main/resources/icons/splash.png"
+   sodipodi:docname="scia_reto_title.svg"
+   inkscape:version="1.1 (ce6663b3b7, 2021-05-25)"
+   version="1.1"
+   id="svg4155"
+   viewBox="0 0 1938.1429 1103.8572"
+   height="311.53302mm"
+   width="546.987mm"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4157">
     <filter
@@ -356,7 +356,11 @@
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
-       id="filter1775">
+       id="filter1775"
+       x="-0.017265782"
+       y="-0.022005692"
+       width="1.0419312"
+       height="1.0546594">
       <feFlood
          flood-opacity="0.498039"
          flood-color="rgb(0,0,0)"
@@ -388,7 +392,11 @@
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
-       id="filter1787">
+       id="filter1787"
+       x="-0.026715714"
+       y="-0.028248456"
+       width="1.0656416"
+       height="1.0692859">
       <feFlood
          flood-opacity="0.498039"
          flood-color="rgb(0,0,0)"
@@ -417,6 +425,78 @@
          result="composite2"
          id="feComposite1785" />
     </filter>
+    <filter
+       inkscape:label="Cross Noise Poster"
+       style="color-interpolation-filters:sRGB;"
+       inkscape:menu-tooltip="Overlay with a small scale screen like noise"
+       inkscape:menu="Image Paint and Draw"
+       id="filter1599"
+       x="-0.0064528025"
+       y="-0.011334197"
+       width="1.0129056"
+       height="1.0226684">
+      <feGaussianBlur
+         in="SourceGraphic"
+         stdDeviation="4"
+         result="result3"
+         id="feGaussianBlur1575" />
+      <feGaussianBlur
+         result="result4"
+         in="SourceGraphic"
+         stdDeviation="1"
+         id="feGaussianBlur1577" />
+      <feBlend
+         mode="darken"
+         in2="result3"
+         id="feBlend1579" />
+      <feComponentTransfer
+         result="result1"
+         id="feComponentTransfer1587">
+        <feFuncR
+           type="discrete"
+           tableValues="0 0.2 0.4 0.6 0.8 1 1"
+           id="feFuncR1581" />
+        <feFuncG
+           type="discrete"
+           tableValues="0 0.2 0.4 0.6 0.8 1 1"
+           id="feFuncG1583" />
+        <feFuncB
+           type="discrete"
+           tableValues="0 0.2 0.4 0.6 0.8 1 1"
+           id="feFuncB1585" />
+      </feComponentTransfer>
+      <feTurbulence
+         result="result0"
+         seed="0"
+         baseFrequency="1"
+         numOctaves="7"
+         type="fractalNoise"
+         id="feTurbulence1589" />
+      <feConvolveMatrix
+         result="result5"
+         order="3 3"
+         kernelMatrix="-2 0 -2 0 -10 0 -2 0 -2 "
+         id="feConvolveMatrix1591" />
+      <feColorMatrix
+         in="result5"
+         type="saturate"
+         values="0"
+         result="result4"
+         id="feColorMatrix1593" />
+      <feComposite
+         result="result2"
+         k3="0.5"
+         k2="0.5"
+         k1="1.5"
+         operator="arithmetic"
+         in="result1"
+         in2="result4"
+         id="feComposite1595" />
+      <feComposite
+         in2="SourceGraphic"
+         operator="in"
+         id="feComposite1597" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -425,9 +505,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.30740573"
-     inkscape:cx="932.77281"
-     inkscape:cy="820.28391"
+     inkscape:zoom="0.43473735"
+     inkscape:cx="618.76441"
+     inkscape:cy="718.82482"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -437,12 +517,13 @@
      fit-margin-bottom="0"
      inkscape:window-width="1920"
      inkscape:window-height="1016"
-     inkscape:window-x="1297"
+     inkscape:window-x="1219"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:document-rotation="0">
+     inkscape:document-rotation="0"
+     inkscape:pagecheckerboard="0">
     <sodipodi:guide
        position="1054.5992,856.60938"
        orientation="1,0"
@@ -464,9 +545,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(843.35718,102.42351)">
+     transform="translate(843.357, 102.424)">
     <rect
-       style="opacity:1;fill:#ffeeaa;fill-opacity:1;stroke:#000080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#aaccff;fill-opacity:1;stroke:#000080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1599)"
        id="rect4059"
        width="1937.1428"
        height="1102.8572"
@@ -475,13 +556,6 @@
        inkscape:export-filename="/home/igorm/Projects_PET/MindMap/mind-map/scia-reto/src/main/resources/icons/splash.png"
        inkscape:export-xdpi="23.807428"
        inkscape:export-ydpi="23.807428" />
-    <ellipse
-       style="opacity:0.99464;fill:#ffe680;stroke-width:17.8125;stroke-linecap:round;stroke-linejoin:round"
-       id="path929"
-       cx="210.38875"
-       cy="1012.5573"
-       rx="1488.8123"
-       ry="454.6994" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -563,7 +637,7 @@
          id="tspan935"
          x="342.03424"
          y="737.9599"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:3.96654">1.4.12-test</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:3.96654">1.5.0-test</tspan><tspan
          sodipodi:role="line"
          x="342.03424"
          y="948.33386"
@@ -643,5 +717,8 @@
            transform="rotate(-60)" />
       </g>
     </g>
+    <g
+       inkscape:label="Delaunay"
+       id="g930" />
   </g>
 </svg>
