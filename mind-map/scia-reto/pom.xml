@@ -353,7 +353,7 @@
                 <fileVersion>${main.version.raw}.0</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
                 <fileDescription>SciaReto Mind Map editor</fileDescription>
-                  <copyright>2016-2021 Igor Maznitsa</copyright>
+                <copyright>2016-2021 Igor Maznitsa</copyright>
                 <productVersion>${main.version.raw}.0</productVersion>
                 <txtProductVersion>${project.version}</txtProductVersion>
                 <productName>${project.name}</productName>
