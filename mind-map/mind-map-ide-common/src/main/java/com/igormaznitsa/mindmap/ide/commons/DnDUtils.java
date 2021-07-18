@@ -127,7 +127,7 @@ public final class DnDUtils {
     String result;
     try {
       result = (String) dtde.getTransferable().getTransferData(DataFlavor.stringFlavor);
-      result = result == null ? null : removeZeroChars(result);
+      result = removeZeroChars(result);
     } catch (NotSerializableException | UnsupportedFlavorException ex) {
       result = null;
     }
@@ -142,9 +142,7 @@ public final class DnDUtils {
         try {
           final String uri = new UrlFile(file).getURL();
           result = uri == null ? null : new URI(uri);
-        } catch (URISyntaxException ex) {
-          result = null;
-        } catch (IOException ex) {
+        } catch (URISyntaxException | IOException ex) {
           result = null;
         }
       }

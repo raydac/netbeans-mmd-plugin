@@ -37,7 +37,7 @@ public final class UrlFile {
     this(FileUtils.readFileToString(file, "Cp1252"));
   }
 
-  public UrlFile(@Nonnull final String text) throws IOException {
+  public UrlFile(@Nonnull final String text) {
     Map<String, String> currentSection = null;
 
     int counter = 0;
@@ -52,13 +52,13 @@ public final class UrlFile {
         if (currentSection != null) {
           counter += currentSection.size();
         }
-        currentSection = new HashMap<String, String>();
+        currentSection = new HashMap<>();
         this.sections.put(sectionName, currentSection);
       } else {
-        final Matcher keyvalue = NAME_VALUE.matcher(splittedLine);
-        if (keyvalue.matches()) {
-          final String key = keyvalue.group(1);
-          final String value = keyvalue.group(2);
+        final Matcher keyValue = NAME_VALUE.matcher(splittedLine);
+        if (keyValue.matches()) {
+          final String key = keyValue.group(1);
+          final String value = keyValue.group(2);
           if (currentSection != null) {
             currentSection.put(key, value);
           }

@@ -23,7 +23,7 @@ public class FilePathWithLineTest {
   @Test
   public void testConstructor_Null() {
     final FilePathWithLine path = new FilePathWithLine(null);
-    assertEquals(null, path.getPath());
+    assertNull(path.getPath());
     assertEquals(-1, path.getLine());
     assertEquals("", path.toString());
   }

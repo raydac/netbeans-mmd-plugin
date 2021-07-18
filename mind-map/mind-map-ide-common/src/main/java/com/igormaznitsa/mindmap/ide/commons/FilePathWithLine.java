@@ -35,16 +35,16 @@ public class FilePathWithLine {
       final Matcher matcher = PATH_CONTAINS_LINE_NUMBER.matcher(filePath);
       if (matcher.find()) {
         this.path = matcher.group(1);
-        int theline;
+        int theLine;
         try {
-          theline = Integer.parseInt(matcher.group(2));
-          if (theline <= 0) {
-            theline = -1;
+          theLine = Integer.parseInt(matcher.group(2));
+          if (theLine <= 0) {
+            theLine = -1;
           }
         } catch (NumberFormatException ex) {
-          theline = -1;
+          theLine = -1;
         }
-        this.line = theline;
+        this.line = theLine;
       } else {
         this.path = filePath;
         this.line = -1;
@@ -58,8 +58,7 @@ public class FilePathWithLine {
       try {
         parsed = Integer.parseInt(text.trim());
         parsed = parsed <= 0 ? -1 : parsed;
-      } catch (NumberFormatException ex) {
-        parsed = -1;
+      } catch (NumberFormatException ignored) {
       }
     }
     return parsed;

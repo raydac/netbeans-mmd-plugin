@@ -170,7 +170,7 @@ public final class FileHistoryManager {
   @MustNotContainNull
   public File[] getLastOpenedProjects() {
     synchronized (this.lastOpenedProjects) {
-      return this.lastOpenedProjects.toArray(new File[this.lastOpenedProjects.size()]);
+      return this.lastOpenedProjects.toArray(new File[0]);
     }
   }
 
@@ -178,7 +178,7 @@ public final class FileHistoryManager {
   @MustNotContainNull
   public File[] getLastOpenedFiles() {
     synchronized (this.lastOpenedFiles) {
-      return this.lastOpenedFiles.toArray(new File[this.lastOpenedFiles.size()]);
+      return this.lastOpenedFiles.toArray(new File[0]);
     }
   }
 
