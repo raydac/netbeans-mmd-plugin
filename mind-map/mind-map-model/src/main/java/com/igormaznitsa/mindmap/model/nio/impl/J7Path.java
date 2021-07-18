@@ -17,7 +17,6 @@
 package com.igormaznitsa.mindmap.model.nio.impl;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer;
 import com.igormaznitsa.mindmap.model.nio.AbstractPath;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import java.io.File;
@@ -25,7 +24,6 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@IgnoreInAnimalSniffer
 public class J7Path extends AbstractPath {
 
   private final java.nio.file.Path nioPath;

@@ -17,13 +17,11 @@
 package com.igormaznitsa.mindmap.model.nio.impl;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.model.IgnoreInAnimalSniffer;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.PathService;
 import java.io.File;
 import javax.annotation.Nonnull;
 
-@IgnoreInAnimalSniffer
 public class J7PathService implements PathService {
 
   @Override
