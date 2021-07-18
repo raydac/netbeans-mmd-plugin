@@ -60,7 +60,7 @@ public class ModelUtilsTest {
   }
 
   @Test
-  public void testMakeQueryStringForURI() throws Exception {
+  public void testMakeQueryStringForURI() {
     final Properties props = new Properties();
     assertEquals("", ModelUtils.makeQueryStringForURI(null));
     assertEquals("", ModelUtils.makeQueryStringForURI(props));
@@ -72,7 +72,7 @@ public class ModelUtilsTest {
 
   
   @Test
-  public void testCalcMaxLengthOfBacktickQuotesSubstr() throws Exception {
+  public void testCalcMaxLengthOfBacktickQuotesSubstr() {
     assertEquals(0, ModelUtils.calcMaxLengthOfBacktickQuotesSubstr("akldjf lsdkjf"));
     assertEquals(0, ModelUtils.calcMaxLengthOfBacktickQuotesSubstr(null));
     assertEquals(1, ModelUtils.calcMaxLengthOfBacktickQuotesSubstr("akl`djf lsdk`jf"));

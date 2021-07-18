@@ -23,8 +23,8 @@ public class ExtraFileTest {
 
   @Test
   public void testEquals() throws Exception {
-    assertTrue(new ExtraFile("./text.txt").equals(new ExtraFile("./text.txt")));
-    assertFalse(new ExtraFile("./text.txt").equals(new ExtraFile("./text2.txt")));
+    assertEquals(new ExtraFile("./text.txt"), new ExtraFile("./text.txt"));
+    assertNotEquals(new ExtraFile("./text.txt"), new ExtraFile("./text2.txt"));
   }
 
   @Test

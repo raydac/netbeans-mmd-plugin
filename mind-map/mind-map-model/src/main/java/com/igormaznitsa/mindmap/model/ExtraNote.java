@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.model;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -87,7 +88,7 @@ public class ExtraNote extends Extra<String> {
 
   @Override
   public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
-    return this.encrypted ? false : pattern.matcher(this.text).find();
+    return !this.encrypted && pattern.matcher(this.text).find();
   }
 
   @Override
@@ -100,7 +101,7 @@ public class ExtraNote extends Extra<String> {
     }
     if (that instanceof ExtraNote) {
       final ExtraNote thatNote = (ExtraNote) that;
-      return (this.hint == thatNote.hint || (this.hint != null && this.hint.equals(thatNote.hint)))
+      return (Objects.equals(this.hint, thatNote.hint))
           && this.encrypted == thatNote.encrypted
           && this.text.equals(((ExtraNote) that).text);
     } else {

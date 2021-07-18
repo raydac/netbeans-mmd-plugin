@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.io.IOUtils;
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer.TokenType;
 
+import java.nio.charset.StandardCharsets;
+
 public class MindMapLexerTest {
 
   private static void assertLexer(final MindMapLexer lexer, final MindMapLexer.TokenType expectedType, final String expectedText, final int expectedTokenStart, final int expectedTokenEnd) {
@@ -516,7 +518,7 @@ public class MindMapLexerTest {
 
   @Test
   public void testTextSplittingForLostOrDuplicatedTokens() throws Exception {
-    final String etalon = IOUtils.toString(MindMapLexerTest.class.getResourceAsStream("cancer_risk.mmd"),"UTF-8");
+    final String etalon = IOUtils.toString(MindMapLexerTest.class.getResourceAsStream("cancer_risk.mmd"), StandardCharsets.UTF_8);
     
     final StringBuilder accum1 = new StringBuilder();
     final StringBuilder accum2 = new StringBuilder();
@@ -538,7 +540,7 @@ public class MindMapLexerTest {
       prevEnd = lexer.getTokenEndOffset();
 //      assertNotEquals("Unknown line : "+lexer.getTokenText(),TokenType.UNKNOWN_LINE, type);
       
-      accum1.append(etalon.substring(lexer.getTokenStartOffset(),lexer.getTokenEndOffset()));
+      accum1.append(etalon, lexer.getTokenStartOffset(), lexer.getTokenEndOffset());
       accum2.append(lexer.getTokenText());
       accum3.append(lexer.getTokenSequence());
       lexer.advance();

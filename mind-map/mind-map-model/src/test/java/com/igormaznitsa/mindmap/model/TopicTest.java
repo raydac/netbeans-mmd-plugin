@@ -37,7 +37,7 @@ public class TopicTest {
   }
 
   @Test
-  public void testFindMaxChildPathLength() throws Exception {
+  public void testFindMaxChildPathLength() {
     final MindMap map = new MindMap(true);
     final Topic t1 = new Topic(map, map.getRoot(), "t1");
 
@@ -56,7 +56,7 @@ public class TopicTest {
   }
 
   @Test
-  public void test() throws Exception {
+  public void test() {
     final MindMap mm = new MindMap(true);
     final Topic topic = new Topic(mm, null, "авы аыва вы Что то");
     assertTrue(topic
@@ -83,7 +83,7 @@ public class TopicTest {
     assertEquals("Topic", topic.getText());
     assertEquals(1, topic.getChildren().size());
     assertEquals(2, topic.getExtras().size());
-    assertEquals("Some\ntext", (String) topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+    assertEquals("Some\ntext", topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
     assertEquals(new URI("http://www.google.com"),
         ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
   }
@@ -97,7 +97,7 @@ public class TopicTest {
     assertEquals(1, topic.getChildren().size());
     assertEquals(2, topic.getExtras().size());
     assertEquals("   Some   \r\n    text     \n    line  \r\n  end \r\n   ",
-        (String) topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+            topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
     assertEquals(new URI("http://www.google.com"),
         ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
     final Topic second = topic.getFirst();
@@ -112,7 +112,7 @@ public class TopicTest {
     assertEquals("Topic", topic.getText());
     assertEquals(1, topic.getChildren().size());
     assertEquals(2, topic.getExtras().size());
-    assertEquals("Some\ntext", (String) topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+    assertEquals("Some\ntext", topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
     assertEquals(new URI("http://www.google.com"),
         ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
   }
@@ -125,7 +125,7 @@ public class TopicTest {
     assertEquals("Topic", topic.getText());
     assertTrue(topic.getChildren().isEmpty());
     assertEquals(2, topic.getExtras().size());
-    assertEquals("Some\ntext", (String) topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+    assertEquals("Some\ntext", topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
     assertEquals(new URI("http://www.google.com"),
         ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
     assertEquals(2, topic.getAttributes().size());

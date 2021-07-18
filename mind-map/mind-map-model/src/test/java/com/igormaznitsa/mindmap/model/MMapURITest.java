@@ -36,10 +36,10 @@ public class MMapURITest {
 
   @Test
   public void testEquals() throws Exception {
-    assertTrue(new MMapURI("http://www.google.com").equals(new MMapURI("http://www.google.com")));
-    assertTrue(new MMapURI("http://www.google.com?a=1").equals(new MMapURI("http://www.google.com?a=1")));
-    assertFalse(new MMapURI("http://www.google.com?a=1").equals(new MMapURI("http://www.google.com")));
-    assertFalse(new MMapURI("http://www.google.com?a=1").equals(new MMapURI("http://www.googler.com?a=1")));
+    assertEquals(new MMapURI("http://www.google.com"), new MMapURI("http://www.google.com"));
+    assertEquals(new MMapURI("http://www.google.com?a=1"), new MMapURI("http://www.google.com?a=1"));
+    assertNotEquals(new MMapURI("http://www.google.com?a=1"), new MMapURI("http://www.google.com"));
+    assertNotEquals(new MMapURI("http://www.google.com?a=1"), new MMapURI("http://www.googler.com?a=1"));
   }
   
   @Test
@@ -69,7 +69,7 @@ public class MMapURITest {
   }
 
   @Test(expected = AssertionError.class)
-  public void testCreate_URINull() throws Exception {
+  public void testCreate_URINull() {
     new MMapURI((URI) null);
   }
 
@@ -175,7 +175,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_NotWindows_NoBase_NoProps() throws Exception {
+  public void testCreate_AbsFile_NotWindows_NoBase_NoProps() {
     assumeNotWindows();
     MMapURI uri = new MMapURI(null, new File("/folder/hello world.txt"), null);
     assertEquals("file:///folder/hello%20world.txt", uri.asString(false, true));
@@ -185,7 +185,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_Windows_NoBase_NoProps() throws Exception {
+  public void testCreate_AbsFile_Windows_NoBase_NoProps() {
     assumeWindows();
     MMapURI uri = new MMapURI(null, new File("C:\\folder\\hello world.txt"), null);
     assertEquals("file://C:/folder/hello%20world.txt", uri.asString(false, true));
@@ -195,7 +195,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_NotWindows_InsideBase_NoProps() throws Exception {
+  public void testCreate_AbsFile_NotWindows_InsideBase_NoProps() {
     assumeNotWindows();
     MMapURI uri = new MMapURI(new File("/folder"), new File("/folder/folder2/hello world.txt"), null);
     assertEquals("folder2/hello%20world.txt", uri.asString(false, true));
@@ -205,7 +205,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_Windows_InsideBase_NoProps() throws Exception {
+  public void testCreate_AbsFile_Windows_InsideBase_NoProps() {
     assumeWindows();
     MMapURI uri = new MMapURI(new File("C:\\folder"), new File("C:\\folder\\folder2\\hello world.txt"), null);
     assertEquals("folder2/hello%20world.txt", uri.asString(false, true));
@@ -215,7 +215,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_NotWindows_OutsideBase_NoProps() throws Exception {
+  public void testCreate_AbsFile_NotWindows_OutsideBase_NoProps() {
     assumeNotWindows();
     MMapURI uri = new MMapURI(new File("/folder1"), new File("/folder/folder2/hello world.txt"), null);
     assertEquals("file:///folder/folder2/hello%20world.txt", uri.asString(false, true));
@@ -225,7 +225,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_Windows_OutsideBase_NoProps() throws Exception {
+  public void testCreate_AbsFile_Windows_OutsideBase_NoProps() {
     assumeWindows();
     MMapURI uri = new MMapURI(new File("C:\\folder1"), new File("C:\\folder\\folder2\\hello world.txt"), null);
     assertEquals("file://C:/folder/folder2/hello%20world.txt", uri.asString(false, true));
@@ -235,7 +235,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_NotWindows_RelativeBase_NoProps() throws Exception {
+  public void testCreate_AbsFile_NotWindows_RelativeBase_NoProps() {
     assumeNotWindows();
     MMapURI uri = new MMapURI(new File("folder1"), new File("/folder1/folder2/hello world.txt"), null);
     assertEquals("file:///folder1/folder2/hello%20world.txt", uri.asString(false, true));
@@ -245,7 +245,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_Windows_RelativeBase_NoProps() throws Exception {
+  public void testCreate_AbsFile_Windows_RelativeBase_NoProps() {
     assumeWindows();
     MMapURI uri = new MMapURI(new File("folder1"), new File("C:\\folder1\\folder2\\hello world.txt"), null);
     assertEquals("file://C:/folder1/folder2/hello%20world.txt", uri.asString(false, true));
@@ -255,7 +255,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_NotWindows_OutsideBase_Props() throws Exception {
+  public void testCreate_AbsFile_NotWindows_OutsideBase_Props() {
     assumeNotWindows();
     final Properties props = new Properties();
     props.put("привет", "от игоря");
@@ -271,7 +271,7 @@ public class MMapURITest {
   }
 
   @Test
-  public void testCreate_AbsFile_Windows_OutsideBase_Props() throws Exception {
+  public void testCreate_AbsFile_Windows_OutsideBase_Props() {
     assumeWindows();
     final Properties props = new Properties();
     props.put("привет", "от игоря");

@@ -247,7 +247,7 @@ public final class ModelUtils {
     }
     final StringBuilder buffer = new StringBuilder();
 
-    final List<String> orderedkeys = new ArrayList<String>(properties.stringPropertyNames());
+    final List<String> orderedkeys = new ArrayList<>(properties.stringPropertyNames());
     Collections.sort(orderedkeys);
 
     for (final String k : orderedkeys) {
@@ -412,7 +412,7 @@ public final class ModelUtils {
 
   @Nonnull
   public static File toFile(@Nonnull final URI uri) {
-    final List<String> pathItems = new ArrayList<String>();
+    final List<String> pathItems = new ArrayList<>();
 
     final String authority = uri.getAuthority();
     if (authority != null && !authority.isEmpty()) {

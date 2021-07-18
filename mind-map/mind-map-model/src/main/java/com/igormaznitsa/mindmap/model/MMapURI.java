@@ -163,9 +163,7 @@ public class MMapURI implements Serializable {
     final String[] splittedNewPath = newURIPath.split("\\/");
     final String[] splittedOldPath = this.uri.getPath().split("\\/");
 
-    final List<String> resultPath = new ArrayList<String>();
-
-    resultPath.addAll(Arrays.asList(splittedNewPath));
+    final List<String> resultPath = new ArrayList<>(Arrays.asList(splittedNewPath));
 
     currentNumberOfResourceItemsTheLasIsZero = currentNumberOfResourceItemsTheLasIsZero + 1;
 

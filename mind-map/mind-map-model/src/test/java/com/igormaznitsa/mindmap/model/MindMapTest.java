@@ -155,11 +155,11 @@ public class MindMapTest {
   @Test
   public void testIteration_TwoLevel() throws Exception {
     final MindMap map = new MindMap(new StringReader("---\n# root\n## child1\n### child1.1\n### child1.2\n## child2\n### child2.1\n### child2.2\n"));
-    final List<String> list = new ArrayList<String>();
+    final List<String> list = new ArrayList<>();
     for(final Topic t : map){
       list.add(t.getText());
     }
-    assertArrayEquals(new String[]{"root", "child1", "child1.1", "child1.2", "child2", "child2.1", "child2.2"},list.toArray(new String[list.size()]));
+    assertArrayEquals(new String[]{"root", "child1", "child1.1", "child1.2", "child2", "child2.1", "child2.2"},list.toArray(new String[0]));
   }
 
   @Test
@@ -171,7 +171,7 @@ public class MindMapTest {
   @Test
   public void testIteration_OnlyRoot() throws Exception {
     final MindMap map = new MindMap(new StringReader("---\n# root\n"));
-    final List<String> list = new ArrayList<String>();
+    final List<String> list = new ArrayList<>();
     for (final Topic t : map) {
       list.add(t.getText());
     }

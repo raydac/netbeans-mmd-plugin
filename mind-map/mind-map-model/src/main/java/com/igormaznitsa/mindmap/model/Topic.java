@@ -50,19 +50,19 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   private static final AtomicLong LOCALUID_GENERATOR = new AtomicLong();
   private static final Logger logger = LoggerFactory.getLogger(Topic.class);
   private final EnumMap<Extra.ExtraType, Extra<?>> extras =
-      new EnumMap<Extra.ExtraType, Extra<?>>(Extra.ExtraType.class);
+          new EnumMap<>(Extra.ExtraType.class);
   private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras =
       Collections.unmodifiableMap(this.extras);
   private final Map<String, String> attributes =
-      new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
+          new TreeMap<>(ModelUtils.STRING_COMPARATOR);
   private final Map<String, String> unmodifableAttributes =
       Collections.unmodifiableMap(this.attributes);
   private final Map<String, String> codeSnippets =
-      new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
+          new TreeMap<>(ModelUtils.STRING_COMPARATOR);
   private final Map<String, String> unmodifableCodeSnippets =
       Collections.unmodifiableMap(this.codeSnippets);
   @Nonnull
-  private final List<Topic> children = new ArrayList<Topic>();
+  private final List<Topic> children = new ArrayList<>();
   @Nonnull
   private final List<Topic> unmodifableChildren = Collections.unmodifiableList(this.children);
   private final transient long localUID = LOCALUID_GENERATOR.getAndIncrement();
@@ -126,8 +126,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   @Nullable
-  public static Topic parse(@Nonnull final MindMap map, @Nonnull final MindMapLexer lexer)
-      throws IOException {
+  public static Topic parse(@Nonnull final MindMap map, @Nonnull final MindMapLexer lexer) {
     map.lock();
     try {
       Topic topic = null;
@@ -136,7 +135,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       Extra.ExtraType extraType = null;
 
       String codeSnippetlanguage = null;
-      String codeSnippetBody = null;
+      StringBuilder codeSnippetBody = null;
 
       int detectedLevel = -1;
 
@@ -188,17 +187,17 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
           case CODE_SNIPPET_START: {
             if (topic != null) {
               codeSnippetlanguage = lexer.getTokenText().substring(3);
-              codeSnippetBody = "";
+              codeSnippetBody = new StringBuilder();
             }
           }
           break;
           case CODE_SNIPPET_BODY: {
-            codeSnippetBody += lexer.getTokenText();
+            codeSnippetBody.append(lexer.getTokenText());
           }
           break;
           case CODE_SNIPPET_END: {
             if (topic != null && codeSnippetlanguage != null && codeSnippetBody != null) {
-              topic.codeSnippets.put(codeSnippetlanguage.trim(), codeSnippetBody);
+              topic.codeSnippets.put(codeSnippetlanguage.trim(), codeSnippetBody.toString());
             }
             codeSnippetlanguage = null;
             codeSnippetBody = null;
@@ -653,7 +652,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     out.append(' ').append(ModelUtils.escapeMarkdownStr(this.text)).append(NEXT_LINE);
 
     if (!this.attributes.isEmpty() || !this.extras.isEmpty()) {
-      final Map<String, String> attributesToWrite = new HashMap<String, String>(this.attributes);
+      final Map<String, String> attributesToWrite = new HashMap<>(this.attributes);
       for (final Map.Entry<Extra.ExtraType, Extra<?>> e : this.extras.entrySet()) {
         e.getValue().addAttributesForWrite(attributesToWrite);
       }
@@ -665,13 +664,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
 
     if (!this.extras.entrySet().isEmpty()) {
-      final List<Extra.ExtraType> types = new ArrayList<Extra.ExtraType>(this.extras.keySet());
-      Collections.sort(types, new Comparator<Extra.ExtraType>() {
-        @Override
-        public int compare(@Nonnull final Extra.ExtraType o1, @Nonnull final Extra.ExtraType o2) {
-          return o1.name().compareTo(o2.name());
-        }
-      });
+      final List<Extra.ExtraType> types = new ArrayList<>(this.extras.keySet());
+      types.sort(Comparator.comparing(Enum::name));
 
       for (final Extra.ExtraType e : types) {
         this.extras.get(e).write(out);
@@ -680,7 +674,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
 
     if (!this.codeSnippets.isEmpty()) {
-      final List<String> sortedKeys = new ArrayList<String>(this.codeSnippets.keySet());
+      final List<String> sortedKeys = new ArrayList<>(this.codeSnippets.keySet());
       Collections.sort(sortedKeys);
       for (final String language : sortedKeys) {
         final String body = this.codeSnippets.get(language);
@@ -930,7 +924,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   @Nonnull
   @MustNotContainNull
   public Topic[] getPath() {
-    final List<Topic> list = new ArrayList<Topic>();
+    final List<Topic> list = new ArrayList<>();
     Topic current = this;
     do {
       list.add(0, current);

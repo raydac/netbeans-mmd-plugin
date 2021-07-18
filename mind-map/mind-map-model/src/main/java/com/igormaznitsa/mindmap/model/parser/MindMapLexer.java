@@ -457,7 +457,7 @@ public final class MindMapLexer {
   public static final class LexerPosition {
 
     private int offset;
-    private TokenType state = TokenType.HEAD_LINE;
+    private TokenType state;
     private boolean tokenCompleted;
 
     private LexerPosition(@Nonnull final LexerPosition pos) {

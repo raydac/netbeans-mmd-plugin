@@ -27,8 +27,8 @@ import javax.annotation.Nonnull;
 
 public class JavaLoggerServiceImpl implements LoggerService {
 
-  private final Map<Class<?>, Logger> cacheForClasses = new HashMap<Class<?>, Logger>();
-  private final Map<String, Logger> cacheForNames = new HashMap<String, Logger>();
+  private final Map<Class<?>, Logger> cacheForClasses = new HashMap<>();
+  private final Map<String, Logger> cacheForNames = new HashMap<>();
 
   @Override
   @Nonnull

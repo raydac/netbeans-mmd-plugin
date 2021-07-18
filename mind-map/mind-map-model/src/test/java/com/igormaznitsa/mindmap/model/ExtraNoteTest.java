@@ -15,39 +15,38 @@
  */
 package com.igormaznitsa.mindmap.model;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 
 import java.io.File;
 import java.util.regex.Pattern;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 public class ExtraNoteTest {
 
   @Test
-  public void testEqualsNonEncrypted() throws Exception {
-    assertTrue(new ExtraNote("aaa").equals(new ExtraNote("aaa")));
-    assertFalse(new ExtraNote("aaa").equals(new ExtraNote("Aaa")));
-    assertFalse(new ExtraNote("aaa").equals(new ExtraNote("aaaa")));
-    assertFalse(new ExtraNote("aaa").equals(new ExtraNote("")));
+  public void testEqualsNonEncrypted() {
+    assertEquals(new ExtraNote("aaa"), new ExtraNote("aaa"));
+    assertNotEquals(new ExtraNote("aaa"), new ExtraNote("Aaa"));
+    assertNotEquals(new ExtraNote("aaa"), new ExtraNote("aaaa"));
+    assertNotEquals(new ExtraNote("aaa"), new ExtraNote(""));
   }
 
   @Test
-  public void testEqualsEncrypted() throws Exception {
-    assertTrue(new ExtraNote("aaa", true, null).equals(new ExtraNote("aaa", true, null)));
-    assertFalse(new ExtraNote("aaa", true, null).equals(new ExtraNote("aaa", false, null)));
-    assertFalse(new ExtraNote("aaa", true, "tip").equals(new ExtraNote("aaa", true, null)));
-    assertFalse(new ExtraNote("aaa", true, "tip").equals(new ExtraNote("aaa", true, "top")));
-    assertFalse(new ExtraNote("aaa", true, "tip").equals(new ExtraNote("aaa", false, "tip")));
+  public void testEqualsEncrypted() {
+    assertEquals(new ExtraNote("aaa", true, null), new ExtraNote("aaa", true, null));
+    assertNotEquals(new ExtraNote("aaa", true, null), new ExtraNote("aaa", false, null));
+    assertNotEquals(new ExtraNote("aaa", true, "tip"), new ExtraNote("aaa", true, null));
+    assertNotEquals(new ExtraNote("aaa", true, "tip"), new ExtraNote("aaa", true, "top"));
+    assertNotEquals(new ExtraNote("aaa", true, "tip"), new ExtraNote("aaa", false, "tip"));
 
-    assertFalse(new ExtraNote("aaa", true, "tip").equals(new ExtraNote("Aaa", true, "tip")));
-    assertFalse(new ExtraNote("aaa").equals(new ExtraNote("aaaa", true, "tip")));
-    assertFalse(new ExtraNote("aaa").equals(new ExtraNote("", true, "tip")));
+    assertNotEquals(new ExtraNote("aaa", true, "tip"), new ExtraNote("Aaa", true, "tip"));
+    assertNotEquals(new ExtraNote("aaa"), new ExtraNote("aaaa", true, "tip"));
+    assertNotEquals(new ExtraNote("aaa"), new ExtraNote("", true, "tip"));
   }
 
   @Test
-  public void testContainsPattern() throws Exception {
+  public void testContainsPattern() {
     final ExtraNote note = new ExtraNote(
         "domr dsf sdf sdf \n sdf http://www.1cpp.ru/forum/YaBB.pl?num=1341507344 fsdf sdfd \n");
     assertTrue(note.containsPattern(null,

@@ -56,9 +56,9 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   private static final String GENERATOR_VERSION_NAME = "__version__"; //NOI18N
   private final transient Lock locker = new ReentrantLock();
   private final Map<String, String> attributes =
-      new TreeMap<String, String>(ModelUtils.STRING_COMPARATOR);
+          new TreeMap<>(ModelUtils.STRING_COMPARATOR);
   private final transient List<MindMapModelEventListener> modelEventListeners =
-      new CopyOnWriteArrayList<MindMapModelEventListener>();
+          new CopyOnWriteArrayList<>();
 
   @Nullable
   private Topic root;
@@ -133,8 +133,7 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   static String allAttributesAsString(@Nonnull final Map<String, String> map) throws IOException {
     final StringBuilder buffer = new StringBuilder();
 
-    final List<String> attrNames = new ArrayList<String>();
-    attrNames.addAll(map.keySet());
+    final List<String> attrNames = new ArrayList<>(map.keySet());
     Collections.sort(attrNames);
 
     boolean nonfirst = false;
@@ -268,14 +267,12 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   public void setRoot(@Nullable final Topic newRoot, final boolean makeNotification) {
     this.locker.lock();
     try {
-      if (newRoot == null) {
-        this.root = newRoot;
-      } else {
+      if (newRoot != null) {
         if (newRoot.getMap() != this) {
           throw new IllegalStateException("Base map must be the same");
         }
-        this.root = newRoot;
       }
+      this.root = newRoot;
       if (makeNotification) {
         fireModelChanged();
       }
@@ -411,7 +408,7 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   @MustNotContainNull
   public List<Topic> removeNonExistingTopics(
       @Nonnull @MustNotContainNull final List<Topic> origList) {
-    final List<Topic> result = new ArrayList<Topic>();
+    final List<Topic> result = new ArrayList<>();
     final Topic rootTopic = this.root;
     if (rootTopic != null) {
       this.locker.lock();
@@ -569,7 +566,7 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   @Nonnull
   @MustNotContainNull
   public List<Topic> findAllTopicsForExtraType(@Nonnull final Extra.ExtraType type) {
-    final List<Topic> result = new ArrayList<Topic>();
+    final List<Topic> result = new ArrayList<>();
     final Topic rootTopic = this.root;
     if (rootTopic != null) {
       this.locker.lock();
@@ -682,7 +679,7 @@ public final class MindMap implements Serializable, Constants, Iterable<Topic> {
   public List<Topic> makePlainList() {
     this.locker.lock();
     try {
-      final List<Topic> result = new ArrayList<Topic>();
+      final List<Topic> result = new ArrayList<>();
       for (final Topic t : this) {
         result.add(t);
       }

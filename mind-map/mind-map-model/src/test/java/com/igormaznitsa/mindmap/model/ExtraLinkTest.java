@@ -24,11 +24,11 @@ public class ExtraLinkTest {
   
   @Test
   public void testEquals() throws Exception {
-    assertTrue(new ExtraLink("http://www.google.com").equals(new ExtraLink("http://www.google.com")));
-    assertTrue(new ExtraLink("http://www.google.com?a=1&b=2").equals(new ExtraLink("http://www.google.com?a=1&b=2")));
-    assertFalse(new ExtraLink("http://www.google.com?a=1&b=2").equals(new ExtraLink("http://www.googlee.com?a=1&b=2")));
-    assertFalse(new ExtraLink("http://www.google.com?a=1&b=2").equals(new ExtraLink("http://www.google.com?b=2&a=1")));
-    assertFalse(new ExtraLink("http://www.google.com?a=1&b=2").equals(new ExtraLink("http://www.google.com?b=1&a=2")));
+    assertEquals(new ExtraLink("http://www.google.com"), new ExtraLink("http://www.google.com"));
+    assertEquals(new ExtraLink("http://www.google.com?a=1&b=2"), new ExtraLink("http://www.google.com?a=1&b=2"));
+    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"), new ExtraLink("http://www.googlee.com?a=1&b=2"));
+    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"), new ExtraLink("http://www.google.com?b=2&a=1"));
+    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"), new ExtraLink("http://www.google.com?b=1&a=2"));
   }
   
   @Test
