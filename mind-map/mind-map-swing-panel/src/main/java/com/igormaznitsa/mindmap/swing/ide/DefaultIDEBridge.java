@@ -37,7 +37,7 @@ class DefaultIDEBridge implements IDEBridge {
   private static final Version IDE_VERSION = new Version("UNKNOWN");
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultIDEBridge.class);
 
-  private final Map<String, Image> IMAGE_CACHE = new HashMap<String, Image>();
+  private final Map<String, Image> IMAGE_CACHE = new HashMap<>();
 
   @Nonnull
   private static String removeStartSlash(@Nonnull final String path) {

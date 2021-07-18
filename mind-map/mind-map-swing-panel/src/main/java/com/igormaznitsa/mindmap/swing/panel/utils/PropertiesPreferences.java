@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
 public class PropertiesPreferences extends Preferences {
 
   private final Properties storage = new Properties();
-  private final List<PreferenceChangeListener> listeners = new ArrayList<PreferenceChangeListener>();
+  private final List<PreferenceChangeListener> listeners = new ArrayList<>();
   private final String comment;
 
   public PropertiesPreferences(@Nullable final String comment, @Nonnull final String text) throws IOException {
@@ -167,7 +167,7 @@ public class PropertiesPreferences extends Preferences {
   @MustNotContainNull
   public String[] keys() throws BackingStoreException {
     final Set<String> keys = this.storage.stringPropertyNames();
-    return keys.toArray(new String[keys.size()]);
+    return keys.toArray(new String[0]);
   }
 
   @Override

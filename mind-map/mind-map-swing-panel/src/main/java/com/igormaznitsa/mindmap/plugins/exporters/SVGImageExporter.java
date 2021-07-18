@@ -74,6 +74,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -297,11 +298,10 @@ public class SVGImageExporter extends AbstractExporter {
 
   @Nonnull
   private String prepareStylePart(@Nonnull final StringBuilder buffer, @Nonnull final MindMapPanelConfig config) {
-    final StringBuilder result = new StringBuilder();
-    result.append("<style>").append(NEXT_LINE);
-    result.append('.' + FONT_CLASS_NAME).append(" {").append(NEXT_LINE).append(font2style(config.getFont())).append("}").append(NEXT_LINE);
-    result.append("</style>");
-    return result.toString();
+    String result = "<style>" + NEXT_LINE +
+            '.' + FONT_CLASS_NAME + " {" + NEXT_LINE + font2style(config.getFont()) + "}" + NEXT_LINE +
+            "</style>";
+    return result;
   }
 
   @Override
@@ -370,7 +370,7 @@ public class SVGImageExporter extends AbstractExporter {
     @Nonnull
     public Object getTransferData(@Nonnull final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
       if (isDataFlavorSupported(flavor) && flavor.equals(SVG_FLAVOR)) {
-        InputStream stream = new ByteArrayInputStream(this.svgContent.getBytes("UTF-8"));
+        InputStream stream = new ByteArrayInputStream(this.svgContent.getBytes(StandardCharsets.UTF_8));
         return stream;
       }
       throw new UnsupportedFlavorException(flavor);

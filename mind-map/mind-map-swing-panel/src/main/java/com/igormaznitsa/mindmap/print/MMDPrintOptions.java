@@ -157,6 +157,6 @@ public class MMDPrintOptions {
     ZOOM,
     FIT_WIDTH_TO_PAGES,
     FIT_HEIGHT_TO_PAGES,
-    FIT_TO_SINGLE_PAGE;
+    FIT_TO_SINGLE_PAGE
   }
 }

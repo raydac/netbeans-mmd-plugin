@@ -55,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -208,7 +209,7 @@ public final class Utils {
       if (charset == null) {
         stream = inStream;
       } else {
-        stream = new ByteArrayInputStream(IOUtils.toString(inStream, charset).getBytes("UTF-8"));
+        stream = new ByteArrayInputStream(IOUtils.toString(inStream, charset).getBytes(StandardCharsets.UTF_8));
       }
       document = builder.parse(stream);
     } finally {
@@ -249,7 +250,7 @@ public final class Utils {
   @Nonnull
   @MustNotContainNull
   public static List<Element> findDirectChildrenForName(@Nonnull final Element element, @Nonnull final String childElementname) {
-    final List<Element> resultList = new ArrayList<Element>();
+    final List<Element> resultList = new ArrayList<>();
     final NodeList list = element.getChildNodes();
     for (int i = 0; i < list.getLength(); i++) {
       final Node node = list.item(i);
@@ -375,7 +376,7 @@ public final class Utils {
       }
 
       final BufferedImage buffer = new BufferedImage(swidth, sheight, BufferedImage.TYPE_INT_ARGB);
-      final Graphics2D gfx = (Graphics2D) buffer.createGraphics();
+      final Graphics2D gfx = buffer.createGraphics();
 
       gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -442,7 +443,7 @@ public final class Utils {
   @Nonnull
   @MustNotContainNull
   public static Topic[] getLeftToRightOrderedChildrens(@Nonnull final Topic topic) {
-    final List<Topic> result = new ArrayList<Topic>();
+    final List<Topic> result = new ArrayList<>();
     if (topic.getTopicLevel() == 0) {
       for (final Topic t : topic.getChildren()) {
         if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
@@ -457,7 +458,7 @@ public final class Utils {
     } else {
       result.addAll(topic.getChildren());
     }
-    return result.toArray(new Topic[result.size()]);
+    return result.toArray(new Topic[0]);
   }
 
   public static boolean safeObjectEquals(@Nullable final Object obj1, @Nullable final Object obj2) {
@@ -850,7 +851,7 @@ public final class Utils {
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
     final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
-    final List<JMenuItem> tmpList = new ArrayList<JMenuItem>();
+    final List<JMenuItem> tmpList = new ArrayList<>();
 
     final boolean isModelNotEmpty = context.getPanel().getModel().getRoot() != null;
 

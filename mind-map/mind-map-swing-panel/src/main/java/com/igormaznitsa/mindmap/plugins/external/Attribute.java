@@ -29,7 +29,7 @@ public enum Attribute {
 
   private final String attrname;
 
-  private Attribute(@Nonnull final String attrname) {
+  Attribute(@Nonnull final String attrname) {
     this.attrname = attrname;
   }
 

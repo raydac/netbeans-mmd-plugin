@@ -216,13 +216,13 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     });
     toolBar.add(buttonPrintOptions);
 
-    final List<String> scalesList = new ArrayList<String>();
+    final List<String> scalesList = new ArrayList<>();
     scalesList.add("10 %");
     for (int i = 25; i < 225; i += 25) {
-      scalesList.add(Integer.toString(i) + " %");
+      scalesList.add(i + " %");
     }
 
-    final String[] scales = scalesList.toArray(new String[scalesList.size()]);
+    final String[] scales = scalesList.toArray(new String[0]);
     final JComboBox comboBoxScale = UI_COMPO_FACTORY.makeComboBox();
     comboBoxScale.setModel(new DefaultComboBoxModel(scales));
     comboBoxScale.setSelectedItem("100 %");

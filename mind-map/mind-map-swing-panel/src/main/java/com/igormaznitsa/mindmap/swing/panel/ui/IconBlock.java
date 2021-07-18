@@ -89,7 +89,7 @@ public class IconBlock {
             ico = findIconForFileType((ExtraFile) e);
             break;
           case LINK:
-            final String uri = ((ExtraLink) e).getAsString();
+            final String uri = e.getAsString();
             ico = uri.startsWith("mailto:") ? ScalableIcon.LINK_EMAIL : ScalableIcon.LINK;
             break;
           case NOTE:

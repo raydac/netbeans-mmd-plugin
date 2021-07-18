@@ -45,13 +45,7 @@ public abstract class AbstractPopupMenuItem implements PopUpMenuItemPlugin {
 
   @Override
   public int compareTo(@Nonnull final MindMapPlugin that) {
-    if (this.getOrder() == that.getOrder()) {
-      return 0;
-    }
-    if (this.getOrder() < that.getOrder()) {
-      return -1;
-    }
-    return 1;
+    return Integer.compare(this.getOrder(), that.getOrder());
   }
 
   @Override

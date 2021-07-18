@@ -70,7 +70,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Freemind2MindMapImporter.class);
 
-  private static final Set<String> TOKEN_NEEDS_NEXT_LINE = new HashSet<String>(Arrays.asList("br", "div", "p", "li"));
+  private static final Set<String> TOKEN_NEEDS_NEXT_LINE = new HashSet<>(Arrays.asList("br", "div", "p", "li"));
 
   @Nonnull
   private static String findArrowlinkDestination(@Nonnull final Element element) {
@@ -223,7 +223,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     final String id = findAttribute(element, "id");
     final String position = findAttribute(element, "position");
     final String arrowDestination = findArrowlinkDestination(element);
-    final String backgroundСolor = findAttribute(element, "background_color");
+    final String backgroundColor = findAttribute(element, "background_color");
     final String color = findAttribute(element, "color");
     final String link = findAttribute(element, "link");
 
@@ -243,7 +243,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
     if (!color.isEmpty()) {
       final Color colorConverted = Utils.html2color(color, false);
-      final Color backgroundColorConverted = Utils.html2color(backgroundСolor, false);
+      final Color backgroundColorConverted = Utils.html2color(backgroundColor, false);
 
       if (colorConverted != null) {
         topicToProcess.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(colorConverted, false));
@@ -351,7 +351,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     private RichContent(@Nonnull final RichContentType type, @Nonnull final String text, @Nonnull @MustNotContainNull final List<String> foundImageUrls) {
       this.type = type;
       this.text = text;
-      this.imageUrls = foundImageUrls.toArray(new String[foundImageUrls.size()]);
+      this.imageUrls = foundImageUrls.toArray(new String[0]);
     }
 
     @Nonnull

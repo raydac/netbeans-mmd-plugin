@@ -42,13 +42,13 @@ public class MiscIcons {
   static {
     final InputStream iconListReadStream = MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icon.lst");
 
-    final Map<String, ImageContainer> imageContainers = new HashMap<String, ImageContainer>();
+    final Map<String, ImageContainer> imageContainers = new HashMap<>();
 
     try {
       imageContainers.put("empty", new ImageContainer("empty"));
 
       final List<String> lines = IOUtils.readLines(iconListReadStream, "UTF-8");
-      ICON_NAMES = lines.toArray(new String[lines.size()]);
+      ICON_NAMES = lines.toArray(new String[0]);
       for (final String icon : ICON_NAMES) {
         imageContainers.put(icon, new ImageContainer(icon));
       }

@@ -291,7 +291,7 @@ final class ColorPickerPanel {
     this.panel.doLayout();
   }
 
-  public static interface ColorListener {
+  public interface ColorListener {
 
     void onColorSelected(@Nonnull ColorPickerPanel source, @Nonnull Color color);
   }
@@ -346,12 +346,11 @@ final class ColorPickerPanel {
       final String green = Integer.toHexString(color.getGreen()).toUpperCase(Locale.ENGLISH);
       final String blue = Integer.toHexString(color.getBlue()).toUpperCase(Locale.ENGLISH);
 
-      final StringBuilder buffer = new StringBuilder();
-      buffer.append('#')
-          .append(red.length() < 2 ? "0" : "").append(red)
-          .append(green.length() < 2 ? "0" : "").append(green)
-          .append(blue.length() < 2 ? "0" : "").append(blue);
-      this.setToolTipText(buffer.toString());
+      String buffer = '#' +
+              (red.length() < 2 ? "0" : "") + red +
+              (green.length() < 2 ? "0" : "") + green +
+              (blue.length() < 2 ? "0" : "") + blue;
+      this.setToolTipText(buffer);
     }
 
     @Nonnull

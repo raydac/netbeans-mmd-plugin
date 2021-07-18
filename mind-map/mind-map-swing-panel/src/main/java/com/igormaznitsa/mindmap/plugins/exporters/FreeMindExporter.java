@@ -114,7 +114,7 @@ public class FreeMindExporter extends AbstractExporter {
 
     final String thelink;
 
-    final List<Extra<?>> extrasToSaveInText = new ArrayList<Extra<?>>();
+    final List<Extra<?>> extrasToSaveInText = new ArrayList<>();
 
     // make some prioritization for only attribute
     if (transition != null) {
@@ -169,7 +169,7 @@ public class FreeMindExporter extends AbstractExporter {
     }
 
     if (htmlTextForNode.length() > 0) {
-      state.append(childShift).append("<richcontent TYPE=\"NOTE\">").append("<html><head></head><body>" + htmlTextForNode.toString() + "</body></html>").append("</richcontent>").nextLine();//NOI18N //NOI18N
+      state.append(childShift).append("<richcontent TYPE=\"NOTE\">").append("<html><head></head><body>" + htmlTextForNode + "</body></html>").append("</richcontent>").nextLine();//NOI18N //NOI18N
     }
 
     for (final Topic ch : topic.getChildren()) {

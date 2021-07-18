@@ -39,7 +39,7 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
   static final String ATTR_KEY = "mmd.emoticon";
 
-  private final Map<String, ScaledImage> SCALED_IMAGE_CACHE = new HashMap<String, ScaledImage>();
+  private final Map<String, ScaledImage> SCALED_IMAGE_CACHE = new HashMap<>();
 
   @Override
   @Nullable
@@ -104,13 +104,7 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   public int compareTo(@Nonnull final MindMapPlugin o) {
-    if (this.getOrder() == o.getOrder()) {
-      return 0;
-    } else if (this.getOrder() < o.getOrder()) {
-      return -1;
-    } else {
-      return 1;
-    }
+    return Integer.compare(this.getOrder(), o.getOrder());
   }
 
   private static final class ScaledImage {

@@ -71,9 +71,9 @@ public final class MMDPrintOptionsPanel extends JPanel {
     this.spinnerFitHeight.setModel(new SpinnerNumberModel(1, 1, 100, 1));
     this.spinnerFitWidth.setModel(new SpinnerNumberModel(1, 1, 100, 1));
 
-    final List<String> zoom = new ArrayList<String>();
+    final List<String> zoom = new ArrayList<>();
     for (int i = 25; i <= 500; i += 25) {
-      zoom.add(Integer.toString(i) + " %");
+      zoom.add(i + " %");
     }
     this.comboZoom.setModel(new DefaultComboBoxModel(zoom.toArray()));
 

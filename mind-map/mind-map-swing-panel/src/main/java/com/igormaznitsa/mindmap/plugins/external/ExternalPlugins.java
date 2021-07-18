@@ -41,7 +41,7 @@ public class ExternalPlugins {
   private final VersionValidator pluginApiValidator;
 
   public ExternalPlugins(@Nonnull final File pluginsFolder) {
-    this.pluginApiValidator = new VersionValidator(">=" + MindMapPlugin.API.toString());
+    this.pluginApiValidator = new VersionValidator(">=" + MindMapPlugin.API);
     this.pluginsFolder = pluginsFolder;
     LOGGER.info("External plugins folder is " + pluginsFolder);
   }
@@ -73,10 +73,10 @@ public class ExternalPlugins {
         final String pluginTitle = GetUtils.ensureNonNull(loader.getAttributes(Attribute.TITLE), "<unknown>");
         final Version pluginVersion = new Version(loader.getAttributes(Attribute.VERSION));
 
-        LOGGER.info(String.format("Detected plugin %s [%s]", pluginTitle, pluginVersion.toString()));
+        LOGGER.info(String.format("Detected plugin %s [%s]", pluginTitle, pluginVersion));
         final Version pluginApiVersion = loader.getApiVersion();
         if (this.pluginApiValidator.isValid(pluginApiVersion)) {
-          LOGGER.info(String.format("Plugin %s [%s] is valid for API", pluginTitle, pluginVersion.toString()));
+          LOGGER.info(String.format("Plugin %s [%s] is valid for API", pluginTitle, pluginVersion));
           final String[] classes = loader.extractPluginClassNames();
           for (final String klazzName : classes) {
             LOGGER.info(String.format("Loading plugin class %s from %s", klazzName, pluginTitle));
@@ -84,7 +84,7 @@ public class ExternalPlugins {
             MindMapPluginRegistry.getInstance().registerPlugin(pluginInstance);
           }
         } else {
-          LOGGER.warn(String.format("Plugin %s [%s] is not valid for API : %s", pluginTitle, pluginVersion.toString(), pluginApiVersion.toString()));
+          LOGGER.warn(String.format("Plugin %s [%s] is not valid for API : %s", pluginTitle, pluginVersion, pluginApiVersion));
         }
       } catch (Exception ex) {
         LOGGER.error("Can't load plugin from : " + plugin.getAbsolutePath(), ex);

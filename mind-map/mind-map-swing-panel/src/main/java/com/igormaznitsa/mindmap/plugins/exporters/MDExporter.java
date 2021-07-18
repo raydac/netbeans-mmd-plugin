@@ -193,7 +193,7 @@ public class MDExporter extends AbstractExporter {
     writeInterTopicLine(state);
     final String prefix;
     if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
-      prefix = topicListNumStr + Integer.toString(topicIndex + 1) + '.';//NOI18N
+      prefix = topicListNumStr + (topicIndex + 1) + '.';//NOI18N
     } else {
       prefix = "";//NOI18N
     }

@@ -90,7 +90,7 @@ public class ElementLevelOther extends ElementLevelFirst {
     while (topic != null) {
       final AbstractElement w = assertNotNull((AbstractElement) topic.getPayload());
       if (w.getClass() == ElementLevelFirst.class) {
-        result = ((ElementLevelFirst) w).isLeftDirection();
+        result = w.isLeftDirection();
         break;
       } else {
         topic = topic.getParent();

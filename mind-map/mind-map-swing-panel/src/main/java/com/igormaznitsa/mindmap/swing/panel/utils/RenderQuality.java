@@ -27,9 +27,9 @@ public enum RenderQuality {
   SPEED,
   QUALITY;
 
-  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_DEFAULT = new HashMap<RenderingHints.Key, Object>();
-  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_SPEED = new HashMap<RenderingHints.Key, Object>();
-  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_QUALTY = new HashMap<RenderingHints.Key, Object>();
+  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_DEFAULT = new HashMap<>();
+  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_SPEED = new HashMap<>();
+  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_QUALTY = new HashMap<>();
 
   static {
     RENDERING_HINTS_QUALTY.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);

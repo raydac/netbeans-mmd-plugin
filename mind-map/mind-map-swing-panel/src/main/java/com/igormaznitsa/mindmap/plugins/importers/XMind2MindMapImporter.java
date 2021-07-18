@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -80,7 +81,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
   @Nonnull
   @MustNotContainNull
   private static List<Element> getChildTopics(@Nonnull final Element topic) {
-    List<Element> result = new ArrayList<Element>();
+    List<Element> result = new ArrayList<>();
 
     for (final Element c : Utils.findDirectChildrenForName(topic, "children")) {
       for (Element t : Utils.findDirectChildrenForName(c, "topics")) {
@@ -320,7 +321,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
       @Nonnull final ZipFile zipFile,
       @Nonnull final InputStream content
   ) throws Exception {
-    final JSONArray parsed = new JSONArray(IOUtils.toString(content, "UTF-8"));
+    final JSONArray parsed = new JSONArray(IOUtils.toString(content, StandardCharsets.UTF_8));
 
     final List<JSONObject> sheets = new ArrayList<>();
 
@@ -526,8 +527,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     final Map<String, XMindStyle> theme = extractThemes(sheet);
 
-    final Map<String, Topic> topicIdMap = new HashMap<String, Topic>();
-    final Map<String, String> linksBetweenTopics = new HashMap<String, String>();
+    final Map<String, Topic> topicIdMap = new HashMap<>();
+    final Map<String, String> linksBetweenTopics = new HashMap<>();
 
     final JSONObject rootTopicObj = sheet.getJSONObject("rootTopic");
     if (rootTopicObj != null) {
@@ -599,8 +600,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
     final Topic rootTopic = assertNotNull(resultedMap.getRoot());
     rootTopic.setText("Empty sheet");
 
-    final Map<String, Topic> topicIdMap = new HashMap<String, Topic>();
-    final Map<String, String> linksBetweenTopics = new HashMap<String, String>();
+    final Map<String, Topic> topicIdMap = new HashMap<>();
+    final Map<String, String> linksBetweenTopics = new HashMap<>();
 
     final List<Element> rootTopics = Utils.findDirectChildrenForName(sheet, "topic");
     if (!rootTopics.isEmpty()) {
@@ -776,7 +777,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
   private static final class XMindStyles {
 
-    private final Map<String, XMindStyle> stylesMap = new HashMap<String, XMindStyle>();
+    private final Map<String, XMindStyle> stylesMap = new HashMap<>();
 
     private XMindStyles(@Nonnull final ZipFile zipFile) {
       try {

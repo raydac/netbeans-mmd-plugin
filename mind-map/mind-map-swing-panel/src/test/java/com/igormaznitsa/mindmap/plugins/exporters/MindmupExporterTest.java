@@ -22,13 +22,15 @@ import static org.junit.Assert.assertTrue;
 import com.igormaznitsa.mindmap.model.MindMap;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 public class MindmupExporterTest extends AbstractStandardExporterTest<MindmupExporter> {
 
   @Test
   public void testNoExceptionsAndResultPresented() throws Exception {
     final MindMap map = new MindMap(true);
     map.getRoot().setText("Hello World!");
-    final String text = new String(export(map, null), "UTF-8");
+    final String text = new String(export(map, null), StandardCharsets.UTF_8);
     System.out.print("JSON\n----------------\n" + text + "\n----------------\n");
     assertTrue(text.contains("Hello World!"));
   }

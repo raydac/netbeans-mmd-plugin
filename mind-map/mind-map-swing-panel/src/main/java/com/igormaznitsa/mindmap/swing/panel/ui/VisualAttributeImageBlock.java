@@ -68,7 +68,7 @@ public class VisualAttributeImageBlock {
     if (pluginsFromRegistry.isEmpty()) {
       this.items = VisualItem.EMPTY;
     } else {
-      final List<VisualAttributePlugin> detectedPlugins = new ArrayList<VisualAttributePlugin>();
+      final List<VisualAttributePlugin> detectedPlugins = new ArrayList<>();
       final Map<String, String> attributes = this.model.getAttributes();
 //      final Map<String, String> codeSnippets = this.model.getCodeSnippets();
       for (final VisualAttributePlugin p : pluginsFromRegistry) {

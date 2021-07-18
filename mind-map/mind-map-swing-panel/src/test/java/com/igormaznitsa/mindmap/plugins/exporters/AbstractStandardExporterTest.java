@@ -31,6 +31,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -107,7 +108,7 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
   @Test
   public void testNoExceptionForExportOfEmptyMap() throws Exception {
     final MindMap map = new MindMap(new StringReader("Empty Mind Map\n---"));
-    final String exported = new String(export(map, null), "UTF-8");
+    final String exported = new String(export(map, null), StandardCharsets.UTF_8);
     System.out.println(exported);
   }
 

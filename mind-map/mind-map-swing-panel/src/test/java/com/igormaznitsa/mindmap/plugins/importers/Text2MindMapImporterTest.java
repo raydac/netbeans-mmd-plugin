@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -34,13 +35,13 @@ public class Text2MindMapImporterTest {
 
   @Test
   public void testDoImport_Empty() throws Exception {
-    final MindMap result = INSTANCE.makeFromLines(asList("          "));
+    final MindMap result = INSTANCE.makeFromLines(Collections.singletonList("          "));
     assertNull(result.getRoot());
   }
 
   @Test
   public void testDoImport_OnlyRoot() throws Exception {
-    final MindMap result = INSTANCE.makeFromLines(asList("\tSolar system   "));
+    final MindMap result = INSTANCE.makeFromLines(Collections.singletonList("\tSolar system   "));
     assertEquals("Solar system", result.getRoot().getText());
   }
 

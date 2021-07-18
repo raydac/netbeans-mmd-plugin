@@ -417,7 +417,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e)
                 || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD_ALL, e)) {
               e.consume();
-              final List<AbstractElement> elements = new ArrayList<AbstractElement>();
+              final List<AbstractElement> elements = new ArrayList<>();
               for (final Topic t : getSelectedTopics()) {
                 final AbstractElement element = (AbstractElement) t.getPayload();
                 if (element != null) {
@@ -795,11 +795,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 }
               } else {
                 // group
-                if (selectedTopics.isEmpty()) {
-                  select(element.getModel(), false);
-                } else {
-                  select(element.getModel(), true);
-                }
+                select(element.getModel(), !selectedTopics.isEmpty());
               }
             }
           } finally {
@@ -893,7 +889,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     if (selectedTopics != null && !selectedTopics.isEmpty()) {
       final Color selectLineColor = cfg.getSelectLineColor();
       g.setStroke(cfg.safeScaleFloatValue(cfg.getSelectLineWidth(), 0.1f), StrokeType.DASHES);
-      final double selectLineGap = (double) cfg.safeScaleFloatValue(cfg.getSelectLineGap(), 0.05f);
+      final double selectLineGap = cfg.safeScaleFloatValue(cfg.getSelectLineGap(), 0.05f);
       final double selectLineGapX2 = selectLineGap + selectLineGap;
 
       for (final Topic s : selectedTopics) {
@@ -936,7 +932,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     final float scaledSize = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
 
     final float lineWidth = scaledSize;
-    final float arrowWidth = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth() * 1.0f, 0.3f);
+    final float arrowWidth = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.3f);
 
     final Color jumpLinkColor = cfg.getJumpLinkColor();
 
@@ -1221,13 +1217,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   @Nonnull
   @MustNotContainNull
   private static Topic[] ensureNoRootInArray(@Nonnull @MustNotContainNull final Topic... topics) {
-    final List<Topic> buffer = new ArrayList<Topic>(topics.length);
+    final List<Topic> buffer = new ArrayList<>(topics.length);
     for (final Topic t : topics) {
       if (!t.isRoot()) {
         buffer.add(t);
       }
     }
-    return buffer.toArray(new Topic[buffer.size()]);
+    return buffer.toArray(new Topic[0]);
   }
 
   private void selectSiblingDiapasone(@Nonnull AbstractElement element) {
@@ -1347,7 +1343,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       if (value == null) {
         this.weakTable.remove(key);
       } else {
-        this.weakTable.put(key, new WeakReference<Object>(value));
+        this.weakTable.put(key, new WeakReference<>(value));
       }
     } finally {
       this.unlock();
@@ -1377,7 +1373,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       }
       break;
       case LINK: {
-        builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml3(ModelUtils.makeShortTextVersion(((ExtraLink) extra).getAsString(), 48)));
+        builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml3(ModelUtils.makeShortTextVersion(extra.getAsString(), 48)));
       }
       break;
       case NOTE: {
@@ -1386,7 +1382,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenText")).append("#######");
         } else {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenText")).append(StringEscapeUtils
-              .escapeHtml3(ModelUtils.makeShortTextVersion(((ExtraNote) extra).getAsString(), 64)));
+              .escapeHtml3(ModelUtils.makeShortTextVersion(extra.getAsString(), 64)));
         }
       }
       break;
@@ -1487,7 +1483,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           }
         } else {
           dragged.getModel().moveToNewParent(destination.getModel());
-          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed() && (controller == null ? true : controller.isUnfoldCollapsedTopicDropTarget(this))) { //NOI18N
+          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed() && (controller == null || controller.isUnfoldCollapsedTopicDropTarget(this))) { //NOI18N
             ((AbstractCollapsableElement) destination).setCollapse(false);
           }
           if (dropPoint.getY() < destination.getBounds().getY()) {
@@ -1732,7 +1728,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   protected void fireNotificationSelectionChanged() {
-    final Topic[] selected = this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
+    final Topic[] selected = this.selectedTopics.toArray(new Topic[0]);
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onChangedSelection(MindMapPanel.this, selected);
     }
@@ -1857,7 +1853,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             nextToFocus = this.selectedTopics.get(0).getParent();
           }
 
-          deleteTopics(force, this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]));
+          deleteTopics(force, this.selectedTopics.toArray(new Topic[0]));
         }
       } finally {
         this.unlock();
@@ -1930,7 +1926,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   public Topic[] getSelectedTopics() {
     this.lock();
     try {
-      return this.selectedTopics.toArray(new Topic[this.selectedTopics.size()]);
+      return this.selectedTopics.toArray(new Topic[0]);
     } finally {
       this.unlock();
     }
@@ -2170,7 +2166,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         });
       }
 
-      final List<int[]> selectedPaths = new ArrayList<int[]>();
+      final List<int[]> selectedPaths = new ArrayList<>();
       for (final Topic t : this.selectedTopics) {
         selectedPaths.add(t.getPositionPath());
       }
@@ -2626,7 +2622,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public boolean isLocked() {
-    return this.panelLocker == null ? false : this.panelLocker.isLocked();
+    return this.panelLocker != null && this.panelLocker.isLocked();
   }
 
   /**
@@ -2931,7 +2927,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     public enum Modifier {
 
       NONE,
-      MAKE_JUMP;
+      MAKE_JUMP
     }
   }
 

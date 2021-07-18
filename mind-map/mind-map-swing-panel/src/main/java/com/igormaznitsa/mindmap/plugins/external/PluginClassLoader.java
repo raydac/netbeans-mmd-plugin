@@ -56,7 +56,7 @@ public class PluginClassLoader extends URLClassLoader {
     if (manifest != null) {
       final Attributes pluginAttributes = manifest.getEntries().get("nb-mindmap-plugin");
       if (pluginAttributes != null) {
-        detectedAttributes = new HashMap<String, String>();
+        detectedAttributes = new HashMap<>();
         for (final Object key : pluginAttributes.keySet()) {
           final String keyAsText = key.toString();
           detectedAttributes.put(keyAsText, pluginAttributes.getValue(keyAsText));

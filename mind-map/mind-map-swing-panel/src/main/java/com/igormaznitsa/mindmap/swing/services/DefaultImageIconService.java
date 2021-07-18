@@ -30,7 +30,7 @@ import org.apache.commons.io.IOUtils;
 
 public class DefaultImageIconService implements ImageIconService {
 
-  private static final Map<IconID, Icon> MAP = new EnumMap<IconID, Icon>(IconID.class);
+  private static final Map<IconID, Icon> MAP = new EnumMap<>(IconID.class);
 
   static {
     MAP.put(IconID.POPUP_EXPORT, loadIcon("export16.png"));

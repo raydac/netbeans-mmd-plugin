@@ -140,7 +140,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   @Nonnull
   @MustNotContainNull
   private List<String> extractImageURLs(@Nonnull final String mdText, @Nonnull final StringBuilder resultText) {
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
     final Matcher matcher = MD_IMAGE_LINK.matcher(mdText);
     int lastFoundEnd = 0;
     while (matcher.find()) {
@@ -160,7 +160,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   @Nonnull
   @MustNotContainNull
   private List<String> extractURLs(@Nonnull final String mdText, @Nonnull final StringBuilder resultText) {
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
     final Matcher matcher = MD_URL_LINK.matcher(mdText);
     int lastFoundEnd = 0;
     while (matcher.find()) {

@@ -76,9 +76,9 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPluginRegistry.class);
   private static final MindMapPluginRegistry INSTANCE = new MindMapPluginRegistry();
-  private final List<MindMapPlugin> pluginList = new ArrayList<MindMapPlugin>();
+  private final List<MindMapPlugin> pluginList = new ArrayList<>();
   private final Map<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>> FIND_CACHE =
-      new HashMap<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>>();
+          new HashMap<>();
 
   private MindMapPluginRegistry() {
     registerPlugin(new FreeMindExporter());
@@ -227,7 +227,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
       List<T> result = (List<T>) FIND_CACHE.get(klazz);
 
       if (result == null) {
-        result = new ArrayList<T>();
+        result = new ArrayList<>();
         if (klazz != null) {
           for (final MindMapPlugin p : this.pluginList) {
             if (klazz.isInstance(p)) {

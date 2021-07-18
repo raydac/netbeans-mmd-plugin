@@ -29,7 +29,7 @@ public interface AttributePlugin extends MindMapPlugin, TopicFinder {
   /**
    * Attribute name which can be returned if plug-in doesn't process attributes.
    */
-  public static final String NULL_ATTRIBUTE = ",=,";
+  String NULL_ATTRIBUTE = ",=,";
 
   /**
    * Get name of attribute key associated with the plug-in.

@@ -46,7 +46,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   public static final String ATTR_IMAGE_URI_KEY = "mmd.image.uri";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageVisualAttributePlugin.class);
-  private static final Map<Topic, Renderable> CACHED_IMAGES = new WeakHashMap<Topic, Renderable>();
+  private static final Map<Topic, Renderable> CACHED_IMAGES = new WeakHashMap<>();
 
   public static void clearCachedImages() {
     CACHED_IMAGES.clear();
@@ -158,13 +158,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   public int compareTo(@Nonnull final MindMapPlugin o) {
-    if (this.getOrder() == o.getOrder()) {
-      return 0;
-    } else if (this.getOrder() < o.getOrder()) {
-      return -1;
-    } else {
-      return 1;
-    }
+    return Integer.compare(this.getOrder(), o.getOrder());
   }
 
 }

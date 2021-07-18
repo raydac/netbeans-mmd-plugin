@@ -30,7 +30,7 @@ public enum StandardTopicAttribute {
 
   private final String textName;
 
-  private StandardTopicAttribute(@Nonnull final String textName) {
+  StandardTopicAttribute(@Nonnull final String textName) {
     this.textName = textName;
   }
 

@@ -73,9 +73,9 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       final List<String> urls = ctopic.getLinkUrls();
 
       if (!urls.isEmpty()) {
-        final List<Topic> insideLinksToTopics = new ArrayList<Topic>();
-        final List<MMapURI> insideLinksToURLs = new ArrayList<MMapURI>();
-        final List<MMapURI> insideLinksToFiles = new ArrayList<MMapURI>();
+        final List<Topic> insideLinksToTopics = new ArrayList<>();
+        final List<MMapURI> insideLinksToURLs = new ArrayList<>();
+        final List<MMapURI> insideLinksToFiles = new ArrayList<>();
 
         for (final String s : urls) {
           if (s.startsWith("novamind://topic/")) {
@@ -209,7 +209,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
     final ParsedContent.TopicReference rootRef = content.getRootTopic();
     if (rootRef != null) {
-      final Map<String, Topic> mapIdToTopic = new HashMap<String, Topic>();
+      final Map<String, Topic> mapIdToTopic = new HashMap<>();
       convertContentTopicIntoMMTopic(result, null, rootRef, manifest, mapIdToTopic);
 
       for (final Map.Entry<String, String> link : content.getLinksBetweenTopics().entrySet()) {
@@ -264,7 +264,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
   private static final class Manifest {
 
     private final ZipFile zipFile;
-    private final Map<String, Resource> resourceMap = new HashMap<String, Resource>();
+    private final Map<String, Resource> resourceMap = new HashMap<>();
 
     private Manifest(@Nonnull final ZipFile zipFile, @Nonnull final String manifestPath) {
       this.zipFile = zipFile;
@@ -348,8 +348,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
   private static final class ParsedContent {
 
-    private final Map<String, ContentTopic> topicsMap = new HashMap<String, ContentTopic>();
-    private final Map<String, String> linksBetweenTopics = new HashMap<String, String>();
+    private final Map<String, ContentTopic> topicsMap = new HashMap<>();
+    private final Map<String, String> linksBetweenTopics = new HashMap<>();
     private final TopicReference rootRef;
 
     ParsedContent(@Nonnull final ZipFile file, @Nonnull final String path) {
@@ -440,7 +440,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       private final Color colorText;
       private final Color colorFill;
 
-      private final List<TopicReference> children = new ArrayList<TopicReference>();
+      private final List<TopicReference> children = new ArrayList<>();
 
       private TopicReference(@Nonnull final Element topicNode, @Nonnull final Map<String, ContentTopic> topicMap) {
         this.id = topicNode.getAttribute("id");
@@ -589,7 +589,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       @Nonnull
       @MustNotContainNull
       private static List<String> extractLinkUrls(@Nonnull final Element node) {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
         for (final Element links : Utils.findDirectChildrenForName(node, "links")) {
           for (final Element l : Utils.findDirectChildrenForName(links, "link")) {
             final String url = l.getAttribute("url");

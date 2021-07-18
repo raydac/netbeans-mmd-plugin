@@ -56,7 +56,7 @@ public class Text2MindMapImporter extends AbstractImporter {
   MindMap makeFromLines(@Nonnull @MustNotContainNull final List<String> lines) {
     final MindMap result = new MindMap(false);
     final Iterator<String> iterator = lines.iterator();
-    final List<TopicData> topicStack = new ArrayList<TopicData>();
+    final List<TopicData> topicStack = new ArrayList<>();
     while (true) {
       final Topic topic = decodeLine(result, iterator, topicStack);
       if (topic == null) {

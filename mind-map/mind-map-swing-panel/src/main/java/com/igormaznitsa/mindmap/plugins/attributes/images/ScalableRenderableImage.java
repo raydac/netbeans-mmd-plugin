@@ -35,7 +35,7 @@ final class ScalableRenderableImage implements Renderable {
   private final Image baseImage;
   private final int width;
   private final int height;
-  private final Map<Double, SoftReference<Image>> cache = new HashMap<Double, SoftReference<Image>>();
+  private final Map<Double, SoftReference<Image>> cache = new HashMap<>();
   private double cachedScale = Double.MIN_VALUE;
 
   public ScalableRenderableImage(@Nonnull final Image baseImage) {
@@ -77,12 +77,11 @@ final class ScalableRenderableImage implements Renderable {
           gfx.drawImage(this.baseImage, AffineTransform.getScaleInstance(scale, scale), null);
           gfx.dispose();
           result = scaled;
-          this.cache.put(scale, new SoftReference<Image>(result));
-          this.cachedScale = scale;
+          this.cache.put(scale, new SoftReference<>(result));
         } else {
           result = null;
-          this.cachedScale = scale;
         }
+        this.cachedScale = scale;
       }
     }
     return result;

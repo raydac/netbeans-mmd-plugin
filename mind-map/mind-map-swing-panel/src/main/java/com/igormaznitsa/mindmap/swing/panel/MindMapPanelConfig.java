@@ -73,8 +73,8 @@ public final class MindMapPanelConfig implements Serializable {
   private static final long serialVersionUID = -4273687011484460064L;
   @MustNotContainNull
   private transient final List<WeakReference<MindMapConfigListener>> listeners =
-      new ArrayList<WeakReference<MindMapConfigListener>>();
-  private transient final Map<String, KeyShortcut> mapShortCut = new HashMap<String, KeyShortcut>();
+          new ArrayList<>();
+  private transient final Map<String, KeyShortcut> mapShortCut = new HashMap<>();
   private int collapsatorSize = 16;
   private int textMargins = 10;
   private int otherLevelVerticalInset = 16;
@@ -238,7 +238,7 @@ public final class MindMapPanelConfig implements Serializable {
 
   @Nullable
   public Map<String, KeyShortcut> getKeyShortcutMap() {
-    return new HashMap<String, KeyShortcut>(this.mapShortCut);
+    return new HashMap<>(this.mapShortCut);
   }
 
   public boolean hasDifferenceInParameters(@Nonnull final MindMapPanelConfig etalon) {
@@ -358,9 +358,9 @@ public final class MindMapPanelConfig implements Serializable {
           } else if (fieldClass == double.class) {
             f.setDouble(this, prefs.getDouble(fieldName, f.getDouble(etalon)));
           } else if (fieldClass == Font.class) {
-            final Font etalonFont = (Font) etalon.getFont();
+            final Font etalonFont = etalon.getFont();
 
-            final String fontName = (String) prefs.get(fieldName + ".name", etalonFont.getName());
+            final String fontName = prefs.get(fieldName + ".name", etalonFont.getName());
             final int fontSize = prefs.getInt(fieldName + ".size", etalonFont.getSize());
             final int fontStyle = prefs.getInt(fieldName + ".style", etalonFont.getStyle());
 
@@ -429,7 +429,7 @@ public final class MindMapPanelConfig implements Serializable {
             for (final WeakReference<MindMapConfigListener> weakContainer : src.listeners) {
               final MindMapConfigListener theListener = weakContainer.get();
               if (theListener != null) {
-                this.listeners.add(new WeakReference<MindMapConfigListener>(theListener));
+                this.listeners.add(new WeakReference<>(theListener));
               }
             }
           }
@@ -452,7 +452,7 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   public void addConfigurationListener(@Nonnull final MindMapConfigListener l) {
-    this.listeners.add(new WeakReference<MindMapConfigListener>(assertNotNull(l)));
+    this.listeners.add(new WeakReference<>(assertNotNull(l)));
   }
 
   public void removeConfigurationListener(@Nonnull final MindMapConfigListener l) {

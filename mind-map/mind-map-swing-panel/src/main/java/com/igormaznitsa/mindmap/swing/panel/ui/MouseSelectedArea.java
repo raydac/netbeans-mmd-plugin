@@ -54,7 +54,7 @@ public class MouseSelectedArea {
   @Nonnull
   @MustNotContainNull
   public List<Topic> getAllSelectedElements(@Nonnull final MindMap map) {
-    final List<Topic> result = new ArrayList<Topic>();
+    final List<Topic> result = new ArrayList<>();
     final Rectangle rect = asRectangle();
     addCoveredToList(result, map.getRoot(), rect.getBounds2D());
     return result;
@@ -70,7 +70,7 @@ public class MouseSelectedArea {
       if (rect.contains(payload.getBounds())) {
         list.add(root);
       }
-      if (payload instanceof AbstractCollapsableElement && ((AbstractCollapsableElement) payload).isCollapsed()) {
+      if (payload instanceof AbstractCollapsableElement && payload.isCollapsed()) {
         return;
       }
     }

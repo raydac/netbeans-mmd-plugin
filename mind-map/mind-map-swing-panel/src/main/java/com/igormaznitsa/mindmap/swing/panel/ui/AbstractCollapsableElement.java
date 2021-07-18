@@ -234,13 +234,12 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
         final double dx = source.getCenterX() - destination.getMaxX();
         path.lineTo((source.getCenterX() - dx / 2), source.getCenterY());
         path.lineTo((source.getCenterX() - dx / 2), destination.getCenterY());
-        path.lineTo(destination.getCenterX(), destination.getCenterY());
       } else {
         final double dx = destination.getX() - source.getCenterX();
         path.lineTo((source.getCenterX() + dx / 2), source.getCenterY());
         path.lineTo((source.getCenterX() + dx / 2), destination.getCenterY());
-        path.lineTo(destination.getCenterX(), destination.getCenterY());
       }
+      path.lineTo(destination.getCenterX(), destination.getCenterY());
 
       g.draw(path, cfg.getConnectorColor(), null);
     }

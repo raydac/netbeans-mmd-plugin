@@ -28,7 +28,7 @@ public class MiscIconsTest {
   public void testReadAllIcons() {
     int number = 0;
     for (final String iconName : MiscIcons.getNames()) {
-      assertNotNull("icon '" + iconName + "\'", MiscIcons.findForName(iconName));
+      assertNotNull("icon '" + iconName + "'", MiscIcons.findForName(iconName));
       number++;
     }
     assertTrue(number > 0);

@@ -42,7 +42,6 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 public final class MindMapUtils {
@@ -55,7 +54,7 @@ public final class MindMapUtils {
       return true;
     }
     final String collapsed = topic.findAttributeInAncestors(ATTR_COLLAPSED.getText());
-    return collapsed != null && Boolean.parseBoolean(collapsed);
+    return Boolean.parseBoolean(collapsed);
   }
 
   @Nonnull
@@ -328,7 +327,7 @@ public final class MindMapUtils {
   @Nonnull
   @MustNotContainNull
   public static Topic[] removeSuccessorsAndDuplications(@Nonnull @MustNotContainNull final Topic... topics) {
-    final List<Topic> result = new ArrayList<Topic>();
+    final List<Topic> result = new ArrayList<>();
 
     for (final Topic t : topics) {
       final Iterator<Topic> iterator = result.iterator();
@@ -340,7 +339,7 @@ public final class MindMapUtils {
       }
       result.add(t);
     }
-    return result.toArray(new Topic[result.size()]);
+    return result.toArray(new Topic[0]);
   }
 
   /**

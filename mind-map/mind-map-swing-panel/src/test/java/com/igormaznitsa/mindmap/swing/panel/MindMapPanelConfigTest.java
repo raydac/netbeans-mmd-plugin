@@ -117,7 +117,7 @@ public class MindMapPanelConfigTest {
 
   @Test
   public void testSaveRestoreState() {
-    final Map<String, Object> storage = new HashMap<String, Object>();
+    final Map<String, Object> storage = new HashMap<>();
     final Preferences prefs = mock(Preferences.class);
 
     doAnswer(new Answer() {
@@ -219,7 +219,7 @@ public class MindMapPanelConfigTest {
       when(prefs.keys()).thenAnswer(new Answer<String[]>() {
         @Override
         public String[] answer(final InvocationOnMock invocation) throws Throwable {
-          return storage.keySet().toArray(new String[storage.size()]);
+          return storage.keySet().toArray(new String[0]);
         }
       });
     } catch (Exception ex) {

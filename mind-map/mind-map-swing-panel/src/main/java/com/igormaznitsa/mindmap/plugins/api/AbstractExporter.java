@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
 
 /**
  * Abstract auxiliary class automates way to implement an abstract exporter.

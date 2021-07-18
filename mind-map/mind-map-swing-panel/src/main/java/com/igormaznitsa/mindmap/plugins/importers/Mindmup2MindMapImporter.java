@@ -84,7 +84,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
       final Topic mindMapRoot = Assertions.assertNotNull(resultedMap.getRoot());
-      final Map<Long, Topic> mapTopicId = new HashMap<Long, Topic>();
+      final Map<Long, Topic> mapTopicId = new HashMap<>();
 
       parseTopic(resultedMap, null, mindMapRoot, parsedJson, mapTopicId);
 
@@ -121,7 +121,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     final JSONObject ideas = json.optJSONObject("ideas");
     if (ideas != null) {
 
-      final List<OrderableIdea> sortedIdeas = new ArrayList<OrderableIdea>();
+      final List<OrderableIdea> sortedIdeas = new ArrayList<>();
       for (final String key : ideas.keySet()) {
         final JSONObject idea = ideas.optJSONObject(key);
         if (idea == null) {

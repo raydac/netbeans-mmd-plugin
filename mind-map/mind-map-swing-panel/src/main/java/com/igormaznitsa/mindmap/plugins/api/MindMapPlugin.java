@@ -29,12 +29,12 @@ public interface MindMapPlugin extends Comparable<MindMapPlugin> {
   /**
    * Recommended start order for custom user plug-ins.
    */
-  public static final int CUSTOM_PLUGIN_START = 1000;
+  int CUSTOM_PLUGIN_START = 1000;
 
   /**
    * Version of the API.
    */
-  public static final Version API = new Version("1.4.10");
+  Version API = new Version("1.4.10");
 
   /**
    * Order of the plug-in among another plug-ins.
