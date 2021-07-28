@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.4.12-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,8 +12,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.4.12 (SNAPSHOT)</p>
+        <p>1.5.0 (SNAPSHOT)</p>
+          <li></li>
+        </p>
+        <p>1.4.12 (28-jul-2021)</p>
         <ul>
+          <li>fixed incompatibility with Intellij IDEA API 2021.2</li>
           <li>minimal supported Intellij IDEA platform lifted to 2018.1</li>
           <li>minimal supported Java version lifted to 1.8</li>
         </ul>
