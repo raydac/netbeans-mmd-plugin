@@ -32,6 +32,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.CommonBundle;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.Disposable;
@@ -341,9 +342,11 @@ public final class IdeaUtils {
     }
   }
 
-  public static NoteEditorData editText(final Project project, final String title, final NoteEditorData data) {
+  public static NoteEditorData editText(final Project project, final DialogProvider dialogProvider, final String title, final NoteEditorData data) {
     final PlainTextEditor editor = new PlainTextEditor(project, data);
     editor.setPreferredSize(new Dimension(550, 450));
+
+    Utils.catchEscInParentDialog(editor, dialogProvider, d -> editor.isChanged(), x -> editor.cancel());
 
     final DialogComponent dialog = new DialogComponent(project, title, editor, editor.getEditor(), false);
 

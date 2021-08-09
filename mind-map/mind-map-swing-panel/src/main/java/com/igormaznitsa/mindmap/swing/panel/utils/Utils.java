@@ -19,6 +19,7 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 import com.igormaznitsa.meta.annotation.ImplementationNote;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -26,60 +27,13 @@ import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
-import com.igormaznitsa.mindmap.swing.services.IconID;
-import com.igormaznitsa.mindmap.swing.services.ImageIconService;
-import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.igormaznitsa.mindmap.swing.services.*;
 import net.iharder.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -90,6 +44,42 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public final class Utils {
 
@@ -513,9 +503,9 @@ public final class Utils {
       final int[] components;
 
       if (hasAlpha) {
-        components = new int[] {color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[]{color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
       } else {
-        components = new int[] {color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[]{color.getRed(), color.getGreen(), color.getBlue()};
       }
 
       for (final int c : components) {
@@ -776,12 +766,12 @@ public final class Utils {
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> findPopupMenuItems(
-      @Nonnull final PluginContext context,
-      @Nonnull final PopUpSection section,
-      final boolean fullScreenModeActive,
-      @Nonnull @MayContainNull final List<JMenuItem> list,
-      @Nullable final Topic topicUnderMouse,
-      @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems
+          @Nonnull final PluginContext context,
+          @Nonnull final PopUpSection section,
+          final boolean fullScreenModeActive,
+          @Nonnull @MayContainNull final List<JMenuItem> list,
+          @Nullable final Topic topicUnderMouse,
+          @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems
   ) {
     list.clear();
 
@@ -791,8 +781,8 @@ public final class Utils {
       }
       if (p.getSection() == section) {
         if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
-            || (p.needsTopicUnderMouse() && topicUnderMouse != null)
-            || (p.needsSelectedTopics() && context.getSelectedTopics().length > 0)) {
+                || (p.needsTopicUnderMouse() && topicUnderMouse != null)
+                || (p.needsSelectedTopics() && context.getSelectedTopics().length > 0)) {
 
           final JMenuItem item = p.makeMenuItem(context, topicUnderMouse);
           if (item != null) {
@@ -845,9 +835,9 @@ public final class Utils {
 
   @Nonnull
   public static JPopupMenu makePopUp(
-      @Nonnull final PluginContext context,
-      final boolean fullScreenModeActive,
-      @Nullable final Topic topicUnderMouse
+          @Nonnull final PluginContext context,
+          final boolean fullScreenModeActive,
+          @Nullable final Topic topicUnderMouse
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
     final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
@@ -884,6 +874,58 @@ public final class Utils {
       }
     }
     return result;
+  }
+
+  @Nonnull
+  @SafeVarargs
+  @ReturnsOriginal
+  public static JComponent catchEscInParentDialog(
+          @Nonnull final JComponent component,
+          @Nonnull final DialogProvider dialogProvider,
+          @Nullable final Predicate<JDialog> doClose,
+          @Nonnull @MustNotContainNull final Consumer<JDialog>... beforeClose) {
+    component.addHierarchyListener(new HierarchyListener() {
+
+      private final KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+
+      @Override
+      public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
+        final Window window = SwingUtilities.getWindowAncestor(component);
+        if (window instanceof JDialog) {
+          final JDialog dialog = (JDialog) window;
+          final InputMap inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+          inputMap.put(escapeKeyStroke, "PRESSING_ESCAPE");
+          final ActionMap actionMap = dialog.getRootPane().getActionMap();
+          actionMap.put("PRESSING_ESCAPE", new AbstractAction() {
+            @Override
+            public void actionPerformed(@Nonnull final ActionEvent e) {
+              final boolean close;
+              if (doClose == null) {
+                close = true;
+              } else {
+                if (doClose.test(dialog)) {
+                  close = dialogProvider
+                          .msgConfirmOkCancel(dialog, BUNDLE.getString("Utils.confirmActionTitle"), BUNDLE.getString("Utils.closeForContentChange"));
+                } else {
+                  close = true;
+                }
+              }
+              if (close) {
+                for (final Consumer<JDialog> c : beforeClose) {
+                  try {
+                    c.accept(dialog);
+                  } catch (Exception ex) {
+                    LOGGER.error("Error during before close call", ex);
+                  }
+                }
+                dialog.dispose();
+              }
+            }
+          });
+        }
+      }
+    });
+    return component;
   }
 
   @Nonnull

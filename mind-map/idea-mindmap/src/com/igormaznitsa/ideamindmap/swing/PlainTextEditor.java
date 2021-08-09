@@ -70,6 +70,10 @@ public class PlainTextEditor extends JPanel {
   private volatile String password;
   private volatile String hint;
 
+  private final String originalText;
+
+  private boolean cancelled;
+
   private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -91,6 +95,7 @@ public class PlainTextEditor extends JPanel {
     
     this.password = data.getPassword();
     this.hint = data.getHint();
+    this.originalText = data.getText();
 
     this.editor = new EmptyTextEditor(project);
 
@@ -195,6 +200,18 @@ public class PlainTextEditor extends JPanel {
     SwingUtilities.invokeLater(() -> editor.replaceSelection(data.getText()));
   }
 
+  public boolean isChanged() {
+    return !this.originalText.equals(this.getEditor().getText());
+  }
+
+  public boolean isCancelled(){
+    return this.cancelled;
+  }
+
+  public void cancel() {
+    this.cancelled = true;
+  }
+
   @Nonnull
   private JButton makeButton(@Nullable final String text, @Nullable final Icon icon) {
     final JButton result = UI_COMPO_FACTORY.makeButton();
@@ -212,8 +229,9 @@ public class PlainTextEditor extends JPanel {
     return result;
   }
 
+  @Nullable
   public NoteEditorData getData() {
-    return new NoteEditorData(this.editor.getText(),this.password, this.hint);
+    return this.cancelled ? null : new NoteEditorData(this.editor.getText(),this.password, this.hint);
   }
 
   public EmptyTextEditor getEditor() {

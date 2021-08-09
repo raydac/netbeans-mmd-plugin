@@ -1437,8 +1437,8 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
             final NoteEditorData result;
             if (note == null) {
                 // create new
-                result = NbUtils.editText(null, String
-                        .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
+                result = NbUtils.editText(null, DialogProviderManager.getInstance().getDialogProvider(),
+                        String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
                             Utils.makeShortTextVersion(topic.getText(), 16)),
                     new NoteEditorData()); //NOI18N
             } else {
@@ -1475,7 +1475,7 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
                 if (noteText == null) {
                     result = null;
                 } else {
-                    result = NbUtils.editText(null, String.format(
+                    result = NbUtils.editText(null, DialogProviderManager.getInstance().getDialogProvider(), String.format(
                         BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
                         Utils.makeShortTextVersion(topic.getText(), 16)), noteText);
                 }

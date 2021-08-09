@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
@@ -421,7 +422,9 @@ public final class UiUtils {
     final NoteEditor textEditor = new NoteEditor(data);
     try {
       if (DialogProviderManager.getInstance().getDialogProvider()
-          .msgOkCancel(Main.getApplicationFrame(), title, textEditor)) {
+          .msgOkCancel(Main.getApplicationFrame(), title, 
+                  Utils.catchEscInParentDialog(textEditor, DialogProviderManager.getInstance().getDialogProvider(), dialog -> textEditor.isTextChanged(),
+                          x -> textEditor.cancel()))) {
         return textEditor.getData();
       } else {
         return null;

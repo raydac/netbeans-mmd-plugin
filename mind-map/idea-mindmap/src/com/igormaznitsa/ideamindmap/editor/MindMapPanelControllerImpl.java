@@ -434,8 +434,9 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
       if (note == null) {
         // create new
         result = IdeaUtils
-            .editText(this.editor.getProject(), String
-                    .format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
+            .editText(this.editor.getProject(),
+                    this.dialogProvider,
+                    String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
                         Utils.makeShortTextVersion(topic.getText(), 16)),
                 new NoteEditorData()); //NOI18N
       } else {
@@ -470,8 +471,8 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         } else {
           result = IdeaUtils
               .editText(this.editor.getProject(),
-                  String.format(
-                      BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
+                  this.dialogProvider,
+                      String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
                       Utils.makeShortTextVersion(topic.getText(), 16)), noteText);
         }
       }

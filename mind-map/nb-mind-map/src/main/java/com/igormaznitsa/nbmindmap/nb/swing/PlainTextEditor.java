@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.annotation.Nullable;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
@@ -114,6 +115,8 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
   private String hint;
   private final Wrapping oldWrapping;
   private Wrapping wrapping;
+  private boolean cancelled;
+  private final String originalText;
 
   private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {
 
@@ -128,6 +131,14 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
     }
   };
 
+  public boolean isCancelled() {
+    return this.cancelled;
+  }
+  
+  public void cancel(){
+    this.cancelled = true;  
+  }
+  
   public PlainTextEditor (@NonNull final NoteEditorData data) {
     initComponents();
     this.toggleButtonProtect.setSelected(data.isEncrypted());
@@ -139,6 +150,7 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
     editor.setEditorKit(getEditorKit());
     this.document = Utilities.getDocument(editor);
 
+    this.originalText = data.getText();
     setText(data.getText());
 
     final Preferences docPreferences = CodeStylePreferences.get(this.document).getPreferences();
@@ -161,6 +173,10 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
     updateBottomPanel();
   }
 
+  public boolean isChanged() {
+      return !this.originalText.equals(this.getText());
+  }
+  
     private void toggleButtonEncryptActionPerformed(ActionEvent evt) {
         final JToggleButton src = (JToggleButton) evt.getSource();
         if (src.isSelected()) {
@@ -218,15 +234,23 @@ public final class PlainTextEditor extends javax.swing.JPanel implements CaretLi
     return CloneableEditorSupport.getEditorKit("text/plain"); //NOI18N
   }
 
-  public NoteEditorData getData () {
-    try {
-      final String text = this.document.getText(0, this.document.getLength());
-      final NoteEditorData result = new NoteEditorData(text, this.password, this.hint);
-      return result;
-    }
-    catch (BadLocationException e) {
+  @Nullable
+  private String getText() {
+    try{
+       return this.document.getText(0, this.document.getLength());
+    } catch (BadLocationException e) {
       LOGGER.error("Can't get text", e); //NOI18N
       return null;
+    }
+  }
+  
+  @Nullable
+  public NoteEditorData getData () {
+    if (this.cancelled) {
+      return null;  
+    } else {
+      final String text = this.getText();
+      return text == null ? null : new NoteEditorData(text, this.password, this.hint);
     }
   }
 

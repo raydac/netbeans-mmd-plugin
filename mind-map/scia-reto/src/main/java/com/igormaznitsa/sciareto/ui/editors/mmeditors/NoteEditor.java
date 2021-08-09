@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box.Filler;
@@ -79,6 +80,7 @@ public final class NoteEditor extends JPanel {
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
   private static final long serialVersionUID = -1715683034655322518L;
   private static final Logger LOGGER = LoggerFactory.getLogger(NoteEditor.class);
+  private boolean cancelled;
   private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -123,7 +125,8 @@ public final class NoteEditor extends JPanel {
   private JLabel labelCursorPos;
   private JLabel labelWrapMode;
   private JToggleButton toggleButtonEncrypt;
-
+  private final String originalText;
+  
   public NoteEditor(@Nonnull final NoteEditorData data) {
     initComponents();
 
@@ -232,6 +235,7 @@ public final class NoteEditor extends JPanel {
     this.editorPane.setFont(PreferencesManager.getInstance()
         .getFont(PreferencesManager.getInstance().getPreferences(),
             SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
+    this.originalText = data.getText();
     this.editorPane.setText(data.getText());
 
     this.password = data.getPassword();
@@ -272,6 +276,18 @@ public final class NoteEditor extends JPanel {
     this.focuser = new Focuser(this.editorPane);
   }
 
+  public boolean isCancelled() {
+    return this.cancelled;
+  }
+
+  public void cancel() {
+    this.cancelled = true;
+  }
+
+  public boolean isTextChanged() {
+    return !this.originalText.equals(this.editorPane.getText());
+  }
+  
   private static boolean isWhitespaceOrControl(final char c) {
     return Character.isISOControl(c) || Character.isWhitespace(c);
   }
@@ -422,9 +438,9 @@ public final class NoteEditor extends JPanel {
     this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
   }
 
-  @Nonnull
+  @Nullable
   public NoteEditorData getData() {
-    return new NoteEditorData(this.editorPane.getText(), this.password, this.hint);
+    return this.cancelled ? null : new NoteEditorData(this.editorPane.getText(), this.password, this.hint);
   }
 
   private void initComponents() {
