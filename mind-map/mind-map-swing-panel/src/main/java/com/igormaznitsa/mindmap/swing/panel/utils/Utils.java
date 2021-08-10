@@ -58,10 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -70,10 +67,8 @@ import java.awt.image.RenderedImage;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -877,6 +872,33 @@ public final class Utils {
   }
 
   @Nonnull
+  @MustNotContainNull
+  private static List<JButton> findAllOptionPaneButtons(@Nonnull final JComponent component) {
+    final List<JButton> result = new ArrayList<>();
+    Arrays.stream(component.getComponents())
+            .filter(x -> x instanceof JComponent)
+            .map(x -> (JComponent) x)
+            .forEach(x -> {
+              if (x instanceof JButton) {
+                if ("OptionPane.button".equals(x.getName())) {
+                  result.add((JButton) x);
+                }
+              } else {
+                result.addAll(findAllOptionPaneButtons(x));
+              }
+            });
+    return result;
+  }
+
+  private static void replaceActionListenerForButton(@Nonnull final JButton button, @Nonnull final ActionListener listener) {
+    final ActionListener[] currentListeners = button.getActionListeners();
+    for (final ActionListener l : currentListeners) {
+      button.removeActionListener(l);
+    }
+    button.addActionListener(listener);
+  }
+
+  @Nonnull
   @SafeVarargs
   @ReturnsOriginal
   public static JComponent catchEscInParentDialog(
@@ -886,40 +908,69 @@ public final class Utils {
           @Nonnull @MustNotContainNull final Consumer<JDialog>... beforeClose) {
     component.addHierarchyListener(new HierarchyListener() {
 
+      final Consumer<JDialog> processor = dialog -> {
+        final boolean close;
+        if (doClose == null) {
+          close = true;
+        } else {
+          if (doClose.test(dialog)) {
+            close = dialogProvider
+                    .msgConfirmOkCancel(dialog, BUNDLE.getString("Utils.confirmActionTitle"), BUNDLE.getString("Utils.closeForContentChange"));
+          } else {
+            close = true;
+          }
+        }
+        if (close) {
+          try {
+            for (final Consumer<JDialog> c : beforeClose) {
+              try {
+                c.accept(dialog);
+              } catch (Exception ex) {
+                LOGGER.error("Error during before close call", ex);
+              }
+            }
+          } finally {
+            dialog.dispose();
+          }
+        }
+      };
       private final KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
 
       @Override
       public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
         final Window window = SwingUtilities.getWindowAncestor(component);
-        if (window instanceof JDialog) {
+        if (window instanceof JDialog && (e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) != 0) {
           final JDialog dialog = (JDialog) window;
+
+          final List<JButton> dialogButtons = findAllOptionPaneButtons(dialog.getRootPane());
+          dialogButtons.stream()
+                  .filter(x -> "cancel".equalsIgnoreCase(x.getText()))
+                  .forEach(x -> replaceActionListenerForButton(x, be -> {
+                    processor.accept(dialog);
+                  }));
+
+          dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+          final WindowListener windowListener = new WindowAdapter() {
+            @Override
+            public void windowClosing(@Nonnull final WindowEvent e) {
+              processor.accept(dialog);
+            }
+          };
+
+          final WindowListener[] windowListeners = dialog.getWindowListeners();
+          for (final WindowListener w : windowListeners) {
+            dialog.removeWindowListener(w);
+          }
+          dialog.addWindowListener(windowListener);
+
           final InputMap inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
           inputMap.put(escapeKeyStroke, "PRESSING_ESCAPE");
           final ActionMap actionMap = dialog.getRootPane().getActionMap();
           actionMap.put("PRESSING_ESCAPE", new AbstractAction() {
             @Override
             public void actionPerformed(@Nonnull final ActionEvent e) {
-              final boolean close;
-              if (doClose == null) {
-                close = true;
-              } else {
-                if (doClose.test(dialog)) {
-                  close = dialogProvider
-                          .msgConfirmOkCancel(dialog, BUNDLE.getString("Utils.confirmActionTitle"), BUNDLE.getString("Utils.closeForContentChange"));
-                } else {
-                  close = true;
-                }
-              }
-              if (close) {
-                for (final Consumer<JDialog> c : beforeClose) {
-                  try {
-                    c.accept(dialog);
-                  } catch (Exception ex) {
-                    LOGGER.error("Error during before close call", ex);
-                  }
-                }
-                dialog.dispose();
-              }
+              processor.accept(dialog);
             }
           });
         }
