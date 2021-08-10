@@ -936,6 +936,8 @@ public final class Utils {
       };
       private final KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
 
+      private final List<WindowListener> foundWindowListeners = new ArrayList<>();
+
       @Override
       public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
         final Window window = SwingUtilities.getWindowAncestor(component);
@@ -951,18 +953,51 @@ public final class Utils {
 
           dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
-          final WindowListener windowListener = new WindowAdapter() {
+          final WindowListener windowListener = new WindowListener() {
             @Override
             public void windowClosing(@Nonnull final WindowEvent e) {
               processor.accept(dialog);
             }
+
+            @Override
+            public void windowOpened(@Nonnull final WindowEvent e) {
+              foundWindowListeners.forEach(x -> x.windowOpened(e));
+            }
+
+            @Override
+            public void windowClosed(@Nonnull final WindowEvent e) {
+              foundWindowListeners.forEach(x -> x.windowClosed(e));
+            }
+
+            @Override
+            public void windowIconified(@Nonnull final WindowEvent e) {
+              foundWindowListeners.forEach(x -> x.windowIconified(e));
+            }
+
+            @Override
+            public void windowDeiconified(@Nonnull final WindowEvent e) {
+              foundWindowListeners.forEach(x -> x.windowDeiconified(e));
+            }
+
+            @Override
+            public void windowActivated(@Nonnull final WindowEvent e) {
+              foundWindowListeners.forEach(x -> x.windowActivated(e));
+            }
+
+            @Override
+            public void windowDeactivated(@Nonnull final WindowEvent e) {
+              foundWindowListeners.forEach(x -> x.windowDeactivated(e));
+            }
           };
 
-          final WindowListener[] windowListeners = dialog.getWindowListeners();
-          for (final WindowListener w : windowListeners) {
-            dialog.removeWindowListener(w);
+          if (this.foundWindowListeners.isEmpty()) {
+            final WindowListener[] windowListeners = dialog.getWindowListeners();
+            for (final WindowListener w : windowListeners) {
+              dialog.removeWindowListener(w);
+              this.foundWindowListeners.add(w);
+            }
+            dialog.addWindowListener(windowListener);
           }
-          dialog.addWindowListener(windowListener);
 
           final InputMap inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
           inputMap.put(escapeKeyStroke, "PRESSING_ESCAPE");
