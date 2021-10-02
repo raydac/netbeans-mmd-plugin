@@ -1,5 +1,7 @@
 target/
 .idea/
+resource.syso
+versioninfo.go
 nb-configuration.xml
 nbactions.xml
 nbactions-publish.xml
@@ -36,6 +38,8 @@ buildNumber.properties
 /mind-map/idea-mindmap/idea-mindmap.iws
 /mind-map/idea-mindmap/idea-mindmap.ipr
 *.iml
+/mind-map/scia-reto-win-launcher/bin
+/mind-map/scia-reto-win-launcher/pkg
 /mind-map/idea-mindmap/bin
 mind-map/idea-mindmap/.classpath
 mind-map/idea-mindmap/.project

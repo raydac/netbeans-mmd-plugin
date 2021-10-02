@@ -34,7 +34,7 @@
       <filtered>false</filtered>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}${file.separator}jre_arm64_macos</directory>
+      <directory>${project.build.directory}${file.separator}jre_macos_aarch64</directory>
       <outputDirectory>${file.separator}SciaReto.app${file.separator}Contents${file.separator}MacOS${file.separator}jre</outputDirectory>
       <includes>
         <include>*/**</include>

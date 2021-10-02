@@ -78,6 +78,7 @@
     <profile>
       <id>publish</id>
       <modules>
+        <module>scia-reto-win-launcher</module>
         <module>nb-mind-map</module>
         <module>idea-mindmap</module>
       </modules>

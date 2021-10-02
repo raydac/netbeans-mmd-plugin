@@ -8,7 +8,7 @@
   <includeSiteDirectory>false</includeSiteDirectory>
 
   <formats>
-    <format>tar.gz</format>
+    <format>zip</format>
   </formats>
   <files>
     <file>
@@ -16,10 +16,17 @@
       <destName>scia-reto.jar</destName>
       <outputDirectory>${project.build.finalName}${file.separator}</outputDirectory>
     </file>
+    <file>
+      <source>
+        ${project.basedir}${file.separator}..${file.separator}scia-reto-win-launcher${file.separator}bin${file.separator}scia-reto.exe
+      </source>
+      <destName>scia-reto.exe</destName>
+      <outputDirectory>${project.build.finalName}${file.separator}</outputDirectory>
+    </file>
   </files>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}linux</directory>
+      <directory>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}windows</directory>
       <outputDirectory>${project.build.finalName}</outputDirectory>
       <includes>
        <include>*/**</include>
@@ -33,7 +40,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}${file.separator}jre_linux</directory>
+      <directory>${project.build.directory}${file.separator}jre_windows_amd64</directory>
       <outputDirectory>${project.build.finalName}${file.separator}jre</outputDirectory>
       <includes>
         <include>*/**</include>

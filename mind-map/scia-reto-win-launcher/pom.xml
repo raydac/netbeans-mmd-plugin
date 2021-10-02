@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.igormaznitsa</groupId>
+    <artifactId>mind-map</artifactId>
+    <version>1.5.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>scia-reto-win-launcher</artifactId>
+  <packaging>mvn-golang</packaging>
+
+  <description>Windows launcher for Scia-Reto editor.</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mvn.golang.go.version>1.17.1</mvn.golang.go.version>
+    <mvn.golang.wrapper.version>2.3.9</mvn.golang.wrapper.version>
+    <target.name>scia-reto</target.name>
+    <final.extension>.exe</final.extension>
+  </properties>
+
+  <build>
+    <sourceDirectory>${basedir}${file.separator}src</sourceDirectory>
+    <directory>${basedir}${file.separator}bin</directory>
+    <defaultGoal>clean package</defaultGoal>
+    <finalName>${target.name}${final.extension}</finalName>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <followSymLinks>false</followSymLinks>
+          <excludeDefaultDirectories>true</excludeDefaultDirectories>
+          <filesets>
+            <fileset>
+              <directory>${basedir}${file.separator}pkg</directory>
+              <directory>${basedir}${file.separator}bin</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>mvn-golang-wrapper</artifactId>
+        <version>${mvn.golang.wrapper.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <strip>true</strip>
+          <env>
+            <GO111MODULE>auto</GO111MODULE>
+          </env>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default-get</id>
+            <configuration>
+              <buildFlags>
+                <flag>-u</flag>
+              </buildFlags>
+              <packages>
+                <package>github.com/josephspurrier/goversioninfo/cmd/goversioninfo/...</package>
+              </packages>
+            </configuration>
+          </execution>
+          <execution>
+            <id>default-build</id>
+            <configuration>
+              <targetOs>windows</targetOs>
+              <targetArch>386</targetArch>
+              <ldFlags>
+                <flag>-H=windowsgui</flag>
+              </ldFlags>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
