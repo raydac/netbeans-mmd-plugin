@@ -19,7 +19,7 @@ __1.5.0 (SNAPSHOT)__
 - SR: RSyntaxTextPanel updated to 3.1.3, Kotlin syntax support added
 - IJ: fixed incompatibility with Intellij IDEA 2021.2 EAP
 - IJ: __minimal Intellij IDEA platform version lifted up to 2018.1__
-- SR: updated PlantUML version to 1.2021.10
+- SR: updated PlantUML version to 1.2021.12
 - SR: improved processing of MMD files during "Find files for text" [#83](https://github.com/raydac/netbeans-mmd-plugin/issues/83) 
 - SR: Updated Launch4j starter
 
