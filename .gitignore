@@ -1,5 +1,9 @@
 target/
 .idea/
+.settings/
+.classpath
+.project
+.factorypath
 resource.syso
 versioninfo.go
 nb-configuration.xml
