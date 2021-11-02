@@ -18,17 +18,18 @@
  */
 package com.igormaznitsa.sciareto.notifications;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.prefs.Preferences;
-import javax.annotation.Nonnull;
-import javax.swing.Timer;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.prefs.Preferences;
 
 public class MessagesService {
 
@@ -53,7 +54,7 @@ public class MessagesService {
   protected void doAction() {
     final Preferences prefs = PreferencesManager.getInstance().getPreferences();
     if (!prefs.getBoolean(PROPERTY_OFFER_TO_DONATE_WAS_SHOWN, false)) {
-      final long totalUpstartTime = prefs.getLong(Main.PROPERTY_TOTAL_UPSTART, 0L);
+      final long totalUpstartTime = prefs.getLong(SciaRetoStarter.PROPERTY_TOTAL_UPSTART, 0L);
       if (totalUpstartTime >= (1000L * 3600L * 24L)) {
         final Timer timer = new Timer(60000,new ActionListener() {
           @Override

@@ -30,7 +30,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
@@ -362,7 +362,7 @@ public final class UiUtils {
       try {
         return new MMapURI(text.trim());
       } catch (URISyntaxException ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
             String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
@@ -372,7 +372,7 @@ public final class UiUtils {
   }
 
   public static boolean msgOkCancel(@Nonnull final String title, @Nonnull final Object component) {
-    return JOptionPane.showConfirmDialog(Main.getApplicationFrame(), component, title,
+    return JOptionPane.showConfirmDialog(SciaRetoStarter.getApplicationFrame(), component, title,
         JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION;
   }
 
@@ -404,10 +404,10 @@ public final class UiUtils {
 
     FileEditPanel.DataContainer result = null;
     if (DialogProviderManager.getInstance().getDialogProvider()
-        .msgOkCancel(Main.getApplicationFrame(), title, filePathEditor)) {
+        .msgOkCancel(SciaRetoStarter.getApplicationFrame(), title, filePathEditor)) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
             String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
                 result.getFilePathWithLine().getPath()));
         result = null;
@@ -422,7 +422,7 @@ public final class UiUtils {
     final NoteEditor textEditor = new NoteEditor(data);
     try {
       if (DialogProviderManager.getInstance().getDialogProvider()
-          .msgOkCancel(Main.getApplicationFrame(), title, 
+          .msgOkCancel(SciaRetoStarter.getApplicationFrame(), title,
                   Utils.catchEscInParentDialog(textEditor, DialogProviderManager.getInstance().getDialogProvider(), dialog -> textEditor.isTextChanged(),
                           x -> textEditor.cancel()))) {
         return textEditor.getData();
@@ -477,7 +477,7 @@ public final class UiUtils {
           @Override
           public void run() {
             DialogProviderManager.getInstance().getDialogProvider()
-                .msgError(Main.getApplicationFrame(),
+                .msgError(SciaRetoStarter.getApplicationFrame(),
                     "Can't open file in system viewer! See the log!");//NOI18N
             Toolkit.getDefaultToolkit().beep();
           }

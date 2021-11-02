@@ -23,40 +23,27 @@ import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.filechooser.FileFilter;
-import org.apache.commons.io.FilenameUtils;
 
 public final class PictureViewer extends AbstractEditor {
 
@@ -110,7 +97,7 @@ public final class PictureViewer extends AbstractEditor {
     buttonPrintImage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(@Nonnull final ActionEvent e) {
-        Main.getApplicationFrame().endFullScreenIfActive();
+        SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
         final MMDPrintPanel printPanel =
             new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
                 PrintableObject.newBuild().image(imageViewer.getImage()).build());

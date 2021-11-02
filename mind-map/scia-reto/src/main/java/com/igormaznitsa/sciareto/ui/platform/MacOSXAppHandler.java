@@ -18,24 +18,17 @@
  */
 package com.igormaznitsa.sciareto.ui.platform;
 
-import com.apple.eawt.AboutHandler;
-import com.apple.eawt.AppEvent;
-import com.apple.eawt.Application;
-import com.apple.eawt.OpenFilesHandler;
-import com.apple.eawt.PreferencesHandler;
-import com.apple.eawt.PrintFilesHandler;
-import com.apple.eawt.QuitHandler;
-import com.apple.eawt.QuitResponse;
+import com.apple.eawt.*;
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.Warning;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.Main;
-import java.io.File;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -50,8 +43,8 @@ public final class MacOSXAppHandler implements Platform {
 
   public MacOSXAppHandler(@Nonnull final Application application) {
     this.application = application;
-    this.application.setDockIconBadge(Main.APP_TITLE);
-    this.application.setDockIconImage(Main.APP_ICON);
+    this.application.setDockIconBadge(SciaRetoStarter.APP_TITLE);
+    this.application.setDockIconImage(SciaRetoStarter.APP_ICON);
     
     this.application.setAboutHandler(new AboutHandler() {
         @Override

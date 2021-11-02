@@ -28,14 +28,13 @@ import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -159,7 +158,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
           final String newExtension = FilenameUtils.getExtension(newFileName);
 
           if (!oldExtension.equals(newExtension)) {
-            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(Main.getApplicationFrame(), "Changed extension", String.format("You have changed extension! Restore old extension '%s'?", oldExtension))) {
+            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(), "Changed extension", String.format("You have changed extension! Restore old extension '%s'?", oldExtension))) {
               newFileName = FilenameUtils.getBaseName(newFileName) + (oldExtension.isEmpty() ? "" : '.' + oldExtension); //NOI18N
             }
           }
@@ -207,13 +206,13 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
               }
             } catch (IOException ex) {
               LOGGER.error("Can't rename file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't rename file to '" + newValue + "\'");
+              DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Can't rename file to '" + newValue + "\'");
             }
           }
         }
       }
     } else {
-      DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Inapropriate file name '" + newFileName + "'!");
+      DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Inapropriate file name '" + newFileName + "'!");
     }
   }
 
@@ -278,7 +277,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   public void startProjectFolderRefresh(@Nonnull final NodeProject nodeProject, @Nullable @MustNotContainNull final Runnable... invokeLater) {
     final int index = this.getIndex(nodeProject);
     if (index >= 0) {
-      Main.getApplicationFrame().asyncReloadProject(nodeProject, ArrayUtils.joinArrays(invokeLater, new Runnable[]{new Runnable() {
+      SciaRetoStarter.getApplicationFrame().asyncReloadProject(nodeProject, ArrayUtils.joinArrays(invokeLater, new Runnable[]{new Runnable() {
         @Override
         public void run() {
           nodeProject.fireNotifySubtreeChanged(NodeProjectGroup.this, listeners);

@@ -18,26 +18,27 @@
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
+import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import java.net.URI;
-import java.util.Properties;
-import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import java.awt.Dimension;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
+import java.util.Properties;
 
 public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkListener {
 
@@ -71,7 +72,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     final Properties props = new Properties();
     props.setProperty("plugin.api", pluginAPIVersion); //NOI18N
     props.setProperty("format.version", formatVersion); //NOI18N
-    props.setProperty("ideversion", Main.IDE_VERSION.toString()); //NOI18N
+    props.setProperty("ideversion", SciaRetoStarter.IDE_VERSION.toString()); //NOI18N
 
     this.thirdParts.add(new ThirdPartLicense("FatCow Farm-Fresh Web Icons", "http://www.fatcow.com/free-icons",  "CC BY 3.0", "https://creativecommons.org/licenses/by/3.0/"));
     this.thirdParts.add(new ThirdPartLicense("Java Universal Network/Graph Framework", "https://github.com/jrtom/jung", "BSD 3", "https://raw.githubusercontent.com/jrtom/jung/master/LICENSE"));

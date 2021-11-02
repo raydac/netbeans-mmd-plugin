@@ -18,16 +18,14 @@
  */
 package com.igormaznitsa.sciareto.notifications;
 
-import java.awt.Color;
-import java.awt.Image;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import org.apache.commons.lang3.StringEscapeUtils;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.sciareto.Main;
+import javax.swing.*;
+import java.awt.*;
 
 public class NotificationManager {
 
@@ -49,8 +47,8 @@ public class NotificationManager {
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
-        Main.getApplicationFrame().getStackPanel().removeAll();
-        Main.getApplicationFrame().getGlassPane().setVisible(false);
+        SciaRetoStarter.getApplicationFrame().getStackPanel().removeAll();
+        SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(false);
       }
     });
   }
@@ -65,7 +63,7 @@ public class NotificationManager {
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
-        final JPanel stack = Main.getApplicationFrame().getStackPanel();
+        final JPanel stack = SciaRetoStarter.getApplicationFrame().getStackPanel();
 
         Color color = Color.WHITE;
         switch (type) {
@@ -82,7 +80,7 @@ public class NotificationManager {
 
         stack.add(new MessagePanel(icon, title, color, component), 0);
         stack.revalidate();
-        Main.getApplicationFrame().getGlassPane().setVisible(true);
+        SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(true);
       }
     });
   }

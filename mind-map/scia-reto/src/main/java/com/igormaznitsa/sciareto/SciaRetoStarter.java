@@ -103,7 +103,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-public class Main {
+public class SciaRetoStarter {
 
   private static final AtomicReference<SplashScreen> splash = new AtomicReference<>();
 
@@ -112,7 +112,7 @@ public class Main {
 
   public static final long UPSTART = currentTimeMillis();
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SciaRetoStarter.class);
 
   private static MainFrame MAIN_FRAME;
 

@@ -18,16 +18,17 @@
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
-import com.igormaznitsa.sciareto.Main;
-import javax.swing.JButton;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.Icons;
+import com.igormaznitsa.sciareto.ui.UiUtils;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.Icons;
-import com.igormaznitsa.sciareto.ui.UiUtils;
 
 public final class DonateButton extends JButton {
   private static final long serialVersionUID = -6096783678529379785L;
@@ -42,7 +43,7 @@ public final class DonateButton extends JButton {
         UiUtils.browseURI(LINK, false);
       }
       catch (Exception ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't open link! You can try to open it manually:\n" + LINK.toASCIIString());
+        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Can't open link! You can try to open it manually:\n" + LINK.toASCIIString());
       }
     }
   };

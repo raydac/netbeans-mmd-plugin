@@ -18,25 +18,24 @@
  */
 package com.igormaznitsa.sciareto.services;
 
-import java.awt.Image;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.notifications.NotificationManager;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
+
+import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SciaRetoBridge implements IDEBridge {
 
@@ -47,7 +46,7 @@ public class SciaRetoBridge implements IDEBridge {
   @Override
   @Nonnull
   public Version getIDEVersion() {
-    return Main.IDE_VERSION;
+    return SciaRetoStarter.IDE_VERSION;
   }
 
   @Override

@@ -20,7 +20,6 @@ package com.igormaznitsa.sciareto.ui.tree;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
@@ -30,7 +29,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindFilesForTextPanel;
@@ -360,7 +359,7 @@ public final class ExplorerTree extends JScrollPane {
                 addFileIfPossible(file, false);
               }
             } catch (IOException ex) {
-              DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't make copy '" + node + '\'');
+              DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Can't make copy '" + node + '\'');
             }
           }
         });
@@ -373,7 +372,7 @@ public final class ExplorerTree extends JScrollPane {
       close.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(@Nonnull final ActionEvent e) {
-          if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(Main.getApplicationFrame(), "Close '" + node + '\'', "Do you really want close '" + node + "\'?\nIt will be just removed from the tree.")) {
+          if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), "Close '" + node + '\'', "Do you really want close '" + node + "\'?\nIt will be just removed from the tree.")) {
             сloseProject((NodeProject) node);
           }
         }
@@ -622,7 +621,7 @@ public final class ExplorerTree extends JScrollPane {
   }
 
   private void addChildTo(@Nonnull final NodeFileOrFolder folder, @Nullable final String extension) {
-    String fileName = JOptionPane.showInputDialog(Main.getApplicationFrame(), extension == null ? "Folder name" : "File name", extension == null ? "New folder" : "New " + extension.toUpperCase(Locale.ENGLISH) + " file", JOptionPane.QUESTION_MESSAGE);
+    String fileName = JOptionPane.showInputDialog(SciaRetoStarter.getApplicationFrame(), extension == null ? "Folder name" : "File name", extension == null ? "New folder" : "New " + extension.toUpperCase(Locale.ENGLISH) + " file", JOptionPane.QUESTION_MESSAGE);
     if (fileName != null) {
       fileName = fileName.trim();
       if (NodeProjectGroup.FILE_NAME.matcher(fileName).matches()) {
@@ -718,11 +717,11 @@ public final class ExplorerTree extends JScrollPane {
           try {
             addFileIfPossible(file, true);
           } catch (IOException ex) {
-            DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Error:" + ex.getMessage());
+            DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Error:" + ex.getMessage());
           }
         }
       } else {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Illegal file name!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Illegal file name!");
       }
     }
   }

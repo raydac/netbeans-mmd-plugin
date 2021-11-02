@@ -23,23 +23,21 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
 
 public abstract class AbstractEditor implements TabProvider, Disposable {
 
@@ -98,12 +96,12 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   public final boolean saveDocumentAs() throws IOException {
     final DialogProvider dialogProvider = DialogProviderManager.getInstance().getDialogProvider();
     final File file = this.getTabTitle().getAssociatedFile();
-    File fileToSave = dialogProvider.msgSaveFileDialog(Main.getApplicationFrame(),
+    File fileToSave = dialogProvider.msgSaveFileDialog(SciaRetoStarter.getApplicationFrame(),
         null,
         "save-as", "Save as", file, true, new FileFilter[]{getFileFilter()}, "Save");
     if (fileToSave != null) {
       if (!fileToSave.getName().contains(".")) {
-        final Boolean result = dialogProvider.msgConfirmYesNoCancel(Main.getApplicationFrame(), "Add extension", String.format("Add file extenstion '%s'?", this.getDefaultExtension()));
+        final Boolean result = dialogProvider.msgConfirmYesNoCancel(SciaRetoStarter.getApplicationFrame(), "Add extension", String.format("Add file extenstion '%s'?", this.getDefaultExtension()));
         if (result == null) {
           return false;
         }
@@ -124,7 +122,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     if (textFile != null
             && !textFile.hasSameContent(textFile.getFile())
             && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
-                    Main.getApplicationFrame(),
+                    SciaRetoStarter.getApplicationFrame(),
                     "Detected file change",
                     String.format("File '%s' has been changed externally, overwrite?", textFile.getFile().getName()))) {
       result = false;
@@ -216,7 +214,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
       return null;
     }
 
-    Main.disposeSplash();
+    SciaRetoStarter.disposeSplash();
 
     if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(this.getContainerToShow(), "Restore from backup?",
             String.format("Detected backup '%s', restore content?", backupFile.getName()))) {

@@ -19,9 +19,6 @@
 
 package com.igormaznitsa.sciareto.plugins.services;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
-
-
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -30,17 +27,15 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Window;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+import java.awt.*;
+
+import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
 
@@ -55,7 +50,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
 
     final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), new ImageIcon(ICON_PRINTER));
     printAction.addActionListener(e -> {
-      Main.getApplicationFrame().endFullScreenIfActive();
+      SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
       final MMDPrintPanel panel = new MMDPrintPanel(context.getDialogProvider(), adaptor, PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
       UiUtils.makeOwningDialogResizable(panel);
       JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(context.getPanel()), panel, "Print mind map", JOptionPane.PLAIN_MESSAGE);

@@ -18,13 +18,12 @@
  */
 package com.igormaznitsa.sciareto.metrics;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
-import org.json.JSONObject;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.sciareto.Main;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+
+import javax.annotation.Nonnull;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MetricsService {
 

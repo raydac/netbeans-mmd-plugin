@@ -19,31 +19,13 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
-import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
-import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
-
-
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
-import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
-import com.igormaznitsa.mindmap.model.ExtraNote;
-import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.MindMap;
-import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.model.TopicFinder;
+import com.igormaznitsa.mindmap.model.*;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
@@ -52,12 +34,7 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
-import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
+import com.igormaznitsa.mindmap.swing.panel.*;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
@@ -66,7 +43,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -80,20 +57,17 @@ import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.*;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
@@ -105,24 +79,17 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 
 public final class MMDEditor extends AbstractTextEditor
     implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener {
@@ -650,7 +617,7 @@ public final class MMDEditor extends AbstractTextEditor
     if (clicks > 1) {
       switch (extra.getType()) {
         case FILE: {
-          Main.getApplicationFrame().endFullScreenIfActive();
+          SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
           final MMapURI uri = (MMapURI) extra.getValue();
           final File theFile = uri.asFile(getProjectFolder());
 
@@ -666,19 +633,19 @@ public final class MMDEditor extends AbstractTextEditor
             }
           } else {
             DialogProviderManager.getInstance().getDialogProvider()
-                .msgWarn(Main.getApplicationFrame(), String
+                .msgWarn(SciaRetoStarter.getApplicationFrame(), String
                     .format(BUNDLE.getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"),
                         theFile.toString()));
           }
         }
         break;
         case LINK: {
-          Main.getApplicationFrame().endFullScreenIfActive();
+          SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
           final MMapURI uri = ((ExtraLink) extra).getValue();
           if (!UiUtils.browseURI(uri.asURI(), PreferencesManager.getInstance().getPreferences()
               .getBoolean("useInsideBrowser", false))) { //NOI18N
             DialogProviderManager.getInstance().getDialogProvider()
-                .msgError(Main.getApplicationFrame(), String
+                .msgError(SciaRetoStarter.getApplicationFrame(), String
                     .format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"),
                         uri.toString()));
           }
@@ -693,7 +660,7 @@ public final class MMDEditor extends AbstractTextEditor
           if (theTopic == null) {
             // not presented
             DialogProviderManager.getInstance().getDialogProvider()
-                .msgWarn(Main.getApplicationFrame(),
+                .msgWarn(SciaRetoStarter.getApplicationFrame(),
                     BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
           } else {
             // detected
@@ -728,7 +695,7 @@ public final class MMDEditor extends AbstractTextEditor
       result = true;
     } else {
       result = DialogProviderManager.getInstance().getDialogProvider()
-          .msgConfirmYesNo(Main.getApplicationFrame(),
+          .msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(),
               BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String
                   .format(BUNDLE.getString("MMDGraphEditor.allowedRemovingOfTopics.message"),
                       topics.length));
@@ -855,7 +822,7 @@ public final class MMDEditor extends AbstractTextEditor
       final MMapURI mmapUri = new MMapURI(uri);
       if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
-            .msgConfirmOkCancel(Main.getApplicationFrame(),
+            .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
                 BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"),
                 BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
           return;
@@ -874,7 +841,7 @@ public final class MMDEditor extends AbstractTextEditor
       final Topic topic = element.getModel();
       if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
-            .msgConfirmOkCancel(Main.getApplicationFrame(),
+            .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
                 BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmTitle"),
                 BUNDLE.getString("MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
           return;
@@ -918,7 +885,7 @@ public final class MMDEditor extends AbstractTextEditor
 
       if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
-            .msgConfirmOkCancel(Main.getApplicationFrame(),
+            .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
                 BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"),
                 BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
           return;
@@ -1008,7 +975,7 @@ public final class MMDEditor extends AbstractTextEditor
           final PasswordPanel passwordPanel =
               new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
           if (DialogProviderManager.getInstance().getDialogProvider()
-              .msgOkCancel(Main.getApplicationFrame(),
+              .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
                   Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"),
                   passwordPanel)) {
             final StringBuilder decrypted = new StringBuilder();
@@ -1018,11 +985,11 @@ public final class MMDEditor extends AbstractTextEditor
                 noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
               } else {
                 DialogProviderManager.getInstance().getDialogProvider()
-                    .msgError(Main.getApplicationFrame(), "Wrong password!");
+                    .msgError(SciaRetoStarter.getApplicationFrame(), "Wrong password!");
               }
             } catch (RuntimeException ex) {
               DialogProviderManager.getInstance().getDialogProvider()
-                  .msgError(Main.getApplicationFrame(),
+                  .msgError(SciaRetoStarter.getApplicationFrame(),
                       "Can't decode encrypted text for error!\nEither broken data or current JDK security policy doesn't support AES-256!");
               logger.error("Can't decode encrypted note", ex);
             }
@@ -1159,7 +1126,7 @@ public final class MMDEditor extends AbstractTextEditor
             valueChanged = true;
           } else {
             DialogProviderManager.getInstance().getDialogProvider()
-                .msgError(Main.getApplicationFrame(), String.format(
+                .msgError(SciaRetoStarter.getApplicationFrame(), String.format(
                     BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
                     dataContainer.getFilePathWithLine().getPath()));
             valueChanged = false;
@@ -1187,7 +1154,7 @@ public final class MMDEditor extends AbstractTextEditor
         final MindMapTreePanel treePanel =
             new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider()
-            .msgOkCancel(Main.getApplicationFrame(),
+            .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
                 BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"),
                 treePanel)) {
           final Topic selected = treePanel.getSelectedTopic();
@@ -1202,7 +1169,7 @@ public final class MMDEditor extends AbstractTextEditor
         final MindMapTreePanel panel =
             new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider()
-            .msgOkCancel(Main.getApplicationFrame(),
+            .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
                 BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"),
                 panel)) {
           final Topic selected = panel.getSelectedTopic();
@@ -1294,7 +1261,7 @@ public final class MMDEditor extends AbstractTextEditor
     final ColorAttributePanel panel =
         new ColorAttributePanel(source.getModel(), borderColor, fillColor, textColor);
     if (DialogProviderManager.getInstance().getDialogProvider()
-        .msgOkCancel(Main.getApplicationFrame(),
+        .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
             String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length),
             panel)) {
       ColorAttributePanel.Result result = panel.getResult();
@@ -1330,7 +1297,7 @@ public final class MMDEditor extends AbstractTextEditor
                                              @Nonnull final Point point,
                                              @Nullable final AbstractElement elementUnderMouse,
                                              @Nullable final ElementPart elementPartUnderMouse) {
-    return Utils.makePopUp(this, Main.getApplicationFrame().isFullScreenActive(),
+    return Utils.makePopUp(this, SciaRetoStarter.getApplicationFrame().isFullScreenActive(),
         elementUnderMouse == null ? null : elementUnderMouse.getModel());
   }
 
@@ -1349,7 +1316,7 @@ public final class MMDEditor extends AbstractTextEditor
     if (draggedTopic != null && destinationTopic != null && draggedTopic != destinationTopic) {
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
-            .msgConfirmOkCancel(Main.getApplicationFrame(),
+            .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
                 BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmTitle"),
                 BUNDLE.getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
           return result;

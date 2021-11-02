@@ -18,10 +18,11 @@
  */
 package com.igormaznitsa.sciareto.ui.platform;
 
-import com.igormaznitsa.sciareto.Main;
-import java.awt.Toolkit;
-import java.lang.reflect.Field;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
+
 import javax.annotation.Nonnull;
+import java.awt.*;
+import java.lang.reflect.Field;
 
 public class PlatformLinux extends PlatformDefault {
 
@@ -34,7 +35,7 @@ public class PlatformLinux extends PlatformDefault {
       final Toolkit toolkit = Toolkit.getDefaultToolkit();
       final Field awtAppClassNameField = toolkit.getClass().getDeclaredField("awtAppClassName");
       awtAppClassNameField.setAccessible(true);
-      awtAppClassNameField.set(toolkit, Main.APP_TITLE);
+      awtAppClassNameField.set(toolkit, SciaRetoStarter.APP_TITLE);
     } catch (Exception ex) {
       //Do nothing
     }

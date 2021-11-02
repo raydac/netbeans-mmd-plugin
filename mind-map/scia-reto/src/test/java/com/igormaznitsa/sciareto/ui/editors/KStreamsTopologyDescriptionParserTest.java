@@ -33,9 +33,7 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.JoinWindows;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
-import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
+import org.apache.kafka.streams.processor.*;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
@@ -47,9 +45,9 @@ public class KStreamsTopologyDescriptionParserTest {
   public void testFromTopology() {
     final Topology topology = new Topology();
     topology.addSource("SomeSource", "topic1", "topic2");
-    topology.addProcessor("Processor1", () -> new FakeProcessor(), "SomeSource");
-    topology.addProcessor("Processor2", () -> new FakeProcessor(), "Processor1");
-    topology.addProcessor("Processor3", () -> new FakeProcessor(), "Processor2");
+    topology.addProcessor("Processor1", FakeProcessor::new, "SomeSource");
+    topology.addProcessor("Processor2", FakeProcessor::new, "Processor1");
+    topology.addProcessor("Processor3", FakeProcessor::new, "Processor2");
     topology.addSink("TheSink", "FinalTopic", "Processor3");
 
     final String src = topology.describe().toString();
@@ -246,13 +244,13 @@ public class KStreamsTopologyDescriptionParserTest {
     }
   }
 
-  private class FakeProcessor extends AbstractProcessor<Object, Object> {
+  private class FakeProcessor extends AbstractProcessor<Short, String> {
     public FakeProcessor() {
       super();
     }
 
     @Override
-    public void process(Object k, Object v) {
+    public void process(Short k, String v) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
   }

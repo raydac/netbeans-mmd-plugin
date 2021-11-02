@@ -30,7 +30,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
@@ -113,7 +113,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileView;
-import javax.swing.tree.TreeNode;
+
 import org.apache.commons.io.FilenameUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -192,8 +192,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     glassPanel.setVisible(false);
 
-    this.setTitle(Main.APP_TITLE); //NOI18N
-    this.setIconImage(Main.APP_ICON); //NOI18N
+    this.setTitle(SciaRetoStarter.APP_TITLE); //NOI18N
+    this.setIconImage(SciaRetoStarter.APP_ICON); //NOI18N
 
     this.stateless = args.length > 0;
 
@@ -327,7 +327,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         try {
           UIManager.setLookAndFeel(info.getClassName());
           SwingUtilities.updateComponentTreeUI(theInstance);
-          PreferencesManager.getInstance().getPreferences().put(Main.PROPERTY_LOOKANDFEEL, info.getClassName());
+          PreferencesManager.getInstance().getPreferences().put(SciaRetoStarter.PROPERTY_LOOKANDFEEL, info.getClassName());
           PreferencesManager.getInstance().flush();
         } catch (Exception ex) {
           LOGGER.error("Can't change LF", ex); //NOI18N
@@ -449,7 +449,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public static void showExceptionDialog(@Nonnull final Exception ex) {
     MainFrame.LOGGER.error("Error", ex);
     Utils.safeSwingBlockingCall(() -> {
-      JOptionPane.showMessageDialog(Main.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     });
   }
 
@@ -699,7 +699,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             LOGGER.info("Exension of file " + file.getName() + " among extensions to be opened in system browser");
             result = false;
           } else {
-            if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(Main.getApplicationFrame(), "Very big file", "It is a very big file! Are you sure to open it?")) {
+            if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(), "Very big file", "It is a very big file! Are you sure to open it?")) {
               return true;
             }
 
@@ -1313,7 +1313,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }// </editor-fold>//GEN-END:initComponents
 
   private void menuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAboutActionPerformed
-    JOptionPane.showMessageDialog(Main.getApplicationFrame(), new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
+    JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
   }//GEN-LAST:event_menuAboutActionPerformed
 
   private void menuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenProjectActionPerformed
@@ -1365,7 +1365,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     fileChooser.setMultiSelectionEnabled(false);
     fileChooser.setDialogTitle("Open project folder");
 
-    if (fileChooser.showOpenDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
+    if (fileChooser.showOpenDialog(SciaRetoStarter.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       final File choosenFile = fileChooser.getSelectedFile();
       if (!focusInTree(choosenFile)) {
         openProject(fileChooser.getSelectedFile(), false);
@@ -1581,7 +1581,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     folderChooser.setDialogType(JFileChooser.SAVE_DIALOG);
     folderChooser.setApproveButtonText("Create");
     folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    if (folderChooser.showSaveDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
+    if (folderChooser.showSaveDialog(SciaRetoStarter.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       final File file = folderChooser.getSelectedFile();
       if (file.isDirectory()) {
         if (file.list().length > 0) {
@@ -1610,7 +1610,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             final JLabel label = new JLabel("Opened in full screen");
             final int tabIndex = this.tabPane.getSelectedIndex();
             this.tabPane.setComponentAt(tabIndex, label);
-            final JWindow window = new JWindow(Main.getApplicationFrame());
+            final JWindow window = new JWindow(SciaRetoStarter.getApplicationFrame());
             window.setAlwaysOnTop(true);
             window.setAutoRequestFocus(true);
             window.setContentPane(selectedEditor.getContainerToShow());
@@ -1991,7 +1991,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     File result = null;
 
-    if (chooser.showSaveDialog(Main.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
+    if (chooser.showSaveDialog(SciaRetoStarter.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       File file = chooser.getSelectedFile();
       if (!file.getName().endsWith(".mmd")) { //NOI18N
         file = new File(file.getAbsolutePath() + ".mmd"); //NOI18N

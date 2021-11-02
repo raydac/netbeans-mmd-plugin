@@ -19,9 +19,6 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml3;
-
-
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
@@ -29,80 +26,12 @@ import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
-import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
-import com.igormaznitsa.sciareto.ui.MainFrame;
-import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
-import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.*;
 import com.igormaznitsa.sciareto.ui.misc.BigLoaderIconAnimationConroller;
 import com.igormaznitsa.sciareto.ui.misc.SplitPaneExt;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.font.TextAttribute;
-import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.OptionFlags;
@@ -120,6 +49,41 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import reactor.core.Disposable;
 import reactor.core.publisher.DirectProcessor;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.*;
+import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml3;
 
 public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
@@ -286,7 +250,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       buttonExportImage = new JButton(loadMenuIcon("picture_save"));
       buttonExportImage.setToolTipText("Export image as file");
       buttonExportImage.addActionListener((ActionEvent e) -> {
-        Main.getApplicationFrame().endFullScreenIfActive();
+        SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
         exportAsFile();
       });
     } else {
@@ -351,7 +315,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       buttonPrintImage = new JButton(loadMenuIcon("printer"));
       buttonPrintImage.setToolTipText("Print current page");
       buttonPrintImage.addActionListener((@Nonnull final ActionEvent e) -> {
-        Main.getApplicationFrame().endFullScreenIfActive();
+        SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
         final MMDPrintPanel printPanel =
             new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
                 PrintableObject.newBuild().image(imageComponent.getImage()).build());

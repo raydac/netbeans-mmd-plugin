@@ -23,17 +23,28 @@ import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
+import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.Box.Filler;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.text.*;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -45,35 +56,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Box.Filler;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.Document;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.TextAction;
-import javax.swing.text.Utilities;
-import javax.swing.undo.UndoManager;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 public final class NoteEditor extends JPanel {
 
@@ -385,7 +367,7 @@ public final class NoteEditor extends JPanel {
         this.editorPane.setText(text);
       } catch (Exception ex) {
         LOGGER.error("Error during text file loading", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
             UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
@@ -421,7 +403,7 @@ public final class NoteEditor extends JPanel {
     } catch (Exception ex) {
       LOGGER.error("Can't open link : " + selectedText); //NOI18N
       DialogProviderManager.getInstance().getDialogProvider()
-          .msgError(Main.getApplicationFrame(), "Can't browse link : " + selectedText);
+          .msgError(SciaRetoStarter.getApplicationFrame(), "Can't browse link : " + selectedText);
     }
   }
 
@@ -623,7 +605,7 @@ public final class NoteEditor extends JPanel {
         FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
       } catch (final Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(),
+        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
             UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }

@@ -347,7 +347,7 @@
               <outfile>${project.build.directory}/${app.name}.exe</outfile>
               <downloadUrl>https://bell-sw.com/pages/downloads/#/java-11-lts</downloadUrl>
               <classPath>
-                <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
+                <mainClass>SciaReto</mainClass>
                 <preCp>anything</preCp>
               </classPath>
               <icon>${project.basedir}${file.separator}src${file.separator}assembly${file.separator}windows${file.separator}app.ico</icon>
@@ -630,7 +630,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.igormaznitsa.sciareto.Main</mainClass>
+              <mainClass>SciaReto</mainClass>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
             <manifestEntries>

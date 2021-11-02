@@ -23,11 +23,17 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -38,15 +44,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
@@ -191,7 +188,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
             } catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider()
-                  .msgError(Main.getApplicationFrame(),
+                  .msgError(SciaRetoStarter.getApplicationFrame(),
                       "Can't save document, may be it is read-only! See log!");
             }
           }
@@ -209,7 +206,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
             } catch (IOException ex) {
               LOGGER.error("Can't save file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider()
-                  .msgError(Main.getApplicationFrame(),
+                  .msgError(SciaRetoStarter.getApplicationFrame(),
                       "Can't save document, may be it is read-only! See log!");
             }
           }
@@ -273,7 +270,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     }
     if (!foundUnsaved
         || DialogProviderManager.getInstance().getDialogProvider()
-        .msgConfirmOkCancel(Main.getApplicationFrame(),
+        .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
             "Detected unsaved", "Detected unsaved documents! Close anyway?")) {
       this.context.closeTab(titles);
     }

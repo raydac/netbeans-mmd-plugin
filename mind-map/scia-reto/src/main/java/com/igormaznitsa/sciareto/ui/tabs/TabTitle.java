@@ -23,29 +23,20 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import java.awt.Cursor;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
 
 public final class TabTitle extends JPanel {
 
@@ -160,7 +151,7 @@ public final class TabTitle extends JPanel {
       result = true;
       final NodeProject project = this.context.findProjectForFile(this.associatedFile);
       if (project != null) {
-        Main.getApplicationFrame().asyncReloadProject(project, new Runnable() {
+        SciaRetoStarter.getApplicationFrame().asyncReloadProject(project, new Runnable() {
           @Override
           public void run() {
             context.focusInTree(TabTitle.this);
@@ -197,7 +188,7 @@ public final class TabTitle extends JPanel {
 
   public void doSafeClose() {
     final boolean close = !this.changed
-        || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(Main.getApplicationFrame(), "Non saved file", "Close unsaved document '" + makeName() + "\'?");
+        || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), "Non saved file", "Close unsaved document '" + makeName() + "\'?");
     if (close) {
       this.context.closeTab(this);
     }
@@ -229,7 +220,7 @@ public final class TabTitle extends JPanel {
   public boolean reload(final boolean askUserConfirmationIfChanged) {
     boolean reloaded = false;
 
-    if (askUserConfirmationIfChanged && isChanged() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(Main.getApplicationFrame(), "File changed", String.format("File '%s' is changed, reload?", (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
+    if (askUserConfirmationIfChanged && isChanged() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(), "File changed", String.format("File '%s' is changed, reload?", (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
       return reloaded;
     }
 

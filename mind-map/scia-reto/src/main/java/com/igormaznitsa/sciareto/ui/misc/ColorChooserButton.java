@@ -22,21 +22,16 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.colorpicker.ColorChooser;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.DefaultButtonModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.SwingUtilities;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -69,7 +64,7 @@ public final class ColorChooserButton extends JButton {
         final ColorChooser colorChooser = new ColorChooser(usedColors, value);
 
         if (DialogProviderManager.getInstance().getDialogProvider()
-                .msgOkCancel(ownerWindow == null ? Main.getApplicationFrame() : ownerWindow,
+                .msgOkCancel(ownerWindow == null ? SciaRetoStarter.getApplicationFrame() : ownerWindow,
                         String.format(UiUtils.BUNDLE.getString("ColorChoosingButton.dialogTitle"),
                                 getText()),
                         colorChooser.getPanel())) {

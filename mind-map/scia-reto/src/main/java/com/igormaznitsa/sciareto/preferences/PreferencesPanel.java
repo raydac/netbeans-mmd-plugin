@@ -29,7 +29,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.Main;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.editors.ScalableRsyntaxTextArea;
@@ -37,25 +37,19 @@ import com.igormaznitsa.sciareto.ui.editors.mmeditors.FontSelector;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.KeyShortCutEditPanel;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.misc.SysFileExtensionEditorPanel;
-import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.prefs.Preferences;
+import org.apache.commons.io.FileUtils;
+
 import javax.annotation.Nonnull;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
-import org.apache.commons.io.FileUtils;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.List;
+import java.util.*;
+import java.util.prefs.Preferences;
 
 public final class PreferencesPanel extends javax.swing.JPanel {
 
@@ -1424,7 +1418,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file, "UTF-8")));
       } catch (final Exception ex) {
         LOGGER.error("Can't import settings", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(Main.getApplicationFrame(), "Can't import settings [" + ex.getMessage() + ']');
+        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Can't import settings [" + ex.getMessage() + ']');
       }
     }
   }//GEN-LAST:event_buttonImportFromFileActionPerformed

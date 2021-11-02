@@ -18,32 +18,16 @@
  */
 package com.igormaznitsa.sciareto.notifications;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
+import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.ui.UiUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
-import com.igormaznitsa.sciareto.Main;
-import com.igormaznitsa.sciareto.ui.UiUtils;
 
 final class MessagePanel extends JPanel implements ActionListener {
 
@@ -125,7 +109,7 @@ final class MessagePanel extends JPanel implements ActionListener {
     if (parent != null) {
       parent.remove(this);
       if (ACTIVE_MESSAGES.decrementAndGet()<=0){
-        Main.getApplicationFrame().getGlassPane().setVisible(false);
+        SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(false);
       }
       parent.revalidate();
     }
