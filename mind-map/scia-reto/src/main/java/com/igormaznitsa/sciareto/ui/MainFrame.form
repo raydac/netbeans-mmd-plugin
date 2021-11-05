@@ -253,6 +253,14 @@
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="menuViewMenuSelected"/>
           </Events>
           <SubComponents>
+            <Menu class="javax.swing.JMenu" name="menuViewUIScale">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/menu_icons/scale_image.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="UI scale"/>
+              </Properties>
+            </Menu>
             <MenuItem class="javax.swing.JMenuItem" name="menuFullScreen">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">

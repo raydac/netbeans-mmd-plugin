@@ -31,6 +31,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
@@ -66,6 +67,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -164,6 +167,21 @@ public final class UiUtils {
   private UiUtils() {
   }
 
+  public static int loadUiScaleFactor() {
+      return PreferencesManager.getInstance().getPreferences().getInt(SciaRetoStarter.PROPERTY_SCALE_GUI, -1);
+  }
+
+  public static void saveUiScaleFactor(final int scaleFactor) {
+      final Preferences preferences = PreferencesManager.getInstance().getPreferences();
+      preferences.putInt(SciaRetoStarter.PROPERTY_SCALE_GUI, scaleFactor);
+      
+      try{
+        preferences.flush();
+      } catch (BackingStoreException ex){
+          // ignore
+      }
+  }
+  
   public static void assertSwingThread() {
     Assertions.assertTrue("Mus be called only from Swing Dispatcher!",
         SwingUtilities.isEventDispatchThread());
