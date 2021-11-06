@@ -15,7 +15,7 @@ public final class SciaReto {
         System.out.println("UI scale factor: " + guiScaleFactor);
         if (guiScaleFactor > 0) {
                 System.setProperty("sun.java2d.uiScale", Integer.toString(Math.max(1, Math.min(5, guiScaleFactor))));
-                System.setProperty("sun.java2d.dpiaware", "true");
+                System.setProperty("sun.java2d.dpiaware", "false");
         }
 
         SciaRetoStarter.main(args);
