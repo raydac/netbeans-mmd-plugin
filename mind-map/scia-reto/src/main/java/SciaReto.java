@@ -24,7 +24,7 @@ public final class SciaReto {
         return result == null ? result : result.trim();
     }
 
-    public static void main(@Nonnull @MustNotContainNull final String... args) {
+    private static void processUiScale(){
         final String guiScaleFactor = readUiScaleFactor();
         if (guiScaleFactor != null) {
             System.out.println("UI scale factor: " + guiScaleFactor);
@@ -32,6 +32,15 @@ public final class SciaReto {
             System.setProperty("sun.java2d.uiScale", guiScaleFactor);
         } else {
             System.out.println("UI scale factor is not set");
+        }
+    }
+    
+    public static void main(@Nonnull @MustNotContainNull final String... args) {
+        final String presentedScale = System.getProperty("sun.java2d.uiScale", null);
+        if (presentedScale == null) {
+            processUiScale();
+        } else {
+            System.out.println("Detected presented sun.java2d.uiScale among System properties: " + presentedScale);
         }
 
         SciaRetoStarter.main(args);
