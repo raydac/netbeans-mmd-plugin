@@ -167,13 +167,22 @@ public final class UiUtils {
   private UiUtils() {
   }
 
-  public static int loadUiScaleFactor() {
-      return PreferencesManager.getInstance().getPreferences().getInt(SciaRetoStarter.PROPERTY_SCALE_GUI, -1);
+  @Nullable
+  public static String loadUiScaleFactor() {
+      String result = PreferencesManager.getInstance().getPreferences().get(SciaRetoStarter.PROPERTY_SCALE_GUI, null);
+      if (result!=null && !result.matches("\\s*[1-5](?:\\.5)?\\s*")){
+          result = null;
+      }
+      return result==null ? result : result.trim();
   }
 
-  public static void saveUiScaleFactor(final int scaleFactor) {
+  public static void saveUiScaleFactor(@Nullable final String scaleFactor) {
       final Preferences preferences = PreferencesManager.getInstance().getPreferences();
-      preferences.putInt(SciaRetoStarter.PROPERTY_SCALE_GUI, scaleFactor);
+      if (scaleFactor == null) {
+        preferences.remove(SciaRetoStarter.PROPERTY_SCALE_GUI);  
+      } else {
+        preferences.put(SciaRetoStarter.PROPERTY_SCALE_GUI, scaleFactor);
+      }
       
       try{
         preferences.flush();

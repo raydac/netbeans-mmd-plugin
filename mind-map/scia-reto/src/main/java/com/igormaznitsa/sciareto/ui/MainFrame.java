@@ -88,6 +88,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
@@ -397,30 +398,29 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }
 
   private void fillScaleUiMenu() {
-    final int selectedScale = UiUtils.loadUiScaleFactor();
-      
+    final String selectedScale = UiUtils.loadUiScaleFactor();
+
     final ButtonGroup scaleButtonGroup = new ButtonGroup();
-    JRadioButtonMenuItem scaleMenuItem = new JRadioButtonMenuItem("None", selectedScale < 1 || selectedScale > 5);
-    scaleMenuItem.addItemListener(x -> {
-        if (x.getStateChange() == ItemEvent.SELECTED) {
-            UiUtils.saveUiScaleFactor(-1);
-            JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), "Application restart required!", "Warning", JOptionPane.WARNING_MESSAGE);
-        }
-    });
-    this.menuViewUIScale.add(scaleMenuItem);
-    scaleButtonGroup.add(scaleMenuItem);
-    for (int i = 1; i <= 5; i++) {
-        scaleMenuItem = new JRadioButtonMenuItem("x"+i, selectedScale == i);
-        final int constScale = i;
-        scaleMenuItem.addItemListener(x -> {
-            if (x.getStateChange() == ItemEvent.SELECTED) {
-                UiUtils.saveUiScaleFactor(constScale);
-                JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), "Application restart required!", "Warning", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-        scaleButtonGroup.add(scaleMenuItem);
-        this.menuViewUIScale.add(scaleMenuItem);
-    }
+    Stream.of("None", "1","1.5","2","2.5","3","3.5","4","4.5","5")
+            .forEach(scale -> {
+                final boolean none = scale.equalsIgnoreCase("none");
+                final boolean selected;
+                if (selectedScale == null) {
+                    selected = none;
+                } else {
+                    selected = scale.equals(selectedScale);
+                }
+                final JRadioButtonMenuItem scaleMenuItem = new JRadioButtonMenuItem(none ? scale : "x"+scale, selected);
+                scaleMenuItem.addItemListener(x -> {
+                    if (x.getStateChange() == ItemEvent.SELECTED) {
+                        UiUtils.saveUiScaleFactor(none ? null : scale);
+                        LOGGER.info("Set UI scaling factor: " + scale);
+                        JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), "UI scaling requires application restart!", "Restart required", JOptionPane.WARNING_MESSAGE);
+                    }
+                });
+                scaleButtonGroup.add(scaleMenuItem);
+                this.menuViewUIScale.add(scaleMenuItem);
+            });
   }
   
   private void ensureTreePanelVisible() {

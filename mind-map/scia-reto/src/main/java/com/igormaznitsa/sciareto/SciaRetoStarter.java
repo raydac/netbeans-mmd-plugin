@@ -123,7 +123,7 @@ public class SciaRetoStarter {
 
   private static final String PROPERTY = "nbmmd.plugin.folder"; //NOI18N
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel"; //NOI18N
-  public static final String PROPERTY_SCALE_GUI = "gui.scale"; //NOI18N
+  public static final String PROPERTY_SCALE_GUI = "general.gui.scale"; //NOI18N
   public static final String PROPERTY_TOTAL_UPSTART = "time.total.upstart"; //NOI18N
 
   private static final long STATISTICS_DELAY = 7L * 24L * 3600L * 1000L;
