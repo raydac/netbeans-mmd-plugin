@@ -32,9 +32,9 @@
     <plantuml.version>1.2021.15</plantuml.version>
     <rsyntax.version>3.1.3</rsyntax.version>
     <rsyntax.autocomplete.version>3.1.2</rsyntax.autocomplete.version>
-    <jna.version>5.9.0</jna.version>
+    <jna.version>5.10.0</jna.version>
     <jre.version>17.0.1+12</jre.version>
-    <reactor.project.version>3.4.11</reactor.project.version>
+    <reactor.project.version>3.4.12</reactor.project.version>
   </properties>
 
   <dependencies>
