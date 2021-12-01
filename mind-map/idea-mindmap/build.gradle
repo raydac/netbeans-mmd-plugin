@@ -33,19 +33,19 @@ targetCompatibility = 1.8
 defaultTasks 'clean', 'build'
 
 dependencies {
-    compile 'com.igormaznitsa:commons-version:1.0.0'
-    compile 'com.igormaznitsa:meta-annotations:1.1.3'
-    compile 'com.igormaznitsa:meta-utils:1.1.3'
+    implementation 'com.igormaznitsa:commons-version:1.0.0'
+    implementation 'com.igormaznitsa:meta-annotations:1.1.3'
+    implementation 'com.igormaznitsa:meta-utils:1.1.3'
 
-    compile 'commons-io:commons-io:' + commonsIoVersion
-    compile 'org.apache.commons:commons-lang3:' + commonsLangVersion
-    compile 'org.json:json:' + jsonVersion
-    compile 'net.iharder:base64:' + iharderVersion
-    compile 'org.jsoup:jsoup:' + jsoupVersion
+    implementation 'commons-io:commons-io:' + commonsIoVersion
+    implementation 'org.apache.commons:commons-lang3:' + commonsLangVersion
+    implementation 'org.json:json:' + jsonVersion
+    implementation 'net.iharder:base64:' + iharderVersion
+    implementation 'org.jsoup:jsoup:' + jsoupVersion
 
-    compile 'com.igormaznitsa:mind-map-model:' + mindMapModelVersion
-    compile 'com.igormaznitsa:mind-map-ide-common:' + mindMapCommonVersion
-    compile 'com.igormaznitsa:mind-map-swing-panel:' + mindMapPanelVersion
+    implementation 'com.igormaznitsa:mind-map-model:' + mindMapModelVersion
+    implementation 'com.igormaznitsa:mind-map-ide-common:' + mindMapCommonVersion
+    implementation 'com.igormaznitsa:mind-map-swing-panel:' + mindMapPanelVersion
 }
 
 sourceSets {
