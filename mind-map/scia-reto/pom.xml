@@ -99,14 +99,6 @@
       <version>${jna.version}</version>
     </dependency>
     <dependency>
-      <!-- downloaded from http://www.java2s.com/Code/JarDownload/mac/mac-ui.jar.zip -->
-      <groupId>com.apple</groupId>
-      <artifactId>mac-ui</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/libs/mac-ui.jar</systemPath>
-    </dependency>
-    <dependency>
       <groupId>net.sourceforge.plantuml</groupId>
       <artifactId>plantuml</artifactId>
       <version>${plantuml.version}</version>

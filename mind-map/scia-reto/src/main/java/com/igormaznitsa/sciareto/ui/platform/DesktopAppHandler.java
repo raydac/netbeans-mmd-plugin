@@ -15,14 +15,13 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-@Warning("It is accessible through Class.forName(), don't rename it!")
-public class DesktopAppHandler implements Platform {
+class DesktopAppHandler implements Platform {
 
   private final Logger LOGGER = LoggerFactory.getLogger(DesktopAppHandler.class);
 
   private final Map<PlatformMenuEvent, PlatformMenuAction> actions = Collections.synchronizedMap(new EnumMap<>(PlatformMenuEvent.class));
 
-  public DesktopAppHandler() {
+  DesktopAppHandler() {
     try {
       final Desktop desktop = Desktop.getDesktop();
 
