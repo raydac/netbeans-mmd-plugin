@@ -18,20 +18,18 @@
  */
 package com.igormaznitsa.sciareto.ui.platform;
 
+import com.igormaznitsa.meta.annotation.Warning;
+
 import javax.annotation.Nonnull;
 import javax.swing.UIManager;
 
+@Warning("It is accessible through Class.forName(), don't rename it!")
 public class PlatformWindows extends PlatformDefault {
 
   public PlatformWindows(){
     super();
   }
   
-  @Override
-  public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event, @Nonnull final PlatformMenuAction listener) {
-    return false;
-  }
-
   @Override
   @Nonnull
   public String getDefaultLFClassName() {

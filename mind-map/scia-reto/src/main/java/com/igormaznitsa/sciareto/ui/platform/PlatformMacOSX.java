@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -42,12 +42,19 @@ public class PlatformMacOSX extends PlatformDefault {
       LOGGER.info("Legacy version of MACOSX AWT has been detected and in use");
     } catch (Throwable ex) {
       LOGGER.error("Can't register application listener, may be newest JDK with removed deprecated methods", ex);//NOI18N
-      try{
-          final Class<?> klazz = Class.forName("com.igormaznitsa.sciareto.ui.platform.MacOSXAppHandler");//NOI18N
-          macListener = klazz.getConstructor(Application.class).newInstance(this.application);
-          LOGGER.info("Newer version of MACOSX AWT has been detected and in use");
-      }catch(Throwable exx) {
-          LOGGER.error("Can't register newer MACOSX handler, contact dveloper!", exx);//NOI18N
+      try {
+        final Class<?> klazz = Class.forName("com.igormaznitsa.sciareto.ui.platform.MacOSXAppHandler");//NOI18N
+        macListener = klazz.getConstructor(Application.class).newInstance(this.application);
+        LOGGER.info("Newer version of MACOSX AWT has been detected and in use");
+      } catch (Throwable exx) {
+        LOGGER.error("Can't register newer MACOSX handler", exx);//NOI18N
+        try {
+          final Class<?> klazz = Class.forName("com.igormaznitsa.sciareto.ui.platform.DesktopAppHandler");//NOI18N
+          macListener = klazz.getConstructor(Application.class).newInstance();
+          LOGGER.info("Desktop handler detected and inited for MACOSX");
+        } catch (Throwable exxx) {
+          LOGGER.error("Can't register desktop handler, contact dveloper!", exxx);//NOI18N
+        }
       }
     } finally {
       this.macOsxAppListener = macListener;

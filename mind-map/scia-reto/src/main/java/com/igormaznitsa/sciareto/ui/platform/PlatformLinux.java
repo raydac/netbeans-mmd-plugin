@@ -18,12 +18,14 @@
  */
 package com.igormaznitsa.sciareto.ui.platform;
 
+import com.igormaznitsa.meta.annotation.Warning;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Field;
 
+@Warning("It is accessible through Class.forName(), don't rename it!")
 public class PlatformLinux extends PlatformDefault {
 
   public PlatformLinux() {

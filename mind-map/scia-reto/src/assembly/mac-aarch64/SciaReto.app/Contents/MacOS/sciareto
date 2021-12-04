@@ -1,4 +1,4 @@
 #!/bin/sh
 BASEDIR=`dirname "$0"`
 
-exec "$BASEDIR"/jre/bin/java -Xmx2G -jar "$BASEDIR"/scia-reto-*.jar
+exec "$BASEDIR"/jre/bin/java -Xmx2G --add-opens java.desktop/com.apple.eawt=ALL-UNNAMED -jar "$BASEDIR"/scia-reto-*.jar
