@@ -50,7 +50,7 @@ public class PlatformMacOSX extends PlatformDefault {
         LOGGER.error("Can't register newer MACOSX handler", exx);//NOI18N
         try {
           final Class<?> klazz = Class.forName("com.igormaznitsa.sciareto.ui.platform.DesktopAppHandler");//NOI18N
-          macListener = klazz.getConstructor(Application.class).newInstance();
+          macListener = klazz.getConstructor().newInstance();
           LOGGER.info("Desktop handler detected and inited for MACOSX");
         } catch (Throwable exxx) {
           LOGGER.error("Can't register desktop handler, contact dveloper!", exxx);//NOI18N
