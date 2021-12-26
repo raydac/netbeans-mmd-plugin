@@ -39,7 +39,6 @@ import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
-import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -434,7 +433,6 @@ public class SciaRetoStarter {
       SystemUtils.setDebugLevelForJavaLogger(Level.INFO);
 
       MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
-      MindMapPluginRegistry.getInstance().unregisterPluginForClass(AboutPlugin.class);
       MindMapPluginRegistry.getInstance().unregisterPluginForClass(OptionsPlugin.class);
 
       SwingUtilities.invokeLater(() -> {

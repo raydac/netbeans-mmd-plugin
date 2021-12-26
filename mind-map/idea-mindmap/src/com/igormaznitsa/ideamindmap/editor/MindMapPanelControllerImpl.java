@@ -44,7 +44,6 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
@@ -183,8 +182,6 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     } else if (plugin instanceof ChangeColorPlugin) {
       final Topic[] selectedTopics = this.getSelectedTopics();
       processColorDialogForTopics(this.editor.getMindMapPanel(), selectedTopics.length > 0 ? selectedTopics : new Topic[] {activeTopic});
-    } else if (plugin instanceof AboutPlugin) {
-      showAbout();
     } else if (plugin instanceof OptionsPlugin) {
       startOptionsEdit();
     } else {

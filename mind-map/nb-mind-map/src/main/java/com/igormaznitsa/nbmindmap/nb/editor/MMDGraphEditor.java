@@ -40,7 +40,6 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
@@ -1623,8 +1622,6 @@ public final class MMDGraphEditor extends CloneableEditor implements AdjustmentL
         } else if (plugin instanceof ChangeColorPlugin) {
             final Topic[] selectedTopics = this.getSelectedTopics();
             processColorDialogForTopics(this.mindMapPanel, selectedTopics.length > 0 ? selectedTopics : new Topic[]{activeTopic});
-        } else if (plugin instanceof AboutPlugin) {
-            NbUtils.plainMessageOk(null, BUNDLE.getString("MMDGraphEditor.makePopUp.msgAboutTitle"), new AboutPanel());//NOI18N
         } else if (plugin instanceof OptionsPlugin) {
             OptionsDisplayer.getDefault().open("nb-mmd-config-main"); //NOI18N
         } else {

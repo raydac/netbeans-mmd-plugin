@@ -44,7 +44,6 @@ import com.igormaznitsa.mindmap.plugins.importers.Mindmup2MindMapImporter;
 import com.igormaznitsa.mindmap.plugins.importers.Novamind2MindMapImporter;
 import com.igormaznitsa.mindmap.plugins.importers.Text2MindMapImporter;
 import com.igormaznitsa.mindmap.plugins.importers.XMind2MindMapImporter;
-import com.igormaznitsa.mindmap.plugins.misc.AboutPlugin;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.AddChildPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.CloneTopicPlugin;
@@ -101,7 +100,6 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new RemoveTopicPlugin());
 
     registerPlugin(new OptionsPlugin());
-    registerPlugin(new AboutPlugin());
 
     registerPlugin(new ShowJumpsPlugin());
     registerPlugin(new CollapseAllPlugin());
