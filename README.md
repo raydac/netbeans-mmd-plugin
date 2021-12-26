@@ -15,16 +15,17 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 __1.5.0 (SNAPSHOT)__
-- __minimal JDK version for mind map model lifted up to 1.8__
-- SR: __minimal JDK version for SciaReto lifted up to 9__
-- SR: provided way to scale application UI
-- SR: embedded JDK version updated to 17.0.1+12
-- SR: RSyntaxTextPanel updated to 3.1.3, Kotlin syntax support added
-- IJ: fixed incompatibility with Intellij IDEA 2021.2 EAP
-- IJ: __minimal Intellij IDEA platform version lifted up to 2018.1__
-- SR: updated PlantUML version to 1.2021.16
-- SR: improved processing of MMD files during "Find files for text" [#83](https://github.com/raydac/netbeans-mmd-plugin/issues/83) 
-- SR: Updated Launch4j starter
+- ALL: removed AboutPlugin
+- ALL: __minimal JDK version for mind map model lifted up to 1.8__
+- SR:  __minimal JDK version for SciaReto lifted up to 9__
+- SR:  provided way to scale application UI
+- SR:  embedded JDK version updated to 17.0.1+12
+- SR:  RSyntaxTextPanel updated to 3.1.3, Kotlin syntax support added
+- IJ:  fixed incompatibility with Intellij IDEA 2021.2 EAP
+- IJ:  __minimal Intellij IDEA platform version lifted up to 2018.1__
+- SR:  updated PlantUML version to 1.2021.16
+- SR:  improved processing of MMD files during "Find files for text" [#83](https://github.com/raydac/netbeans-mmd-plugin/issues/83) 
+- SR:  Updated Launch4j starter
 
 __1.4.11 (28-mar-2021)__
 - NB:  __stopped support NetBeans 8.0, minimal supported version 9.0__
