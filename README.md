@@ -3,7 +3,7 @@
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Java 8.0+](https://img.shields.io/badge/java-8.0%2b-green.svg)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 [![NetBeans](https://img.shields.io/badge/netbeans-9.0%2b-green.svg)](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
-[![Intellij IDEA](https://img.shields.io/badge/idea-14.0.5%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)
+[![Intellij IDEA](https://img.shields.io/badge/idea-2018.1%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)
 [![PayPal donation](https://img.shields.io/badge/donation-PayPal-cyan.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2)
 [![YooMoney donation](https://img.shields.io/badge/donation-Yoo.money-blue.svg)](https://yoomoney.ru/to/41001158080699)
 
