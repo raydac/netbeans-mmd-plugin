@@ -4,7 +4,7 @@
    inkscape:export-xdpi="27.860001"
    inkscape:export-filename="/home/igorm/Projects/Projects_PET/netbeans-mmd-plugin/mind-map/scia-reto/src/main/resources/icons/splash.png"
    sodipodi:docname="scia_reto_title.svg"
-   inkscape:version="1.1 (ce6663b3b7, 2021-05-25)"
+   inkscape:version="1.1.1 (eb90963e84, 2021-10-02)"
    version="1.1"
    id="svg4155"
    viewBox="0 0 1938.1429 1103.8572"
@@ -505,9 +505,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.43473735"
-     inkscape:cx="618.76441"
-     inkscape:cy="718.82482"
+     inkscape:zoom="0.21736868"
+     inkscape:cx="1699.8769"
+     inkscape:cy="655.56824"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -517,7 +517,7 @@
      fit-margin-bottom="0"
      inkscape:window-width="1920"
      inkscape:window-height="1016"
-     inkscape:window-x="1219"
+     inkscape:window-x="1428"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
      showguides="true"
@@ -537,7 +537,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -629,24 +628,24 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:158.66px;line-height:1.25;font-family:sans-serif;fill:#004455;fill-opacity:1;stroke:none;stroke-width:3.96654"
-       x="342.03424"
-       y="737.9599"
+       style="font-style:normal;font-weight:normal;font-size:260.463px;line-height:1.25;font-family:sans-serif;fill:#004455;fill-opacity:1;stroke:none;stroke-width:6.51163"
+       x="553.45197"
+       y="788.1286"
        id="text937"><tspan
          sodipodi:role="line"
          id="tspan935"
-         x="342.03424"
-         y="737.9599"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:3.96654">1.5.0-test</tspan><tspan
+         x="553.45197"
+         y="788.1286"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:6.51163">1.5.0</tspan><tspan
          sodipodi:role="line"
-         x="342.03424"
-         y="948.33386"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:3.96654"
+         x="553.45197"
+         y="1133.4874"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:6.51163"
          id="tspan930" /><tspan
          sodipodi:role="line"
-         x="342.03424"
-         y="1158.7079"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:3.96654"
+         x="553.45197"
+         y="1478.8463"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:6.51163"
          id="tspan928" /></text>
     <g
        id="g1717"

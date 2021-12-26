@@ -1,4 +1,4 @@
-__1.5.0 (SNAPSHOT)__
+__1.5.0 (26-dec-2021)__
 - ALL: removed AboutPlugin
 - ALL: __minimal JDK version for mind map model lifted up to 1.8__
 - SR:  __minimal JDK version for SciaReto lifted up to 9__
