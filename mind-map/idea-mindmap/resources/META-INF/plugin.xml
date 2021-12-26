@@ -14,6 +14,8 @@
     <change-notes><![CDATA[
         <p>1.5.0 (26-dec-2021)</p>
         <ul>
+          <li>improved processing of functional keys F1-F12 to support them in shortcuts</li>
+          <li>added confirmation to close Note editor by ESC key if content changed</li>
           <li>removed AboutPlugin</li>
           <li>minimal JDK version for mind map model lifted up to 1.8</li>
           <li>minimal Intellij IDEA platform version lifted up to 2018.1</li>

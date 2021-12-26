@@ -17,7 +17,6 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 __1.5.0 (26-dec-2021)__
 - ALL: improved processing of functional keys F1-F12 to support them in shortcuts
 - ALL: added confirmation to close Note editor by ESC key if content changed #86
-- ALL: minimal supported Java API for model updated to 1.8
 - ALL: removed AboutPlugin
 - ALL: __minimal JDK version for mind map model lifted up to 1.8__
 - SR:  __minimal JDK version for SciaReto lifted up to 9__
