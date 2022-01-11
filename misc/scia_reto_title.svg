@@ -505,9 +505,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.21736868"
-     inkscape:cx="1699.8769"
-     inkscape:cy="655.56824"
+     inkscape:zoom="0.43473736"
+     inkscape:cx="1401.9959"
+     inkscape:cy="838.43726"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -546,7 +546,7 @@
      id="layer1"
      transform="translate(843.357, 102.424)">
     <rect
-       style="opacity:1;fill:#aaccff;fill-opacity:1;stroke:#000080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1599)"
+       style="opacity:1;fill:#ff9955;fill-opacity:1;stroke:#000080;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1599)"
        id="rect4059"
        width="1937.1428"
        height="1102.8572"
@@ -565,12 +565,12 @@
          id="tspan4207"
          x="1074.3152"
          y="928.86218"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">Free OSS Mind Map Editor (http://www.sciareto.org)</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">Free OSS Mind Map Editor (https://www.sciareto.org)</tspan><tspan
          sodipodi:role="line"
          x="1074.3152"
          y="985.11218"
          id="tspan4209"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">© 2016-2021 Igor A. Maznitsa</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:45px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:end;text-anchor:end">© 2016-2022 Igor A. Maznitsa</tspan></text>
     <g
        id="g949"
        transform="matrix(0.89825076,0,0,0.89825076,102.11561,-21.013131)"
@@ -628,24 +628,24 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:260.463px;line-height:1.25;font-family:sans-serif;fill:#004455;fill-opacity:1;stroke:none;stroke-width:6.51163"
-       x="553.45197"
+       style="font-style:normal;font-weight:normal;font-size:260.463px;line-height:1.25;font-family:sans-serif;text-align:end;text-anchor:end;fill:#004455;fill-opacity:1;stroke:none;stroke-width:6.51163"
+       x="962.37811"
        y="788.1286"
        id="text937"><tspan
          sodipodi:role="line"
          id="tspan935"
-         x="553.45197"
+         x="962.37811"
          y="788.1286"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:6.51163">1.5.0</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';text-align:end;text-anchor:end;fill:#004455;stroke-width:6.51163">1.5.1-test</tspan><tspan
          sodipodi:role="line"
-         x="553.45197"
+         x="962.37811"
          y="1133.4874"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:6.51163"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';text-align:end;text-anchor:end;fill:#004455;stroke-width:6.51163"
          id="tspan930" /><tspan
          sodipodi:role="line"
-         x="553.45197"
+         x="962.37811"
          y="1478.8463"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';fill:#004455;stroke-width:6.51163"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Rasa;-inkscape-font-specification:'Rasa Bold';text-align:end;text-anchor:end;fill:#004455;stroke-width:6.51163"
          id="tspan928" /></text>
     <g
        id="g1717"

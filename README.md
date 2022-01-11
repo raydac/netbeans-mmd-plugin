@@ -14,7 +14,13 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.5.1 (SNAPSHOT)__
+
+- SR:  updated PlantUML to 1.2022.0
+
+
 __1.5.0 (26-dec-2021)__
+
 - ALL: improved processing of functional keys F1-F12 to support them in shortcuts
 - ALL: added confirmation to close Note editor by ESC key if content changed #86
 - ALL: removed AboutPlugin
@@ -28,26 +34,6 @@ __1.5.0 (26-dec-2021)__
 - SR:  updated PlantUML to 1.2021.16
 - SR:  improved processing of MMD files during "Find files for text" [#83](https://github.com/raydac/netbeans-mmd-plugin/issues/83) 
 - SR:  Updated Launch4j starter
-
-__1.4.11 (28-mar-2021)__
-- NB:  __stopped support NetBeans 8.0, minimal supported version 9.0__
-- NB:  NetBeans plugin published in Maven central
-- SR:  improved undo for RSyntax panel [#80](https://github.com/raydac/netbeans-mmd-plugin/issues/80) 
-- IJ:  fixed resource bundle loading under Intellij IDEA 2021.1 EAP
-- ALL: improved text representation of mind map for clipboard
-- ALL: improved folder processing in import-export plugins
-- SR:  embedded JDK version updated to 11.0.10+9
-- SR:  updated RSyntax panel version to 3.1.2
-- SR:  updated PlantUML version to 1.2021.3
-
-__1.4.10 (14-dec-2020)__
-- SR:  added View-Zoom into the main menu toolbar
-- ALL: added password protection for notes (AES-256)
-- ALL: decreased topic dragging start sensitivity [#77](https://github.com/raydac/netbeans-mmd-plugin/issues/77)
-- ALL: emoticons and images included into search scope by their names [#76](https://github.com/raydac/netbeans-mmd-plugin/issues/76)
-- SR:  fixed file rename [#74](https://github.com/raydac/netbeans-mmd-plugin/issues/74)
-- SR:  embedded JDK version updated to 11.0.9.1+1
-- SR:  embedded PlantUml updated to 1.2020.22
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
