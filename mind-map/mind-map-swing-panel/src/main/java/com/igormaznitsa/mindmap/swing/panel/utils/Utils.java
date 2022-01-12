@@ -861,6 +861,10 @@ public final class Utils {
     return result;
   }
 
+  public static boolean isPopupEvent(@Nullable final MouseEvent mouseEvent) {
+    return mouseEvent != null && mouseEvent.getButton() != 0 && mouseEvent.isPopupTrigger();
+  }
+
   public static boolean isKeyStrokeEvent(@Nullable final KeyStroke keyStroke, final int keyEventType, @Nullable final KeyEvent event) {
     boolean result = false;
     if (keyStroke != null && event != null) {

@@ -306,6 +306,11 @@ public abstract class AbstractElement {
     return this.bounds.getX() - (this.isLeftDirection() ? this.blockSize.getWidth() - this.bounds.getWidth() : 0.0d);
   }
 
+  @Nonnull
+  public Point getCenter() {
+    return new Point((int)this.bounds.getCenterX(), (int)this.bounds.getCenterY());
+  }
+
   @Nullable
   public AbstractElement findNearestOpenedTopicToPoint(@Nullable final AbstractElement elementToIgnore, @Nonnull final Point point) {
     return findNearestTopic(elementToIgnore, Double.MAX_VALUE, point);
@@ -448,8 +453,7 @@ public abstract class AbstractElement {
 
   @Nonnull
   public Color getBorderColor(@Nonnull final MindMapPanelConfig config) {
-    final Color dflt = this.borderColor == null ? config.getElementBorderColor() : this.borderColor;
-    return dflt;
+    return this.borderColor == null ? config.getElementBorderColor() : this.borderColor;
   }
 
   @Nonnull

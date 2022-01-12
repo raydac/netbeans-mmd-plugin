@@ -67,11 +67,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.isPopupEvent;
 
 public class MindMapPanel extends JComponent implements ClipboardOwner {
 
-  private static final int MIN_DISTANCE_FOR_TOPIC_DRAGGING_START = 8;  
-    
+  private static final int MIN_DISTANCE_FOR_TOPIC_DRAGGING_START = 8;
+
   public static final long serialVersionUID = 2783412123454232L;
   public static final String ATTR_SHOW_JUMPS = "showJumps";
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanel.class);
@@ -109,7 +110,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient AbstractElement destinationElement = null;
   private final UUID uuid = UUID.randomUUID();
   private Point lastMousePressed = null;
-  
+
   @Nonnull
   public UUID getUuid() {
     return this.uuid;
@@ -252,27 +253,22 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       }
 
       private void callUpdateEditorPanelSize() {
-          SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-                  updateEditorPanelSize(textEditor.getPreferredSize());
-              }
-          });
+        SwingUtilities.invokeLater(() -> updateEditorPanelSize(textEditor.getPreferredSize()));
       }
-      
+
       @Override
       public void insertUpdate(@Nonnull final DocumentEvent e) {
-          callUpdateEditorPanelSize();
+        callUpdateEditorPanelSize();
       }
 
       @Override
       public void removeUpdate(@Nonnull final DocumentEvent e) {
-          callUpdateEditorPanelSize();
+        callUpdateEditorPanelSize();
       }
 
       @Override
       public void changedUpdate(@Nonnull final DocumentEvent e) {
-          callUpdateEditorPanelSize();
+        callUpdateEditorPanelSize();
       }
     });
 
@@ -328,6 +324,15 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         }
       }
 
+      private void processContextMenuKey() {
+        final AbstractElement element = findTopicForContextMenu();
+        if (element != null) {
+          final Point point = element.getCenter();
+          ensureVisibility(element);
+          processPopUp(point, element);
+        }
+      }
+
       @Override
       public void keyReleased(@Nonnull final KeyEvent e) {
         if (lockIfNotDisposed()) {
@@ -337,7 +342,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             }
 
             if (!e.isConsumed()) {
-              if (config.isKeyEvent(MindMapPanelConfig.KEY_SHOW_POPUP, e)) {
+              if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+                e.consume();
+                processContextMenuKey();
+              } else if (config.isKeyEvent(MindMapPanelConfig.KEY_SHOW_POPUP, e)) {
                 e.consume();
                 processPopUpForShortcut();
               } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
@@ -478,13 +486,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       @Override
       public void mousePressed(@Nonnull final MouseEvent e) {
         if (!e.isConsumed() && lockIfNotDisposed()) {
-            lastMousePressed = e.getPoint();
-            try {
+          lastMousePressed = e.getPoint();
+          try {
             if (!controller.isMouseClickProcessingAllowed(theInstance)) {
               return;
             }
             try {
-              if (e.isPopupTrigger()) {
+              if (isPopupEvent(e)) {
                 mouseDragSelection = null;
                 MindMap theMap = model;
                 AbstractElement element = null;
@@ -540,7 +548,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                     select(m, false);
                   }
                 }
-              } else if (e.isPopupTrigger()) {
+              } else if (isPopupEvent(e)) {
                 mouseDragSelection = null;
                 MindMap theMap = model;
                 AbstractElement element = null;
@@ -570,17 +578,17 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       }
 
       private boolean isDraggedDistanceReached(@Nonnull final MouseEvent dragEvent) {
-          boolean result = false;
-          if (lastMousePressed != null) {
-              final Point dragPoint = dragEvent.getPoint();
-              final int dx = lastMousePressed.x - dragEvent.getX();
-              final int dy = lastMousePressed.y - dragEvent.getY();
-              final double distance = Math.sqrt(dx*dx+dy*dy);
-              result = distance >= MIN_DISTANCE_FOR_TOPIC_DRAGGING_START;
-          }
-          return result;
+        boolean result = false;
+        if (lastMousePressed != null) {
+          final Point dragPoint = dragEvent.getPoint();
+          final int dx = lastMousePressed.x - dragEvent.getX();
+          final int dy = lastMousePressed.y - dragEvent.getY();
+          final double distance = Math.sqrt(dx * dx + dy * dy);
+          result = distance >= MIN_DISTANCE_FOR_TOPIC_DRAGGING_START;
+        }
+        return result;
       }
-      
+
       @Override
       public void mouseDragged(@Nonnull final MouseEvent e) {
         if (!e.isConsumed() && lockIfNotDisposed()) {
@@ -1343,7 +1351,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenText")).append("#######");
         } else {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenText")).append(StringEscapeUtils
-              .escapeHtml3(ModelUtils.makeShortTextVersion(extra.getAsString(), 64)));
+                  .escapeHtml3(ModelUtils.makeShortTextVersion(extra.getAsString(), 64)));
         }
       }
       break;
@@ -1550,10 +1558,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
     if (nextFocused != null) {
       final boolean addFocused = config.isKeyEventDetected(key,
-          MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
-          MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
-          MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
-          MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
+              MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+              MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED,
+              MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+              MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED);
       if (!addFocused || this.selectedTopics.contains(nextFocused.getModel())) {
         removeAllSelection();
       }
@@ -1730,11 +1738,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   protected void fireNotificationScaledByMouse(
-      @Nonnull final Point mousePoint,
-      final double oldScale,
-      final double newScale,
-      @Nonnull final Dimension oldSize,
-      @Nonnull final Dimension newSize
+          @Nonnull final Point mousePoint,
+          final double oldScale,
+          final double newScale,
+          @Nonnull final Dimension oldSize,
+          @Nonnull final Dimension newSize
   ) {
     for (final MindMapListener l : MindMapPanel.this.mindMapListeners) {
       l.onScaledByMouse(MindMapPanel.this, mousePoint, oldScale, newScale, oldSize, newSize);
@@ -2457,6 +2465,29 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   @Nullable
+  public AbstractElement findTopicForContextMenu() {
+    if (this.lockIfNotDisposed()) {
+      try {
+        AbstractElement result = null;
+        if (this.selectedTopics.isEmpty()) {
+          if (this.model != null) {
+            final Topic root = this.model.getRoot();
+            if (root != null) {
+              result = (AbstractElement) root.getPayload();
+            }
+          }
+        } else {
+          result = (AbstractElement) this.selectedTopics.get(0).getPayload();
+        }
+        return result;
+      } finally {
+        this.unlock();
+      }
+    }
+    return null;
+  }
+
+  @Nullable
   public AbstractElement findTopicUnderPoint(@Nonnull final Point point) {
     if (this.lockIfNotDisposed()) {
       try {
@@ -2752,7 +2783,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                         newTopic = new Topic(this.model, s, topicText);
                       } else {
                         newTopic =
-                            new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
+                                new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
                       }
                       MindMapUtils.ensureVisibility(newTopic);
                     }
