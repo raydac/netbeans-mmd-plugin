@@ -16,6 +16,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 # Changelog
 __1.5.1 (SNAPSHOT)__
 
+- ALL: added support for context menu button #90
 - SR:  updated PlantUML to 1.2022.0
 
 
