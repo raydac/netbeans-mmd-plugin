@@ -14,6 +14,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+
 __1.5.1 (SNAPSHOT)__
 
 - ALL: added support for context menu button #90
