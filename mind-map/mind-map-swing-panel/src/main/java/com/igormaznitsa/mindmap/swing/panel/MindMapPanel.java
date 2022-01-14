@@ -30,10 +30,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.*;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
-import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
-import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
-import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.panel.utils.*;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -321,15 +318,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           } finally {
             unlock();
           }
-        }
-      }
-
-      private void processContextMenuKey() {
-        final AbstractElement element = findTopicForContextMenu();
-        if (element != null) {
-          final Point point = element.getCenter();
-          ensureVisibility(element);
-          processPopUp(point, element);
         }
       }
 
@@ -1304,6 +1292,24 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     } finally {
       this.unlock();
     }
+  }
+
+  @Nonnull
+  public Pair<AbstractElement, Point> findBestPointForContextMenu(final boolean ensureComponentVisibility) {
+    final AbstractElement element = findTopicForContextMenu();
+    if (element != null) {
+      if (ensureComponentVisibility)
+        this.ensureVisibility(element);
+      return new Pair<>(element, element.getCenter());
+    } else {
+      final Rectangle visibleRect = this.getVisibleRect();
+      return new Pair<>(null, new Point((int) visibleRect.getCenterX(), (int) visibleRect.getCenterY()));
+    }
+  }
+
+  private void processContextMenuKey() {
+    final Pair<AbstractElement, Point> elementPoint = this.findBestPointForContextMenu(true);
+    this.processPopUp(elementPoint.getRight(), elementPoint.getLeft());
   }
 
   public void putTmpObject(@Nonnull final Object key, @Nullable final Object value) {
