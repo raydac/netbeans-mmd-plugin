@@ -37,6 +37,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
+import com.igormaznitsa.mindmap.swing.panel.utils.Pair;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.CopyProvider;
@@ -940,7 +941,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   public Object getData(@NonNls String s) {
     Object result = null;
     if (PlatformDataKeys.CONTEXT_MENU_POINT.is(s)) {
-      result = this.mindMapPanel.findBestPointForContextMenu(false);
+      result = this.mindMapPanel.findBestPointForContextMenu(false).map(Pair::getRight).orElse(null);
     } else if (PlatformDataKeys.COPY_PROVIDER.is(s) || PlatformDataKeys.CUT_PROVIDER.is(s) || PlatformDataKeys.PASTE_PROVIDER.is(s)) {
       result = this;
     }

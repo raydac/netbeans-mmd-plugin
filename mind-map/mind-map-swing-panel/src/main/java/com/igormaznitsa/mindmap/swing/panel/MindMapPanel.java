@@ -1295,21 +1295,26 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   @Nonnull
-  public Pair<AbstractElement, Point> findBestPointForContextMenu(final boolean ensureComponentVisibility) {
+  public Optional<Pair<AbstractElement, Point>> findBestPointForContextMenu(final boolean ensureComponentVisibility) {
     final AbstractElement element = findTopicForContextMenu();
-    if (element != null) {
-      if (ensureComponentVisibility)
-        this.ensureVisibility(element);
-      return new Pair<>(element, element.getCenter());
+    if (element == null) {
+      return Optional.empty();
     } else {
-      final Rectangle visibleRect = this.getVisibleRect();
-      return new Pair<>(null, new Point((int) visibleRect.getCenterX(), (int) visibleRect.getCenterY()));
+      if (ensureComponentVisibility) {
+        this.ensureVisibility(element);
+      }
+      return Optional.of(new Pair<>(element, element.getCenter()));
     }
   }
 
   private void processContextMenuKey() {
-    final Pair<AbstractElement, Point> elementPoint = this.findBestPointForContextMenu(true);
-    this.processPopUp(elementPoint.getRight(), elementPoint.getLeft());
+    final Pair<AbstractElement, Point> elementPoint = this.findBestPointForContextMenu(true).orElse(null);
+    if (elementPoint == null) {
+      final Rectangle rect = this.getBounds();
+      this.processPopUp(new Point((int) rect.getCenterX(), (int) rect.getCenterY()), null);
+    } else {
+      this.processPopUp(elementPoint.getRight(), elementPoint.getLeft());
+    }
   }
 
   public void putTmpObject(@Nonnull final Object key, @Nullable final Object value) {
