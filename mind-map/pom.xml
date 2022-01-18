@@ -88,6 +88,16 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>meta-annotations</artifactId>
+        <version>1.1.3</version>
+      </dependency>
+      <dependency>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>meta-utils</artifactId>
+        <version>1.1.3</version>
+      </dependency>
+      <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commons.io.version}</version>
@@ -96,16 +106,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons.lang.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.igormaznitsa</groupId>
-        <artifactId>meta-annotations</artifactId>
-        <version>${meta.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.igormaznitsa</groupId>
-        <artifactId>meta-utils</artifactId>
-        <version>${meta.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -241,6 +241,25 @@
                 <artifactId>java18</artifactId>
                 <version>1.0</version>
               </signature>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>no-duplicate-declared-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <dependencyConvergence/>
+                <banDuplicatePomDependencyVersions/>
+              </rules>
             </configuration>
           </execution>
         </executions>
