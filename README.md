@@ -19,7 +19,7 @@ __1.5.1 (SNAPSHOT)__
 
 - SR:  embedded JDK version updated to 17.0.2+9
 - ALL: added support for context menu button #90
-- SR:  updated PlantUML to 1.2022.0
+- SR:  updated PlantUML to 1.2022.1
 
 
 __1.5.0 (26-dec-2021)__
