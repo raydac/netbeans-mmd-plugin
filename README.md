@@ -17,6 +17,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 __1.5.1 (SNAPSHOT)__
 
+- IJ:  changed weight of KnowledgeViewPane #94
 - SR:  embedded JDK version updated to 17.0.2+9
 - ALL: added support for context menu button #90
 - SR:  updated PlantUML to 1.2022.2
