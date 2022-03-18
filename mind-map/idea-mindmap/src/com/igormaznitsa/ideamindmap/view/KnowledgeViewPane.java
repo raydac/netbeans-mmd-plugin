@@ -216,7 +216,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
 
   @Override
   public int getWeight() {
-    return 10;
+    return 51175;
   }
 
   @Override
