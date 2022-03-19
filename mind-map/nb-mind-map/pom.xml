@@ -161,7 +161,7 @@
       <plugin>
           <groupId>org.apache.netbeans.utilities</groupId>
         <artifactId>nbm-maven-plugin</artifactId>
-          <version>4.6</version>
+          <version>4.7</version>
         <extensions>true</extensions>
         <configuration>
           <encoding>UTF-8</encoding>
@@ -172,8 +172,9 @@
           <licenseFile>src/main/nbm/LICENSE-2.0.txt</licenseFile>
           <codeNameBase>com.igormaznitsa.nbmindmap/1</codeNameBase>
           <requiresRestart>true</requiresRestart>
-          <keystore>${project.build.directory}/../../private/keystore.jks</keystore>
+          <keystore>${project.basedir}/jkslink</keystore>
           <keystorealias>iam</keystorealias>
+          <keystorepassword>${keystore.password}</keystorepassword>
         </configuration>
       </plugin>
       <plugin>
