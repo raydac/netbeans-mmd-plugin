@@ -2,7 +2,7 @@ __1.5.1 (SNAPSHOT)__
 - IJ:  changed weight of KnowledgeViewPane #94
 - SR:  embedded JDK version updated to 17.0.2+9
 - ALL: added support for context menu button #90
-- SR:  updated PlantUML to 1.2022.2
+- SR:  updated PlantUML to 1.2022.3
 
 __1.5.0 (26-dec-2021)__
 - ALL: improved processing of functional keys F1-F12 to support them in shortcuts
