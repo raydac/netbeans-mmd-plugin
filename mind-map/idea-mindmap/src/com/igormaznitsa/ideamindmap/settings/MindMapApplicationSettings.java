@@ -24,6 +24,8 @@ import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
+import com.igormaznitsa.mindmap.swing.panel.SettingsAccessor;
+import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -33,8 +35,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 @State(name = "NBMindMapPlugin", storages = {@Storage(file = "$APP_CONFIG$/nbmindmapsettings.xml")})
 public class MindMapApplicationSettings implements ApplicationComponent, PersistentStateComponent<DeclaredFieldsSerializer>, DeclaredFieldsSerializer.Converter {
@@ -98,13 +107,38 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
 
   @Nullable
   @Override
-  public Object fromString(@Nonnull Class<?> fieldType, @Nonnull String value) {
-    if (fieldType == Color.class) {
+  public Object fromString(@Nonnull Class<?> fieldType, @Nullable String value) {
+    if (fieldType.isAssignableFrom(Map.class)) {
+      if (value == null || value.trim().isEmpty()) {
+        return Collections.emptyMap();
+      } else {
+        try {
+          final Map<String, KeyShortcut> result = new HashMap<>();
+          for (final String s : value.split(",")) {
+            String[] keyValue = s.split("::");
+            if (keyValue.length == 2) {
+              final String key = keyValue[0].trim();
+              final String shortcut = keyValue[1].trim();
+              result.put(key, new KeyShortcut(shortcut));
+            } else {
+              throw new IllegalArgumentException("Detected wrong entity pair: " + s);
+            }
+          }
+          return result;
+        }catch (Exception ex){
+          LOGGER.error("Can't split key shortcuts", ex);
+          return Collections.emptyMap();
+        }
+      }
+    } if (fieldType == Color.class) {
+      if (value == null) return null;
       return new Color(Integer.parseInt(value), true);
     } else if (fieldType == Font.class) {
+      if (value == null) return new Font("Arial", Font.BOLD, 12);
       final String[] splitted = value.split(":");
-      return new Font(splitted[0], Integer.parseInt(splitted[1]), Integer.parseInt(splitted[2]));
+      return new Font(splitted[0].trim(), Integer.parseInt(splitted[1].trim()), Integer.parseInt(splitted[2].trim()));
     } else if (fieldType == RenderQuality.class) {
+      if (value == null) return RenderQuality.DEFAULT;
       try {
         return RenderQuality.valueOf(value);
       } catch (Exception ex) {
@@ -117,8 +151,21 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
 
   @Nonnull
   @Override
-  public String asString(@Nonnull Class<?> fieldType, @Nonnull Object value) {
-    if (fieldType == Color.class) {
+  public String asString(@Nonnull Class<?> fieldType, @Nullable Object value) {
+    if (fieldType.isAssignableFrom(Map.class)) {
+      if (value == null) return "";
+      try {
+        final StringBuilder buffer = new StringBuilder();
+        final Map<String, KeyShortcut> keyMap = (Map<String, KeyShortcut>) value;
+        keyMap.forEach((k, v) -> {
+          if (buffer.length() > 0) buffer.append(",");
+          buffer.append(k).append("::").append(v.packToString());
+        });
+        return buffer.toString();
+      }catch (Exception ex) {
+        throw new RuntimeException("Can't make key short map", ex);
+      }
+    } else if (fieldType == Color.class) {
       return Integer.toString(((Color) value).getRGB());
     } else if (fieldType == Font.class) {
       final Font font = (Font) value;
@@ -135,9 +182,17 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
   @Override
   public Object provideDefaultValue(@Nonnull final String fieldName, @Nonnull final Class<?> fieldType) {
     try {
-      final Field field = MindMapPanelConfig.class.getDeclaredField(fieldName);
-      field.setAccessible(true);
-      return field.get(etalon);
+      for(final Method method : MindMapPanelConfig.class.getDeclaredMethods()) {
+        if (Modifier.isPublic(method.getModifiers()) && method.getParameterCount() == 0) {
+          SettingsAccessor settingsAccessor = method.getAnnotation(SettingsAccessor.class);
+          if (settingsAccessor != null) {
+            if (settingsAccessor.name().equals(fieldName)) {
+              return method.invoke(etalon);
+            }
+          }
+        }
+      }
+      throw new IllegalStateException("Can't find getter for field name: " + fieldName);
     } catch (Exception ex) {
       LOGGER.error("Error during default value extraction (" + fieldType + " " + fieldName + ')');
       throw new RuntimeException("Can't extract default value from settings", ex);

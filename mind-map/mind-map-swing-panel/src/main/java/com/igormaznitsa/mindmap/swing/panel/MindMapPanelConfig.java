@@ -74,6 +74,7 @@ public final class MindMapPanelConfig implements Serializable {
   @MustNotContainNull
   private transient final List<WeakReference<MindMapConfigListener>> listeners =
           new ArrayList<>();
+
   private transient final Map<String, KeyShortcut> mapShortCut = new HashMap<>();
   private int collapsatorSize = 16;
   private int textMargins = 10;
@@ -236,9 +237,16 @@ public final class MindMapPanelConfig implements Serializable {
     this.mapShortCut.put(shortCut.getID(), shortCut);
   }
 
-  @Nullable
+  @SettingsAccessor(name = "mapShortCut")
+  @Nonnull
   public Map<String, KeyShortcut> getKeyShortcutMap() {
     return new HashMap<>(this.mapShortCut);
+  }
+
+  @SettingsAccessor(name = "mapShortCut")
+  public void setKeyShortcutMap(@Nonnull final Map<String, KeyShortcut> map) {
+    this.mapShortCut.clear();
+    this.mapShortCut.putAll(map);
   }
 
   public boolean hasDifferenceInParameters(@Nonnull final MindMapPanelConfig etalon) {
@@ -513,322 +521,390 @@ public final class MindMapPanelConfig implements Serializable {
     return false;
   }
 
+  @SettingsAccessor(name = "horizontalBlockGap")
   public int getHorizontalBlockGap() {
     return this.horizontalBlockGap;
   }
 
+  @SettingsAccessor(name = "horizontalBlockGap")
   public void setHorizontalBlockGap(final int gap) {
     this.horizontalBlockGap = gap;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "selectLineWidth")
   public float getSelectLineWidth() {
     return this.selectLineWidth;
   }
 
+  @SettingsAccessor(name = "selectLineWidth")
   public void setSelectLineWidth(final float f) {
     this.selectLineWidth = f;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "jumpLinkWidth")
   public float getJumpLinkWidth() {
     return this.jumpLinkWidth;
   }
 
+  @SettingsAccessor(name = "jumpLinkWidth")
   public void setJumpLinkWidth(final float f) {
     this.jumpLinkWidth = f;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "jumpLinkColor")
   @Nonnull
   public Color getJumpLinkColor() {
     return this.jumpLinkColor;
   }
 
+  @SettingsAccessor(name = "jumpLinkColor")
   public void setJumpLinkColor(@Nonnull final Color color) {
     this.jumpLinkColor = color;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "scaleModifiers")
   public int getScaleModifiers() {
     return this.scaleModifiers;
   }
 
+  @SettingsAccessor(name = "scaleModifiers")
   public void setScaleModifiers(final int value) {
     this.scaleModifiers = value;
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "selectLineColor")
   public Color getSelectLineColor() {
     return this.selectLineColor;
   }
 
+  @SettingsAccessor(name = "selectLineColor")
   public void setSelectLineColor(@Nonnull final Color color) {
     this.selectLineColor = color;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "paperMargins")
   public int getPaperMargins() {
     return this.paperMargins;
   }
 
+  @SettingsAccessor(name = "paperMargins")
   public void setPaperMargins(final int size) {
     this.paperMargins = size;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "smartTextPaste")
   public boolean isSmartTextPaste() {
     return this.smartTextPaste;
   }
 
+  @SettingsAccessor(name = "smartTextPaste")
   public void setSmartTextPaste(final boolean flag) {
     this.smartTextPaste = flag;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "drawBackground")
   public boolean isDrawBackground() {
     return this.drawBackground;
   }
 
+  @SettingsAccessor(name = "drawBackground")
   public void setDrawBackground(final boolean flag) {
     this.drawBackground = flag;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "otherLevelVerticalInset")
   public int getOtherLevelVerticalInset() {
     return this.otherLevelVerticalInset;
   }
 
+  @SettingsAccessor(name = "otherLevelVerticalInset")
   public void setOtherLevelVerticalInset(final int value) {
     this.otherLevelVerticalInset = value;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "otherLevelHorizontalInset")
   public int getOtherLevelHorizontalInset() {
     return this.otherLevelHorizontalInset;
   }
 
+  @SettingsAccessor(name = "otherLevelHorizontalInset")
   public void setOtherLevelHorizontalInset(final int value) {
     this.otherLevelHorizontalInset = value;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "firstLevelVerticalInset")
   public int getFirstLevelVerticalInset() {
     return this.firstLevelVerticalInset;
   }
 
+  @SettingsAccessor(name = "firstLevelVerticalInset")
   public void setFirstLevelVerticalInset(final int value) {
     this.firstLevelVerticalInset = value;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "firstLevelHorizontalInset")
   public int getFirstLevelHorizontalInset() {
     return this.firstLevelHorizontalInset;
   }
 
+  @SettingsAccessor(name = "firstLevelHorizontalInset")
   public void setFirstLevelHorizontalInset(final int value) {
     this.firstLevelHorizontalInset = value;
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "paperColor")
   public Color getPaperColor() {
     return this.paperColor;
   }
 
+  @SettingsAccessor(name = "paperColor")
   public void setPaperColor(@Nonnull final Color color) {
     this.paperColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "gridColor")
   public Color getGridColor() {
     return this.gridColor;
   }
 
+  @SettingsAccessor(name = "gridColor")
   public void setGridColor(@Nonnull final Color color) {
     this.gridColor = color;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "showGrid")
   public boolean isShowGrid() {
     return this.showGrid;
   }
 
+  @SettingsAccessor(name = "showGrid")
   public void setShowGrid(final boolean flag) {
     this.showGrid = flag;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "gridStep")
   public int getGridStep() {
     return this.gridStep;
   }
 
+  @SettingsAccessor(name = "gridStep")
   public void setGridStep(final int step) {
     this.gridStep = step;
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "rootBackgroundColor")
   public Color getRootBackgroundColor() {
     return this.rootBackgroundColor;
   }
 
+  @SettingsAccessor(name = "rootBackgroundColor")
   public void setRootBackgroundColor(@Nonnull final Color color) {
     this.rootBackgroundColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "firstLevelBackgroundColor")
   public Color getFirstLevelBackgroundColor() {
     return this.firstLevelBackgroundColor;
   }
 
+  @SettingsAccessor(name = "firstLevelBackgroundColor")
   public void setFirstLevelBackgroundColor(@Nonnull final Color color) {
     this.firstLevelBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "otherLevelBackgroundColor")
   public Color getOtherLevelBackgroundColor() {
     return this.otherLevelBackgroundColor;
   }
 
+  @SettingsAccessor(name = "otherLevelBackgroundColor")
   public void setOtherLevelBackgroundColor(@Nonnull final Color color) {
     this.otherLevelBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "rootTextColor")
   public Color getRootTextColor() {
     return this.rootTextColor;
   }
 
+  @SettingsAccessor(name = "rootTextColor")
   public void setRootTextColor(@Nonnull final Color color) {
     this.rootTextColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "firstLevelTextColor")
   public Color getFirstLevelTextColor() {
     return this.firstLevelTextColor;
   }
 
+  @SettingsAccessor(name = "firstLevelTextColor")
   public void setFirstLevelTextColor(@Nonnull final Color color) {
     this.firstLevelTextColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "otherLevelTextColor")
   public Color getOtherLevelTextColor() {
     return this.otherLevelTextColor;
   }
 
+  @SettingsAccessor(name = "otherLevelTextColor")
   public void setOtherLevelTextColor(@Nonnull final Color color) {
     this.otherLevelTextColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "elementBorderColor")
   public Color getElementBorderColor() {
     return this.elementBorderColor;
   }
 
+  @SettingsAccessor(name = "elementBorderColor")
   public void setElementBorderColor(@Nonnull final Color color) {
     this.elementBorderColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "connectorColor")
   public Color getConnectorColor() {
     return this.connectorColor;
   }
 
+  @SettingsAccessor(name = "connectorColor")
   public void setConnectorColor(@Nonnull final Color color) {
     this.connectorColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "shadowColor")
   public Color getShadowColor() {
     return this.shadowColor;
   }
 
+  @SettingsAccessor(name = "shadowColor")
   public void setShadowColor(@Nonnull final Color color) {
     this.shadowColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "collapsatorBorderColor")
   public Color getCollapsatorBorderColor() {
     return this.collapsatorBorderColor;
   }
 
+  @SettingsAccessor(name = "collapsatorBorderColor")
   public void setCollapsatorBorderColor(@Nonnull final Color color) {
     this.collapsatorBorderColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "collapsatorBackgroundColor")
   public Color getCollapsatorBackgroundColor() {
     return this.collapsatorBackgroundColor;
   }
 
+  @SettingsAccessor(name = "collapsatorBackgroundColor")
   public void setCollapsatorBackgroundColor(@Nonnull final Color color) {
     this.collapsatorBackgroundColor = assertNotNull(color);
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "elementBorderWidth")
   public float getElementBorderWidth() {
     return this.elementBorderWidth;
   }
 
+  @SettingsAccessor(name = "elementBorderWidth")
   public void setElementBorderWidth(final float value) {
     this.elementBorderWidth = value;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "collapsatorBorderWidth")
   public float getCollapsatorBorderWidth() {
     return this.collapsatorBorderWidth;
   }
 
+  @SettingsAccessor(name = "collapsatorBorderWidth")
   public void setCollapsatorBorderWidth(final float width) {
     this.collapsatorBorderWidth = width;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "shadowOffset")
   public float getShadowOffset() {
     return this.shadowOffset;
   }
 
+  @SettingsAccessor(name = "shadowOffset")
   public void setShadowOffset(final float value) {
     this.shadowOffset = value;
   }
 
+  @SettingsAccessor(name = "connectorWidth")
   public float getConnectorWidth() {
     return this.connectorWidth;
   }
 
+  @SettingsAccessor(name = "connectorWidth")
   public void setConnectorWidth(final float value) {
     this.connectorWidth = value;
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "font")
   public Font getFont() {
     return this.font;
   }
 
+  @SettingsAccessor(name = "font")
   public void setFont(@Nonnull final Font f) {
     this.font = assertNotNull(f);
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "scale")
   public double getScale() {
     return this.scale;
   }
 
+  @SettingsAccessor(name = "scale")
   public void setScale(final double value) {
     this.scale = Math.max(0.01d, value);
     notifyCfgListenersAboutChange();
@@ -838,47 +914,57 @@ public final class MindMapPanelConfig implements Serializable {
     this.scale = Math.max(0.01d, value);
   }
 
+  @SettingsAccessor(name = "dropShadow")
   public boolean isDropShadow() {
     return this.dropShadow;
   }
 
+  @SettingsAccessor(name = "dropShadow")
   public void setDropShadow(final boolean value) {
     this.dropShadow = value;
     notifyCfgListenersAboutChange();
   }
 
   @Nonnull
+  @SettingsAccessor(name = "renderQuality")
   public RenderQuality getRenderQuality() {
     return this.renderQuality;
   }
 
+  @SettingsAccessor(name = "renderQuality")
   public void setRenderQuality(@Nullable final RenderQuality value) {
     this.renderQuality = GetUtils.ensureNonNull(value, Utils.getDefaultRenderQialityForOs());
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "collapsatorSize")
   public int getCollapsatorSize() {
     return this.collapsatorSize;
   }
 
+  @SettingsAccessor(name = "collapsatorSize")
   public void setCollapsatorSize(final int size) {
     this.collapsatorSize = size;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "textMargins")
   public int getTextMargins() {
     return this.textMargins;
   }
 
+  @SettingsAccessor(name = "textMargins")
   public void setTextMargins(final int value) {
     this.textMargins = value;
     notifyCfgListenersAboutChange();
   }
 
+  @SettingsAccessor(name = "selectLineGap")
   public int getSelectLineGap() {
     return this.selectLineGap;
   }
 
+  @SettingsAccessor(name = "selectLineGap")
   public void setSelectLineGap(final int value) {
     this.selectLineGap = value;
     notifyCfgListenersAboutChange();
