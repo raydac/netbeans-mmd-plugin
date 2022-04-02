@@ -17,6 +17,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 __1.5.1 (SNAPSHOT)__
 
+- IJ:  fixed save settings for key shortcut #96
 - IJ:  changed weight of KnowledgeViewPane #94
 - SR:  embedded JDK version updated to 17.0.2+9
 - ALL: added support for context menu button #90
