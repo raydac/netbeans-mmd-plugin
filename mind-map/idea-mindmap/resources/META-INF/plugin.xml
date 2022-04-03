@@ -14,6 +14,9 @@
     <change-notes><![CDATA[
         <p>1.5.1 (SNAPSHOT)</p>
         <ul>
+          <li>fixed save settings for key shortcut</li>
+          <li>changed weight of KnowledgeViewPane</li>
+          <li>added support for context menu button</li>
         </ul>
         <p>1.5.0 (26-dec-2021)</p>
         <ul>
