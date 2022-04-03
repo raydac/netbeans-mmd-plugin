@@ -1,4 +1,5 @@
 __1.5.1 (SNAPSHOT)__
+- ALL: fixed wrong decimal separator in SVG exporter #95
 - IJ:  fixed save settings for key shortcut #96
 - IJ:  changed weight of KnowledgeViewPane #94
 - SR:  embedded JDK version updated to 17.0.2+9

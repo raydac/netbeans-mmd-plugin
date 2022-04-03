@@ -14,6 +14,7 @@
     <change-notes><![CDATA[
         <p>1.5.1 (SNAPSHOT)</p>
         <ul>
+          <li>fixed wrong decimal separator in SVG exporter</li>
           <li>fixed save settings for key shortcut</li>
           <li>changed weight of KnowledgeViewPane</li>
           <li>added support for context menu button</li>
