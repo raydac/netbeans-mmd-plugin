@@ -58,6 +58,7 @@ import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
@@ -85,10 +86,7 @@ import java.io.File;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
@@ -98,6 +96,8 @@ import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispat
 
 public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEditor, MindMapListener, DropTargetListener, Committable, DataProvider, CopyProvider, CutProvider, PasteProvider {
   private static final long serialVersionUID = -8185230144865144686L;
+
+  private final UserDataHolderBase userDataHolder = new UserDataHolderBase();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapDocumentEditor.class);
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
@@ -375,12 +375,12 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   @Nullable
   @Override
   public <T> T getUserData(@Nonnull Key<T> key) {
-    return null;
+    return this.userDataHolder.getUserData(key);
   }
 
   @Override
   public <T> void putUserData(@Nonnull Key<T> key, @Nullable T t) {
-
+    this.userDataHolder.putUserData(key, t);
   }
 
   public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
