@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
   </parent>
 
   <artifactId>scia-reto-win-launcher</artifactId>
@@ -16,7 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <mvn.golang.go.version>1.18</mvn.golang.go.version>
+    <mvn.golang.go.version>1.18.1</mvn.golang.go.version>
     <mvn.golang.wrapper.version>2.3.9</mvn.golang.wrapper.version>
     <maven.test.skip>true</maven.test.skip>
     <target.name>scia-reto</target.name>

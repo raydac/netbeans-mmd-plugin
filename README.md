@@ -15,7 +15,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 
-__1.5.1 (SNAPSHOT)__
+__1.5.1 (15-apr-2022)__
 
 - ALL: fixed wrong decimal separator in SVG exporter #95
 - IJ:  fixed save settings for key shortcut #96

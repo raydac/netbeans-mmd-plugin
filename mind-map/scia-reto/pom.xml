@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
   </parent>
 
   <artifactId>scia-reto</artifactId>
@@ -31,9 +31,9 @@
     <plantuml.version>1.2022.4</plantuml.version>
     <rsyntax.version>3.2.0</rsyntax.version>
     <rsyntax.autocomplete.version>3.2.0</rsyntax.autocomplete.version>
-    <jna.version>5.10.0</jna.version>
+    <jna.version>5.11.0</jna.version>
     <jre.version>17.0.2+9</jre.version>
-    <reactor.project.version>3.4.16</reactor.project.version>
+    <reactor.project.version>3.4.17</reactor.project.version>
   </properties>
 
   <dependencies>
