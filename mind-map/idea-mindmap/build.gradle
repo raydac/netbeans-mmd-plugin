@@ -9,7 +9,7 @@ repositories {
     mavenLocal()
 }
 
-version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.5.1-SNAPSHOT"
+version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.5.2-SNAPSHOT"
 
 intellij {
     version 'IC-181.5684.4'
@@ -18,7 +18,7 @@ intellij {
     updateSinceUntilBuild false
 }
 
-def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.5.0"
+def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.5.2-SNAPSHOT"
 def mindMapCommonVersion = project.hasProperty('mm_ide_common_version') ? project.getProperty('mm_ide_common_version') : project.version
 def mindMapPanelVersion = project.hasProperty('mm_panel_version') ? project.getProperty('mm_panel_version') : project.version
 def commonsIoVersion = project.hasProperty('commonsio_version') ? project.getProperty('commonsio_version') : "2.11.0"
