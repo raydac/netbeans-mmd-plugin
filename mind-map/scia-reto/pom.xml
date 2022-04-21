@@ -32,7 +32,7 @@
     <rsyntax.version>3.2.0</rsyntax.version>
     <rsyntax.autocomplete.version>3.2.0</rsyntax.autocomplete.version>
     <jna.version>5.11.0</jna.version>
-    <jre.version>17.0.2+9</jre.version>
+    <jre.version>17.0.3+7</jre.version>
     <reactor.project.version>3.4.17</reactor.project.version>
   </properties>
 

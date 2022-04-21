@@ -1029,9 +1029,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.30740574"
-     inkscape:cx="1642.78"
-     inkscape:cy="538.37641"
+     inkscape:zoom="0.61481148"
+     inkscape:cx="1455.7308"
+     inkscape:cy="545.69573"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1085,20 +1085,20 @@
        d="M 1313.894,906.58966 A 1188.1796,562.05762 0 0 1 125.71445,1468.6473 1188.1796,562.05762 0 0 1 -1062.4651,906.58966 1188.1796,562.05762 0 0 1 125.71445,344.53204 1188.1796,562.05762 0 0 1 1313.894,906.58966 Z" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:20.6005px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.71671px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter2957)"
-       x="1075.4762"
-       y="883.93555"
+       style="font-style:normal;font-weight:normal;font-size:10.8043px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.900357px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1073.0884"
+       y="936.7616"
        id="text4205"><tspan
          sodipodi:role="line"
          id="tspan4207"
-         x="1075.4762"
-         y="883.93555"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:77.2517px;line-height:1.25;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Bold';text-align:end;text-anchor:end;fill:#000000;stroke-width:1.71671px">Free OSS Mind Map Editor (https://www.sciareto.org)</tspan><tspan
+         x="1073.0884"
+         y="936.7616"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40.5159px;line-height:1.25;font-family:'Nimbus Roman';-inkscape-font-specification:'Nimbus Roman,  Bold';text-align:end;text-anchor:end;fill:#000000;stroke-width:0.900357px">Free OSS Mind Map Editor (https://www.sciareto.org)</tspan><tspan
          sodipodi:role="line"
-         x="1075.4762"
-         y="980.50018"
+         x="1073.0884"
+         y="987.40649"
          id="tspan4209"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:77.2517px;line-height:1.25;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Bold';text-align:end;text-anchor:end;fill:#000000;stroke-width:1.71671px">© 2016-2022 Igor A. Maznitsa</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40.5159px;line-height:1.25;font-family:'Nimbus Roman';-inkscape-font-specification:'Nimbus Roman,  Bold';text-align:end;text-anchor:end;fill:#000000;stroke-width:0.900357px">© 2016-2022 Igor A. Maznitsa</tspan></text>
     <g
        id="g949"
        transform="matrix(0.89825076,0,0,0.89825076,102.11561,-21.013132)"
@@ -1157,22 +1157,22 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:260.463px;line-height:1.25;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000080;fill-opacity:1;stroke:none;stroke-width:6.51163;filter:url(#filter3185)"
-       x="903.27808"
+       x="1068.2781"
        y="771.93048"
        id="text937"><tspan
          sodipodi:role="line"
          id="tspan935"
-         x="903.27808"
+         x="1068.2781"
          y="771.93048"
-         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000080;stroke-width:6.51163">1.5.1</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000080;stroke-width:6.51163">1.5.2-S</tspan><tspan
          sodipodi:role="line"
-         x="903.27808"
+         x="1068.2781"
          y="1097.5093"
          style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000080;stroke-width:6.51163"
          id="tspan930" /><tspan
          sodipodi:role="line"
-         x="903.27808"
-         y="1423.0881"
+         x="1068.2781"
+         y="1423.088"
          style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000080;stroke-width:6.51163"
          id="tspan928" /></text>
     <g
