@@ -325,7 +325,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       public void keyReleased(@Nonnull final KeyEvent e) {
         if (lockIfNotDisposed()) {
           try {
-            if (e.getKeyCode() >= KeyEvent.VK_F1 && e.getKeyCode() <= KeyEvent.VK_F12) {
+            if ((e.getKeyCode() >= KeyEvent.VK_F1 && e.getKeyCode() <= KeyEvent.VK_F12) 
+                    || e.getKeyCode() == KeyEvent.VK_INSERT) {
               this.processTypedKeyInternal(e);
             }
 
