@@ -277,6 +277,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
   private void buttonEditKeyCodeActionPerformed(java.awt.event.ActionEvent evt) {
     if (this.buttonEditKeyCode.isSelected()) {
       this.textFieldKeyCode.requestFocus();
+      this.textFieldKeyCode.setFocusTraversalKeysEnabled(false);
     }
   }
 
@@ -298,6 +299,7 @@ public class KeyShortCutEditPanel extends JBPanel implements TableModel {
         default: {
           updateCurrentSelectedForKey(evt);
           this.buttonEditKeyCode.setSelected(false);
+          this.textFieldKeyCode.setFocusTraversalKeysEnabled(true);
           this.tableKeyShortcuts.requestFocus();
         }
         break;

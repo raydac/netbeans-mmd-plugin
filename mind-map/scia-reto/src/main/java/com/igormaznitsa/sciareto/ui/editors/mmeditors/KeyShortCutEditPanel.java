@@ -280,6 +280,7 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
   private void buttonEditKeyCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditKeyCodeActionPerformed
     if (this.buttonEditKeyCode.isSelected()){
       this.textFieldKeyCode.requestFocus();
+      this.textFieldKeyCode.setFocusTraversalKeysEnabled(false);
     }
   }//GEN-LAST:event_buttonEditKeyCodeActionPerformed
 
@@ -299,6 +300,7 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
         default:{
           updateCurrentSelectedForKey(evt);
           this.buttonEditKeyCode.setSelected(false);
+          this.textFieldKeyCode.setFocusTraversalKeysEnabled(true);
           this.tableKeyShortcuts.requestFocus();
         }break;
       }
