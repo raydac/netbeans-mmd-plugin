@@ -19,7 +19,7 @@ __1.5.2 (SNAPSHOT)__
 
 - SR:  updated PlantUML to 1.2022.5
 - ALL: fixed use Insert key as shortcut #100
-- SR:  embedded JDK version updated to 17.0.3+7
+- SR:  embedded JDK version updated to 17.0.3.1+2
 
 __1.5.1 (15-apr-2022)__
 
