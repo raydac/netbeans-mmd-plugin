@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.ide.commons;
 
 import java.awt.datatransfer.DataFlavor;
@@ -40,7 +41,9 @@ public final class DnDUtils {
   private static final String MIME_MOZ_URL = "text/x-moz-url";
   private static final String MIME_TEXT_HTML = "text/html";
 
-  private static final Pattern HTML_LINK_PATTERN = Pattern.compile("^\\s*\\<\\s*a\\s[^>]*?href\\s*=\\s*\\\"(.*?)\\\"[^>]*?\\>.*?\\<\\s*\\/\\s*a\\s*\\>\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+  private static final Pattern HTML_LINK_PATTERN = Pattern.compile(
+      "^\\s*\\<\\s*a\\s[^>]*?href\\s*=\\s*\\\"(.*?)\\\"[^>]*?\\>.*?\\<\\s*\\/\\s*a\\s*\\>\\s*$",
+      Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
   private DnDUtils() {
   }
@@ -48,7 +51,9 @@ public final class DnDUtils {
   public static boolean isFileOrLinkOrText(@Nonnull final DropTargetDragEvent dtde) {
     boolean result = false;
     for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
-      if (flavor.isFlavorJavaFileListType() || flavor.isFlavorTextType() || flavor.isMimeTypeEqual(MIME_MOZ_URL) || flavor.isMimeTypeEqual(MIME_TEXT_PLAIN) || flavor.isMimeTypeEqual(MIME_TEXT_HTML)) {
+      if (flavor.isFlavorJavaFileListType() || flavor.isFlavorTextType() ||
+          flavor.isMimeTypeEqual(MIME_MOZ_URL) || flavor.isMimeTypeEqual(MIME_TEXT_PLAIN) ||
+          flavor.isMimeTypeEqual(MIME_TEXT_HTML)) {
         result = true;
         break;
       }
@@ -68,7 +73,10 @@ public final class DnDUtils {
   }
 
   @Nullable
-  public static String extractHtmlLink(final boolean removeZeroChars, @Nonnull final String text) {
+  public static String extractHtmlLink(final boolean removeZeroChars, @Nullable final String text) {
+    if (text == null) {
+      return null;
+    }
     final String textToProcess;
     if (removeZeroChars) {
       textToProcess = removeZeroChars(text);
@@ -91,18 +99,22 @@ public final class DnDUtils {
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
       if (df.getRepresentationClass() == String.class) {
         if (foundHtmlLink == null && df.isMimeTypeEqual(MIME_TEXT_HTML)) {
-          final String link = extractHtmlLink(true, (String) dtde.getTransferable().getTransferData(df));
+          final String link =
+              extractHtmlLink(true, (String) dtde.getTransferable().getTransferData(df));
           if (link != null) {
             foundHtmlLink = link;
           }
         }
-      } else if (df.getRepresentationClass() == InputStream.class && df.isMimeTypeEqual(MIME_MOZ_URL)) {
+      } else if (df.getRepresentationClass() == InputStream.class &&
+          df.isMimeTypeEqual(MIME_MOZ_URL)) {
         if (foundMozLink == null) {
           final InputStream in = ((InputStream) dtde.getTransferable().getTransferData(df));
-          final StringWriter string = new StringWriter();
-          IOUtils.copy(in, string, Charset.defaultCharset());
-          IOUtils.closeQuietly(in);
-          foundMozLink = removeZeroChars(string.toString().split("\\n")[0]).trim();
+          if (in != null) {
+            final StringWriter string = new StringWriter();
+            IOUtils.copy(in, string, Charset.defaultCharset());
+            IOUtils.closeQuietly(in);
+            foundMozLink = removeZeroChars(string.toString().split("\\n")[0]).trim();
+          }
         }
       }
     }
@@ -110,11 +122,15 @@ public final class DnDUtils {
   }
 
   private static final Pattern EMPTY_OR_WHITE = Pattern.compile("[\\s\\n]");
-  
+
   public static boolean isUriString(@Nullable final String str) {
-    if (str == null) return false;
+    if (str == null) {
+      return false;
+    }
     try {
-      if (EMPTY_OR_WHITE.matcher(str).find()) return false;
+      if (EMPTY_OR_WHITE.matcher(str).find()) {
+        return false;
+      }
       final URI uri = new URI(str);
       return uri.isAbsolute();
     } catch (URISyntaxException ex) {
@@ -127,7 +143,7 @@ public final class DnDUtils {
     String result;
     try {
       result = (String) dtde.getTransferable().getTransferData(DataFlavor.stringFlavor);
-      result = removeZeroChars(result);
+      result = result == null ? null : removeZeroChars(result);
     } catch (NotSerializableException | UnsupportedFlavorException ex) {
       result = null;
     }
