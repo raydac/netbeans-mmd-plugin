@@ -17,9 +17,6 @@
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
-import com.igormaznitsa.ideamindmap.filetype.MindMapFileType;
-import com.igormaznitsa.ideamindmap.lang.MMDFile;
-import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile;
 import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.NoteEditorData;
@@ -55,12 +52,8 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.awt.RelativePoint;
-import com.intellij.util.indexing.FileBasedIndex;
 import com.intellij.util.ui.UIUtil;
 import java.awt.Color;
 import java.awt.Component;
@@ -75,9 +68,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
@@ -108,14 +98,22 @@ public final class IdeaUtils {
   }
 
   @Nullable
-  public static VirtualFile findMavenProjectRootForFile(@Nonnull final Project mainProject, @Nonnull final VirtualFile targetFile) {
+  public static VirtualFile findMavenProjectRootForFile(@Nonnull final Project mainProject,
+                                                        @Nonnull final VirtualFile targetFile) {
     VirtualFile result = null;
     try {
-      final Class<?> mavenProjectsManagerClass = Class.forName("org.jetbrains.idea.maven.project.MavenProjectsManager");
-      final Object mavenProjectsManagerInstance = mavenProjectsManagerClass.getMethod("getInstance", Project.class).invoke(null, mainProject);
+      final Class<?> mavenProjectsManagerClass =
+          Class.forName("org.jetbrains.idea.maven.project.MavenProjectsManager");
+      final Object mavenProjectsManagerInstance =
+          mavenProjectsManagerClass.getMethod("getInstance", Project.class)
+              .invoke(null, mainProject);
 
-      final Method methodGetDirectoryFile = Class.forName("org.jetbrains.idea.maven.project.MavenProject").getMethod("getDirectoryFile");
-      final List<?> listOfRootMaveProjects = (List<?>) mavenProjectsManagerClass.getMethod("getRootProjects").invoke(mavenProjectsManagerInstance);
+      final Method methodGetDirectoryFile =
+          Class.forName("org.jetbrains.idea.maven.project.MavenProject")
+              .getMethod("getDirectoryFile");
+      final List<?> listOfRootMaveProjects =
+          (List<?>) mavenProjectsManagerClass.getMethod("getRootProjects")
+              .invoke(mavenProjectsManagerInstance);
 
       for (final Object mavenProject : listOfRootMaveProjects) {
         final VirtualFile directory = (VirtualFile) methodGetDirectoryFile.invoke(mavenProject);
@@ -125,7 +123,9 @@ public final class IdeaUtils {
         }
       }
     } catch (ClassNotFoundException ex) {
-      LOGGER.info("can't find org...maven.project.MavenProjectsManager or org...maven.project.MavenProject in findMavenProjectRootForFile : " + ex.getMessage());
+      LOGGER.info(
+          "can't find org...maven.project.MavenProjectsManager or org...maven.project.MavenProject in findMavenProjectRootForFile : " +
+              ex.getMessage());
     } catch (NoSuchMethodException ex) {
       LOGGER.error("NoSuchMethodException in findMavenProjectRootForFile", ex);
       throw new Error("NoSuchMethodException in findMavenProjectRootForFile", ex);
@@ -170,19 +170,25 @@ public final class IdeaUtils {
   }
 
   public static boolean submitTransactionLater(@Nonnull final Runnable runnable) {
-    final Object transactionGuardInstance = callGetInstance("com.intellij.openapi.application.TransactionGuard");
+    final Object transactionGuardInstance =
+        callGetInstance("com.intellij.openapi.application.TransactionGuard");
 
     boolean result = false;
     if (transactionGuardInstance != null) {
-      result = safeInvokeMethodNoResult(transactionGuardInstance, "submitTransactionLater", new Class<?>[] {Disposable.class, Runnable.class}, new Object[] {(Disposable) () -> {
-      }, runnable});
+      result = safeInvokeMethodNoResult(transactionGuardInstance, "submitTransactionLater",
+          new Class<?>[] {Disposable.class, Runnable.class}, new Object[] {(Disposable) () -> {
+          }, runnable});
     }
 
     return result;
   }
 
-  public static void executeWriteAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
-    final Runnable wrapper = () -> CommandProcessor.getInstance().executeCommand(project, () -> ApplicationManager.getApplication().runWriteAction(action), "MMD.executeWriteAction", null, document);
+  public static void executeWriteAction(@Nullable final Project project,
+                                        @Nullable final Document document,
+                                        @Nonnull final Runnable action) {
+    final Runnable wrapper = () -> CommandProcessor.getInstance()
+        .executeCommand(project, () -> ApplicationManager.getApplication().runWriteAction(action),
+            "MMD.executeWriteAction", null, document);
 
     if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(wrapper::run)) {
       LOGGER.info("Using TransactionGuard for write action");
@@ -192,8 +198,12 @@ public final class IdeaUtils {
     }
   }
 
-  public static void executeReadAction(@Nullable final Project project, @Nullable final Document document, @Nonnull final Runnable action) {
-    final Runnable wrapper = () -> CommandProcessor.getInstance().executeCommand(project, () -> ApplicationManager.getApplication().runReadAction(action), "MMD>executeReadAction", null, document);
+  public static void executeReadAction(@Nullable final Project project,
+                                       @Nullable final Document document,
+                                       @Nonnull final Runnable action) {
+    final Runnable wrapper = () -> CommandProcessor.getInstance()
+        .executeCommand(project, () -> ApplicationManager.getApplication().runReadAction(action),
+            "MMD>executeReadAction", null, document);
 
     if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(wrapper::run)) {
       LOGGER.info("Using TransactionGuard for read action");
@@ -205,29 +215,43 @@ public final class IdeaUtils {
 
   @SuppressWarnings("unchecked")
   @Nullable
-  public static <T> T safeInvokeMethodForResult(@Nonnull final Object instance, @Nonnull final T defaultResult, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object[] arguments) {
+  public static <T> T safeInvokeMethodForResult(@Nonnull final Object instance,
+                                                @Nonnull final T defaultResult,
+                                                @Nonnull final String methodName,
+                                                @Nonnull @MustNotContainNull
+                                                final Class<?>[] argumentClasses,
+                                                @Nonnull @MustNotContainNull
+                                                final Object[] arguments) {
     final Method method;
     try {
       method = instance.getClass().getMethod(methodName, argumentClasses);
     } catch (NoSuchMethodException ex) {
-      LOGGER.info("Can't find method '" + methodName + "' in class " + instance.getClass().getName());
+      LOGGER.info(
+          "Can't find method '" + methodName + "' in class " + instance.getClass().getName());
       return defaultResult;
     }
 
     try {
       return (T) method.invoke(instance, arguments);
     } catch (Exception ex) {
-      LOGGER.error("Error during call " + instance.getClass().getName() + "." + methodName + ", default result will be returned");
+      LOGGER.error("Error during call " + instance.getClass().getName() + "." + methodName +
+          ", default result will be returned");
     }
     return defaultResult;
   }
 
-  public static boolean safeInvokeMethodNoResult(@Nonnull final Object instance, @Nonnull final String methodName, @Nonnull @MustNotContainNull final Class<?>[] argumentClasses, @Nonnull @MustNotContainNull final Object[] arguments) {
+  public static boolean safeInvokeMethodNoResult(@Nonnull final Object instance,
+                                                 @Nonnull final String methodName,
+                                                 @Nonnull @MustNotContainNull
+                                                 final Class<?>[] argumentClasses,
+                                                 @Nonnull @MustNotContainNull
+                                                 final Object[] arguments) {
     final Method method;
     try {
       method = instance.getClass().getMethod(methodName, argumentClasses);
     } catch (NoSuchMethodException ex) {
-      LOGGER.info("Can't find method '" + methodName + "' in class " + instance.getClass().getName());
+      LOGGER.info(
+          "Can't find method '" + methodName + "' in class " + instance.getClass().getName());
       return false;
     }
 
@@ -241,21 +265,24 @@ public final class IdeaUtils {
   }
 
   @Nullable
-  public static VirtualFile findKnowledgeFolderForModule(@Nullable final Module module, final boolean createIfMissing) {
+  public static VirtualFile findKnowledgeFolderForModule(@Nullable final Module module,
+                                                         final boolean createIfMissing) {
     final VirtualFile rootFolder = IdeaUtils.findPotentialRootFolderForModule(module);
     final AtomicReference<VirtualFile> result = new AtomicReference<>();
     if (rootFolder != null) {
       result.set(rootFolder.findChild(PROJECT_KNOWLEDGE_FOLDER_NAME));
       if (result.get() == null || !result.get().isDirectory()) {
         if (createIfMissing) {
-          CommandProcessor.getInstance().executeCommand(module.getProject(), () -> ApplicationManager.getApplication().runWriteAction(() -> {
-            try {
-              result.set(VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
-              LOGGER.info("Created knowledge folder for " + module);
-            } catch (IOException ex) {
-              LOGGER.error("Can't create knowledge folder for " + module, ex);
-            }
-          }), null, null);
+          CommandProcessor.getInstance().executeCommand(module.getProject(),
+              () -> ApplicationManager.getApplication().runWriteAction(() -> {
+                try {
+                  result.set(
+                      VfsUtil.createDirectoryIfMissing(rootFolder, PROJECT_KNOWLEDGE_FOLDER_NAME));
+                  LOGGER.info("Created knowledge folder for " + module);
+                } catch (IOException ex) {
+                  LOGGER.error("Can't create knowledge folder for " + module, ex);
+                }
+              }), null, null);
         } else {
           result.set(null);
         }
@@ -265,7 +292,8 @@ public final class IdeaUtils {
   }
 
   @Nullable
-  public static Module findModuleForFile(@Nullable final Project project, @Nullable final VirtualFile file) {
+  public static Module findModuleForFile(@Nullable final Project project,
+                                         @Nullable final VirtualFile file) {
     return project == null || file == null ? null : ModuleUtil.findModuleForFile(file, project);
   }
 
@@ -279,7 +307,8 @@ public final class IdeaUtils {
     return true;
   }
 
-  public static void openInSystemViewer(@Nonnull final DialogProvider dialogProvider, @Nullable final VirtualFile theFile) {
+  public static void openInSystemViewer(@Nonnull final DialogProvider dialogProvider,
+                                        @Nullable final VirtualFile theFile) {
     final File file = vfile2iofile(theFile);
 
     if (file == null) {
@@ -307,7 +336,8 @@ public final class IdeaUtils {
         }
       };
       final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
-      thr.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e));
+      thr.setUncaughtExceptionHandler((t, e) -> LOGGER.error(
+          "Detected uncaught exception in openInSystemViewer() for file " + file, e));
 
       thr.setDaemon(true);
       thr.start();
@@ -318,7 +348,8 @@ public final class IdeaUtils {
     return UIUtil.isUnderDarcula();
   }
 
-  public static File chooseFile(final Component parent, final boolean filesOnly, final String title, final File selectedFile, final FileFilter filter) {
+  public static File chooseFile(final Component parent, final boolean filesOnly, final String title,
+                                final File selectedFile, final FileFilter filter) {
     final JFileChooser chooser = new JFileChooser(selectedFile);
 
     chooser.setApproveButtonText("Select");
@@ -342,26 +373,35 @@ public final class IdeaUtils {
     }
   }
 
-  public static NoteEditorData editText(final Project project, final DialogProvider dialogProvider, final String title, final NoteEditorData data) {
+  public static NoteEditorData editText(final Project project, final DialogProvider dialogProvider,
+                                        final String title, final NoteEditorData data) {
     final PlainTextEditor editor = new PlainTextEditor(project, data);
     editor.setPreferredSize(new Dimension(550, 450));
 
-    Utils.catchEscInParentDialog(editor, dialogProvider, d -> editor.isChanged(), x -> editor.cancel());
+    Utils.catchEscInParentDialog(editor, dialogProvider, d -> editor.isChanged(),
+        x -> editor.cancel());
 
-    final DialogComponent dialog = new DialogComponent(project, title, editor, editor.getEditor(), false);
+    final DialogComponent dialog =
+        new DialogComponent(project, title, editor, editor.getEditor(), false);
 
     return dialog.showAndGet() ? editor.getData() : null;
   }
 
-  public static boolean plainMessageOkCancel(final Project project, final String title, final JComponent centerComponent) {
+  public static boolean plainMessageOkCancel(final Project project, final String title,
+                                             final JComponent centerComponent) {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
-        centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true);
+        centerComponent instanceof HasPreferredFocusComponent ?
+            ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() :
+            centerComponent, true);
     return dialog.showAndGet();
   }
 
-  public static void plainMessageClose(final Project project, final String title, final JComponent centerComponent) {
+  public static void plainMessageClose(final Project project, final String title,
+                                       final JComponent centerComponent) {
     final DialogComponent dialog = new DialogComponent(project, title, centerComponent,
-        centerComponent instanceof HasPreferredFocusComponent ? ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() : centerComponent, true) {
+        centerComponent instanceof HasPreferredFocusComponent ?
+            ((HasPreferredFocusComponent) centerComponent).getComponentPreferredForFocus() :
+            centerComponent, true) {
       @Nonnull
       @Override
       protected Action[] createActions() {
@@ -382,7 +422,8 @@ public final class IdeaUtils {
     return vfFile == null ? null : VfsUtilCore.virtualToIoFile(vfFile);
   }
 
-  public static Color extractCommonColorForColorChooserButton(final String colorAttribute, final Topic[] topics) {
+  public static Color extractCommonColorForColorChooserButton(final String colorAttribute,
+                                                              final Topic[] topics) {
     Color result = null;
     for (final Topic t : topics) {
       final Color color = html2color(t.getAttribute(colorAttribute), false);
@@ -409,8 +450,12 @@ public final class IdeaUtils {
     return result;
   }
 
-  public static FileEditPanel.DataContainer editFilePath(final MindMapDocumentEditor editor, final String title, final File projectFolder, final FileEditPanel.DataContainer data) {
-    final FileEditPanel filePathEditor = new FileEditPanel(editor.getDialogProvider(), projectFolder, data);
+  public static FileEditPanel.DataContainer editFilePath(final MindMapDocumentEditor editor,
+                                                         final String title,
+                                                         final File projectFolder,
+                                                         final FileEditPanel.DataContainer data) {
+    final FileEditPanel filePathEditor =
+        new FileEditPanel(editor.getDialogProvider(), projectFolder, data);
 
     filePathEditor.doLayout();
     filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
@@ -420,7 +465,9 @@ public final class IdeaUtils {
       if (result.isValid()) {
         return result;
       } else {
-        Messages.showErrorDialog(editor.getMindMapPanel(), String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), result.getPathWithLine().getPath()), "Error");
+        Messages.showErrorDialog(editor.getMindMapPanel(),
+            String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                result.getPathWithLine().getPath()), "Error");
         return null;
       }
     } else {
@@ -428,8 +475,10 @@ public final class IdeaUtils {
     }
   }
 
-  public static MMapURI editURI(final MindMapDocumentEditor editor, final String title, final MMapURI uri) {
-    final UriEditPanel uriEditor = new UriEditPanel(uri == null ? null : uri.asString(false, false));
+  public static MMapURI editURI(final MindMapDocumentEditor editor, final String title,
+                                final MMapURI uri) {
+    final UriEditPanel uriEditor =
+        new UriEditPanel(uri == null ? null : uri.asString(false, false));
 
     uriEditor.doLayout();
     uriEditor.setPreferredSize(new Dimension(450, uriEditor.getPreferredSize().height));
@@ -454,7 +503,8 @@ public final class IdeaUtils {
     }
   }
 
-  public static boolean isInProjectContentRoot(@Nonnull final Project project, @Nonnull final VirtualFile file) {
+  public static boolean isInProjectContentRoot(@Nonnull final Project project,
+                                               @Nonnull final VirtualFile file) {
     for (final VirtualFile root : ProjectRootManager.getInstance(project).getContentRoots()) {
       if (VfsUtil.isAncestor(root, file, false)) {
         return true;
@@ -466,12 +516,14 @@ public final class IdeaUtils {
   public static void showPopup(@Nonnull final String text, @Nonnull final MessageType type) {
     SwingUtils.safeSwing(() -> {
       final JBPopupFactory factory = JBPopupFactory.getInstance();
-      final BalloonBuilder builder = factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml(text), type, null);
+      final BalloonBuilder builder =
+          factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml(text), type, null);
       final Balloon balloon = builder.createBalloon();
       balloon.setAnimationEnabled(true);
       final Component frame = WindowManager.getInstance().findVisibleFrame();
       if (frame != null) {
-        balloon.show(new RelativePoint(frame, new Point(frame.getWidth(), frame.getHeight())), Balloon.Position.below);
+        balloon.show(new RelativePoint(frame, new Point(frame.getWidth(), frame.getHeight())),
+            Balloon.Position.below);
       }
     });
   }
@@ -492,22 +544,6 @@ public final class IdeaUtils {
     return findProjectFolder(element.getProject());
   }
 
-  public static List<PsiExtraFile> findPsiFileLinksForProjectScope(final Project project) {
-    List<PsiExtraFile> result = new ArrayList<>();
-    Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MindMapFileType.INSTANCE,
-        GlobalSearchScope.allScope(project));
-    for (VirtualFile virtualFile : virtualFiles) {
-      final MMDFile simpleFile = (MMDFile) PsiManager.getInstance(project).findFile(virtualFile);
-      if (simpleFile != null) {
-        final PsiExtraFile[] fileLinks = PsiTreeUtil.getChildrenOfType(simpleFile, PsiExtraFile.class);
-        if (fileLinks != null) {
-          Collections.addAll(result, fileLinks);
-        }
-      }
-    }
-    return result;
-  }
-
   @Nonnull
   public static GlobalSearchScope moduleScope(@Nonnull Project project, @Nullable Module module) {
     return module != null ? moduleScope(module) : GlobalSearchScope.projectScope(project);
@@ -520,14 +556,17 @@ public final class IdeaUtils {
 
   @Nonnull
   public static GlobalSearchScope moduleScope(@Nonnull Module module) {
-    return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module).uniteWith(module.getModuleContentWithDependenciesScope());
+    return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module)
+        .uniteWith(module.getModuleContentWithDependenciesScope());
   }
 
   private static class DialogComponent extends DialogWrapper {
     private final JComponent component;
     private final JComponent prefferedComponent;
 
-    public DialogComponent(final Project project, final String title, final JComponent component, final JComponent prefferedComponent, final boolean defaultButtonEnabled) {
+    public DialogComponent(final Project project, final String title, final JComponent component,
+                           final JComponent prefferedComponent,
+                           final boolean defaultButtonEnabled) {
       super(project, false, IdeModalityType.PROJECT);
       this.component = component;
       this.prefferedComponent = prefferedComponent == null ? component : prefferedComponent;
