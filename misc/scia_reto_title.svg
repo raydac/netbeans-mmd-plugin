@@ -2,9 +2,9 @@
 <svg
    inkscape:export-ydpi="27.860001"
    inkscape:export-xdpi="27.860001"
-   inkscape:export-filename="/home/igorm/Projects/Pet/netbeans-mmd-plugin/mind-map/scia-reto/src/main/resources/icons/splash.png"
+   inkscape:export-filename="../mind-map/scia-reto/src/main/resources/icons/splash.png"
    sodipodi:docname="scia_reto_title.svg"
-   inkscape:version="1.1.2 (1:1.1+202202050950+0a00cf5339)"
+   inkscape:version="1.2 (1:1.2+202206011327+fc4e4096c5)"
    version="1.1"
    id="svg4155"
    viewBox="0 0 1938.1429 1103.8572"
@@ -136,7 +136,8 @@
          in2="result5"
          operator="arithmetic"
          result="result6"
-         id="feComposite5029" />
+         id="feComposite5029"
+         k4="0" />
       <feComposite
          operator="in"
          in="result6"
@@ -249,7 +250,9 @@
          k3="1.2"
          in="fbSourceGraphicAlpha"
          operator="arithmetic"
-         result="result5" />
+         result="result5"
+         k2="0"
+         k4="0" />
       <feBlend
          id="feBlend4429"
          in2="result5"
@@ -288,7 +291,8 @@
          result="result4"
          operator="arithmetic"
          k2="2.5"
-         k3="3.5" />
+         k3="3.5"
+         k4="0" />
       <feBlend
          id="feBlend4441"
          in2="result4"
@@ -346,7 +350,8 @@
          in2="result5"
          operator="arithmetic"
          result="result6"
-         id="feComposite3589" />
+         id="feComposite3589"
+         k4="0" />
       <feComposite
          operator="in"
          in="result6"
@@ -427,9 +432,9 @@
        inkscape:label="Drop Shadow"
        id="filter1787"
        x="-0.026715714"
-       y="-0.028248456"
+       y="-0.02810362"
        width="1.0656416"
-       height="1.0692859">
+       height="1.0638034">
       <feFlood
          flood-opacity="0.498039"
          flood-color="rgb(0,0,0)"
@@ -524,7 +529,8 @@
          operator="arithmetic"
          in="result1"
          in2="result4"
-         id="feComposite1595" />
+         id="feComposite1595"
+         k4="0" />
       <feComposite
          in2="SourceGraphic"
          operator="in"
@@ -596,7 +602,8 @@
          operator="arithmetic"
          in="result1"
          in2="result4"
-         id="feComposite1167" />
+         id="feComposite1167"
+         k4="0" />
       <feComposite
          in2="SourceGraphic"
          operator="in"
@@ -856,10 +863,10 @@
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
        id="filter3185"
-       x="-0.014280387"
-       y="-0.037860517"
-       width="1.0285608"
-       height="1.075721">
+       x="-0.0080200973"
+       y="-0.034505788"
+       width="1.0160402"
+       height="1.0690116">
       <feFlood
          flood-opacity="0.498039"
          flood-color="rgb(0,0,0)"
@@ -942,7 +949,9 @@
          k2="0.5"
          operator="arithmetic"
          result="result4"
-         id="feComposite1586" />
+         id="feComposite1586"
+         k1="0"
+         k4="0" />
       <feComposite
          operator="in"
          result="result2"
@@ -998,7 +1007,10 @@
          result="result5"
          operator="arithmetic"
          k1="1.7"
-         id="feComposite6612" />
+         id="feComposite6612"
+         k2="0"
+         k3="0"
+         k4="0" />
       <feBlend
          in="result5"
          in2="result3"
@@ -1030,8 +1042,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.61481148"
-     inkscape:cx="1455.7308"
-     inkscape:cy="545.69573"
+     inkscape:cx="1298.7721"
+     inkscape:cy="547.32225"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1047,11 +1059,14 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:document-rotation="0"
-     inkscape:pagecheckerboard="0">
+     inkscape:pagecheckerboard="0"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1">
     <sodipodi:guide
        position="1054.5992,856.60938"
        orientation="1,0"
-       id="guide4472" />
+       id="guide4472"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata4160">
@@ -1086,17 +1101,17 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.8043px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.900357px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="1073.0884"
-       y="936.7616"
+       x="1061.8384"
+       y="910.5116"
        id="text4205"><tspan
          sodipodi:role="line"
          id="tspan4207"
-         x="1073.0884"
-         y="936.7616"
+         x="1061.8384"
+         y="910.5116"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40.5159px;line-height:1.25;font-family:'Nimbus Roman';-inkscape-font-specification:'Nimbus Roman,  Bold';text-align:end;text-anchor:end;fill:#000000;stroke-width:0.900357px">Free OSS Mind Map Editor (https://www.sciareto.org)</tspan><tspan
          sodipodi:role="line"
-         x="1073.0884"
-         y="987.40649"
+         x="1061.8384"
+         y="961.15649"
          id="tspan4209"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40.5159px;line-height:1.25;font-family:'Nimbus Roman';-inkscape-font-specification:'Nimbus Roman,  Bold';text-align:end;text-anchor:end;fill:#000000;stroke-width:0.900357px">© 2016-2022 Igor A. Maznitsa</tspan></text>
     <g
