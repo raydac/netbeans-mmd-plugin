@@ -39,6 +39,7 @@
       <includes>
         <include>*/**</include>
       </includes>
+      <filtered>false</filtered>
     </fileSet>
   </fileSets>
   <files>
