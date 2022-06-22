@@ -17,7 +17,7 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 __1.5.2 (SNAPSHOT)__
 
-- SR:  updated PlantUML to 1.2022.5
+- SR:  updated PlantUML to 1.2022.6
 - ALL: fixed use Insert key as shortcut #100
 - SR:  embedded JDK version updated to 17.0.3.1+2
 
