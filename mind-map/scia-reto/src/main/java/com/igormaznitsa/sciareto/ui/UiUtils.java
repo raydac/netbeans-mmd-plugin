@@ -37,6 +37,7 @@ import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.UriEditPanel;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -45,6 +46,7 @@ import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -52,6 +54,7 @@ import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.HierarchyEvent;
@@ -136,6 +139,21 @@ public final class UiUtils {
       return this.worker;
     }
   };
+
+  @Nonnull
+  public static Image makeWithAlpha(@Nonnull final Image base, final float alpha) {
+    final BufferedImage result =
+        new BufferedImage(base.getWidth(null), base.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+    final Graphics2D gfx = result.createGraphics();
+    try {
+      gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, alpha));
+      gfx.drawImage(base, 0, 0, null);
+    } finally {
+      gfx.dispose();
+    }
+    return result;
+  }
 
   public static double findDeviceScale(@Nullable final GraphicsDevice device) {
     final AffineTransform transform =

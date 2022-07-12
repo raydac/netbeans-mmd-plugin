@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.tabs;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -50,11 +51,22 @@ public final class TabTitle extends JPanel {
 
   private boolean visited;
 
-  private static final Icon CloseTabIcon = new ImageIcon(UiUtils.loadIcon("cancel.png")); //NOI18N
+  private static final Icon CloseTabIconTransparent;
+  private static final Icon CloseTabIcon;
+
+  static {
+    final Image image = UiUtils.loadIcon("cancel.png"); //NOI18N
+    if (image == null) {
+      throw new NullPointerException("Can't load image from resource");
+    }
+    CloseTabIcon = new ImageIcon(image);
+    CloseTabIconTransparent = new ImageIcon(UiUtils.makeWithAlpha(image, 0.4f));
+  }
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TabTitle.class);
-  
-  public TabTitle(@Nonnull final Context context, @Nonnull final TabProvider parent, @Nullable final File associatedFile) {
+
+  public TabTitle(@Nonnull final Context context, @Nonnull final TabProvider parent,
+                  @Nullable final File associatedFile) {
     super(new GridBagLayout());
     this.parent = parent;
     this.context = context;
@@ -89,9 +101,7 @@ public final class TabTitle extends JPanel {
 
     final Icon uiCloseIcon = UIManager.getIcon("InternalFrameTitlePane.closeIcon"); //NOI18N
 
-    this.closeButton = new JButton(uiCloseIcon == null ? CloseTabIcon : uiCloseIcon) {
-      private static final long serialVersionUID = -8005282815756047979L;
-
+    this.closeButton = new JButton() {
       @Override
       public String getToolTipText() {
         return theInstance.getToolTipText();
@@ -102,6 +112,15 @@ public final class TabTitle extends JPanel {
         return false;
       }
     };
+
+    if (uiCloseIcon == null) {
+      this.closeButton.setIcon(CloseTabIconTransparent);
+      this.closeButton.setRolloverIcon(CloseTabIcon);
+      this.closeButton.setPressedIcon(CloseTabIcon);
+    } else {
+      this.closeButton.setIcon(uiCloseIcon);
+    }
+
     this.closeButton.setToolTipText("Close tab");
     this.closeButton.setBorder(null);
     this.closeButton.setContentAreaFilled(false);
@@ -176,7 +195,8 @@ public final class TabTitle extends JPanel {
   public boolean belongFolderOrSame(@Nonnull final File folder) {
     boolean result = false;
     if (this.associatedFile != null) {
-      return folder.equals(this.associatedFile) || Paths.toPath(this.associatedFile).startsWith(Paths.toPath(folder));
+      return folder.equals(this.associatedFile) ||
+          Paths.toPath(this.associatedFile).startsWith(Paths.toPath(folder));
     }
     return result;
   }
@@ -188,7 +208,9 @@ public final class TabTitle extends JPanel {
 
   public void doSafeClose() {
     final boolean close = !this.changed
-        || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), "Non saved file", "Close unsaved document '" + makeName() + "\'?");
+        || DialogProviderManager.getInstance().getDialogProvider()
+        .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), "Non saved file",
+            "Close unsaved document '" + makeName() + "\'?");
     if (close) {
       this.context.closeTab(this);
     }
@@ -220,17 +242,21 @@ public final class TabTitle extends JPanel {
   public boolean reload(final boolean askUserConfirmationIfChanged) {
     boolean reloaded = false;
 
-    if (askUserConfirmationIfChanged && isChanged() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(), "File changed", String.format("File '%s' is changed, reload?", (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
+    if (askUserConfirmationIfChanged && isChanged() &&
+        !DialogProviderManager.getInstance().getDialogProvider()
+            .msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(), "File changed",
+                String.format("File '%s' is changed, reload?",
+                    (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
       return reloaded;
     }
 
     final File file = getAssociatedFile();
-    if (file != null && file.isFile()){
-      try{
+    if (file != null && file.isFile()) {
+      try {
         this.parent.loadContent(file);
         reloaded = true;
-      }catch(IOException ex){
-        LOGGER.error("Can't reload file :"+file, ex); //NOI18N
+      } catch (IOException ex) {
+        LOGGER.error("Can't reload file :" + file, ex); //NOI18N
       }
     }
     return reloaded;
@@ -251,7 +277,9 @@ public final class TabTitle extends JPanel {
     Utils.safeSwingCall(new Runnable() {
       @Override
       public void run() {
-        titleLabel.setText("<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml3(makeName()) + (changed ? "</u></b>" : "") + "</html>"); //NOI18N
+        titleLabel.setText(
+            "<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml3(makeName()) +
+                (changed ? "</u></b>" : "") + "</html>"); //NOI18N
         revalidate();
       }
     });
