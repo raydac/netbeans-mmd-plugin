@@ -87,7 +87,6 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml3;
 
 public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
-  protected static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
   protected static final Icon ICON_WARNING = new ImageIcon(UiUtils.loadIcon("warning16.png"));
   protected static final Icon ICON_INFO = new ImageIcon(UiUtils.loadIcon("info16.png"));
 
@@ -97,7 +96,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   private static final int DELAY_AUTOREFRESH_SECONDS = 5;
   private final JLabel progressLabel = new JLabel(BigLoaderIconAnimationConroller.LOADING);
 
-  private volatile LastRendered lastSuccessfulyRenderedText = null;
+  private volatile LastRendered lastSuccessfullyRenderedText = null;
 
   private File lastExportedFile = null;
   protected final ScalableRsyntaxTextArea editor;
@@ -465,7 +464,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
         .filter(x -> !x.isEmpty() && this.autoRefresh.isSelected())
         .subscribe(x -> SwingUtilities.invokeLater(() -> {
           final String txt = editor.getText();
-          final LastRendered lastRendered = this.lastSuccessfulyRenderedText;
+          final LastRendered lastRendered = this.lastSuccessfullyRenderedText;
           if ((lastRendered == null || !txt.equals(lastRendered.editorText)) &&
               isSyntaxCorrect(txt)) {
             startRenderScript();
@@ -625,7 +624,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     final Map attributes = font.getAttributes();
     attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
     result.setFont(font.deriveFont(attributes));
-    result.setForeground(UiUtils.DARK_THEME ? Color.YELLOW : Color.BLUE);
+    result.setForeground(UiUtils.figureOutThatDarkTheme() ? Color.YELLOW.darker() : Color.BLUE.brighter());
     result.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     result.setToolTipText(toolTip);
     result.addMouseListener(new MouseAdapter() {
@@ -1006,7 +1005,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   protected void resetLastRendered() {
-    this.lastSuccessfulyRenderedText = null;
+    this.lastSuccessfullyRenderedText = null;
   }
 
   protected boolean isCustomRendering() {
@@ -1049,7 +1048,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
       final LastRendered currentText = new LastRendered(imageIndex, editorText);
 
-      if (!currentText.equals(this.lastSuccessfulyRenderedText)) {
+      if (!currentText.equals(this.lastSuccessfullyRenderedText)) {
         if (this.labelPageNumber != null) {
           updatePageNumberInfo(currentText.page, totalPages);
         }
@@ -1107,7 +1106,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
               final Exception error = detectedError.get();
               if (error == null) {
-                lastSuccessfulyRenderedText = currentText;
+                lastSuccessfullyRenderedText = currentText;
                 imageComponent.setImage(generatedImage.get(), false);
                 renderedScrollPane.revalidate();
                 renderedPanel.remove(progressLabel);
@@ -1126,7 +1125,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             });
 
           } finally {
-            this.lastSuccessfulyRenderedText = null;
+            this.lastSuccessfullyRenderedText = null;
             BigLoaderIconAnimationConroller.getInstance().unregisterLabel(progressLabel);
           }
         });

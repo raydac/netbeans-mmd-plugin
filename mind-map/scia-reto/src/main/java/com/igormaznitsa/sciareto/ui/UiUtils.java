@@ -92,7 +92,6 @@ public final class UiUtils {
       java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
   public static final MMapURI EMPTY_URI;
-  public static final boolean DARK_THEME;
 
   static {
     try {
@@ -100,11 +99,14 @@ public final class UiUtils {
     } catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
     }
+  }
+
+  public static boolean figureOutThatDarkTheme(){
     final Color color = UIManager.getColor("Panel.background"); //NOI18N
     if (color == null) {
-      DARK_THEME = false;
+      return false;
     } else {
-      DARK_THEME = calculateBrightness(color) < 150;
+      return calculateBrightness(color) < 150;
     }
   }
 

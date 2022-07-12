@@ -24,6 +24,7 @@ import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import java.awt.Font;
 import java.awt.event.MouseWheelEvent;
 import javax.annotation.Nonnull;
+import javax.swing.UIManager;
 import javax.swing.event.UndoableEditEvent;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RUndoManager;
@@ -61,6 +62,15 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
                 this.getParent().dispatchEvent(e);
             }
         });
+
+        this.setBackground(UIManager.getColor("EditorPane.background"));
+        this.setForeground(UIManager.getColor("EditorPane.foreground"));
+        this.setBorder(UIManager.getBorder("EditorPane.border"));
+        this.setFont(UIManager.getFont("EditorPane.font"));
+        this.setCaretColor(UIManager.getColor("EditorPane.caretForeground"));
+        this.setSelectionColor(UIManager.getColor("EditorPane.selectionBackground"));
+        this.setSelectedTextColor(UIManager.getColor("EditorPane.selectionForeground"));
+        this.setMargin(UIManager.getInsets("EditorPane.margin"));
 
         updateFontForScale();
     }

@@ -98,10 +98,11 @@ public final class ColorChooserButton extends JButton {
     final Image img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
     final Graphics gfx = img.getGraphics();
     try {
+      final boolean darkTheme = UiUtils.figureOutThatDarkTheme();
       if (color == null) {
-        gfx.setColor(UiUtils.DARK_THEME ? Color.darkGray : Color.white);
+        gfx.setColor(darkTheme ? Color.darkGray : Color.white);
         gfx.fillRect(0, 0, 16, 16);
-        gfx.setColor(UiUtils.DARK_THEME ? Color.yellow : Color.black);
+        gfx.setColor(darkTheme ? Color.yellow : Color.black);
         gfx.drawRect(0, 0, 15, 15);
         gfx.drawLine(0, 0, 15, 15);
       } else if (color == DIFF_COLORS) {
