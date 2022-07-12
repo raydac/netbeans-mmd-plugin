@@ -24,9 +24,7 @@ import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.IntelliJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatArcDarkOrangeIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatArcIJTheme;
@@ -35,12 +33,15 @@ import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatCyanLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatMaterialDesignDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatArcDarkContrastIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkContrastIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightContrastIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDarkerIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanContrastIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialPalenightIJTheme;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -349,28 +350,7 @@ public class SciaRetoStarter {
 
     if (doShowGUI) {
       SwingUtilities.invokeLater(() -> {
-        FlatLightLaf.installLafInfo();
-        FlatDarculaLaf.installLafInfo();
-
-        FlatArcOrangeIJTheme.installLafInfo();
-        FlatArcDarkContrastIJTheme.installLafInfo();
-        FlatArcDarkIJTheme.installLafInfo();
-        FlatArcIJTheme.installLafInfo();
-        FlatArcDarkOrangeIJTheme.installLafInfo();
-
-        FlatAtomOneDarkIJTheme.installLafInfo();
-        FlatAtomOneLightContrastIJTheme.installLafInfo();
-        FlatAtomOneDarkContrastIJTheme.installLafInfo();
-        FlatAtomOneLightIJTheme.installLafInfo();
-
-        FlatIntelliJLaf.installLafInfo();
-
-        FlatCarbonIJTheme.installLafInfo();
-        FlatCobalt2IJTheme.installLafInfo();
-        FlatCyanLightIJTheme.installLafInfo();
-        FlatDraculaIJTheme.installLafInfo();
-        FlatMaterialDeepOceanContrastIJTheme.installLafInfo();
-
+        registerExtraLF();
         findLookAndFeelForClassName(selectedLookAndFeel)
             .ifPresent(info -> {
               try {
@@ -440,6 +420,33 @@ public class SciaRetoStarter {
 
       new MessagesService().execute();
     }
+  }
+
+  private static void registerExtraLF() {
+    FlatLightLaf.installLafInfo();
+    FlatDarculaLaf.installLafInfo();
+
+    FlatArcOrangeIJTheme.installLafInfo();
+    FlatArcDarkContrastIJTheme.installLafInfo();
+    FlatArcDarkIJTheme.installLafInfo();
+    FlatArcIJTheme.installLafInfo();
+    FlatArcDarkOrangeIJTheme.installLafInfo();
+
+    FlatAtomOneDarkIJTheme.installLafInfo();
+    FlatAtomOneLightContrastIJTheme.installLafInfo();
+    FlatAtomOneDarkContrastIJTheme.installLafInfo();
+    FlatAtomOneLightIJTheme.installLafInfo();
+
+    FlatMaterialDarkerIJTheme.installLafInfo();
+    FlatMaterialPalenightIJTheme.installLafInfo();
+    FlatMaterialDesignDarkIJTheme.installLafInfo();
+    FlatMaterialDeepOceanContrastIJTheme.installLafInfo();
+
+    FlatIntelliJLaf.installLafInfo();
+    FlatCarbonIJTheme.installLafInfo();
+    FlatCobalt2IJTheme.installLafInfo();
+    FlatCyanLightIJTheme.installLafInfo();
+    FlatDraculaIJTheme.installLafInfo();
   }
 
   private static boolean convertData(@Nonnull @MustNotContainNull final String[] args) {
