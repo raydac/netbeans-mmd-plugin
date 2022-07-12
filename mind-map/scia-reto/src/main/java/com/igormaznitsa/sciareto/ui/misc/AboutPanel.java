@@ -77,6 +77,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     this.thirdParts.add(new ThirdPartLicense("FatCow Farm-Fresh Web Icons", "http://www.fatcow.com/free-icons",  "CC BY 3.0", "https://creativecommons.org/licenses/by/3.0/"));
     this.thirdParts.add(new ThirdPartLicense("Java Universal Network/Graph Framework", "https://github.com/jrtom/jung", "BSD 3", "https://raw.githubusercontent.com/jrtom/jung/master/LICENSE"));
     this.thirdParts.add(new ThirdPartLicense("RSynaxTextArea", "https://github.com/bobbylight/RSyntaxTextArea", "modified BSD license", "https://raw.githubusercontent.com/bobbylight/RSyntaxTextArea/master/src/main/dist/RSyntaxTextArea.License.txt"));
+    this.thirdParts.add(new ThirdPartLicense("FlatLaf", "https://github.com/JFormDesigner/FlatLaf", "Apache License, Version 2.0", "https://raw.githubusercontent.com/JFormDesigner/FlatLaf/main/LICENSE"));
     this.thirdParts.add(new ThirdPartLicense("PlantUML", "http://plantuml.com/", "GPL License", "https://www.gnu.org/copyleft/gpl.html"));
     this.thirdParts.add(new ThirdPartLicense("JLaTeXMath Library", "https://github.com/opencollab/jlatexmath", "GPL License", "https://github.com/opencollab/jlatexmath/blob/master/LICENSE"));
     this.thirdParts.add(new ThirdPartLicense("Apache Batik", "https://xmlgraphics.apache.org/batik/", "Apache License, Version 2.0", "https://xmlgraphics.apache.org/batik/license.html"));

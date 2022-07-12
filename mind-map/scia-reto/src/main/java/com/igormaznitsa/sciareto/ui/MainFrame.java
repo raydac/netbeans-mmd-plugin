@@ -84,10 +84,13 @@ import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -105,6 +108,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
@@ -319,7 +323,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     final LookAndFeel current = UIManager.getLookAndFeel();
     final ButtonGroup lfGroup = new ButtonGroup();
     final String currentLFClassName = current.getClass().getName();
-    for (final UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+
+    final Consumer<UIManager.LookAndFeelInfo> lfRegistrator = info -> {
       final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(info.getName());
       lfGroup.add(menuItem);
       if (currentLFClassName.equals(info.getClassName())) {
@@ -327,17 +332,28 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
       menuItem.addActionListener((@Nonnull final ActionEvent e) -> {
         try {
+
           UIManager.setLookAndFeel(info.getClassName());
           SwingUtilities.updateComponentTreeUI(theInstance);
-          PreferencesManager.getInstance().getPreferences().put(SciaRetoStarter.PROPERTY_LOOKANDFEEL, info.getClassName());
+          PreferencesManager.getInstance().getPreferences()
+              .put(SciaRetoStarter.PROPERTY_LOOKANDFEEL, info.getClassName());
           PreferencesManager.getInstance().flush();
         } catch (Exception ex) {
           LOGGER.error("Can't change LF", ex); //NOI18N
         }
       });
       this.menuLookAndFeel.add(menuItem);
-    }
+    };
 
+    final List<UIManager.LookAndFeelInfo> baseLookAndFeels = findBaseLookAndFeels();
+    baseLookAndFeels.forEach(lfRegistrator);
+    this.menuLookAndFeel.add(new JSeparator());
+
+    Stream.of(UIManager.getInstalledLookAndFeels())
+        .filter(x -> !baseLookAndFeels.contains(x))
+        .sorted(Comparator.comparing(UIManager.LookAndFeelInfo::getName))
+        .forEach(lfRegistrator);
+    
     fillScaleUiMenu();
     
     if (SystemUtils.isMac()) {
@@ -2048,7 +2064,19 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     return result;
   }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+  @Nonnull
+  private static List<UIManager.LookAndFeelInfo> findBaseLookAndFeels() {
+    return Stream.of(UIManager.getInstalledLookAndFeels())
+        .filter(x ->
+            x.getClassName().startsWith("com.sun.")
+                || x.getClassName().startsWith("java.")
+                || x.getClassName().startsWith("javax.")
+        )
+        .sorted(Comparator.comparing(UIManager.LookAndFeelInfo::getName))
+        .collect(Collectors.toList());
+  }
+
+  // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;

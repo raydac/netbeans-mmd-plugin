@@ -22,7 +22,25 @@ package com.igormaznitsa.sciareto;
 import static java.lang.System.currentTimeMillis;
 import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 
-
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.IntelliJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcDarkOrangeIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcOrangeIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCyanLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatArcDarkContrastIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkContrastIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightContrastIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanContrastIJTheme;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -81,11 +99,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -104,69 +124,20 @@ import org.apache.commons.io.IOUtils;
 
 public class SciaRetoStarter {
 
-  private static final AtomicReference<SplashScreen> splash = new AtomicReference<>();
-
   public static final String APP_TITLE = "Scia Reto";
   public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
-
   public static final long UPSTART = currentTimeMillis();
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SciaRetoStarter.class);
-
-  private static MainFrame MAIN_FRAME;
-
   public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 5L, 2L}, null);
-  //NOI18N
-
   public static final Random RND = new Random();
-
-  private static final String PROPERTY = "nbmmd.plugin.folder"; //NOI18N
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel"; //NOI18N
   public static final String PROPERTY_SCALE_GUI = "general.gui.scale"; //NOI18N
+  //NOI18N
   public static final String PROPERTY_TOTAL_UPSTART = "time.total.upstart"; //NOI18N
-
+  private static final AtomicReference<SplashScreen> splash = new AtomicReference<>();
+  private static final Logger LOGGER = LoggerFactory.getLogger(SciaRetoStarter.class);
+  private static final String PROPERTY = "nbmmd.plugin.folder"; //NOI18N
   private static final long STATISTICS_DELAY = 7L * 24L * 3600L * 1000L;
-
-  private static final class LocalMMDImporter extends AbstractImporter {
-
-    @Nullable
-    @Override
-    public MindMap doImport(@Nonnull PluginContext context) throws Exception {
-      final File fileToImport = context.getDialogProvider()
-          .msgOpenFileDialog(null, context,"", "", null, true, new FileFilter[0], ""); //NOI18N
-      return new MindMap(
-          new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
-    }
-
-    @Nonnull
-    @Override
-    public String getName(@Nonnull PluginContext context) {
-      return "MMDImporter"; //NOI18N
-    }
-
-    @Nonnull
-    @Override
-    public String getReference(@Nonnull PluginContext context) {
-      return "MMDImporter"; //NOI18N
-    }
-
-    @Override
-    public String getMnemonic() {
-      return "mmd"; //NOI18N
-    }
-
-    @Nonnull
-    @Override
-    public Icon getIcon(@Nonnull PluginContext context) {
-      return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_INDEXED));
-    }
-
-    @Override
-    public int getOrder() {
-      return 0;
-    }
-
-  }
+  private static MainFrame MAIN_FRAME;
 
   public static void disposeSplash() {
     final SplashScreen splashScr = splash.getAndSet(null);
@@ -176,59 +147,6 @@ public class SciaRetoStarter {
       } else {
         SwingUtilities.invokeLater(splashScr::dispose);
       }
-    }
-  }
-
-  private static final class LocalMMDExporter extends AbstractExporter {
-
-    @Override
-    public void doExport(@Nonnull PluginContext context, @Nullable JComponent options,
-                         @Nullable OutputStream out) throws IOException {
-      final MindMap map = context.getPanel().getModel();
-      IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
-    }
-
-    @Override
-    public void doExportToClipboard(@Nonnull PluginContext context, @Nullable JComponent options)
-        throws IOException {
-      final MindMap map = context.getPanel().getModel();
-      final StringWriter writer = map.write(new StringWriter());
-      final String text = writer.toString();
-      SwingUtilities.invokeLater(() -> {
-        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard != null) {
-          clipboard.setContents(new StringSelection(text), context.getPanel());
-        }
-      });
-    }
-
-    @Nonnull
-    @Override
-    public String getName(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
-      return "MMDExporter"; //NOI18N
-    }
-
-    @Nonnull
-    @Override
-    public String getReference(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
-      return "MMDExporter"; //NOI18N
-    }
-
-    @Nonnull
-    @Override
-    public Icon getIcon(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
-      return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_INDEXED));
-    }
-
-    @Override
-    @Nullable
-    public String getMnemonic() {
-      return "mmd"; //NOI18N
-    }
-
-    @Override
-    public int getOrder() {
-      return 0;
     }
   }
 
@@ -280,10 +198,21 @@ public class SciaRetoStarter {
     return result;
   }
 
+  @Nonnull
+  private static Optional<LookAndFeelInfo> findLookAndFeelForClassName(
+      @Nullable final String className) {
+    if (className == null) {
+      return Optional.empty();
+    }
+    return Stream.of(UIManager.getInstalledLookAndFeels())
+        .filter(x -> className.equals(x.getClassName()))
+        .findFirst();
+  }
+
   public static void main(@Nonnull @MustNotContainNull final String... args) {
     final GraphicsConfiguration primaryScreen = findPrimaryScreen();
 
-    // -- Properties for MAC OSX --  
+    // -- Properties for MAC OSX --
     System.setProperty("apple.awt.fileDialogForDirectories", "true"); //NOI18N
     System.setProperty("apple.laf.useScreenMenuBar", "true"); //NOI18N
     System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SciaReto"); //NOI18N
@@ -375,17 +304,6 @@ public class SciaRetoStarter {
       }
     });
 
-    try {
-      for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if (selectedLookAndFeel.equals(info.getClassName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    } catch (Exception e) {
-      LOGGER.error("Can't set L&F", e); //NOI18N
-    }
-
     loadPlugins();
 
     boolean doShowGUI = true;
@@ -430,6 +348,39 @@ public class SciaRetoStarter {
     }
 
     if (doShowGUI) {
+      SwingUtilities.invokeLater(() -> {
+        FlatLightLaf.installLafInfo();
+        FlatDarculaLaf.installLafInfo();
+
+        FlatArcOrangeIJTheme.installLafInfo();
+        FlatArcDarkContrastIJTheme.installLafInfo();
+        FlatArcDarkIJTheme.installLafInfo();
+        FlatArcIJTheme.installLafInfo();
+        FlatArcDarkOrangeIJTheme.installLafInfo();
+
+        FlatAtomOneDarkIJTheme.installLafInfo();
+        FlatAtomOneLightContrastIJTheme.installLafInfo();
+        FlatAtomOneDarkContrastIJTheme.installLafInfo();
+        FlatAtomOneLightIJTheme.installLafInfo();
+
+        FlatIntelliJLaf.installLafInfo();
+
+        FlatCarbonIJTheme.installLafInfo();
+        FlatCobalt2IJTheme.installLafInfo();
+        FlatCyanLightIJTheme.installLafInfo();
+        FlatDraculaIJTheme.installLafInfo();
+        FlatMaterialDeepOceanContrastIJTheme.installLafInfo();
+
+        findLookAndFeelForClassName(selectedLookAndFeel)
+            .ifPresent(info -> {
+              try {
+                UIManager.setLookAndFeel(info.getClassName());
+              } catch (Exception ex) {
+                LOGGER.error("Can't set L&F", ex); //NOI18N
+              }
+            });
+      });
+
       SystemUtils.setDebugLevelForJavaLogger(Level.INFO);
 
       MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
@@ -957,5 +908,99 @@ public class SciaRetoStarter {
     out.println(
         "   --option NAME=VALUE - an option to tune export process, specific for each exporter, see documentation"); //NOI18N
     out.println();
+  }
+
+  private static final class LocalMMDImporter extends AbstractImporter {
+
+    @Nullable
+    @Override
+    public MindMap doImport(@Nonnull PluginContext context) throws Exception {
+      final File fileToImport = context.getDialogProvider()
+          .msgOpenFileDialog(null, context, "", "", null, true, new FileFilter[0], ""); //NOI18N
+      return new MindMap(
+          new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
+    }
+
+    @Nonnull
+    @Override
+    public String getName(@Nonnull PluginContext context) {
+      return "MMDImporter"; //NOI18N
+    }
+
+    @Nonnull
+    @Override
+    public String getReference(@Nonnull PluginContext context) {
+      return "MMDImporter"; //NOI18N
+    }
+
+    @Override
+    public String getMnemonic() {
+      return "mmd"; //NOI18N
+    }
+
+    @Nonnull
+    @Override
+    public Icon getIcon(@Nonnull PluginContext context) {
+      return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_INDEXED));
+    }
+
+    @Override
+    public int getOrder() {
+      return 0;
+    }
+
+  }
+
+  private static final class LocalMMDExporter extends AbstractExporter {
+
+    @Override
+    public void doExport(@Nonnull PluginContext context, @Nullable JComponent options,
+                         @Nullable OutputStream out) throws IOException {
+      final MindMap map = context.getPanel().getModel();
+      IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
+    }
+
+    @Override
+    public void doExportToClipboard(@Nonnull PluginContext context, @Nullable JComponent options)
+        throws IOException {
+      final MindMap map = context.getPanel().getModel();
+      final StringWriter writer = map.write(new StringWriter());
+      final String text = writer.toString();
+      SwingUtilities.invokeLater(() -> {
+        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard != null) {
+          clipboard.setContents(new StringSelection(text), context.getPanel());
+        }
+      });
+    }
+
+    @Nonnull
+    @Override
+    public String getName(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
+      return "MMDExporter"; //NOI18N
+    }
+
+    @Nonnull
+    @Override
+    public String getReference(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
+      return "MMDExporter"; //NOI18N
+    }
+
+    @Nonnull
+    @Override
+    public Icon getIcon(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
+      return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_INDEXED));
+    }
+
+    @Override
+    @Nullable
+    public String getMnemonic() {
+      return "mmd"; //NOI18N
+    }
+
+    @Override
+    public int getOrder() {
+      return 0;
+    }
   }
 }
