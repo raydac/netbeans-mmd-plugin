@@ -50,7 +50,7 @@ public final class TabTitle extends JPanel {
 
   private boolean visited;
 
-  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png")); //NOI18N
+  private static final Icon CloseTabIcon = new ImageIcon(UiUtils.loadIcon("cancel.png")); //NOI18N
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TabTitle.class);
   
@@ -89,7 +89,7 @@ public final class TabTitle extends JPanel {
 
     final Icon uiCloseIcon = UIManager.getIcon("InternalFrameTitlePane.closeIcon"); //NOI18N
 
-    this.closeButton = new JButton(uiCloseIcon == null ? NIMBUS_CLOSE_ICON : uiCloseIcon) {
+    this.closeButton = new JButton(uiCloseIcon == null ? CloseTabIcon : uiCloseIcon) {
       private static final long serialVersionUID = -8005282815756047979L;
 
       @Override
