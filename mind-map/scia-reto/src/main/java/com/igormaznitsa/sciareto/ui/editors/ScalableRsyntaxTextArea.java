@@ -71,15 +71,16 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
         }
 
         updateFontForScale();
-    };
+    }
 
-private static Theme loadTheme(final String name){
-        try(final InputStream in = ScalableRsyntaxTextArea.class.getResourceAsStream(
-            "/org/fife/ui/rsyntaxtextarea/themes/"+name)) {
-            return Theme.load(in, DEFAULT_FONT);
-        }catch (Exception ex){
-            throw new Error("Can't load theme: "+name);
-        }
+    @Nonnull
+    private static Theme loadTheme(@Nonnull final String name) {
+      try (final InputStream in = ScalableRsyntaxTextArea.class.getResourceAsStream(
+          "/org/fife/ui/rsyntaxtextarea/themes/" + name)) {
+        return Theme.load(in, DEFAULT_FONT);
+      } catch (Exception ex) {
+        throw new Error("Can't load theme: " + name);
+      }
     }
 
     public void doZoomIn() {
