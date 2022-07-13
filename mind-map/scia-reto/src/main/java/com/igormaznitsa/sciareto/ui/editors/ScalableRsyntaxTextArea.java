@@ -21,28 +21,29 @@ package com.igormaznitsa.sciareto.ui.editors;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Font;
 import java.awt.event.MouseWheelEvent;
+import java.io.InputStream;
 import javax.annotation.Nonnull;
-import javax.swing.UIManager;
 import javax.swing.event.UndoableEditEvent;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RUndoManager;
 
 public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
 
     public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-
-    private float fontScale = 1.0f;
-    private float fontOriginalSize;
-
     private static final float SCALE_STEP = 0.5f;
     private static final float SCALE_MIN = 0.03f;
     private static final float SCALE_MAX = 10.0f;
-
+    private static final Theme THEME_DARK = loadTheme("dark.xml");
+    private static final Theme THEME_LIGHT = loadTheme("default.xml");
+    private float fontScale = 1.0f;
+    private float fontOriginalSize;
     private MindMapPanelConfig config;
 
-    public ScalableRsyntaxTextArea(@Nonnull final MindMapPanelConfig mmConfig) {
+        public ScalableRsyntaxTextArea(@Nonnull final MindMapPanelConfig mmConfig) {
         super();
 
         this.config = mmConfig;
@@ -63,16 +64,22 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
             }
         });
 
-        this.setBackground(UIManager.getColor("EditorPane.background"));
-        this.setForeground(UIManager.getColor("EditorPane.foreground"));
-        this.setBorder(UIManager.getBorder("EditorPane.border"));
-        this.setFont(UIManager.getFont("EditorPane.font"));
-        this.setCaretColor(UIManager.getColor("EditorPane.caretForeground"));
-        this.setSelectionColor(UIManager.getColor("EditorPane.selectionBackground"));
-        this.setSelectedTextColor(UIManager.getColor("EditorPane.selectionForeground"));
-        this.setMargin(UIManager.getInsets("EditorPane.margin"));
+        if (UiUtils.figureOutThatDarkTheme()) {
+            THEME_DARK.apply(this);
+        } else {
+            THEME_LIGHT.apply(this);
+        }
 
         updateFontForScale();
+    };
+
+private static Theme loadTheme(final String name){
+        try(final InputStream in = ScalableRsyntaxTextArea.class.getResourceAsStream(
+            "/org/fife/ui/rsyntaxtextarea/themes/"+name)) {
+            return Theme.load(in, DEFAULT_FONT);
+        }catch (Exception ex){
+            throw new Error("Can't load theme: "+name);
+        }
     }
 
     public void doZoomIn() {
