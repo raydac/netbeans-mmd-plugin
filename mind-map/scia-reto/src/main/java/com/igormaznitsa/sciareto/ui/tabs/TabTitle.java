@@ -60,7 +60,7 @@ public final class TabTitle extends JPanel {
       throw new NullPointerException("Can't load image from resource");
     }
     CloseTabIcon = new ImageIcon(image);
-    CloseTabIconTransparent = new ImageIcon(UiUtils.makeWithAlpha(image, 0.4f));
+    CloseTabIconTransparent = new ImageIcon(UiUtils.makeWithAlpha(image, 0.25f));
   }
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TabTitle.class);
