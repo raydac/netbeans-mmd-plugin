@@ -31,9 +31,9 @@
     <plantuml.version>1.2022.6</plantuml.version>
     <rsyntax.version>3.2.0</rsyntax.version>
     <rsyntax.autocomplete.version>3.2.0</rsyntax.autocomplete.version>
-    <jna.version>5.11.0</jna.version>
+    <jna.version>5.12.1</jna.version>
     <jre.version>17.0.3.1+2</jre.version>
-    <reactor.project.version>3.4.19</reactor.project.version>
+    <reactor.project.version>3.4.21</reactor.project.version>
     <flatlaf.version>2.3</flatlaf.version>
   </properties>
 
