@@ -50,4 +50,5 @@ mind-map/idea-mindmap/.project
 mind-map/idea-mindmap/.settings/org.eclipse.buildship.core.prefs
 versioninfo.go
 resource.syso
+resource_windows.syso
 jkslink
