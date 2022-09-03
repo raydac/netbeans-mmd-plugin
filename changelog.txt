@@ -1,5 +1,6 @@
 __1.5.2 (SNAPSHOT)__
 
+- SR:  added way to set PlantUML security profile through preferences
 - SR:  added FlatLaf themes [#104](https://github.com/raydac/netbeans-mmd-plugin/issues/104)
 - SR:  updated PlantUML to 1.2022.7
 - ALL: fixed use Insert key as shortcut #100
