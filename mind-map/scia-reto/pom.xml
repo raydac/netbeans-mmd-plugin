@@ -281,6 +281,8 @@
                   </options>
                   <addModules>
                     <module>jdk.localedata</module>
+                    <module>jdk.crypto.ec</module>
+                    <module>jdk.crypto.cryptoki</module>
                   </addModules>
                 </configuration>
               </execution>
@@ -303,6 +305,8 @@
                   </options>
                   <addModules>
                     <module>jdk.localedata</module>
+                    <module>jdk.crypto.ec</module>
+                    <module>jdk.crypto.cryptoki</module>
                   </addModules>
                 </configuration>
               </execution>
@@ -325,6 +329,8 @@
                   </options>
                   <addModules>
                     <module>jdk.localedata</module>
+                    <module>jdk.crypto.ec</module>
+                    <module>jdk.crypto.cryptoki</module>
                   </addModules>
                 </configuration>
               </execution>
@@ -347,6 +353,8 @@
                   </options>
                   <addModules>
                     <module>jdk.localedata</module>
+                    <module>jdk.crypto.ec</module>
+                    <module>jdk.crypto.cryptoki</module>
                   </addModules>
                 </configuration>
               </execution>
