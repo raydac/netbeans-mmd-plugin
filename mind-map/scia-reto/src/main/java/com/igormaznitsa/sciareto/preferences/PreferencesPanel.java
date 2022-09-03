@@ -31,7 +31,10 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
+import static com.igormaznitsa.sciareto.preferences.PrefUtils.PROPERTY_PLANTUML_DOT_PATH;
+import static com.igormaznitsa.sciareto.preferences.PrefUtils.PROPERTY_PLANTUML_SECURITY_PROFILE;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.editors.PlantUmlSecurityProfile;
 import com.igormaznitsa.sciareto.ui.editors.ScalableRsyntaxTextArea;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FontSelector;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.KeyShortCutEditPanel;
@@ -178,7 +181,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         spinnerElementBorderWidth = new javax.swing.JSpinner();
         labelBorderWidth = new javax.swing.JLabel();
         filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
-        jPanel14 = new javax.swing.JPanel();
+        panelGraphvizDot = new javax.swing.JPanel();
         textFieldPathToGraphvizDot = new javax.swing.JTextField();
         buttonGraphvizDotFile = new javax.swing.JButton();
         filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
@@ -190,6 +193,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         slider2ndLevelHorzGap = new javax.swing.JSlider();
         jPanel19 = new javax.swing.JPanel();
         slider2ndLevelVertGap = new javax.swing.JSlider();
+        panelPlantUmlSecurityProfile = new javax.swing.JPanel();
+        comboBoxPlantUmlSecurityProfile = new javax.swing.JComboBox<>();
         jPanel1 = new javax.swing.JPanel();
         checkboxUseInsideBrowser = new javax.swing.JCheckBox();
         checkboxRelativePathsForFilesInTheProject = new javax.swing.JCheckBox();
@@ -676,8 +681,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1000.0;
         jPanel2.add(filler4, gridBagConstraints);
 
-        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Graphviz DOT file (for PlantUML)"));
-        jPanel14.setLayout(new java.awt.GridBagLayout());
+        panelGraphvizDot.setBorder(javax.swing.BorderFactory.createTitledBorder("Graphviz DOT file (for PlantUML)"));
+        panelGraphvizDot.setLayout(new java.awt.GridBagLayout());
 
         textFieldPathToGraphvizDot.setColumns(3);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -685,7 +690,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1000.0;
-        jPanel14.add(textFieldPathToGraphvizDot, gridBagConstraints);
+        panelGraphvizDot.add(textFieldPathToGraphvizDot, gridBagConstraints);
 
         buttonGraphvizDotFile.setText("...");
         buttonGraphvizDotFile.setToolTipText("select file");
@@ -697,17 +702,17 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        jPanel14.add(buttonGraphvizDotFile, gridBagConstraints);
+        panelGraphvizDot.add(buttonGraphvizDotFile, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 11;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel2.add(jPanel14, gridBagConstraints);
+        jPanel2.add(panelGraphvizDot, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridy = 13;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 1000.0;
@@ -800,6 +805,19 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         jPanel2.add(jPanel19, gridBagConstraints);
+
+        panelPlantUmlSecurityProfile.setBorder(javax.swing.BorderFactory.createTitledBorder("PlantUML security (restart required)"));
+        panelPlantUmlSecurityProfile.setLayout(new java.awt.BorderLayout());
+
+        comboBoxPlantUmlSecurityProfile.setModel(new DefaultComboBoxModel<PlantUmlSecurityProfile>(PlantUmlSecurityProfile.values()));
+        panelPlantUmlSecurityProfile.add(comboBoxPlantUmlSecurityProfile, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel2.add(panelPlantUmlSecurityProfile, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -1490,8 +1508,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
 
       // third part options
-      final String pathToGraphViz = preferences.get("plantuml.dotpath", null);
+      final String pathToGraphViz = preferences.get(PROPERTY_PLANTUML_DOT_PATH, null);
       this.textFieldPathToGraphvizDot.setText(pathToGraphViz == null ? "" : pathToGraphViz);
+      this.comboBoxPlantUmlSecurityProfile.setSelectedItem(
+              PlantUmlSecurityProfile.findForText(preferences.get(PROPERTY_PLANTUML_SECURITY_PROFILE, null), PlantUmlSecurityProfile.LEGACY));
 
       // Metrics
       this.checkboxMetricsAllowed.setSelected(MetricsService.getInstance().isEnabled());
@@ -1614,10 +1634,12 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     final String pathToGraphVizDot = textFieldPathToGraphvizDot.getText();
     if (pathToGraphVizDot.trim().isEmpty()) {
-      preferences.remove("plantuml.dotpath");
+      preferences.remove(PROPERTY_PLANTUML_DOT_PATH);
     } else {
-      preferences.put("plantuml.dotpath", pathToGraphVizDot);
+      preferences.put(PROPERTY_PLANTUML_DOT_PATH, pathToGraphVizDot);
     }
+    
+    preferences.put(PROPERTY_PLANTUML_SECURITY_PROFILE, comboBoxPlantUmlSecurityProfile.getSelectedItem().toString());
 
     PreferencesManager.getInstance().setFont(preferences, SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, fontTextEditor);
     PreferencesManager.getInstance().setFlag(preferences, SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, this.checkBoxBackupLastEdit.isSelected());
@@ -1695,6 +1717,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserRootBackground;
     private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserRootText;
     private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserSelectLine;
+    private javax.swing.JComboBox<PlantUmlSecurityProfile> comboBoxPlantUmlSecurityProfile;
     private javax.swing.JComboBox<RenderQuality> comboBoxRenderQuality;
     private com.igormaznitsa.sciareto.ui.misc.DonateButton donateButton1;
     private javax.swing.Box.Filler filler1;
@@ -1716,7 +1739,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
@@ -1731,6 +1753,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JLabel labelBorderWidth;
+    private javax.swing.JPanel panelGraphvizDot;
+    private javax.swing.JPanel panelPlantUmlSecurityProfile;
     private javax.swing.JPanel panelScalingModifiers;
     private javax.swing.JSlider slider1stLevelHorzGap;
     private javax.swing.JSlider slider1stLevelVertGap;

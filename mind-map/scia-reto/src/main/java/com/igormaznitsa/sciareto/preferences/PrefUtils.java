@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,14 +16,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.preferences;
 
 
+import com.igormaznitsa.sciareto.ui.editors.PlantUmlSecurityProfile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 
 public final class PrefUtils {
+  public static final String ENV_PLANTUML_LIMIT_SIZE = "PLANTUML_LIMIT_SIZE";
+  public static final String ENV_PLANTUML_SECURITY_PROFILE = "PLANTUML_SECURITY_PROFILE";
+
+  public static final String PROPERTY_PLANTUML_SECURITY_PROFILE = "plantuml.security.profile";
+  public static final String PROPERTY_PLANTUML_DOT_PATH = "plantuml.dotpath";
+
   private PrefUtils() {
 
   }
@@ -32,16 +40,27 @@ public final class PrefUtils {
     return PreferencesManager.getInstance().getPreferences().getBoolean("showHiddenFiles", true);
   }
 
+  public static void setPlantUmlSecurityProfileAsSystemProperty() {
+    final PlantUmlSecurityProfile currentProfile
+        = PlantUmlSecurityProfile.findForText(
+        PreferencesManager.getInstance().getPreferences()
+            .get(PROPERTY_PLANTUML_SECURITY_PROFILE, null),
+        PlantUmlSecurityProfile.LEGACY);
+    System.setProperty(ENV_PLANTUML_SECURITY_PROFILE, currentProfile.name());
+  }
+
   @Nullable
   public static String getPlantUmlDotPath() {
-    final String result = PreferencesManager.getInstance().getPreferences().get("plantuml.dotpath", null);
+    final String result =
+        PreferencesManager.getInstance().getPreferences().get(PROPERTY_PLANTUML_DOT_PATH, null);
     return (result == null || result.trim().isEmpty()) ? null : result;
   }
 
   @Nonnull
   public static String font2str(@Nonnull final Font font) {
     final StringBuilder buffer = new StringBuilder();
-    buffer.append(font.getFontName()).append('|').append(font.getStyle()).append('|').append(font.getSize());
+    buffer.append(font.getFontName()).append('|').append(font.getStyle()).append('|')
+        .append(font.getSize());
     return buffer.toString();
   }
 
