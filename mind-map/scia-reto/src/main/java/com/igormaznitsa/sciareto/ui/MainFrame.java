@@ -1950,11 +1950,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuNewFileActionPerformed
 
   private void menuHelpPLantUmpManualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHelpPLantUmpManualActionPerformed
-    UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf");
+    UiUtils.openLocalResourceInDesktop("help/PlantUML_Language_Reference_Guide_en.pdf");
   }//GEN-LAST:event_menuHelpPLantUmpManualActionPerformed
 
   private void menuHelpHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHelpHelpActionPerformed
-    UiUtils.openLocalResource("help/index.html");
+    UiUtils.openLocalResourceInDesktop("help/index.html");
   }//GEN-LAST:event_menuHelpHelpActionPerformed
 
   private void menuViewMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuViewMenuSelected

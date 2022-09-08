@@ -90,29 +90,9 @@ import reactor.core.scheduler.Scheduler;
 
 public final class UiUtils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(UiUtils.class);
   public static final ResourceBundle BUNDLE =
       java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-
   public static final MMapURI EMPTY_URI;
-
-  static {
-    try {
-      EMPTY_URI = new MMapURI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
-    } catch (URISyntaxException ex) {
-      throw new Error("Unexpected exception", ex); //NOI18N
-    }
-  }
-
-  public static boolean figureOutThatDarkTheme(){
-    final Color color = UIManager.getColor("Panel.background"); //NOI18N
-    if (color == null) {
-      return false;
-    } else {
-      return calculateBrightness(color) < 150;
-    }
-  }
-
   public static final Scheduler SWING_SCHEDULER = new Scheduler() {
     private final Disposable nullDisposable = () -> {
     };
@@ -139,6 +119,27 @@ public final class UiUtils {
       return this.worker;
     }
   };
+  private static final Logger LOGGER = LoggerFactory.getLogger(UiUtils.class);
+
+  static {
+    try {
+      EMPTY_URI = new MMapURI("http://igormaznitsa.com/specialuri#empty"); //NOI18N
+    } catch (URISyntaxException ex) {
+      throw new Error("Unexpected exception", ex); //NOI18N
+    }
+  }
+
+  private UiUtils() {
+  }
+
+  public static boolean figureOutThatDarkTheme() {
+    final Color color = UIManager.getColor("Panel.background"); //NOI18N
+    if (color == null) {
+      return false;
+    } else {
+      return calculateBrightness(color) < 150;
+    }
+  }
 
   @Nonnull
   public static Image makeWithAlpha(@Nonnull final Image base, final float alpha) {
@@ -161,56 +162,31 @@ public final class UiUtils {
     return transform == null ? 1.0d : Math.max(transform.getScaleX(), transform.getScaleY());
   }
 
-  public static final class SplashScreen extends JWindow {
-
-    private static final long serialVersionUID = 2481671028674534278L;
-
-    private final Image image;
-
-    public SplashScreen(@Nullable final GraphicsConfiguration gfc, @Nonnull final Image image) {
-      super(gfc);
-      this.setAlwaysOnTop(true);
-
-      this.image = image;
-      final JLabel label = new JLabel(new ImageIcon(this.image));
-      final JPanel root = new JPanel(new BorderLayout(0, 0));
-      root.add(label, BorderLayout.CENTER);
-      this.setContentPane(root);
-      this.pack();
-
-      this.setLocation(getPointForCentering(this));
-      invalidate();
-      repaint();
-    }
-  }
-
-  private UiUtils() {
-  }
-
   @Nullable
   public static String loadUiScaleFactor() {
-      String result = PreferencesManager.getInstance().getPreferences().get(SciaRetoStarter.PROPERTY_SCALE_GUI, null);
-      if (result!=null && !result.matches("\\s*[1-5](?:\\.5)?\\s*")){
-          result = null;
-      }
-      return result==null ? result : result.trim();
+    String result = PreferencesManager.getInstance().getPreferences()
+        .get(SciaRetoStarter.PROPERTY_SCALE_GUI, null);
+    if (result != null && !result.matches("\\s*[1-5](?:\\.5)?\\s*")) {
+      result = null;
+    }
+    return result == null ? result : result.trim();
   }
 
   public static void saveUiScaleFactor(@Nullable final String scaleFactor) {
-      final Preferences preferences = PreferencesManager.getInstance().getPreferences();
-      if (scaleFactor == null) {
-        preferences.remove(SciaRetoStarter.PROPERTY_SCALE_GUI);  
-      } else {
-        preferences.put(SciaRetoStarter.PROPERTY_SCALE_GUI, scaleFactor);
-      }
-      
-      try{
-        preferences.flush();
-      } catch (BackingStoreException ex){
-          // ignore
-      }
+    final Preferences preferences = PreferencesManager.getInstance().getPreferences();
+    if (scaleFactor == null) {
+      preferences.remove(SciaRetoStarter.PROPERTY_SCALE_GUI);
+    } else {
+      preferences.put(SciaRetoStarter.PROPERTY_SCALE_GUI, scaleFactor);
+    }
+
+    try {
+      preferences.flush();
+    } catch (BackingStoreException ex) {
+      // ignore
+    }
   }
-  
+
   public static void assertSwingThread() {
     Assertions.assertTrue("Mus be called only from Swing Dispatcher!",
         SwingUtilities.isEventDispatchThread());
@@ -409,8 +385,9 @@ public final class UiUtils {
       try {
         return new MMapURI(text.trim());
       } catch (URISyntaxException ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
-            String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+        DialogProviderManager.getInstance().getDialogProvider()
+            .msgError(SciaRetoStarter.getApplicationFrame(),
+                String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     } else {
@@ -454,9 +431,11 @@ public final class UiUtils {
         .msgOkCancel(SciaRetoStarter.getApplicationFrame(), title, filePathEditor)) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
-            String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
-                result.getFilePathWithLine().getPath()));
+        DialogProviderManager.getInstance().getDialogProvider()
+            .msgError(SciaRetoStarter.getApplicationFrame(),
+                String.format(
+                    BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                    result.getFilePathWithLine().getPath()));
         result = null;
       }
     }
@@ -470,8 +449,10 @@ public final class UiUtils {
     try {
       if (DialogProviderManager.getInstance().getDialogProvider()
           .msgOkCancel(SciaRetoStarter.getApplicationFrame(), title,
-                  Utils.catchEscInParentDialog(textEditor, DialogProviderManager.getInstance().getDialogProvider(), dialog -> textEditor.isTextChanged(),
-                          x -> textEditor.cancel()))) {
+              Utils.catchEscInParentDialog(textEditor,
+                  DialogProviderManager.getInstance().getDialogProvider(),
+                  dialog -> textEditor.isTextChanged(),
+                  x -> textEditor.cancel()))) {
         return textEditor.getData();
       } else {
         return null;
@@ -481,27 +462,51 @@ public final class UiUtils {
     }
   }
 
-  public static void openLocalResource(@Nonnull final String resource) {
+  @Nullable
+  public static String findPathToApplicationBundle() {
     try {
-      final File folderPath =
-          new File(MainFrame.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-              .getParentFile();
-      SwingUtilities.invokeLater(() -> {
-        if (Desktop.isDesktopSupported()) {
-          final Desktop desktop = Desktop.getDesktop();
-          if (desktop.isSupported(Desktop.Action.OPEN)) {
-            try {
-              desktop.open(new File(folderPath, resource.replace('/', File.separatorChar)));
-            } catch (IOException ex) {
-              LOGGER.error("Can't open in desktop: " + resource, ex);
-            } catch (IllegalArgumentException ex) {
-              LOGGER.error("Can't use file as argument to be opened in desktop: " + resource, ex);
+      final Class<?> classFileManager = Class.forName("com.apple.eio.FileManager");
+      return (String) classFileManager.getMethod("getPathToApplicationBundle").invoke(null);
+    } catch (Exception ex) {
+      return null;
+    }
+  }
+
+  public static void openLocalResourceInDesktop(@Nonnull final String resource) {
+    final Runnable runner = () -> {
+      if (Desktop.isDesktopSupported()) {
+        final Desktop desktop = Desktop.getDesktop();
+        if (desktop.isSupported(Desktop.Action.OPEN)) {
+          try {
+            final File resourcePath = new File(resource);
+            if (resourcePath.isAbsolute()) {
+              desktop.open(resourcePath);
+            } else {
+              final String normalizedResourcePath = resource.replace('/', File.separatorChar);
+
+              final File codeSourcePath =
+                  new File(MainFrame.class.getProtectionDomain().getCodeSource().getLocation()
+                      .toURI());
+              final String applicationBundlePath = findPathToApplicationBundle();
+
+              if (applicationBundlePath == null) {
+                desktop.open(new File(codeSourcePath.getParent(), normalizedResourcePath));
+              } else {
+                desktop.open(new File(
+                    applicationBundlePath + "/Contents/Resources/" + normalizedResourcePath));
+              }
             }
+          } catch (URISyntaxException | IOException | IllegalArgumentException ex) {
+            LOGGER.error("Can't open in desktop: " + resource, ex);
           }
         }
-      });
-    } catch (URISyntaxException ex) {
-      LOGGER.error("Can't get folder path", ex);
+      }
+    };
+
+    if (SwingUtilities.isEventDispatchThread()) {
+      runner.run();
+    } else {
+      SwingUtilities.invokeLater(runner);
     }
   }
 
@@ -585,6 +590,29 @@ public final class UiUtils {
     } catch (MalformedURLException ex) {
       LOGGER.error("MalformedURLException", ex); //NOI18N
       return false;
+    }
+  }
+
+  public static final class SplashScreen extends JWindow {
+
+    private static final long serialVersionUID = 2481671028674534278L;
+
+    private final Image image;
+
+    public SplashScreen(@Nullable final GraphicsConfiguration gfc, @Nonnull final Image image) {
+      super(gfc);
+      this.setAlwaysOnTop(true);
+
+      this.image = image;
+      final JLabel label = new JLabel(new ImageIcon(this.image));
+      final JPanel root = new JPanel(new BorderLayout(0, 0));
+      root.add(label, BorderLayout.CENTER);
+      this.setContentPane(root);
+      this.pack();
+
+      this.setLocation(getPointForCentering(this));
+      invalidate();
+      repaint();
     }
   }
 

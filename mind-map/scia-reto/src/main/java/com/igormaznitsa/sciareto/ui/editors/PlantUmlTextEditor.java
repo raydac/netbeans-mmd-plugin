@@ -61,7 +61,7 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
 
   @Override
   protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel, @Nonnull final GridBagConstraints constraints) {
-    menuPanel.add(makeLinkLabel("PlantUML", () -> UiUtils.openLocalResource("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), constraints);
+    menuPanel.add(makeLinkLabel("PlantUML", () -> UiUtils.openLocalResourceInDesktop("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), constraints);
     menuPanel.add(makeLinkLabel("AsciiMath", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), constraints);
 //    this.menu.add(makeLinkLabel("LatexMath", "https://en.wikibooks.org/wiki/LaTeX/Mathematics", "Open LatexMath manual", ICON_INFO), gbdata);
   }
