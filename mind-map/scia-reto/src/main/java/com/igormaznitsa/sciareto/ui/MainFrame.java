@@ -2069,6 +2069,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     return Stream.of(UIManager.getInstalledLookAndFeels())
         .filter(x ->
             x.getClassName().startsWith("com.sun.")
+                || x.getClassName().startsWith("com.apple.")
                 || x.getClassName().startsWith("java.")
                 || x.getClassName().startsWith("javax.")
         )
