@@ -165,6 +165,49 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>de.perdian.maven.plugins</groupId>
+            <artifactId>macosappbundler-maven-plugin</artifactId>
+            <version>1.18.0</version>
+            <configuration>
+              <plist>
+                <CFBundleIconFile>icon.icns</CFBundleIconFile>
+                <CFBundleDisplayName>SciaReto</CFBundleDisplayName>
+                <CFBundleDevelopmentRegion>English</CFBundleDevelopmentRegion>
+                <CFBundleURLTypes>
+                  <string>msa</string>
+                </CFBundleURLTypes>
+                <JVMVersion>9+</JVMVersion>
+                <JVMMainClassName>SciaReto</JVMMainClassName>
+              </plist>
+              <dmg>
+                <generate>true</generate>
+                <autoFallback>true</autoFallback>
+                <appendVersion>false</appendVersion>
+                <dmgFileName>${project.build.finalName}-macos</dmgFileName>
+              </dmg>
+              <app>
+                <additionalResources>
+                  <resource>
+                    <directory>${project.basedir}/src/assembly/common</directory>
+                    <outputDirectory>Contents/Resources</outputDirectory>
+                    <includes>
+                      <include>**</include>
+                    </includes>
+                  </resource>
+                </additionalResources>
+              </app>
+            </configuration>
+            <executions>
+              <execution>
+                <id>make-macos-bundle</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>bundle</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>mvn-jlink-wrapper</artifactId>
             <version>1.1.0</version>
@@ -382,7 +425,7 @@
                 <fileVersion>${main.version.raw}.0</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
                 <fileDescription>SciaReto Mind Map editor</fileDescription>
-                <copyright>2016-2021 Igor Maznitsa</copyright>
+                <copyright>2016-2022 Igor Maznitsa</copyright>
                 <productVersion>${main.version.raw}.0</productVersion>
                 <txtProductVersion>${project.version}</txtProductVersion>
                 <productName>${project.name}</productName>
