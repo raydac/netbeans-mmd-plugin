@@ -78,6 +78,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -593,7 +594,7 @@ public final class UiUtils {
     }
   }
 
-  public static final class SplashScreen extends JWindow {
+  public static final class SplashScreen extends JFrame {
 
     private static final long serialVersionUID = 2481671028674534278L;
 
@@ -601,12 +602,17 @@ public final class UiUtils {
 
     public SplashScreen(@Nullable final GraphicsConfiguration gfc, @Nonnull final Image image) {
       super(gfc);
+
       this.setAlwaysOnTop(true);
+      this.setUndecorated(true);
+      this.setBackground(new Color(0,0,0,0));
 
       this.image = image;
       final JLabel label = new JLabel(new ImageIcon(this.image));
       final JPanel root = new JPanel(new BorderLayout(0, 0));
+      root.setOpaque(false);
       root.add(label, BorderLayout.CENTER);
+
       this.setContentPane(root);
       this.pack();
 
