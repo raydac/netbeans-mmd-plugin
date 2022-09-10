@@ -612,7 +612,6 @@ public final class UiUtils {
 
       this.setLocation(getPointForCentering(this));
       invalidate();
-      repaint();
     }
   }
 
