@@ -1381,6 +1381,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private void buttonResetToDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetToDefaultActionPerformed
     loadFrom(new MindMapPanelConfig(), PreferencesManager.getInstance().getPreferences());
     this.fontTextEditor = ScalableRsyntaxTextArea.DEFAULT_FONT;
+    this.textFieldPathToGraphvizDot.setText("");
+    this.comboBoxPlantUmlSecurityProfile.setSelectedItem(PlantUmlSecurityProfile.LEGACY);
     updateFontButton(this.buttonFontForEditor, this.fontTextEditor);
   }//GEN-LAST:event_buttonResetToDefaultActionPerformed
 
