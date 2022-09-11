@@ -33,59 +33,100 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
-import com.igormaznitsa.mindmap.swing.services.*;
-import net.iharder.Base64;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.helper.W3CDom;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
+import com.igormaznitsa.mindmap.swing.services.IconID;
+import com.igormaznitsa.mindmap.swing.services.ImageIconService;
+import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import net.iharder.Base64;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
+import org.jsoup.parser.Parser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public final class Utils {
 
-  public static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
+  public static final ResourceBundle BUNDLE =
+      java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
-  public static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
+  public static final UIComponentFactory UI_COMPO_FACTORY =
+      UIComponentFactoryProvider.findInstance();
   public static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
-  public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size"; //NOI18N
-  public static final boolean LTR_LANGUAGE = ComponentOrientation.getOrientation(new Locale(System.getProperty("user.language"))).isLeftToRight();
+  public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size";
+      //NOI18N
+  public static final boolean LTR_LANGUAGE =
+      ComponentOrientation.getOrientation(new Locale(System.getProperty("user.language")))
+          .isLeftToRight();
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-  private static final Pattern URI_PATTERN = Pattern.compile("^(?:([^:\\s]+):)(?://(?:[^?/@\\s]*@)?([^/?\\s]*)/?)?([^?\\s]+)?(?:\\?([^#\\s]*))?(?:#\\S*)?$");
+  private static final Pattern URI_PATTERN = Pattern.compile(
+      "^(?:([^:\\s]+):)(?://(?:[^?/@\\s]*@)?([^/?\\s]*)/?)?([^?\\s]+)?(?:\\?([^#\\s]*))?(?:#\\S*)?$");
   private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
   private static final Pattern STRIP_PATTERN = Pattern.compile("^(\\s*)(.*[^\\s])(\\s*)$");
 
@@ -101,7 +142,9 @@ public final class Utils {
    * @throws IOException if there is any transport error
    */
   @Nullable
-  public static InputStream findInputStreamForResource(@Nonnull final ZipFile zipFile, @Nonnull final String resourcePath) throws IOException {
+  public static InputStream findInputStreamForResource(@Nonnull final ZipFile zipFile,
+                                                       @Nonnull final String resourcePath)
+      throws IOException {
     final ZipEntry entry = zipFile.getEntry(resourcePath);
 
     InputStream result = null;
@@ -122,7 +165,8 @@ public final class Utils {
    * @throws IOException thrown if there is any transport error
    */
   @Nullable
-  public static byte[] toByteArray(@Nonnull final ZipFile zipFile, @Nonnull final String path) throws IOException {
+  public static byte[] toByteArray(@Nonnull final ZipFile zipFile, @Nonnull final String path)
+      throws IOException {
     final InputStream in = findInputStreamForResource(zipFile, path);
 
     byte[] result = null;
@@ -139,9 +183,14 @@ public final class Utils {
   }
 
   @Nonnull
-  public static Document loadHtmlDocument(@Nonnull final InputStream inStream, @Nullable final String charset, final boolean autoClose) throws ParserConfigurationException, IOException {
+  public static Document load(
+      @Nonnull final InputStream inStream,
+      @Nullable final String charset,
+      @Nonnull Parser parser,
+      final boolean autoClose) throws ParserConfigurationException, IOException {
     try {
-      final org.jsoup.nodes.Document result = Jsoup.parse(IOUtils.toString(inStream, charset));
+      final org.jsoup.nodes.Document result =
+          Jsoup.parse(IOUtils.toString(inStream, charset), parser);
       return new W3CDom().fromJsoup(result);
     } finally {
       if (autoClose) {
@@ -163,7 +212,9 @@ public final class Utils {
    * @since 1.4.0
    */
   @Nonnull
-  public static Document loadXmlDocument(@Nonnull final InputStream inStream, @Nullable final String charset, final boolean autoClose) throws SAXException, IOException, ParserConfigurationException {
+  public static Document loadXmlDocument(@Nonnull final InputStream inStream,
+                                         @Nullable final String charset, final boolean autoClose)
+      throws SAXException, IOException, ParserConfigurationException {
     final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
     try {
@@ -194,7 +245,8 @@ public final class Utils {
       if (charset == null) {
         stream = inStream;
       } else {
-        stream = new ByteArrayInputStream(IOUtils.toString(inStream, charset).getBytes(StandardCharsets.UTF_8));
+        stream = new ByteArrayInputStream(
+            IOUtils.toString(inStream, charset).getBytes(StandardCharsets.UTF_8));
       }
       document = builder.parse(stream);
     } finally {
@@ -215,7 +267,8 @@ public final class Utils {
    * @since 1.4.0
    */
   @Nullable
-  public static Element findFirstElement(@Nonnull final Element node, @Nonnull final String elementName) {
+  public static Element findFirstElement(@Nonnull final Element node,
+                                         @Nonnull final String elementName) {
     Element result = null;
     for (final Element l : Utils.findDirectChildrenForName(node, elementName)) {
       result = l;
@@ -227,19 +280,22 @@ public final class Utils {
   /**
    * Find all direct children with defined name.
    *
-   * @param element          parent element
-   * @param childElementname child element name
+   * @param element   parent element
+   * @param childName child element name
    * @return list of found elements
    * @since 1.4.0
    */
   @Nonnull
   @MustNotContainNull
-  public static List<Element> findDirectChildrenForName(@Nonnull final Element element, @Nonnull final String childElementname) {
+  public static List<Element> findDirectChildrenForName(@Nonnull final Element element,
+                                                        @Nonnull final String childName) {
     final List<Element> resultList = new ArrayList<>();
+
     final NodeList list = element.getChildNodes();
     for (int i = 0; i < list.getLength(); i++) {
       final Node node = list.item(i);
-      if (element.equals(node.getParentNode()) && node instanceof Element && childElementname.equals(node.getNodeName())) {
+      if (element.equals(node.getParentNode()) && node instanceof Element &&
+          childName.equals(node.getNodeName())) {
         resultList.add((Element) node);
       }
     }
@@ -288,7 +344,8 @@ public final class Utils {
    * @since 1.4.0
    */
   @Nullable
-  public static String rescaleImageAndEncodeAsBase64(@Nonnull final InputStream in, final int maxSize) throws IOException {
+  public static String rescaleImageAndEncodeAsBase64(@Nonnull final InputStream in,
+                                                     final int maxSize) throws IOException {
     final Image image = ImageIO.read(in);
     String result = null;
     if (image != null) {
@@ -307,7 +364,8 @@ public final class Utils {
    * @since 1.4.0
    */
   @Nonnull
-  public static String rescaleImageAndEncodeAsBase64(@Nonnull final File file, final int maxSize) throws IOException {
+  public static String rescaleImageAndEncodeAsBase64(@Nonnull final File file, final int maxSize)
+      throws IOException {
     final Image image = ImageIO.read(file);
     if (image == null) {
       throw new IllegalArgumentException("Can't load image file : " + file); //NOI18N
@@ -340,13 +398,15 @@ public final class Utils {
    * @since 1.4.0
    */
   @Nonnull
-  public static String rescaleImageAndEncodeAsBase64(@Nonnull Image image, final int maxSize) throws IOException {
+  public static String rescaleImageAndEncodeAsBase64(@Nonnull Image image, final int maxSize)
+      throws IOException {
     final int width = image.getWidth(null);
     final int height = image.getHeight(null);
 
     final int maxImageSideSize = maxSize > 0 ? maxSize : Math.max(width, height);
 
-    final float imageScale = width > maxImageSideSize || height > maxImageSideSize ? (float) maxImageSideSize / (float) Math.max(width, height) : 1.0f;
+    final float imageScale = width > maxImageSideSize || height > maxImageSideSize ?
+        (float) maxImageSideSize / (float) Math.max(width, height) : 1.0f;
 
     if (!(image instanceof RenderedImage) || Float.compare(imageScale, 1.0f) != 0) {
       final int swidth;
@@ -365,10 +425,13 @@ public final class Utils {
 
       gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-      gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+          RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
       gfx.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
-      gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+      gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+          RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
       gfx.drawImage(image, AffineTransform.getScaleInstance(imageScale, imageScale), null);
       gfx.dispose();
@@ -387,7 +450,9 @@ public final class Utils {
   }
 
   public static int calculateColorBrightness(@Nonnull final Color color) {
-    return (int) Math.sqrt(color.getRed() * color.getRed() * .241d + color.getGreen() * color.getGreen() * .691d + color.getBlue() * color.getBlue() * .068d);
+    return (int) Math.sqrt(
+        color.getRed() * color.getRed() * .241d + color.getGreen() * color.getGreen() * .691d +
+            color.getBlue() * color.getBlue() * .068d);
   }
 
   public static boolean isDarkTheme() {
@@ -400,7 +465,8 @@ public final class Utils {
   }
 
   @Nonnull
-  public static String convertCamelCasedToHumanForm(@Nonnull final String camelCasedString, final boolean capitalizeFirstChar) {
+  public static String convertCamelCasedToHumanForm(@Nonnull final String camelCasedString,
+                                                    final boolean capitalizeFirstChar) {
     final StringBuilder result = new StringBuilder();
 
     boolean notFirst = false;
@@ -456,7 +522,8 @@ public final class Utils {
     return obj1.equals(obj2);
   }
 
-  public static void setAttribute(@Nonnull final String name, @Nullable final String value, @Nonnull @MustNotContainNull final Topic[] topics) {
+  public static void setAttribute(@Nonnull final String name, @Nullable final String value,
+                                  @Nonnull @MustNotContainNull final Topic[] topics) {
     for (final Topic t : topics) {
       t.setAttribute(name, value);
     }
@@ -498,9 +565,10 @@ public final class Utils {
       final int[] components;
 
       if (hasAlpha) {
-        components = new int[]{color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
+        components =
+            new int[] {color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()};
       } else {
-        components = new int[]{color.getRed(), color.getGreen(), color.getBlue()};
+        components = new int[] {color.getRed(), color.getGreen(), color.getBlue()};
       }
 
       for (final int c : components) {
@@ -597,7 +665,8 @@ public final class Utils {
     }
   }
 
-  private static void setTreeState(@Nonnull final JTree tree, @Nonnull final TreePath path, final boolean recursively, final boolean unfold) {
+  private static void setTreeState(@Nonnull final JTree tree, @Nonnull final TreePath path,
+                                   final boolean recursively, final boolean unfold) {
     final Object lastNode = path.getLastPathComponent();
     for (int i = 0; i < tree.getModel().getChildCount(lastNode); i++) {
       final Object child = tree.getModel().getChild(lastNode, i);
@@ -626,7 +695,8 @@ public final class Utils {
   }
 
   @Nullable
-  public static Point2D findRectEdgeIntersection(@Nonnull final Rectangle2D rect, final double outboundX, final double outboundY) {
+  public static Point2D findRectEdgeIntersection(@Nonnull final Rectangle2D rect,
+                                                 final double outboundX, final double outboundY) {
     final int detectedSide = rect.outcode(outboundX, outboundY);
 
     if ((detectedSide & (Rectangle2D.OUT_TOP | Rectangle2D.OUT_BOTTOM)) != 0) {
@@ -667,13 +737,16 @@ public final class Utils {
   public static boolean isPlantUmlFileExtension(@Nonnull final String lowerCasedTrimmedExtension) {
     boolean result = false;
     if (lowerCasedTrimmedExtension.length() > 1 && lowerCasedTrimmedExtension.charAt(0) == 'p') {
-      result = "pu".equals(lowerCasedTrimmedExtension) || "puml".equals(lowerCasedTrimmedExtension) || "plantuml".equals(lowerCasedTrimmedExtension);
+      result =
+          "pu".equals(lowerCasedTrimmedExtension) || "puml".equals(lowerCasedTrimmedExtension) ||
+              "plantuml".equals(lowerCasedTrimmedExtension);
     }
     return result;
   }
 
   @Nullable
-  public static Image scaleImage(@Nonnull final Image src, final double baseScaleX, final double baseScaleY, final double scale) {
+  public static Image scaleImage(@Nonnull final Image src, final double baseScaleX,
+                                 final double baseScaleY, final double scale) {
     final int imgw = src.getWidth(null);
     final int imgh = src.getHeight(null);
 
@@ -691,7 +764,9 @@ public final class Utils {
         g.drawImage(src, 0, 0, scaledW, scaledH, null);
         g.dispose();
       } catch (OutOfMemoryError e) {
-        LOGGER.error("OutOfmemoryError in scaleImage (" + baseScaleX + ',' + baseScaleY + ',' + scale + ')', e);
+        LOGGER.error(
+            "OutOfmemoryError in scaleImage (" + baseScaleX + ',' + baseScaleY + ',' + scale + ')',
+            e);
         throw e;
       }
 
@@ -700,17 +775,22 @@ public final class Utils {
   }
 
   @Nonnull
-  public static Image renderWithTransparency(final float opacity, @Nonnull final AbstractElement element, @Nonnull final MindMapPanelConfig config, @Nonnull final RenderQuality quality) {
+  public static Image renderWithTransparency(final float opacity,
+                                             @Nonnull final AbstractElement element,
+                                             @Nonnull final MindMapPanelConfig config,
+                                             @Nonnull final RenderQuality quality) {
     final AbstractElement cloned = element.makeCopy();
     final Rectangle2D bounds = cloned.getBounds();
 
-    final float increase = config.safeScaleFloatValue(config.getElementBorderWidth() + config.getShadowOffset(), 0.0f);
+    final float increase =
+        config.safeScaleFloatValue(config.getElementBorderWidth() + config.getShadowOffset(), 0.0f);
     final int imageWidth = (int) Math.round(bounds.getWidth() + increase);
     final int imageHeight = (int) Math.round(bounds.getHeight() + increase);
 
     bounds.setRect(0.0d, 0.0d, bounds.getWidth(), bounds.getHeight());
 
-    final BufferedImage result = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+    final BufferedImage result =
+        new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
 
     for (int y = 0; y < imageHeight; y++) {
       for (int x = 0; x < imageWidth; x++) {
@@ -761,12 +841,12 @@ public final class Utils {
   @Nonnull
   @MustNotContainNull
   private static List<JMenuItem> findPopupMenuItems(
-          @Nonnull final PluginContext context,
-          @Nonnull final PopUpSection section,
-          final boolean fullScreenModeActive,
-          @Nonnull @MayContainNull final List<JMenuItem> list,
-          @Nullable final Topic topicUnderMouse,
-          @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems
+      @Nonnull final PluginContext context,
+      @Nonnull final PopUpSection section,
+      final boolean fullScreenModeActive,
+      @Nonnull @MayContainNull final List<JMenuItem> list,
+      @Nullable final Topic topicUnderMouse,
+      @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems
   ) {
     list.clear();
 
@@ -776,8 +856,8 @@ public final class Utils {
       }
       if (p.getSection() == section) {
         if (!(p.needsTopicUnderMouse() || p.needsSelectedTopics())
-                || (p.needsTopicUnderMouse() && topicUnderMouse != null)
-                || (p.needsSelectedTopics() && context.getSelectedTopics().length > 0)) {
+            || (p.needsTopicUnderMouse() && topicUnderMouse != null)
+            || (p.needsSelectedTopics() && context.getSelectedTopics().length > 0)) {
 
           final JMenuItem item = p.makeMenuItem(context, topicUnderMouse);
           if (item != null) {
@@ -798,7 +878,10 @@ public final class Utils {
 
   @Nonnull
   @MustNotContainNull
-  private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu, @Nullable final JMenu subMenu, @Nonnull @MustNotContainNull final List<JMenuItem> items) {
+  private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu,
+                                                      @Nullable final JMenu subMenu,
+                                                      @Nonnull @MustNotContainNull
+                                                      final List<JMenuItem> items) {
     if (!items.isEmpty()) {
       if (menu.getComponentCount() > 0) {
         menu.add(UI_COMPO_FACTORY.makeMenuSeparator());
@@ -818,7 +901,8 @@ public final class Utils {
     return items;
   }
 
-  public static boolean isDataFlavorAvailable(@Nonnull final Clipboard clipboard, @Nonnull final DataFlavor flavor) {
+  public static boolean isDataFlavorAvailable(@Nonnull final Clipboard clipboard,
+                                              @Nonnull final DataFlavor flavor) {
     boolean result = false;
     try {
       result = clipboard.isDataFlavorAvailable(flavor);
@@ -830,33 +914,50 @@ public final class Utils {
 
   @Nonnull
   public static JPopupMenu makePopUp(
-          @Nonnull final PluginContext context,
-          final boolean fullScreenModeActive,
-          @Nullable final Topic topicUnderMouse
+      @Nonnull final PluginContext context,
+      final boolean fullScreenModeActive,
+      @Nullable final Topic topicUnderMouse
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
-    final List<PopUpMenuItemPlugin> pluginMenuItems = MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
+    final List<PopUpMenuItemPlugin> pluginMenuItems =
+        MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
     final List<JMenuItem> tmpList = new ArrayList<>();
 
     final boolean isModelNotEmpty = context.getPanel().getModel().getRoot() != null;
 
-    putAllItemsAsSection(result, null, findPopupMenuItems(context, PopUpSection.MAIN, fullScreenModeActive, tmpList, topicUnderMouse, pluginMenuItems));
-    putAllItemsAsSection(result, null, findPopupMenuItems(context, PopUpSection.MANIPULATORS, fullScreenModeActive, tmpList, topicUnderMouse, pluginMenuItems));
-    putAllItemsAsSection(result, null, findPopupMenuItems(context, PopUpSection.EXTRAS, fullScreenModeActive, tmpList, topicUnderMouse, pluginMenuItems));
+    putAllItemsAsSection(result, null,
+        findPopupMenuItems(context, PopUpSection.MAIN, fullScreenModeActive, tmpList,
+            topicUnderMouse, pluginMenuItems));
+    putAllItemsAsSection(result, null,
+        findPopupMenuItems(context, PopUpSection.MANIPULATORS, fullScreenModeActive, tmpList,
+            topicUnderMouse, pluginMenuItems));
+    putAllItemsAsSection(result, null,
+        findPopupMenuItems(context, PopUpSection.EXTRAS, fullScreenModeActive, tmpList,
+            topicUnderMouse, pluginMenuItems));
 
-    final JMenu exportMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDExporters.SubmenuName"));
+    final JMenu exportMenu =
+        UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDExporters.SubmenuName"));
     exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
 
-    final JMenu importMenu = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDImporters.SubmenuName"));
+    final JMenu importMenu =
+        UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDImporters.SubmenuName"));
     importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
 
-    putAllItemsAsSection(result, importMenu, findPopupMenuItems(context, PopUpSection.IMPORT, fullScreenModeActive, tmpList, topicUnderMouse, pluginMenuItems));
+    putAllItemsAsSection(result, importMenu,
+        findPopupMenuItems(context, PopUpSection.IMPORT, fullScreenModeActive, tmpList,
+            topicUnderMouse, pluginMenuItems));
     if (isModelNotEmpty) {
-      putAllItemsAsSection(result, exportMenu, findPopupMenuItems(context, PopUpSection.EXPORT, fullScreenModeActive, tmpList, topicUnderMouse, pluginMenuItems));
+      putAllItemsAsSection(result, exportMenu,
+          findPopupMenuItems(context, PopUpSection.EXPORT, fullScreenModeActive, tmpList,
+              topicUnderMouse, pluginMenuItems));
     }
 
-    putAllItemsAsSection(result, null, findPopupMenuItems(context, PopUpSection.TOOLS, fullScreenModeActive, tmpList, topicUnderMouse, pluginMenuItems));
-    putAllItemsAsSection(result, null, findPopupMenuItems(context, PopUpSection.MISC, fullScreenModeActive, tmpList, topicUnderMouse, pluginMenuItems));
+    putAllItemsAsSection(result, null,
+        findPopupMenuItems(context, PopUpSection.TOOLS, fullScreenModeActive, tmpList,
+            topicUnderMouse, pluginMenuItems));
+    putAllItemsAsSection(result, null,
+        findPopupMenuItems(context, PopUpSection.MISC, fullScreenModeActive, tmpList,
+            topicUnderMouse, pluginMenuItems));
 
     return result;
   }
@@ -865,11 +966,13 @@ public final class Utils {
     return mouseEvent != null && mouseEvent.getButton() != 0 && mouseEvent.isPopupTrigger();
   }
 
-  public static boolean isKeyStrokeEvent(@Nullable final KeyStroke keyStroke, final int keyEventType, @Nullable final KeyEvent event) {
+  public static boolean isKeyStrokeEvent(@Nullable final KeyStroke keyStroke,
+                                         final int keyEventType, @Nullable final KeyEvent event) {
     boolean result = false;
     if (keyStroke != null && event != null) {
       if (keyEventType == keyStroke.getKeyEventType()) {
-        result = ((keyStroke.getModifiers() & event.getModifiers()) == keyStroke.getModifiers()) && (keyStroke.getKeyCode() == event.getKeyCode());
+        result = ((keyStroke.getModifiers() & event.getModifiers()) == keyStroke.getModifiers()) &&
+            (keyStroke.getKeyCode() == event.getKeyCode());
       }
     }
     return result;
@@ -880,21 +983,22 @@ public final class Utils {
   private static List<JButton> findAllOptionPaneButtons(@Nonnull final JComponent component) {
     final List<JButton> result = new ArrayList<>();
     Arrays.stream(component.getComponents())
-            .filter(x -> x instanceof JComponent)
-            .map(x -> (JComponent) x)
-            .forEach(x -> {
-              if (x instanceof JButton) {
-                if ("OptionPane.button".equals(x.getName())) {
-                  result.add((JButton) x);
-                }
-              } else {
-                result.addAll(findAllOptionPaneButtons(x));
-              }
-            });
+        .filter(x -> x instanceof JComponent)
+        .map(x -> (JComponent) x)
+        .forEach(x -> {
+          if (x instanceof JButton) {
+            if ("OptionPane.button".equals(x.getName())) {
+              result.add((JButton) x);
+            }
+          } else {
+            result.addAll(findAllOptionPaneButtons(x));
+          }
+        });
     return result;
   }
 
-  private static void replaceActionListenerForButton(@Nonnull final JButton button, @Nonnull final ActionListener listener) {
+  private static void replaceActionListenerForButton(@Nonnull final JButton button,
+                                                     @Nonnull final ActionListener listener) {
     final ActionListener[] currentListeners = button.getActionListeners();
     for (final ActionListener l : currentListeners) {
       button.removeActionListener(l);
@@ -906,10 +1010,10 @@ public final class Utils {
   @SafeVarargs
   @ReturnsOriginal
   public static JComponent catchEscInParentDialog(
-          @Nonnull final JComponent component,
-          @Nonnull final DialogProvider dialogProvider,
-          @Nullable final Predicate<JDialog> doClose,
-          @Nonnull @MustNotContainNull final Consumer<JDialog>... beforeClose) {
+      @Nonnull final JComponent component,
+      @Nonnull final DialogProvider dialogProvider,
+      @Nullable final Predicate<JDialog> doClose,
+      @Nonnull @MustNotContainNull final Consumer<JDialog>... beforeClose) {
     component.addHierarchyListener(new HierarchyListener() {
 
       final Consumer<JDialog> processor = dialog -> {
@@ -919,7 +1023,8 @@ public final class Utils {
         } else {
           if (doClose.test(dialog)) {
             close = dialogProvider
-                    .msgConfirmOkCancel(dialog, BUNDLE.getString("Utils.confirmActionTitle"), BUNDLE.getString("Utils.closeForContentChange"));
+                .msgConfirmOkCancel(dialog, BUNDLE.getString("Utils.confirmActionTitle"),
+                    BUNDLE.getString("Utils.closeForContentChange"));
           } else {
             close = true;
           }
@@ -938,22 +1043,24 @@ public final class Utils {
           }
         }
       };
-      private final KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+      private final KeyStroke escapeKeyStroke =
+          KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
 
       private final List<WindowListener> foundWindowListeners = new ArrayList<>();
 
       @Override
       public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
         final Window window = SwingUtilities.getWindowAncestor(component);
-        if (window instanceof JDialog && (e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) != 0) {
+        if (window instanceof JDialog &&
+            (e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) != 0) {
           final JDialog dialog = (JDialog) window;
 
           final List<JButton> dialogButtons = findAllOptionPaneButtons(dialog.getRootPane());
           dialogButtons.stream()
-                  .filter(x -> "cancel".equalsIgnoreCase(x.getText()))
-                  .forEach(x -> replaceActionListenerForButton(x, be -> {
-                    processor.accept(dialog);
-                  }));
+              .filter(x -> "cancel".equalsIgnoreCase(x.getText()))
+              .forEach(x -> replaceActionListenerForButton(x, be -> {
+                processor.accept(dialog);
+              }));
 
           dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
@@ -1003,7 +1110,8 @@ public final class Utils {
             dialog.addWindowListener(windowListener);
           }
 
-          final InputMap inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+          final InputMap inputMap =
+              dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
           inputMap.put(escapeKeyStroke, "PRESSING_ESCAPE");
           final ActionMap actionMap = dialog.getRootPane().getActionMap();
           actionMap.put("PRESSING_ESCAPE", new AbstractAction() {

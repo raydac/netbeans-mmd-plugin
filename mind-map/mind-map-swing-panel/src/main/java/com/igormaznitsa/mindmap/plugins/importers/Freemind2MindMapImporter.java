@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.plugins.importers;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 
-
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -42,6 +41,7 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -54,9 +54,12 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.jsoup.parser.Parser;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -66,11 +69,13 @@ import org.w3c.dom.NodeList;
 
 public class Freemind2MindMapImporter extends AbstractImporter {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_FREEMIND);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_FREEMIND);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Freemind2MindMapImporter.class);
 
-  private static final Set<String> TOKEN_NEEDS_NEXT_LINE = new HashSet<>(Arrays.asList("br", "div", "p", "li"));
+  private static final Set<String> TOKEN_NEEDS_NEXT_LINE =
+      new HashSet<>(Arrays.asList("br", "div", "p", "li"));
 
   @Nonnull
   private static String findArrowlinkDestination(@Nonnull final Element element) {
@@ -78,7 +83,10 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     return arrows.isEmpty() ? "" : findAttribute(arrows.get(0), "destination");
   }
 
-  private static void processImageLinkForTopic(@Nonnull final File rootFolder, @Nonnull final Topic topic, @Nonnull @MustNotContainNull final String[] imageUrls) {
+  private static void processImageLinkForTopic(@Nonnull final File rootFolder,
+                                               @Nonnull final Topic topic,
+                                               @Nonnull @MustNotContainNull
+                                               final String[] imageUrls) {
     for (final String s : imageUrls) {
       try {
         URI imageUri = URI.create(s);
@@ -91,7 +99,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
         }
 
         if (file.isFile()) {
-          topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, Utils.rescaleImageAndEncodeAsBase64(file, -1));
+          topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY,
+              Utils.rescaleImageAndEncodeAsBase64(file, -1));
           break;
         }
       } catch (Exception ex) {
@@ -102,7 +111,10 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
   @Nonnull
   @ReturnsOriginal
-  private static StringBuilder processHtmlElement(@Nonnull final NodeList list, @Nonnull final StringBuilder builder, @Nonnull @MustNotContainNull final List<String> imageURLs) {
+  private static StringBuilder processHtmlElement(@Nonnull final NodeList list,
+                                                  @Nonnull final StringBuilder builder,
+                                                  @Nonnull @MustNotContainNull
+                                                  final List<String> imageURLs) {
     for (int i = 0; i < list.getLength(); i++) {
       final Node n = list.item(i);
       switch (n.getNodeType()) {
@@ -136,7 +148,10 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
   @Nonnull
   @ReturnsOriginal
-  private static StringBuilder extractTextFromHtmlElement(@Nonnull final Element element, @Nonnull final StringBuilder buffer, @Nonnull @MustNotContainNull final List<String> imageURLs) {
+  private static StringBuilder extractTextFromHtmlElement(@Nonnull final Element element,
+                                                          @Nonnull final StringBuilder buffer,
+                                                          @Nonnull @MustNotContainNull
+                                                          final List<String> imageURLs) {
     processHtmlElement(element.getChildNodes(), buffer, imageURLs);
     return buffer;
   }
@@ -144,7 +159,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   @Nonnull
   @MustNotContainNull
   private static List<RichContent> extractRichContent(@Nonnull final Element richContentElement) {
-    final List<Element> richContents = Utils.findDirectChildrenForName(richContentElement, "richcontent");
+    final List<Element> richContents =
+        Utils.findDirectChildrenForName(richContentElement, "richcontent");
 
     final List<RichContent> result = new ArrayList<>();
 
@@ -155,7 +171,9 @@ public class Freemind2MindMapImporter extends AbstractImporter {
       try {
         foundImageUrls.clear();
         final RichContentType type = RichContentType.valueOf(textType);
-        final String text = extractTextFromHtmlElement(e, new StringBuilder(), foundImageUrls).toString().replace("\r", "");
+        final String text =
+            extractTextFromHtmlElement(e, new StringBuilder(), foundImageUrls).toString()
+                .replace("\r", "");
         result.add(new RichContent(type, text, foundImageUrls));
       } catch (IllegalArgumentException ex) {
         LOGGER.warn("Unknown node type : " + textType);
@@ -166,7 +184,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   }
 
   @Nonnull
-  private static String findAttribute(@Nonnull final Element element, @Nonnull final String attribute) {
+  private static String findAttribute(@Nonnull final Element element,
+                                      @Nonnull final String attribute) {
     final NamedNodeMap map = element.getAttributes();
     for (int i = 0; i < map.getLength(); i++) {
       final Attr attr = (Attr) map.item(i);
@@ -180,15 +199,29 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Freemind2MindMap.openDialogTitle"), null, "mm", "Freemind files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
+    final File file = this.selectFileForExtension(context,
+        Texts.getString("MMDImporters.Freemind2MindMap.openDialogTitle"), null, "mm",
+        "Freemind files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
     }
 
-    final Document document = Utils.loadHtmlDocument(new FileInputStream(file), "UTF-8", true);
+    try (final FileInputStream in = new FileInputStream(file)) {
+      final File rootFolder = file.getParentFile();
+      return extractTopics(rootFolder == null ? file : rootFolder, in);
+    }
+  }
+
+  @Nonnull
+  public MindMap extractTopics(@Nonnull final File rootFolder,
+                               @Nonnull final FileInputStream inputStream)
+      throws ParserConfigurationException, IOException, XPathExpressionException {
+    final Document document = Utils.load(inputStream, "UTF-8", Parser.xmlParser(), true);
+
     final XPath xpath = XPathFactory.newInstance().newXPath();
-    final Element rootElement = (Element) xpath.evaluate("/html/body/map", document, XPathConstants.NODE);
+    final Element rootElement =
+        (Element) xpath.evaluate("/map", document, XPathConstants.NODE);
 
     if (rootElement == null) {
       throw new IllegalArgumentException("Can't parse freemind file as xhtml");
@@ -203,7 +236,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     if (list.isEmpty()) {
       Assertions.assertNotNull(resultedMap.getRoot()).setText("Empty");
     } else {
-      parseTopic(file.getParentFile(), resultedMap, null, resultedMap.getRoot(), list.get(0), idTopicMap, linksMap);
+      parseTopic(rootFolder, resultedMap, null, resultedMap.getRoot(), list.get(0), idTopicMap,
+          linksMap);
     }
 
     for (final Map.Entry<String, String> l : linksMap.entrySet()) {
@@ -217,7 +251,10 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     return resultedMap;
   }
 
-  private void parseTopic(@Nonnull final File rootFolder, @Nonnull final MindMap map, @Nullable Topic parent, @Nullable Topic preGeneratedTopic, @Nonnull Element element, @Nonnull final Map<String, Topic> idTopicMap, @Nonnull final Map<String, String> linksMap) {
+  private void parseTopic(@Nonnull final File rootFolder, @Nonnull final MindMap map,
+                          @Nullable Topic parent, @Nullable Topic preGeneratedTopic,
+                          @Nonnull Element element, @Nonnull final Map<String, Topic> idTopicMap,
+                          @Nonnull final Map<String, String> linksMap) {
 
     final String text = findAttribute(element, "text");
     final String id = findAttribute(element, "id");
@@ -246,14 +283,17 @@ public class Freemind2MindMapImporter extends AbstractImporter {
       final Color backgroundColorConverted = Utils.html2color(backgroundColor, false);
 
       if (colorConverted != null) {
-        topicToProcess.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(colorConverted, false));
+        topicToProcess.setAttribute(ATTR_TEXT_COLOR.getText(),
+            Utils.color2html(colorConverted, false));
       }
 
       if (backgroundColorConverted != null) {
-        topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(backgroundColorConverted, false));
+        topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(),
+            Utils.color2html(backgroundColorConverted, false));
       } else {
         if (colorConverted != null) {
-          topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(colorConverted), false));
+          topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(),
+              Utils.color2html(Utils.makeContrastColor(colorConverted), false));
         }
       }
     }
@@ -348,7 +388,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     private final String text;
     private final String[] imageUrls;
 
-    private RichContent(@Nonnull final RichContentType type, @Nonnull final String text, @Nonnull @MustNotContainNull final List<String> foundImageUrls) {
+    private RichContent(@Nonnull final RichContentType type, @Nonnull final String text,
+                        @Nonnull @MustNotContainNull final List<String> foundImageUrls) {
       this.type = type;
       this.text = text;
       this.imageUrls = foundImageUrls.toArray(new String[0]);

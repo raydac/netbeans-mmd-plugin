@@ -9,7 +9,7 @@ repositories {
     mavenLocal()
 }
 
-version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.5.2-SNAPSHOT"
+version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.5.2"
 
 intellij {
     version 'IC-181.5684.4'
@@ -18,13 +18,13 @@ intellij {
     updateSinceUntilBuild false
 }
 
-def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.5.2-SNAPSHOT"
+def mindMapModelVersion = project.hasProperty('mm_model_version') ? project.getProperty('mm_model_version') : "1.5.2"
 def mindMapCommonVersion = project.hasProperty('mm_ide_common_version') ? project.getProperty('mm_ide_common_version') : project.version
 def mindMapPanelVersion = project.hasProperty('mm_panel_version') ? project.getProperty('mm_panel_version') : project.version
 def commonsIoVersion = project.hasProperty('commonsio_version') ? project.getProperty('commonsio_version') : "2.11.0"
 def commonsLangVersion = project.hasProperty('commonslang_version') ? project.getProperty('commonslang_version') : "3.12.0"
 def iharderVersion = project.hasProperty('iharder_version') ? project.getProperty('iharder_version') : "2.3.9"
-def jsoupVersion = project.hasProperty('jsoup_version') ? project.getProperty('jsoup_version') : "1.11.3"
+def jsoupVersion = project.hasProperty('jsoup_version') ? project.getProperty('jsoup_version') : "1.15.3"
 def jsonVersion = project.hasProperty('json_version') ? project.getProperty('json_version') : "20180813"
 
 sourceCompatibility = 1.8
