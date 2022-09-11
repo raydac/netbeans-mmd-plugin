@@ -1604,7 +1604,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private boolean createKnowledgeFolder(@Nonnull final File folder) {
     boolean result = false;
-    if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, true)) {
+    if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false)) {
       final File knowledgeFolder = new File(folder, Context.KNOWLEDGE_FOLDER);
       if (knowledgeFolder.mkdirs()) {
         result = true;
@@ -1635,7 +1635,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     if (folderChooser.showSaveDialog(SciaRetoStarter.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       final File file = folderChooser.getSelectedFile();
       if (file.isDirectory()) {
-        if (file.list().length > 0) {
+        final String [] files = file.list();
+        if (files == null) {
+          LOGGER.error("Can't create folder : " + file); //NOI18N
+          DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Error during folder process: " + file);
+          return;
+        }
+        if (files.length > 0) {
           DialogProviderManager.getInstance().getDialogProvider().msgError(this, "File '" + file.getName() + "' already exists and non-empty!");
         } else {
           prepareAndOpenProjectFolder(file);
