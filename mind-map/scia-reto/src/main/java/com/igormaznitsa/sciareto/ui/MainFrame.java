@@ -1602,22 +1602,22 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }//GEN-LAST:event_menuExitActionPerformed
 
-  private boolean createKnowledgeFolder(@Nonnull final File folder) {
-    boolean result = false;
+  private boolean tryCreateKnowledgeFolderIn(@Nonnull final File folder) {
+    boolean created = false;
     if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false)) {
       final File knowledgeFolder = new File(folder, Context.KNOWLEDGE_FOLDER);
       if (knowledgeFolder.mkdirs()) {
-        result = true;
+        created = true;
       } else {
         LOGGER.warn("Can't create folder : " + Context.KNOWLEDGE_FOLDER); //NOI18N
       }
     }
-    return result;
+    return created;
   }
 
   private boolean prepareAndOpenProjectFolder(@Nonnull final File folder) {
     boolean result = false;
-    createKnowledgeFolder(folder);
+    tryCreateKnowledgeFolderIn(folder);
     if (openProject(folder, true)) {
       result = true;
       this.focusInTree(folder);
