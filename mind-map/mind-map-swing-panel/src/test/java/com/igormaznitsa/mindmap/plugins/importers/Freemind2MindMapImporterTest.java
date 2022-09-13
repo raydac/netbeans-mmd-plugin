@@ -10,13 +10,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import org.junit.Test;
 
-public class Freemind2MindMapImporterTest {
+public class Freemind2MindMapImporterTest extends AbstractImporterTest {
   private static final Freemind2MindMapImporter INSTANCE = new Freemind2MindMapImporter();
-
-  private static File findFile(final String resource) throws Exception {
-    return new File(
-        requireNonNull(Freemind2MindMapImporterTest.class.getResource(resource)).toURI());
-  }
 
   @Test
   public void testFile1() throws Exception {

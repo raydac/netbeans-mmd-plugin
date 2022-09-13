@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.plugins.importers;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 
-
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.GetUtils;
@@ -44,6 +43,7 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -198,6 +198,10 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       return null;
     }
 
+    return this.doImportFromFile(file);
+  }
+
+  MindMap doImportFromFile(File file) throws IOException {
     final ZipFile zipFile = new ZipFile(file);
     final Manifest manifest = new Manifest(zipFile, "manifest.xml");
     final ParsedContent content = new ParsedContent(zipFile, "content.xml");
@@ -222,7 +226,6 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       }
 
       processURLLinks(result, content, rootRef, mapIdToTopic);
-
     }
     return result;
   }

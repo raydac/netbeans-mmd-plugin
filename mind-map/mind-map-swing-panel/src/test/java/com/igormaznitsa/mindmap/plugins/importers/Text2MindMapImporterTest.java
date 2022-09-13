@@ -30,23 +30,23 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-public class Text2MindMapImporterTest {
+public class Text2MindMapImporterTest extends AbstractImporterTest {
   private static final Text2MindMapImporter INSTANCE = new Text2MindMapImporter();
 
   @Test
-  public void testDoImport_Empty() throws Exception {
+  public void testDoImport_Empty() {
     final MindMap result = INSTANCE.makeFromLines(Collections.singletonList("          "));
     assertNull(result.getRoot());
   }
 
   @Test
-  public void testDoImport_OnlyRoot() throws Exception {
+  public void testDoImport_OnlyRoot() {
     final MindMap result = INSTANCE.makeFromLines(Collections.singletonList("\tSolar system   "));
     assertEquals("Solar system", result.getRoot().getText());
   }
 
   @Test
-  public void testDoImport_Multilevel() throws Exception {
+  public void testDoImport_Multilevel() {
     final MindMap result = INSTANCE.makeFromLines(asList("Solar system", "\tMercury", "\tVenus", "\tEarth", "\t\tMoon", "\tMars", "\t\tFobos", "\t\tDemos", "Jupiter"));
     assertEquals("Solar system", result.getRoot().getText());
     assertEquals(5, result.getRoot().getChildren().size());
@@ -59,7 +59,7 @@ public class Text2MindMapImporterTest {
 
 
   @Test
-  public void testDoImport_Multilevel2() throws Exception {
+  public void testDoImport_Multilevel2() {
     final MindMap result = INSTANCE.makeFromLines(asList("solar system", "\tjupiter", "\tmars", " \t\tfobos", "\t\tdeimos", "\tpluto", "\tsaturn"));
     assertEquals("solar system", result.getRoot().getText());
     assertEquals(4, result.getRoot().getChildren().size());

@@ -39,6 +39,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,16 +49,21 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
+import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 public class CoggleMM2MindMapImporter extends AbstractImporter {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_COGGLE2MM);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_COGGLE2MM);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CoggleMM2MindMapImporter.class);
-  private static final Pattern MD_IMAGE_LINK = Pattern.compile("\\!\\[(.*?)\\]\\((.*?)\\)", Pattern.MULTILINE | Pattern.UNICODE_CASE);
-  private static final Pattern MD_URL_LINK = Pattern.compile("(?<!\\!)\\[(.*?)\\]\\((.*?)\\)", Pattern.MULTILINE | Pattern.UNICODE_CASE);
+  private static final Pattern MD_IMAGE_LINK =
+      Pattern.compile("\\!\\[(.*?)\\]\\((.*?)\\)", Pattern.MULTILINE | Pattern.UNICODE_CASE);
+  private static final Pattern MD_URL_LINK =
+      Pattern.compile("(?<!\\!)\\[(.*?)\\]\\((.*?)\\)", Pattern.MULTILINE | Pattern.UNICODE_CASE);
 
   @Nullable
   private static String loadImageForURLAndEncode(@Nonnull final String imageUrl) {
@@ -83,7 +89,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   }
 
   @Nullable
-  private static String loadFirstSuccessfulImage(@Nonnull @MustNotContainNull final List<String> urls) {
+  private static String loadFirstSuccessfulImage(
+      @Nonnull @MustNotContainNull final List<String> urls) {
     String result = null;
     for (final String url : urls) {
       result = loadImageForURLAndEncode(url);
@@ -95,7 +102,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   }
 
   @Nullable
-  private static MMapURI getFirstSuccessfulURL(@Nonnull @MustNotContainNull final List<String> urls) {
+  private static MMapURI getFirstSuccessfulURL(
+      @Nonnull @MustNotContainNull final List<String> urls) {
     MMapURI result = null;
     for (final String url : urls) {
       try {
@@ -113,13 +121,24 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   @Override
   @Nullable
   public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.CoggleMM2MindMap.openDialogTitle"), null, "mm", "Coggle MM files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
+    final File file = this.selectFileForExtension(context,
+        Texts.getString("MMDImporters.CoggleMM2MindMap.openDialogTitle"), null, "mm",
+        "Coggle MM files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
     }
 
-    final Document document = Utils.loadXmlDocument(new FileInputStream(file), "UTF-8", true);
+    return doImportFileAsMap(file);
+  }
+
+   MindMap doImportFileAsMap(final File file)
+      throws SAXException, IOException, ParserConfigurationException {
+
+    final Document document;
+    try (final FileInputStream in = new FileInputStream(file)) {
+      document = Utils.loadXmlDocument(in, "UTF-8", true);
+    }
 
     final MindMap result = new MindMap(true);
     Assertions.assertNotNull(result.getRoot()).setText("Empty");
@@ -133,13 +152,13 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     } else {
       throw new IllegalArgumentException("File is not Coggle mind map");
     }
-
     return result;
   }
 
   @Nonnull
   @MustNotContainNull
-  private List<String> extractImageURLs(@Nonnull final String mdText, @Nonnull final StringBuilder resultText) {
+  private List<String> extractImageURLs(@Nonnull final String mdText,
+                                        @Nonnull final StringBuilder resultText) {
     final List<String> result = new ArrayList<>();
     final Matcher matcher = MD_IMAGE_LINK.matcher(mdText);
     int lastFoundEnd = 0;
@@ -159,7 +178,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
 
   @Nonnull
   @MustNotContainNull
-  private List<String> extractURLs(@Nonnull final String mdText, @Nonnull final StringBuilder resultText) {
+  private List<String> extractURLs(@Nonnull final String mdText,
+                                   @Nonnull final StringBuilder resultText) {
     final List<String> result = new ArrayList<>();
     final Matcher matcher = MD_URL_LINK.matcher(mdText);
     int lastFoundEnd = 0;
@@ -177,7 +197,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  private void parseTopic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nullable final Topic preGeneratedOne, @Nonnull final Element element) {
+  private void parseTopic(@Nonnull final MindMap map, @Nullable final Topic parent,
+                          @Nullable final Topic preGeneratedOne, @Nonnull final Element element) {
     final Topic topicToProcess;
     if (preGeneratedOne == null) {
       topicToProcess = Assertions.assertNotNull(parent).makeChild("", null);
@@ -186,7 +207,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     }
 
     final StringBuilder resultTextBuffer = new StringBuilder();
-    final List<String> foundImageURLs = extractImageURLs(element.getAttribute("TEXT"), resultTextBuffer);
+    final List<String> foundImageURLs =
+        extractImageURLs(element.getAttribute("TEXT"), resultTextBuffer);
     String nodeText = resultTextBuffer.toString();
     resultTextBuffer.setLength(0);
 
@@ -250,8 +272,10 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     }
 
     if (edgeColor != null) {
-      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), Utils.color2html(edgeColor, false));
-      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(edgeColor), false));
+      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
+          Utils.color2html(edgeColor, false));
+      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
+          Utils.color2html(Utils.makeContrastColor(edgeColor), false));
     }
 
     if (note.length() > 0) {

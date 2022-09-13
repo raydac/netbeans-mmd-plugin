@@ -6,12 +6,12 @@ import java.io.File;
 import java.util.zip.ZipFile;
 import org.junit.Test;
 
-public class XMind2MindMapImporterTest {
+public class XMind2MindMapImporterTest extends AbstractImporterTest {
 
   private static final XMind2MindMapImporter INSTANCE = new XMind2MindMapImporter();
 
   private ZipFile findZip(final String resource) throws Exception {
-    return new ZipFile(new File(this.getClass().getResource(resource).toURI()));
+    return new ZipFile(findFile(resource));
   }
 
   @Test

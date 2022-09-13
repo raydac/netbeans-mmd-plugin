@@ -43,6 +43,7 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,32 +72,38 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       return null;
     }
 
-    final JSONObject parsedJson;
-    parsedJson = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
+    try {
+      return this.doImportFile(file);
+    } catch (final IllegalArgumentException ex){
+      LOGGER.error("Can't parse", ex);
+      context.getDialogProvider().msgError(null, Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
+      return null;
+    }
+  }
 
-    MindMap resultedMap = null;
-
+  MindMap doImportFile(final File file) throws IOException {
+    final JSONObject parsedJson = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
     final Number formatVersion = parsedJson.getNumber("formatVersion");
     if (formatVersion == null) {
-      context.getDialogProvider().msgError(null, Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
-    } else {
-      resultedMap = new MindMap(true);
-      resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
-
-      final Topic mindMapRoot = Assertions.assertNotNull(resultedMap.getRoot());
-      final Map<Long, Topic> mapTopicId = new HashMap<>();
-
-      parseTopic(resultedMap, null, mindMapRoot, parsedJson, mapTopicId);
-
-      if (!mindMapRoot.getExtras().containsKey(Extra.ExtraType.FILE)) {
-        mindMapRoot.setExtra(new ExtraFile(new MMapURI(null, file, null)));
-      }
-
-      if (parsedJson.has("links")) {
-        final JSONArray links = parsedJson.getJSONArray("links");
-        processLinks(resultedMap, links, mapTopicId);
-      }
+      throw new IllegalArgumentException("Can't find formatVersion");
     }
+    final MindMap resultedMap = new MindMap(true);
+    resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
+
+    final Topic mindMapRoot = Assertions.assertNotNull(resultedMap.getRoot());
+    final Map<Long, Topic> mapTopicId = new HashMap<>();
+
+    parseTopic(resultedMap, null, mindMapRoot, parsedJson, mapTopicId);
+
+    if (!mindMapRoot.getExtras().containsKey(Extra.ExtraType.FILE)) {
+      mindMapRoot.setExtra(new ExtraFile(new MMapURI(null, file, null)));
+    }
+
+    if (parsedJson.has("links")) {
+      final JSONArray links = parsedJson.getJSONArray("links");
+      processLinks(resultedMap, links, mapTopicId);
+    }
+
     return resultedMap;
   }
 
