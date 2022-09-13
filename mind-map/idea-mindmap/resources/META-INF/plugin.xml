@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.5.2</version>
+    <version>1.5.3-SNAPSHOT</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,6 +12,9 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.5.3 (SNAPSHOT)</p>
+        <ul>
+        </ul>
         <p>1.5.2 (11-sep-2022)</p>
         <ul>
           <li>fixed use of Insert key as shortcut</li>

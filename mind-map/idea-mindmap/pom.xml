@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>idea-mindmap</artifactId>
@@ -117,6 +117,7 @@
                 <argument>-i</argument>
                 <argument>-S</argument>
                 <argument>-Pjsoup_version=${jsoup.version}</argument>
+                <argument>-Pjson_version=${json.version}</argument>
                 <argument>-Pcommonsio_version=${commons.io.version}</argument>
                 <argument>-Pcommonslang_version=${commons.lang.version}</argument>
                 <argument>-Piharder_version=${iharder.version}</argument>
