@@ -1145,7 +1145,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.43473737"
-     inkscape:cx="1307.6861"
+     inkscape:cx="1309.9863"
      inkscape:cy="488.80086"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -1789,7 +1789,7 @@
        cy="690.13257"
        rx="286.49033"
        ry="84.938522"
-       transform="matrix(1.0500728,0,0,1.3825416,-61.155277,-259.88086)" />
+       transform="matrix(1.578519,0,0,1.3825416,-655.25799,-259.88086)" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:260.463px;line-height:1.25;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:6.51163"
@@ -1800,7 +1800,7 @@
          id="tspan935"
          x="1068.2781"
          y="771.93048"
-         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000000;stroke-width:6.51163">1.5.2</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000000;stroke-width:6.51163">1.5.3-S</tspan><tspan
          sodipodi:role="line"
          x="1068.2781"
          y="1097.5093"
