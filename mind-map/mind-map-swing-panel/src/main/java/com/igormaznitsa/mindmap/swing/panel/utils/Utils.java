@@ -68,6 +68,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -99,7 +100,6 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import net.iharder.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jsoup.Jsoup;
@@ -1127,8 +1127,8 @@ public final class Utils {
   }
 
   @Nonnull
-  public static byte[] base64decode(@Nonnull final String text) throws IOException {
-    return Base64.decode(text);
+  public static byte[] base64decode(@Nonnull final String text) {
+    return Base64.getDecoder().decode(text);
   }
 
   @Nonnull
@@ -1146,7 +1146,7 @@ public final class Utils {
 
   @Nonnull
   public static String base64encode(@Nonnull final byte[] data) {
-    return Base64.encodeBytes(data);
+    return Base64.getEncoder().encodeToString(data);
   }
 
 }

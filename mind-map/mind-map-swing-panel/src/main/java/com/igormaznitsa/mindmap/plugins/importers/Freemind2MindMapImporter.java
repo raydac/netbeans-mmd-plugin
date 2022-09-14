@@ -214,7 +214,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   }
 
   @Nonnull
-  public MindMap extractTopics(@Nonnull final File rootFolder,
+  MindMap extractTopics(@Nonnull final File rootFolder,
                                @Nonnull final FileInputStream inputStream)
       throws ParserConfigurationException, IOException, XPathExpressionException {
     final Document document = Utils.load(inputStream, "UTF-8", Parser.xmlParser(), true);

@@ -129,10 +129,11 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
       return null;
     }
 
-    return doImportFileAsMap(file);
+    return doImportFile(file);
   }
 
-   MindMap doImportFileAsMap(final File file)
+  @Nonnull
+  MindMap doImportFile(@Nonnull final File file)
       throws SAXException, IOException, ParserConfigurationException {
 
     final Document document;

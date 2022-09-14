@@ -12,7 +12,7 @@ public class Novamind2MindMapImporterTest extends AbstractImporterTest {
 
   @Test
   public void testParseFile() throws Exception {
-    final MindMap map = INSTANCE.doImportFromFile(findFile("Novamind.nm5"));
+    final MindMap map = INSTANCE.doImportFile(findFile("Novamind.nm5"));
 
     final Topic root = assertNotNull(map.getRoot());
     assertEquals("Your Flight Plan", root.getText());

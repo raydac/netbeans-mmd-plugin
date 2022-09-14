@@ -81,7 +81,8 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     }
   }
 
-  MindMap doImportFile(final File file) throws IOException {
+  @Nonnull
+  MindMap doImportFile(@Nonnull final File file) throws IOException {
     final JSONObject parsedJson = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
     final Number formatVersion = parsedJson.getNumber("formatVersion");
     if (formatVersion == null) {

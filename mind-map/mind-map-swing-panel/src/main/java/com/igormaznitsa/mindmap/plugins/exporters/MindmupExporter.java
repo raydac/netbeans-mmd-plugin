@@ -130,7 +130,7 @@ public class MindmupExporter extends AbstractExporter {
       BufferedImage renderedImage;
       try {
         renderedImage = ImageIO.read(new ByteArrayInputStream(Utils.base64decode(encodedImage)));
-      } catch (IOException ex) {
+      } catch (Exception ex) {
         LOGGER.error("Can't render image for topic:" + topic);
         renderedImage = null;
       }

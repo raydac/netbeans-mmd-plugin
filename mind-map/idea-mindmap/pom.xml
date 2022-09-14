@@ -120,7 +120,6 @@
                 <argument>-Pjson_version=${json.version}</argument>
                 <argument>-Pcommonsio_version=${commons.io.version}</argument>
                 <argument>-Pcommonslang_version=${commons.lang.version}</argument>
-                <argument>-Piharder_version=${iharder.version}</argument>
                 <argument>-Pmm_plugin_version=${project.version}</argument>
                 <argument>-Pmm_model_version=${mindmap.model.version}</argument>
                 <argument>-Pmm_ide_common_version=${project.version}</argument>

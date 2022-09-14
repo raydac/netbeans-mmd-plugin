@@ -13,7 +13,7 @@ public class CoggleMM2MindMapImporterTest extends AbstractImporterTest {
 
   @Test
   public void testParseFile() throws Exception {
-    final MindMap map = INSTANCE.doImportFileAsMap(findFile("Coggle.mm"));
+    final MindMap map = INSTANCE.doImportFile(findFile("Coggle.mm"));
 
     final Topic root = assertNotNull(map.getRoot());
     assertEquals("GILGAMESH  ", root.getText());

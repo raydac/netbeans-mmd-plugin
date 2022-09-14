@@ -198,10 +198,11 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       return null;
     }
 
-    return this.doImportFromFile(file);
+    return this.doImportFile(file);
   }
 
-  MindMap doImportFromFile(File file) throws IOException {
+  @Nonnull
+  MindMap doImportFile(@Nonnull final File file) throws IOException {
     final ZipFile zipFile = new ZipFile(file);
     final Manifest manifest = new Manifest(zipFile, "manifest.xml");
     final ParsedContent content = new ParsedContent(zipFile, "content.xml");

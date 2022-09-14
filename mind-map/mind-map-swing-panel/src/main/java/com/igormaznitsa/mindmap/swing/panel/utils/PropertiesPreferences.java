@@ -155,11 +155,7 @@ public class PropertiesPreferences extends Preferences {
   @Nullable
   public byte[] getByteArray(@Nonnull final String key, @Nullable final byte[] def) {
     final String found = this.storage.getProperty(key);
-    try {
-      return found == null ? def : Utils.base64decode(found);
-    } catch (final IOException ex) {
-      throw new RuntimeException("Error during BASE64 decode", ex);
-    }
+    return found == null ? def : Utils.base64decode(found);
   }
 
   @Override

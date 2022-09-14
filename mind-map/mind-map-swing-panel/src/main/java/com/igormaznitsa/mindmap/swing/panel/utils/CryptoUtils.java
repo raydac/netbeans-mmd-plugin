@@ -15,7 +15,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import net.iharder.Base64;
 
 public final class CryptoUtils {
   private CryptoUtils() {
@@ -55,7 +54,7 @@ public final class CryptoUtils {
         throw new IllegalStateException(
             "Data can't be encrypted! Check encryption provider and settings!");
       }
-      return Base64.encodeBytes(encodedData);
+      return Utils.base64encode(encodedData);
     } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | IOException ex) {
       throw new RuntimeException(ex);
     }
@@ -68,7 +67,7 @@ public final class CryptoUtils {
       final Key aesKey = new SecretKeySpec(key, "AES");
       Cipher cipher = Cipher.getInstance("AES");
       cipher.init(Cipher.DECRYPT_MODE, aesKey);
-      final byte[] decrypted = cipher.doFinal(Base64.decode(text));
+      final byte[] decrypted = cipher.doFinal(Utils.base64decode(text));
       if (decrypted.length < 32) {
         return false;
       }
@@ -82,7 +81,7 @@ public final class CryptoUtils {
       return true;
     } catch (BadPaddingException ex) {
       return false;
-    } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException | IllegalBlockSizeException | IOException ex) {
+    } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException | IllegalBlockSizeException ex) {
       throw new RuntimeException(ex);
     }
   }

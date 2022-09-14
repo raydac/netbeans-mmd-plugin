@@ -23,7 +23,6 @@ def mindMapCommonVersion = project.getProperty('mm_ide_common_version')
 def mindMapPanelVersion = project.getProperty('mm_panel_version')
 def commonsIoVersion = project.getProperty('commonsio_version')
 def commonsLangVersion = project.getProperty('commonslang_version')
-def iharderVersion = project.getProperty('iharder_version')
 def jsoupVersion = project.getProperty('jsoup_version')
 def jsonVersion = project.getProperty('json_version')
 
@@ -40,7 +39,6 @@ dependencies {
     implementation 'commons-io:commons-io:' + commonsIoVersion
     implementation 'org.apache.commons:commons-lang3:' + commonsLangVersion
     implementation 'org.json:json:' + jsonVersion
-    implementation 'net.iharder:base64:' + iharderVersion
     implementation 'org.jsoup:jsoup:' + jsoupVersion
 
     implementation 'com.igormaznitsa:mind-map-model:' + mindMapModelVersion
