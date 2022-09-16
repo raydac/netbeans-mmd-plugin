@@ -29,26 +29,44 @@ import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import org.apache.commons.io.FilenameUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.filechooser.FileFilter;
+import org.apache.batik.anim.dom.SVGDOMImplementation;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.TranscodingHints;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.util.SVGConstants;
+import org.apache.commons.io.FilenameUtils;
 
 public final class PictureViewer extends AbstractEditor {
 
   public static final Set<String> SUPPORTED_FORMATS =
-      Collections.unmodifiableSet(new HashSet<>(Arrays.asList("png", "jpg", "gif"))); //NOI18N
+      Set.of("png", "jpg", "gif", "svg"); //NOI18N
   public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
     @Override
     public boolean accept(@Nonnull final File f) {
@@ -62,7 +80,7 @@ public final class PictureViewer extends AbstractEditor {
     @Override
     @Nonnull
     public String getDescription() {
-      return "Image file (*.png,*.jpg,*.gif)";
+      return "Image file (*.png,*.jpg,*.gif,*.svg)";
     }
   };
   private final TabTitle title;
@@ -70,10 +88,9 @@ public final class PictureViewer extends AbstractEditor {
   private final JScrollPane scrollPane = new EditorScrollPanel();
 
   private final ScalableImage imageViewer;
-  private transient BufferedImage image;
   private final ScaleStatusIndicator scaleLabel;
-
   private final JLabel imageInfoLabel;
+  private transient BufferedImage image;
 
   public PictureViewer(@Nonnull final Context context, @Nonnull final File file)
       throws IOException {
@@ -94,30 +111,24 @@ public final class PictureViewer extends AbstractEditor {
     final JButton buttonPrintImage = new JButton(loadMenuIcon("printer"));
     buttonPrintImage.setToolTipText("Print image");
     buttonPrintImage.setFocusPainted(false);
-    buttonPrintImage.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
-        final MMDPrintPanel printPanel =
-            new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
-                PrintableObject.newBuild().image(imageViewer.getImage()).build());
-        UiUtils.makeOwningDialogResizable(printPanel);
-        JOptionPane
-            .showMessageDialog(mainPanel, printPanel, "Print image", JOptionPane.PLAIN_MESSAGE);
-      }
+    buttonPrintImage.addActionListener(e -> {
+      SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
+      final MMDPrintPanel printPanel =
+          new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
+              PrintableObject.newBuild().image(imageViewer.getImage()).build());
+      UiUtils.makeOwningDialogResizable(printPanel);
+      JOptionPane
+          .showMessageDialog(mainPanel, printPanel, "Print image", JOptionPane.PLAIN_MESSAGE);
     });
 
     final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
     buttonClipboardImage.setToolTipText("Copy image to clipboard");
 
-    buttonClipboardImage.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final BufferedImage image = imageViewer.getImage();
-        if (image != null) {
-          Toolkit.getDefaultToolkit().getSystemClipboard()
-              .setContents(new ImageSelection(image), null);
-        }
+    buttonClipboardImage.addActionListener(e -> {
+      final BufferedImage image = imageViewer.getImage();
+      if (image != null) {
+        Toolkit.getDefaultToolkit().getSystemClipboard()
+            .setContents(new ImageSelection(image), null);
       }
     });
 
@@ -139,6 +150,39 @@ public final class PictureViewer extends AbstractEditor {
     loadContent(file);
   }
 
+  @Nonnull
+  private static BufferedImage renderSvg(@Nonnull final File svgFile)
+      throws IOException, TranscoderException {
+    final TranscodingHints transcoderHints = new TranscodingHints();
+    transcoderHints.put(ImageTranscoder.KEY_XML_PARSER_VALIDATING, Boolean.FALSE);
+    transcoderHints.put(ImageTranscoder.KEY_DOM_IMPLEMENTATION,
+        SVGDOMImplementation.getDOMImplementation());
+    transcoderHints.put(ImageTranscoder.KEY_DOCUMENT_ELEMENT_NAMESPACE_URI,
+        SVGConstants.SVG_NAMESPACE_URI);
+    transcoderHints.put(ImageTranscoder.KEY_DOCUMENT_ELEMENT, "svg");
+
+    final AtomicReference<BufferedImage> imagePointer = new AtomicReference<>();
+    try (InputStream in = Files.newInputStream(svgFile.toPath())) {
+      final TranscoderInput input = new TranscoderInput(in);
+      final ImageTranscoder imageTranscoder = new ImageTranscoder() {
+        @Override
+        public BufferedImage createImage(final int w, final int h) {
+          return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        }
+
+        @Override
+        public void writeImage(@Nonnull final BufferedImage image,
+                               @Nonnull final TranscoderOutput out)
+            throws TranscoderException {
+          imagePointer.set(image);
+        }
+      };
+      imageTranscoder.setTranscodingHints(transcoderHints);
+      imageTranscoder.transcode(input, null);
+    }
+    return imagePointer.get();
+  }
+
   @Override
   public void doZoomReset() {
     this.scaleLabel.doZoomReset();
@@ -153,7 +197,7 @@ public final class PictureViewer extends AbstractEditor {
   public void doZoomIn() {
     this.scaleLabel.doZoomIn();
   }
-  
+
   @Nonnull
   @Override
   public String getDefaultExtension() {
@@ -175,10 +219,13 @@ public final class PictureViewer extends AbstractEditor {
     BufferedImage loaded = null;
     if (file != null) {
       try {
-        loaded = ImageIO.read(file);
+        if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".svg")) {
+          loaded = renderSvg(file);
+        } else {
+          loaded = ImageIO.read(file);
+        }
       } catch (Exception ex) {
         logger.error("Can't load image", ex); //NOI18N
-        loaded = null;
       }
     }
 
