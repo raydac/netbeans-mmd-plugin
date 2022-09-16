@@ -1,3 +1,8 @@
+__1.5.3 (SNAPSHOT)__
+
+- SR:  added support of SVG images in viewer
+- ALL: rework Base64, now JDK API in use
+
 __1.5.2 (11-sep-2022)__
 
 - SR:  added way to set PlantUML security profile through preferences
