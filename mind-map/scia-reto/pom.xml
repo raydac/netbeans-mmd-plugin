@@ -32,7 +32,7 @@
     <rsyntax.version>3.2.0</rsyntax.version>
     <rsyntax.autocomplete.version>3.2.0</rsyntax.autocomplete.version>
     <jna.version>5.12.1</jna.version>
-    <jre.version>17.0.4.1+1</jre.version>
+    <jre.version>19+37</jre.version>
     <reactor.project.version>3.4.22</reactor.project.version>
     <flatlaf.version>2.4</flatlaf.version>
   </properties>
@@ -220,7 +220,7 @@
           <plugin>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>mvn-jlink-wrapper</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.0</version>
             <executions>
               <execution>
                 <id>cache-work-jdk</id>
