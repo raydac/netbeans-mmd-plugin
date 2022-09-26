@@ -29,7 +29,7 @@
     <batik.version>1.14</batik.version>
     <jlatexmath.version>1.0.7</jlatexmath.version>
     <plantuml.version>1.2022.7</plantuml.version>
-    <rsyntax.version>3.2.0</rsyntax.version>
+    <rsyntax.version>3.3.0</rsyntax.version>
     <rsyntax.autocomplete.version>3.2.0</rsyntax.autocomplete.version>
     <jna.version>5.12.1</jna.version>
     <jre.version>19+37</jre.version>
