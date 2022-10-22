@@ -15,6 +15,11 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 
+__1.5.3 (SNAPSHOT)__
+- SR:  embedded JDK updated to 19.0.1+11
+- SR:  added support of SVG images in viewer
+- ALL: rework Base64, now JDK API in use
+
 __1.5.2 (11-sep-2022)__
 - SR:  added way to set PlantUML security profile through preferences
 - SR:  added FlatLaf themes [#104](https://github.com/raydac/netbeans-mmd-plugin/issues/104)
