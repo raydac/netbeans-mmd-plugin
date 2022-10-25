@@ -264,8 +264,9 @@ public class SciaRetoStarter {
           try {
             splash.set(new SplashScreen(primaryScreen, splashImage));
             splash.get().setVisible(true);
+            splash.get().invalidate();
             splash.get().repaint();
-            splash.get().requestFocus();
+            splash.get().toFront();
           } catch (Exception ex) {
             LOGGER.error("Splash can't be shown", ex); //NOI18N
             if (splash.get() != null) {

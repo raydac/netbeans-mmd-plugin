@@ -48,14 +48,11 @@ public class MetricsService {
 
   public void onFirstStart() {
       LOGGER.info("Starting statistics send"); //NOI18N
-      final Thread thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            doFirstStartAction();
-          } catch (Exception ex) {
-            LOGGER.error("Can't send statistics", ex); //NOI18N
-          }
+      final Thread thread = new Thread(() -> {
+        try {
+          doFirstStartAction();
+        } catch (Exception ex) {
+          LOGGER.error("Can't send statistics", ex); //NOI18N
         }
       }, "SCIARETO_STATISTIC_SEND"); //NOI18N
       thread.setDaemon(true);
@@ -65,14 +62,11 @@ public class MetricsService {
   public void sendStatistics() {
     if (this.enabled.get()) {
       LOGGER.info("Starting statistics send"); //NOI18N
-      final Thread thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            doAction();
-          } catch (Exception ex) {
-            LOGGER.error("Can't send statistics", ex); //NOI18N
-          }
+      final Thread thread = new Thread(() -> {
+        try {
+          doAction();
+        } catch (Exception ex) {
+          LOGGER.error("Can't send statistics", ex); //NOI18N
         }
       }, "SCIARETO_STATISTIC_SEND"); //NOI18N
       thread.setDaemon(true);

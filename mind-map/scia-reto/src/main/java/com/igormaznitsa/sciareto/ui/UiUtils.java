@@ -82,7 +82,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.apache.commons.lang3.SystemUtils;
@@ -605,7 +604,7 @@ public final class UiUtils {
 
       this.setAlwaysOnTop(true);
       this.setUndecorated(true);
-      this.setBackground(new Color(0,0,0,0));
+      this.setBackground(new Color(0, 0, 0, 0));
 
       this.image = image;
       final JLabel label = new JLabel(new ImageIcon(this.image));
@@ -618,6 +617,11 @@ public final class UiUtils {
 
       this.setLocation(getPointForCentering(this));
       invalidate();
+    }
+
+    @Override
+    public boolean isFocusable() {
+      return false;
     }
   }
 
