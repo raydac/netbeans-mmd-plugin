@@ -89,8 +89,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -107,6 +107,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
@@ -257,14 +259,21 @@ public class SciaRetoStarter {
 
     if (args.length == 0) {
       final long splashTimerStart = currentTimeMillis();
+      final CountDownLatch latch = new CountDownLatch(1);
       try {
-        SwingUtilities.invokeAndWait(() -> {
+        SwingUtilities.invokeLater(() -> {
           try {
             final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
-            splash.set(new SplashScreen(primaryScreen, splashImage));
-            splash.get().setVisible(true);
-            splash.get().invalidate();
-            splash.get().repaint();
+            final SplashScreen splashScreen =new SplashScreen(primaryScreen, splashImage);
+            splashScreen.addWindowListener(new WindowAdapter() {
+              @Override
+              public void windowActivated(WindowEvent e) {
+                latch.countDown();
+              }
+            });
+            splash.set(splashScreen);
+            splashScreen.setVisible(true);
+            splashScreen.repaint();
           } catch (Exception ex) {
             LOGGER.error("Splash can't be shown", ex); //NOI18N
             if (splash.get() != null) {
@@ -276,6 +285,16 @@ public class SciaRetoStarter {
       } catch (final Exception ex) {
         LOGGER.error("Error during splash processing", ex); //NOI18N
       }
+
+      try {
+        if (!latch.await(10, TimeUnit.SECONDS)){
+          LOGGER.warn("Splash latch as not decremented!");
+        }
+      }catch (InterruptedException ex){
+        Thread.currentThread().interrupt();
+        return;
+      }
+
       timeTakenBySplashStart = currentTimeMillis() - splashTimerStart;
     } else {
       timeTakenBySplashStart = 0L;
@@ -286,29 +305,21 @@ public class SciaRetoStarter {
             currentTimeMillis() + STATISTICS_DELAY)) >= STATISTICS_DELAY) {
       LOGGER.info("Statistics scheduled"); //NOI18N
 
-      final Timer timer = new Timer(45000, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          MetricsService.getInstance().sendStatistics();
-        }
-      });
+      final Timer timer = new Timer(45000, e -> MetricsService.getInstance().sendStatistics());
       timer.setRepeats(false);
       timer.start();
     }
 
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      @Override
-      public void run() {
-        try {
-          final Preferences prefs = PreferencesManager.getInstance().getPreferences();
-          prefs.putLong(PROPERTY_TOTAL_UPSTART,
-              prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (currentTimeMillis() - UPSTART));
-          PreferencesManager.getInstance().flush();
-        } finally {
-          PlatformProvider.getPlatform().dispose();
-        }
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      try {
+        final Preferences prefs = PreferencesManager.getInstance().getPreferences();
+        prefs.putLong(PROPERTY_TOTAL_UPSTART,
+            prefs.getLong(PROPERTY_TOTAL_UPSTART, 0L) + (currentTimeMillis() - UPSTART));
+        PreferencesManager.getInstance().flush();
+      } finally {
+        PlatformProvider.getPlatform().dispose();
       }
-    });
+    }));
 
     loadPlugins();
 

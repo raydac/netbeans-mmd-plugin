@@ -521,14 +521,11 @@ public final class UiUtils {
         }
       }
       if (!ok) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            DialogProviderManager.getInstance().getDialogProvider()
-                .msgError(SciaRetoStarter.getApplicationFrame(),
-                    "Can't open file in system viewer! See the log!");//NOI18N
-            Toolkit.getDefaultToolkit().beep();
-          }
+        SwingUtilities.invokeLater(() -> {
+          DialogProviderManager.getInstance().getDialogProvider()
+              .msgError(SciaRetoStarter.getApplicationFrame(),
+                  "Can't open file in system viewer! See the log!");//NOI18N
+          Toolkit.getDefaultToolkit().beep();
         });
       }
     };
@@ -595,7 +592,10 @@ public final class UiUtils {
 
     private final Image image;
 
-    public SplashScreen(@Nullable final GraphicsConfiguration gfc, @Nonnull final Image image) {
+    public SplashScreen(
+        @Nullable final GraphicsConfiguration gfc,
+        @Nonnull final Image image
+    ) {
       super(gfc);
 
       this.setAlwaysOnTop(true);
@@ -603,14 +603,21 @@ public final class UiUtils {
       this.setBackground(new Color(0, 0, 0, 0));
 
       this.image = image;
+      final int width = this.image.getWidth(null);
+      final int height = this.image.getHeight(null);
 
-      this.setBounds(0,0,this.image.getWidth(null), this.image.getHeight(null));
+      this.setBounds(0,0, width, height);
+      this.setMinimumSize(new Dimension(width, height));
+      this.setSize(new Dimension(width, height));
+      this.setMaximumSize(new Dimension(width, height));
+      this.setPreferredSize(new Dimension(width, height));
+
       this.setLocation(getPointForCentering(this));
     }
 
     @Override
     public void paint(final Graphics g) {
-      g.drawImage(this.image, 0, 0, null);
+        g.drawImage(this.image, 0, 0, null);
     }
 
     @Override
