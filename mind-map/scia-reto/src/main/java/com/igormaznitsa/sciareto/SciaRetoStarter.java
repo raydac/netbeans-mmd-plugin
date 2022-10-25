@@ -258,15 +258,13 @@ public class SciaRetoStarter {
     if (args.length == 0) {
       final long splashTimerStart = currentTimeMillis();
       try {
-        final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
-
         SwingUtilities.invokeAndWait(() -> {
           try {
+            final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
             splash.set(new SplashScreen(primaryScreen, splashImage));
             splash.get().setVisible(true);
             splash.get().invalidate();
             splash.get().repaint();
-            splash.get().toFront();
           } catch (Exception ex) {
             LOGGER.error("Splash can't be shown", ex); //NOI18N
             if (splash.get() != null) {

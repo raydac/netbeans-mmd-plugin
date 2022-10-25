@@ -21,7 +21,6 @@ package com.igormaznitsa.sciareto.ui;
 
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
 
-
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.IOUtils;
@@ -38,7 +37,6 @@ import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.UriEditPanel;
 import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import java.awt.AlphaComposite;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -79,9 +77,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.apache.commons.lang3.SystemUtils;
@@ -607,16 +603,14 @@ public final class UiUtils {
       this.setBackground(new Color(0, 0, 0, 0));
 
       this.image = image;
-      final JLabel label = new JLabel(new ImageIcon(this.image));
-      final JPanel root = new JPanel(new BorderLayout(0, 0));
-      root.setOpaque(false);
-      root.add(label, BorderLayout.CENTER);
 
-      this.setContentPane(root);
-      this.pack();
-
+      this.setBounds(0,0,this.image.getWidth(null), this.image.getHeight(null));
       this.setLocation(getPointForCentering(this));
-      invalidate();
+    }
+
+    @Override
+    public void paint(final Graphics g) {
+      g.drawImage(this.image, 0, 0, null);
     }
 
     @Override
