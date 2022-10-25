@@ -60,10 +60,12 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     RESERVED_WORDS.add("@endtree");
     RESERVED_WORDS.add("@enduml");
     RESERVED_WORDS.add("@endwbs");
+    RESERVED_WORDS.add("@endebnf");
     RESERVED_WORDS.add("@endwire");
     RESERVED_WORDS.add("@endyaml");
     RESERVED_WORDS.add("@startboard");
     RESERVED_WORDS.add("@startbpm");
+    RESERVED_WORDS.add("@startebnf");
     RESERVED_WORDS.add("@startcreole");
     RESERVED_WORDS.add("@startcute");
     RESERVED_WORDS.add("@startdef");
