@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>mind-map</artifactId>
+        <version>1.5.3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mind-map-annotation-processor-it</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <animal.sniffer.skip>true</animal.sniffer.skip>
+    </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>com.igormaznitsa</groupId>
+            <artifactId>mind-map-annotation-processor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <target>1.8</target>
+                    <source>1.8</source>
+                    <verbose>false</verbose>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

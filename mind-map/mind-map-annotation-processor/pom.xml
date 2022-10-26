@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>mind-map</artifactId>
+        <version>1.5.3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mind-map-annotation-processor</artifactId>
+    <packaging>jar</packaging>
+
+    <name>MMD Annotation processor</name>
+    <description>Processor to generate MMD files based on annotated sources</description>
+
+    <developers>
+        <developer>
+            <id>raydac</id>
+            <name>Igor Maznitsa</name>
+            <email>rrg4400@gmail.com</email>
+            <url>http://www.igormaznitsa.com</url>
+            <timezone>+2</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <url>http://www.sciareto.org</url>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/raydac/netbeans-mmd-plugin/issues</url>
+    </issueManagement>
+
+    <scm>
+        <url>https://github.com/raydac/netbeans-mmd-plugin</url>
+        <connection>scm:git:git://github.com/raydac/netbeans-mmd-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:raydac/netbeans-mmd-plugin.git</developerConnection>
+    </scm>
+
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
+    <organization>
+        <name>Igor Maznitsa</name>
+        <url>http://www.igormaznitsa.com</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <animal.sniffer.skip>true</animal.sniffer.skip>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>publish</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>make-bundle</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/assemble/bundle.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Automatic-Module-Name>igormaznitsa.mmd.processor</Automatic-Module-Name>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.igormaznitsa</groupId>
+                        <artifactId>uber-pom</artifactId>
+                        <configuration>
+                            <remove>
+                                <section>parent</section>
+                                <section>modules</section>
+                                <section>profiles/profile/modules</section>
+                            </remove>
+                            <removeSiblingDuplications>true</removeSiblingDuplications>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>upom</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-sources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-javadoc</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.igormaznitsa</groupId>
+            <artifactId>mind-map-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>ensure-java-1.8-class-library</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <signature>
+                                <groupId>org.codehaus.mojo.signature</groupId>
+                                <artifactId>java18</artifactId>
+                                <version>1.0</version>
+                            </signature>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <target>1.8</target>
+                    <source>1.8</source>
+                    <verbose>true</verbose>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <compilerArgument>-proc:none</compilerArgument>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

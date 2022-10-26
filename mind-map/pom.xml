@@ -25,6 +25,8 @@
 
   <modules>
     <module>mind-map-model</module>
+    <module>mind-map-annotation-processor</module>
+    <module>mind-mao-annotation-processor-it</module>
     <module>mind-map-swing-panel</module>
     <module>mind-map-ide-common</module>
     <module>scia-reto</module>
