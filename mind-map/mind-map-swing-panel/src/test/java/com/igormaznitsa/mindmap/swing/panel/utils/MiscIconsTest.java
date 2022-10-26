@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-
 import org.junit.Test;
 
 public class MiscIconsTest {
@@ -29,6 +28,7 @@ public class MiscIconsTest {
     int number = 0;
     for (final String iconName : MiscIcons.getNames()) {
       assertNotNull("icon '" + iconName + "'", MiscIcons.findForName(iconName));
+//    System.out.println(iconName.toUpperCase(Locale.ENGLISH)+"(\""+iconName+"\"),");
       number++;
     }
     assertTrue(number > 0);
