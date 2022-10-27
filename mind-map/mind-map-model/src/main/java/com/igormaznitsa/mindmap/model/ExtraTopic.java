@@ -19,20 +19,17 @@ package com.igormaznitsa.mindmap.model;
 import java.io.File;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class ExtraTopic extends Extra<String> {
   public static final String TOPIC_UID_ATTR = "topicLinkUID"; //NOI18N
   private static final long serialVersionUID = -8556885025460722094L;
   private final String topicUID;
 
-  public ExtraTopic(@Nonnull final String topicUID) {
+  public ExtraTopic(final String topicUID) {
     this.topicUID = topicUID;
   }
 
-  @Nullable
-  public static ExtraTopic makeLinkTo(@Nonnull final MindMap map, @Nullable final Topic topic) {
+  public static ExtraTopic makeLinkTo(final MindMap map, final Topic topic) {
     ExtraTopic result = null;
     if (topic != null) {
       String uid = topic.getAttribute(TOPIC_UID_ATTR);
@@ -67,7 +64,7 @@ public class ExtraTopic extends Extra<String> {
   }
 
   @Override
-  public boolean equals(@Nullable final Object that) {
+  public boolean equals(final Object that) {
     if (that == null) {
       return false;
     }
@@ -82,30 +79,26 @@ public class ExtraTopic extends Extra<String> {
   }
 
   @Override
-  public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
+  public boolean containsPattern(final File baseFolder, final Pattern pattern) {
     return false;
   }
 
   @Override
-  @Nonnull
   public String getValue() {
     return this.topicUID;
   }
 
   @Override
-  @Nonnull
   public ExtraType getType() {
     return ExtraType.TOPIC;
   }
 
   @Override
-  @Nonnull
   public String getAsString() {
     return this.topicUID;
   }
 
   @Override
-  @Nonnull
   public String provideAsStringForSave() {
     return this.getAsString();
   }

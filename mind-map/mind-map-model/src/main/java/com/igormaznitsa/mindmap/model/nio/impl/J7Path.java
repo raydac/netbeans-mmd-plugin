@@ -16,40 +16,36 @@
 
 package com.igormaznitsa.mindmap.model.nio.impl;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.nio.AbstractPath;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import java.io.File;
 import java.util.Iterator;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class J7Path extends AbstractPath {
 
   private final java.nio.file.Path nioPath;
 
-  private J7Path(@Nonnull final java.nio.file.Path path) {
+  private J7Path(final java.nio.file.Path path) {
     super();
     this.nioPath = path;
   }
 
-  public J7Path(@Nonnull final File file) {
+  public J7Path(final File file) {
     super(file);
     this.nioPath = file.toPath();
   }
 
-  public J7Path(@Nonnull final String first, @Nonnull @MustNotContainNull final String... items) {
+  public J7Path(final String first, final String... items) {
     super(first, items);
     this.nioPath = java.nio.file.Paths.get(first, items);
   }
 
-  @Nullable
-  private static J7Path makePathIfNotNull(@Nullable final java.nio.file.Path basePath) {
+  private static J7Path makePathIfNotNull(final java.nio.file.Path basePath) {
     return basePath == null ? null : new J7Path(basePath);
   }
 
   @Override
-  public boolean startsWith(@Nonnull final Path basePath) {
+  public boolean startsWith(final Path basePath) {
     final J7Path thatPath = (J7Path) basePath;
     return this.nioPath.startsWith(thatPath.nioPath);
   }
@@ -60,26 +56,22 @@ public class J7Path extends AbstractPath {
   }
 
   @Override
-  @Nullable
-  public Path relativize(@Nonnull final Path filePath) {
+  public Path relativize(final Path filePath) {
     final J7Path thatPath = (J7Path) filePath;
     return makePathIfNotNull(this.nioPath.relativize(thatPath.nioPath));
   }
 
   @Override
-  @Nullable
   public Path getRoot() {
     return makePathIfNotNull(this.nioPath.getRoot());
   }
 
   @Override
-  @Nonnull
   public File toFile() {
     return this.nioPath.toFile();
   }
 
   @Override
-  @Nonnull
   public Iterator<Path> iterator() {
     return new Iterator<Path>() {
       private final Iterator<java.nio.file.Path> wrappedIterator = nioPath.iterator();
@@ -95,7 +87,6 @@ public class J7Path extends AbstractPath {
       }
 
       @Override
-      @Nullable
       public Path next() {
         return makePathIfNotNull(this.wrappedIterator.next());
       }
@@ -108,7 +99,7 @@ public class J7Path extends AbstractPath {
   }
 
   @Override
-  public boolean equals(@Nonnull final Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -120,7 +111,6 @@ public class J7Path extends AbstractPath {
   }
 
   @Override
-  @Nonnull
   public String toString() {
     return this.nioPath.toString();
   }

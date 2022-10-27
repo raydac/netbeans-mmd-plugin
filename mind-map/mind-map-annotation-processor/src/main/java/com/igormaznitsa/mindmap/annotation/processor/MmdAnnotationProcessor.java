@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.annotations.MmdFile;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import com.sun.source.tree.CompilationUnitTree;
@@ -22,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -30,7 +28,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
@@ -55,21 +52,18 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private File optionTargetFolder;
   private boolean optionPreferRelativePaths;
 
-  @Nonnull
   @Override
   public SourceVersion getSupportedSourceVersion() {
     return SourceVersion.RELEASE_8;
   }
 
   @Override
-  @Nonnull
-  @MustNotContainNull
   public Set<String> getSupportedAnnotationTypes() {
     return ANNOTATIONS.keySet();
   }
 
   @Override
-  public synchronized void init(@Nonnull final ProcessingEnvironment processingEnv) {
+  public synchronized void init(final ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.trees = Trees.instance(processingEnv);
     this.sourcePositions = this.trees.getSourcePositions();
@@ -102,16 +96,14 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
         String.format("MMD: Prefer generate relative paths: %s", this.optionPreferRelativePaths));
   }
 
-  @MustNotContainNull
-  @Nonnull
   @Override
   public Set<String> getSupportedOptions() {
     return SUPPORTED_OPTIONS;
   }
 
   @Override
-  public boolean process(@Nonnull final Set<? extends TypeElement> annotations,
-                         @Nonnull final RoundEnvironment roundEnv) {
+  public boolean process(final Set<? extends TypeElement> annotations,
+                         final RoundEnvironment roundEnv) {
 
     final List<FoundMmdAnnotation> foundMmdAnnotationList = new ArrayList<>();
 
@@ -126,10 +118,10 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
       annotatedElements.forEach(x -> {
         final Annotation annotationInstance = x.getAnnotation(annotationClass);
-        final Pair<URI, Long> position = findPosition(x);
+        final UriLine position = findPosition(x);
         foundMmdAnnotationList.add(
-            new FoundMmdAnnotation(annotationInstance, new File(position.getLeft()),
-                position.getRight()));
+            new FoundMmdAnnotation(annotationInstance, new File(position.uri),
+                position.line));
       });
     }
 
@@ -139,13 +131,23 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     return true;
   }
 
-  @Nonnull
-  private Pair<URI, Long> findPosition(@Nonnull final Element element) {
+  private UriLine findPosition(final Element element) {
     final TreePath treePath = trees.getPath(element);
     final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
     final long startPosition =
         this.sourcePositions.getStartPosition(compilationUnit, treePath.getLeaf());
     final long lineNumber = compilationUnit.getLineMap().getLineNumber(startPosition);
-    return Pair.of(compilationUnit.getSourceFile().toUri(), lineNumber);
+    return new UriLine(compilationUnit.getSourceFile().toUri(), lineNumber);
+  }
+
+  private static final class UriLine {
+    private final URI uri;
+    private final long line;
+
+    UriLine(final URI uri, final long line) {
+      this.uri = requireNonNull(uri);
+      this.line = line;
+    }
+
   }
 }

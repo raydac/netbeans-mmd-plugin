@@ -16,48 +16,44 @@
 
 package com.igormaznitsa.mindmap.model.logger.impl;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
+import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class JavaLogger extends Logger {
 
   private final java.util.logging.Logger wrappedLogger;
 
-  public JavaLogger(@Nonnull final Class<?> klazz) {
-    super(assertNotNull(klazz));
+  public JavaLogger(final Class<?> klazz) {
+    super(requireNonNull(klazz));
     this.wrappedLogger = java.util.logging.Logger.getLogger(klazz.getName());
   }
 
-  public JavaLogger(@Nonnull final String name) {
-    super(assertNotNull(name));
+  public JavaLogger(final String name) {
+    super(requireNonNull(name));
     this.wrappedLogger = java.util.logging.Logger.getLogger(name);
   }
 
   @Override
-  public void info(@Nullable final String message) {
+  public void info(final String message) {
     this.wrappedLogger.info(message);
   }
 
   @Override
-  public void warn(@Nullable final String message) {
+  public void warn(final String message) {
     this.wrappedLogger.warning(message);
   }
 
   @Override
-  public void error(@Nullable final String message) {
+  public void error(final String message) {
     this.wrappedLogger.log(java.util.logging.Level.WARNING, message);
   }
 
   @Override
-  public void error(@Nullable final String message, @Nullable final Throwable error) {
+  public void error(final String message, final Throwable error) {
     this.wrappedLogger.log(java.util.logging.Level.WARNING, message, error);
   }
 
-  @Nonnull
   public java.util.logging.Logger getWrappedLogger() {
     return this.wrappedLogger;
   }

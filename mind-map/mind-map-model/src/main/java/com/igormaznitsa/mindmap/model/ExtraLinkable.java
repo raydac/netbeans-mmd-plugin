@@ -16,10 +16,7 @@
 
 package com.igormaznitsa.mindmap.model;
 
-import javax.annotation.Nonnull;
-
 public interface ExtraLinkable {
 
-  @Nonnull
   MMapURI getAsURI();
 }

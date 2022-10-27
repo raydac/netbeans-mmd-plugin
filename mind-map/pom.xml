@@ -108,39 +108,31 @@
         <artifactId>commons-lang3</artifactId>
         <version>${commons.lang.version}</version>
       </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>4.8.0</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <dependencies>
-    <dependency>
-      <groupId>com.igormaznitsa</groupId>
-      <artifactId>meta-annotations</artifactId>
-      <version>${meta.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.igormaznitsa</groupId>
-      <artifactId>meta-utils</artifactId>
-      <version>${meta.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>2.28.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
   <build>
     <defaultGoal>clean install</defaultGoal>
     
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>properties-maven-plugin</artifactId>
@@ -249,7 +241,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
             <id>no-duplicate-declared-dependencies</id>

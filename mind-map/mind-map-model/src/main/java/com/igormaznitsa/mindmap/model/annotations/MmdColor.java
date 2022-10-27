@@ -1,7 +1,5 @@
 package com.igormaznitsa.mindmap.model.annotations;
 
-import javax.annotation.Nonnull;
-
 /**
  * Color constants to be used for generated MMD topics.
  *
@@ -31,11 +29,10 @@ public enum MmdColor {
 
   private final String htmlColor;
 
-  MmdColor(@Nonnull final String htmlColor) {
+  MmdColor(final String htmlColor) {
     this.htmlColor = htmlColor;
   }
 
-  @Nonnull
   public String getHtmlColor() {
     return this.htmlColor;
   }

@@ -3,8 +3,6 @@ package com.igormaznitsa.mindmap.annotation.processor;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class FoundMmdAnnotation {
   private final Annotation annotation;
@@ -12,8 +10,8 @@ public class FoundMmdAnnotation {
   private final long line;
 
   public FoundMmdAnnotation(
-      @Nonnull final Annotation annotation,
-      @Nonnull final File file,
+      final Annotation annotation,
+      final File file,
       final long line
   ) {
     this.annotation = annotation;
@@ -27,7 +25,7 @@ public class FoundMmdAnnotation {
   }
 
   @Override
-  public boolean equals(@Nullable final Object that) {
+  public boolean equals(final Object that) {
     if (that == null) {
       return false;
     }
@@ -43,12 +41,10 @@ public class FoundMmdAnnotation {
     return false;
   }
 
-  @Nonnull
   public Annotation getAnnotation() {
     return this.annotation;
   }
 
-  @Nonnull
   public File getFile() {
     return this.file;
   }

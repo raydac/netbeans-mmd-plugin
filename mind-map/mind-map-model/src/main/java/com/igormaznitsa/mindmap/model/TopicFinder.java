@@ -3,8 +3,6 @@ package com.igormaznitsa.mindmap.model;
 import java.io.File;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface TopicFinder {
   /**
@@ -17,7 +15,8 @@ public interface TopicFinder {
    * @return true if text found, false otherwise
    * @since 1.4.10
    */
-  boolean doesTopicContentMatches(@Nonnull Topic topic, @Nullable File baseFolder,
-                                  @Nonnull Pattern pattern,
-                                  @Nullable Set<Extra.ExtraType> extraTypes);
+  boolean doesTopicContentMatches(Topic topic,
+                                  File baseFolder,
+                                  Pattern pattern,
+                                  Set<Extra.ExtraType> extraTypes);
 }

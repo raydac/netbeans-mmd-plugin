@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.model;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Path;
@@ -38,8 +37,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public final class ModelUtils {
 
@@ -56,7 +53,7 @@ public final class ModelUtils {
   private ModelUtils() {
   }
 
-  public static int calcCharsOnStart(final char chr, @Nonnull final String text) {
+  public static int calcCharsOnStart(final char chr, final String text) {
     int result = 0;
     for (int i = 0; i < text.length(); i++) {
       if (text.charAt(i) == chr) {
@@ -68,7 +65,7 @@ public final class ModelUtils {
     return result;
   }
 
-  public static boolean onlyFromChar(@Nonnull final String line, final char chr) {
+  public static boolean onlyFromChar(final String line, final char chr) {
     if (line.isEmpty()) {
       return false;
     }
@@ -80,9 +77,7 @@ public final class ModelUtils {
     return true;
   }
 
-  @Nonnull
-  @MustNotContainNull
-  public static Object[] joinArrays(@Nonnull @MustNotContainNull final Object[]... arrs) {
+  public static Object[] joinArrays(final Object[]... arrs) {
     int totalLen = 0;
     for (final Object[] a : arrs) {
       totalLen += a.length;
@@ -98,13 +93,11 @@ public final class ModelUtils {
     return result;
   }
 
-  @Nonnull
-  public static String makePreBlock(@Nonnull final String text) {
+  public static String makePreBlock(final String text) {
     return "<pre>" + escapeTextForPreBlock(text) + "</pre>"; //NOI18N
   }
 
-  @Nonnull
-  public static String escapeTextForPreBlock(@Nonnull final String text) {
+  public static String escapeTextForPreBlock(final String text) {
     final int length = text.length();
     final StringBuilder result = new StringBuilder(length);
 
@@ -134,8 +127,7 @@ public final class ModelUtils {
     return result.toString();
   }
 
-  @Nonnull
-  public static String makeMDCodeBlock(@Nonnull final String text) throws IOException {
+  public static String makeMDCodeBlock(final String text) throws IOException {
     final int maxQuotes = calcMaxLengthOfBacktickQuotesSubstr(text) + 1;
     final StringBuilder result = new StringBuilder(text.length() + 16);
     writeChar(result, '`', maxQuotes);
@@ -144,8 +136,7 @@ public final class ModelUtils {
     return result.toString();
   }
 
-  @Nonnull
-  public static String escapeMarkdownStr(@Nonnull final String text) {
+  public static String escapeMarkdownStr(final String text) {
     final StringBuilder buffer = new StringBuilder(text.length() * 2);
     for (final char c : text.toCharArray()) {
       if (c == '\n') {
@@ -162,7 +153,7 @@ public final class ModelUtils {
     return buffer.toString();
   }
 
-  public static int calcMaxLengthOfBacktickQuotesSubstr(@Nullable final String text) {
+  public static int calcMaxLengthOfBacktickQuotesSubstr(final String text) {
     int result = 0;
     if (text != null) {
       int pos = 0;
@@ -181,15 +172,14 @@ public final class ModelUtils {
     return result;
   }
 
-  public static void writeChar(@Nonnull final Appendable out, final char chr, final int times)
+  public static void writeChar(final Appendable out, final char chr, final int times)
       throws IOException {
     for (int i = 0; i < times; i++) {
       out.append(chr);
     }
   }
 
-  @Nonnull
-  public static String unescapeMarkdownStr(@Nonnull final String text) {
+  public static String unescapeMarkdownStr(final String text) {
     String unescaped = UNESCAPE_BR.matcher(text).replaceAll("\n"); //NOI18N
     final StringBuffer result = new StringBuffer(text.length());
     final Matcher escaped = MD_ESCAPED_PATTERN.matcher(unescaped);
@@ -201,15 +191,14 @@ public final class ModelUtils {
     return result.toString();
   }
 
-  @Nonnull
-  public static String makeShortTextVersion(@Nonnull String text, final int maxLength) {
+  public static String makeShortTextVersion(String text, final int maxLength) {
     if (text.length() > maxLength) {
       text = text.substring(0, maxLength) + "..."; //NOI18N
     }
     return text;
   }
 
-  public static int countLines(@Nonnull final String text) {
+  public static int countLines(final String text) {
     int result = 1;
     for (int i = 0; i < text.length(); i++) {
       if (text.charAt(i) == '\n') {
@@ -219,9 +208,7 @@ public final class ModelUtils {
     return result;
   }
 
-  @Nonnull
-  @MustNotContainNull
-  public static String[] breakToLines(@Nonnull final String text) {
+  public static String[] breakToLines(final String text) {
     final int lineNum = countLines(text);
     final String[] result = new String[lineNum];
     final StringBuilder line = new StringBuilder();
@@ -240,8 +227,7 @@ public final class ModelUtils {
     return result;
   }
 
-  @Nonnull
-  public static String makeQueryStringForURI(@Nullable final Properties properties) {
+  public static String makeQueryStringForURI(final Properties properties) {
     if (properties == null || properties.isEmpty()) {
       return ""; //NOI18N
     }
@@ -267,8 +253,7 @@ public final class ModelUtils {
     return buffer.toString();
   }
 
-  @Nonnull
-  public static Properties extractQueryPropertiesFromURI(@Nonnull final URI uri) {
+  public static Properties extractQueryPropertiesFromURI(final URI uri) {
     final Properties result = new Properties();
 
     final String rawQuery = uri.getRawQuery();
@@ -290,14 +275,12 @@ public final class ModelUtils {
     return result;
   }
 
-  @Nonnull
   private static String char2UriHexByte(final char ch) {
     final String s = Integer.toHexString(ch).toUpperCase(Locale.ENGLISH);
     return '%' + (s.length() < 2 ? "0" : "") + s; //NOI18N //NOI18N
   }
 
-  @Nonnull
-  public static String encodeForURI(@Nonnull final String s) {
+  public static String encodeForURI(final String s) {
     final StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
@@ -316,8 +299,7 @@ public final class ModelUtils {
     return result.toString();
   }
 
-  @Nullable
-  public static File makeFileForPath(@Nullable final String path) {
+  public static File makeFileForPath(final String path) {
     if (path == null || path.isEmpty()) {
       return null;
     }
@@ -333,8 +315,7 @@ public final class ModelUtils {
     }
   }
 
-  @Nonnull
-  public static String escapeURIPath(@Nonnull final String text) {
+  public static String escapeURIPath(final String text) {
     final String chars = "% :<>?"; //NOI18N
     String result = text;
     for (final char ch : chars.toCharArray()) {
@@ -345,8 +326,7 @@ public final class ModelUtils {
     return result;
   }
 
-  @Nonnull
-  public static String removeISOControls(@Nonnull final String text) {
+  public static String removeISOControls(final String text) {
     StringBuilder result = null;
     boolean detected = false;
     for (int i = 0; i < text.length(); i++) {
@@ -366,8 +346,7 @@ public final class ModelUtils {
     return detected ? result.toString() : text;
   }
 
-  @Nonnull
-  private static String normalizeFileURI(@Nonnull final String fileUri) {
+  private static String normalizeFileURI(final String fileUri) {
     final int schemePosition = fileUri.indexOf(':');
     final String scheme =
         schemePosition < 0 ? "" : fileUri.substring(0, schemePosition + 1); //NOI18N
@@ -380,8 +359,7 @@ public final class ModelUtils {
     return scheme + result;
   }
 
-  @Nullable
-  public static URI toURI(@Nullable final Path path) {
+  public static URI toURI(final Path path) {
     if (path == null) {
       return null;
     }
@@ -410,8 +388,7 @@ public final class ModelUtils {
     }
   }
 
-  @Nonnull
-  public static File toFile(@Nonnull final URI uri) {
+  public static File toFile(final URI uri) {
     final List<String> pathItems = new ArrayList<>();
 
     final String authority = uri.getAuthority();
@@ -448,7 +425,7 @@ public final class ModelUtils {
     private static final long serialVersionUID = -68309989264175879L;
 
     @Override
-    public int compare(@Nonnull final String o1, @Nonnull final String o2) {
+    public int compare(final String o1, final String o2) {
       return o1.compareTo(o2);
     }
   }

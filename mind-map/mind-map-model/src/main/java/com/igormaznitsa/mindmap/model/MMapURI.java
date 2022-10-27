@@ -16,7 +16,8 @@
 
 package com.igormaznitsa.mindmap.model;
 
-import com.igormaznitsa.meta.common.utils.Assertions;
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import java.io.File;
@@ -29,8 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class MMapURI implements Serializable {
 
@@ -42,12 +41,12 @@ public class MMapURI implements Serializable {
   private final Properties parameters;
   private final boolean fileUriFlag;
 
-  public MMapURI(@Nonnull final String uri) throws URISyntaxException {
+  public MMapURI(final String uri) throws URISyntaxException {
     this(new URI(uri));
   }
 
-  public MMapURI(@Nonnull final URI uri) {
-    this.fileUriFlag = Assertions.assertNotNull(uri).getScheme() == null ||
+  public MMapURI(final URI uri) {
+    this.fileUriFlag = requireNonNull(uri).getScheme() == null ||
         uri.getScheme().equalsIgnoreCase("file"); //NOI18N
 
     final URI preparedURI;
@@ -74,15 +73,15 @@ public class MMapURI implements Serializable {
     this.uri = preparedURI;
   }
 
-  private MMapURI(@Nonnull final URI uri, final boolean isFile,
-                  @Nullable final Properties properties) {
+  private MMapURI(final URI uri, final boolean isFile,
+                  final Properties properties) {
     this.uri = uri;
     this.fileUriFlag = isFile;
     this.parameters = properties == null ? new Properties() : (Properties) properties.clone();
   }
 
-  public MMapURI(@Nullable final File nullableBase, @Nonnull final File file,
-                 @Nullable final Properties nullableParameters) {
+  public MMapURI(final File nullableBase, final File file,
+                 final Properties nullableParameters) {
     this.fileUriFlag = true;
     this.parameters = new Properties();
     if (nullableParameters != null && !nullableParameters.isEmpty()) {
@@ -104,8 +103,7 @@ public class MMapURI implements Serializable {
     }
   }
 
-  @Nullable
-  private static String extractHost(@Nonnull final URI uri) {
+  private static String extractHost(final URI uri) {
     String host = uri.getHost();
     if (host == null) {
       final String schemeSpecific = uri.getSchemeSpecificPart();
@@ -117,9 +115,8 @@ public class MMapURI implements Serializable {
   }
 
   @SuppressWarnings("ConstantConditions")
-  @Nonnull
-  public static MMapURI makeFromFilePath(@Nullable final File base, @Nonnull final String filePath,
-                                         @Nullable final Properties properties) {
+  public static MMapURI makeFromFilePath(final File base, final String filePath,
+                                         final Properties properties) {
     return new MMapURI(base, ModelUtils.makeFileForPath(filePath), properties);
   }
 
@@ -129,7 +126,7 @@ public class MMapURI implements Serializable {
   }
 
   @Override
-  public boolean equals(@Nullable final Object that) {
+  public boolean equals(final Object that) {
     if (that == null) {
       return false;
     }
@@ -155,8 +152,7 @@ public class MMapURI implements Serializable {
     }
   }
 
-  @Nonnull
-  public MMapURI replaceBaseInPath(final boolean replaceHost, @Nonnull final URI newBase,
+  public MMapURI replaceBaseInPath(final boolean replaceHost, final URI newBase,
                                    int currentNumberOfResourceItemsTheLasIsZero)
       throws URISyntaxException {
     final String newURIPath = newBase.getPath();
@@ -196,8 +192,7 @@ public class MMapURI implements Serializable {
     return new MMapURI(newURI, this.fileUriFlag, this.parameters);
   }
 
-  @Nonnull
-  public MMapURI replaceName(@Nonnull final String newName) throws URISyntaxException {
+  public MMapURI replaceName(final String newName) throws URISyntaxException {
     final MMapURI result;
     final String normalizedName = ModelUtils.escapeURIPath(newName).replace('\\', '/');
 
@@ -233,7 +228,6 @@ public class MMapURI implements Serializable {
     return result;
   }
 
-  @Nonnull
   public URI asURI() {
     if (this.fileUriFlag) {
       try {
@@ -247,7 +241,6 @@ public class MMapURI implements Serializable {
     }
   }
 
-  @Nonnull
   public String getExtension() {
     String text = this.uri.getPath();
     final int lastSlash = text.lastIndexOf('/');
@@ -264,7 +257,6 @@ public class MMapURI implements Serializable {
     return result;
   }
 
-  @Nonnull
   public String asString(final boolean ascII, final boolean addPropertiesAsQuery) {
     if (this.fileUriFlag) {
       return (ascII ? this.uri.toASCIIString() : this.uri.toString()) +
@@ -275,8 +267,7 @@ public class MMapURI implements Serializable {
     }
   }
 
-  @Nonnull
-  public File asFile(@Nullable final File base) {
+  public File asFile(final File base) {
     final File result;
     if (this.uri.isAbsolute()) {
       result = ModelUtils.toFile(this.uri);
@@ -290,7 +281,6 @@ public class MMapURI implements Serializable {
     return result;
   }
 
-  @Nonnull
   public Properties getParameters() {
     return (Properties) this.parameters.clone();
   }
@@ -300,7 +290,6 @@ public class MMapURI implements Serializable {
   }
 
   @Override
-  @Nonnull
   public String toString() {
     return asString(false, true);
   }

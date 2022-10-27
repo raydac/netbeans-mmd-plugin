@@ -16,13 +16,11 @@
 
 package com.igormaznitsa.mindmap.model.logger;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
+import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.logger.impl.JavaLoggerServiceImpl;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-import javax.annotation.Nonnull;
 
 public final class LoggerFactory {
   private static final LoggerService LOGGER_SERVICE;
@@ -37,14 +35,12 @@ public final class LoggerFactory {
         .info("Detected MindMap Logger Service: " + LOGGER_SERVICE.getClass().getName());
   }
 
-  @Nonnull
-  public static Logger getLogger(@Nonnull final Class<?> klazz) {
-    return LOGGER_SERVICE.getLogger(assertNotNull(klazz));
+  public static Logger getLogger(final Class<?> klazz) {
+    return LOGGER_SERVICE.getLogger(requireNonNull(klazz));
   }
 
-  @Nonnull
-  public static Logger getLogger(@Nonnull final String name) {
-    return LOGGER_SERVICE.getLogger(assertNotNull(name));
+  public static Logger getLogger(final String name) {
+    return LOGGER_SERVICE.getLogger(requireNonNull(name));
   }
 
 }

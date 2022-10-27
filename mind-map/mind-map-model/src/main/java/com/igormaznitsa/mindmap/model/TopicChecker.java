@@ -16,9 +16,8 @@
 
 package com.igormaznitsa.mindmap.model;
 
-import javax.annotation.Nonnull;
 
 public interface TopicChecker {
 
-  boolean check(@Nonnull Topic topic);
+  boolean check(Topic topic);
 }

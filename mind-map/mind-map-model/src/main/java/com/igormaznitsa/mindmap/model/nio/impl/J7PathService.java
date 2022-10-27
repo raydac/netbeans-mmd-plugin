@@ -16,24 +16,20 @@
 
 package com.igormaznitsa.mindmap.model.nio.impl;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.PathService;
 import java.io.File;
-import javax.annotation.Nonnull;
 
 public class J7PathService implements PathService {
 
   @Override
-  @Nonnull
-  public Path getForFile(@Nonnull final File file) {
+  public Path getForFile(final File file) {
     return new J7Path(file);
   }
 
   @Override
-  @Nonnull
-  public Path getForPathItems(@Nonnull final String first,
-                              @Nonnull @MustNotContainNull final String... items) {
+  public Path getForPathItems(final String first,
+                              final String... items) {
     return new J7Path(first, items);
   }
 

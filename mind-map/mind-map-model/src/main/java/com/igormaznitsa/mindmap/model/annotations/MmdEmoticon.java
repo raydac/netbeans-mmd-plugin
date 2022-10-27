@@ -1,7 +1,5 @@
 package com.igormaznitsa.mindmap.model.annotations;
 
-import javax.annotation.Nonnull;
-
 /**
  * Set of allowed emoticons for generated MMD topics.
  *
@@ -389,11 +387,10 @@ public enum MmdEmoticon {
 
   private final String id;
 
-  MmdEmoticon(@Nonnull final String id) {
+  MmdEmoticon(final String id) {
     this.id = id;
   }
 
-  @Nonnull
   public String getId() {
     return this.id;
   }

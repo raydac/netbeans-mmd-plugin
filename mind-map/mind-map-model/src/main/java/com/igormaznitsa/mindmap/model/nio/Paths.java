@@ -16,14 +16,12 @@
 
 package com.igormaznitsa.mindmap.model.nio;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.impl.J7PathService;
 import java.io.File;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-import javax.annotation.Nonnull;
 
 public final class Paths {
 
@@ -41,14 +39,12 @@ public final class Paths {
     LOGGER.info("Detected path service : " + PATH_SERVICE.getClass().getName());
   }
 
-  @Nonnull
-  public static Path toPath(@Nonnull final File file) {
+  public static Path toPath(final File file) {
     return PATH_SERVICE.getForFile(file);
   }
 
-  @Nonnull
-  public static Path get(@Nonnull final String string,
-                         @Nonnull @MustNotContainNull final String[] next) {
+  public static Path get(final String string,
+                         final String[] next) {
     return PATH_SERVICE.getForPathItems(string, next);
   }
 

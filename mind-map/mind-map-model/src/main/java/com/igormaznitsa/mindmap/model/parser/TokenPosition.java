@@ -17,9 +17,7 @@
 package com.igormaznitsa.mindmap.model.parser;
 
 import java.io.Serializable;
-import javax.annotation.concurrent.Immutable;
 
-@Immutable
 public final class TokenPosition implements Serializable {
 
   private static final long serialVersionUID = 4029368174558764315L;

@@ -20,6 +20,11 @@
       <artifactId>mind-map-model</artifactId>
       <version>${mindmap.model.version}</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
     
   <build>

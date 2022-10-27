@@ -20,8 +20,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class ExtraNote extends Extra<String> {
   public static final String ATTR_ENCRYPTED = "extras.note.encrypted";
@@ -31,15 +29,15 @@ public class ExtraNote extends Extra<String> {
   private final boolean encrypted;
   private final String hint;
 
-  public ExtraNote(@Nonnull final String text) {
+  public ExtraNote(final String text) {
     this.text = text;
     this.encrypted = false;
     this.hint = null;
   }
 
-  public ExtraNote(@Nonnull final String text,
+  public ExtraNote(final String text,
                    final boolean encrypted,
-                   @Nullable final String hint) {
+                   final String hint) {
     this.text = text;
     this.encrypted = encrypted;
     this.hint = hint;
@@ -54,13 +52,12 @@ public class ExtraNote extends Extra<String> {
     return this.encrypted;
   }
 
-  @Nullable
   public String getHint() {
     return this.hint;
   }
 
   @Override
-  void attachedToTopic(@Nonnull final Topic topic) {
+  void attachedToTopic(final Topic topic) {
     if (this.encrypted) {
       topic.setAttribute(ATTR_ENCRYPTED, "true");
       topic.setAttribute(ATTR_PASSWORD_HINT, this.hint);
@@ -71,13 +68,13 @@ public class ExtraNote extends Extra<String> {
   }
 
   @Override
-  void detachedToTopic(@Nonnull final Topic topic) {
+  void detachedToTopic(final Topic topic) {
     topic.setAttribute(ATTR_ENCRYPTED, null);
     topic.setAttribute(ATTR_PASSWORD_HINT, null);
   }
 
   @Override
-  void addAttributesForWrite(@Nonnull final Map<String, String> attributesForWrite) {
+  void addAttributesForWrite(final Map<String, String> attributesForWrite) {
     if (this.encrypted) {
       attributesForWrite.put(ATTR_ENCRYPTED, "true");
     }
@@ -87,12 +84,12 @@ public class ExtraNote extends Extra<String> {
   }
 
   @Override
-  public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
+  public boolean containsPattern( final File baseFolder, final Pattern pattern) {
     return !this.encrypted && pattern.matcher(this.text).find();
   }
 
   @Override
-  public boolean equals(@Nullable final Object that) {
+  public boolean equals(final Object that) {
     if (that == null) {
       return false;
     }
@@ -115,25 +112,21 @@ public class ExtraNote extends Extra<String> {
   }
 
   @Override
-  @Nonnull
   public String getValue() {
     return this.text;
   }
 
   @Override
-  @Nonnull
   public ExtraType getType() {
     return ExtraType.NOTE;
   }
 
   @Override
-  @Nonnull
   public String getAsString() {
     return this.text;
   }
 
   @Override
-  @Nonnull
   public String provideAsStringForSave() {
     return this.text;
   }

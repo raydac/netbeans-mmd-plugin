@@ -145,6 +145,11 @@
       <artifactId>flatlaf-intellij-themes</artifactId>
       <version>${flatlaf.version}</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.kafka</groupId>

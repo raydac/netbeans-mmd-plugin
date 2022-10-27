@@ -16,12 +16,8 @@
 
 package com.igormaznitsa.mindmap.model.logger;
 
-import javax.annotation.Nonnull;
-
 public interface LoggerService {
-  @Nonnull
-  Logger getLogger(@Nonnull Class<?> klazz);
+  Logger getLogger(Class<?> klazz);
 
-  @Nonnull
-  Logger getLogger(@Nonnull String name);
+  Logger getLogger(String name);
 }

@@ -16,8 +16,6 @@
 
 package com.igormaznitsa.mindmap.model;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -26,43 +24,38 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public abstract class Extra<T> implements Serializable, Constants, Cloneable {
 
   private static final long serialVersionUID = 2547528075256486018L;
 
-  @Nonnull
   public abstract T getValue();
 
-  @Nonnull
   public abstract ExtraType getType();
 
-  @Nonnull
   public abstract String getAsString();
 
   public boolean isExportable() {
     return true;
   }
 
-  void addAttributesForWrite(@Nonnull final Map<String, String> attributesForWrite) {
+  void addAttributesForWrite(final Map<String, String> attributesForWrite) {
   }
 
-  void attachedToTopic(@Nonnull final Topic topic) {
-
-  }
-
-  void detachedToTopic(@Nonnull final Topic topic) {
+  void attachedToTopic(final Topic topic) {
 
   }
 
-  @Nonnull
+  void detachedToTopic(final Topic topic) {
+
+  }
+
   public abstract String provideAsStringForSave();
 
-  public abstract boolean containsPattern(@Nullable File baseFolder, @Nonnull Pattern pattern);
+  public abstract boolean containsPattern(File baseFolder, Pattern pattern);
 
-  public final void write(@Nonnull final Writer out) throws IOException {
+  public final void write(final Writer out) throws IOException {
     out.append("- ").append(getType().name()).append(NEXT_LINE); //NOI18N
     out.append(ModelUtils.makePreBlock(provideAsStringForSave()));
   }
@@ -75,8 +68,7 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
     TOPIC,
     UNKNOWN;
 
-    @Nullable
-    public String preprocessString(@Nullable final String str) {
+    public String preprocessString(final String str) {
       String result = null;
       if (str != null) {
         switch (this) {
@@ -102,8 +94,7 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
       return result;
     }
 
-    @Nonnull
-    public Extra<?> parseLoaded(@Nonnull final String text, @Nonnull Map<String, String> attributes)
+    public Extra<?> parseLoaded(final String text, final Map<String, String> attributes)
         throws URISyntaxException {
       final String preprocessed = StringEscapeUtils.unescapeHtml3(text);
       switch (this) {

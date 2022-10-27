@@ -15,19 +15,20 @@
  */
 package com.igormaznitsa.mindmap.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URI;
 import java.util.Properties;
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class ModelUtilsTest {
 
-  private void assertEscapeUnescapePre(@Nonnull final String text) {
+  private void assertEscapeUnescapePre(final String text) {
     assertEquals(text, StringEscapeUtils.unescapeHtml3(ModelUtils.escapeTextForPreBlock(text)));
   }
   

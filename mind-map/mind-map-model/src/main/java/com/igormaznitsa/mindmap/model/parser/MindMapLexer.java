@@ -16,10 +16,7 @@
 
 package com.igormaznitsa.mindmap.model.parser;
 
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Allows to extract lexeme from mind map file.
@@ -41,8 +38,8 @@ public final class MindMapLexer {
     return this.tokenEnd;
   }
 
-  public void start(@Nonnull final CharSequence buffer, final int startOffset, final int endOffset,
-                    @Nonnull final MindMapLexer.TokenType initialState) {
+  public void start(final CharSequence buffer, final int startOffset, final int endOffset,
+                    final MindMapLexer.TokenType initialState) {
     this.buffer = buffer;
     this.tokenType = initialState;
     this.position.offset = startOffset;
@@ -55,22 +52,18 @@ public final class MindMapLexer {
     this.endOffset = value;
   }
 
-  @Nonnull
   public CharSequence getTokenSequence() {
     return getBufferSequence().subSequence(this.tokenStart, this.tokenEnd);
   }
 
-  @Nonnull
   public String getTokenText() {
     return getTokenSequence().toString();
   }
 
-  @Nullable
   public TokenType getTokenType() {
     return this.tokenStart == this.tokenEnd ? null : this.tokenType;
   }
 
-  @Nonnull
   public TokenPosition makeTokenPosition() {
     return new TokenPosition(this.tokenStart, this.tokenEnd);
   }
@@ -192,7 +185,7 @@ public final class MindMapLexer {
         }
         break;
         default:
-          throw Assertions.fail("Detected unexpected lexer state " + this.position.state);
+          throw new IllegalStateException("Detected unexpected lexer state " + this.position.state);
       }
     }
 
@@ -247,7 +240,7 @@ public final class MindMapLexer {
     return this.position.offset == this.tokenStart;
   }
 
-  private boolean prevTextInBufferIs(@Nonnull final String text) {
+  private boolean prevTextInBufferIs(final String text) {
     final int len = text.length();
     int startPos = this.position.offset - len;
     if (startPos < 0) {
@@ -261,7 +254,7 @@ public final class MindMapLexer {
     return true;
   }
 
-  private boolean hasTextAt(@Nonnull final String text, int position) {
+  private boolean hasTextAt(final String text, int position) {
     boolean result = false;
     if (position >= 0 && position + text.length() <= this.buffer.length()) {
       boolean ok = true;
@@ -280,7 +273,7 @@ public final class MindMapLexer {
     return this.position.offset >= this.endOffset;
   }
 
-  private boolean tokenStartsWith(@Nonnull final String text) {
+  private boolean tokenStartsWith(final String text) {
     boolean result = true;
     int index = 0;
 
@@ -298,7 +291,7 @@ public final class MindMapLexer {
     return result;
   }
 
-  private boolean isTokenMayStartWith(@Nonnull final String text) {
+  private boolean isTokenMayStartWith(final String text) {
     boolean result = true;
     int index = 0;
     for (int i = this.tokenStart; i <= this.position.offset && index < text.length(); i++) {
@@ -412,19 +405,16 @@ public final class MindMapLexer {
     }
   }
 
-  @Nonnull
-  @ReturnsOriginal
   public LexerPosition getCurrentPosition() {
     return this.position;
   }
 
-  public void restore(@Nonnull final LexerPosition position) {
+  public void restore(final LexerPosition position) {
     if (position != this.position) {
       this.position.set(position);
     }
   }
 
-  @Nonnull
   public CharSequence getBufferSequence() {
     return this.buffer;
   }
@@ -460,16 +450,16 @@ public final class MindMapLexer {
     private TokenType state;
     private boolean tokenCompleted;
 
-    private LexerPosition(@Nonnull final LexerPosition pos) {
+    private LexerPosition(final LexerPosition pos) {
       this.offset = pos.offset;
       this.state = pos.state;
       this.tokenCompleted = pos.tokenCompleted;
     }
 
-    private LexerPosition(final int offset, @Nonnull final TokenType state) {
+    private LexerPosition(final int offset, final TokenType state) {
       this.tokenCompleted = true;
       this.offset = offset;
-      this.state = Assertions.assertNotNull(state);
+      this.state = requireNonNull(state);
     }
 
     public int getOffset() {
@@ -480,12 +470,11 @@ public final class MindMapLexer {
       return this.tokenCompleted;
     }
 
-    @Nonnull
     public TokenType getState() {
       return this.state;
     }
 
-    public void set(@Nullable final LexerPosition position) {
+    public void set(final LexerPosition position) {
       if (position != null && this != position) {
         this.offset = position.offset;
         this.state = position.state;
@@ -493,7 +482,6 @@ public final class MindMapLexer {
       }
     }
 
-    @Nonnull
     public LexerPosition makeCopy() {
       return new LexerPosition(this);
     }

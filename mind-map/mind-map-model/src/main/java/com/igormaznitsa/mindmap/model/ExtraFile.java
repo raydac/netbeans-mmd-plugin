@@ -20,8 +20,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 
 public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
@@ -33,18 +31,17 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   private final String lowerCasedFileExtension;
   private volatile String cachedString;
 
-  public ExtraFile(@Nonnull final MMapURI file) {
+  public ExtraFile(final MMapURI file) {
     this.fileUri = file;
     this.lowerCasedFileExtension = file.getExtension().toLowerCase(Locale.ENGLISH);
     this.mmdFileFlag = this.lowerCasedFileExtension.equals("mmd"); //NOI18N
   }
 
-  public ExtraFile(@Nonnull final String text) throws URISyntaxException {
+  public ExtraFile(final String text) throws URISyntaxException {
     this(new MMapURI(text));
   }
 
-  @Nonnull
-  private static String ensureFolderPath(@Nonnull final String str) {
+  private static String ensureFolderPath(final String str) {
     if (str.endsWith("/") || str.endsWith("\\")) {
       return str;
     }
@@ -52,7 +49,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   }
 
   @Override
-  public boolean containsPattern(@Nullable final File baseFolder, @Nonnull final Pattern pattern) {
+  public boolean containsPattern(final File baseFolder, final Pattern pattern) {
     final String filePathAsText =
         FilenameUtils.normalize(this.fileUri.asFile(baseFolder).getAbsolutePath());
     return pattern.matcher(filePathAsText).find();
@@ -64,7 +61,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   }
 
   @Override
-  public boolean equals(@Nullable final Object that) {
+  public boolean equals(final Object that) {
     if (that == null) {
       return false;
     }
@@ -84,25 +81,21 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     return this.mmdFileFlag;
   }
 
-  @Nonnull
   public String getLCFileExtension() {
     return this.lowerCasedFileExtension;
   }
 
   @Override
-  @Nonnull
   public MMapURI getValue() {
     return fileUri;
   }
 
   @Override
-  @Nonnull
   public ExtraType getType() {
     return ExtraType.FILE;
   }
 
   @Override
-  @Nonnull
   public String getAsString() {
     if (this.cachedString == null) {
       this.cachedString = this.fileUri.asFile(null).getPath();
@@ -111,13 +104,11 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
   }
 
   @Override
-  @Nonnull
   public String provideAsStringForSave() {
     return this.fileUri.asString(false, true);
   }
 
   @Override
-  @Nonnull
   public MMapURI getAsURI() {
     return this.fileUri;
   }
@@ -126,10 +117,9 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     return this.fileUri.isAbsolute();
   }
 
-  @Nullable
-  public ExtraFile replaceParentPath(@Nullable final File baseFolder,
-                                     @Nonnull final MMapURI oldFolder,
-                                     @Nonnull final MMapURI newFolder) {
+  public ExtraFile replaceParentPath(final File baseFolder,
+                                     final MMapURI oldFolder,
+                                     final MMapURI newFolder) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File oldFolderFile = oldFolder.asFile(baseFolder);
     final File newFolderFile = newFolder.asFile(baseFolder);
@@ -150,7 +140,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
 
-  public boolean hasParent(@Nullable final File baseFolder, @Nonnull final MMapURI folder) {
+  public boolean hasParent(final File baseFolder, final MMapURI folder) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = folder.asFile(baseFolder);
 
@@ -166,7 +156,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
 
-  public boolean isSameOrHasParent(@Nullable final File baseFolder, @Nonnull final MMapURI file) {
+  public boolean isSameOrHasParent(final File baseFolder, final MMapURI file) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = file.asFile(baseFolder);
 
@@ -182,7 +172,7 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
 
-  public boolean isSame(@Nullable final File baseFolder, @Nonnull final MMapURI file) {
+  public boolean isSame(final File baseFolder, final MMapURI file) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = file.asFile(baseFolder);
 

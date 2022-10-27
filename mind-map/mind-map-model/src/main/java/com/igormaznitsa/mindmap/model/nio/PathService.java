@@ -16,14 +16,10 @@
 
 package com.igormaznitsa.mindmap.model.nio;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import java.io.File;
-import javax.annotation.Nonnull;
 
 public interface PathService {
-  @Nonnull
-  Path getForFile(@Nonnull File file);
+  Path getForFile(File file);
 
-  @Nonnull
-  Path getForPathItems(@Nonnull String first, @MustNotContainNull @Nonnull String... items);
+  Path getForPathItems(String first, String... items);
 }
