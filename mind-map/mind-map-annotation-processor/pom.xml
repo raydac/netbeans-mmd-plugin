@@ -11,6 +11,11 @@
     <name>MMD Annotation processor</name>
     <description>Processor to generate MMD files based on annotated sources</description>
 
+    <properties>
+        <animal.sniffer.skip>true</animal.sniffer.skip>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <developers>
         <developer>
             <id>raydac</id>
@@ -53,10 +58,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <properties>
-        <animal.sniffer.skip>true</animal.sniffer.skip>
-    </properties>
 
     <profiles>
         <profile>
