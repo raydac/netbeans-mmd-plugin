@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -70,7 +69,7 @@ public class TopicTest {
   @Test
   public void testParse_OnlyTopic() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Topic"));
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic"), false);
     assertEquals("Topic", topic.getText());
     assertTrue(topic.getChildren().isEmpty());
   }
@@ -79,7 +78,8 @@ public class TopicTest {
   public void testParse_OnlyTopicWithExtras() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer(
-        "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"));
+            "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"),
+        false);
     assertEquals("Topic", topic.getText());
     assertEquals(1, topic.getChildren().size());
     assertEquals(2, topic.getExtras().size());
@@ -92,7 +92,8 @@ public class TopicTest {
   public void testParse_PairTopicsFirstContainsMultilineTextNoteAndMiscEOL() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer(
-        "# Topic\r\n- NOTE\r\n<pre>   Some   \r\n    text     \n    line  \r\n  end \r\n   </pre>\r\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"));
+            "# Topic\r\n- NOTE\r\n<pre>   Some   \r\n    text     \n    line  \r\n  end \r\n   </pre>\r\n- LINK\n<pre>http://www.google.com</pre>\n## Topic2"),
+        false);
     assertEquals("Topic", topic.getText());
     assertEquals(1, topic.getChildren().size());
     assertEquals(2, topic.getExtras().size());
@@ -108,7 +109,8 @@ public class TopicTest {
   public void testParse_TopicWithURLContainingSpaces() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer(
-        "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>  http://www.google.com </pre>\n## Topic2"));
+            "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>  http://www.google.com </pre>\n## Topic2"),
+        false);
     assertEquals("Topic", topic.getText());
     assertEquals(1, topic.getChildren().size());
     assertEquals(2, topic.getExtras().size());
@@ -121,7 +123,8 @@ public class TopicTest {
   public void testParse_OnlyTopicWithExtrasAndAttributes() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic topic = Topic.parse(mm, makeLexer(
-        "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n> attr1=`hello`,attr2=``wor`ld``"));
+            "# Topic\n- NOTE\n<pre>Some\ntext</pre>\n- LINK\n<pre>http://www.google.com</pre>\n> attr1=`hello`,attr2=``wor`ld``"),
+        false);
     assertEquals("Topic", topic.getText());
     assertTrue(topic.getChildren().isEmpty());
     assertEquals(2, topic.getExtras().size());
@@ -136,7 +139,7 @@ public class TopicTest {
   @Test
   public void testParse_TopicAndChild() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Topic<br>Root\n ## Child<br/>Topic"));
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic<br>Root\n ## Child<br/>Topic"), false);
     assertEquals("Topic\nRoot", topic.getText());
     assertEquals(1, topic.getChildren().size());
 
@@ -149,7 +152,8 @@ public class TopicTest {
   public void testParseRoot_CodeSnippetContainsThreeBackticksLine_withSpacesBefore()
       throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n ```\n```"));
+    final Topic topic =
+        Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n ```\n```"), false);
     assertEquals("System.exit(0);\n ```\n", topic.getCodeSnippet("Java"));
   }
 
@@ -157,14 +161,16 @@ public class TopicTest {
   public void testParseRoot_CodeSnippetContainsThreeBackticksLine_withOneMoreBacktickAfterSpace()
       throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n``` `\n```"));
+    final Topic topic =
+        Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n``` `\n```"), false);
     assertEquals("System.exit(0);\n``` `\n", topic.getCodeSnippet("Java"));
   }
 
   @Test
   public void testParseRoot_CodeSnippetContainsThreeBackticksLine_manyBackticks() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n`````\n```"));
+    final Topic topic =
+        Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n`````\n```"), false);
     assertEquals("System.exit(0);\n`````\n", topic.getCodeSnippet("Java"));
   }
 
@@ -172,7 +178,8 @@ public class TopicTest {
   public void testParseRoot_CodeSnippetContainsThreeBackticksLine_threeBacktickAndChar()
       throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n```a\n```"));
+    final Topic topic =
+        Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\n```a\n```"), false);
     assertEquals("System.exit(0);\n```a\n", topic.getCodeSnippet("Java"));
   }
 
@@ -180,35 +187,37 @@ public class TopicTest {
   public void testParseRoot_CodeSnippetContainsThreeBackticksLine_charAndThreeBacktick()
       throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\na```\n```"));
+    final Topic topic =
+        Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.exit(0);\na```\n```"), false);
     assertEquals("System.exit(0);\na```\n", topic.getCodeSnippet("Java"));
   }
 
   @Test
   public void testParseRoot_emptyCodeSnippet() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\n```"));
+    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\n```"), false);
     assertEquals("", topic.getCodeSnippet("Java"));
   }
 
   @Test
   public void testParseRoot_notClosedCodeSnippet_OnlyHeader() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\n"));
+    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\n"), false);
     assertNull(topic.getCodeSnippet("Java"));
   }
 
   @Test
   public void testParseRoot_notClosedCodeSnippet_NotClosed() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.out.println();\n"));
+    final Topic topic =
+        Topic.parse(mm, makeLexer("# Root\n```Java\nSystem.out.println();\n"), false);
     assertNull(topic.getCodeSnippet("Java"));
   }
 
   @Test
   public void testParse_TopicAndTwoChildren() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n ## Child1\n ## Child2\n"));
+    final Topic topic = Topic.parse(mm, makeLexer("# Topic\n ## Child1\n ## Child2\n"), false);
     assertEquals("Topic", topic.getText());
     assertEquals(2, topic.getChildren().size());
 
@@ -225,7 +234,8 @@ public class TopicTest {
   public void testParse_MultiLevels() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic root = Topic.parse(mm, makeLexer(
-        "# Level1\n## Level2.1\n### Level3.1\n## Level2.2\n### Level3.2\n#### Level4.2\n## Level2.3"));
+            "# Level1\n## Level2.1\n### Level3.1\n## Level2.2\n### Level3.2\n#### Level4.2\n## Level2.3"),
+        false);
     assertEquals("Level1", root.getText());
     assertEquals(3, root.getChildren().size());
     assertEquals("Level2.1", root.getChildren().get(0).getText());
@@ -319,7 +329,7 @@ public class TopicTest {
   @Test
   public void testParse_EmptyTextAtMiddleLevel() throws Exception {
     final MindMap mm = new MindMap(true);
-    final Topic topic = Topic.parse(mm, makeLexer("# \n## Child\n"));
+    final Topic topic = Topic.parse(mm, makeLexer("# \n## Child\n"), false);
     assertEquals("", topic.getText());
     assertEquals(1, topic.getChildren().size());
 

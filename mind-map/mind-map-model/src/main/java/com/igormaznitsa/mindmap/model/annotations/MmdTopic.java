@@ -121,4 +121,18 @@ public @interface MmdTopic {
    * @return border fill color for the topic.
    */
   MmdColor colorBorder() default MmdColor.DEFAULT;
+
+  /**
+   * Flag to ask topic to be collapsed
+   *
+   * @return true if topic should be collapsed, false otherwise
+   */
+  boolean collapsed() default false;
+
+  /**
+   * Recommended direction for the topic.
+   *
+   * @return direction which should be used for the topic if it is possible
+   */
+  Direction direction() default Direction.AUTO;
 }

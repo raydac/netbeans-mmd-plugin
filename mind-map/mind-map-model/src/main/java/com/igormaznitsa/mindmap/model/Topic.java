@@ -19,8 +19,6 @@ package com.igormaznitsa.mindmap.model;
 import static com.igormaznitsa.mindmap.model.MiscUtils.ensureDoesntHaveNull;
 import static java.util.Objects.requireNonNull;
 
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 import java.io.File;
 import java.io.IOException;
@@ -45,17 +43,16 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   private static final long serialVersionUID = -4642569244907433215L;
   private static final AtomicLong LOCALUID_GENERATOR = new AtomicLong();
-  private static final Logger logger = LoggerFactory.getLogger(Topic.class);
   private final EnumMap<Extra.ExtraType, Extra<?>> extras =
-          new EnumMap<>(Extra.ExtraType.class);
+      new EnumMap<>(Extra.ExtraType.class);
   private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras =
       Collections.unmodifiableMap(this.extras);
   private final Map<String, String> attributes =
-          new TreeMap<>(ModelUtils.STRING_COMPARATOR);
+      new TreeMap<>(ModelUtils.STRING_COMPARATOR);
   private final Map<String, String> unmodifableAttributes =
       Collections.unmodifiableMap(this.attributes);
   private final Map<String, String> codeSnippets =
-          new TreeMap<>(ModelUtils.STRING_COMPARATOR);
+      new TreeMap<>(ModelUtils.STRING_COMPARATOR);
   private final Map<String, String> unmodifableCodeSnippets =
       Collections.unmodifiableMap(this.codeSnippets);
   private final List<Topic> children = new ArrayList<>();
@@ -116,7 +113,8 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
-  public static Topic parse(final MindMap map, final MindMapLexer lexer) {
+  public static Topic parse(final MindMap map, final MindMapLexer lexer,
+                            final boolean ignoreErrors) {
     map.lock();
     try {
       Topic topic = null;
@@ -210,10 +208,12 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
                 if (groupPre != null) {
                   topic.setExtra(extraType.parseLoaded(groupPre, topic.attributes));
                 } else {
-                  logger.error("Detected invalid extra data " + extraType);
+                  if (!ignoreErrors) {
+                    throw new IllegalStateException("Detected invalid extra data " + extraType);
+                  }
                 }
               } catch (Exception ex) {
-                logger.error("Unexpected exception #23241", ex); //NOI18N
+                throw new Error("Unexpected exception #23241", ex);
               } finally {
                 extraType = null;
               }

@@ -116,7 +116,7 @@ public class MMapURI implements Serializable {
 
   @SuppressWarnings("ConstantConditions")
   public static MMapURI makeFromFilePath(final File base, final String filePath,
-                                         final Properties properties) {
+                                         final Properties properties) throws URISyntaxException {
     return new MMapURI(base, ModelUtils.makeFileForPath(filePath), properties);
   }
 

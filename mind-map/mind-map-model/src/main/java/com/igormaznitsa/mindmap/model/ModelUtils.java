@@ -16,8 +16,6 @@
 
 package com.igormaznitsa.mindmap.model;
 
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.Paths;
 import java.io.File;
@@ -28,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,7 +40,6 @@ import java.util.regex.Pattern;
 public final class ModelUtils {
 
   public static final Comparator<String> STRING_COMPARATOR = new StringComparator();
-  private static final Logger LOGGER = LoggerFactory.getLogger(ModelUtils.class);
 
   private static final Pattern UNESCAPE_BR = Pattern.compile("(?i)\\<\\s*?br\\s*?\\/?\\>"); //NOI18N
   private static final Pattern MD_ESCAPED_PATTERN =
@@ -238,16 +236,16 @@ public final class ModelUtils {
 
     for (final String k : orderedkeys) {
       try {
-        final String encodedKey = URLEncoder.encode(k, "UTF-8"); //NOI18N
-        final String encodedValue = URLEncoder.encode(properties.getProperty(k), "UTF-8"); //NOI18N
+        final String encodedKey = URLEncoder.encode(k, StandardCharsets.UTF_8.name());
+        final String encodedValue =
+            URLEncoder.encode(properties.getProperty(k), StandardCharsets.UTF_8.name());
 
         if (buffer.length() > 0) {
           buffer.append('&');
         }
         buffer.append(encodedKey).append('=').append(encodedValue);
-      } catch (UnsupportedEncodingException ex) {
-        LOGGER.error("Can't encode URI query", ex); //NOI18N
-        throw new Error("Unexpected exception, can't find UTF-8 charset!"); //NOI18N
+      } catch (final UnsupportedEncodingException ex) {
+        throw new Error(ex);
       }
     }
     return buffer.toString();
@@ -260,15 +258,14 @@ public final class ModelUtils {
     if (rawQuery != null) {
       final Matcher matcher = URI_QUERY_PARAMETERS.matcher(rawQuery);
 
-      try {
-        while (matcher.find()) {
-          final String key = URLDecoder.decode(matcher.group(1), "UTF-8"); //NOI18N
-          final String value = URLDecoder.decode(matcher.group(2), "UTF-8"); //NOI18N
+      while (matcher.find()) {
+        try {
+          final String key = URLDecoder.decode(matcher.group(1), StandardCharsets.UTF_8.name());
+          final String value = URLDecoder.decode(matcher.group(2), StandardCharsets.UTF_8.name());
           result.put(key, value);
+        } catch (UnsupportedEncodingException ex) {
+          throw new Error(ex);
         }
-      } catch (UnsupportedEncodingException ex) {
-        LOGGER.error("Can't decode URI query", ex); //NOI18N
-        throw new Error("Unexpected exception, can't find UTF-8 charset!"); //NOI18N
       }
     }
 
@@ -299,17 +296,12 @@ public final class ModelUtils {
     return result.toString();
   }
 
-  public static File makeFileForPath(final String path) {
+  public static File makeFileForPath(final String path) throws URISyntaxException {
     if (path == null || path.isEmpty()) {
       return null;
     }
     if (path.startsWith("file:")) { //NOI18N
-      try {
-        return new File(new URI(normalizeFileURI(path)));
-      } catch (URISyntaxException ex) {
-        LOGGER.error("URISyntaxException for " + path, ex); //NOI18N
-        return null;
-      }
+      return new File(new URI(normalizeFileURI(path)));
     } else {
       return new File(path);
     }
