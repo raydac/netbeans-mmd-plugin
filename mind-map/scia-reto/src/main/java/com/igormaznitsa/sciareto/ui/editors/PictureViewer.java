@@ -39,6 +39,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,7 +56,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
-import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -66,7 +67,14 @@ import org.apache.commons.io.FilenameUtils;
 public final class PictureViewer extends AbstractEditor {
 
   public static final Set<String> SUPPORTED_FORMATS =
-      Set.of("png", "jpg", "gif", "svg"); //NOI18N
+      Collections.unmodifiableSet(new HashSet<String>() {{
+        add("png"); //NOI18N
+        add("jpg"); //NOI18N
+        add("gif"); //NOI18N
+        add("svg"); //NOI18N
+      }});
+
+
   public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
     @Override
     public boolean accept(@Nonnull final File f) {
@@ -155,8 +163,6 @@ public final class PictureViewer extends AbstractEditor {
       throws IOException, TranscoderException {
     final TranscodingHints transcoderHints = new TranscodingHints();
     transcoderHints.put(ImageTranscoder.KEY_XML_PARSER_VALIDATING, Boolean.FALSE);
-    transcoderHints.put(ImageTranscoder.KEY_DOM_IMPLEMENTATION,
-        SVGDOMImplementation.getDOMImplementation());
     transcoderHints.put(ImageTranscoder.KEY_DOCUMENT_ELEMENT_NAMESPACE_URI,
         SVGConstants.SVG_NAMESPACE_URI);
     transcoderHints.put(ImageTranscoder.KEY_DOCUMENT_ELEMENT, "svg");

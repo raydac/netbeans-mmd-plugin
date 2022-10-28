@@ -62,7 +62,12 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
 
   @Override
   protected Problem processFile(final Project project, final int level, final File projectFolder, final FileObject fileObject) {
-    final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
+    final MMapURI fileAsURI;
+    try {
+      fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
+    }catch (URISyntaxException ex){
+      return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.malformedURI"));
+    }
 
     final Lookup targetLookup = this.refactoring.getTarget();
     if (targetLookup == null) {

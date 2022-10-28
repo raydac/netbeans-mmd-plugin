@@ -20,7 +20,6 @@ import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 
-
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
@@ -69,6 +68,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.awt.Color;
 import java.awt.Point;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
@@ -369,22 +369,37 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
             props.put(FILELINK_ATTR_LINE, Integer.toString(dataContainer.getPathWithLine().getLine()));
           }
 
-          final MMapURI fileUri = MMapURI.makeFromFilePath(this.editor.isMakeRelativePath() ? projectFolder : null, dataContainer.getPathWithLine().getPath(), props); //NOI18N
-          final File theFile = fileUri.asFile(projectFolder);
-          LOGGER.info(String.format("Path %s converted to uri: %s", dataContainer.getPathWithLine(), fileUri.asString(false, true))); //NOI18N
+          try {
+            final MMapURI fileUri =
+                MMapURI.makeFromFilePath(this.editor.isMakeRelativePath() ? projectFolder : null,
+                    dataContainer.getPathWithLine().getPath(), props); //NOI18N
+            final File theFile = fileUri.asFile(projectFolder);
+            LOGGER.info(
+                String.format("Path %s converted to uri: %s", dataContainer.getPathWithLine(),
+                    fileUri.asString(false, true))); //NOI18N
 
-          if (theFile.exists()) {
-            if (currentFilePath == null) {
-              this.editor.getMindMapPanel().putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, theFile.getParentFile());
-            }
+            if (theFile.exists()) {
+              if (currentFilePath == null) {
+                this.editor.getMindMapPanel().putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER,
+                    theFile.getParentFile());
+              }
 
-            final ExtraFile newFile = new ExtraFile(fileUri);
-            if (currentFilePath == null || !currentFilePath.equals(newFile)) {
-              topic.setExtra(newFile);
-              changed = true;
+              final ExtraFile newFile = new ExtraFile(fileUri);
+              if (currentFilePath == null || !currentFilePath.equals(newFile)) {
+                topic.setExtra(newFile);
+                changed = true;
+              }
+            } else {
+              dialogProvider.msgError(null, String.format(
+                  BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                  dataContainer.getPathWithLine().getPath()));
             }
-          } else {
-            dialogProvider.msgError(null, String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"), dataContainer.getPathWithLine().getPath()));
+          }catch (URISyntaxException ex){
+            LOGGER.error(
+                String.format("Malformed URI syntax: %s", dataContainer.getPathWithLine()), ex); //NOI18N
+            dialogProvider.msgError(null, String.format(
+                BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.malformedURI"),
+                dataContainer.getPathWithLine().getPath()));
           }
         }
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -66,7 +67,8 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
     return null;
   }
 
-  protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path, final String newName) {
+  protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path,
+                                            final String newName) {
     int foldersInNewName = numberOfFolders(newName);
 
     final String normalizedSeparators = FilenameUtils.separatorsToUnix(path);
@@ -90,8 +92,7 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
       if (start >= 0) {
         if (indexEnd <= 0) {
           result = path.substring(0, start + 1) + newName;
-        }
-        else {
+        } else {
           result = path.substring(0, start + 1) + newName + path.substring(indexEnd);
         }
       }
@@ -100,15 +101,21 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
   }
 
   @Override
-  protected Problem processFile(final Project project, final int level, final File projectFolder, final FileObject fileObject) {
-    final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
+  protected Problem processFile(final Project project, final int level, final File projectFolder,
+                                final FileObject fileObject) {
+    final MMapURI fileAsURI;
+    try {
+      fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
+    } catch (URISyntaxException ex) {
+      return new Problem(false, "Malformed URI syntax: " + ex.getMessage());
+    }
 
     String newFileName = this.refactoring.getNewName();
-    
-    if (newFileName == null){
+
+    if (newFileName == null) {
       return new Problem(false, "Detected null as new file name for rename refactoring action");
     }
-    
+
     if (level == 0 && !fileObject.isFolder()) {
       final String ext = FilenameUtils.getExtension(fileObject.getNameExt());
       if (!ext.isEmpty()) {
@@ -116,21 +123,20 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
           newFileName += '.' + ext;
         }
       }
-    }
-    else {
+    } else {
       newFileName = newFileName.replace('.', '/');
     }
 
     final MMapURI newFileAsURI;
     try {
       if (level == 0) {
-        newFileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null).replaceName(newFileName);
+        newFileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)
+            .replaceName(newFileName);
+      } else {
+        newFileAsURI = MMapURI.makeFromFilePath(projectFolder,
+            replaceNameInPath(level, fileObject.getPath(), newFileName), null);
       }
-      else {
-        newFileAsURI = MMapURI.makeFromFilePath(projectFolder, replaceNameInPath(level, fileObject.getPath(), newFileName), null);
-      }
-    }
-    catch (URISyntaxException ex) {
+    } catch (URISyntaxException ex) {
       LOGGER.error("Can't make new file uri for " + fileObject.getPath(), ex); //NOI18N
       return new Problem(true, BUNDLE.getString("Refactoring.CantMakeURI"));
     }
@@ -141,12 +147,12 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
       }
       try {
         if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
-          final RenameElement element = new RenameElement(new MindMapLink(mmap), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null));
+          final RenameElement element = new RenameElement(new MindMapLink(mmap), projectFolder,
+              MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null));
           element.setNewFile(newFileAsURI);
           addElement(element);
         }
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         ErrorManager.getDefault().notify(ex);
         return new Problem(true, BUNDLE.getString("Refactoring.CantProcessMindMap"));
       }

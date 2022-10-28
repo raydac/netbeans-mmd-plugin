@@ -72,8 +72,12 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
               extraTypes.contains(Extra.ExtraType.FILE))) {
         final String text = topic.getAttribute(ATTR_IMAGE_URI_KEY);
         if (text != null) {
-          result =
-              pattern.matcher(MMapURI.makeFromFilePath(baseFolder, text, null).toString()).find();
+          try {
+            result =
+                pattern.matcher(MMapURI.makeFromFilePath(baseFolder, text, null).toString()).find();
+          } catch (URISyntaxException ex) {
+            // ignore
+          }
         }
       }
     }

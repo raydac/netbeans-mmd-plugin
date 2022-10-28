@@ -19,13 +19,30 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
+import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_BORDER_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
+import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
+import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
-import com.igormaznitsa.mindmap.model.*;
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.TopicFinder;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
@@ -34,7 +51,12 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
-import com.igormaznitsa.mindmap.swing.panel.*;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
+import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
@@ -57,17 +79,20 @@ import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
@@ -79,17 +104,24 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
-
-import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
-import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
-import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.*;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
-import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 public final class MMDEditor extends AbstractTextEditor
     implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener {
@@ -1096,7 +1128,7 @@ public final class MMDEditor extends AbstractTextEditor
       }
 
       if (dataContainer != null) {
-        final boolean valueChanged;
+        boolean valueChanged = false;
         if (dataContainer.getFilePathWithLine().isEmptyOrOnlySpaces()) {
           valueChanged = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
@@ -1108,28 +1140,39 @@ public final class MMDEditor extends AbstractTextEditor
             props.put(FILELINK_ATTR_LINE,
                 Integer.toString(dataContainer.getFilePathWithLine().getLine()));
           }
-          final MMapURI fileUri = MMapURI.makeFromFilePath(
-              PreferencesManager.getInstance().getPreferences()
-                  .getBoolean("makeRelativePathToProject", true) ? projectFolder : null,
-              dataContainer.getFilePathWithLine().getPath(), props); //NOI18N
-          final File theFile = fileUri.asFile(projectFolder);
-          logger.info(String
-              .format("Path %s converted to uri: %s", dataContainer.getFilePathWithLine(),
-                  fileUri.asString(false, true))); //NOI18N
+          final MMapURI fileUri;
 
-          if (theFile.exists()) {
-            if (currentFilePath == null) {
-              this.mindMapPanel
-                  .putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, theFile.getParentFile());
+          try {
+            fileUri = MMapURI.makeFromFilePath(
+                PreferencesManager.getInstance().getPreferences()
+                    .getBoolean("makeRelativePathToProject", true) ? projectFolder : null,
+                dataContainer.getFilePathWithLine().getPath(), props); //NOI18N
+            final File theFile = fileUri.asFile(projectFolder);
+            logger.info(String
+                .format("Path %s converted to uri: %s", dataContainer.getFilePathWithLine(),
+                    fileUri.asString(false, true))); //NOI18N
+
+            if (theFile.exists()) {
+              if (currentFilePath == null) {
+                this.mindMapPanel
+                    .putSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER,
+                        theFile.getParentFile());
+              }
+              topic.setExtra(new ExtraFile(fileUri));
+              valueChanged = true;
+            } else {
+              DialogProviderManager.getInstance().getDialogProvider()
+                  .msgError(SciaRetoStarter.getApplicationFrame(), String.format(
+                      BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                      dataContainer.getFilePathWithLine().getPath()));
             }
-            topic.setExtra(new ExtraFile(fileUri));
-            valueChanged = true;
-          } else {
+          } catch (final URISyntaxException ex) {
+            logger.error(String
+                .format("URI syntax error: %s", dataContainer.getFilePathWithLine()), ex); //NOI18N
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgError(SciaRetoStarter.getApplicationFrame(), String.format(
-                    BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                    BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantConvertFilePath"),
                     dataContainer.getFilePathWithLine().getPath()));
-            valueChanged = false;
           }
         }
 

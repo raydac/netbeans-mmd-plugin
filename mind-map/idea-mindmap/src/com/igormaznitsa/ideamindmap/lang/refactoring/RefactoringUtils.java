@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import javax.annotation.Nonnull;
 
@@ -22,7 +23,8 @@ public final class RefactoringUtils {
   private RefactoringUtils() {
   }
 
-  public static MMapURI makeNewMMapUri(@Nonnull final Project project, @Nonnull final MMapURI oldFile, @Nonnull VirtualFile newFile) {
+  public static MMapURI makeNewMMapUri(@Nonnull final Project project, @Nonnull final MMapURI oldFile, @Nonnull VirtualFile newFile)
+   throws URISyntaxException {
     final File projectFolder = IdeaUtils.findProjectFolder(project);
     if (projectFolder == null) {
       throw new NullPointerException("Project folder is not found for " + project);

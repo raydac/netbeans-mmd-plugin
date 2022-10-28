@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
+import java.net.URISyntaxException;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.WhereUsedQuery;
@@ -31,8 +33,14 @@ public class WhereUsedActionPlugin extends AbstractPlugin<WhereUsedQuery> {
   }
 
   @Override
-  protected Problem processFile(final Project project, final int level, final File projectFolder, final FileObject fileObject) {
-    final MMapURI fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
+  protected Problem processFile(final Project project, final int level, final File projectFolder,
+                                final FileObject fileObject) {
+    final MMapURI fileAsURI;
+    try {
+      fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
+    } catch (URISyntaxException ex) {
+      return new Problem(false, "Malformed URI syntax: " + ex.getMessage());
+    }
 
     for (final FileObject mmap : allMapsInProject(project)) {
       if (isCanceled()) {
@@ -40,10 +48,10 @@ public class WhereUsedActionPlugin extends AbstractPlugin<WhereUsedQuery> {
       }
       try {
         if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
-            addElement(new WhereUsedElement(new MindMapLink(mmap), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)));
+          addElement(new WhereUsedElement(new MindMapLink(mmap), projectFolder,
+              MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)));
         }
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         ErrorManager.getDefault().notify(ex);
         return new Problem(true, BUNDLE.getString("Refactoring.CantProcessMindMap"));
       }

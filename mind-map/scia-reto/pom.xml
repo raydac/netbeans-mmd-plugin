@@ -24,7 +24,6 @@
 
   <properties>
     <app.name>sciareto-${project.version}</app.name>
-    <maven.compiler.release>9</maven.compiler.release>
     <jung.version>2.1.1</jung.version>
     <batik.version>1.14</batik.version>
     <jlatexmath.version>1.0.7</jlatexmath.version>
@@ -709,16 +708,6 @@
     <finalName>${app.name}</finalName>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>ensure-java-1.8-class-library</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
@@ -738,6 +727,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
+          <release>9</release>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
         </configuration>

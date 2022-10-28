@@ -16,6 +16,7 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.util.IncorrectOperationException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -62,9 +63,10 @@ public class PsiExtraFileReference extends PsiReferenceBase<PsiExtraFile> {
       }), null, null, document);
 
       extraFile.setMMapURI(newUri);
-
     } catch (IOException ex) {
       throw new IncorrectOperationException("Can't update links in mind map", (Throwable) ex);
+    } catch (URISyntaxException ex) {
+      throw new IncorrectOperationException("Can't update links in mind map for URI syntax error", (Throwable) ex);
     }
   }
 
