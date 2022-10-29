@@ -25,8 +25,6 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 public class ExtraURIPlugin extends AbstractFocusedTopicPlugin implements ExternallyExecutedPlugin {
@@ -40,23 +38,21 @@ public class ExtraURIPlugin extends AbstractFocusedTopicPlugin implements Extern
   }
 
   @Override
-  @Nullable
-  protected Icon getIcon(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected Icon getIcon(final PluginContext context, final Topic activeTopic) {
     return ICO;
   }
 
   @Override
-  @Nonnull
-  protected String getName(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected String getName(final PluginContext context, final Topic activeTopic) {
     if (activeTopic == null) {
       return "...";
     }
-    return activeTopic.getExtras().containsKey(Extra.ExtraType.LINK) ? Texts.getString("MMDGraphEditor.makePopUp.miEditURI") :
+    return activeTopic.getExtras().containsKey(Extra.ExtraType.LINK) ?
+        Texts.getString("MMDGraphEditor.makePopUp.miEditURI") :
         Texts.getString("MMDGraphEditor.makePopUp.miAddURI");
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.EXTRAS;
   }

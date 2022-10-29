@@ -26,8 +26,6 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class MMGraphics2DWrapper implements MMGraphics {
 
@@ -35,12 +33,11 @@ public class MMGraphics2DWrapper implements MMGraphics {
   private StrokeType strokeType = StrokeType.SOLID;
   private float strokeWidth = 1.0f;
 
-  public MMGraphics2DWrapper(@Nonnull final Graphics2D wrapped) {
+  public MMGraphics2DWrapper(final Graphics2D wrapped) {
     this.wrapped = wrapped;
     this.wrapped.setStroke(new BasicStroke(this.strokeWidth));
   }
 
-  @Nonnull
   public Graphics2D getWrappedGraphics() {
     return this.wrapped;
   }
@@ -51,7 +48,8 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  public void drawRect(final int x, final int y, final int width, final int height, @Nullable final Color border, @Nullable final Color fill) {
+  public void drawRect(final int x, final int y, final int width, final int height,
+                       final Color border, final Color fill) {
     if (fill != null) {
       this.wrapped.setColor(fill);
       this.wrapped.fillRect(x, y, width, height);
@@ -64,7 +62,6 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  @Nonnull
   public MMGraphics copy() {
     final MMGraphics2DWrapper result = new MMGraphics2DWrapper((Graphics2D) wrapped.create());
     result.strokeType = this.strokeType;
@@ -83,13 +80,12 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  @Nullable
   public Rectangle getClipBounds() {
     return this.wrapped.getClipBounds();
   }
 
   @Override
-  public void setStroke(@Nonnull final float width, @Nonnull final StrokeType type) {
+  public void setStroke(final float width, final StrokeType type) {
     if (type != this.strokeType || Float.compare(this.strokeWidth, width) != 0) {
       this.strokeType = type;
       this.strokeWidth = width;
@@ -114,7 +110,8 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  public void drawLine(final int startX, final int startY, final int endX, final int endY, @Nullable final Color color) {
+  public void drawLine(final int startX, final int startY, final int endX, final int endY,
+                       final Color color) {
     if (color != null) {
       this.wrapped.setColor(color);
       this.wrapped.drawLine(startX, startY, endX, endY);
@@ -122,7 +119,7 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  public void draw(@Nonnull final Shape shape, @Nullable final Color border, @Nullable final Color fill) {
+  public void draw(final Shape shape, final Color border, final Color fill) {
     if (fill != null) {
       this.wrapped.setColor(fill);
       this.wrapped.fill(shape);
@@ -135,7 +132,8 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  public void drawCurve(final double startX, final double startY, final double endX, final double endY, @Nullable final Color color) {
+  public void drawCurve(final double startX, final double startY, final double endX,
+                        final double endY, final Color color) {
     final Path2D path = new Path2D.Double();
     path.moveTo(startX, startY);
     path.curveTo(startX, endY, startX, endY, endX, endY);
@@ -146,7 +144,8 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  public void drawOval(final int x, final int y, final int w, final int h, @Nullable final Color border, @Nullable final Color fill) {
+  public void drawOval(final int x, final int y, final int w, final int h, final Color border,
+                       final Color fill) {
     if (fill != null) {
       this.wrapped.setColor(fill);
       this.wrapped.fillOval(x, y, w, h);
@@ -159,7 +158,7 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  public void drawImage(@Nullable final Image image, final int x, final int y) {
+  public void drawImage(final Image image, final int x, final int y) {
     if (image != null) {
       this.wrapped.drawImage(image, x, y, null);
     }
@@ -171,18 +170,17 @@ public class MMGraphics2DWrapper implements MMGraphics {
   }
 
   @Override
-  @Nonnull
-  public Rectangle2D getStringBounds(@Nonnull final String str) {
+  public Rectangle2D getStringBounds(final String str) {
     return this.wrapped.getFont().getStringBounds(str, this.wrapped.getFontRenderContext());
   }
 
   @Override
-  public void setFont(@Nonnull final Font font) {
+  public void setFont(final Font font) {
     this.wrapped.setFont(font);
   }
 
   @Override
-  public void drawString(@Nonnull final String text, final int x, final int y, @Nullable Color color) {
+  public void drawString(final String text, final int x, final int y, final Color color) {
     if (color != null && this.wrapped.getFont().getSize2D() > 1.0f) {
       this.wrapped.setColor(color);
       this.wrapped.drawString(text, x, y);

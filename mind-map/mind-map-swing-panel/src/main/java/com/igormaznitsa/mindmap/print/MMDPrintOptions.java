@@ -16,8 +16,7 @@
 
 package com.igormaznitsa.mindmap.print;
 
-import com.igormaznitsa.meta.common.utils.Assertions;
-import javax.annotation.Nonnull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Parameters for print.
@@ -36,7 +35,7 @@ public class MMDPrintOptions {
   public MMDPrintOptions() {
   }
 
-  public MMDPrintOptions(@Nonnull final MMDPrintOptions that) {
+  public MMDPrintOptions(final MMDPrintOptions that) {
     this.scaleOption = that.scaleOption;
     this.horzPages = that.horzPages;
     this.vertPages = that.vertPages;
@@ -59,7 +58,6 @@ public class MMDPrintOptions {
    * @param flag true if to print as image, false otherwise
    * @return this instance
    */
-  @Nonnull
   public MMDPrintOptions setDrawAsImage(final boolean flag) {
     this.drawAsImage = flag;
     return this;
@@ -80,9 +78,10 @@ public class MMDPrintOptions {
    * @param value new scale, must be great than zero.
    * @return this instance
    */
-  @Nonnull
   public MMDPrintOptions setScale(final double value) {
-    Assertions.assertTrue("Must be >0.0d", value > 0.0d);
+    if (value <= 0.0d) {
+      throw new IllegalArgumentException("Must be >0.0d");
+    }
     this.scale = value;
     return this;
   }
@@ -102,9 +101,10 @@ public class MMDPrintOptions {
    * @param pages number of pages in column, must be 1 or great
    * @return this instance
    */
-  @Nonnull
   public MMDPrintOptions setPagesInColumn(final int pages) {
-    Assertions.assertTrue("Must be >=1", pages >= 1);
+    if (pages < 1) {
+      throw new IllegalArgumentException("Must contain pages");
+    }
     this.vertPages = pages;
     return this;
   }
@@ -124,9 +124,10 @@ public class MMDPrintOptions {
    * @param pages number of pages in row, must be 1 or great
    * @return this instance
    */
-  @Nonnull
   public MMDPrintOptions setPagesInRow(final int pages) {
-    Assertions.assertTrue("Must be >=1", pages >= 1);
+    if (pages < 1) {
+      throw new IllegalArgumentException("Must contain pages");
+    }
     this.horzPages = pages;
     return this;
   }
@@ -136,7 +137,6 @@ public class MMDPrintOptions {
    *
    * @return the selected scale option, must not be null.
    */
-  @Nonnull
   public ScaleType getScaleType() {
     return this.scaleOption;
   }
@@ -147,9 +147,8 @@ public class MMDPrintOptions {
    * @param scaleOption option, must not be null
    * @return this instance
    */
-  @Nonnull
-  public MMDPrintOptions setScaleType(@Nonnull final ScaleType scaleOption) {
-    this.scaleOption = Assertions.assertNotNull(scaleOption);
+  public MMDPrintOptions setScaleType(final ScaleType scaleOption) {
+    this.scaleOption = requireNonNull(scaleOption);
     return this;
   }
 

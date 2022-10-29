@@ -23,10 +23,6 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
@@ -35,21 +31,16 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_COLLAPSEALL);
 
   @Override
-  @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic) {
-    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"), ICO);
+  public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
+    final JMenuItem result =
+        UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miCollapseAll"),
+            ICO);
     result.setEnabled(context.getPanel().getModel().getRoot() != null);
-    result.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        context.getPanel().collapseOrExpandAll(true);
-      }
-    });
+    result.addActionListener(e -> context.getPanel().collapseOrExpandAll(true));
     return result;
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.MANIPULATORS;
   }

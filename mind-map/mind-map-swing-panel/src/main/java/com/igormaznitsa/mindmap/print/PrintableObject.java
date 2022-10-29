@@ -16,33 +16,27 @@
 
 package com.igormaznitsa.mindmap.print;
 
-import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import java.awt.Image;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public final class PrintableObject {
 
   private final Image image;
   private final MindMapPanel panel;
 
-  private PrintableObject(@Nullable final Image image, @Nullable final MindMapPanel panel) {
+  private PrintableObject(final Image image, final MindMapPanel panel) {
     this.panel = panel;
     this.image = image;
   }
 
-  @Nonnull
   public static Builder newBuild() {
     return new Builder();
   }
 
-  @Nullable
   public MindMapPanel getPanel() {
     return this.panel;
   }
 
-  @Nullable
   public Image getImage() {
     return this.image;
   }
@@ -63,23 +57,26 @@ public final class PrintableObject {
     private Builder() {
     }
 
-    @Nonnull
-    public Builder image(@Nullable final Image image) {
-      Assertions.assertNull("Panel already set", this.panel);
+    public Builder image(final Image image) {
+      if (this.panel != null) {
+        throw new IllegalStateException("Panel already set");
+      }
       this.image = image;
       return this;
     }
 
-    @Nonnull
-    public Builder mmdpanel(@Nullable final MindMapPanel panel) {
-      Assertions.assertNull("Image already set", this.image);
+    public Builder mmdpanel(final MindMapPanel panel) {
+      if (this.image != null) {
+        throw new IllegalStateException("Image already set");
+      }
       this.panel = panel;
       return this;
     }
 
-    @Nonnull
     public PrintableObject build() {
-      Assertions.assertTrue("One object must be set", this.image != null || this.panel != null);
+      if (!(this.image != null || this.panel != null)) {
+        throw new IllegalStateException("One object must be set");
+      }
       return new PrintableObject(this.image, this.panel);
     }
   }

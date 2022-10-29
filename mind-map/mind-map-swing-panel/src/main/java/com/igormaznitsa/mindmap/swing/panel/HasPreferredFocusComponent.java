@@ -16,11 +16,9 @@
 
 package com.igormaznitsa.mindmap.swing.panel;
 
-import javax.annotation.Nullable;
 import javax.swing.JComponent;
 
 public interface HasPreferredFocusComponent {
 
-  @Nullable
   JComponent getComponentPreferredForFocus();
 }

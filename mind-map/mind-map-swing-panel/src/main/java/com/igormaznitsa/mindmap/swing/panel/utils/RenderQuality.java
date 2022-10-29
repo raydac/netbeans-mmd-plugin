@@ -20,7 +20,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
 
 public enum RenderQuality {
   DEFAULT,
@@ -29,22 +28,31 @@ public enum RenderQuality {
 
   private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_DEFAULT = new HashMap<>();
   private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_SPEED = new HashMap<>();
-  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_QUALTY = new HashMap<>();
+  private static final Map<RenderingHints.Key, Object> RENDERING_HINTS_QUALITY = new HashMap<>();
 
   static {
-    RENDERING_HINTS_QUALTY.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-    RENDERING_HINTS_QUALTY.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    RENDERING_HINTS_QUALTY.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    RENDERING_HINTS_QUALTY.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-    RENDERING_HINTS_QUALTY.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-    RENDERING_HINTS_QUALTY.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+    RENDERING_HINTS_QUALITY.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    RENDERING_HINTS_QUALITY.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    RENDERING_HINTS_QUALITY.put(RenderingHints.KEY_TEXT_ANTIALIASING,
+        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    RENDERING_HINTS_QUALITY.put(RenderingHints.KEY_INTERPOLATION,
+        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    RENDERING_HINTS_QUALITY.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
+        RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+    RENDERING_HINTS_QUALITY.put(RenderingHints.KEY_COLOR_RENDERING,
+        RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
     RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_DEFAULT);
-    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
-    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
-    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_DEFAULT);
-    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_DEFAULT);
+    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_DEFAULT);
+    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_TEXT_ANTIALIASING,
+        RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
+    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_INTERPOLATION,
+        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
+        RenderingHints.VALUE_ALPHA_INTERPOLATION_DEFAULT);
+    RENDERING_HINTS_DEFAULT.put(RenderingHints.KEY_COLOR_RENDERING,
+        RenderingHints.VALUE_COLOR_RENDER_DEFAULT);
 
     RENDERING_HINTS_SPEED.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
     RENDERING_HINTS_SPEED.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -54,10 +62,10 @@ public enum RenderQuality {
     RENDERING_HINTS_SPEED.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
   }
 
-  public void prepare(@Nonnull final Graphics2D g) {
+  public void prepare(final Graphics2D g) {
     switch (this) {
       case QUALITY:
-        g.setRenderingHints(RENDERING_HINTS_QUALTY);
+        g.setRenderingHints(RENDERING_HINTS_QUALITY);
         break;
       case DEFAULT:
         g.setRenderingHints(RENDERING_HINTS_DEFAULT);

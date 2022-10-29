@@ -18,9 +18,8 @@ package com.igormaznitsa.mindmap.plugins.importers;
 
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
+import static java.util.Objects.requireNonNull;
 
-
-import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -50,8 +49,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -64,9 +61,10 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
   private static final Logger LOGGER = LoggerFactory.getLogger(Mindmup2MindMapImporter.class);
 
   @Override
-  @Nullable
-  public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), null, "mup", "Mindmup files (.MUP)", Texts.getString("MMDImporters.ApproveImport"));
+  public MindMap doImport(final PluginContext context) throws Exception {
+    final File file = this.selectFileForExtension(context,
+        Texts.getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), null, "mup",
+        "Mindmup files (.MUP)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
@@ -74,15 +72,14 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
 
     try {
       return this.doImportFile(file);
-    } catch (final IllegalArgumentException ex){
+    } catch (final IllegalArgumentException ex) {
       LOGGER.error("Can't parse", ex);
       context.getDialogProvider().msgError(null, Texts.getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
       return null;
     }
   }
 
-  @Nonnull
-  MindMap doImportFile(@Nonnull final File file) throws IOException {
+  MindMap doImportFile(final File file) throws IOException {
     final JSONObject parsedJson = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
     final Number formatVersion = parsedJson.getNumber("formatVersion");
     if (formatVersion == null) {
@@ -91,7 +88,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     final MindMap resultedMap = new MindMap(true);
     resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
-    final Topic mindMapRoot = Assertions.assertNotNull(resultedMap.getRoot());
+    final Topic mindMapRoot = requireNonNull(resultedMap.getRoot());
     final Map<Long, Topic> mapTopicId = new HashMap<>();
 
     parseTopic(resultedMap, null, mindMapRoot, parsedJson, mapTopicId);
@@ -108,7 +105,8 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     return resultedMap;
   }
 
-  private void processLinks(@Nonnull final MindMap map, @Nonnull final JSONArray links, @Nonnull final Map<Long, Topic> topics) {
+  private void processLinks(final MindMap map, final JSONArray links,
+                            final Map<Long, Topic> topics) {
     for (int i = 0; i < links.length(); i++) {
       try {
         final JSONObject linkObject = links.getJSONObject(i);
@@ -125,7 +123,13 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     }
   }
 
-  private void parseTopic(@Nonnull MindMap map, @Nullable final Topic parentTopic, @Nullable final Topic pregeneratedTopic, @Nonnull final JSONObject json, @Nonnull final Map<Long, Topic> idTopicMap) {
+  private void parseTopic(
+      final MindMap map,
+      final Topic parentTopic,
+      final Topic pregeneratedTopic,
+      final JSONObject json,
+      final Map<Long, Topic> idTopicMap
+  ) {
     final JSONObject ideas = json.optJSONObject("ideas");
     if (ideas != null) {
 
@@ -154,11 +158,11 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
         final Topic topicToProcess;
 
         if (pregeneratedTopic == null) {
-          topicToProcess = Assertions.assertNotNull(parentTopic).makeChild(title.trim(), parentTopic);
-          if (Assertions.assertNotNull(topicToProcess.getParent()).isRoot()) {
+          topicToProcess = requireNonNull(parentTopic).makeChild(title.trim(), parentTopic);
+          if (requireNonNull(topicToProcess.getParent()).isRoot()) {
             if (i.isLeftBranch()) {
               AbstractCollapsableElement.makeTopicLeftSided(topicToProcess, true);
-              final Topic firstSibling = Assertions.assertNotNull(parentTopic).getFirst();
+              final Topic firstSibling = requireNonNull(parentTopic).getFirst();
               if (firstSibling != null && firstSibling != topicToProcess) {
                 topicToProcess.moveBefore(firstSibling);
               }
@@ -206,17 +210,18 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     }
   }
 
-  private void processAttrNote(@Nonnull final JSONObject note, @Nonnull final Topic topic) {
+  private void processAttrNote(final JSONObject note, final Topic topic) {
     topic.setExtra(new ExtraNote(note.optString("text", "")));
   }
 
-  private void processAttrIcon(@Nonnull final JSONObject icon, @Nonnull final Topic topic) {
+  private void processAttrIcon(final JSONObject icon, final Topic topic) {
     final String iconUrl = icon.getString("url");
     if (iconUrl.startsWith("data:")) {
       final String[] data = iconUrl.split("\\,");
       if (data.length == 2 && data[0].startsWith("data:image/") && data[0].endsWith("base64")) {
         try {
-          final String encoded = Utils.rescaleImageAndEncodeAsBase64(new ByteArrayInputStream(Utils.base64decode(data[1].trim())), -1);
+          final String encoded = Utils.rescaleImageAndEncodeAsBase64(
+              new ByteArrayInputStream(Utils.base64decode(data[1].trim())), -1);
           if (encoded == null) {
             LOGGER.warn("Can't convert image : " + iconUrl);
           } else {
@@ -235,38 +240,35 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     }
   }
 
-  private void processAttrStyle(@Nonnull final JSONObject style, @Nonnull final Topic topic) {
+  private void processAttrStyle(final JSONObject style, final Topic topic) {
     final String background = style.getString("background");
     if (background != null) {
       final Color color = Utils.html2color(background, false);
       if (color != null) {
         topic.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(color, false));
-        topic.setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(Utils.makeContrastColor(color), false));
+        topic.setAttribute(ATTR_TEXT_COLOR.getText(),
+            Utils.color2html(Utils.makeContrastColor(color), false));
       }
     }
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "mindmup";
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context) {
+  public String getName(final PluginContext context) {
     return Texts.getString("MMDImporters.Mindmup2MindMap.Name");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context) {
+  public String getReference(final PluginContext context) {
     return Texts.getString("MMDImporters.Mindmup2MindMap.Reference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext context) {
+  public Icon getIcon(final PluginContext context) {
     return ICO;
   }
 
@@ -285,7 +287,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     private final double order;
     private final JSONObject idea;
 
-    private OrderableIdea(final double order, @Nonnull final JSONObject idea) {
+    private OrderableIdea(final double order, final JSONObject idea) {
       this.order = order;
       this.idea = idea;
     }
@@ -294,13 +296,12 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       return this.order < 0.0d;
     }
 
-    @Nonnull
     private JSONObject getIdea() {
       return this.idea;
     }
 
     @Override
-    public int compareTo(@Nonnull final OrderableIdea that) {
+    public int compareTo(final OrderableIdea that) {
       return Double.compare(this.order, that.order);
     }
 

@@ -1,8 +1,8 @@
 package com.igormaznitsa.mindmap.plugins.importers;
 
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -15,7 +15,8 @@ public class CoggleMM2MindMapImporterTest extends AbstractImporterTest {
   public void testParseFile() throws Exception {
     final MindMap map = INSTANCE.doImportFile(findFile("Coggle.mm"));
 
-    final Topic root = assertNotNull(map.getRoot());
+    final Topic root = map.getRoot();
+    assertNotNull(root);
     assertEquals("GILGAMESH  ", root.getText());
     assertEquals(6, root.getChildren().size());
   }

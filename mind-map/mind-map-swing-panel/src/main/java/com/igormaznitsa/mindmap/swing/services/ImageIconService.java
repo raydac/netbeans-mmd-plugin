@@ -16,11 +16,8 @@
 
 package com.igormaznitsa.mindmap.swing.services;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 public interface ImageIconService {
-  @Nullable
-  Icon getIconForId(@Nonnull IconID id);
+  Icon getIconForId(IconID id);
 }

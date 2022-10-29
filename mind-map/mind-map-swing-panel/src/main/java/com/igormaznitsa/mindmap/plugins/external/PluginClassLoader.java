@@ -18,8 +18,6 @@ package com.igormaznitsa.mindmap.plugins.external;
 
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.commons.version.VersionValidator;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.File;
@@ -30,10 +28,9 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.lang.model.SourceVersion;
 
 public class PluginClassLoader extends URLClassLoader {
@@ -45,10 +42,12 @@ public class PluginClassLoader extends URLClassLoader {
   private final Version apiVersion;
   private VersionValidator compatibilityValidator;
 
-  public PluginClassLoader(@Nonnull final File pluginFile) throws IOException {
-    super(new URL[] {Assertions.assertNotNull(pluginFile).toURI().toURL()}, PluginClassLoader.class.getClassLoader());
+  public PluginClassLoader(final File pluginFile) throws IOException {
+    super(new URL[] {Objects.requireNonNull(pluginFile).toURI().toURL()},
+        PluginClassLoader.class.getClassLoader());
     this.pluginFile = pluginFile;
-    this.connection = (JarURLConnection) new URL("jar", "", pluginFile.toURI() + "!/").openConnection();
+    this.connection =
+        (JarURLConnection) new URL("jar", "", pluginFile.toURI() + "!/").openConnection();
 
     final Manifest manifest = this.connection.getManifest();
     Map<String, String> detectedAttributes = null;
@@ -70,8 +69,6 @@ public class PluginClassLoader extends URLClassLoader {
     this.apiVersion = new Version(this.attributes.get(Attribute.API.getAttrName()));
   }
 
-  @Nonnull
-  @MustNotContainNull
   public String[] extractPluginClassNames() {
     final String classNameList = this.getAttributes(Attribute.PLUGINS);
     String[] result;
@@ -92,13 +89,12 @@ public class PluginClassLoader extends URLClassLoader {
     return result;
   }
 
-  @Nullable
   public Version extractVersion() {
     final String version = getAttributes(Attribute.VERSION);
     return version == null ? null : new Version(version);
   }
 
-  public boolean isCompatibleWithIde(@Nonnull final Version ideVersion) {
+  public boolean isCompatibleWithIde(final Version ideVersion) {
     final String compatible = this.getAttributes(Attribute.COMPATIBLE);
     if (compatible == null) {
       return false;
@@ -112,17 +108,14 @@ public class PluginClassLoader extends URLClassLoader {
     return this.compatibilityValidator.isValid(ideVersion);
   }
 
-  @Nonnull
   public Version getApiVersion() {
     return this.apiVersion;
   }
 
-  @Nullable
-  public String getAttributes(@Nonnull final Attribute attr) {
+  public String getAttributes(final Attribute attr) {
     return this.attributes.get(attr.getAttrName());
   }
 
-  @Nonnull
   public File getFile() {
     return this.pluginFile;
   }

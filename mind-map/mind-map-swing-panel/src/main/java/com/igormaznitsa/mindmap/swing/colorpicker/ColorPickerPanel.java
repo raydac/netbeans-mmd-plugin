@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.swing.colorpicker;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -30,8 +29,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -52,12 +49,12 @@ final class ColorPickerPanel {
   private boolean readOnly = false;
 
   public ColorPickerPanel(
-      @Nonnull final JPanel panel,
+      final JPanel panel,
       final int rows,
       final int cols,
       final int gapHorz,
       final int gapVert,
-      @Nullable @MustNotContainNull final List<Color> predefinedColors
+      final List<Color> predefinedColors
   ) {
     this.panel = panel;
     this.panel.setOpaque(false);
@@ -78,17 +75,17 @@ final class ColorPickerPanel {
     updateColorButtons(this.predefinedColors);
   }
 
-  protected void fireColorSelected(@Nonnull final Color color) {
+  protected void fireColorSelected(final Color color) {
     for (final ColorListener listener : this.colorListeners) {
       listener.onColorSelected(this, color);
     }
   }
 
-  public void addColorListener(@Nonnull final ColorListener listener) {
+  public void addColorListener(final ColorListener listener) {
     this.colorListeners.add(listener);
   }
 
-  public void removeColorListener(@Nonnull final ColorListener listener) {
+  public void removeColorListener(final ColorListener listener) {
     this.colorListeners.remove(listener);
   }
 
@@ -104,7 +101,6 @@ final class ColorPickerPanel {
     this.panel.repaint();
   }
 
-  @Nullable
   public Color getColor() {
     for (final Component c : this.panel.getComponents()) {
       if (c instanceof RadioColorButton) {
@@ -117,7 +113,7 @@ final class ColorPickerPanel {
     return null;
   }
 
-  public void setColor(@Nullable final Color color) {
+  public void setColor(final Color color) {
     if (color == null) {
       this.resetSelected();
     } else {
@@ -204,7 +200,6 @@ final class ColorPickerPanel {
     updateColorButtons(this.predefinedColors);
   }
 
-  @Nonnull
   public JPanel getPanel() {
     return this.panel;
   }
@@ -213,7 +208,7 @@ final class ColorPickerPanel {
     return s + java.lang.Math.round(p * (d - s));
   }
 
-  private void updateColorButtons(@Nullable @MustNotContainNull final List<Color> predefinedColors) {
+  private void updateColorButtons(final List<Color> predefinedColors) {
     this.panel.removeAll();
     this.panel.setLayout(new GridLayout(this.rows, this.cols, this.gapHorz, this.gapVert));
 
@@ -293,7 +288,7 @@ final class ColorPickerPanel {
 
   public interface ColorListener {
 
-    void onColorSelected(@Nonnull ColorPickerPanel source, @Nonnull Color color);
+    void onColorSelected(ColorPickerPanel source, Color color);
   }
 
   private static final class RadioColorButton extends JComponent {
@@ -302,10 +297,10 @@ final class ColorPickerPanel {
     private boolean selected;
 
     RadioColorButton(
-        @Nonnull final ColorPickerPanel parent,
+        final ColorPickerPanel parent,
         final int cellWidth,
         final int cellHeight,
-        @Nonnull final Color color,
+        final Color color,
         final boolean selected
     ) {
       super();
@@ -324,7 +319,7 @@ final class ColorPickerPanel {
 
       this.addMouseListener(new MouseAdapter() {
         @Override
-        public void mouseClicked(@Nonnull final MouseEvent e) {
+        public void mouseClicked(final MouseEvent e) {
           if (!e.isConsumed() && !parent.isReadOnly()) {
             setSelected(true, true);
           }
@@ -333,8 +328,9 @@ final class ColorPickerPanel {
 
       this.addKeyListener(new KeyAdapter() {
         @Override
-        public void keyReleased(@Nonnull final KeyEvent e) {
-          if (!e.isConsumed() && (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE)) {
+        public void keyReleased(final KeyEvent e) {
+          if (!e.isConsumed() &&
+              (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE)) {
             e.consume();
             setSelected(true, !isSelected());
           }
@@ -347,14 +343,13 @@ final class ColorPickerPanel {
       final String blue = Integer.toHexString(color.getBlue()).toUpperCase(Locale.ENGLISH);
 
       String buffer = '#' +
-              (red.length() < 2 ? "0" : "") + red +
-              (green.length() < 2 ? "0" : "") + green +
-              (blue.length() < 2 ? "0" : "") + blue;
+          (red.length() < 2 ? "0" : "") + red +
+          (green.length() < 2 ? "0" : "") + green +
+          (blue.length() < 2 ? "0" : "") + blue;
       this.setToolTipText(buffer);
     }
 
-    @Nonnull
-    public static Color getContrastColor(@Nonnull final Color color) {
+    public static Color getContrastColor(final Color color) {
       double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
       return y >= 128 ? Color.BLACK : Color.WHITE;
     }
@@ -365,7 +360,7 @@ final class ColorPickerPanel {
     }
 
     @Override
-    public void paintComponent(@Nonnull final Graphics gfx) {
+    public void paintComponent(final Graphics gfx) {
       gfx.setColor(this.getBackground());
       gfx.fill3DRect(0, 0, this.getWidth(), this.getHeight(), true);
     }

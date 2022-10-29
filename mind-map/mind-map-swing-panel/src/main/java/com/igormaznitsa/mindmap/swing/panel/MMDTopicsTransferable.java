@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.swing.panel;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
@@ -27,7 +26,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.Map;
-import javax.annotation.Nonnull;
 
 /**
  * Transferable object to represent topic list in clipboard.
@@ -54,7 +52,7 @@ public class MMDTopicsTransferable implements Transferable {
 
   private final Topic[] topics;
 
-  public MMDTopicsTransferable(@Nonnull @MustNotContainNull final Topic... topics) {
+  public MMDTopicsTransferable(final Topic... topics) {
     this.topics = new Topic[topics.length];
 
     final MindMap fakeMap = new MindMap(false);
@@ -64,13 +62,11 @@ public class MMDTopicsTransferable implements Transferable {
     }
   }
 
-  @Nonnull
-  private static String oneLineTitle(@Nonnull final Topic topic) {
+  private static String oneLineTitle(final Topic topic) {
     return topic.getText().replace("\n", " ").trim();
   }
 
-  @Nonnull
-  private static String convertTopicToText(@Nonnull final Topic topic, final int level) {
+  private static String convertTopicToText(final Topic topic, final int level) {
     final StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < level; i++) {
@@ -158,20 +154,17 @@ public class MMDTopicsTransferable implements Transferable {
   }
 
   @Override
-  @Nonnull
-  @MustNotContainNull
   public DataFlavor[] getTransferDataFlavors() {
     return FLAVORS;
   }
 
   @Override
-  public boolean isDataFlavorSupported(@Nonnull final DataFlavor flavor) {
+  public boolean isDataFlavorSupported(final DataFlavor flavor) {
     return flavor.isFlavorTextType() || flavor.isMimeTypeEqual(MMD_DATA_FLAVOR);
   }
 
   @Override
-  @Nonnull
-  public Object getTransferData(@Nonnull final DataFlavor flavor)
+  public Object getTransferData(final DataFlavor flavor)
       throws UnsupportedFlavorException, IOException {
     if (flavor.isFlavorTextType()) {
       final StringBuilder result = new StringBuilder();

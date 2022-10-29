@@ -17,7 +17,6 @@
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.TopicFinder;
-import javax.annotation.Nonnull;
 
 /**
  * Interface for plug-ins processing attributes of model topics.
@@ -37,6 +36,5 @@ public interface AttributePlugin extends MindMapPlugin, TopicFinder {
    * @return the name of the attribute key.
    * @see #NULL_ATTRIBUTE
    */
-  @Nonnull
   String getAttributeKey();
 }

@@ -19,12 +19,10 @@ package com.igormaznitsa.mindmap.print;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -35,7 +33,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
@@ -59,7 +56,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
   private final JSpinner spinnerFitWidth = UIComponentFactoryProvider.findInstance().makeSpinner();
   private final JSpinner spinnerFitHeight = UIComponentFactoryProvider.findInstance().makeSpinner();
 
-  public MMDPrintOptionsPanel(@Nonnull final MMDPrintOptions options) {
+  public MMDPrintOptionsPanel(final MMDPrintOptions options) {
     super(new GridBagLayout());
     this.options = new MMDPrintOptions(options);
 
@@ -75,7 +72,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
     for (int i = 25; i <= 500; i += 25) {
       zoom.add(i + " %");
     }
-    this.comboZoom.setModel(new DefaultComboBoxModel(zoom.toArray()));
+    this.comboZoom.setModel(new DefaultComboBoxModel<>(zoom.toArray()));
 
     final GridBagConstraints gbc = new GridBagConstraints();
 
@@ -106,19 +103,9 @@ public final class MMDPrintOptionsPanel extends JPanel {
     selectZoomButton();
     enableZoomComponentsForState();
 
-    final ChangeListener zoomChangeListener = new ChangeListener() {
-      @Override
-      public void stateChanged(@Nonnull ChangeEvent e) {
-        fillZoomData();
-      }
-    };
+    final ChangeListener zoomChangeListener = e -> fillZoomData();
 
-    final ActionListener zoomActionListener = new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull ActionEvent e) {
-        fillZoomData();
-      }
-    };
+    final ActionListener zoomActionListener = e -> fillZoomData();
 
     this.radioFitHeightTo.addActionListener(zoomActionListener);
     this.radioFitWidthTo.addActionListener(zoomActionListener);
@@ -132,7 +119,6 @@ public final class MMDPrintOptionsPanel extends JPanel {
     this.doLayout();
   }
 
-  @Nonnull
   private JPanel makeZoomPanel() {
     final JPanel result = UIComponentFactoryProvider.findInstance().makePanel();
     result.setLayout(new GridBagLayout());
@@ -249,7 +235,6 @@ public final class MMDPrintOptionsPanel extends JPanel {
     }
   }
 
-  @Nonnull
   public MMDPrintOptions getOptions() {
     return this.options;
   }

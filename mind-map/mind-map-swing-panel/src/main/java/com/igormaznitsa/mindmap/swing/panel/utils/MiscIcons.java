@@ -16,19 +16,19 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 
@@ -47,7 +47,8 @@ public class MiscIcons {
     try {
       imageContainers.put("empty", new ImageContainer("empty"));
 
-      final List<String> lines = IOUtils.readLines(iconListReadStream, "UTF-8");
+      final List<String> lines =
+          IOUtils.readLines(requireNonNull(iconListReadStream), StandardCharsets.UTF_8);
       ICON_NAMES = lines.toArray(new String[0]);
       for (final String icon : ICON_NAMES) {
         imageContainers.put(icon, new ImageContainer(icon));
@@ -75,14 +76,11 @@ public class MiscIcons {
     loadingDaemon.start();
   }
 
-  @Nullable
-  public static Image findForName(@Nonnull final String name) {
+  public static Image findForName(final String name) {
     final ImageContainer result = IMAGE_CACHE.get(name);
     return result == null ? null : result.getImage();
   }
 
-  @Nonnull
-  @MustNotContainNull
   public static String[] getNames() {
     return ICON_NAMES.clone();
   }
@@ -92,14 +90,13 @@ public class MiscIcons {
     private final String name;
     private volatile Image image;
 
-    private ImageContainer(@Nonnull final String name) {
+    private ImageContainer(final String name) {
       this.name = name;
       if ("empty".equals(name)) {
         this.image = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
       }
     }
 
-    @Nullable
     private synchronized Image getImage() {
       if (this.image == null) {
         this.image = loadImage(this.name);
@@ -107,9 +104,9 @@ public class MiscIcons {
       return this.image;
     }
 
-    @Nullable
-    private Image loadImage(@Nonnull final String name) {
-      final InputStream in = MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/" + name + ".png");
+    private Image loadImage(final String name) {
+      final InputStream in = MiscIcons.class.getResourceAsStream(
+          "/com/igormaznitsa/mindmap/swing/miscicons/" + name + ".png");
       if (in == null) {
         return null;
       }

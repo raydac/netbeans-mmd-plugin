@@ -17,30 +17,26 @@
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import static com.igormaznitsa.mindmap.model.ModelUtils.breakToLines;
+import static java.util.Objects.requireNonNull;
 
-
-import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.text.JTextComponent;
 
 public final class TextBlock implements Cloneable {
 
-  private static final Rectangle2D ZERO = new Rectangle2D.Double();
-  private final Rectangle2D bounds = new Rectangle2D.Double();
+  private final Rectangle2D bounds = new Rectangle2D.Double(0.0d, 0.0d, 0.0d, 0.0d);
   private String text;
   private Line[] lines;
   private Font font;
   private double maxLineAscent;
   private TextAlign textAlign;
 
-  public TextBlock(@Nonnull final TextBlock orig) {
+  public TextBlock(final TextBlock orig) {
     this.text = orig.text;
     this.lines = orig.lines.clone();
     this.font = orig.font;
@@ -49,32 +45,35 @@ public final class TextBlock implements Cloneable {
     this.textAlign = orig.textAlign;
   }
 
-  public TextBlock(@Nonnull final String text, @Nonnull final TextAlign justify) {
-    updateText(Assertions.assertNotNull(text));
-    this.textAlign = Assertions.assertNotNull(justify);
+  public TextBlock(final String text, final TextAlign justify) {
+    updateText(requireNonNull(text));
+    this.textAlign = requireNonNull(justify);
   }
 
-  public void updateText(@Nullable final String text) {
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    return new TextBlock(this);
+  }
+
+  public void updateText(final String text) {
     this.text = text == null ? "" : text; //NOI18N
     invalidate();
   }
 
-  public void fillByTextAndFont(@Nonnull final JTextComponent compo) {
+  public void fillByTextAndFont(final JTextComponent compo) {
     compo.setFont(this.font);
     compo.setText(this.text);
   }
 
-  @Nonnull
   public Rectangle2D getBounds() {
-    return this.bounds == null ? ZERO : this.bounds;
+    return this.bounds;
   }
 
-  @Nonnull
   public TextAlign getTextAlign() {
     return this.textAlign;
   }
 
-  public void setTextAlign(@Nullable final TextAlign textAlign) {
+  public void setTextAlign(final TextAlign textAlign) {
     this.textAlign = textAlign == null ? TextAlign.CENTER : textAlign;
     invalidate();
   }
@@ -87,8 +86,9 @@ public final class TextBlock implements Cloneable {
     this.bounds.setFrame(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
-  public void updateSize(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
-    this.font = cfg.getFont().deriveFont(AffineTransform.getScaleInstance(cfg.getScale(), cfg.getScale()));
+  public void updateSize(final MMGraphics gfx, final MindMapPanelConfig cfg) {
+    this.font =
+        cfg.getFont().deriveFont(AffineTransform.getScaleInstance(cfg.getScale(), cfg.getScale()));
     gfx.setFont(font);
 
     this.maxLineAscent = gfx.getFontMaxAscent();
@@ -110,7 +110,7 @@ public final class TextBlock implements Cloneable {
     this.bounds.setRect(0.0d, 0.0d, maxWidth, maxHeight);
   }
 
-  public void paint(@Nonnull final MMGraphics gfx, @Nonnull final Color color) {
+  public void paint(final MMGraphics gfx, final Color color) {
     if (this.font != null && this.lines != null) {
       double posy = this.bounds.getY() + this.maxLineAscent;
       gfx.setFont(this.font);
@@ -144,7 +144,7 @@ public final class TextBlock implements Cloneable {
     private final Rectangle2D bounds;
     private final String line;
 
-    private Line(@Nonnull final String line, @Nonnull final Rectangle2D bounds) {
+    private Line(final String line, final Rectangle2D bounds) {
       this.bounds = bounds;
       this.line = line;
     }

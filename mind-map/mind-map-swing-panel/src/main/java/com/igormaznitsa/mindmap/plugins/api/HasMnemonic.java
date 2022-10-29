@@ -16,8 +16,6 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
-import javax.annotation.Nullable;
-
 /**
  * Shows that plug-in provides its mnemonic name.
  *
@@ -29,6 +27,5 @@ public interface HasMnemonic {
    *
    * @return mnemocode which must be in lower-case, only Latin symbols and can't contain spaces or special chars, it can provide null.
    */
-  @Nullable
   String getMnemonic();
 }

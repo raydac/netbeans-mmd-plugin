@@ -16,10 +16,6 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.annotation.Weight;
-import javax.annotation.Nonnull;
-
 /**
  * Interface for module to process code snippet saved in model topics.
  *
@@ -31,8 +27,5 @@ public interface CodeSnippetProcessor extends MindMapPlugin {
    *
    * @return the array of language names (case sensitive)
    */
-  @Nonnull
-  @MustNotContainNull
-  @Weight(Weight.Unit.EXTRALIGHT)
   String[] getProcessingLanguageNames();
 }

@@ -16,11 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static java.util.Objects.requireNonNull;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -28,6 +25,7 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.MiscUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -51,8 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -65,10 +61,12 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Novamind2MindMapImporter.class);
 
-  private static void processURLLinks(@Nonnull final MindMap map, @Nonnull final ParsedContent model, @Nonnull final ParsedContent.TopicReference topicRef, @Nonnull final Map<String, Topic> mapTopicRefToTopics) {
+  private static void processURLLinks(final MindMap map, final ParsedContent model,
+                                      final ParsedContent.TopicReference topicRef,
+                                      final Map<String, Topic> mapTopicRefToTopics) {
     final Topic topic = mapTopicRefToTopics.get(topicRef.getId());
     if (topic != null) {
-      final ParsedContent.ContentTopic ctopic = Assertions.assertNotNull(topicRef.getContentTopic());
+      final ParsedContent.ContentTopic ctopic = requireNonNull(topicRef.getContentTopic());
 
       final List<String> urls = ctopic.getLinkUrls();
 
@@ -80,7 +78,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         for (final String s : urls) {
           if (s.startsWith("novamind://topic/")) {
             final String targetTopicId = s.substring(17);
-            final ParsedContent.TopicReference reference = model.findForTopicId(assertNotNull(model.getRootTopic()), targetTopicId);
+            final ParsedContent.TopicReference reference =
+                model.findForTopicId(requireNonNull(model.getRootTopic()), targetTopicId);
             if (reference != null) {
               final Topic destTopic = mapTopicRefToTopics.get(reference.getId());
               if (destTopic != null) {
@@ -144,16 +143,20 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     }
   }
 
-  private static void convertContentTopicIntoMMTopic(@Nonnull final MindMap map, @Nullable final Topic parent, @Nonnull final ParsedContent.TopicReference node, @Nonnull final Manifest manifest, @Nonnull final Map<String, Topic> mapRefToTopic) {
+  private static void convertContentTopicIntoMMTopic(final MindMap map, final Topic parent,
+                                                     final ParsedContent.TopicReference node,
+                                                     final Manifest manifest,
+                                                     final Map<String, Topic> mapRefToTopic) {
     final Topic processing;
     if (parent == null) {
-      processing = assertNotNull(map.getRoot());
+      processing = requireNonNull(map.getRoot());
     } else {
       processing = parent.makeChild("<ID not found>", null);
     }
 
     if (node.getColorBackground() != null) {
-      processing.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), Utils.color2html(node.getColorBackground(), false));
+      processing.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
+          Utils.color2html(node.getColorBackground(), false));
     }
 
     if (node.getColorBorder() != null) {
@@ -166,10 +169,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
     final ParsedContent.ContentTopic data = node.getContentTopic();
     if (data != null) {
-
       mapRefToTopic.put(node.getId(), processing);
-
-      processing.setText(GetUtils.ensureNonNull(data.getRichText(), ""));
+      processing.setText(MiscUtils.ensureNotNull(data.getRichText(), ""));
 
       final String imageResourceId = data.getImageResourceId();
       if (imageResourceId != null) {
@@ -190,9 +191,10 @@ public class Novamind2MindMapImporter extends AbstractImporter {
   }
 
   @Override
-  @Nullable
-  public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Novamind2MindMap.openDialogTitle"), null, "nm5", "Novamind files (.NM5)", Texts.getString("MMDImporters.ApproveImport"));
+  public MindMap doImport(final PluginContext context) throws Exception {
+    final File file = this.selectFileForExtension(context,
+        Texts.getString("MMDImporters.Novamind2MindMap.openDialogTitle"), null, "nm5",
+        "Novamind files (.NM5)", Texts.getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
@@ -201,8 +203,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     return this.doImportFile(file);
   }
 
-  @Nonnull
-  MindMap doImportFile(@Nonnull final File file) throws IOException {
+  MindMap doImportFile(final File file) throws IOException {
     final ZipFile zipFile = new ZipFile(file);
     final Manifest manifest = new Manifest(zipFile, "manifest.xml");
     final ParsedContent content = new ParsedContent(zipFile, "content.xml");
@@ -210,7 +211,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     final MindMap result = new MindMap(true);
     result.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
-    assertNotNull(result.getRoot()).setText("Empty map");
+    requireNonNull(result.getRoot()).setText("Empty map");
 
     final ParsedContent.TopicReference rootRef = content.getRootTopic();
     if (rootRef != null) {
@@ -232,26 +233,22 @@ public class Novamind2MindMapImporter extends AbstractImporter {
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "novamind";
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context) {
+  public String getName(final PluginContext context) {
     return Texts.getString("MMDImporters.Novamind2MindMap.Name");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context) {
+  public String getReference(final PluginContext context) {
     return Texts.getString("MMDImporters.Novamind2MindMap.Reference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext context) {
+  public Icon getIcon(final PluginContext context) {
     return ICO;
   }
 
@@ -270,7 +267,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     private final ZipFile zipFile;
     private final Map<String, Resource> resourceMap = new HashMap<>();
 
-    private Manifest(@Nonnull final ZipFile zipFile, @Nonnull final String manifestPath) {
+    private Manifest(final ZipFile zipFile, final String manifestPath) {
       this.zipFile = zipFile;
       try {
         final InputStream resourceIn = Utils.findInputStreamForResource(zipFile, manifestPath);
@@ -296,8 +293,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       }
     }
 
-    @Nullable
-    private String findResourceImage(@Nonnull final String id) {
+    private String findResourceImage(final String id) {
       String result = null;
 
       final Resource resource = findResource(id);
@@ -318,8 +314,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       return result;
     }
 
-    @Nullable
-    private Resource findResource(@Nonnull final String id) {
+    private Resource findResource(final String id) {
       return this.resourceMap.get(id);
     }
 
@@ -327,16 +322,14 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
       private final String url;
 
-      Resource(@Nonnull final String url) {
+      Resource(final String url) {
         this.url = url;
       }
 
-      @Nonnull
       String getUrl() {
         return this.url;
       }
 
-      @Nullable
       byte[] extractResourceBody() {
         byte[] result = null;
         final String path = "Resources/" + url;
@@ -356,7 +349,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     private final Map<String, String> linksBetweenTopics = new HashMap<>();
     private final TopicReference rootRef;
 
-    ParsedContent(@Nonnull final ZipFile file, @Nonnull final String path) {
+    ParsedContent(final ZipFile file, final String path) {
       TopicReference mapRoot = null;
 
       try {
@@ -407,11 +400,10 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       this.rootRef = mapRoot;
     }
 
-    @Nullable
-    TopicReference findForTopicId(@Nonnull TopicReference startTopicRef, @Nonnull final String contentTopicId) {
+    TopicReference findForTopicId(final TopicReference startTopicRef, final String contentTopicId) {
       TopicReference result = null;
 
-      if (contentTopicId.equals(Assertions.assertNotNull(startTopicRef.getContentTopic()).getId())) {
+      if (contentTopicId.equals(requireNonNull(startTopicRef.getContentTopic()).getId())) {
         result = startTopicRef;
       } else {
         for (final ParsedContent.TopicReference c : startTopicRef.getChildren()) {
@@ -425,12 +417,10 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       return result;
     }
 
-    @Nullable
     TopicReference getRootTopic() {
       return this.rootRef;
     }
 
-    @Nonnull
     Map<String, String> getLinksBetweenTopics() {
       return this.linksBetweenTopics;
     }
@@ -446,7 +436,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
       private final List<TopicReference> children = new ArrayList<>();
 
-      private TopicReference(@Nonnull final Element topicNode, @Nonnull final Map<String, ContentTopic> topicMap) {
+      private TopicReference(final Element topicNode, final Map<String, ContentTopic> topicMap) {
         this.id = topicNode.getAttribute("id");
         this.linkedTopic = topicMap.get(topicNode.getAttribute("topic-ref"));
 
@@ -490,33 +480,26 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         this.colorFill = tmpColorBackground;
       }
 
-      @Nullable
       Color getColorBorder() {
         return this.colorBorder;
       }
 
-      @Nullable
       Color getColorBackground() {
         return this.colorFill;
       }
 
-      @Nullable
       Color getColorText() {
         return this.colorText;
       }
 
-      @Nonnull
       String getId() {
         return this.id;
       }
 
-      @Nullable
       ContentTopic getContentTopic() {
         return this.linkedTopic;
       }
 
-      @Nonnull
-      @MustNotContainNull
       public List<TopicReference> getChildren() {
         return this.children;
       }
@@ -530,7 +513,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       private final List<String> linkUrls;
       private final String imageResourceId;
 
-      private ContentTopic(@Nonnull final String id, @Nonnull final Element nodeElement) {
+      private ContentTopic(final String id, final Element nodeElement) {
         this.id = id;
         this.imageResourceId = extractImageId(nodeElement);
         this.notes = extractNotes(nodeElement);
@@ -538,8 +521,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         this.richText = extractRichTextBlock(nodeElement);
       }
 
-      @Nonnull
-      private static String extractRichText(@Nonnull final Element richText) {
+      private static String extractRichText(final Element richText) {
         final StringBuilder result = new StringBuilder();
 
         for (final Element r : Utils.findDirectChildrenForName(richText, "text-run")) {
@@ -562,15 +544,14 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         return result.toString();
       }
 
-      @Nullable
-      private static String extractImageId(@Nonnull final Element node) {
+      private static String extractImageId(final Element node) {
         final Element imageElement = Utils.findFirstElement(node, "top-image");
-        final String resourceRef = imageElement == null ? "" : imageElement.getAttribute("resource-ref");
+        final String resourceRef =
+            imageElement == null ? "" : imageElement.getAttribute("resource-ref");
         return resourceRef.isEmpty() ? null : resourceRef;
       }
 
-      @Nullable
-      private static String extractNotes(@Nonnull final Element node) {
+      private static String extractNotes(final Element node) {
         final StringBuilder result = new StringBuilder();
         for (final Element e : Utils.findDirectChildrenForName(node, "notes")) {
           final String rtext = extractRichTextBlock(e);
@@ -581,8 +562,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         return result.length() == 0 ? null : result.toString();
       }
 
-      @Nullable
-      private static String extractRichTextBlock(@Nonnull final Element element) {
+      private static String extractRichTextBlock(final Element element) {
         final StringBuilder result = new StringBuilder();
         for (final Element rc : Utils.findDirectChildrenForName(element, "rich-text")) {
           result.append(extractRichText(rc));
@@ -590,9 +570,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         return result.length() == 0 ? null : result.toString();
       }
 
-      @Nonnull
-      @MustNotContainNull
-      private static List<String> extractLinkUrls(@Nonnull final Element node) {
+      private static List<String> extractLinkUrls(final Element node) {
         final List<String> result = new ArrayList<>();
         for (final Element links : Utils.findDirectChildrenForName(node, "links")) {
           for (final Element l : Utils.findDirectChildrenForName(links, "link")) {
@@ -605,28 +583,22 @@ public class Novamind2MindMapImporter extends AbstractImporter {
         return result;
       }
 
-      @Nonnull
       String getId() {
         return this.id;
       }
 
-      @Nullable
       String getImageResourceId() {
         return this.imageResourceId;
       }
 
-      @Nullable
       String getNotes() {
         return this.notes;
       }
 
-      @Nullable
       String getRichText() {
         return this.richText;
       }
 
-      @Nonnull
-      @MustNotContainNull
       List<String> getLinkUrls() {
         return this.linkUrls;
       }

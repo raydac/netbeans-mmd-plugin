@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
@@ -42,9 +40,8 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   private final Map<String, ScaledImage> SCALED_IMAGE_CACHE = new HashMap<>();
 
   @Override
-  @Nullable
-  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config,
-                                   @Nonnull final Topic topic) {
+  public Renderable getScaledImage(final MindMapPanelConfig config,
+                                   final Topic topic) {
     final String name = topic.getAttribute(ATTR_KEY);
     if (name == null) {
       return null;
@@ -59,9 +56,9 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean doesTopicContentMatches(@Nonnull Topic topic, @Nullable File baseFolder,
-                                         @Nonnull Pattern pattern,
-                                         @Nullable Set<Extra.ExtraType> extraTypes) {
+  public boolean doesTopicContentMatches(Topic topic, File baseFolder,
+                                         Pattern pattern,
+                                         Set<Extra.ExtraType> extraTypes) {
 
     boolean result = false;
     if (extraTypes != null && extraTypes.contains(Extra.ExtraType.NOTE)) {
@@ -75,24 +72,22 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
 
   @Override
-  public boolean onClick(final @Nonnull PluginContext context, final @Nonnull Topic topic,
+  public boolean onClick(final PluginContext context, final Topic topic,
                          final boolean activeGroupModifier, final int clickCount) {
     return false;
   }
 
   @Override
-  @Nullable
-  public String getToolTip(@Nonnull final PluginContext context, @Nonnull final Topic topic) {
+  public String getToolTip(final PluginContext context, final Topic topic) {
     return topic.getAttribute(ATTR_KEY);
   }
 
   @Override
-  public boolean isClickable(@Nonnull final PluginContext context, @Nonnull final Topic topic) {
+  public boolean isClickable(final PluginContext context, final Topic topic) {
     return false;
   }
 
   @Override
-  @Nonnull
   public String getAttributeKey() {
     return ATTR_KEY;
   }
@@ -103,7 +98,7 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public int compareTo(@Nonnull final MindMapPlugin o) {
+  public int compareTo(final MindMapPlugin o) {
     return Integer.compare(this.getOrder(), o.getOrder());
   }
 
@@ -117,7 +112,7 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
     private double scale = -1.0d;
     private Renderable scaledImage;
 
-    public ScaledImage(@Nonnull final String imageName, final double scale) {
+    public ScaledImage(final String imageName, final double scale) {
       this.baseImage = MiscIcons.findForName(imageName);
       if (this.baseImage != null) {
         this.BASE_SCALE_X = (double) ICON_SIZE / (double) this.baseImage.getWidth(null);
@@ -129,7 +124,6 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
       getImage(scale);
     }
 
-    @Nullable
     public Renderable getImage(final double scale) {
       final Renderable result;
       if (this.baseImage == null || Double.compare(this.scale, scale) == 0) {

@@ -17,8 +17,6 @@
 package com.igormaznitsa.mindmap.swing.services;
 
 import com.igormaznitsa.mindmap.plugins.api.HasOptions;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -44,72 +42,49 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 public interface UIComponentFactory {
-  @Nonnull
   JPanel makePanel();
 
-  @Nonnull
-  JPanel makePanelWithOptions(@Nonnull HasOptions optionsProcessor);
+  JPanel makePanelWithOptions(HasOptions optionsProcessor);
 
-  @Nonnull
   JComboBox makeComboBox();
 
-  @Nonnull
   JSpinner makeSpinner();
 
-  @Nonnull
   JButton makeButton();
 
-  @Nonnull
   JToggleButton makeToggleButton();
 
-  @Nonnull
   JRadioButton makeRadioButton();
 
-  @Nonnull
   JToolBar makeToolBar();
 
-  @Nonnull
   JScrollPane makeScrollPane();
 
-  @Nonnull
   JCheckBox makeCheckBox();
 
-  @Nonnull
   JLabel makeLabel();
 
-  @Nonnull
   JPopupMenu makePopupMenu();
 
-  @Nonnull
   JTextArea makeTextArea();
 
-  @Nonnull
   JPasswordField makePasswordField();
 
-  @Nonnull
   JTextField makeTextField();
 
-  @Nonnull
   JEditorPane makeEditorPane();
 
-  @Nonnull
-  JMenuItem makeMenuItem(@Nonnull String text, @Nullable Icon icon);
+  JMenuItem makeMenuItem(String text, Icon icon);
 
-  @Nonnull
-  JRadioButtonMenuItem makeRadioButtonMenuItem(@Nonnull String text, @Nullable Icon icon, boolean selected);
+  JRadioButtonMenuItem makeRadioButtonMenuItem(String text, Icon icon, boolean selected);
 
-  @Nonnull
-  JCheckBoxMenuItem makeCheckboxMenuItem(@Nonnull String text, @Nullable Icon icon, boolean selected);
+  JCheckBoxMenuItem makeCheckboxMenuItem(String text, Icon icon, boolean selected);
 
-  @Nonnull
   ButtonGroup makeButtonGroup();
 
-  @Nonnull
   JSeparator makeMenuSeparator();
 
-  @Nonnull
-  JMenu makeMenu(@Nonnull String text);
+  JMenu makeMenu(String text);
 
-  @Nonnull
   JSlider makeSlider();
 }

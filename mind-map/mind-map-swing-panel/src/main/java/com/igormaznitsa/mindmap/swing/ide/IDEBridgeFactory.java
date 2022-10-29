@@ -20,7 +20,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-import javax.annotation.Nonnull;
 
 public class IDEBridgeFactory {
   private static final IDEBridge IDE_INFO_PROVIDER;
@@ -33,7 +32,6 @@ public class IDEBridgeFactory {
     LoggerFactory.getLogger(UIComponentFactoryProvider.class).info("IDE Info provider factory : " + IDE_INFO_PROVIDER.getClass().getName());
   }
 
-  @Nonnull
   public static IDEBridge findInstance() {
     return IDE_INFO_PROVIDER;
   }

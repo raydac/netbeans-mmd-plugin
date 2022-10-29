@@ -16,10 +16,8 @@
 
 package com.igormaznitsa.mindmap.swing.panel;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.io.Serializable;
-import javax.annotation.Nonnull;
 
 /**
  * Auxiliary container to transfer topics through clipboard.
@@ -31,7 +29,7 @@ public final class NBMindMapTopicsContainer implements Serializable {
   private static final long serialVersionUID = -2749724232423031881L;
   private final Topic[] topics;
 
-  public NBMindMapTopicsContainer(@Nonnull @MustNotContainNull final Topic[] topics) {
+  public NBMindMapTopicsContainer(final Topic[] topics) {
     this.topics = topics.clone();
   }
 
@@ -39,8 +37,6 @@ public final class NBMindMapTopicsContainer implements Serializable {
     return this.topics == null || this.topics.length == 0;
   }
 
-  @Nonnull
-  @MustNotContainNull
   public Topic[] getTopics() {
     return this.topics.clone();
   }

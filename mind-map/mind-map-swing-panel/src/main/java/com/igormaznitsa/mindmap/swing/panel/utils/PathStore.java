@@ -4,8 +4,6 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Auxiliary thread safe class allows to keep some non-null file folder path associated
@@ -17,8 +15,7 @@ public class PathStore {
   private final Map<String, File> internalMap = new HashMap<>();
   private static final File USER_HOME = new File(System.getProperty("user.home"));
 
-  @Nonnull
-  public synchronized File find(@Nullable final PluginContext context, @Nonnull final String id) {
+  public synchronized File find(final PluginContext context, final String id) {
     File result = internalMap.get(id);
     final File projectFolder = context == null ? null : context.getProjectFolder();
     if (result == null) {
@@ -27,8 +24,7 @@ public class PathStore {
     return result;
   }
 
-  @Nullable
-  public synchronized File put(@Nonnull final String id, @Nullable File file) {
+  public synchronized File put(final String id, final File file) {
     if (file == null) {
       return null;
     }

@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
@@ -29,8 +28,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import org.apache.commons.io.FileUtils;
 
@@ -41,9 +38,10 @@ public class Text2MindMapImporter extends AbstractImporter {
   private static final int TAB_POSITIONS = 16;
 
   @Override
-  @Nullable
-  public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context, Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), null, "txt", "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
+  public MindMap doImport(final PluginContext context) throws Exception {
+    final File file = this.selectFileForExtension(context,
+        Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), null, "txt",
+        "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
     MindMap result = null;
     if (file != null) {
       final List<String> lines = FileUtils.readLines(file, "UTF-8");
@@ -52,8 +50,7 @@ public class Text2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nonnull
-  MindMap makeFromLines(@Nonnull @MustNotContainNull final List<String> lines) {
+  MindMap makeFromLines(final List<String> lines) {
     final MindMap result = new MindMap(false);
     final Iterator<String> iterator = lines.iterator();
     final List<TopicData> topicStack = new ArrayList<>();
@@ -78,8 +75,7 @@ public class Text2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nullable
-  private String nextNonEmptyString(@Nonnull final Iterator<String> iterator) {
+  private String nextNonEmptyString(final Iterator<String> iterator) {
     String result = null;
     while (iterator.hasNext()) {
       result = iterator.next();
@@ -92,7 +88,7 @@ public class Text2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  private int calcDataOffset(@Nonnull final String text) {
+  private int calcDataOffset(final String text) {
     int result = 0;
     for (final char c : text.toCharArray()) {
       if (c == '\t') {
@@ -106,8 +102,7 @@ public class Text2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nullable
-  private Topic findPrevTopicForOffset(@Nonnull @MustNotContainNull final List<TopicData> topicStack, final int detectedOffset) {
+  private Topic findPrevTopicForOffset(final List<TopicData> topicStack, final int detectedOffset) {
     for (final TopicData d : topicStack) {
       if (d.offset < detectedOffset) {
         return d.topic;
@@ -128,8 +123,8 @@ public class Text2MindMapImporter extends AbstractImporter {
     return result == null ? null : result.topic;
   }
 
-  @Nullable
-  private Topic decodeLine(@Nonnull final MindMap map, @Nonnull final Iterator<String> lines, @Nonnull @MustNotContainNull final List<TopicData> topicStack) {
+  private Topic decodeLine(final MindMap map, final Iterator<String> lines,
+                           final List<TopicData> topicStack) {
     Topic result = null;
     final String line = nextNonEmptyString(lines);
     if (line != null) {
@@ -151,26 +146,22 @@ public class Text2MindMapImporter extends AbstractImporter {
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "tabtext";
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context) {
+  public String getName(final PluginContext context) {
     return Texts.getString("MMDImporters.Text2MindMap.Name");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context) {
+  public String getReference(final PluginContext context) {
     return Texts.getString("MMDImporters.Text2MindMap.Reference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext context) {
+  public Icon getIcon(final PluginContext context) {
     return ICO;
   }
 
@@ -184,7 +175,7 @@ public class Text2MindMapImporter extends AbstractImporter {
     private final int offset;
     private final Topic topic;
 
-    public TopicData(final int offset, @Nonnull final Topic topic) {
+    public TopicData(final int offset, final Topic topic) {
       this.offset = offset;
       this.topic = topic;
     }

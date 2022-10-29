@@ -22,43 +22,38 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface MMGraphics {
-  @Nonnull
   MMGraphics copy();
 
   void dispose();
 
   void translate(double x, double y);
 
-  @Nullable
   Rectangle getClipBounds();
 
-  void setStroke(float width, @Nonnull StrokeType type);
+  void setStroke(float width, StrokeType type);
 
-  void drawLine(int startX, int startY, int endX, int endY, @Nullable Color color);
+  void drawLine(int startX, int startY, int endX, int endY, Color color);
 
-  void drawRect(int x, int y, int width, int height, @Nullable Color border, @Nullable Color fill);
+  void drawRect(int x, int y, int width, int height, Color border, Color fill);
 
-  void draw(@Nonnull Shape shape, @Nullable Color border, @Nullable Color fill);
+  void draw(Shape shape, Color border, Color fill);
 
-  void drawCurve(double startX, double startY, double endX, double endY, @Nullable Color color);
+  void drawCurve(double startX, double startY, double endX, double endY, Color color);
 
-  void drawOval(int x, int y, int w, int h, @Nullable Color border, @Nullable Color fill);
+  void drawOval(int x, int y, int w, int h, Color border, Color fill);
 
-  void drawImage(@Nullable Image image, int x, int y);
+  void drawImage(Image image, int x, int y);
 
-  void setFont(@Nonnull Font font);
+  void setFont(Font font);
 
   float getFontMaxAscent();
 
   void setClip(int x, int y, int w, int h);
 
-  @Nonnull
-  Rectangle2D getStringBounds(@Nonnull String s);
+  Rectangle2D getStringBounds(String s);
 
-  void drawString(@Nonnull String text, int x, int y, @Nullable Color fill);
+  void drawString(String text, int x, int y, Color fill);
 
 }

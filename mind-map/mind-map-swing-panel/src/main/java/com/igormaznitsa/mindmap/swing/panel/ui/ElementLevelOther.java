@@ -17,8 +17,7 @@
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
+import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
@@ -27,26 +26,25 @@ import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
-import javax.annotation.Nonnull;
 
 public class ElementLevelOther extends ElementLevelFirst {
 
-  public ElementLevelOther(@Nonnull final Topic model) {
+  public ElementLevelOther(final Topic model) {
     super(model);
   }
 
-  protected ElementLevelOther(@Nonnull final ElementLevelOther element) {
+  protected ElementLevelOther(final ElementLevelOther element) {
     super(element);
   }
 
   @Override
-  @Nonnull
   public AbstractElement makeCopy() {
     return new ElementLevelOther(this);
   }
 
   @Override
-  public void drawComponent(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+  public void drawComponent(final MMGraphics g, final MindMapPanelConfig cfg,
+                            final boolean drawCollapsator) {
     g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.1f), StrokeType.SOLID);
 
     final Shape shape = makeShape(cfg, 0f, 0f);
@@ -74,10 +72,15 @@ public class ElementLevelOther extends ElementLevelFirst {
   }
 
   @Override
-  public void doPaintConnectors(@Nonnull final MMGraphics g, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
-    final Rectangle2D source = new Rectangle2D.Double(this.bounds.getX() + this.collapsatorZone.getX(), this.bounds.getY() + this.collapsatorZone.getY(), this.collapsatorZone.getWidth(), this.collapsatorZone.getHeight());
+  public void doPaintConnectors(final MMGraphics g, final boolean leftDirection,
+                                final MindMapPanelConfig cfg) {
+    final Rectangle2D source =
+        new Rectangle2D.Double(this.bounds.getX() + this.collapsatorZone.getX(),
+            this.bounds.getY() + this.collapsatorZone.getY(), this.collapsatorZone.getWidth(),
+            this.collapsatorZone.getHeight());
     for (final Topic t : this.model.getChildren()) {
-      this.drawConnector(g, source, assertNotNull(((AbstractElement) t.getPayload())).getBounds(), leftDirection, cfg);
+      this.drawConnector(g, source, requireNonNull(((AbstractElement) t.getPayload())).getBounds(),
+          leftDirection, cfg);
     }
   }
 
@@ -88,7 +91,7 @@ public class ElementLevelOther extends ElementLevelFirst {
     boolean result = false;
 
     while (topic != null) {
-      final AbstractElement w = assertNotNull((AbstractElement) topic.getPayload());
+      final AbstractElement w = requireNonNull((AbstractElement) topic.getPayload());
       if (w.getClass() == ElementLevelFirst.class) {
         result = w.isLeftDirection();
         break;
@@ -105,15 +108,14 @@ public class ElementLevelOther extends ElementLevelFirst {
   }
 
   @Override
-  @Nonnull
-  public Color getBackgroundColor(@Nonnull final MindMapPanelConfig config) {
-    final Color dflt = this.fillColor == null ? config.getOtherLevelBackgroundColor() : this.fillColor;
+  public Color getBackgroundColor(final MindMapPanelConfig config) {
+    final Color dflt =
+        this.fillColor == null ? config.getOtherLevelBackgroundColor() : this.fillColor;
     return dflt;
   }
 
   @Override
-  @Nonnull
-  public Color getTextColor(@Nonnull final MindMapPanelConfig config) {
+  public Color getTextColor(final MindMapPanelConfig config) {
     final Color dflt = this.textColor == null ? config.getOtherLevelTextColor() : this.textColor;
     return dflt;
   }

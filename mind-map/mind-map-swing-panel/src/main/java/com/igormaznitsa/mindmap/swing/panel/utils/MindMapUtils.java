@@ -22,9 +22,6 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_F
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import static javax.swing.SwingUtilities.windowForComponent;
 
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
@@ -36,12 +33,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.filechooser.FileFilter;
 
 public final class MindMapUtils {
@@ -49,7 +43,7 @@ public final class MindMapUtils {
   private MindMapUtils() {
   }
 
-  public static boolean isHidden(@Nullable final Topic topic) {
+  public static boolean isHidden(final Topic topic) {
     if (topic == null) {
       return true;
     }
@@ -57,9 +51,7 @@ public final class MindMapUtils {
     return Boolean.parseBoolean(collapsed);
   }
 
-  @Nonnull
-  @MustNotContainNull
-  public static List<Color> findAllTopicColors(@Nonnull final MindMap map, @Nonnull final ColorType colorType) {
+  public static List<Color> findAllTopicColors(final MindMap map, final ColorType colorType) {
     final Set<Color> result = new HashSet<>();
     for (final Topic topic : map) {
       final Color color;
@@ -83,8 +75,7 @@ public final class MindMapUtils {
     return Arrays.asList(result.toArray(new Color[0]));
   }
 
-  @Nullable
-  public static Topic findFirstVisibleAncestor(@Nullable final Topic topic) {
+  public static Topic findFirstVisibleAncestor(final Topic topic) {
     if (topic == null) {
       return null;
     }
@@ -106,7 +97,7 @@ public final class MindMapUtils {
     return lastVisible;
   }
 
-  public static boolean isTopicVisible(@Nonnull final Topic topic) {
+  public static boolean isTopicVisible(final Topic topic) {
     boolean result = true;
 
     Topic current = topic.getParent();
@@ -120,7 +111,7 @@ public final class MindMapUtils {
     return result;
   }
 
-  public static boolean ensureVisibility(@Nonnull final Topic topic) {
+  public static boolean ensureVisibility(final Topic topic) {
     boolean result = false;
 
     Topic current = topic.getParent();
@@ -133,11 +124,12 @@ public final class MindMapUtils {
     return result;
   }
 
-  public static boolean isCollapsed(@Nonnull final Topic topic) {
+  public static boolean isCollapsed(final Topic topic) {
     return "true".equalsIgnoreCase(topic.getAttribute(ATTR_COLLAPSED.getText()));//NOI18N
   }
 
-  public static boolean foldOrUnfoldChildren(@Nonnull final Topic topic, final boolean fold, final int levelCount) {
+  public static boolean foldOrUnfoldChildren(final Topic topic, final boolean fold,
+                                             final int levelCount) {
     boolean result = false;
     if (levelCount > 0 && topic.hasChildren()) {
       for (final Topic c : topic) {
@@ -148,19 +140,19 @@ public final class MindMapUtils {
     return result;
   }
 
-  public static boolean setCollapsed(@Nonnull final Topic topic, final boolean fold) {
+  public static boolean setCollapsed(final Topic topic, final boolean fold) {
     return topic.setAttribute(ATTR_COLLAPSED.getText(), fold ? "true" : null);//NOI18N
   }
 
-  public static void removeCollapseAttributeFromTopicsWithoutChildren(@Nullable final MindMap map) {
+  public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map) {
     removeCollapseAttrIfNoChildren(map == null ? null : map.getRoot());
   }
 
-  public static void removeCollapseAttr(@Nonnull final MindMap map) {
+  public static void removeCollapseAttr(final MindMap map) {
     _removeCollapseAttr(map.getRoot());
   }
 
-  private static void _removeCollapseAttr(@Nullable final Topic topic) {
+  private static void _removeCollapseAttr(final Topic topic) {
     if (topic != null) {
       topic.setAttribute(ATTR_COLLAPSED.getText(), null);
       if (topic.hasChildren()) {
@@ -171,7 +163,7 @@ public final class MindMapUtils {
     }
   }
 
-  public static void removeCollapseAttrIfNoChildren(@Nullable final Topic topic) {
+  public static void removeCollapseAttrIfNoChildren(final Topic topic) {
     if (topic != null) {
       if (!topic.hasChildren()) {
         topic.setAttribute(ATTR_COLLAPSED.getText(), null);
@@ -183,14 +175,16 @@ public final class MindMapUtils {
     }
   }
 
-  public static void copyColorAttributes(@Nonnull final Topic source, @Nonnull final Topic destination) {
-    destination.setAttribute(ATTR_FILL_COLOR.getText(), source.getAttribute(ATTR_FILL_COLOR.getText()));
-    destination.setAttribute(ATTR_BORDER_COLOR.getText(), source.getAttribute(ATTR_BORDER_COLOR.getText()));
-    destination.setAttribute(ATTR_TEXT_COLOR.getText(), source.getAttribute(ATTR_TEXT_COLOR.getText()));
+  public static void copyColorAttributes(final Topic source, final Topic destination) {
+    destination.setAttribute(ATTR_FILL_COLOR.getText(),
+        source.getAttribute(ATTR_FILL_COLOR.getText()));
+    destination.setAttribute(ATTR_BORDER_COLOR.getText(),
+        source.getAttribute(ATTR_BORDER_COLOR.getText()));
+    destination.setAttribute(ATTR_TEXT_COLOR.getText(),
+        source.getAttribute(ATTR_TEXT_COLOR.getText()));
   }
 
-  @Nonnull
-  public static Color getBackgroundColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
+  public static Color getBackgroundColor(final MindMapPanelConfig cfg, final Topic topic) {
     final Color extracted = Utils.html2color(topic.getAttribute(ATTR_FILL_COLOR.getText()), false);
     final Color result;
     if (extracted == null) {
@@ -214,8 +208,7 @@ public final class MindMapUtils {
     return result;
   }
 
-  @Nonnull
-  public static Color getTextColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
+  public static Color getTextColor(final MindMapPanelConfig cfg, final Topic topic) {
     final Color extracted = Utils.html2color(topic.getAttribute(ATTR_TEXT_COLOR.getText()), false);
     final Color result;
     if (extracted == null) {
@@ -239,16 +232,19 @@ public final class MindMapUtils {
     return result;
   }
 
-  @Nonnull
-  public static Color getBorderColor(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Topic topic) {
-    final Color extracted = Utils.html2color(topic.getAttribute(ATTR_BORDER_COLOR.getText()), false);
+  public static Color getBorderColor(final MindMapPanelConfig cfg, final Topic topic) {
+    final Color extracted =
+        Utils.html2color(topic.getAttribute(ATTR_BORDER_COLOR.getText()), false);
     return extracted == null ? cfg.getElementBorderColor() : extracted;
   }
 
-  @Nullable
-  public static File selectFileToSaveForFileFilter(@Nonnull final MindMapPanel panel,
-                                                   @Nullable final PluginContext pluginContext,
-                                                   @Nonnull final String dialogId, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
+  public static File selectFileToSaveForFileFilter(final MindMapPanel panel,
+                                                   final PluginContext pluginContext,
+                                                   final String dialogId, final String title,
+                                                   final File defaultFolder,
+                                                   final String dottedFileExtension,
+                                                   final String filterDescription,
+                                                   final String approveButtonText) {
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
     return panel.getController().getDialogProvider(panel).msgSaveFileDialog(
         windowForComponent(panel),
@@ -259,20 +255,25 @@ public final class MindMapUtils {
         true,
         new FileFilter[] {new FileFilter() { //NOI18N
           @Override
-          public boolean accept(@Nonnull final File f) {
-            return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
+          public boolean accept(final File f) {
+            return f.isDirectory() || (f.isFile() &&
+                f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
           }
 
           @Override
-          @Nonnull
           public String getDescription() {
             return filterDescription;
           }
         }}, approveButtonText);
   }
 
-  @Nullable
-  public static File selectFileToOpenForFileFilter(@Nonnull final MindMapPanel panel, @Nullable final PluginContext pluginContext, @Nonnull final String dialogId, @Nonnull final String title, @Nullable final File defaultFolder, @Nonnull final String dottedFileExtension, @Nonnull final String filterDescription, @Nonnull final String approveButtonText) {
+  public static File selectFileToOpenForFileFilter(final MindMapPanel panel,
+                                                   final PluginContext pluginContext,
+                                                   final String dialogId, final String title,
+                                                   final File defaultFolder,
+                                                   final String dottedFileExtension,
+                                                   final String filterDescription,
+                                                   final String approveButtonText) {
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
     return panel.getController().getDialogProvider(panel).msgOpenFileDialog(
@@ -284,29 +285,35 @@ public final class MindMapUtils {
         true,
         new FileFilter[] {new FileFilter() {
           @Override
-          public boolean accept(@Nonnull final File f) {
-            return f.isDirectory() || (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
+          public boolean accept(final File f) {
+            return f.isDirectory() || (f.isFile() &&
+                f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
           }
 
           @Override
-          @Nonnull
           public String getDescription() {
             return filterDescription;
           }
         }}, approveButtonText);
   }
 
-  @Nullable
-  public static File checkFileAndExtension(@Nonnull final MindMapPanel panel, @Nullable final File file, @Nonnull final String dottedExtension) {
+  public static File checkFileAndExtension(final MindMapPanel panel, final File file,
+                                           final String dottedExtension) {
     if (file == null) {
       return null;
     }
     if (file.isDirectory()) {
-      panel.getController().getDialogProvider(panel).msgError(null, String.format(Texts.getString("AbstractMindMapExporter.msgErrorItIsDirectory"), file.getAbsolutePath()));
+      panel.getController().getDialogProvider(panel).msgError(null,
+          String.format(Texts.getString("AbstractMindMapExporter.msgErrorItIsDirectory"),
+              file.getAbsolutePath()));
       return null;
     }
     if (file.isFile()) {
-      if (!panel.getController().getDialogProvider(panel).msgConfirmOkCancel(null, Texts.getString("AbstractMindMapExporter.titleSaveAs"), String.format(Texts.getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"), file.getAbsolutePath()))) {
+      if (!panel.getController().getDialogProvider(panel)
+          .msgConfirmOkCancel(null, Texts.getString("AbstractMindMapExporter.titleSaveAs"),
+              String.format(
+                  Texts.getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"),
+                  file.getAbsolutePath()))) {
         return null;
       }
     } else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
@@ -324,19 +331,11 @@ public final class MindMapUtils {
    * @return resulted array
    * @since 1.3.1
    */
-  @Nonnull
-  @MustNotContainNull
-  public static Topic[] removeSuccessorsAndDuplications(@Nonnull @MustNotContainNull final Topic... topics) {
+  public static Topic[] removeSuccessorsAndDuplications(final Topic... topics) {
     final List<Topic> result = new ArrayList<>();
 
     for (final Topic t : topics) {
-      final Iterator<Topic> iterator = result.iterator();
-      while (iterator.hasNext()) {
-        final Topic listed = iterator.next();
-        if (listed == t || listed.hasAncestor(t)) {
-          iterator.remove();
-        }
-      }
+      result.removeIf(listed -> listed == t || listed.hasAncestor(t));
       result.add(t);
     }
     return result.toArray(new Topic[0]);
@@ -350,9 +349,7 @@ public final class MindMapUtils {
    * @return same root topic provided as argument
    * @since 1.4.7
    */
-  @Nonnull
-  @ReturnsOriginal
-  public static Topic makeSubTreeFromText(@Nonnull final Topic topic, @Nonnull final String text) {
+  public static Topic makeSubTreeFromText(final Topic topic, final String text) {
     final String[] lines = Utils.breakToLines(text);
 
     if (lines.length == 0) {
@@ -372,7 +369,6 @@ public final class MindMapUtils {
     int maxLineLength = 0;
     for (int i = 0; i < lines.length; i++) {
       final String old = lines[i];
-      final String str;
       if (old.trim().isEmpty()) {
         lines[i] = null;
       } else {

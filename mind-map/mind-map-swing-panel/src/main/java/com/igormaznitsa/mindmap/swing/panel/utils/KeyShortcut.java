@@ -18,8 +18,6 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import java.awt.event.KeyEvent;
 import java.util.Locale;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.KeyStroke;
 
 public final class KeyShortcut {
@@ -29,7 +27,7 @@ public final class KeyShortcut {
   private final int modifiers;
   private final int keyCode;
 
-  public KeyShortcut(@Nonnull final String packed) {
+  public KeyShortcut(final String packed) {
     final String[] split = packed.split("\\*");
     this.id = split[0];
     final long code = Long.parseLong(split[1], 16);
@@ -37,7 +35,7 @@ public final class KeyShortcut {
     this.modifiers = (int) code;
   }
 
-  public KeyShortcut(@Nonnull final String id, final int keyCode, final int modifiers) {
+  public KeyShortcut(final String id, final int keyCode, final int modifiers) {
     if (id.contains("*")) {
       throw new IllegalArgumentException("ID can't contain '*'");
     }
@@ -110,18 +108,20 @@ public final class KeyShortcut {
     return this.keyCode;
   }
 
-  @Nonnull
   public String getID() {
     return this.id;
   }
 
-  public boolean isEvent(@Nonnull final KeyEvent event) {
+  public boolean isEvent(final KeyEvent event) {
     return this.isEvent(event, ALL_MODIFIERS_MASK);
   }
 
-  public boolean isEvent(@Nonnull final KeyEvent event, final int modifiersPlayingRole) {
-    final int code = event.getKeyCode() == 0 ? preprocessCharKeyCode(event.getModifiers(), event.getKeyChar()) : event.getKeyCode();
-    return code == this.keyCode && (event.getModifiers() & modifiersPlayingRole) == (this.modifiers & modifiersPlayingRole);
+  public boolean isEvent(final KeyEvent event, final int modifiersPlayingRole) {
+    final int code =
+        event.getKeyCode() == 0 ? preprocessCharKeyCode(event.getModifiers(), event.getKeyChar()) :
+            event.getKeyCode();
+    return code == this.keyCode &&
+        (event.getModifiers() & modifiersPlayingRole) == (this.modifiers & modifiersPlayingRole);
   }
 
   @Override
@@ -130,25 +130,24 @@ public final class KeyShortcut {
   }
 
   @Override
-  public boolean equals(@Nullable final Object object) {
+  public boolean equals(final Object object) {
     if (object == this) {
       return true;
     }
     if (object instanceof KeyShortcut) {
       final KeyShortcut that = (KeyShortcut) object;
-      return this.id.equals(that.id) && this.keyCode == that.keyCode && this.modifiers == that.modifiers;
+      return this.id.equals(that.id) && this.keyCode == that.keyCode &&
+          this.modifiers == that.modifiers;
     }
     return false;
   }
 
-  @Nonnull
   public String packToString() {
     final long packed = ((long) this.keyCode << 32) | ((long) this.modifiers & 0xFFFFFFFFL);
     return this.id + '*' + Long.toHexString(packed).toUpperCase(Locale.ENGLISH);
   }
 
   @Override
-  @Nonnull
   public String toString() {
     final String modifierText = KeyEvent.getKeyModifiersText(this.modifiers);
     final String keyText = KeyEvent.getKeyText(this.keyCode);
@@ -163,15 +162,15 @@ public final class KeyShortcut {
     return builder.toString();
   }
 
-  public boolean doesConflictWith(@Nullable final KeyStroke stroke) {
+  public boolean doesConflictWith(final KeyStroke stroke) {
     boolean result = false;
     if (stroke != null) {
-      result = stroke.getKeyCode() == this.keyCode && (this.modifiers & stroke.getModifiers()) == this.modifiers;
+      result = stroke.getKeyCode() == this.keyCode &&
+          (this.modifiers & stroke.getModifiers()) == this.modifiers;
     }
     return result;
   }
 
-  @Nonnull
   public String getKeyCodeName() {
     return KeyEvent.getKeyText(this.keyCode);
   }

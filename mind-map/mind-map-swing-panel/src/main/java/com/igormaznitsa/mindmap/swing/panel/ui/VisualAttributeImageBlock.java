@@ -28,8 +28,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class VisualAttributeImageBlock {
 
@@ -39,7 +37,7 @@ public class VisualAttributeImageBlock {
 
   private VisualItem[] items = null;
 
-  public VisualAttributeImageBlock(@Nonnull final VisualAttributeImageBlock orig) {
+  public VisualAttributeImageBlock(final VisualAttributeImageBlock orig) {
     this.bounds.setRect(orig.bounds);
     this.model = orig.model;
     this.contentPresented = orig.contentPresented;
@@ -53,7 +51,7 @@ public class VisualAttributeImageBlock {
     }
   }
 
-  public VisualAttributeImageBlock(@Nonnull final Topic model) {
+  public VisualAttributeImageBlock(final Topic model) {
     this.model = model;
   }
 
@@ -61,10 +59,11 @@ public class VisualAttributeImageBlock {
     this.bounds.setRect(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
-  public void updateSize(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
-    final List<VisualAttributePlugin> pluginsFromRegistry = MindMapPluginRegistry.getInstance().findFor(VisualAttributePlugin.class);
+  public void updateSize(final MMGraphics mmGraphics, final MindMapPanelConfig cfg) {
+    final List<VisualAttributePlugin> pluginsFromRegistry =
+        MindMapPluginRegistry.getInstance().findFor(VisualAttributePlugin.class);
     int x = 0;
-    int maxheight = 0;
+    int maxHeight = 0;
     if (pluginsFromRegistry.isEmpty()) {
       this.items = VisualItem.EMPTY;
     } else {
@@ -90,22 +89,22 @@ public class VisualAttributeImageBlock {
           item.updateImage(cfg);
         }
         x += item.getWidth();
-        maxheight = Math.max(maxheight, item.getHeight());
+        maxHeight = Math.max(maxHeight, item.getHeight());
         index++;
       }
       for (final VisualItem i : this.items) {
-        i.toHCenter(maxheight);
+        i.toHCenter(maxHeight);
       }
     }
 
-    this.bounds.setRect(0d, 0d, x, maxheight);
+    this.bounds.setRect(0d, 0d, x, maxHeight);
   }
 
   public boolean mayHaveContent() {
     return this.items == null || this.items.length > 0;
   }
 
-  public void paint(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void paint(final MMGraphics gfx, final MindMapPanelConfig cfg) {
     if (this.items == null) {
       updateSize(gfx, cfg);
     }
@@ -119,7 +118,6 @@ public class VisualAttributeImageBlock {
     }
   }
 
-  @Nullable
   public VisualAttributePlugin findPluginForPoint(final double x, final double y) {
     VisualAttributePlugin result = null;
     if (this.items != null && this.bounds.contains(x, y)) {
@@ -135,7 +133,6 @@ public class VisualAttributeImageBlock {
     return result;
   }
 
-  @Nonnull
   public Rectangle2D getBounds() {
     return this.bounds;
   }
@@ -153,7 +150,7 @@ public class VisualAttributeImageBlock {
     private int height;
     private double lastScale = -1.0d;
 
-    VisualItem(@Nonnull VisualAttributeImageBlock parent, @Nonnull final VisualItem item) {
+    VisualItem(VisualAttributeImageBlock parent, final VisualItem item) {
       this.parent = parent;
       this.plugin = item.plugin;
       this.relx = item.relx;
@@ -164,7 +161,8 @@ public class VisualAttributeImageBlock {
       this.image = item.image;
     }
 
-    VisualItem(@Nonnull final VisualAttributeImageBlock parent, @Nonnull final MindMapPanelConfig cfg, final int x, final int y, @Nonnull final VisualAttributePlugin plugin) {
+    VisualItem(final VisualAttributeImageBlock parent, final MindMapPanelConfig cfg, final int x,
+               final int y, final VisualAttributePlugin plugin) {
       this.parent = parent;
       this.relx = x;
       this.rely = y;
@@ -172,7 +170,6 @@ public class VisualAttributeImageBlock {
       updateImage(cfg);
     }
 
-    @Nonnull
     VisualAttributePlugin getPlugin() {
       return this.plugin;
     }
@@ -189,7 +186,7 @@ public class VisualAttributeImageBlock {
       return this.height;
     }
 
-    void updateImage(@Nonnull final MindMapPanelConfig config) {
+    void updateImage(final MindMapPanelConfig config) {
       final double scale = config.getScale();
 
       if (this.image == null || Double.compare(this.lastScale, scale) != 0) {
@@ -213,7 +210,8 @@ public class VisualAttributeImageBlock {
       return relativeX >= this.relx && relativeY >= this.rely && relativeX < this.relx + this.width && relativeY < this.rely + this.height;
     }
 
-    void draw(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg, final int basex, final int basey) {
+    void draw(final MMGraphics gfx, final MindMapPanelConfig cfg, final int basex,
+              final int basey) {
       if (this.isVisible()) {
         this.image.renderAt(gfx, cfg, basex + this.relx, basey + this.rely);
       }

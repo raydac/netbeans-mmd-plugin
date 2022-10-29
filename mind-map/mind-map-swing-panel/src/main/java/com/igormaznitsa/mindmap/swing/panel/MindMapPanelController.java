@@ -21,41 +21,38 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import java.awt.Point;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.JPopupMenu;
 
 public interface MindMapPanelController {
 
-  boolean isUnfoldCollapsedTopicDropTarget(@Nonnull MindMapPanel source);
+  boolean isUnfoldCollapsedTopicDropTarget(MindMapPanel source);
 
-  boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull MindMapPanel source);
+  boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source);
 
-  boolean isTrimTopicTextBeforeSet(@Nonnull MindMapPanel source);
+  boolean isTrimTopicTextBeforeSet(MindMapPanel source);
 
-  boolean isSelectionAllowed(@Nonnull MindMapPanel source);
+  boolean isSelectionAllowed(MindMapPanel source);
 
-  boolean isElementDragAllowed(@Nonnull MindMapPanel source);
+  boolean isElementDragAllowed(MindMapPanel source);
 
-  boolean isMouseMoveProcessingAllowed(@Nonnull MindMapPanel source);
+  boolean isMouseMoveProcessingAllowed(MindMapPanel source);
 
-  boolean isMouseWheelProcessingAllowed(@Nonnull MindMapPanel source);
+  boolean isMouseWheelProcessingAllowed(MindMapPanel source);
 
-  boolean isMouseClickProcessingAllowed(@Nonnull MindMapPanel source);
+  boolean isMouseClickProcessingAllowed(MindMapPanel source);
 
-  boolean canTopicBeDeleted(@Nonnull MindMapPanel source, @Nonnull Topic topic);
+  boolean canTopicBeDeleted(MindMapPanel source, Topic topic);
 
-  @Nonnull
-  PluginContext makePluginContext(@Nonnull MindMapPanel source);
+  PluginContext makePluginContext(MindMapPanel source);
 
-  @Nonnull
-  MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull MindMapPanel source);
+  MindMapPanelConfig provideConfigForMindMapPanel(MindMapPanel source);
 
-  @Nullable
-  JPopupMenu makePopUpForMindMapPanel(@Nonnull MindMapPanel source, @Nonnull Point point, @Nullable AbstractElement elementUnderMouse, @Nullable ElementPart elementPartUnderMouse);
+  JPopupMenu makePopUpForMindMapPanel(MindMapPanel source, Point point,
+                                      AbstractElement elementUnderMouse,
+                                      ElementPart elementPartUnderMouse);
 
-  @Nonnull
-  DialogProvider getDialogProvider(@Nonnull MindMapPanel source);
+  DialogProvider getDialogProvider(MindMapPanel source);
 
-  boolean processDropTopicToAnotherTopic(@Nonnull MindMapPanel source, @Nonnull Point dropPoint, @Nonnull Topic draggedTopic, @Nullable Topic destinationTopic);
+  boolean processDropTopicToAnotherTopic(MindMapPanel source, Point dropPoint, Topic draggedTopic,
+                                         Topic destinationTopic);
 }

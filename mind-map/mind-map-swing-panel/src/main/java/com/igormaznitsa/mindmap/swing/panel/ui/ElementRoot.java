@@ -16,8 +16,7 @@
 
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
+import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
@@ -32,26 +31,23 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public final class ElementRoot extends AbstractElement {
 
   private final Dimension2D leftBlockSize = new Dimension();
   private final Dimension2D rightBlockSize = new Dimension();
 
-  public ElementRoot(@Nonnull final Topic topic) {
+  public ElementRoot(final Topic topic) {
     super(topic);
   }
 
-  protected ElementRoot(@Nonnull final ElementRoot element) {
+  public ElementRoot(final ElementRoot element) {
     super(element);
     this.leftBlockSize.setSize(element.leftBlockSize);
     this.rightBlockSize.setSize(element.rightBlockSize);
   }
 
   @Override
-  @Nonnull
   public AbstractElement makeCopy() {
     return new ElementRoot(this);
   }
@@ -67,14 +63,15 @@ public final class ElementRoot extends AbstractElement {
     return false;
   }
 
-  @Nonnull
-  private Shape makeShape(@Nonnull final MindMapPanelConfig cfg, final double x, final double y) {
+  private Shape makeShape(final MindMapPanelConfig cfg, final double x, final double y) {
     final float round = cfg.safeScaleFloatValue(10.0f, 0.1f);
-    return new RoundRectangle2D.Double(x, y, this.bounds.getWidth(), this.bounds.getHeight(), round, round);
+    return new RoundRectangle2D.Double(x, y, this.bounds.getWidth(), this.bounds.getHeight(), round,
+        round);
   }
 
   @Override
-  public void drawComponent(@Nonnull final MMGraphics g, @Nonnull final MindMapPanelConfig cfg, final boolean drawCollapsator) {
+  public void drawComponent(final MMGraphics g, final MindMapPanelConfig cfg,
+                            final boolean drawCollapsator) {
     g.setStroke(cfg.safeScaleFloatValue(cfg.getElementBorderWidth(), 0.1f), StrokeType.SOLID);
 
     final Shape shape = makeShape(cfg, 0f, 0f);
@@ -98,7 +95,9 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public void drawConnector(@Nonnull final MMGraphics g, @Nonnull final Rectangle2D source, @Nonnull final Rectangle2D destination, final boolean leftDirection, @Nonnull final MindMapPanelConfig cfg) {
+  public void drawConnector(final MMGraphics g, final Rectangle2D source,
+                            final Rectangle2D destination, final boolean leftDirection,
+                            final MindMapPanelConfig cfg) {
     g.setStroke(cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f), StrokeType.SOLID);
 
     final double startX;
@@ -117,7 +116,8 @@ public final class ElementRoot extends AbstractElement {
     double result = 0.0d;
     boolean nonfirst = false;
     for (final Topic t : this.model.getChildren()) {
-      final AbstractCollapsableElement w = assertNotNull((AbstractCollapsableElement) t.getPayload());
+      final AbstractCollapsableElement w =
+          requireNonNull((AbstractCollapsableElement) t.getPayload());
       final boolean lft = w.isLeftDirection();
       if ((left && lft) || (!left && !lft)) {
         if (nonfirst) {
@@ -132,7 +132,8 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public void alignElementAndChildren(@Nonnull final MindMapPanelConfig cfg, final boolean leftSide, final double cx, final double cy) {
+  public void alignElementAndChildren(final MindMapPanelConfig cfg, final boolean leftSide,
+                                      final double cx, final double cy) {
     super.alignElementAndChildren(cfg, leftSide, cx, cy);
 
     final double dx = cx;
@@ -149,7 +150,8 @@ public final class ElementRoot extends AbstractElement {
       final double ddx = dx - insetHorz;
       double ddy = dy - (leftHeight - this.bounds.getHeight()) / 2;
       for (final Topic t : this.model.getChildren()) {
-        final AbstractCollapsableElement c = assertNotNull((AbstractCollapsableElement) t.getPayload());
+        final AbstractCollapsableElement c =
+            requireNonNull((AbstractCollapsableElement) t.getPayload());
         if (c.isLeftDirection()) {
           c.alignElementAndChildren(cfg, true, ddx - c.getBlockSize().getWidth(), ddy);
           ddy += c.getBlockSize().getHeight() + insetVert;
@@ -161,7 +163,8 @@ public final class ElementRoot extends AbstractElement {
       final double ddx = dx + this.bounds.getWidth() + insetHorz;
       double ddy = dy - (rightHeight - this.bounds.getHeight()) / 2;
       for (final Topic t : this.model.getChildren()) {
-        final AbstractCollapsableElement c = assertNotNull((AbstractCollapsableElement) t.getPayload());
+        final AbstractCollapsableElement c =
+            requireNonNull((AbstractCollapsableElement) t.getPayload());
         if (!c.isLeftDirection()) {
           c.alignElementAndChildren(cfg, false, ddx, ddy);
           ddy += c.getBlockSize().getHeight() + insetVert;
@@ -171,25 +174,25 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  public void updateElementBounds(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateElementBounds(final MMGraphics gfx, final MindMapPanelConfig cfg) {
     super.updateElementBounds(gfx, cfg);
-    final double marginOffset = ((cfg.getTextMargins() + cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
-    this.bounds.setRect(this.bounds.getX(), this.bounds.getY(), this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
+    final double marginOffset =
+        ((cfg.getTextMargins() + cfg.getElementBorderWidth()) * 2.0d) * cfg.getScale();
+    this.bounds.setRect(this.bounds.getX(), this.bounds.getY(),
+        this.bounds.getWidth() + marginOffset, this.bounds.getHeight() + marginOffset);
   }
 
-  @Nonnull
   public Dimension2D getLeftBlockSize() {
     return this.leftBlockSize;
   }
 
-  @Nonnull
   public Dimension2D getRightBlockSize() {
     return this.rightBlockSize;
   }
 
   @Override
-  @Nonnull
-  public Dimension2D calcBlockSize(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Dimension2D size, final boolean childrenOnly) {
+  public Dimension2D calcBlockSize(final MindMapPanelConfig cfg, final Dimension2D size,
+                                   final boolean childrenOnly) {
     final double insetV = cfg.getScale() * cfg.getFirstLevelVerticalInset();
     final double insetH = cfg.getScale() * cfg.getFirstLevelHorizontalInset();
 
@@ -204,7 +207,7 @@ public final class ElementRoot extends AbstractElement {
     boolean nonfirstOnRight = false;
 
     for (final Topic t : this.model.getChildren()) {
-      final ElementLevelFirst w = assertNotNull((ElementLevelFirst) t.getPayload());
+      final ElementLevelFirst w = requireNonNull((ElementLevelFirst) t.getPayload());
 
       w.calcBlockSize(cfg, result, false);
 
@@ -250,8 +253,7 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  @Nullable
-  public Topic findTopicBeforePoint(@Nonnull final MindMapPanelConfig cfg, @Nonnull final Point point) {
+  public Topic findTopicBeforePoint(final MindMapPanelConfig cfg, final Point point) {
 
     Topic result = null;
     if (this.hasChildren()) {
@@ -266,13 +268,13 @@ public final class ElementRoot extends AbstractElement {
         final List<Topic> childForDirection = new ArrayList<>();
         if (point.getX() < this.bounds.getCenterX()) {
           for (final Topic t : this.model.getChildren()) {
-            if ((assertNotNull((AbstractElement) t.getPayload())).isLeftDirection()) {
+            if ((requireNonNull((AbstractElement) t.getPayload())).isLeftDirection()) {
               childForDirection.add(t);
             }
           }
         } else {
           for (final Topic t : this.model.getChildren()) {
-            if (!(assertNotNull((AbstractElement) t.getPayload())).isLeftDirection()) {
+            if (!(requireNonNull((AbstractElement) t.getPayload())).isLeftDirection()) {
               childForDirection.add(t);
             }
           }
@@ -281,7 +283,7 @@ public final class ElementRoot extends AbstractElement {
         final Topic lastOne = childForDirection.isEmpty() ? null : childForDirection.get(childForDirection.size() - 1);
 
         for (final Topic t : childForDirection) {
-          final AbstractElement el = assertNotNull((AbstractElement) t.getPayload());
+          final AbstractElement el = requireNonNull((AbstractElement) t.getPayload());
 
           final double childStartBlockY = el.calcBlockY();
           final double childEndBlockY = childStartBlockY + el.getBlockSize().getHeight() + vertInset;
@@ -304,17 +306,13 @@ public final class ElementRoot extends AbstractElement {
   }
 
   @Override
-  @Nonnull
-  public Color getBackgroundColor(@Nonnull final MindMapPanelConfig config) {
-    final Color dflt = this.fillColor == null ? config.getRootBackgroundColor() : this.fillColor;
-    return dflt;
+  public Color getBackgroundColor(final MindMapPanelConfig config) {
+    return this.fillColor == null ? config.getRootBackgroundColor() : this.fillColor;
   }
 
   @Override
-  @Nonnull
-  public Color getTextColor(@Nonnull final MindMapPanelConfig config) {
-    final Color dflt = this.textColor == null ? config.getRootTextColor() : this.textColor;
-    return dflt;
+  public Color getTextColor(final MindMapPanelConfig config) {
+    return this.textColor == null ? config.getRootTextColor() : this.textColor;
   }
 
 }

@@ -16,9 +16,6 @@
 
 package com.igormaznitsa.mindmap.plugins.processors;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
-
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
@@ -27,8 +24,7 @@ import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Objects;
 import javax.swing.Icon;
 
 public class EditTextPlugin extends AbstractFocusedTopicPlugin {
@@ -41,26 +37,24 @@ public class EditTextPlugin extends AbstractFocusedTopicPlugin {
   }
 
   @Override
-  @Nullable
-  protected Icon getIcon(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected Icon getIcon(final PluginContext context, final Topic activeTopic) {
     return ICO;
   }
 
   @Override
-  @Nonnull
-  protected String getName(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected String getName(final PluginContext context, final Topic activeTopic) {
     return Texts.getString("MMDGraphEditor.makePopUp.miEditText");
   }
 
   @Override
-  protected void doActionForTopic(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected void doActionForTopic(final PluginContext context, final Topic activeTopic) {
     if (activeTopic != null) {
-      context.getPanel().startEdit((AbstractElement) assertNotNull(activeTopic.getPayload()));
+      context.getPanel()
+          .startEdit((AbstractElement) Objects.requireNonNull(activeTopic.getPayload()));
     }
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }

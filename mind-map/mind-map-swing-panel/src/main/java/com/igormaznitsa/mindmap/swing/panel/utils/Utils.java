@@ -16,10 +16,6 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import com.igormaznitsa.meta.annotation.ImplementationNote;
-import com.igormaznitsa.meta.annotation.MayContainNull;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -78,8 +74,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -141,9 +135,8 @@ public final class Utils {
    * @return input stream for resource or null if not found or directory
    * @throws IOException if there is any transport error
    */
-  @Nullable
-  public static InputStream findInputStreamForResource(@Nonnull final ZipFile zipFile,
-                                                       @Nonnull final String resourcePath)
+  public static InputStream findInputStreamForResource(final ZipFile zipFile,
+                                                       final String resourcePath)
       throws IOException {
     final ZipEntry entry = zipFile.getEntry(resourcePath);
 
@@ -164,8 +157,7 @@ public final class Utils {
    * @return byte array or null if not found
    * @throws IOException thrown if there is any transport error
    */
-  @Nullable
-  public static byte[] toByteArray(@Nonnull final ZipFile zipFile, @Nonnull final String path)
+  public static byte[] toByteArray(final ZipFile zipFile, final String path)
       throws IOException {
     final InputStream in = findInputStreamForResource(zipFile, path);
 
@@ -182,11 +174,10 @@ public final class Utils {
     return result;
   }
 
-  @Nonnull
   public static Document load(
-      @Nonnull final InputStream inStream,
-      @Nullable final String charset,
-      @Nonnull Parser parser,
+      final InputStream inStream,
+      final String charset,
+      final Parser parser,
       final boolean autoClose) throws ParserConfigurationException, IOException {
     try {
       final org.jsoup.nodes.Document result =
@@ -211,9 +202,8 @@ public final class Utils {
    * @throws SAXException                 will be thrown if SAX error
    * @since 1.4.0
    */
-  @Nonnull
-  public static Document loadXmlDocument(@Nonnull final InputStream inStream,
-                                         @Nullable final String charset, final boolean autoClose)
+  public static Document loadXmlDocument(final InputStream inStream,
+                                         final String charset, final boolean autoClose)
       throws SAXException, IOException, ParserConfigurationException {
     final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -266,9 +256,8 @@ public final class Utils {
    * @return found first child or null if not found
    * @since 1.4.0
    */
-  @Nullable
-  public static Element findFirstElement(@Nonnull final Element node,
-                                         @Nonnull final String elementName) {
+  public static Element findFirstElement(final Element node,
+                                         final String elementName) {
     Element result = null;
     for (final Element l : Utils.findDirectChildrenForName(node, elementName)) {
       result = l;
@@ -285,10 +274,8 @@ public final class Utils {
    * @return list of found elements
    * @since 1.4.0
    */
-  @Nonnull
-  @MustNotContainNull
-  public static List<Element> findDirectChildrenForName(@Nonnull final Element element,
-                                                        @Nonnull final String childName) {
+  public static List<Element> findDirectChildrenForName(final Element element,
+                                                        final String childName) {
     final List<Element> resultList = new ArrayList<>();
 
     final NodeList list = element.getChildNodes();
@@ -308,7 +295,7 @@ public final class Utils {
    * @param uri string to be checked, must not be null
    * @return true if the string contains correct uri, false otherwise
    */
-  public static boolean isUriCorrect(@Nonnull final String uri) {
+  public static boolean isUriCorrect(final String uri) {
     return URI_PATTERN.matcher(uri).matches();
   }
 
@@ -343,8 +330,7 @@ public final class Utils {
    * @throws IOException if any error during conversion or loading
    * @since 1.4.0
    */
-  @Nullable
-  public static String rescaleImageAndEncodeAsBase64(@Nonnull final InputStream in,
+  public static String rescaleImageAndEncodeAsBase64(final InputStream in,
                                                      final int maxSize) throws IOException {
     final Image image = ImageIO.read(in);
     String result = null;
@@ -363,8 +349,7 @@ public final class Utils {
    * @throws IOException if any error during conversion or loading
    * @since 1.4.0
    */
-  @Nonnull
-  public static String rescaleImageAndEncodeAsBase64(@Nonnull final File file, final int maxSize)
+  public static String rescaleImageAndEncodeAsBase64(final File file, final int maxSize)
       throws IOException {
     final Image image = ImageIO.read(file);
     if (image == null) {
@@ -379,7 +364,6 @@ public final class Utils {
    * @return the render quality for host OS, must not be null
    * @since 1.4.5
    */
-  @Nonnull
   public static RenderQuality getDefaultRenderQialityForOs() {
     RenderQuality result = RenderQuality.DEFAULT;
     if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_WINDOWS) {
@@ -397,8 +381,7 @@ public final class Utils {
    * @throws IOException if it was impossible to encode image
    * @since 1.4.0
    */
-  @Nonnull
-  public static String rescaleImageAndEncodeAsBase64(@Nonnull Image image, final int maxSize)
+  public static String rescaleImageAndEncodeAsBase64(Image image, final int maxSize)
       throws IOException {
     final int width = image.getWidth(null);
     final int height = image.getHeight(null);
@@ -449,7 +432,7 @@ public final class Utils {
     return Utils.base64encode(bos.toByteArray());
   }
 
-  public static int calculateColorBrightness(@Nonnull final Color color) {
+  public static int calculateColorBrightness(final Color color) {
     return (int) Math.sqrt(
         color.getRed() * color.getRed() * .241d + color.getGreen() * color.getGreen() * .691d +
             color.getBlue() * color.getBlue() * .068d);
@@ -464,8 +447,7 @@ public final class Utils {
     }
   }
 
-  @Nonnull
-  public static String convertCamelCasedToHumanForm(@Nonnull final String camelCasedString,
+  public static String convertCamelCasedToHumanForm(final String camelCasedString,
                                                     final boolean capitalizeFirstChar) {
     final StringBuilder result = new StringBuilder();
 
@@ -491,9 +473,7 @@ public final class Utils {
     return result.toString();
   }
 
-  @Nonnull
-  @MustNotContainNull
-  public static Topic[] getLeftToRightOrderedChildrens(@Nonnull final Topic topic) {
+  public static Topic[] getLeftToRightOrderedChildrens(final Topic topic) {
     final List<Topic> result = new ArrayList<>();
     if (topic.getTopicLevel() == 0) {
       for (final Topic t : topic.getChildren()) {
@@ -512,7 +492,7 @@ public final class Utils {
     return result.toArray(new Topic[0]);
   }
 
-  public static boolean safeObjectEquals(@Nullable final Object obj1, @Nullable final Object obj2) {
+  public static boolean safeObjectEquals(final Object obj1, final Object obj2) {
     if (obj1 == obj2) {
       return true;
     }
@@ -522,15 +502,14 @@ public final class Utils {
     return obj1.equals(obj2);
   }
 
-  public static void setAttribute(@Nonnull final String name, @Nullable final String value,
-                                  @Nonnull @MustNotContainNull final Topic[] topics) {
+  public static void setAttribute(final String name, final String value,
+                                  final Topic[] topics) {
     for (final Topic t : topics) {
       t.setAttribute(name, value);
     }
   }
 
-  @Nullable
-  public static Color html2color(@Nullable final String str, final boolean hasAlpha) {
+  public static Color html2color(final String str, final boolean hasAlpha) {
     Color result = null;
     if (str != null && !str.isEmpty() && str.charAt(0) == '#') {
       try {
@@ -554,8 +533,7 @@ public final class Utils {
     return result;
   }
 
-  @Nullable
-  public static String color2html(@Nullable final Color color, final boolean hasAlpha) {
+  public static String color2html(final Color color, final boolean hasAlpha) {
     String result = null;
     if (color != null) {
       final StringBuilder buffer = new StringBuilder();
@@ -584,20 +562,18 @@ public final class Utils {
     return result;
   }
 
-  @Nonnull
-  public static String getFirstLine(@Nonnull final String text) {
+  public static String getFirstLine(final String text) {
     return text.replace("\r", "").split("\\n")[0]; //NOI18N
   }
 
-  @Nonnull
-  public static String makeShortTextVersion(@Nonnull String text, final int maxLength) {
+  public static String makeShortTextVersion(String text, final int maxLength) {
     if (text.length() > maxLength) {
       text = text.substring(0, maxLength) + "..."; //NOI18N
     }
     return text;
   }
 
-  public static void safeSwingCall(@Nonnull final Runnable runnable) {
+  public static void safeSwingCall(final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
     } else {
@@ -605,7 +581,7 @@ public final class Utils {
     }
   }
 
-  public static void safeSwingBlockingCall(@Nonnull final Runnable runnable) {
+  public static void safeSwingBlockingCall(final Runnable runnable) {
     if (SwingUtilities.isEventDispatchThread()) {
       runnable.run();
     } else {
@@ -619,9 +595,7 @@ public final class Utils {
     }
   }
 
-  @Nonnull
-  @MustNotContainNull
-  public static String[] breakToLines(@Nonnull final String text) {
+  public static String[] breakToLines(final String text) {
     final int lineNum = numberOfLines(text);
     final String[] result = new String[lineNum];
     final StringBuilder line = new StringBuilder();
@@ -640,7 +614,7 @@ public final class Utils {
     return result;
   }
 
-  public static int numberOfLines(@Nonnull final String text) {
+  public static int numberOfLines(final String text) {
     int result = 1;
     for (int i = 0; i < text.length(); i++) {
       if (text.charAt(i) == '\n') {
@@ -650,8 +624,10 @@ public final class Utils {
     return result;
   }
 
-  @ImplementationNote("Must be called from Swing UI thread")
-  public static void foldUnfoldTree(@Nonnull final JTree tree, final boolean unfold) {
+  public static void foldUnfoldTree(final JTree tree, final boolean unfold) {
+    if (!SwingUtilities.isEventDispatchThread()) {
+      throw new IllegalStateException("Must be called from Swing thread");
+    }
     final TreeModel model = tree.getModel();
     if (model != null) {
       final Object root = model.getRoot();
@@ -665,7 +641,7 @@ public final class Utils {
     }
   }
 
-  private static void setTreeState(@Nonnull final JTree tree, @Nonnull final TreePath path,
+  private static void setTreeState(final JTree tree, final TreePath path,
                                    final boolean recursively, final boolean unfold) {
     final Object lastNode = path.getLastPathComponent();
     for (int i = 0; i < tree.getModel().getChildCount(lastNode); i++) {
@@ -682,8 +658,7 @@ public final class Utils {
     }
   }
 
-  public static @Nonnull
-  String removeAllISOControlsButTabs(@Nonnull final String str) {
+  public static String removeAllISOControlsButTabs(final String str) {
     final StringBuilder result = new StringBuilder(str.length());
     for (final char c : str.toCharArray()) {
       if (c != '\t' && Character.isISOControl(c)) {
@@ -694,8 +669,7 @@ public final class Utils {
     return result.toString();
   }
 
-  @Nullable
-  public static Point2D findRectEdgeIntersection(@Nonnull final Rectangle2D rect,
+  public static Point2D findRectEdgeIntersection(final Rectangle2D rect,
                                                  final double outboundX, final double outboundY) {
     final int detectedSide = rect.outcode(outboundX, outboundY);
 
@@ -734,7 +708,7 @@ public final class Utils {
     return null;
   }
 
-  public static boolean isPlantUmlFileExtension(@Nonnull final String lowerCasedTrimmedExtension) {
+  public static boolean isPlantUmlFileExtension(final String lowerCasedTrimmedExtension) {
     boolean result = false;
     if (lowerCasedTrimmedExtension.length() > 1 && lowerCasedTrimmedExtension.charAt(0) == 'p') {
       result =
@@ -744,8 +718,7 @@ public final class Utils {
     return result;
   }
 
-  @Nullable
-  public static Image scaleImage(@Nonnull final Image src, final double baseScaleX,
+  public static Image scaleImage(final Image src, final double baseScaleX,
                                  final double baseScaleY, final double scale) {
     final int imgw = src.getWidth(null);
     final int imgh = src.getHeight(null);
@@ -774,11 +747,10 @@ public final class Utils {
     return result;
   }
 
-  @Nonnull
   public static Image renderWithTransparency(final float opacity,
-                                             @Nonnull final AbstractElement element,
-                                             @Nonnull final MindMapPanelConfig config,
-                                             @Nonnull final RenderQuality quality) {
+                                             final AbstractElement element,
+                                             final MindMapPanelConfig config,
+                                             final RenderQuality quality) {
     final AbstractElement cloned = element.makeCopy();
     final Rectangle2D bounds = cloned.getBounds();
 
@@ -833,20 +805,17 @@ public final class Utils {
     return result;
   }
 
-  @Nonnull
-  public static Color makeContrastColor(@Nonnull final Color color) {
+  public static Color makeContrastColor(final Color color) {
     return new Color(color.getRed() ^ 0xFF, color.getGreen() ^ 0xFF, color.getBlue() ^ 0xFF);
   }
 
-  @Nonnull
-  @MustNotContainNull
   private static List<JMenuItem> findPopupMenuItems(
-      @Nonnull final PluginContext context,
-      @Nonnull final PopUpSection section,
+      final PluginContext context,
+      final PopUpSection section,
       final boolean fullScreenModeActive,
-      @Nonnull @MayContainNull final List<JMenuItem> list,
-      @Nullable final Topic topicUnderMouse,
-      @Nonnull @MustNotContainNull final List<PopUpMenuItemPlugin> pluginMenuItems
+      final List<JMenuItem> list,
+      final Topic topicUnderMouse,
+      final List<PopUpMenuItemPlugin> pluginMenuItems
   ) {
     list.clear();
 
@@ -876,11 +845,8 @@ public final class Utils {
     }
   }
 
-  @Nonnull
-  @MustNotContainNull
-  private static List<JMenuItem> putAllItemsAsSection(@Nonnull final JPopupMenu menu,
-                                                      @Nullable final JMenu subMenu,
-                                                      @Nonnull @MustNotContainNull
+  private static List<JMenuItem> putAllItemsAsSection(final JPopupMenu menu,
+                                                      final JMenu subMenu,
                                                       final List<JMenuItem> items) {
     if (!items.isEmpty()) {
       if (menu.getComponentCount() > 0) {
@@ -901,8 +867,8 @@ public final class Utils {
     return items;
   }
 
-  public static boolean isDataFlavorAvailable(@Nonnull final Clipboard clipboard,
-                                              @Nonnull final DataFlavor flavor) {
+  public static boolean isDataFlavorAvailable(final Clipboard clipboard,
+                                              final DataFlavor flavor) {
     boolean result = false;
     try {
       result = clipboard.isDataFlavorAvailable(flavor);
@@ -912,11 +878,10 @@ public final class Utils {
     return result;
   }
 
-  @Nonnull
   public static JPopupMenu makePopUp(
-      @Nonnull final PluginContext context,
+      final PluginContext context,
       final boolean fullScreenModeActive,
-      @Nullable final Topic topicUnderMouse
+      final Topic topicUnderMouse
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
     final List<PopUpMenuItemPlugin> pluginMenuItems =
@@ -962,12 +927,12 @@ public final class Utils {
     return result;
   }
 
-  public static boolean isPopupEvent(@Nullable final MouseEvent mouseEvent) {
+  public static boolean isPopupEvent(final MouseEvent mouseEvent) {
     return mouseEvent != null && mouseEvent.getButton() != 0 && mouseEvent.isPopupTrigger();
   }
 
-  public static boolean isKeyStrokeEvent(@Nullable final KeyStroke keyStroke,
-                                         final int keyEventType, @Nullable final KeyEvent event) {
+  public static boolean isKeyStrokeEvent(final KeyStroke keyStroke,
+                                         final int keyEventType, final KeyEvent event) {
     boolean result = false;
     if (keyStroke != null && event != null) {
       if (keyEventType == keyStroke.getKeyEventType()) {
@@ -978,9 +943,7 @@ public final class Utils {
     return result;
   }
 
-  @Nonnull
-  @MustNotContainNull
-  private static List<JButton> findAllOptionPaneButtons(@Nonnull final JComponent component) {
+  private static List<JButton> findAllOptionPaneButtons(final JComponent component) {
     final List<JButton> result = new ArrayList<>();
     Arrays.stream(component.getComponents())
         .filter(x -> x instanceof JComponent)
@@ -997,8 +960,8 @@ public final class Utils {
     return result;
   }
 
-  private static void replaceActionListenerForButton(@Nonnull final JButton button,
-                                                     @Nonnull final ActionListener listener) {
+  private static void replaceActionListenerForButton(final JButton button,
+                                                     final ActionListener listener) {
     final ActionListener[] currentListeners = button.getActionListeners();
     for (final ActionListener l : currentListeners) {
       button.removeActionListener(l);
@@ -1006,14 +969,12 @@ public final class Utils {
     button.addActionListener(listener);
   }
 
-  @Nonnull
   @SafeVarargs
-  @ReturnsOriginal
   public static JComponent catchEscInParentDialog(
-      @Nonnull final JComponent component,
-      @Nonnull final DialogProvider dialogProvider,
-      @Nullable final Predicate<JDialog> doClose,
-      @Nonnull @MustNotContainNull final Consumer<JDialog>... beforeClose) {
+      final JComponent component,
+      final DialogProvider dialogProvider,
+      final Predicate<JDialog> doClose,
+      final Consumer<JDialog>... beforeClose) {
     component.addHierarchyListener(new HierarchyListener() {
 
       final Consumer<JDialog> processor = dialog -> {
@@ -1049,7 +1010,7 @@ public final class Utils {
       private final List<WindowListener> foundWindowListeners = new ArrayList<>();
 
       @Override
-      public void hierarchyChanged(@Nonnull final HierarchyEvent e) {
+      public void hierarchyChanged(final HierarchyEvent e) {
         final Window window = SwingUtilities.getWindowAncestor(component);
         if (window instanceof JDialog &&
             (e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) != 0) {
@@ -1066,37 +1027,37 @@ public final class Utils {
 
           final WindowListener windowListener = new WindowListener() {
             @Override
-            public void windowClosing(@Nonnull final WindowEvent e) {
+            public void windowClosing(final WindowEvent e) {
               processor.accept(dialog);
             }
 
             @Override
-            public void windowOpened(@Nonnull final WindowEvent e) {
+            public void windowOpened(final WindowEvent e) {
               foundWindowListeners.forEach(x -> x.windowOpened(e));
             }
 
             @Override
-            public void windowClosed(@Nonnull final WindowEvent e) {
+            public void windowClosed(final WindowEvent e) {
               foundWindowListeners.forEach(x -> x.windowClosed(e));
             }
 
             @Override
-            public void windowIconified(@Nonnull final WindowEvent e) {
+            public void windowIconified(final WindowEvent e) {
               foundWindowListeners.forEach(x -> x.windowIconified(e));
             }
 
             @Override
-            public void windowDeiconified(@Nonnull final WindowEvent e) {
+            public void windowDeiconified(final WindowEvent e) {
               foundWindowListeners.forEach(x -> x.windowDeiconified(e));
             }
 
             @Override
-            public void windowActivated(@Nonnull final WindowEvent e) {
+            public void windowActivated(final WindowEvent e) {
               foundWindowListeners.forEach(x -> x.windowActivated(e));
             }
 
             @Override
-            public void windowDeactivated(@Nonnull final WindowEvent e) {
+            public void windowDeactivated(final WindowEvent e) {
               foundWindowListeners.forEach(x -> x.windowDeactivated(e));
             }
           };
@@ -1116,7 +1077,7 @@ public final class Utils {
           final ActionMap actionMap = dialog.getRootPane().getActionMap();
           actionMap.put("PRESSING_ESCAPE", new AbstractAction() {
             @Override
-            public void actionPerformed(@Nonnull final ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
               processor.accept(dialog);
             }
           });
@@ -1126,13 +1087,11 @@ public final class Utils {
     return component;
   }
 
-  @Nonnull
-  public static byte[] base64decode(@Nonnull final String text) {
+  public static byte[] base64decode(final String text) {
     return Base64.getDecoder().decode(text);
   }
 
-  @Nonnull
-  public static String strip(@Nonnull final String str, final boolean leading) {
+  public static String strip(final String str, final boolean leading) {
     if (str.trim().isEmpty()) {
       return "";
     }
@@ -1144,8 +1103,7 @@ public final class Utils {
   }
 
 
-  @Nonnull
-  public static String base64encode(@Nonnull final byte[] data) {
+  public static String base64encode(final byte[] data) {
     return Base64.getEncoder().encodeToString(data);
   }
 

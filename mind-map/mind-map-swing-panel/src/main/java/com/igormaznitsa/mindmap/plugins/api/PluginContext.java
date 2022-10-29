@@ -16,14 +16,11 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import java.io.File;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Interface describes context where executed or activated plug-in.
@@ -31,26 +28,19 @@ import javax.annotation.Nullable;
  * @since 1.4.7
  */
 public interface PluginContext {
-  @Nonnull
   MindMapPanelConfig getPanelConfig();
 
-  @Nonnull
   MindMapPanel getPanel();
 
-  @Nonnull
   DialogProvider getDialogProvider();
 
-  @Nullable
   File getProjectFolder();
 
-  @Nullable
   File getMindMapFile();
 
-  @Nullable
-  @MustNotContainNull
   Topic[] getSelectedTopics();
 
-  void openFile(@Nonnull final File file, boolean preferSystemBrowser);
+  void openFile(final File file, boolean preferSystemBrowser);
 
-  void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin, @Nullable Topic activeTopic);
+  void processPluginActivation(ExternallyExecutedPlugin plugin, Topic activeTopic);
 }

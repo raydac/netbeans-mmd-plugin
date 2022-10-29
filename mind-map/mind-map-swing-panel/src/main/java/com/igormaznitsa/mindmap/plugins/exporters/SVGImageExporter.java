@@ -20,9 +20,6 @@ import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.calculateSizeOfM
 import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.drawOnGraphicsForConfiguration;
 import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.layoutFullDiagramWithCenteringToPaper;
 
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -56,7 +53,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.SystemFlavorMap;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.Dimension2D;
@@ -72,7 +68,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -80,8 +75,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -91,12 +85,12 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class SVGImageExporter extends AbstractExporter {
 
   protected static final String FONT_CLASS_NAME = "mindMapTitleFont";
-  private static final Map<String, String[]> LOCAL_FONT_MAP = new HashMap<String, String[]>() {
+  private static final Map<String, String[]> LOCAL_FONT_MAP = new HashMap<>() {
     {
       put("dialog", new String[] {"sans-serif", "SansSerif"});
       put("dialoginput", new String[] {"monospace", "Monospace"});
@@ -119,13 +113,11 @@ public class SVGImageExporter extends AbstractExporter {
     DOUBLE = new DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.US));
   }
 
-  @Nonnull
   private static String dbl2str(final double value) {
     return DOUBLE.format(value);
   }
 
-  @Nonnull
-  private static String fontFamilyToSVG(@Nonnull Font font) {
+  private static String fontFamilyToSVG(final Font font) {
     String fontFamilyStr = font.getFamily();
     final String[] logicalFontFamily = LOCAL_FONT_MAP.get(font.getName().toLowerCase());
     if (logicalFontFamily != null) {
@@ -136,8 +128,7 @@ public class SVGImageExporter extends AbstractExporter {
     return fontFamilyStr;
   }
 
-  @Nonnull
-  private static String font2style(@Nonnull final Font font) {
+  private static String font2style(final Font font) {
     final StringBuilder result = new StringBuilder();
 
     final String fontStyle = font.isItalic() ? "italic" : "normal";
@@ -154,14 +145,12 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "svg";
   }
 
   @Override
-  @Nullable
-  public JComponent makeOptions(@Nonnull final PluginContext context) {
+  public JComponent makeOptions(final PluginContext context) {
     final Options options = new Options(flagExpandAllNodes, flagDrawBackground);
     final JPanel panel = UI_FACTORY.makePanelWithOptions(options);
     final JCheckBox checkBoxExpandAll = UI_FACTORY.makeCheckBox();
@@ -181,15 +170,13 @@ public class SVGImageExporter extends AbstractExporter {
 
     panel.setBorder(BorderFactory.createEmptyBorder(16, 32, 16, 32));
 
-    final ActionListener actionListener = new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        if (e.getSource() == checkBoxExpandAll) {
-          options.setOption(Options.KEY_EXPAND_ALL, Boolean.toString(checkBoxExpandAll.isSelected()));
-        }
-        if (e.getSource() == checkBoxDrawBackground) {
-          options.setOption(Options.KEY_DRAW_BACK, Boolean.toString(checkBoxDrawBackground.isSelected()));
-        }
+    final ActionListener actionListener = e -> {
+      if (e.getSource() == checkBoxExpandAll) {
+        options.setOption(Options.KEY_EXPAND_ALL, Boolean.toString(checkBoxExpandAll.isSelected()));
+      }
+      if (e.getSource() == checkBoxDrawBackground) {
+        options.setOption(Options.KEY_DRAW_BACK,
+            Boolean.toString(checkBoxDrawBackground.isSelected()));
       }
     };
 
@@ -199,14 +186,13 @@ public class SVGImageExporter extends AbstractExporter {
     return panel;
   }
 
-  @Nonnull
-  private String makeContent(@Nonnull final PluginContext context, @Nullable final JComponent options) throws IOException {
+  private String makeContent(final PluginContext context, final JComponent options) {
     if (options instanceof HasOptions) {
       final HasOptions opts = (HasOptions) options;
       this.flagExpandAllNodes = Boolean.parseBoolean(opts.getOption(Options.KEY_EXPAND_ALL));
       this.flagDrawBackground = Boolean.parseBoolean(opts.getOption(Options.KEY_DRAW_BACK));
     } else {
-      for (final Component compo : Assertions.assertNotNull(options).getComponents()) {
+      for (final Component compo : Objects.requireNonNull(options).getComponents()) {
         if (compo instanceof JCheckBox) {
           final JCheckBox cb = (JCheckBox) compo;
           if ("unfold".equalsIgnoreCase(cb.getActionCommand())) {
@@ -241,8 +227,9 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     final StringBuilder buffer = new StringBuilder(16384);
-    buffer.append(String.format(SVG_HEADER, 100, 100, dbl2str(blockSize.getWidth()), dbl2str(blockSize.getHeight()))).append(NEXT_LINE);
-    buffer.append(prepareStylePart(buffer, newConfig)).append(NEXT_LINE);
+    buffer.append(String.format(SVG_HEADER, 100, 100, dbl2str(blockSize.getWidth()),
+        dbl2str(blockSize.getHeight()))).append(NEXT_LINE);
+    buffer.append(prepareStylePart(newConfig)).append(NEXT_LINE);
 
     final BufferedImage image = new BufferedImage(32, 32, BufferedImage.TYPE_INT_RGB);
     final Graphics2D g = image.createGraphics();
@@ -261,21 +248,20 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(@Nonnull final PluginContext context, @Nonnull final JComponent options) throws IOException {
+  public void doExportToClipboard(final PluginContext context, final JComponent options)
+      throws IOException {
     final String text = makeContent(context, options);
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard != null) {
-          clipboard.setContents(new SvgClip(text), null);
-        }
+    SwingUtilities.invokeLater(() -> {
+      final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      if (clipboard != null) {
+        clipboard.setContents(new SvgClip(text), null);
       }
     });
   }
 
   @Override
-  public void doExport(@Nonnull final PluginContext context, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+  public void doExport(final PluginContext context, final JComponent options,
+                       final OutputStream out) throws IOException {
     final String text = makeContent(context, options);
 
     File fileToSaveMap = null;
@@ -301,29 +287,25 @@ public class SVGImageExporter extends AbstractExporter {
     }
   }
 
-  @Nonnull
-  private String prepareStylePart(@Nonnull final StringBuilder buffer, @Nonnull final MindMapPanelConfig config) {
+  private String prepareStylePart(final MindMapPanelConfig config) {
     String result = "<style>" + NEXT_LINE +
-            '.' + FONT_CLASS_NAME + " {" + NEXT_LINE + font2style(config.getFont()) + "}" + NEXT_LINE +
-            "</style>";
+        '.' + FONT_CLASS_NAME + " {" + NEXT_LINE + font2style(config.getFont()) + "}" + NEXT_LINE +
+        "</style>";
     return result;
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public String getName(final PluginContext context, final Topic actionTopic) {
     return Texts.getString("SvgExporter.exporterName");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public String getReference(final PluginContext context, final Topic actionTopic) {
     return Texts.getString("SvgExporter.exporterReference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext panel, @Nullable Topic actionTopic) {
+  public Icon getIcon(final PluginContext panel, final Topic actionTopic) {
     return ICO;
   }
 
@@ -339,7 +321,7 @@ public class SVGImageExporter extends AbstractExporter {
 
     private final DataFlavor[] supportedFlavors;
 
-    public SvgClip(@Nonnull final String str) {
+    public SvgClip(final String str) {
       this.supportedFlavors = new DataFlavor[] {
           SVG_FLAVOR,};
 
@@ -349,13 +331,12 @@ public class SVGImageExporter extends AbstractExporter {
       systemFlavorMap.addUnencodedNativeForFlavor(dataFlavor, "image/svg+xml");
     }
 
-    @Nonnull
     static DataFlavor getSVGFlavor() {
       return SvgClip.SVG_FLAVOR;
     }
 
     @Override
-    public boolean isDataFlavorSupported(@Nonnull final DataFlavor flavor) {
+    public boolean isDataFlavorSupported(final DataFlavor flavor) {
       for (DataFlavor supported : this.supportedFlavors) {
         if (flavor.equals(supported)) {
           return true;
@@ -365,23 +346,19 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    @Nonnull
-    @MustNotContainNull
     public DataFlavor[] getTransferDataFlavors() {
       return this.supportedFlavors;
     }
 
     @Override
-    @Nonnull
-    public Object getTransferData(@Nonnull final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+    public Object getTransferData(final DataFlavor flavor) throws UnsupportedFlavorException {
       if (isDataFlavorSupported(flavor) && flavor.equals(SVG_FLAVOR)) {
-        InputStream stream = new ByteArrayInputStream(this.svgContent.getBytes(StandardCharsets.UTF_8));
-        return stream;
+        return new ByteArrayInputStream(this.svgContent.getBytes(StandardCharsets.UTF_8));
       }
       throw new UnsupportedFlavorException(flavor);
     }
 
-    public void lostOwnership(@Nonnull final Clipboard clipboard, @Nonnull final Transferable tr) {
+    public void lostOwnership(final Clipboard clipboard, final Transferable tr) {
     }
   }
 
@@ -398,20 +375,17 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public boolean doesSupportKey(@Nonnull final String key) {
+    public boolean doesSupportKey(final String key) {
       return KEY_DRAW_BACK.equals(key) || KEY_EXPAND_ALL.equals(key);
     }
 
     @Override
-    @Nonnull
-    @MustNotContainNull
     public String[] getOptionKeys() {
       return new String[] {KEY_EXPAND_ALL, KEY_DRAW_BACK};
     }
 
     @Override
-    @Nonnull
-    public String getOptionKeyDescription(@Nonnull final String key) {
+    public String getOptionKeyDescription(final String key) {
       if (KEY_DRAW_BACK.equals(key)) {
         return "Draw background";
       }
@@ -422,7 +396,7 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void setOption(@Nonnull final String key, @Nullable final String value) {
+    public void setOption(final String key, final String value) {
       if (KEY_DRAW_BACK.equals(key)) {
         this.drawBack = Boolean.parseBoolean(value);
       } else if (KEY_EXPAND_ALL.equals(key)) {
@@ -431,8 +405,7 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    @Nullable
-    public String getOption(@Nonnull final String key) {
+    public String getOption(final String key) {
       if (KEY_DRAW_BACK.equals(key)) {
         return Boolean.toString(this.drawBack);
       }
@@ -454,19 +427,19 @@ public class SVGImageExporter extends AbstractExporter {
     private float strokeWidth = 1.0f;
     private StrokeType strokeType = StrokeType.SOLID;
 
-    private SVGMMGraphics(@Nonnull final StringBuilder buffer, @Nonnull final Graphics2D context) {
+    private SVGMMGraphics(final StringBuilder buffer, final Graphics2D context) {
       this.buffer = buffer;
       this.context = (Graphics2D) context.create();
     }
 
-    @Nonnull
-    private static String svgRgb(@Nonnull final Color color) {
+    private static String svgRgb(final Color color) {
       return "rgb(" + color.getRed() + ',' + color.getGreen() + ',' + color.getBlue() + ')';
     }
 
-    private void printFillOpacity(@Nonnull final Color color) {
+    private void printFillOpacity(final Color color) {
       if (color.getAlpha() < 255) {
-        this.buffer.append(" fill-opacity=\"").append(ALPHA.format(color.getAlpha() / 255.0f)).append("\" ");
+        this.buffer.append(" fill-opacity=\"").append(ALPHA.format(color.getAlpha() / 255.0f))
+            .append("\" ");
       }
     }
 
@@ -474,7 +447,7 @@ public class SVGImageExporter extends AbstractExporter {
       this.buffer.append("class=\"" + FONT_CLASS_NAME + '\"');
     }
 
-    private void printStrokeData(@Nonnull final Color color) {
+    private void printStrokeData(final Color color) {
       this.buffer.append(" stroke=\"").append(svgRgb(color))
           .append("\" stroke-width=\"").append(dbl2str(this.strokeWidth)).append("\"");
 
@@ -483,7 +456,9 @@ public class SVGImageExporter extends AbstractExporter {
           this.buffer.append(" stroke-linecap=\"round\"");
           break;
         case DASHES:
-          this.buffer.append(" stroke-linecap=\"butt\" stroke-dasharray=\"").append(dbl2str(this.strokeWidth * 3.0f)).append(',').append(dbl2str(this.strokeWidth)).append("\"");
+          this.buffer.append(" stroke-linecap=\"butt\" stroke-dasharray=\"")
+              .append(dbl2str(this.strokeWidth * 3.0f)).append(',')
+              .append(dbl2str(this.strokeWidth)).append("\"");
           break;
         case DOTS:
           this.buffer.append(" stroke-linecap=\"butt\" stroke-dasharray=\"").append(dbl2str(this.strokeWidth)).append(',').append(dbl2str(this.strokeWidth * 2.0f)).append("\"");
@@ -497,13 +472,14 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    @Nonnull
-    public Rectangle2D getStringBounds(@Nonnull final String str) {
+    public Rectangle2D getStringBounds(final String str) {
       if (str.isEmpty()) {
         return this.context.getFontMetrics().getStringBounds("", this.context);
       } else {
-        final TextLayout textLayout = new TextLayout(str, this.context.getFont(), this.context.getFontRenderContext());
-        return new Rectangle2D.Float(0, -textLayout.getAscent(), textLayout.getAdvance(), textLayout.getAscent() + textLayout.getDescent() + textLayout.getLeading());
+        final TextLayout textLayout =
+            new TextLayout(str, this.context.getFont(), this.context.getFontRenderContext());
+        return new Rectangle2D.Float(0, -textLayout.getAscent(), textLayout.getAdvance(),
+            textLayout.getAscent() + textLayout.getDescent() + textLayout.getLeading());
       }
     }
 
@@ -513,7 +489,6 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    @Nonnull
     public MMGraphics copy() {
       final SVGMMGraphics result = new SVGMMGraphics(this.buffer, this.context);
       result.translateX = this.translateX;
@@ -536,18 +511,16 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    @Nullable
     public Rectangle getClipBounds() {
       return this.context.getClipBounds();
     }
 
     @Override
-    public void setStroke(final float width, @Nonnull final StrokeType type) {
+    public void setStroke(final float width, final StrokeType type) {
       if (type != this.strokeType || Float.compare(this.strokeWidth, width) != 0) {
         this.strokeType = type;
         this.strokeWidth = width;
-        if (type != this.strokeType || Float.compare(this.strokeWidth, width) != 0) {
-          this.strokeType = type;
+        if (Float.compare(this.strokeWidth, width) != 0) {
           this.strokeWidth = width;
 
           final Stroke stroke;
@@ -557,7 +530,8 @@ public class SVGImageExporter extends AbstractExporter {
               stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
               break;
             case DASHES:
-              stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[] {width * 2.0f, width}, 0.0f);
+              stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f,
+                  new float[] {width * 2.0f, width}, 0.0f);
               break;
             case DOTS:
               stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {width, width * 2.0f}, 0.0f);
@@ -571,7 +545,8 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void drawLine(final int startX, final int startY, final int endX, final int endY, @Nullable final Color color) {
+    public void drawLine(final int startX, final int startY, final int endX, final int endY,
+                         final Color color) {
       this.buffer.append("<line x1=\"").append(dbl2str(startX + this.translateX))
           .append("\" y1=\"").append(dbl2str(startY + this.translateY))
           .append("\" x2=\"").append(dbl2str(endX + this.translateX))
@@ -584,19 +559,22 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void drawString(@Nonnull final String text, final int x, final int y, @Nullable final Color color) {
-      this.buffer.append("<text x=\"").append(dbl2str(this.translateX + x)).append("\" y=\"").append(dbl2str(this.translateY + y)).append('\"');
+    public void drawString(final String text, final int x, final int y, final Color color) {
+      this.buffer.append("<text x=\"").append(dbl2str(this.translateX + x)).append("\" y=\"")
+          .append(dbl2str(this.translateY + y)).append('\"');
       if (color != null) {
         this.buffer.append(" fill=\"").append(svgRgb(color)).append("\"");
         printFillOpacity(color);
       }
       this.buffer.append(' ');
       printFontData();
-      this.buffer.append('>').append(StringEscapeUtils.escapeXml(text)).append("</text>").append(NEXT_LINE);
+      this.buffer.append('>').append(StringEscapeUtils.escapeXml10(text)).append("</text>")
+          .append(NEXT_LINE);
     }
 
     @Override
-    public void drawRect(final int x, final int y, final int width, final int height, final @Nullable Color border, final @Nullable Color fill) {
+    public void drawRect(final int x, final int y, final int width, final int height,
+                         final Color border, final Color fill) {
       this.buffer.append("<rect x=\"").append(dbl2str(this.translateX + x))
           .append("\" y=\"").append(dbl2str(translateY + y))
           .append("\" width=\"").append(dbl2str(width))
@@ -617,7 +595,7 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void draw(@Nonnull final Shape shape, @Nullable final Color border, @Nullable final Color fill) {
+    public void draw(final Shape shape, final Color border, final Color fill) {
       if (shape instanceof RoundRectangle2D) {
         final RoundRectangle2D rect = (RoundRectangle2D) shape;
 
@@ -701,8 +679,10 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void drawCurve(final double startX, final double startY, final double endX, final double endY, @Nullable final Color color) {
-      this.buffer.append("<path d=\"M").append(dbl2str(startX + this.translateX)).append(',').append(startY + this.translateY)
+    public void drawCurve(final double startX, final double startY, final double endX,
+                          final double endY, final Color color) {
+      this.buffer.append("<path d=\"M").append(dbl2str(startX + this.translateX)).append(',')
+          .append(startY + this.translateY)
           .append(" C").append(dbl2str(startX))
           .append(',').append(dbl2str(endY))
           .append(' ').append(dbl2str(startX))
@@ -718,7 +698,8 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void drawOval(final int x, final int y, final int w, final int h, @Nullable final Color border, @Nullable final Color fill) {
+    public void drawOval(final int x, final int y, final int w, final int h, final Color border,
+                         final Color fill) {
       final double rx = (double) w / 2.0d;
       final double ry = (double) h / 2.0d;
       final double cx = (double) x + this.translateX + rx;
@@ -745,14 +726,17 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void drawImage(@Nullable final Image image, final int x, final int y) {
+    public void drawImage(final Image image, final int x, final int y) {
       if (image != null) {
         if (image instanceof RenderedImage) {
           final RenderedImage ri = (RenderedImage) image;
           final ByteArrayOutputStream imageBuffer = new ByteArrayOutputStream(1024);
           try {
             if (ImageIO.write(ri, "png", imageBuffer)) {
-              this.buffer.append("<image width=\"").append(ri.getWidth()).append("\" height=\"").append(ri.getHeight()).append("\" x=\"").append(dbl2str(this.translateX + x)).append("\" y=\"").append(dbl2str(this.translateY + y)).append("\" xlink:href=\"data:image/png;base64,");
+              this.buffer.append("<image width=\"").append(ri.getWidth()).append("\" height=\"")
+                  .append(ri.getHeight()).append("\" x=\"").append(dbl2str(this.translateX + x))
+                  .append("\" y=\"").append(dbl2str(this.translateY + y))
+                  .append("\" xlink:href=\"data:image/png;base64,");
               this.buffer.append(Utils.base64encode(imageBuffer.toByteArray()));
               this.buffer.append("\"/>").append(NEXT_LINE);
             } else {
@@ -768,7 +752,7 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void setFont(@Nonnull final Font font) {
+    public void setFont(final Font font) {
       this.context.setFont(font);
     }
 

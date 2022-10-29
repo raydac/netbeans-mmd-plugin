@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.plugins.exporters;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
@@ -32,8 +31,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import org.junit.Test;
 
@@ -58,11 +55,11 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
       }
 
       @Override
-      public void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin, @Nullable Topic activeTopic) {
+      public void processPluginActivation(ExternallyExecutedPlugin plugin, Topic activeTopic) {
       }
 
       @Override
-      public void openFile(@Nonnull File file, boolean preferSystemBrowser) {
+      public void openFile(File file, boolean preferSystemBrowser) {
       }
 
       @Override
@@ -75,13 +72,11 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
         throw new UnsupportedOperationException("Not supported.");
       }
 
-      @Nullable
       @Override
       public File getProjectFolder() {
         return null;
       }
 
-      @Nullable
       @Override
       public File getMindMapFile() {
         return null;

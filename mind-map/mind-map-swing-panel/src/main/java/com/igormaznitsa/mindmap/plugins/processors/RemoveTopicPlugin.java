@@ -16,8 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.processors;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
+import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
@@ -26,8 +25,6 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 public class RemoveTopicPlugin extends AbstractFocusedTopicPlugin {
@@ -45,33 +42,32 @@ public class RemoveTopicPlugin extends AbstractFocusedTopicPlugin {
   }
 
   @Override
-  @Nullable
-  protected Icon getIcon(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected Icon getIcon(final PluginContext context, final Topic activeTopic) {
     return ICO;
   }
 
   @Override
-  @Nonnull
-  protected String getName(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    return context.getSelectedTopics().length > 0 ? Texts.getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") : Texts.getString("MMDGraphEditor.makePopUp.miRemoveTheTopic");
+  protected String getName(final PluginContext context, final Topic activeTopic) {
+    return context.getSelectedTopics().length > 0 ?
+        Texts.getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") :
+        Texts.getString("MMDGraphEditor.makePopUp.miRemoveTheTopic");
   }
 
   @Override
-  protected void doActionForTopic(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected void doActionForTopic(final PluginContext context, final Topic activeTopic) {
     if (context.getPanel().hasSelectedTopics()) {
       context.getPanel().deleteSelectedTopics(false);
     } else {
-      context.getPanel().deleteTopics(false, assertNotNull(activeTopic));
+      context.getPanel().deleteTopics(false, requireNonNull(activeTopic));
     }
   }
 
   @Override
-  public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  public boolean isEnabled(final PluginContext context, final Topic activeTopic) {
     return true;
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }

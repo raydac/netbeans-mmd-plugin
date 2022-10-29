@@ -1,6 +1,5 @@
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
 
 import com.igormaznitsa.mindmap.model.Extra;

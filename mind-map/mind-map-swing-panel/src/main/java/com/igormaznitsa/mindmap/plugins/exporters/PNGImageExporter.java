@@ -16,8 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -37,7 +37,6 @@ import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -47,8 +46,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -73,8 +70,7 @@ public final class PNGImageExporter extends AbstractExporter {
   }
 
   @Override
-  @Nullable
-  public JComponent makeOptions(@Nonnull final PluginContext context) {
+  public JComponent makeOptions(final PluginContext context) {
     final Options options = new Options(flagExpandAllNodes, flagDrawBackground);
 
     final JPanel panel = UI_FACTORY.makePanelWithOptions(options);
@@ -95,15 +91,13 @@ public final class PNGImageExporter extends AbstractExporter {
 
     panel.setBorder(BorderFactory.createEmptyBorder(16, 32, 16, 32));
 
-    final ActionListener actionListener = new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        if (e.getSource() == checkBoxExpandAll) {
-          options.setOption(Options.KEY_EXPAND_ALL, Boolean.toString(checkBoxExpandAll.isSelected()));
-        }
-        if (e.getSource() == checkBoxDrawBackground) {
-          options.setOption(Options.KEY_DRAW_BACK, Boolean.toString(checkBoxDrawBackground.isSelected()));
-        }
+    final ActionListener actionListener = e -> {
+      if (e.getSource() == checkBoxExpandAll) {
+        options.setOption(Options.KEY_EXPAND_ALL, Boolean.toString(checkBoxExpandAll.isSelected()));
+      }
+      if (e.getSource() == checkBoxDrawBackground) {
+        options.setOption(Options.KEY_DRAW_BACK,
+            Boolean.toString(checkBoxDrawBackground.isSelected()));
       }
     };
 
@@ -113,14 +107,13 @@ public final class PNGImageExporter extends AbstractExporter {
     return panel;
   }
 
-  @Nullable
-  private BufferedImage makeImage(@Nonnull final PluginContext context, @Nullable final JComponent options) throws IOException {
+  private BufferedImage makeImage(final PluginContext context, final JComponent options) {
     if (options instanceof HasOptions) {
       final HasOptions opts = (HasOptions) options;
       this.flagExpandAllNodes = Boolean.parseBoolean(opts.getOption(Options.KEY_EXPAND_ALL));
       this.flagDrawBackground = Boolean.parseBoolean(opts.getOption(Options.KEY_DRAW_BACK));
     } else {
-      for (final Component compo : Assertions.assertNotNull(options).getComponents()) {
+      for (final Component compo : requireNonNull(options).getComponents()) {
         if (compo instanceof JCheckBox) {
           final JCheckBox cb = (JCheckBox) compo;
           if ("unfold".equalsIgnoreCase(cb.getActionCommand())) {
@@ -140,29 +133,29 @@ public final class PNGImageExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(@Nonnull final PluginContext context, @Nonnull final JComponent options) throws IOException {
+  public void doExportToClipboard(final PluginContext context, final JComponent options)
+      throws IOException {
     final BufferedImage image = makeImage(context, options);
     if (image != null) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-          if (clipboard != null) {
-            clipboard.setContents(new ImageSelection(image), null);
-          }
+      SwingUtilities.invokeLater(() -> {
+        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        if (clipboard != null) {
+          clipboard.setContents(new ImageSelection(image), null);
         }
       });
     }
   }
 
   @Override
-  public void doExport(@Nonnull final PluginContext context, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+  public void doExport(final PluginContext context, final JComponent options,
+                       final OutputStream out) throws IOException {
     final RenderedImage image = makeImage(context, options);
 
     if (image == null) {
       if (out == null) {
         LOGGER.error("Can't render map as image");
-        context.getDialogProvider().msgError(null, Texts.getString("PNGImageExporter.msgErrorDuringRendering"));
+        context.getDialogProvider()
+            .msgError(null, Texts.getString("PNGImageExporter.msgErrorDuringRendering"));
         return;
       } else {
         throw new IOException("Can't render image");
@@ -201,26 +194,22 @@ public final class PNGImageExporter extends AbstractExporter {
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "png";
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public String getName(final PluginContext context, Topic actionTopic) {
     return Texts.getString("PNGImageExporter.exporterName");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public String getReference(final PluginContext context, Topic actionTopic) {
     return Texts.getString("PNGImageExporter.exporterReference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public Icon getIcon(final PluginContext context, Topic actionTopic) {
     return ICO;
   }
 
@@ -242,20 +231,17 @@ public final class PNGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public boolean doesSupportKey(@Nonnull final String key) {
+    public boolean doesSupportKey(final String key) {
       return KEY_DRAW_BACK.equals(key) || KEY_EXPAND_ALL.equals(key);
     }
 
     @Override
-    @Nonnull
-    @MustNotContainNull
     public String[] getOptionKeys() {
       return new String[] {KEY_EXPAND_ALL, KEY_DRAW_BACK};
     }
 
     @Override
-    @Nonnull
-    public String getOptionKeyDescription(@Nonnull final String key) {
+    public String getOptionKeyDescription(final String key) {
       if (KEY_DRAW_BACK.equals(key)) {
         return "Draw background";
       }
@@ -266,7 +252,7 @@ public final class PNGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public void setOption(@Nonnull final String key, @Nullable final String value) {
+    public void setOption(final String key, final String value) {
       if (KEY_DRAW_BACK.equals(key)) {
         this.drawBack = Boolean.parseBoolean(value);
       } else if (KEY_EXPAND_ALL.equals(key)) {
@@ -275,8 +261,7 @@ public final class PNGImageExporter extends AbstractExporter {
     }
 
     @Override
-    @Nullable
-    public String getOption(@Nonnull final String key) {
+    public String getOption(final String key) {
       if (KEY_DRAW_BACK.equals(key)) {
         return Boolean.toString(this.drawBack);
       }

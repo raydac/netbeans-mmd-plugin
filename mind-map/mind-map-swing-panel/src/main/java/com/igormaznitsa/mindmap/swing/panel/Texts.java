@@ -17,7 +17,6 @@
 package com.igormaznitsa.mindmap.swing.panel;
 
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
 
 public final class Texts {
   public static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
@@ -26,8 +25,7 @@ public final class Texts {
 
   }
 
-  @Nonnull
-  public static String getString(@Nonnull final String key) {
+  public static String getString(final String key) {
     return BUNDLE.getString(key);
   }
 

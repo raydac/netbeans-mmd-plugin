@@ -23,8 +23,6 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
@@ -37,24 +35,27 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
   }
 
   @Override
-  @Nullable
-  protected Icon getIcon(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected Icon getIcon(final PluginContext context, final Topic activeTopic) {
     return ICO;
   }
 
   @Override
-  @Nonnull
-  protected String getName(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    return context.getSelectedTopics().length > 0 ? Texts.getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") : Texts.getString("MMDGraphEditor.makePopUp.miCloneTheTopic");
+  protected String getName(final PluginContext context, final Topic activeTopic) {
+    return context.getSelectedTopics().length > 0 ?
+        Texts.getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") :
+        Texts.getString("MMDGraphEditor.makePopUp.miCloneTheTopic");
   }
 
   @Override
-  protected void doActionForTopic(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    final Topic toClone = context.getSelectedTopics().length > 0 ? context.getSelectedTopics()[0] : activeTopic;
+  protected void doActionForTopic(final PluginContext context, final Topic activeTopic) {
+    final Topic toClone =
+        context.getSelectedTopics().length > 0 ? context.getSelectedTopics()[0] : activeTopic;
 
     if (toClone != null) {
 
-      final Boolean cloneSubtree = toClone.hasChildren() ? context.getDialogProvider().msgConfirmYesNoCancel(null, Texts.getString("MindMapPanel.titleCloneTopicRequest"), Texts.getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) : Boolean.FALSE;
+      final Boolean cloneSubtree = toClone.hasChildren() ? context.getDialogProvider()
+          .msgConfirmYesNoCancel(null, Texts.getString("MindMapPanel.titleCloneTopicRequest"),
+              Texts.getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) : Boolean.FALSE;
       if (cloneSubtree == null) {
         return;
       }
@@ -73,13 +74,13 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
   }
 
   @Override
-  public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  public boolean isEnabled(final PluginContext context, final Topic activeTopic) {
     return (context.getSelectedTopics().length == 1
-        && !context.getSelectedTopics()[0].isRoot()) || (context.getSelectedTopics().length == 0 && activeTopic != null && !activeTopic.isRoot());
+        && !context.getSelectedTopics()[0].isRoot()) ||
+        (context.getSelectedTopics().length == 0 && activeTopic != null && !activeTopic.isRoot());
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }

@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -74,9 +72,9 @@ public class DefaultImageIconService implements ImageIconService {
   public DefaultImageIconService() {
   }
 
-  @Nonnull
-  private static Icon loadIcon(@Nonnull final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
+  private static Icon loadIcon(final String name) {
+    final InputStream in = ScalableIcon.class.getClassLoader()
+        .getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
     try {
       return new ImageIcon(ImageIO.read(in));
     } catch (IOException ex) {
@@ -88,8 +86,7 @@ public class DefaultImageIconService implements ImageIconService {
 
 
   @Override
-  @Nullable
-  public Icon getIconForId(@Nonnull final IconID id) {
+  public Icon getIconForId(final IconID id) {
     return MAP.get(id);
   }
 

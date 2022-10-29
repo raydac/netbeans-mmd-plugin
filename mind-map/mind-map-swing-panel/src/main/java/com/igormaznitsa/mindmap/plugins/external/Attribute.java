@@ -16,8 +16,6 @@
 
 package com.igormaznitsa.mindmap.plugins.external;
 
-import javax.annotation.Nonnull;
-
 public enum Attribute {
   API("api"),
   TITLE("title"),
@@ -29,11 +27,10 @@ public enum Attribute {
 
   private final String attrname;
 
-  Attribute(@Nonnull final String attrname) {
+  Attribute(final String attrname) {
     this.attrname = attrname;
   }
 
-  @Nonnull
   public String getAttrName() {
     return this.attrname;
   }

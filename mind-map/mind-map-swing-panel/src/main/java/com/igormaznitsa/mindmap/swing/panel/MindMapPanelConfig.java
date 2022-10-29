@@ -16,17 +16,12 @@
 
 package com.igormaznitsa.mindmap.swing.panel;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static java.util.Objects.requireNonNull;
 
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
-import com.igormaznitsa.meta.common.utils.GetUtils;
+import com.igormaznitsa.mindmap.model.MiscUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import org.apache.commons.lang3.SystemUtils;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -41,9 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.KeyStroke;
+import org.apache.commons.lang3.SystemUtils;
 
 public final class MindMapPanelConfig implements Serializable {
 
@@ -71,7 +65,6 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_SHOW_POPUP = "showPopupMenu";
 
   private static final long serialVersionUID = -4273687011484460064L;
-  @MustNotContainNull
   private transient final List<WeakReference<MindMapConfigListener>> listeners =
           new ArrayList<>();
 
@@ -117,7 +110,7 @@ public final class MindMapPanelConfig implements Serializable {
   private RenderQuality renderQuality = Utils.getDefaultRenderQialityForOs();
   private transient volatile boolean notificationEnabled = true;
 
-  public MindMapPanelConfig(@Nonnull final MindMapPanelConfig cfg, final boolean copyListeners) {
+  public MindMapPanelConfig(final MindMapPanelConfig cfg, final boolean copyListeners) {
     this();
     this.makeFullCopyOf(cfg, copyListeners, false);
   }
@@ -218,38 +211,36 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public boolean isKeyEvent(@Nonnull final String id, @Nonnull final KeyEvent event,
+  public boolean isKeyEvent(final String id, final KeyEvent event,
                             final int modifiersMask) {
     final KeyShortcut shortCut = this.mapShortCut.get(id);
     return shortCut != null && shortCut.isEvent(event, modifiersMask);
   }
 
-  public boolean isKeyEvent(@Nonnull final String id, @Nonnull final KeyEvent event) {
+  public boolean isKeyEvent(final String id, final KeyEvent event) {
     return this.isKeyEvent(id, event, KeyShortcut.ALL_MODIFIERS_MASK);
   }
 
-  @Nullable
-  public KeyShortcut getKeyShortCut(@Nonnull final String id) {
+  public KeyShortcut getKeyShortCut(final String id) {
     return this.mapShortCut.get(id);
   }
 
-  public void setKeyShortCut(@Nonnull final KeyShortcut shortCut) {
+  public void setKeyShortCut(final KeyShortcut shortCut) {
     this.mapShortCut.put(shortCut.getID(), shortCut);
   }
 
   @SettingsAccessor(name = "mapShortCut")
-  @Nonnull
   public Map<String, KeyShortcut> getKeyShortcutMap() {
     return new HashMap<>(this.mapShortCut);
   }
 
   @SettingsAccessor(name = "mapShortCut")
-  public void setKeyShortcutMap(@Nonnull final Map<String, KeyShortcut> map) {
+  public void setKeyShortcutMap(final Map<String, KeyShortcut> map) {
     this.mapShortCut.clear();
     this.mapShortCut.putAll(map);
   }
 
-  public boolean hasDifferenceInParameters(@Nonnull final MindMapPanelConfig etalon) {
+  public boolean hasDifferenceInParameters(final MindMapPanelConfig etalon) {
     for (final Field f : MindMapPanelConfig.class.getDeclaredFields()) {
       if ((f.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT | Modifier.FINAL)) != 0) {
         continue;
@@ -290,9 +281,7 @@ public final class MindMapPanelConfig implements Serializable {
     return false;
   }
 
-  @Nullable
-  @ReturnsOriginal
-  public Preferences saveTo(@Nullable final Preferences prefs) {
+  public Preferences saveTo(final Preferences prefs) {
     if (prefs != null) {
       final String prefix = MindMapPanelConfig.class.getSimpleName();
 
@@ -341,8 +330,7 @@ public final class MindMapPanelConfig implements Serializable {
     return prefs;
   }
 
-  @Nullable
-  public Preferences loadFrom(@Nullable final Preferences prefs) {
+  public Preferences loadFrom(final Preferences prefs) {
     if (prefs != null) {
       final String prefix = MindMapPanelConfig.class.getSimpleName();
 
@@ -412,7 +400,7 @@ public final class MindMapPanelConfig implements Serializable {
     return prefs;
   }
 
-  public void makeAtomicChange(@Nonnull final Runnable runnable) {
+  public void makeAtomicChange(final Runnable runnable) {
     this.notificationEnabled = false;
     try {
       runnable.run();
@@ -427,7 +415,7 @@ public final class MindMapPanelConfig implements Serializable {
     return Float.compare(result, minimal) >= 0 ? result : minimal;
   }
 
-  public void makeFullCopyOf(@Nullable final MindMapPanelConfig src, final boolean copyListeners,
+  public void makeFullCopyOf(final MindMapPanelConfig src, final boolean copyListeners,
                              final boolean makeNotification) {
     if (src != null) {
       for (final Field f : MindMapPanelConfig.class.getDeclaredFields()) {
@@ -459,11 +447,11 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public void addConfigurationListener(@Nonnull final MindMapConfigListener l) {
-    this.listeners.add(new WeakReference<>(assertNotNull(l)));
+  public void addConfigurationListener(final MindMapConfigListener l) {
+    this.listeners.add(new WeakReference<>(requireNonNull(l)));
   }
 
-  public void removeConfigurationListener(@Nonnull final MindMapConfigListener l) {
+  public void removeConfigurationListener(final MindMapConfigListener l) {
     final Iterator<WeakReference<MindMapConfigListener>> iter = this.listeners.iterator();
     while (iter.hasNext()) {
       final WeakReference<MindMapConfigListener> wr = iter.next();
@@ -474,7 +462,7 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public boolean isShortcutConflict(@Nullable final KeyStroke keyStroke) {
+  public boolean isShortcutConflict(final KeyStroke keyStroke) {
     boolean result = false;
     if (keyStroke != null) {
       for (final KeyShortcut s : this.mapShortCut.values()) {
@@ -498,9 +486,9 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public boolean isKeyEventDetected(@Nonnull final KeyEvent event,
-                                    @Nonnull final int effectiveModifiers,
-                                    @Nonnull @MustNotContainNull final String... shortCutIDs) {
+  public boolean isKeyEventDetected(final KeyEvent event,
+                                    final int effectiveModifiers,
+                                    final String... shortCutIDs) {
     for (final String k : shortCutIDs) {
       final KeyShortcut shortCut = this.mapShortCut.get(k);
       if (shortCut != null && shortCut.isEvent(event, effectiveModifiers)) {
@@ -510,8 +498,8 @@ public final class MindMapPanelConfig implements Serializable {
     return false;
   }
 
-  public boolean isKeyEventDetected(@Nonnull final KeyEvent event,
-                                    @Nonnull @MustNotContainNull final String... shortCutIDs) {
+  public boolean isKeyEventDetected(final KeyEvent event,
+                                    final String... shortCutIDs) {
     for (final String k : shortCutIDs) {
       final KeyShortcut shortCut = this.mapShortCut.get(k);
       if (shortCut != null && shortCut.isEvent(event, KeyShortcut.ALL_MODIFIERS_MASK)) {
@@ -555,13 +543,12 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   @SettingsAccessor(name = "jumpLinkColor")
-  @Nonnull
   public Color getJumpLinkColor() {
     return this.jumpLinkColor;
   }
 
   @SettingsAccessor(name = "jumpLinkColor")
-  public void setJumpLinkColor(@Nonnull final Color color) {
+  public void setJumpLinkColor(final Color color) {
     this.jumpLinkColor = color;
     notifyCfgListenersAboutChange();
   }
@@ -577,14 +564,13 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "selectLineColor")
   public Color getSelectLineColor() {
     return this.selectLineColor;
   }
 
   @SettingsAccessor(name = "selectLineColor")
-  public void setSelectLineColor(@Nonnull final Color color) {
+  public void setSelectLineColor(final Color color) {
     this.selectLineColor = color;
     notifyCfgListenersAboutChange();
   }
@@ -666,26 +652,24 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "paperColor")
   public Color getPaperColor() {
     return this.paperColor;
   }
 
   @SettingsAccessor(name = "paperColor")
-  public void setPaperColor(@Nonnull final Color color) {
-    this.paperColor = assertNotNull(color);
+  public void setPaperColor(final Color color) {
+    this.paperColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "gridColor")
   public Color getGridColor() {
     return this.gridColor;
   }
 
   @SettingsAccessor(name = "gridColor")
-  public void setGridColor(@Nonnull final Color color) {
+  public void setGridColor(final Color color) {
     this.gridColor = color;
     notifyCfgListenersAboutChange();
   }
@@ -712,135 +696,124 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "rootBackgroundColor")
   public Color getRootBackgroundColor() {
     return this.rootBackgroundColor;
   }
 
   @SettingsAccessor(name = "rootBackgroundColor")
-  public void setRootBackgroundColor(@Nonnull final Color color) {
-    this.rootBackgroundColor = assertNotNull(color);
+  public void setRootBackgroundColor(final Color color) {
+    this.rootBackgroundColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "firstLevelBackgroundColor")
   public Color getFirstLevelBackgroundColor() {
     return this.firstLevelBackgroundColor;
   }
 
   @SettingsAccessor(name = "firstLevelBackgroundColor")
-  public void setFirstLevelBackgroundColor(@Nonnull final Color color) {
+  public void setFirstLevelBackgroundColor(final Color color) {
     this.firstLevelBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "otherLevelBackgroundColor")
   public Color getOtherLevelBackgroundColor() {
     return this.otherLevelBackgroundColor;
   }
 
   @SettingsAccessor(name = "otherLevelBackgroundColor")
-  public void setOtherLevelBackgroundColor(@Nonnull final Color color) {
+  public void setOtherLevelBackgroundColor(final Color color) {
     this.otherLevelBackgroundColor = color;
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "rootTextColor")
   public Color getRootTextColor() {
     return this.rootTextColor;
   }
 
   @SettingsAccessor(name = "rootTextColor")
-  public void setRootTextColor(@Nonnull final Color color) {
-    this.rootTextColor = assertNotNull(color);
+  public void setRootTextColor(final Color color) {
+    this.rootTextColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "firstLevelTextColor")
   public Color getFirstLevelTextColor() {
     return this.firstLevelTextColor;
   }
 
   @SettingsAccessor(name = "firstLevelTextColor")
-  public void setFirstLevelTextColor(@Nonnull final Color color) {
-    this.firstLevelTextColor = assertNotNull(color);
+  public void setFirstLevelTextColor(final Color color) {
+    this.firstLevelTextColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "otherLevelTextColor")
   public Color getOtherLevelTextColor() {
     return this.otherLevelTextColor;
   }
 
   @SettingsAccessor(name = "otherLevelTextColor")
-  public void setOtherLevelTextColor(@Nonnull final Color color) {
-    this.otherLevelTextColor = assertNotNull(color);
+  public void setOtherLevelTextColor(final Color color) {
+    this.otherLevelTextColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "elementBorderColor")
   public Color getElementBorderColor() {
     return this.elementBorderColor;
   }
 
   @SettingsAccessor(name = "elementBorderColor")
-  public void setElementBorderColor(@Nonnull final Color color) {
-    this.elementBorderColor = assertNotNull(color);
+  public void setElementBorderColor(final Color color) {
+    this.elementBorderColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "connectorColor")
   public Color getConnectorColor() {
     return this.connectorColor;
   }
 
   @SettingsAccessor(name = "connectorColor")
-  public void setConnectorColor(@Nonnull final Color color) {
-    this.connectorColor = assertNotNull(color);
+  public void setConnectorColor(final Color color) {
+    this.connectorColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "shadowColor")
   public Color getShadowColor() {
     return this.shadowColor;
   }
 
   @SettingsAccessor(name = "shadowColor")
-  public void setShadowColor(@Nonnull final Color color) {
-    this.shadowColor = assertNotNull(color);
+  public void setShadowColor(final Color color) {
+    this.shadowColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "collapsatorBorderColor")
   public Color getCollapsatorBorderColor() {
     return this.collapsatorBorderColor;
   }
 
   @SettingsAccessor(name = "collapsatorBorderColor")
-  public void setCollapsatorBorderColor(@Nonnull final Color color) {
-    this.collapsatorBorderColor = assertNotNull(color);
+  public void setCollapsatorBorderColor(final Color color) {
+    this.collapsatorBorderColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "collapsatorBackgroundColor")
   public Color getCollapsatorBackgroundColor() {
     return this.collapsatorBackgroundColor;
   }
 
   @SettingsAccessor(name = "collapsatorBackgroundColor")
-  public void setCollapsatorBackgroundColor(@Nonnull final Color color) {
-    this.collapsatorBackgroundColor = assertNotNull(color);
+  public void setCollapsatorBackgroundColor(final Color color) {
+    this.collapsatorBackgroundColor = requireNonNull(color);
     notifyCfgListenersAboutChange();
   }
 
@@ -887,15 +860,14 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "font")
   public Font getFont() {
     return this.font;
   }
 
   @SettingsAccessor(name = "font")
-  public void setFont(@Nonnull final Font f) {
-    this.font = assertNotNull(f);
+  public void setFont(final Font f) {
+    this.font = requireNonNull(f);
     notifyCfgListenersAboutChange();
   }
 
@@ -925,15 +897,14 @@ public final class MindMapPanelConfig implements Serializable {
     notifyCfgListenersAboutChange();
   }
 
-  @Nonnull
   @SettingsAccessor(name = "renderQuality")
   public RenderQuality getRenderQuality() {
     return this.renderQuality;
   }
 
   @SettingsAccessor(name = "renderQuality")
-  public void setRenderQuality(@Nullable final RenderQuality value) {
-    this.renderQuality = GetUtils.ensureNonNull(value, Utils.getDefaultRenderQialityForOs());
+  public void setRenderQuality(final RenderQuality value) {
+    this.renderQuality = MiscUtils.ensureNotNull(value, Utils.getDefaultRenderQialityForOs());
     notifyCfgListenersAboutChange();
   }
 

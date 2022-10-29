@@ -19,8 +19,6 @@ package com.igormaznitsa.mindmap.plugins.api;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Abstract auxiliary class to implement an abstract pop-up menu item.
@@ -35,7 +33,7 @@ public abstract class AbstractPopupMenuItem implements PopUpMenuItemPlugin {
   }
 
   @Override
-  public boolean equals(@Nullable final Object obj) {
+  public boolean equals(final Object obj) {
     boolean result = false;
     if (obj instanceof AbstractPopupMenuItem) {
       result = this.getOrder() == ((AbstractPopupMenuItem) obj).getOrder();
@@ -44,7 +42,7 @@ public abstract class AbstractPopupMenuItem implements PopUpMenuItemPlugin {
   }
 
   @Override
-  public int compareTo(@Nonnull final MindMapPlugin that) {
+  public int compareTo(final MindMapPlugin that) {
     return Integer.compare(this.getOrder(), that.getOrder());
   }
 
@@ -54,7 +52,7 @@ public abstract class AbstractPopupMenuItem implements PopUpMenuItemPlugin {
   }
 
   @Override
-  public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  public boolean isEnabled(final PluginContext context, final Topic activeTopic) {
     return true;
   }
 

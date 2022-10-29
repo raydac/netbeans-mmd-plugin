@@ -16,10 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static java.util.Objects.requireNonNull;
 
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
@@ -51,8 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.zip.ZipFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -67,20 +63,16 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(XMind2MindMapImporter.class);
 
-  @Nonnull
   private static RuntimeException makeWrongFormatException() {
     return new IllegalArgumentException("Wrong or unsupported XMind file format");
   }
 
-  @Nonnull
-  private static String extractTopicTitle(@Nonnull final Element topic) {
+  private static String extractTopicTitle(final Element topic) {
     final List<Element> title = Utils.findDirectChildrenForName(topic, "title");
     return title.isEmpty() ? "" : title.get(0).getTextContent();
   }
 
-  @Nonnull
-  @MustNotContainNull
-  private static List<Element> getChildTopics(@Nonnull final Element topic) {
+  private static List<Element> getChildTopics(final Element topic) {
     List<Element> result = new ArrayList<>();
 
     for (final Element c : Utils.findDirectChildrenForName(topic, "children")) {
@@ -92,17 +84,19 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  private static void convertTopic(@Nonnull ZipFile zipFile, @Nonnull final XMindStyles styles,
-                                   @Nonnull final MindMap map, @Nullable final Topic parent,
-                                   @Nullable Topic pregeneratedOne,
-                                   @Nonnull final Element topicElement,
-                                   @Nonnull Map<String, Topic> idTopicMap,
-                                   @Nonnull final Map<String, String> linksBetweenTopics)
-      throws Exception {
+  private static void convertTopic(
+      final ZipFile zipFile,
+      final XMindStyles styles,
+      final MindMap map,
+      final Topic parent,
+      final Topic pregeneratedOne,
+      final Element topicElement,
+      final Map<String, Topic> idTopicMap,
+      final Map<String, String> linksBetweenTopics) {
     final Topic topicToProcess;
 
     if (pregeneratedOne == null) {
-      topicToProcess = assertNotNull(parent).makeChild("", null);
+      topicToProcess = requireNonNull(parent).makeChild("", null);
     } else {
       topicToProcess = pregeneratedOne;
     }
@@ -153,9 +147,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
     }
   }
 
-  @Nullable
-  private static String extractFirstAttachedImageAsBase64(@Nonnull final ZipFile file,
-                                                          @Nonnull final Element topic) {
+  private static String extractFirstAttachedImageAsBase64(final ZipFile file,
+                                                          final Element topic) {
     String result = null;
 
     for (final Element e : Utils.findDirectChildrenForName(topic, "xhtml:img")) {
@@ -182,14 +175,13 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nullable
-  private static String extractFirstAttachedImageAsBase64(@Nonnull final ZipFile file,
-                                                          @Nonnull final JSONObject topic) {
+  private static String extractFirstAttachedImageAsBase64(final ZipFile file,
+                                                          final JSONObject topic) {
 
     String result = null;
     JSONObject image = topic.has("image") ? topic.getJSONObject("image") : null;
     if (image != null) {
-      final String link = assertNotNull(image.getString("src"));
+      final String link = requireNonNull(image.getString("src"));
       if (link.startsWith("xap:")) {
         InputStream inStream = null;
         try {
@@ -207,8 +199,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nonnull
-  private static String extractNote(@Nonnull final Element topic) {
+  private static String extractNote(final Element topic) {
     final StringBuilder result = new StringBuilder();
 
     for (final Element note : Utils.findDirectChildrenForName(topic, "notes")) {
@@ -229,8 +220,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result.toString();
   }
 
-  @Nonnull
-  private static String extractNote(@Nonnull final JSONObject topic) {
+  private static String extractNote(final JSONObject topic) {
     final StringBuilder result = new StringBuilder();
 
     final JSONObject notes = topic.has("notes") ? topic.getJSONObject("notes") : null;
@@ -250,9 +240,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result.toString();
   }
 
-  @Nonnull
-  private static String extractTextContentFrom(@Nonnull final Element element,
-                                               @Nonnull final String tag) {
+  private static String extractTextContentFrom(final Element element,
+                                               final String tag) {
     final StringBuilder result = new StringBuilder();
 
     for (final Element c : Utils.findDirectChildrenForName(element, tag)) {
@@ -265,9 +254,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result.toString();
   }
 
-  @Nonnull
-  private static String extractTextContentFrom(@Nonnull final JSONObject element,
-                                               @Nonnull final String tag) {
+  private static String extractTextContentFrom(final JSONObject element,
+                                               final String tag) {
     final StringBuilder result = new StringBuilder();
 
     if (element.has(tag)) {
@@ -281,88 +269,22 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result.toString();
   }
 
-  @Override
-  @Nullable
-  public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
-    final File file = this.selectFileForExtension(context,
-        Texts.getString("MMDImporters.XMind2MindMap.openDialogTitle"), null, "xmind",
-        "XMind files (.XMIND)", Texts.getString("MMDImporters.ApproveImport"));
-
-    if (file == null) {
-      return null;
-    }
-
-    final ZipFile zipFile = new ZipFile(file);
-    final XMindStyles styles = new XMindStyles(zipFile);
-
-    return this.parseZipFile(zipFile);
-  }
-
-  @Nonnull
-  MindMap parseZipFile(@Nonnull final ZipFile zipFile) throws Exception {
-    InputStream contentStream = Utils.findInputStreamForResource(zipFile, "content.json");
-    MindMap result;
-    if (contentStream == null) {
-      final XMindStyles styles = new XMindStyles(zipFile);
-      contentStream = Utils.findInputStreamForResource(zipFile, "content.xml");
-      if (contentStream == null) {
-        throw makeWrongFormatException();
-      } else {
-        result = convertXmlContent(styles, zipFile, contentStream);
-      }
-    } else {
-      result = convertJsonContent(zipFile, contentStream);
-    }
-    return result;
-  }
-
-  @Nonnull
-  private MindMap convertJsonContent(
-      @Nonnull final ZipFile zipFile,
-      @Nonnull final InputStream content
-  ) throws Exception {
-    final JSONArray parsed = new JSONArray(IOUtils.toString(content, StandardCharsets.UTF_8));
-
-    final List<JSONObject> sheets = new ArrayList<>();
-
-    if (parsed.length() > 0) {
-      for (int i = 0; i < parsed.length(); i++) {
-        final JSONObject object = parsed.getJSONObject(i);
-        if ("sheet".equals(object.getString("class"))) {
-          sheets.add(object);
-        }
-      }
-    }
-
-    final MindMap result;
-
-    if (sheets.isEmpty()) {
-      result = new MindMap(true);
-      assertNotNull(result.getRoot()).setText("Empty");
-    } else {
-      result = convertJsonSheet(zipFile, sheets.get(0));
-    }
-
-    return result;
-  }
-
-  @Nullable
-  private static String convertTextAlign(@Nullable final String align) {
+  private static String convertTextAlign(final String align) {
     return align;
   }
 
-  private static void convertTopic(@Nonnull final ZipFile zipFile,
-                                   @Nonnull final Map<String, XMindStyle> theme,
-                                   @Nonnull final MindMap map,
-                                   @Nullable final Topic parent,
-                                   @Nullable Topic pregeneratedOne,
-                                   @Nonnull final JSONObject topicElement,
-                                   @Nonnull Map<String, Topic> idTopicMap,
-                                   @Nonnull final Map<String, String> linksBetweenTopics) {
+  private static void convertTopic(final ZipFile zipFile,
+                                   final Map<String, XMindStyle> theme,
+                                   final MindMap map,
+                                   final Topic parent,
+                                   final Topic pregeneratedOne,
+                                   final JSONObject topicElement,
+                                   final Map<String, Topic> idTopicMap,
+                                   final Map<String, String> linksBetweenTopics) {
     final Topic topicToProcess;
 
     if (pregeneratedOne == null) {
-      topicToProcess = assertNotNull(parent).makeChild("", null);
+      topicToProcess = requireNonNull(parent).makeChild("", null);
     } else {
       topicToProcess = pregeneratedOne;
     }
@@ -500,8 +422,69 @@ public class XMind2MindMapImporter extends AbstractImporter {
     }
   }
 
-  @Nonnull
-  private Map<String, XMindStyle> extractThemes(@Nonnull final JSONObject sheet) {
+  @Override
+  public MindMap doImport(final PluginContext context) throws Exception {
+    final File file = this.selectFileForExtension(context,
+        Texts.getString("MMDImporters.XMind2MindMap.openDialogTitle"), null, "xmind",
+        "XMind files (.XMIND)", Texts.getString("MMDImporters.ApproveImport"));
+
+    if (file == null) {
+      return null;
+    }
+
+    final ZipFile zipFile = new ZipFile(file);
+    final XMindStyles styles = new XMindStyles(zipFile);
+
+    return this.parseZipFile(zipFile);
+  }
+
+  MindMap parseZipFile(final ZipFile zipFile) throws Exception {
+    InputStream contentStream = Utils.findInputStreamForResource(zipFile, "content.json");
+    MindMap result;
+    if (contentStream == null) {
+      final XMindStyles styles = new XMindStyles(zipFile);
+      contentStream = Utils.findInputStreamForResource(zipFile, "content.xml");
+      if (contentStream == null) {
+        throw makeWrongFormatException();
+      } else {
+        result = convertXmlContent(styles, zipFile, contentStream);
+      }
+    } else {
+      result = convertJsonContent(zipFile, contentStream);
+    }
+    return result;
+  }
+
+  private MindMap convertJsonContent(
+      final ZipFile zipFile,
+      final InputStream content
+  ) throws Exception {
+    final JSONArray parsed = new JSONArray(IOUtils.toString(content, StandardCharsets.UTF_8));
+
+    final List<JSONObject> sheets = new ArrayList<>();
+
+    if (parsed.length() > 0) {
+      for (int i = 0; i < parsed.length(); i++) {
+        final JSONObject object = parsed.getJSONObject(i);
+        if ("sheet".equals(object.getString("class"))) {
+          sheets.add(object);
+        }
+      }
+    }
+
+    final MindMap result;
+
+    if (sheets.isEmpty()) {
+      result = new MindMap(true);
+      requireNonNull(result.getRoot()).setText("Empty");
+    } else {
+      result = convertJsonSheet(zipFile, sheets.get(0));
+    }
+
+    return result;
+  }
+
+  private Map<String, XMindStyle> extractThemes(final JSONObject sheet) {
     final Map<String, XMindStyle> result = new HashMap<>();
 
     if (sheet.has("theme")) {
@@ -516,13 +499,12 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nonnull
-  private MindMap convertJsonSheet(@Nonnull final ZipFile file,
-                                   @Nonnull final JSONObject sheet) throws Exception {
+  private MindMap convertJsonSheet(final ZipFile file,
+                                   final JSONObject sheet) {
     final MindMap resultedMap = new MindMap(true);
     resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
-    final Topic rootTopic = assertNotNull(resultedMap.getRoot());
+    final Topic rootTopic = requireNonNull(resultedMap.getRoot());
     rootTopic.setText("Empty sheet");
 
     final Map<String, XMindStyle> theme = extractThemes(sheet);
@@ -562,18 +544,17 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return resultedMap;
   }
 
-  @Nonnull
   private MindMap convertXmlContent(
-      @Nonnull final XMindStyles style,
-      @Nonnull final ZipFile zipFile,
-      @Nonnull final InputStream content
+      final XMindStyles style,
+      final ZipFile zipFile,
+      final InputStream content
   ) throws Exception {
     final Document document =
-        Utils.loadXmlDocument(assertNotNull(content), null, true);
+        Utils.loadXmlDocument(requireNonNull(content), null, true);
 
     final Element rootElement = document.getDocumentElement();
     if (!rootElement.getTagName().equals("xmap-content")) {
-      makeWrongFormatException();
+      throw makeWrongFormatException();
     }
 
     final List<Element> xmlSheets =
@@ -583,7 +564,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     if (xmlSheets.isEmpty()) {
       result = new MindMap(true);
-      assertNotNull(result.getRoot()).setText("Empty");
+      requireNonNull(result.getRoot()).setText("Empty");
     } else {
       result = convertXmlSheet(style, zipFile, xmlSheets.get(0));
     }
@@ -591,13 +572,12 @@ public class XMind2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nonnull
-  private MindMap convertXmlSheet(@Nonnull final XMindStyles styles, @Nonnull final ZipFile file,
-                                  @Nonnull final Element sheet) throws Exception {
+  private MindMap convertXmlSheet(final XMindStyles styles, final ZipFile file,
+                                  final Element sheet) {
     final MindMap resultedMap = new MindMap(true);
     resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
-    final Topic rootTopic = assertNotNull(resultedMap.getRoot());
+    final Topic rootTopic = requireNonNull(resultedMap.getRoot());
     rootTopic.setText("Empty sheet");
 
     final Map<String, Topic> topicIdMap = new HashMap<>();
@@ -635,26 +615,22 @@ public class XMind2MindMapImporter extends AbstractImporter {
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "xmind";
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context) {
+  public String getName(final PluginContext context) {
     return Texts.getString("MMDImporters.XMind2MindMap.Name");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context) {
+  public String getReference(final PluginContext context) {
     return Texts.getString("MMDImporters.XMind2MindMap.Reference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext context) {
+  public Icon getIcon(final PluginContext context) {
     return ICO;
   }
 
@@ -670,7 +646,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
     private final Color border;
     private final String textAlign;
 
-    XMindStyle(@Nonnull final JSONObject jsonObject) {
+    XMindStyle(final JSONObject jsonObject) {
       final JSONObject properties =
           jsonObject.has("properties") ? jsonObject.getJSONObject("properties") : null;
       if (properties == null) {
@@ -699,7 +675,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
       this.foreground = null;
     }
 
-    XMindStyle(@Nonnull final Element style) {
+    XMindStyle(final Element style) {
       Color back = null;
       Color front = null;
       Color bord = null;
@@ -723,39 +699,35 @@ public class XMind2MindMapImporter extends AbstractImporter {
       this.textAlign = align;
     }
 
-    @Nullable
-    String getForegroundAsHtml(@Nullable final String preferred) {
+    String getForegroundAsHtml(final String preferred) {
       if (preferred != null) {
         return preferred;
       }
       return foreground == null ? null : Utils.color2html(this.foreground, false);
     }
 
-    @Nullable
-    String getBackgroundAsHtml(@Nullable final String preferred) {
+    String getBackgroundAsHtml(final String preferred) {
       if (preferred != null) {
         return preferred;
       }
       return background == null ? null : Utils.color2html(this.background, false);
     }
 
-    @Nullable
-    String getBorderColorAsHtml(@Nullable final String preferred) {
+    String getBorderColorAsHtml(final String preferred) {
       if (preferred != null) {
         return preferred;
       }
       return background == null ? null : Utils.color2html(this.background, false);
     }
 
-    @Nullable
-    String getTextAlign(@Nullable final String preferred) {
+    String getTextAlign(final String preferred) {
       if (preferred != null) {
         return preferred;
       }
       return this.textAlign;
     }
 
-    private void attachTo(@Nonnull final Topic topic) {
+    private void attachTo(final Topic topic) {
       if (this.background != null) {
         topic.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
             Utils.color2html(this.background, false));
@@ -779,7 +751,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     private final Map<String, XMindStyle> stylesMap = new HashMap<>();
 
-    private XMindStyles(@Nonnull final ZipFile zipFile) {
+    private XMindStyles(final ZipFile zipFile) {
       try {
         final InputStream stylesXml = Utils.findInputStreamForResource(zipFile, "styles.xml");
         if (stylesXml != null) {
@@ -802,7 +774,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
       }
     }
 
-    private void setStyle(@Nonnull final String styleId, @Nonnull final Topic topic) {
+    private void setStyle(final String styleId, final Topic topic) {
       final XMindStyle foundStyle = this.stylesMap.get(styleId);
       if (foundStyle != null) {
         foundStyle.attachTo(topic);

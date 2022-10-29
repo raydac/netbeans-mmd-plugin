@@ -18,12 +18,11 @@ package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
-import javax.annotation.Nonnull;
 
 public interface Renderable {
-  int getWidth(@Nonnull double scale);
+  int getWidth(double scale);
 
-  int getHeight(@Nonnull double scale);
+  int getHeight(double scale);
 
-  void renderAt(@Nonnull MMGraphics gfx, @Nonnull MindMapPanelConfig config, int x, int y);
+  void renderAt(MMGraphics gfx, MindMapPanelConfig config, int x, int y);
 }

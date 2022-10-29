@@ -18,15 +18,12 @@ package com.igormaznitsa.mindmap.swing.panel.ui;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
-import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.geom.Rectangle2D;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class IconBlock {
 
@@ -37,7 +34,7 @@ public class IconBlock {
 
   private Extra<?>[] currentExtras = null;
 
-  public IconBlock(@Nonnull final IconBlock orig) {
+  public IconBlock(final IconBlock orig) {
     this.bounds.setRect(orig.bounds);
     this.model = orig.model;
     this.scale = orig.scale;
@@ -45,7 +42,7 @@ public class IconBlock {
     this.currentExtras = orig.currentExtras == null ? null : orig.currentExtras.clone();
   }
 
-  public IconBlock(@Nonnull final Topic model) {
+  public IconBlock(final Topic model) {
     this.model = model;
   }
 
@@ -53,7 +50,7 @@ public class IconBlock {
     this.bounds.setRect(x, y, this.bounds.getWidth(), this.bounds.getHeight());
   }
 
-  public void updateSize(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig cfg) {
+  public void updateSize(final MMGraphics gfx, final MindMapPanelConfig cfg) {
     final int numberOfIcons = this.model.getNumberOfExtras();
     this.scale = cfg.getScale();
     if (numberOfIcons == 0) {
@@ -76,7 +73,7 @@ public class IconBlock {
     return this.currentExtras != null && this.contentPresented;
   }
 
-  public void paint(@Nonnull final MMGraphics gfx) {
+  public void paint(final MMGraphics gfx) {
     final int numberOfIcons = this.model.getNumberOfExtras();
     if (numberOfIcons != 0) {
       double offsetX = this.bounds.getX();
@@ -109,20 +106,19 @@ public class IconBlock {
     }
   }
 
-  @Nonnull
-  public ScalableIcon findIconForFileType(@Nonnull final ExtraFile theFileLink) {
+  public ScalableIcon findIconForFileType(final ExtraFile theFileLink) {
     final ScalableIcon result;
     if (theFileLink.isMMDFile()) {
       result = theFileLink.isAbsolute() ? ScalableIcon.FILE_MMD_WARN : ScalableIcon.FILE_MMD;
     } else if (Utils.isPlantUmlFileExtension(theFileLink.getLCFileExtension())) {
-      result = theFileLink.isAbsolute() ? ScalableIcon.FILE_PLANTUML_WARN : ScalableIcon.FILE_PLANTUML;
+      result =
+          theFileLink.isAbsolute() ? ScalableIcon.FILE_PLANTUML_WARN : ScalableIcon.FILE_PLANTUML;
     } else {
       result = theFileLink.isAbsolute() ? ScalableIcon.FILE_WARN : ScalableIcon.FILE;
     }
     return result;
   }
 
-  @Nullable
   public Extra<?> findExtraForPoint(final double x, final double y) {
     Extra<?> result = null;
     if (this.hasContent() && this.bounds.contains(x, y)) {
@@ -133,7 +129,6 @@ public class IconBlock {
     return result;
   }
 
-  @Nonnull
   public Rectangle2D getBounds() {
     return this.bounds;
   }

@@ -18,8 +18,6 @@ package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Plug-in to provide visual representation of attributes.
@@ -35,8 +33,7 @@ public interface VisualAttributePlugin extends AttributePlugin {
    * @return object to render the attribute, null if it is not shown
    * @since 1.3.0
    */
-  @Nullable
-  Renderable getScaledImage(@Nonnull MindMapPanelConfig config, @Nonnull Topic topic);
+  Renderable getScaledImage(MindMapPanelConfig config, Topic topic);
 
   /**
    * Process click on image represents the attribute,
@@ -48,7 +45,7 @@ public interface VisualAttributePlugin extends AttributePlugin {
    * @return true if the map was changed for the operation, false otherwise
    * @since 1.4.7
    */
-  boolean onClick(@Nonnull PluginContext context, @Nonnull Topic topic, boolean activeGroupModifier, int clickCount);
+  boolean onClick(PluginContext context, Topic topic, boolean activeGroupModifier, int clickCount);
 
   /**
    * Get tool-tip for image represents the attribute.
@@ -57,8 +54,7 @@ public interface VisualAttributePlugin extends AttributePlugin {
    * @param topic   the topic
    * @return text to be shown as tool-tip or null if nothing
    */
-  @Nullable
-  String getToolTip(@Nonnull PluginContext context, @Nonnull Topic topic);
+  String getToolTip(PluginContext context, Topic topic);
 
   /**
    * Is the visual attribute clickable one.
@@ -67,5 +63,5 @@ public interface VisualAttributePlugin extends AttributePlugin {
    * @param topic   the topic
    * @return true if the attribute is clickable one, false otherwise
    */
-  boolean isClickable(@Nonnull PluginContext context, @Nonnull Topic topic);
+  boolean isClickable(PluginContext context, Topic topic);
 }

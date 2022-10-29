@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.safeObjectEquals;
 
-
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
@@ -29,8 +28,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
@@ -41,20 +38,21 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
   private static final Icon ICON = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_EMOTICONS);
 
   @Override
-  @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("Emoticons.MenuTitle"), ICON);
+  public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {
+    final JMenuItem result =
+        UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("Emoticons.MenuTitle"), ICON);
     result.setToolTipText(BUNDLE.getString("Emoticons.MenuTooltip"));
     result.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        final IconPanel iconPanel = new IconPanel(context);
+      public void actionPerformed(final ActionEvent e) {
+        final IconPanel iconPanel = new IconPanel();
         final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
         scrollPane.getVerticalScrollBar().setUnitIncrement(32);
         scrollPane.getVerticalScrollBar().setBlockIncrement(96);
         scrollPane.setPreferredSize(new Dimension(512, 400));
         scrollPane.setViewportView(iconPanel);
-        if (context.getDialogProvider().msgOkCancel(null, BUNDLE.getString("Emoticons.DialogTitle"), scrollPane)) {
+        if (context.getDialogProvider()
+            .msgOkCancel(null, BUNDLE.getString("Emoticons.DialogTitle"), scrollPane)) {
           final String emoticonName = iconPanel.getSelectedName();
           if (emoticonName != null) {
             final boolean changed;
@@ -73,7 +71,8 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
     return result;
   }
 
-  private boolean setAttribute(@Nullable final String value, @Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  private boolean setAttribute(final String value, final PluginContext context,
+                               final Topic activeTopic) {
     boolean changed = false;
     if (activeTopic != null) {
       final String old = activeTopic.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
@@ -93,7 +92,6 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.EXTRAS;
   }

@@ -16,8 +16,6 @@
 
 package com.igormaznitsa.mindmap.plugins.processors;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
@@ -26,17 +24,14 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.ui.TextAlign;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
 
@@ -47,8 +42,7 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
   private static final Icon ICON_RIGHT = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_RIGHT);
 
   @Override
-  @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {
     final JMenu result = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("TextAlign.Plugin.MenuTitle"));
     result.setIcon(ICON);
 
@@ -58,7 +52,7 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
     if (activeTopic == null) {
       workTopics = context.getSelectedTopics();
     } else {
-      workTopics = ArrayUtils.append(activeTopic, context.getSelectedTopics());
+      workTopics = ArrayUtils.addFirst(context.getSelectedTopics(), activeTopic);
     }
 
     final TextAlign sharedTextAlign = findSharedTextAlign(workTopics);
@@ -75,39 +69,26 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
     result.add(menuCenter);
     result.add(menuRight);
 
-    menuLeft.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        setAlignValue(context.getPanel(), workTopics, TextAlign.LEFT);
-      }
-    });
+    menuLeft.addActionListener(e -> setAlignValue(context.getPanel(), workTopics, TextAlign.LEFT));
 
-    menuCenter.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        setAlignValue(context.getPanel(), workTopics, TextAlign.CENTER);
-      }
-    });
+    menuCenter.addActionListener(
+        e -> setAlignValue(context.getPanel(), workTopics, TextAlign.CENTER));
 
-    menuRight.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        setAlignValue(context.getPanel(), workTopics, TextAlign.RIGHT);
-      }
-    });
+    menuRight.addActionListener(
+        e -> setAlignValue(context.getPanel(), workTopics, TextAlign.RIGHT));
 
     return result;
   }
 
-  private void setAlignValue(@Nonnull final MindMapPanel panel, @Nonnull @MustNotContainNull final Topic[] topics, @Nonnull final TextAlign align) {
+  private void setAlignValue(final MindMapPanel panel, final Topic[] topics,
+                             final TextAlign align) {
     for (final Topic t : topics) {
       t.setAttribute("align", align.name().toLowerCase(Locale.ENGLISH));
     }
     panel.doNotifyModelChanged(true);
   }
 
-  @Nullable
-  private TextAlign findSharedTextAlign(@Nonnull @MustNotContainNull final Topic[] topics) {
+  private TextAlign findSharedTextAlign(final Topic[] topics) {
     TextAlign result = null;
 
     for (final Topic t : topics) {
@@ -123,7 +104,6 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }

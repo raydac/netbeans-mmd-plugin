@@ -18,13 +18,12 @@ package com.igormaznitsa.mindmap.plugins.exporters;
 
 import static com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin.ATTR_KEY;
 
-
-import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MiscUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -50,9 +49,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -62,44 +60,46 @@ import org.json.JSONStringer;
 
 public class MindmupExporter extends AbstractExporter {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
   private static final Logger LOGGER = LoggerFactory.getLogger(MindmupExporter.class);
 
-  @Nonnull
-  private static String makeHtmlFromExtras(@Nullable final ExtraLink link, @Nullable final ExtraFile file) {
+  private static String makeHtmlFromExtras(final ExtraLink link, final ExtraFile file) {
     final StringBuilder result = new StringBuilder();
 
     if (file != null) {
       final String uri = file.getValue().asString(true, false);
-      result.append("FILE: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
+      result.append("FILE: <a href=\"").append(uri).append("\">").append(uri)
+          .append("</a><br>"); //NOI18N
     }
     if (link != null) {
       final String uri = link.getValue().asString(true, true);
-      result.append("LINK: <a href=\"").append(uri).append("\">").append(uri).append("</a><br>"); //NOI18N
+      result.append("LINK: <a href=\"").append(uri).append("\">").append(uri)
+          .append("</a><br>"); //NOI18N
     }
     return result.toString();
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "mindmup";
   }
 
   private void writeTopic(
-      @Nonnull final JSONStringer stringer,
-      @Nonnull final MindMapPanelConfig cfg,
-      @Nonnull final AtomicInteger idCounter,
-      @Nullable final Topic topic,
-      @Nonnull final Map<String, String> linkMap,
-      @Nonnull final Map<String, TopicId> uuidMap
+      final JSONStringer stringer,
+      final MindMapPanelConfig cfg,
+      final AtomicInteger idCounter,
+      final Topic topic,
+      final Map<String, String> linkMap,
+      final Map<String, TopicId> uuidMap
   ) {
-    stringer.key("title").value(GetUtils.ensureNonNull(topic.getText(), ""));
+    stringer.key("title").value(MiscUtils.ensureNotNull(topic.getText(), ""));
     final int topicId = idCounter.getAndIncrement();
     stringer.key("id").value(topicId);
 
     final String uuid =
-        GetUtils.ensureNonNull(topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR), "genlink_" + topicId);
+        MiscUtils.ensureNotNull(topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR),
+            "genlink_" + topicId);
     uuidMap.put(uuid, new TopicId(topicId, uuid, topic));
 
     final ExtraNote note = (ExtraNote) this.findExtra(topic, Extra.ExtraType.NOTE);
@@ -116,7 +116,8 @@ public class MindmupExporter extends AbstractExporter {
     stringer.key("attr").object();
 
     stringer.key("style").object();
-    stringer.key("background").value(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false));
+    stringer.key("background")
+        .value(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false));
     stringer.endObject();
 
     if (note != null) {
@@ -168,7 +169,8 @@ public class MindmupExporter extends AbstractExporter {
     stringer.endObject();
   }
 
-  private void writeRoot(@Nonnull final JSONStringer stringer, @Nonnull final MindMapPanelConfig cfg, @Nullable final Topic root) {
+  private void writeRoot(final JSONStringer stringer, final MindMapPanelConfig cfg,
+                         final Topic root) {
     stringer.object();
 
     stringer.key("formatVersion").value(3L);
@@ -182,7 +184,7 @@ public class MindmupExporter extends AbstractExporter {
       stringer.key("1").object();
       writeTopic(stringer, cfg, new AtomicInteger(1), root, linkMap, uuidTopicMap);
       stringer.endObject();
-      stringer.key("title").value(GetUtils.ensureNonNull(root.getText(), "[Root]"));
+      stringer.key("title").value(Objects.requireNonNull(root.getText(), "[Root]"));
     } else {
       stringer.key("title").value("Empty map");
     }
@@ -222,15 +224,15 @@ public class MindmupExporter extends AbstractExporter {
     stringer.endObject();
   }
 
-  @Nonnull
-  private String makeContent(@Nonnull final MindMapPanel panel) {
+  private String makeContent(final MindMapPanel panel) {
     final JSONStringer stringer = new JSONStringer();
     writeRoot(stringer, panel.getConfiguration(), panel.getModel().getRoot());
     return stringer.toString();
   }
 
   @Override
-  public void doExportToClipboard(@Nonnull final PluginContext context, @Nonnull final JComponent options) throws IOException {
+  public void doExportToClipboard(final PluginContext context, final JComponent options)
+      throws IOException {
     final String text = makeContent(context.getPanel());
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -244,7 +246,8 @@ public class MindmupExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(@Nonnull final PluginContext context, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException {
+  public void doExport(final PluginContext context, final JComponent options,
+                       final OutputStream out) throws IOException {
     final String text = makeContent(context.getPanel());
 
     File fileToSaveMap = null;
@@ -259,8 +262,10 @@ public class MindmupExporter extends AbstractExporter {
           ".mup",
           Texts.getString("MindmupExporter.filterDescription"),
           Texts.getString("MindmupExporter.approveButtonText"));
-      fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mup");//NOI18N
-      theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
+      fileToSaveMap =
+          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mup");//NOI18N
+      theOut = fileToSaveMap == null ? null :
+          new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
       try {
@@ -274,20 +279,17 @@ public class MindmupExporter extends AbstractExporter {
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public String getName(final PluginContext context, final Topic actionTopic) {
     return Texts.getString("MindmupExporter.exporterName");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public String getReference(final PluginContext context, final Topic actionTopic) {
     return Texts.getString("MindmupExporter.exporterReference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public Icon getIcon(final PluginContext context, Topic actionTopic) {
     return ICO;
   }
 
@@ -296,13 +298,12 @@ public class MindmupExporter extends AbstractExporter {
     return 2;
   }
 
-  private static class TopicId {
-
+  private static final class TopicId {
     private final int id;
     private final Topic topic;
     private final String uuid;
 
-    private TopicId(final int id, @Nullable final String uuid, @Nonnull final Topic topic) {
+    private TopicId(final int id, final String uuid, final Topic topic) {
       this.id = id;
       this.topic = topic;
       this.uuid = uuid;

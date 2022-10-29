@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.swing.colorpicker;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
@@ -28,13 +27,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -61,8 +56,8 @@ public final class ColorChooser {
   private Color tunedColor;
 
   public ColorChooser(
-      @Nullable @MustNotContainNull final List<Color> mapColors,
-      @Nullable final Color selectedColor
+      final List<Color> mapColors,
+      final Color selectedColor
   ) {
     final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
     this.panel = componentFactory.makePanel();
@@ -111,8 +106,10 @@ public final class ColorChooser {
     this.sampleLightText.setBackground(Color.BLACK);
     this.sampleLightText.setFont(font);
 
-    this.colorPicker = new ColorPickerPanel(componentFactory.makePanel(), PALETTE_ROWS, 12, 4, 4, PALETTE);
-    this.presentedColors = new ColorPickerPanel(componentFactory.makePanel(), 2, 12, 4, 4, mapColors == null ? Collections.<Color>emptyList() : mapColors);
+    this.colorPicker =
+        new ColorPickerPanel(componentFactory.makePanel(), PALETTE_ROWS, 12, 4, 4, PALETTE);
+    this.presentedColors = new ColorPickerPanel(componentFactory.makePanel(), 2, 12, 4, 4,
+        mapColors == null ? Collections.emptyList() : mapColors);
 
     this.panel.add(this.colorPicker.getPanel(), data);
 
@@ -149,30 +146,34 @@ public final class ColorChooser {
     buttonTuneColor.setContentAreaFilled(false);
     buttonTuneColor.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     buttonTuneColor.setToolTipText(Texts.getString("ColorChooser.ButtonColorWheel.Tooltip"));
-    buttonTuneColor.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent event) {
-        Color choosedColor = null;
+    buttonTuneColor.addActionListener(event -> {
+      Color choosedColor;
+      try {
+        choosedColor =
+            (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class,
+                    Color.class, boolean.class)
+                .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"),
+                    sampleDarkFill.getBackground(), false);
+      } catch (Exception ex) {
         try {
-          choosedColor = (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class, Color.class, boolean.class)
-              .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground(), false);
-        } catch (Exception ex) {
-          try {
-            choosedColor = (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class, Color.class)
-                .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"), sampleDarkFill.getBackground());
-          } catch (Exception exx) {
-            choosedColor = null;
-            JOptionPane.showMessageDialog(panel, exx.getMessage(), "Internal error", JOptionPane.ERROR_MESSAGE);
-          }
+          choosedColor =
+              (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class,
+                      Color.class)
+                  .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"),
+                      sampleDarkFill.getBackground());
+        } catch (Exception exx) {
+          choosedColor = null;
+          JOptionPane.showMessageDialog(panel, exx.getMessage(), "Internal error",
+              JOptionPane.ERROR_MESSAGE);
         }
-        if (choosedColor != null) {
-          colorPicker.resetSelected();
-          presentedColors.setColor(null);
-          final Color colorWithoutAlpha = new Color(choosedColor.getRGB());
-          tunedColor = colorWithoutAlpha;
-          updateSamples(colorWithoutAlpha);
-          panel.repaint();
-        }
+      }
+      if (choosedColor != null) {
+        colorPicker.resetSelected();
+        presentedColors.setColor(null);
+        final Color colorWithoutAlpha = new Color(choosedColor.getRGB());
+        tunedColor = colorWithoutAlpha;
+        updateSamples(colorWithoutAlpha);
+        panel.repaint();
       }
     });
 
@@ -186,39 +187,28 @@ public final class ColorChooser {
     data.gridy = 2;
     this.panel.add(this.presentedColors.getPanel(), data);
 
-    this.colorPicker.addColorListener(new ColorPickerPanel.ColorListener() {
-      @Override
-      public void onColorSelected(@Nonnull final ColorPickerPanel source, @Nonnull final Color color) {
-        presentedColors.resetSelected();
-        updateSamples(color);
-      }
+    this.colorPicker.addColorListener((source, color) -> {
+      presentedColors.resetSelected();
+      updateSamples(color);
     });
 
-    this.presentedColors.addColorListener(new ColorPickerPanel.ColorListener() {
-      @Override
-      public void onColorSelected(@Nonnull final ColorPickerPanel source, @Nonnull final Color color) {
-        colorPicker.resetSelected();
-        updateSamples(color);
-      }
+    this.presentedColors.addColorListener((source, color) -> {
+      colorPicker.resetSelected();
+      updateSamples(color);
     });
 
     if (selectedColor != null) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          colorPicker.resetSelected();
-          tunedColor = null;
-          presentedColors.setColor(selectedColor);
-          updateSamples(selectedColor);
-        }
+      SwingUtilities.invokeLater(() -> {
+        colorPicker.resetSelected();
+        tunedColor = null;
+        presentedColors.setColor(selectedColor);
+        updateSamples(selectedColor);
       });
     }
 
     this.panel.doLayout();
   }
 
-  @Nonnull
-  @MustNotContainNull
   private static List<Color> makePalette() {
     final List<Color> result = new ArrayList<>();
 
@@ -250,9 +240,7 @@ public final class ColorChooser {
     return Collections.unmodifiableList(result);
   }
 
-  @Nonnull
-  @MustNotContainNull
-  private static List<Color> makeSteps(@Nonnull final Color start, @Nonnull final Color end, final int steps) {
+  private static List<Color> makeSteps(final Color start, final Color end, final int steps) {
     float sr = start.getRed();
     float sg = start.getGreen();
     float sb = start.getBlue();
@@ -277,19 +265,17 @@ public final class ColorChooser {
     return result;
   }
 
-  @Nonnull
   public JPanel getPanel() {
     return this.panel;
   }
 
-  private void updateSamples(@Nonnull final Color color) {
+  private void updateSamples(final Color color) {
     this.sampleDarkFill.setBackground(color);
     this.sampleLightFill.setBackground(color);
     this.sampleDarkText.setForeground(color);
     this.sampleLightText.setForeground(color);
   }
 
-  @Nullable
   public Color getColor() {
     final Color colorMain = this.colorPicker.getColor();
     final Color colorSecond = this.presentedColors.getColor();

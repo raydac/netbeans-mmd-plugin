@@ -16,13 +16,10 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
+import static java.util.Objects.requireNonNull;
 
 import java.awt.Image;
 import java.io.InputStream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 
@@ -47,19 +44,19 @@ public final class ScalableIcon {
   private double currentScaleFactor = -1.0d;
   private Image scaledCachedImage;
 
-  public ScalableIcon(@Nonnull final Image image) {
-    this.baseImage = assertNotNull("Image must not be null", image);
+  public ScalableIcon(final Image image) {
+    this.baseImage = requireNonNull(image, "Image must not be null");
     this.baseScaleX = (float) BASE_WIDTH / (float) this.baseImage.getWidth(null);
     this.baseScaleY = (float) BASE_HEIGHT / (float) this.baseImage.getHeight(null);
   }
 
-  private ScalableIcon(@Nonnull final String name) {
+  private ScalableIcon(final String name) {
     this(loadStandardImage(name));
   }
 
-  @Nonnull
-  public static Image loadStandardImage(@Nonnull final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader().getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
+  public static Image loadStandardImage(final String name) {
+    final InputStream in = ScalableIcon.class.getClassLoader()
+        .getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
     try {
       return ImageIO.read(in);
     } catch (Exception ex) {
@@ -73,7 +70,6 @@ public final class ScalableIcon {
     return this.currentScaleFactor;
   }
 
-  @Nullable
   public synchronized Image getImage(final double scale) {
     if (Double.compare(this.currentScaleFactor, scale) != 0) {
       this.scaledCachedImage = null;

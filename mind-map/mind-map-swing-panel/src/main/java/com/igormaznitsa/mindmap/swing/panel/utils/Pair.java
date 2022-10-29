@@ -16,9 +16,7 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import com.igormaznitsa.meta.common.utils.Assertions;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Auxiliary class to keep some pair of objects in single container.
@@ -32,9 +30,9 @@ public class Pair<L, R> {
   private final L left;
   private final R right;
 
-  public Pair(@Nonnull final L left, @Nonnull final R right) {
-    this.left = Assertions.assertNotNull(left);
-    this.right = Assertions.assertNotNull(right);
+  public Pair(final L left, final R right) {
+    this.left = requireNonNull(left);
+    this.right = requireNonNull(right);
   }
 
   @Override
@@ -43,7 +41,7 @@ public class Pair<L, R> {
   }
 
   @Override
-  public boolean equals(@Nullable final Object that) {
+  public boolean equals(final Object that) {
     if (that == null) {
       return false;
     }
@@ -57,18 +55,15 @@ public class Pair<L, R> {
     return false;
   }
 
-  @Nonnull
   public L getLeft() {
     return this.left;
   }
 
-  @Nonnull
   public R getRight() {
     return this.right;
   }
 
   @Override
-  @Nonnull
   public String toString() {
     return "Pair(" + this.left + ":" + this.right + ")";
   }

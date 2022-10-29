@@ -35,8 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
 public class ImageVisualAttributePlugin implements VisualAttributePlugin {
@@ -54,10 +52,10 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   public boolean doesTopicContentMatches(
-      @Nonnull Topic topic,
-      @Nullable File baseFolder,
-      @Nonnull Pattern pattern,
-      @Nullable Set<Extra.ExtraType> extraTypes
+      final Topic topic,
+      final File baseFolder,
+      final Pattern pattern,
+      final Set<Extra.ExtraType> extraTypes
   ) {
     boolean result = false;
     if (extraTypes != null && topic.getAttribute(ATTR_KEY) != null) {
@@ -85,9 +83,8 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  @Nullable
-  public Renderable getScaledImage(@Nonnull final MindMapPanelConfig config,
-                                   @Nonnull final Topic activeTopic) {
+  public Renderable getScaledImage(final MindMapPanelConfig config,
+                                   final Topic activeTopic) {
     Renderable result = CACHED_IMAGES.get(activeTopic);
     if (result == null) {
       result = new ScalableRenderableImage(extractImage(activeTopic));
@@ -96,8 +93,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
     return result;
   }
 
-  @Nullable
-  private Image extractImage(@Nonnull final Topic topic) {
+  private Image extractImage(final Topic topic) {
     Image result = null;
     final String encoded = topic.getAttribute(ATTR_KEY);
     if (encoded != null) {
@@ -111,7 +107,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean onClick(@Nonnull final PluginContext context, @Nonnull final Topic topic,
+  public boolean onClick(final PluginContext context, final Topic topic,
                          final boolean activeGroupModifier, final int clickCount) {
     if (clickCount > 1) {
       final String imageFilePathUri = topic.getAttribute(ATTR_IMAGE_URI_KEY);
@@ -133,8 +129,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  @Nullable
-  public String getToolTip(@Nonnull final PluginContext context, @Nonnull final Topic activeTopic) {
+  public String getToolTip(final PluginContext context, final Topic activeTopic) {
     String result = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
     if (result == null) {
       result = activeTopic.getAttribute(ATTR_IMAGE_NAME);
@@ -143,14 +138,13 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public boolean isClickable(@Nonnull final PluginContext context,
-                             @Nonnull final Topic activeTopic) {
+  public boolean isClickable(final PluginContext context,
+                             final Topic activeTopic) {
     final String imageFilePath = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
     return imageFilePath != null;
   }
 
   @Override
-  @Nonnull
   public String getAttributeKey() {
     return ATTR_KEY;
   }
@@ -161,7 +155,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public int compareTo(@Nonnull final MindMapPlugin o) {
+  public int compareTo(final MindMapPlugin o) {
     return Integer.compare(this.getOrder(), o.getOrder());
   }
 

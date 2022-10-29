@@ -18,8 +18,6 @@ package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Interface for plug-in to be aware for operations over panels.
@@ -27,9 +25,9 @@ import javax.annotation.Nullable;
  * @since 1.2
  */
 public interface PanelAwarePlugin extends MindMapPlugin {
-  void onPanelCreate(@Nonnull MindMapPanel panel);
+  void onPanelCreate(MindMapPanel panel);
 
-  void onPanelModelChange(@Nonnull MindMapPanel panel, @Nullable MindMap oldModel, @Nonnull MindMap newModel);
+  void onPanelModelChange(MindMapPanel panel, MindMap oldModel, MindMap newModel);
 
-  void onPanelDispose(@Nonnull MindMapPanel panel);
+  void onPanelDispose(MindMapPanel panel);
 }

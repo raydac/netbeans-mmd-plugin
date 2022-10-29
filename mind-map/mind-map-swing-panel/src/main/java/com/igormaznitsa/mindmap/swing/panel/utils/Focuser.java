@@ -21,7 +21,6 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
@@ -31,42 +30,37 @@ public final class Focuser implements AncestorListener {
 
   private final JComponent component;
 
-  public Focuser(@Nonnull final JComponent component) {
+  public Focuser(final JComponent component) {
     this.component = component;
     this.component.addAncestorListener(this);
   }
 
   @Override
-  public void ancestorAdded(@Nonnull final AncestorEvent event) {
+  public void ancestorAdded(final AncestorEvent event) {
     if (event.getID() == AncestorEvent.ANCESTOR_ADDED) {
       if (event.getAncestor() instanceof Window) {
         ((Window) event.getAncestor()).addWindowListener(new WindowAdapter() {
           private void doBusiness() {
-            SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-                component.requestFocus();
-              }
-            });
+            SwingUtilities.invokeLater(component::requestFocus);
           }
 
           @Override
-          public void windowGainedFocus(@Nonnull final WindowEvent e) {
+          public void windowGainedFocus(final WindowEvent e) {
             this.doBusiness();
           }
 
           @Override
-          public void windowActivated(@Nonnull final WindowEvent e) {
+          public void windowActivated(final WindowEvent e) {
             this.doBusiness();
           }
 
           @Override
-          public void windowOpened(@Nonnull final WindowEvent e) {
+          public void windowOpened(final WindowEvent e) {
             this.doBusiness();
           }
 
           @Override
-          public void windowClosing(@Nonnull final WindowEvent e) {
+          public void windowClosing(final WindowEvent e) {
             ((Window) e.getComponent()).removeWindowListener(this);
           }
         });
@@ -76,11 +70,11 @@ public final class Focuser implements AncestorListener {
   }
 
   @Override
-  public void ancestorRemoved(@Nonnull final AncestorEvent event) {
+  public void ancestorRemoved(final AncestorEvent event) {
   }
 
   @Override
-  public void ancestorMoved(@Nonnull final AncestorEvent event) {
+  public void ancestorMoved(final AncestorEvent event) {
 
   }
 }

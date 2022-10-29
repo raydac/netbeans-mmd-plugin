@@ -16,8 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
+import static com.igormaznitsa.mindmap.model.ModelUtils.escapeMarkdownStr;
+import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -25,7 +25,6 @@ import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
@@ -44,21 +43,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class MDExporter extends AbstractExporter {
 
   private static final int STARTING_INDEX_FOR_NUMERATION = 5;
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MARKDOWN);
 
-  @Nonnull
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
@@ -67,8 +63,7 @@ public class MDExporter extends AbstractExporter {
     return buffer.toString();
   }
 
-  @Nonnull
-  private static String makeLineFromString(@Nonnull final String text) {
+  private static String makeLineFromString(final String text) {
     final StringBuilder result = new StringBuilder(text.length());
 
     for (final char c : text.toCharArray()) {
@@ -82,13 +77,12 @@ public class MDExporter extends AbstractExporter {
     return result.toString();
   }
 
-  @Nullable
-  private static String getTopicUid(@Nonnull final Topic topic) {
+  private static String getTopicUid(final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private void writeTopic(@Nonnull final Topic topic, @Nonnull final String listPosition,
-                          @Nonnull final State state) throws IOException {
+  private void writeTopic(final Topic topic, final String listPosition,
+                          final State state) {
     final int level = topic.getTopicLevel();
 
     String prefix = "";//NOI18N
@@ -100,12 +94,12 @@ public class MDExporter extends AbstractExporter {
 
     if (level < STARTING_INDEX_FOR_NUMERATION) {
       final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);//NOI18N
-      state.append(headerPrefix).append(' ').append(ModelUtils.escapeMarkdownStr(topic.getText()))
+      state.append(headerPrefix).append(' ').append(escapeMarkdownStr(topic.getText()))
           .nextLine();
     } else {
       final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION + 1);//NOI18N
       state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ')
-          .append(ModelUtils.escapeMarkdownStr(topic.getText())).nextLine();
+          .append(escapeMarkdownStr(topic.getText())).nextLine();
     }
 
     final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
@@ -120,10 +114,10 @@ public class MDExporter extends AbstractExporter {
       if (linkedTopic != null) {
         state.append(prefix).append("*Related to: ")//NOI18N
             .append('[')//NOI18N
-            .append(ModelUtils.escapeMarkdownStr(makeLineFromString(linkedTopic.getText())))
+            .append(escapeMarkdownStr(makeLineFromString(linkedTopic.getText())))
             .append("](")//NOI18N
             .append("#")//NOI18N
-            .append(assertNotNull(getTopicUid(linkedTopic)))
+            .append(requireNonNull(getTopicUid(linkedTopic)))
             .append(")*")//NOI18N
             .nextStringMarker()
             .nextLine();
@@ -138,7 +132,9 @@ public class MDExporter extends AbstractExporter {
       final MMapURI fileURI = file.getValue();
       state.append(prefix)
           .append("> File: ")//NOI18N
-          .append(ModelUtils.escapeMarkdownStr(fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString())).nextStringMarker().nextLine();
+          .append(escapeMarkdownStr(
+              fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString()))
+          .nextStringMarker().nextLine();
       extrasPrinted = true;
     }
 
@@ -148,7 +144,7 @@ public class MDExporter extends AbstractExporter {
       state.append(prefix)
           .append("> Url: ")//NOI18N
           .append('[')//NOI18N
-          .append(ModelUtils.escapeMarkdownStr(url))
+          .append(escapeMarkdownStr(url))
           .append("](")//NOI18N
           .append(ascurl)
           .append(')')//NOI18N
@@ -185,11 +181,12 @@ public class MDExporter extends AbstractExporter {
     }
   }
 
-  private void writeInterTopicLine(@Nonnull final State state) {
+  private void writeInterTopicLine(final State state) {
     state.nextLine();
   }
 
-  private void writeOtherTopicRecursively(@Nonnull final Topic t, @Nonnull final String topicListNumStr, final int topicIndex, @Nonnull final State state) throws IOException {
+  private void writeOtherTopicRecursively(final Topic t, final String topicListNumStr,
+                                          final int topicIndex, final State state) {
     writeInterTopicLine(state);
     final String prefix;
     if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
@@ -204,15 +201,16 @@ public class MDExporter extends AbstractExporter {
     }
   }
 
-  @Nonnull
-  private String makeContent(@Nonnull final MindMapPanel panel) throws IOException {
+  private String makeContent(final MindMapPanel panel) {
     final State state = new State();
 
     state.append("<!--")//NOI18N
         .nextLine()//NOI18N
-        .append("Generated by NB Mind Map Plugin (https://github.com/raydac/netbeans-mmd-plugin)")//NOI18N
+        .append(
+            "Generated by NB Mind Map Plugin (https://github.com/raydac/netbeans-mmd-plugin)")//NOI18N
         .nextLine();//NOI18N
-    state.append(DATE_FORMAT.format(new java.util.Date().getTime())).nextLine().append("-->").nextLine();//NOI18N
+    state.append(DATE_FORMAT.format(new java.util.Date().getTime())).nextLine().append("-->")
+        .nextLine();//NOI18N
 
     final Topic root = panel.getModel().getRoot();
     if (root != null) {
@@ -233,21 +231,20 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(@Nonnull final PluginContext context, @Nonnull final JComponent options) throws IOException {
+  public void doExportToClipboard(final PluginContext context, final JComponent options)
+      throws IOException {
     final String text = makeContent(context.getPanel());
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard != null) {
-          clipboard.setContents(new StringSelection(text), null);
-        }
+    SwingUtilities.invokeLater(() -> {
+      final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      if (clipboard != null) {
+        clipboard.setContents(new StringSelection(text), null);
       }
     });
   }
 
   @Override
-  public void doExport(@Nonnull final PluginContext context, @Nonnull final JComponent options, @Nullable final OutputStream out) throws IOException {
+  public void doExport(final PluginContext context, final JComponent options,
+                       final OutputStream out) throws IOException {
     final String text = makeContent(context.getPanel());
 
     File fileToSaveMap = null;
@@ -277,26 +274,22 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "markdown";
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public String getName(final PluginContext context, final Topic actionTopic) {
     return Texts.getString("MDExporter.exporterName");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public String getReference(final PluginContext context, final Topic actionTopic) {
     return Texts.getString("MDExporter.exporterReference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext context, @Nullable Topic actionTopic) {
+  public Icon getIcon(final PluginContext context, final Topic actionTopic) {
     return ICO;
   }
 
@@ -310,32 +303,27 @@ public class MDExporter extends AbstractExporter {
     private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
     private final StringBuilder buffer = new StringBuilder(16384);
 
-    @Nonnull
     public State append(final char ch) {
       this.buffer.append(ch);
       return this;
     }
 
-    @Nonnull
     public State nextStringMarker() {
       this.buffer.append("  ");//NOI18N
       return this;
     }
 
-    @Nonnull
-    public State append(@Nonnull final String str) {
+    public State append(final String str) {
       this.buffer.append(str);
       return this;
     }
 
-    @Nonnull
     public State nextLine() {
       this.buffer.append(NEXT_LINE);
       return this;
     }
 
     @Override
-    @Nonnull
     public String toString() {
       return this.buffer.toString();
     }

@@ -16,10 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import javax.annotation.Nonnull;
 
 /**
  * Interface to be implemented by plug-in to be aware for operations over topics.
@@ -27,8 +25,7 @@ import javax.annotation.Nonnull;
  * @since 1.2
  */
 public interface ModelAwarePlugin extends MindMapPlugin {
-  @Weight(Weight.Unit.NORMAL)
-  void onDeleteTopic(@Nonnull final MindMapPanel panel, @Nonnull final Topic topic);
+  void onDeleteTopic(MindMapPanel panel, Topic topic);
 
-  void onCreateTopic(@Nonnull final MindMapPanel panel, @Nonnull Topic parent, @Nonnull final Topic newTopic);
+  void onCreateTopic(MindMapPanel panel, Topic parent, Topic newTopic);
 }

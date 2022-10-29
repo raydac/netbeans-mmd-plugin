@@ -17,8 +17,6 @@
 package com.igormaznitsa.mindmap.swing.ide;
 
 import com.igormaznitsa.commons.version.Version;
-import com.igormaznitsa.meta.annotation.ThrowsRuntimeException;
-import javax.annotation.Nonnull;
 import javax.swing.Icon;
 
 /**
@@ -31,7 +29,6 @@ public interface IDEBridge {
    * @return the IDE version info as version object, must not be null
    * @since 1.2.0
    */
-  @Nonnull
   Version getIDEVersion();
 
   /**
@@ -42,7 +39,7 @@ public interface IDEBridge {
    * @param type    type of the notification, must not be null
    * @since 1.2.0
    */
-  void showIDENotification(@Nonnull String title, @Nonnull String message, @Nonnull NotificationType type);
+  void showIDENotification(String title, String message, NotificationType type);
 
   /**
    * Send request to restart IDE.
@@ -59,7 +56,5 @@ public interface IDEBridge {
    * @return the icon, it must not be null, if it is not found then IDE will process the situation by its inside mechanisms and some runtime exception will be thrown
    * @since 1.2.0
    */
-  @Nonnull
-  @ThrowsRuntimeException(value = RuntimeException.class, reference = "Some runtime exception will be thrown if it is impossible to load icon")
-  Icon loadIcon(@Nonnull String path, @Nonnull Class<?> klazz);
+  Icon loadIcon(String path, Class<?> klazz);
 }

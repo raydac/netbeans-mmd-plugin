@@ -16,11 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.JMenuItem;
 
 /**
@@ -31,18 +28,15 @@ import javax.swing.JMenuItem;
  */
 public interface PopUpMenuItemPlugin extends MindMapPlugin {
 
-  @Weight(Weight.Unit.LIGHT)
-  @Nullable
-  JMenuItem makeMenuItem(@Nonnull PluginContext context, @Nullable Topic activeTopic);
+  JMenuItem makeMenuItem(PluginContext context, Topic activeTopic);
 
-  @Nonnull
   PopUpSection getSection();
 
   boolean needsTopicUnderMouse();
 
   boolean needsSelectedTopics();
 
-  boolean isEnabled(@Nonnull PluginContext context, @Nullable Topic activeTopic);
+  boolean isEnabled(PluginContext context, Topic activeTopic);
 
   boolean isCompatibleWithFullScreenMode();
 }

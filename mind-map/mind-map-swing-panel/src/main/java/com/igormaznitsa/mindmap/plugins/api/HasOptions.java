@@ -16,27 +16,19 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  * Interface allows to set and get properties.
  *
  * @since 1.3.1
  */
 public interface HasOptions {
-  boolean doesSupportKey(@Nonnull final String key);
+  boolean doesSupportKey(final String key);
 
-  @Nonnull
-  @MustNotContainNull
   String[] getOptionKeys();
 
-  @Nonnull
-  String getOptionKeyDescription(@Nonnull String key);
+  String getOptionKeyDescription(String key);
 
-  void setOption(@Nonnull String key, @Nullable String value);
+  void setOption(String key, String value);
 
-  @Nullable
-  String getOption(@Nonnull String key);
+  String getOption(String key);
 }

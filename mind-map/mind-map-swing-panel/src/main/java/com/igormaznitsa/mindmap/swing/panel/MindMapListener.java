@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.swing.panel;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
@@ -24,26 +23,26 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import javax.annotation.Nonnull;
 
 public interface MindMapListener {
-  void onMindMapModelChanged(@Nonnull MindMapPanel source, boolean saveToHistory);
+  void onMindMapModelChanged(MindMapPanel source, boolean saveToHistory);
 
-  void onComponentElementsLayouted(@Nonnull MindMapPanel source, @Nonnull Graphics2D g);
+  void onComponentElementsLayout(MindMapPanel source, Graphics2D g);
 
-  void onMindMapModelRealigned(@Nonnull MindMapPanel source, @Nonnull Dimension coveredAreaSize);
+  void onMindMapModelRealigned(MindMapPanel source, Dimension coveredAreaSize);
 
-  void onEnsureVisibilityOfTopic(@Nonnull MindMapPanel source, @Nonnull Topic topic);
+  void onEnsureVisibilityOfTopic(MindMapPanel source, Topic topic);
 
-  void onTopicCollapsatorClick(@Nonnull MindMapPanel source, @Nonnull Topic topic, boolean beforeAction);
+  void onTopicCollapsatorClick(MindMapPanel source, Topic topic, boolean beforeAction);
 
-  void onScaledByMouse(@Nonnull MindMapPanel source, @Nonnull Point mousePoint, double oldScale, double newScale, @Nonnull Dimension oldSize, @Nonnull Dimension newSize);
+  void onScaledByMouse(MindMapPanel source, Point mousePoint, double oldScale, double newScale,
+                       Dimension oldSize, Dimension newSize);
 
-  void onClickOnExtra(@Nonnull MindMapPanel source, int modifiers, int clicks, @Nonnull Topic topic, @Nonnull Extra<?> extra);
+  void onClickOnExtra(MindMapPanel source, int modifiers, int clicks, Topic topic, Extra<?> extra);
 
-  void onChangedSelection(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic[] currentSelectedTopics);
+  void onChangedSelection(MindMapPanel source, Topic[] currentSelectedTopics);
 
-  boolean allowedRemovingOfTopics(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic[] topics);
+  boolean allowedRemovingOfTopics(MindMapPanel source, Topic[] topics);
 
-  void onNonConsumedKeyEvent(@Nonnull MindMapPanel source, @Nonnull KeyEvent event, @Nonnull KeyEventType type);
+  void onNonConsumedKeyEvent(MindMapPanel source, KeyEvent event, KeyEventType type);
 }

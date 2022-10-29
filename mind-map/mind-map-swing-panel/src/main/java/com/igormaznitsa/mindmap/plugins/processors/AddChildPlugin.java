@@ -16,8 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.processors;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
-
+import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
@@ -26,8 +25,6 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 public class AddChildPlugin extends AbstractFocusedTopicPlugin {
@@ -40,24 +37,21 @@ public class AddChildPlugin extends AbstractFocusedTopicPlugin {
   }
 
   @Override
-  @Nullable
-  protected Icon getIcon(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected Icon getIcon(final PluginContext context, final Topic activeTopic) {
     return ICO;
   }
 
   @Override
-  @Nonnull
-  protected String getName(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  protected String getName(final PluginContext context, final Topic activeTopic) {
     return Texts.getString("MMDGraphEditor.makePopUp.miAddChild");
   }
 
   @Override
-  protected void doActionForTopic(@Nonnull final PluginContext context, @Nullable final Topic actionTopic) {
-    context.getPanel().makeNewChildAndStartEdit(assertNotNull(actionTopic), null);
+  protected void doActionForTopic(final PluginContext context, final Topic actionTopic) {
+    context.getPanel().makeNewChildAndStartEdit(requireNonNull(actionTopic), null);
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.MAIN;
   }

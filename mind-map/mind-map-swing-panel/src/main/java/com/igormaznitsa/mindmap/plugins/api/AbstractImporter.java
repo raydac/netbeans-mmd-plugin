@@ -28,8 +28,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Locale;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
@@ -43,8 +41,7 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractImporter.class);
 
-  @Nonnull
-  private static String normalizeExtension(@Nonnull final String extension) {
+  private static String normalizeExtension(final String extension) {
     String result = extension.toUpperCase(Locale.ENGLISH);
     if (!result.startsWith(".")) {
       result = '.' + result;
@@ -53,20 +50,20 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   }
 
   @Override
-  @Nullable
   public JMenuItem makeMenuItem(
-      @Nonnull final PluginContext context,
-      @Nullable final Topic activeTopic
+      final PluginContext context,
+      final Topic activeTopic
   ) {
     final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context), getIcon(context));
     result.setToolTipText(getReference(context));
 
     result.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         try {
           if (AbstractImporter.this instanceof ExternallyExecutedPlugin) {
-            context.processPluginActivation((ExternallyExecutedPlugin) AbstractImporter.this, activeTopic);
+            context.processPluginActivation((ExternallyExecutedPlugin) AbstractImporter.this,
+                activeTopic);
           } else {
             context.getPanel().removeAllSelection();
             final MindMap map = doImport(context);
@@ -102,7 +99,6 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.IMPORT;
   }
@@ -117,13 +113,12 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
     return false;
   }
 
-  @Nullable
-  protected File selectFileForExtension(@Nonnull final PluginContext context,
-                                        @Nonnull final String dialogTitle,
-                                        @Nullable final File defaultFolder,
-                                        @Nonnull final String fileExtension,
-                                        @Nonnull final String fileFilterDescription,
-                                        @Nonnull final String approveButtonText) {
+  protected File selectFileForExtension(final PluginContext context,
+                                        final String dialogTitle,
+                                        final File defaultFolder,
+                                        final String fileExtension,
+                                        final String fileFilterDescription,
+                                        final String approveButtonText) {
     return MindMapUtils.selectFileToOpenForFileFilter(
         context.getPanel(),
         context,
@@ -133,23 +128,18 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
         normalizeExtension(fileExtension), fileFilterDescription, approveButtonText);
   }
 
-  @Nullable
   @Override
   public String getMnemonic() {
     return null;
   }
 
-  @Nullable
-  public abstract MindMap doImport(@Nonnull final PluginContext context) throws Exception;
+  public abstract MindMap doImport(PluginContext context) throws Exception;
 
-  @Nonnull
-  public abstract String getName(@Nonnull final PluginContext context);
+  public abstract String getName(PluginContext context);
 
-  @Nonnull
-  public abstract String getReference(@Nonnull final PluginContext context);
+  public abstract String getReference(PluginContext context);
 
-  @Nonnull
-  public abstract Icon getIcon(@Nonnull final PluginContext context);
+  public abstract Icon getIcon(PluginContext context);
 
 
 }

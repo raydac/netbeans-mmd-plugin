@@ -27,8 +27,6 @@ import java.awt.image.BufferedImage;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 final class ScalableRenderableImage implements Renderable {
 
@@ -38,7 +36,7 @@ final class ScalableRenderableImage implements Renderable {
   private final Map<Double, SoftReference<Image>> cache = new HashMap<>();
   private double cachedScale = Double.MIN_VALUE;
 
-  public ScalableRenderableImage(@Nonnull final Image baseImage) {
+  public ScalableRenderableImage(final Image baseImage) {
     this.baseImage = baseImage;
     this.width = baseImage.getWidth(null);
     this.height = baseImage.getHeight(null);
@@ -54,7 +52,6 @@ final class ScalableRenderableImage implements Renderable {
     return (int) Math.round(this.height * scale);
   }
 
-  @Nullable
   private Image getCached(final double scale) {
     Image result;
     synchronized (this.cache) {
@@ -88,7 +85,8 @@ final class ScalableRenderableImage implements Renderable {
   }
 
   @Override
-  public void renderAt(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig config, final int x, final int y) {
+  public void renderAt(final MMGraphics gfx, final MindMapPanelConfig config, final int x,
+                       final int y) {
     final Image image = getCached(config.getScale());
     gfx.drawImage(image, x, y);
   }

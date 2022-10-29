@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.awt.Point;
@@ -25,24 +24,21 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class MouseSelectedArea {
 
   private final Point startPoint;
   private final Point currentPoint;
 
-  public MouseSelectedArea(@Nonnull final Point point) {
+  public MouseSelectedArea(final Point point) {
     this.startPoint = new Point(point);
     this.currentPoint = new Point(point);
   }
 
-  public void update(@Nonnull final MouseEvent e) {
+  public void update(final MouseEvent e) {
     this.currentPoint.setLocation(e.getPoint());
   }
 
-  @Nonnull
   public Rectangle asRectangle() {
     final int minX = Math.min(this.startPoint.x, this.currentPoint.x);
     final int minY = Math.min(this.startPoint.y, this.currentPoint.y);
@@ -51,29 +47,26 @@ public class MouseSelectedArea {
     return new Rectangle(minX, minY, maxX - minX, maxY - minY);
   }
 
-  @Nonnull
-  @MustNotContainNull
-  public List<Topic> getAllSelectedElements(@Nonnull final MindMap map) {
+  public List<Topic> getAllSelectedElements(final MindMap map) {
     final List<Topic> result = new ArrayList<>();
     final Rectangle rect = asRectangle();
     addCoveredToList(result, map.getRoot(), rect.getBounds2D());
     return result;
   }
 
-  private void addCoveredToList(@Nonnull @MustNotContainNull final List<Topic> list, @Nullable final Topic root, @Nonnull final Rectangle2D rect) {
+  private void addCoveredToList(final List<Topic> list, final Topic root, final Rectangle2D rect) {
     if (root == null || root.getPayload() == null) {
       return;
     }
 
     final AbstractElement payload = (AbstractElement) root.getPayload();
-    if (payload != null) {
-      if (rect.contains(payload.getBounds())) {
-        list.add(root);
-      }
-      if (payload instanceof AbstractCollapsableElement && payload.isCollapsed()) {
-        return;
-      }
+    if (rect.contains(payload.getBounds())) {
+      list.add(root);
     }
+    if (payload instanceof AbstractCollapsableElement && payload.isCollapsed()) {
+      return;
+    }
+
     for (final Topic t : root.getChildren()) {
       addCoveredToList(list, t, rect);
     }

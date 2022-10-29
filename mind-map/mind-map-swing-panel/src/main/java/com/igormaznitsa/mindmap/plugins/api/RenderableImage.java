@@ -16,30 +16,32 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import java.awt.Image;
-import javax.annotation.Nonnull;
 
 public class RenderableImage implements Renderable {
   private final Image image;
 
-  public RenderableImage(@Nonnull final Image image) {
-    this.image = image;
+  public RenderableImage(final Image image) {
+    this.image = requireNonNull(image);
   }
 
   @Override
-  public int getWidth(@Nonnull final double scale) {
+  public int getWidth(final double scale) {
     return this.image.getWidth(null);
   }
 
   @Override
-  public int getHeight(@Nonnull final double scale) {
+  public int getHeight(final double scale) {
     return this.image.getHeight(null);
   }
 
   @Override
-  public void renderAt(@Nonnull final MMGraphics gfx, @Nonnull final MindMapPanelConfig config, final int x, final int y) {
+  public void renderAt(final MMGraphics gfx, final MindMapPanelConfig config, final int x,
+                       final int y) {
     gfx.drawImage(this.image, x, y);
   }
 

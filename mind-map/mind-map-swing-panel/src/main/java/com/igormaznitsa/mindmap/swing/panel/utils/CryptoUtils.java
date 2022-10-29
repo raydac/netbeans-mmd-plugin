@@ -8,8 +8,6 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -21,8 +19,7 @@ public final class CryptoUtils {
 
   }
 
-  @Nonnull
-  public static byte[] sha256(@Nonnull final byte[] data) {
+  public static byte[] sha256(final byte[] data) {
     try {
       return MessageDigest.getInstance("SHA-256").digest(data);
     } catch (NoSuchAlgorithmException ex) {
@@ -30,8 +27,7 @@ public final class CryptoUtils {
     }
   }
 
-  @Nonnull
-  public static String encrypt(@Nullable final String pass, @Nonnull final String text) {
+  public static String encrypt(final String pass, final String text) {
     if (pass == null || pass.isEmpty()) {
       return text;
     }
@@ -55,13 +51,14 @@ public final class CryptoUtils {
             "Data can't be encrypted! Check encryption provider and settings!");
       }
       return Utils.base64encode(encodedData);
-    } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | IOException ex) {
+    } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException |
+             IllegalBlockSizeException | BadPaddingException | IOException ex) {
       throw new RuntimeException(ex);
     }
   }
 
-  public static boolean decrypt(@Nonnull final String pass, @Nonnull final String text,
-                                @Nonnull final StringBuilder output) {
+  public static boolean decrypt(final String pass, final String text,
+                                final StringBuilder output) {
     try {
       final byte[] key = sha256(pass.getBytes(StandardCharsets.UTF_8));
       final Key aesKey = new SecretKeySpec(key, "AES");

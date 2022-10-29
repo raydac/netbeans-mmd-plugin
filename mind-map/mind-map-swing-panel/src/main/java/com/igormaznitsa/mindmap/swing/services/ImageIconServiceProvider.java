@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.swing.services;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-import javax.annotation.Nonnull;
 
 public final class ImageIconServiceProvider {
   private static final ImageIconService IMAGEICON_SERVICE;
@@ -32,7 +31,6 @@ public final class ImageIconServiceProvider {
     LoggerFactory.getLogger(ImageIconServiceProvider.class).info("Image Icon Service factory : " + IMAGEICON_SERVICE.getClass().getName());
   }
 
-  @Nonnull
   public static ImageIconService findInstance() {
     return IMAGEICON_SERVICE;
   }

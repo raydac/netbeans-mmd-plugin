@@ -16,14 +16,13 @@
 
 package com.igormaznitsa.mindmap.plugins.attributes.emoticon;
 
-import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.Enumeration;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -37,18 +36,15 @@ public final class IconPanel extends JPanel {
   private static final long serialVersionUID = 4823626757838675154L;
 
   private final ButtonGroup group = Utils.UI_COMPO_FACTORY.makeButtonGroup();
-  private final PluginContext context;
 
-  public IconPanel(@Nonnull final PluginContext context) {
+  public IconPanel() {
     super(new GridLayout(0, 6));
-    this.context = context;
     add(makeIconButton(group, "empty"));
     for (final String s : MiscIcons.getNames()) {
       add(makeIconButton(group, s));
     }
   }
 
-  @Nullable
   public String getSelectedName() {
     final Enumeration<AbstractButton> iterator = this.group.getElements();
     while (iterator.hasMoreElements()) {
@@ -60,16 +56,14 @@ public final class IconPanel extends JPanel {
     return null;
   }
 
-  @Nonnull
-  private JToggleButton makeIconButton(@Nonnull final ButtonGroup group,
-                                       @Nonnull final String name) {
+  private JToggleButton makeIconButton(final ButtonGroup group,
+                                       final String name) {
     final JToggleButton result = Utils.UI_COMPO_FACTORY.makeToggleButton();
 
     final Color panelColor = this.getBackground();
 
     result.setUI(new MetalToggleButtonUI() {
       @Override
-      @Nullable
       protected Color getSelectColor() {
         return panelColor.brighter();
       }
@@ -79,7 +73,7 @@ public final class IconPanel extends JPanel {
 
     result.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
         BorderFactory.createEmptyBorder(3, 3, 3, 3)));
-    result.setIcon(new ImageIcon(MiscIcons.findForName(name)));
+    result.setIcon(new ImageIcon(requireNonNull(MiscIcons.findForName(name))));
     result.setName(name);
     result.setFocusPainted(false);
     result.setToolTipText(name);

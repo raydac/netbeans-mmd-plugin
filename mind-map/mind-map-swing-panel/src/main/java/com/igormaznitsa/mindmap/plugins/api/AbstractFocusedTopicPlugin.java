@@ -17,10 +17,6 @@
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.Topic;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
@@ -32,23 +28,21 @@ import javax.swing.JMenuItem;
 public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
 
   @Override
-  @Nullable
   public JMenuItem makeMenuItem(
-      @Nonnull final PluginContext context,
-      @Nullable final Topic activeTopic) {
+      final PluginContext context,
+      final Topic activeTopic) {
 
-    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
+    final JMenuItem result =
+        UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
 
     result.setToolTipText(getReference());
 
-    result.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        if (AbstractFocusedTopicPlugin.this instanceof ExternallyExecutedPlugin) {
-          context.processPluginActivation((ExternallyExecutedPlugin) AbstractFocusedTopicPlugin.this, activeTopic);
-        } else {
-          doActionForTopic(context, activeTopic);
-        }
+    result.addActionListener(e -> {
+      if (AbstractFocusedTopicPlugin.this instanceof ExternallyExecutedPlugin) {
+        context.processPluginActivation((ExternallyExecutedPlugin) AbstractFocusedTopicPlugin.this,
+            activeTopic);
+      } else {
+        doActionForTopic(context, activeTopic);
       }
     });
     return result;
@@ -64,23 +58,21 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
     return false;
   }
 
-  @Nonnull
-  protected abstract Icon getIcon(@Nonnull PluginContext context, @Nullable Topic activeTopic);
+  protected abstract Icon getIcon(PluginContext context, Topic activeTopic);
 
-  @Nonnull
-  protected abstract String getName(@Nonnull PluginContext context, @Nullable Topic activeTopic);
+  protected abstract String getName(PluginContext context, Topic activeTopic);
 
-  @Nullable
   protected String getReference() {
     return null;
   }
 
   @Override
-  public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    return context.getSelectedTopics().length == 1 || (context.getSelectedTopics().length == 0 && activeTopic != null);
+  public boolean isEnabled(final PluginContext context, final Topic activeTopic) {
+    return context.getSelectedTopics().length == 1 ||
+        (context.getSelectedTopics().length == 0 && activeTopic != null);
   }
 
-  protected void doActionForTopic(@Nonnull PluginContext context, @Nullable Topic actionTopic) {
+  protected void doActionForTopic(PluginContext context, Topic actionTopic) {
     if (this instanceof ExternallyExecutedPlugin) {
       context.processPluginActivation((ExternallyExecutedPlugin) this, actionTopic);
     }

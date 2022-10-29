@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.print;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
@@ -29,7 +28,6 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
@@ -43,8 +41,6 @@ import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -80,7 +76,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   private PrintPage[][] pages;
   private MMDPrintOptions options = new MMDPrintOptions();
 
-  public MMDPrintPanel(@Nonnull final DialogProvider dialogProvider, @Nullable final Adaptor adaptor, @Nonnull final PrintableObject printableObject) {
+  public MMDPrintPanel(final DialogProvider dialogProvider, final Adaptor adaptor,
+                       final PrintableObject printableObject) {
     super(new BorderLayout());
     this.dialogProvider = dialogProvider;
     final MMDPrintPanel theInstance = this;
@@ -107,7 +104,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     buttonPrint.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         splitToPagesForCurrentFormat();
         final PageFormat format = pageFormat;
         final int numOfPages = countPages();
@@ -120,7 +117,6 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
           }
 
           @Override
-          @Nonnull
           public PageFormat getPageFormat(final int pageIndex) throws IndexOutOfBoundsException {
             final PrintPage thepage = findPageForIndex(pageIndex);
             if (thepage == null) {
@@ -129,54 +125,43 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
             return format;
           }
 
-          @SuppressWarnings("unchecked")
           @Override
-          @Nonnull
           public Printable getPrintable(final int pageIndex) throws IndexOutOfBoundsException {
             final PrintPage thePage = findPageForIndex(pageIndex);
             if (thePage == null) {
               throw new IndexOutOfBoundsException();
             }
-            return new Printable() {
-              @SuppressWarnings("unchecked")
-              @Override
-              public int print(@Nonnull final Graphics graphics, @Nonnull final PageFormat format, final int pageIndex) throws PrinterException {
-                final Graphics2D gfx = (Graphics2D) graphics;
+            return (graphics, format1, pageIndex1) -> {
+              final Graphics2D gfx = (Graphics2D) graphics;
 
-                if (thePage == null) {
-                  return Printable.NO_SUCH_PAGE;
-                } else {
-                  gfx.translate((int) format.getImageableX(), (int) format.getImageableY());
-                  thePage.print(gfx);
+              gfx.translate((int) format1.getImageableX(), (int) format1.getImageableY());
+              thePage.print(gfx);
 
-                  if (drawBorder) {
-                    final Stroke stroke = gfx.getStroke();
-                    gfx.setStroke(BORDER_STYLE);
-                    gfx.draw(new Rectangle2D.Double(0d, 0d, format.getImageableWidth(), format.getImageableHeight()));
-                    gfx.setColor(BORDER_COLOR);
-                    gfx.setStroke(stroke);
-                  }
-                  gfx.translate(-(int) format.getImageableX(), -(int) format.getImageableY());
-                  return Printable.PAGE_EXISTS;
-                }
+              if (drawBorder) {
+                final Stroke stroke = gfx.getStroke();
+                gfx.setStroke(BORDER_STYLE);
+                gfx.draw(new Rectangle2D.Double(0d, 0d, format1.getImageableWidth(),
+                    format1.getImageableHeight()));
+                gfx.setColor(BORDER_COLOR);
+                gfx.setStroke(stroke);
               }
+              gfx.translate(-(int) format1.getImageableX(), -(int) format1.getImageableY());
+              return Printable.PAGE_EXISTS;
             };
           }
         });
 
         if (printerJob.printDialog()) {
-          theAdaptor.startBackgroundTask(theInstance, BUNDLE.getString("MMDPrintPanel.JobTitle"), new Runnable() {
-            @Override
-            public void run() {
-              try {
-                LOGGER.info("Start print job");
-                printerJob.print();
-              } catch (PrinterException ex) {
-                LOGGER.error("Print error", ex);
-                throw new RuntimeException("Error during print job", ex);
-              }
-            }
-          });
+          theAdaptor.startBackgroundTask(theInstance, BUNDLE.getString("MMDPrintPanel.JobTitle"),
+              () -> {
+                try {
+                  LOGGER.info("Start print job");
+                  printerJob.print();
+                } catch (PrinterException ex) {
+                  LOGGER.error("Print error", ex);
+                  throw new RuntimeException("Error during print job", ex);
+                }
+              });
           theAdaptor.onPrintTaskStarted(theInstance);
         }
       }
@@ -186,32 +171,27 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     final JButton buttonPageSetup = UI_COMPO_FACTORY.makeButton();
     buttonPageSetup.setText(BUNDLE.getString("MMDPrintPanel.PageSetup"));
     buttonPageSetup.setIcon(ICO_PAGE);
-    buttonPageSetup.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        pageFormat = printerJob.pageDialog(pageFormat);
-        splitToPagesForCurrentFormat();
-        scrollPane.revalidate();
-        scrollPane.getViewport().revalidate();
-        scrollPane.repaint();
-      }
+    buttonPageSetup.addActionListener(e -> {
+      pageFormat = printerJob.pageDialog(pageFormat);
+      splitToPagesForCurrentFormat();
+      scrollPane.revalidate();
+      scrollPane.getViewport().revalidate();
+      scrollPane.repaint();
     });
     toolBar.add(buttonPageSetup);
 
     final JButton buttonPrintOptions = UI_COMPO_FACTORY.makeButton();
     buttonPrintOptions.setText(BUNDLE.getString("MMDPrintPanel.PrintOptions"));
     buttonPrintOptions.setIcon(ICO_OPTIONS);
-    buttonPrintOptions.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        final MMDPrintOptionsPanel panel = new MMDPrintOptionsPanel(options);
-        if (dialogProvider.msgOkCancel(theInstance, BUNDLE.getString("MMDPrintOptionsPanel.Title"), panel)) {
-          options = panel.getOptions();
-          splitToPagesForCurrentFormat();
-          scrollPane.revalidate();
-          scrollPane.getViewport().revalidate();
-          scrollPane.repaint();
-        }
+    buttonPrintOptions.addActionListener(e -> {
+      final MMDPrintOptionsPanel panel = new MMDPrintOptionsPanel(options);
+      if (dialogProvider.msgOkCancel(theInstance, BUNDLE.getString("MMDPrintOptionsPanel.Title"),
+          panel)) {
+        options = panel.getOptions();
+        splitToPagesForCurrentFormat();
+        scrollPane.revalidate();
+        scrollPane.getViewport().revalidate();
+        scrollPane.repaint();
       }
     });
     toolBar.add(buttonPrintOptions);
@@ -229,16 +209,14 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     this.pageZoomFactor = 1.0d;
     comboBoxScale.setEditable(false);
 
-    comboBoxScale.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        final int percent = Integer.parseInt(comboBoxScale.getSelectedItem().toString().split("\\s")[0]);
-        pageZoomFactor = (double) percent / 100d;
-        splitToPagesForCurrentFormat();
-        scrollPane.revalidate();
-        scrollPane.getViewport().revalidate();
-        scrollPane.repaint();
-      }
+    comboBoxScale.addActionListener(e -> {
+      final int percent =
+          Integer.parseInt(comboBoxScale.getSelectedItem().toString().split("\\s")[0]);
+      pageZoomFactor = (double) percent / 100d;
+      splitToPagesForCurrentFormat();
+      scrollPane.revalidate();
+      scrollPane.getViewport().revalidate();
+      scrollPane.repaint();
     });
     comboBoxScale.setMaximumSize(comboBoxScale.getPreferredSize());
     toolBar.addSeparator();
@@ -249,27 +227,19 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     this.checkBoxDrawBorder = UI_COMPO_FACTORY.makeCheckBox();
     this.checkBoxDrawBorder.setSelected(true);
     this.checkBoxDrawBorder.setText(BUNDLE.getString("MMDPrintPanel.DrawBorder"));
-    this.checkBoxDrawBorder.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull ActionEvent e) {
-        scrollPane.repaint();
-      }
-    });
+    this.checkBoxDrawBorder.addActionListener(e -> scrollPane.repaint());
     toolBar.add(this.checkBoxDrawBorder);
 
     this.checkBoxDrawAsImage = UI_COMPO_FACTORY.makeCheckBox();
     this.checkBoxDrawAsImage.setSelected(this.options.isDrawAsImage() || printableObject.isImage());
     this.checkBoxDrawAsImage.setEnabled(!printableObject.isImage());
     this.checkBoxDrawAsImage.setText(BUNDLE.getString("MMDPrintPanel.DrawAsImage"));
-    this.checkBoxDrawAsImage.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull ActionEvent e) {
-        options.setDrawAsImage(checkBoxDrawAsImage.isSelected());
-        splitToPagesForCurrentFormat();
-        scrollPane.revalidate();
-        scrollPane.getViewport().revalidate();
-        scrollPane.repaint();
-      }
+    this.checkBoxDrawAsImage.addActionListener(e -> {
+      options.setDrawAsImage(checkBoxDrawAsImage.isSelected());
+      splitToPagesForCurrentFormat();
+      scrollPane.revalidate();
+      scrollPane.getViewport().revalidate();
+      scrollPane.repaint();
     });
     toolBar.add(this.checkBoxDrawAsImage);
 
@@ -289,12 +259,10 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   }
 
   @Override
-  @Nonnull
   public JComponent getComponentPreferredForFocus() {
     return this.preferredFocusedComponent;
   }
 
-  @Nonnull
   PageFormat getPageFormat() {
     return this.pageFormat;
   }
@@ -307,13 +275,10 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     return result;
   }
 
-  @Nonnull
-  @MustNotContainNull
   PrintPage[][] getPages() {
     return this.pages;
   }
 
-  @Nullable
   PrintPage findPageForIndex(final int value) {
     int i = 0;
     for (final PrintPage[] row : this.pages) {
@@ -352,13 +317,12 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   public interface Adaptor {
 
-    void startBackgroundTask(@Nonnull MMDPrintPanel source, @Nonnull String name, @Nonnull Runnable task);
+    void startBackgroundTask(MMDPrintPanel source, String name, Runnable task);
 
-    boolean isDarkTheme(@Nonnull MMDPrintPanel source);
+    boolean isDarkTheme(MMDPrintPanel source);
 
-    void onPrintTaskStarted(@Nonnull MMDPrintPanel source);
+    void onPrintTaskStarted(MMDPrintPanel source);
 
-    @Nonnull
-    Dimension getPreferredSizeOfPanel(@Nonnull MMDPrintPanel source);
+    Dimension getPreferredSizeOfPanel(MMDPrintPanel source);
   }
 }

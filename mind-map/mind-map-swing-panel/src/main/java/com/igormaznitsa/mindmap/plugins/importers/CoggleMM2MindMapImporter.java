@@ -16,8 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.importers;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.Assertions;
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -45,8 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,8 +63,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   private static final Pattern MD_URL_LINK =
       Pattern.compile("(?<!\\!)\\[(.*?)\\]\\((.*?)\\)", Pattern.MULTILINE | Pattern.UNICODE_CASE);
 
-  @Nullable
-  private static String loadImageForURLAndEncode(@Nonnull final String imageUrl) {
+  private static String loadImageForURLAndEncode(final String imageUrl) {
     String result = null;
 
     final Image loadedImage;
@@ -88,9 +85,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nullable
   private static String loadFirstSuccessfulImage(
-      @Nonnull @MustNotContainNull final List<String> urls) {
+      final List<String> urls) {
     String result = null;
     for (final String url : urls) {
       result = loadImageForURLAndEncode(url);
@@ -101,9 +97,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nullable
   private static MMapURI getFirstSuccessfulURL(
-      @Nonnull @MustNotContainNull final List<String> urls) {
+      final List<String> urls) {
     MMapURI result = null;
     for (final String url : urls) {
       try {
@@ -119,8 +114,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   }
 
   @Override
-  @Nullable
-  public MindMap doImport(@Nonnull final PluginContext context) throws Exception {
+  public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
         Texts.getString("MMDImporters.CoggleMM2MindMap.openDialogTitle"), null, "mm",
         "Coggle MM files (.MM)", Texts.getString("MMDImporters.ApproveImport"));
@@ -132,8 +126,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     return doImportFile(file);
   }
 
-  @Nonnull
-  MindMap doImportFile(@Nonnull final File file)
+  MindMap doImportFile(final File file)
       throws SAXException, IOException, ParserConfigurationException {
 
     final Document document;
@@ -142,7 +135,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     }
 
     final MindMap result = new MindMap(true);
-    Assertions.assertNotNull(result.getRoot()).setText("Empty");
+    requireNonNull(result.getRoot()).setText("Empty");
 
     final Element root = document.getDocumentElement();
     if ("map".equals(root.getTagName())) {
@@ -156,10 +149,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nonnull
-  @MustNotContainNull
-  private List<String> extractImageURLs(@Nonnull final String mdText,
-                                        @Nonnull final StringBuilder resultText) {
+  private List<String> extractImageURLs(final String mdText,
+                                        final StringBuilder resultText) {
     final List<String> result = new ArrayList<>();
     final Matcher matcher = MD_IMAGE_LINK.matcher(mdText);
     int lastFoundEnd = 0;
@@ -177,10 +168,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  @Nonnull
-  @MustNotContainNull
-  private List<String> extractURLs(@Nonnull final String mdText,
-                                   @Nonnull final StringBuilder resultText) {
+  private List<String> extractURLs(final String mdText,
+                                   final StringBuilder resultText) {
     final List<String> result = new ArrayList<>();
     final Matcher matcher = MD_URL_LINK.matcher(mdText);
     int lastFoundEnd = 0;
@@ -198,11 +187,11 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     return result;
   }
 
-  private void parseTopic(@Nonnull final MindMap map, @Nullable final Topic parent,
-                          @Nullable final Topic preGeneratedOne, @Nonnull final Element element) {
+  private void parseTopic(final MindMap map, final Topic parent,
+                          final Topic preGeneratedOne, final Element element) {
     final Topic topicToProcess;
     if (preGeneratedOne == null) {
-      topicToProcess = Assertions.assertNotNull(parent).makeChild("", null);
+      topicToProcess = requireNonNull(parent).makeChild("", null);
     } else {
       topicToProcess = preGeneratedOne;
     }
@@ -289,26 +278,22 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   }
 
   @Override
-  @Nullable
   public String getMnemonic() {
     return "cogglemm";
   }
 
   @Override
-  @Nonnull
-  public String getName(@Nonnull final PluginContext context) {
+  public String getName(final PluginContext context) {
     return Texts.getString("MMDImporters.CoggleMM2MindMap.Name");
   }
 
   @Override
-  @Nonnull
-  public String getReference(@Nonnull final PluginContext context) {
+  public String getReference(final PluginContext context) {
     return Texts.getString("MMDImporters.CoggleMM2MindMap.Reference");
   }
 
   @Override
-  @Nonnull
-  public Icon getIcon(@Nonnull final PluginContext context) {
+  public Icon getIcon(final PluginContext context) {
     return ICO;
   }
 

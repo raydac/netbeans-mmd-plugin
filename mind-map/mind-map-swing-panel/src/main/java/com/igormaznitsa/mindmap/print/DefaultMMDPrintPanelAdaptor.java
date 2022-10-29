@@ -20,31 +20,30 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Dimension;
-import javax.annotation.Nonnull;
 
 public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMMDPrintPanelAdaptor.class);
 
   @Override
-  public void startBackgroundTask(@Nonnull final MMDPrintPanel source, @Nonnull final String name, @Nonnull final Runnable task) {
+  public void startBackgroundTask(final MMDPrintPanel source, final String name,
+                                  final Runnable task) {
     final Thread thread = new Thread(task, name);
     thread.setDaemon(true);
     thread.start();
   }
 
   @Override
-  public boolean isDarkTheme(@Nonnull final MMDPrintPanel source) {
+  public boolean isDarkTheme(final MMDPrintPanel source) {
     return Utils.isDarkTheme();
   }
 
   @Override
-  public void onPrintTaskStarted(@Nonnull final MMDPrintPanel source) {
+  public void onPrintTaskStarted(final MMDPrintPanel source) {
   }
 
   @Override
-  @Nonnull
-  public Dimension getPreferredSizeOfPanel(@Nonnull final MMDPrintPanel source) {
+  public Dimension getPreferredSizeOfPanel(final MMDPrintPanel source) {
     return new Dimension(600, 450);
   }
 }

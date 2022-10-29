@@ -23,13 +23,10 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -46,49 +43,46 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporter.class);
 
   @Override
-  @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    final JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
+  public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {
+    final JMenuItem result =
+        UI_COMPO_FACTORY.makeMenuItem(getName(context, activeTopic), getIcon(context, activeTopic));
     result.setToolTipText(getReference(context, activeTopic));
 
     final AbstractPopupMenuItem theInstance = this;
 
-    result.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        try {
-          if (theInstance instanceof ExternallyExecutedPlugin) {
-            context.processPluginActivation((ExternallyExecutedPlugin) theInstance, activeTopic);
-          } else {
-            final JComponent options = makeOptions(context);
-            if (options != null && !context.getDialogProvider().msgOkCancel(null, getName(context, activeTopic), options)) {
-              return;
-            }
-            if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
-              LOGGER.info("Export map into file: " + AbstractExporter.this);
-              doExport(context, options, null);
-            } else {
-              LOGGER.info("Export map into clipboard:" + AbstractExporter.this);
-              doExportToClipboard(context, options);
-            }
+    result.addActionListener(e -> {
+      try {
+        if (theInstance instanceof ExternallyExecutedPlugin) {
+          context.processPluginActivation((ExternallyExecutedPlugin) theInstance, activeTopic);
+        } else {
+          final JComponent options = makeOptions(context);
+          if (options != null && !context.getDialogProvider()
+              .msgOkCancel(null, getName(context, activeTopic), options)) {
+            return;
           }
-        } catch (Exception ex) {
-          LOGGER.error("Error during map export", ex); //NOI18N
-          context.getDialogProvider().msgError(null, Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
+          if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
+            LOGGER.info("Export map into file: " + AbstractExporter.this);
+            doExport(context, options, null);
+          } else {
+            LOGGER.info("Export map into clipboard:" + AbstractExporter.this);
+            doExportToClipboard(context, options);
+          }
         }
+      } catch (Exception ex) {
+        LOGGER.error("Error during map export", ex); //NOI18N
+        context.getDialogProvider()
+            .msgError(null, Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
       }
     });
     return result;
   }
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.EXPORT;
   }
 
-  @Nullable
-  protected Extra<?> findExtra(@Nonnull final Topic topic, @Nonnull final Extra.ExtraType type) {
+  protected Extra<?> findExtra(final Topic topic, final Extra.ExtraType type) {
     final Extra<?> result = topic.getExtras().get(type);
     return result == null ? null : (result.isExportable() ? result : null);
   }
@@ -103,18 +97,17 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
     return false;
   }
 
-  @Nullable
-  public JComponent makeOptions(@Nonnull final PluginContext context) {
+  public JComponent makeOptions(final PluginContext context) {
     return null;
   }
 
-  @Nullable
   @Override
   public String getMnemonic() {
     return null;
   }
 
-  public abstract void doExport(@Nonnull final PluginContext context, @Nullable final JComponent options, @Nullable final OutputStream out) throws IOException;
+  public abstract void doExport(final PluginContext context, final JComponent options,
+                                final OutputStream out) throws IOException;
 
   /**
    * Export data into clipboard.
@@ -123,15 +116,13 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
    * @param options component containing extra options, can be null
    * @throws IOException it will be thrown if any error
    */
-  public abstract void doExportToClipboard(@Nonnull final PluginContext context, @Nullable final JComponent options) throws IOException;
+  public abstract void doExportToClipboard(final PluginContext context, final JComponent options)
+      throws IOException;
 
-  @Nonnull
-  public abstract String getName(@Nonnull final PluginContext context, @Nullable final Topic activeTopic);
+  public abstract String getName(final PluginContext context, final Topic activeTopic);
 
-  @Nonnull
-  public abstract String getReference(@Nonnull final PluginContext context, @Nullable final Topic activeTopic);
+  public abstract String getReference(final PluginContext context, final Topic activeTopic);
 
-  @Nonnull
-  public abstract Icon getIcon(@Nonnull final PluginContext context, @Nullable final Topic activeTopic);
+  public abstract Icon getIcon(final PluginContext context, final Topic activeTopic);
 
 }

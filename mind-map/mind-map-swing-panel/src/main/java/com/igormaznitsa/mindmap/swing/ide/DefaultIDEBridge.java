@@ -16,8 +16,9 @@
 
 package com.igormaznitsa.mindmap.swing.ide;
 
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.commons.version.Version;
-import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -39,8 +39,7 @@ class DefaultIDEBridge implements IDEBridge {
 
   private final Map<String, Image> IMAGE_CACHE = new HashMap<>();
 
-  @Nonnull
-  private static String removeStartSlash(@Nonnull final String path) {
+  private static String removeStartSlash(final String path) {
     String result = path;
     if (path.startsWith("/") || path.startsWith("\\")) {
       result = result.substring(1);
@@ -49,39 +48,34 @@ class DefaultIDEBridge implements IDEBridge {
   }
 
   @Override
-  @Nonnull
   public Version getIDEVersion() {
     return IDE_VERSION;
   }
 
   @Override
-  public void showIDENotification(@Nonnull final String title, @Nonnull final String message, @Nonnull final NotificationType type) {
-    final int msgtype;
+  public void showIDENotification(final String title, final String message,
+                                  final NotificationType type) {
+    final int messageType;
     switch (type) {
       case INFO:
         LOGGER.info("IDENotification : (" + title + ") " + message);
-        msgtype = JOptionPane.INFORMATION_MESSAGE;
+        messageType = JOptionPane.INFORMATION_MESSAGE;
         break;
       case WARNING:
         LOGGER.warn("IDENotification : (" + title + ") " + message);
-        msgtype = JOptionPane.WARNING_MESSAGE;
+        messageType = JOptionPane.WARNING_MESSAGE;
         break;
       case ERROR:
         LOGGER.error("IDENotification : (" + title + ") " + message);
-        msgtype = JOptionPane.ERROR_MESSAGE;
+        messageType = JOptionPane.ERROR_MESSAGE;
         break;
       default: {
         LOGGER.warn("*IDENotification : (" + title + ") " + message);
-        msgtype = JOptionPane.WARNING_MESSAGE;
+        messageType = JOptionPane.WARNING_MESSAGE;
       }
     }
 
-    Utils.safeSwingCall(new Runnable() {
-      @Override
-      public void run() {
-        JOptionPane.showMessageDialog(null, message, title, msgtype);
-      }
-    });
+    Utils.safeSwingCall(() -> JOptionPane.showMessageDialog(null, message, title, messageType));
   }
 
   @Override
@@ -91,13 +85,13 @@ class DefaultIDEBridge implements IDEBridge {
   }
 
   @Override
-  @Nonnull
-  public Icon loadIcon(@Nonnull final String path, @Nonnull final Class<?> klazz) {
+  public Icon loadIcon(final String path, final Class<?> klazz) {
     Image image;
     synchronized (IMAGE_CACHE) {
       image = IMAGE_CACHE.get(path);
       if (image == null) {
-        final InputStream in = klazz.getClassLoader().getResourceAsStream(Assertions.assertNotNull("Icon path must not be null", removeStartSlash(path)));
+        final InputStream in = klazz.getClassLoader().getResourceAsStream(
+            requireNonNull(removeStartSlash(path), "Icon path must not be null"));
         if (in == null) {
           throw new IllegalArgumentException("Can't find icon resource : " + path);
         }

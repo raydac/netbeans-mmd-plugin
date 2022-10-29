@@ -24,10 +24,6 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
@@ -36,25 +32,18 @@ public class ChangeColorPlugin extends AbstractPopupMenuItem implements External
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CHANGECOLOR);
 
   @Override
-  @Nonnull
   public PopUpSection getSection() {
     return PopUpSection.MANIPULATORS;
   }
 
   @Override
-  @Nullable
-  public JMenuItem makeMenuItem(@Nonnull final PluginContext context, @Nullable final Topic topic) {
+  public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(
         context.getSelectedTopics() != null && context.getSelectedTopics().length > 0
             ? Texts.getString("MMDGraphEditor.makePopUp.miColorsForSelected") :
             Texts.getString("MMDGraphEditor.makePopUp.miColorsForTopic"), ICO);
 
-    result.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        context.processPluginActivation(ChangeColorPlugin.this, topic);
-      }
-    });
+    result.addActionListener(e -> context.processPluginActivation(ChangeColorPlugin.this, topic));
     return result;
   }
 

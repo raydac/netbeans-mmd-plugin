@@ -1,21 +1,17 @@
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import static java.awt.Color.LIGHT_GRAY;
 import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BorderFactory.createLineBorder;
 
-
+import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.annotation.Nonnull;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,7 +31,7 @@ public final class PasswordPanel extends JPanel {
     this("", "", true);
   }
 
-  public PasswordPanel(@Nonnull final String password, @Nonnull final String passwordHint,
+  public PasswordPanel(final String password, final String passwordHint,
                        final boolean hintEditable) {
     super(new GridBagLayout());
     this.setBorder(createCompoundBorder(
@@ -100,26 +96,21 @@ public final class PasswordPanel extends JPanel {
         .setToolTipText(Utils.BUNDLE.getString("PasswordPanel.checkboxShowPassword.tooltip"));
     this.add(showPasswordCheckbox, gbc);
 
-    showPasswordCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        if (showPasswordCheckbox.isSelected()) {
-          textFieldPassword.setEchoChar((char) 0);
-        } else {
-          textFieldPassword.setEchoChar('*');
-        }
+    showPasswordCheckbox.addActionListener(e -> {
+      if (showPasswordCheckbox.isSelected()) {
+        textFieldPassword.setEchoChar((char) 0);
+      } else {
+        textFieldPassword.setEchoChar('*');
       }
     });
-    
+
     this.focuser = new Focuser(this.textFieldPassword);
   }
 
-  @Nonnull
   public char[] getPassword() {
     return this.textFieldPassword.getPassword();
   }
 
-  @Nonnull
   public String getHint() {
     return this.textFieldHint == null ? this.textLabelHint.getText() : this.textFieldHint.getText();
   }

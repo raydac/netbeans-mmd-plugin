@@ -16,35 +16,33 @@
 
 package com.igormaznitsa.mindmap.swing.panel;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import java.awt.Component;
 import java.io.File;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 
 public interface DialogProvider {
 
-  void msgError(@Nullable Component parentComponent, @Nonnull String text);
+  void msgError(Component parentComponent, String text);
 
-  void msgInfo(@Nullable Component parentComponent, @Nonnull String text);
+  void msgInfo(Component parentComponent, String text);
 
-  void msgWarn(@Nullable Component parentComponent, @Nonnull String text);
+  void msgWarn(Component parentComponent, String text);
 
-  boolean msgConfirmOkCancel(@Nullable Component parentComponent, @Nonnull String title, @Nonnull String question);
+  boolean msgConfirmOkCancel(Component parentComponent, String title, String question);
 
-  boolean msgOkCancel(@Nullable Component parentComponent, @Nonnull String title, @Nonnull JComponent component);
+  boolean msgOkCancel(Component parentComponent, String title, JComponent component);
 
-  boolean msgConfirmYesNo(@Nullable Component parentComponent, @Nonnull String title, @Nonnull String question);
+  boolean msgConfirmYesNo(Component parentComponent, String title, String question);
 
-  @Nullable
-  Boolean msgConfirmYesNoCancel(@Nullable Component parentComponent, @Nonnull String title, @Nonnull final String question);
+  Boolean msgConfirmYesNoCancel(Component parentComponent, String title, String question);
 
-  @Nullable
-  File msgSaveFileDialog(@Nullable Component parentComponent, @Nullable PluginContext pluginContext, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull @MustNotContainNull FileFilter[] fileFilter, @Nonnull String approveButtonText);
+  File msgSaveFileDialog(Component parentComponent, PluginContext pluginContext, String id,
+                         String title, File defaultFolder, boolean filesOnly,
+                         FileFilter[] fileFilter, String approveButtonText);
 
-  @Nullable
-  File msgOpenFileDialog(@Nullable Component parentComponent, @Nullable PluginContext pluginContext, @Nonnull String id, @Nonnull String title, @Nullable File defaultFolder, boolean filesOnly, @Nonnull @MustNotContainNull FileFilter[] fileFilter, @Nonnull String approveButtonText);
+  File msgOpenFileDialog(Component parentComponent, PluginContext pluginContext, String id,
+                         String title, File defaultFolder, boolean filesOnly,
+                         FileFilter[] fileFilter, String approveButtonText);
 }

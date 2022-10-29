@@ -16,8 +16,9 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.GetUtils;
+import static com.igormaznitsa.mindmap.model.MiscUtils.ensureNotNull;
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -31,8 +32,6 @@ import java.util.prefs.NodeChangeListener;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Auxiliary class implementing Preferences, based on Properties.
@@ -45,30 +44,29 @@ public class PropertiesPreferences extends Preferences {
   private final List<PreferenceChangeListener> listeners = new ArrayList<>();
   private final String comment;
 
-  public PropertiesPreferences(@Nullable final String comment, @Nonnull final String text) throws IOException {
+  public PropertiesPreferences(final String comment, final String text) throws IOException {
     this(comment);
     this.storage.load(new StringReader(text));
   }
 
-  public PropertiesPreferences(@Nullable final String comment) {
+  public PropertiesPreferences(final String comment) {
     super();
     this.comment = comment;
   }
 
   @Override
-  public void put(@Nonnull final String key, @Nonnull final String value) {
+  public void put(final String key, final String value) {
     this.storage.setProperty(key, value);
     fireListeners(key, value);
   }
 
   @Override
-  @Nullable
-  public String get(@Nonnull final String key, @Nullable final String def) {
+  public String get(final String key, final String def) {
     return this.storage.containsKey(key) ? this.storage.getProperty(key) : def;
   }
 
   @Override
-  public void remove(@Nonnull final String key) {
+  public void remove(final String key) {
     this.storage.remove(key);
     fireListeners(key, null);
   }
@@ -80,113 +78,106 @@ public class PropertiesPreferences extends Preferences {
   }
 
   @Override
-  public void putInt(@Nonnull final String key, final int value) {
+  public void putInt(final String key, final int value) {
     final String newvalue = Integer.toString(value);
     this.storage.setProperty(key, newvalue);
     fireListeners(key, newvalue);
   }
 
   @Override
-  public int getInt(@Nonnull final String key, final int def) {
+  public int getInt(final String key, final int def) {
     final String value = this.storage.getProperty(key);
     return value == null ? def : Integer.parseInt(value);
   }
 
   @Override
-  public void putLong(@Nonnull final String key, final long value) {
+  public void putLong(final String key, final long value) {
     final String newvalue = Long.toString(value);
     this.storage.setProperty(key, newvalue);
     fireListeners(key, newvalue);
   }
 
   @Override
-  public long getLong(@Nonnull final String key, final long def) {
+  public long getLong(final String key, final long def) {
     final String value = this.storage.getProperty(key);
     return value == null ? def : Long.parseLong(value);
   }
 
   @Override
-  public void putBoolean(@Nonnull final String key, final boolean value) {
+  public void putBoolean(final String key, final boolean value) {
     final String newvalue = Boolean.toString(value);
     this.storage.setProperty(key, newvalue);
     fireListeners(key, newvalue);
   }
 
   @Override
-  public boolean getBoolean(@Nonnull final String key, final boolean def) {
+  public boolean getBoolean(final String key, final boolean def) {
     final String value = this.storage.getProperty(key);
     return value == null ? def : Boolean.parseBoolean(value);
   }
 
   @Override
-  public void putFloat(@Nonnull final String key, final float value) {
+  public void putFloat(final String key, final float value) {
     final String newvalue = Float.toString(value);
     this.storage.setProperty(key, newvalue);
     fireListeners(key, newvalue);
   }
 
   @Override
-  public float getFloat(@Nonnull final String key, final float def) {
+  public float getFloat(final String key, final float def) {
     final String value = this.storage.getProperty(key);
     return value == null ? def : Float.parseFloat(value);
   }
 
   @Override
-  public void putDouble(@Nonnull final String key, final double value) {
+  public void putDouble(final String key, final double value) {
     final String newvalue = Double.toString(value);
     this.storage.setProperty(key, newvalue);
     fireListeners(key, newvalue);
   }
 
   @Override
-  public double getDouble(@Nonnull final String key, final double def) {
+  public double getDouble(final String key, final double def) {
     final String value = this.storage.getProperty(key);
     return value == null ? def : Double.parseDouble(value);
   }
 
   @Override
-  public void putByteArray(@Nonnull final String key, @Nonnull final byte[] value) {
+  public void putByteArray(final String key, final byte[] value) {
     final String data = Utils.base64encode(value);
     this.storage.setProperty(key, data);
     fireListeners(key, data);
   }
 
   @Override
-  @Nullable
-  public byte[] getByteArray(@Nonnull final String key, @Nullable final byte[] def) {
+  public byte[] getByteArray(final String key, final byte[] def) {
     final String found = this.storage.getProperty(key);
     return found == null ? def : Utils.base64decode(found);
   }
 
   @Override
-  @Nonnull
-  @MustNotContainNull
   public String[] keys() throws BackingStoreException {
     final Set<String> keys = this.storage.stringPropertyNames();
     return keys.toArray(new String[0]);
   }
 
   @Override
-  @Nonnull
-  @MustNotContainNull
   public String[] childrenNames() throws BackingStoreException {
     return new String[0];
   }
 
   @Override
-  @Nullable
   public Preferences parent() {
     return null;
   }
 
   @Override
-  @Nullable
-  public Preferences node(@Nonnull final String pathName) {
+  public Preferences node(final String pathName) {
     return null;
   }
 
   @Override
-  public boolean nodeExists(@Nonnull final String pathName) throws BackingStoreException {
+  public boolean nodeExists(final String pathName) throws BackingStoreException {
     return false;
   }
 
@@ -195,13 +186,11 @@ public class PropertiesPreferences extends Preferences {
   }
 
   @Override
-  @Nonnull
   public String name() {
     return "/";
   }
 
   @Override
-  @Nonnull
   public String absolutePath() {
     return "/";
   }
@@ -212,11 +201,10 @@ public class PropertiesPreferences extends Preferences {
   }
 
   @Override
-  @Nonnull
   public String toString() {
     final StringWriter writer = new StringWriter();
     try {
-      this.storage.store(writer, GetUtils.ensureNonNull(this.comment, ""));
+      this.storage.store(writer, ensureNotNull(this.comment, ""));
       return writer.toString();
     } catch (IOException ex) {
       throw new Error("Unexpected error", ex);
@@ -232,34 +220,34 @@ public class PropertiesPreferences extends Preferences {
   }
 
   @Override
-  public void addPreferenceChangeListener(@Nonnull final PreferenceChangeListener pcl) {
+  public void addPreferenceChangeListener(final PreferenceChangeListener pcl) {
     this.listeners.add(pcl);
   }
 
   @Override
-  public void removePreferenceChangeListener(@Nonnull final PreferenceChangeListener pcl) {
+  public void removePreferenceChangeListener(final PreferenceChangeListener pcl) {
     this.listeners.remove(pcl);
   }
 
   @Override
-  public void addNodeChangeListener(@Nonnull final NodeChangeListener ncl) {
+  public void addNodeChangeListener(final NodeChangeListener ncl) {
   }
 
   @Override
-  public void removeNodeChangeListener(@Nonnull final NodeChangeListener ncl) {
+  public void removeNodeChangeListener(final NodeChangeListener ncl) {
   }
 
   @Override
-  public void exportNode(@Nonnull final OutputStream os) throws IOException, BackingStoreException {
+  public void exportNode(final OutputStream os) throws IOException, BackingStoreException {
     this.exportSubtree(os);
   }
 
   @Override
-  public void exportSubtree(@Nonnull final OutputStream os) throws IOException, BackingStoreException {
-    this.storage.store(os, GetUtils.ensureNonNull(this.comment, ""));
+  public void exportSubtree(final OutputStream os) throws IOException, BackingStoreException {
+    this.storage.store(os, requireNonNull(this.comment, ""));
   }
 
-  private void fireListeners(@Nonnull final String key, @Nullable final String newValue) {
+  private void fireListeners(final String key, final String newValue) {
     final PreferenceChangeEvent event = new PreferenceChangeEvent(this, key, newValue);
     for (final PreferenceChangeListener l : this.listeners) {
       l.preferenceChange(event);

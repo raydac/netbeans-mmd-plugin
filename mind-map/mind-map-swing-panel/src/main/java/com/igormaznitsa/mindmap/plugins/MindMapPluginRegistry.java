@@ -16,10 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins;
 
-import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static java.util.Objects.requireNonNull;
 
-
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.TopicFinder;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -66,11 +64,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 
-@ThreadSafe
 public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPluginRegistry.class);
@@ -121,7 +115,6 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new ImageVisualAttributePlugin());
   }
 
-  @Nonnull
   public Set<TopicFinder> findAllTopicFinders() {
     final Set<TopicFinder> result = new HashSet<>();
     for (final MindMapPlugin p : this.pluginList) {
@@ -133,21 +126,20 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     return result;
   }
 
-  @Nonnull
   public static MindMapPluginRegistry getInstance() {
     return INSTANCE;
   }
 
-  public void registerPlugin(@Nonnull final MindMapPlugin plugin) {
+  public void registerPlugin(final MindMapPlugin plugin) {
     synchronized (FIND_CACHE) {
-      this.pluginList.add(assertNotNull(plugin));
+      this.pluginList.add(requireNonNull(plugin));
       LOGGER.info("Registered plugin " + plugin.getClass().getName());
       Collections.sort(this.pluginList);
       FIND_CACHE.clear();
     }
   }
 
-  public void unregisterPluginForClass(@Nonnull final Class<? extends MindMapPlugin> pluginClass) {
+  public void unregisterPluginForClass(final Class<? extends MindMapPlugin> pluginClass) {
     synchronized (FIND_CACHE) {
       final Iterator<MindMapPlugin> iterator = this.pluginList.iterator();
       while (iterator.hasNext()) {
@@ -161,9 +153,9 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     }
   }
 
-  public void unregisterPlugin(@Nonnull final MindMapPlugin plugin) {
+  public void unregisterPlugin(final MindMapPlugin plugin) {
     synchronized (FIND_CACHE) {
-      if (this.pluginList.remove(assertNotNull(plugin))) {
+      if (this.pluginList.remove(requireNonNull(plugin))) {
         LOGGER.info("Unregistered plugin " + plugin.getClass().getName());
         Collections.sort(this.pluginList);
       }
@@ -184,8 +176,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     }
   }
 
-  @Nullable
-  public AbstractExporter findExporterForMnemonic(@Nonnull final String mnemonic) {
+  public AbstractExporter findExporterForMnemonic(final String mnemonic) {
     AbstractExporter result = null;
     synchronized (FIND_CACHE) {
       for (final MindMapPlugin p : this.pluginList) {
@@ -201,8 +192,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     return result;
   }
 
-  @Nullable
-  public AbstractImporter findImporterForMnemonic(@Nonnull final String mnemonic) {
+  public AbstractImporter findImporterForMnemonic(final String mnemonic) {
     AbstractImporter result = null;
     synchronized (FIND_CACHE) {
       for (final MindMapPlugin p : this.pluginList) {
@@ -218,9 +208,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     return result;
   }
 
-  @Nonnull
-  @MustNotContainNull
-  public <T extends MindMapPlugin> List<T> findFor(@Nullable final Class<T> klazz) {
+  public <T extends MindMapPlugin> List<T> findFor(final Class<T> klazz) {
     synchronized (FIND_CACHE) {
       List<T> result = (List<T>) FIND_CACHE.get(klazz);
 
@@ -241,7 +229,6 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   }
 
   @Override
-  @Nonnull
   public Iterator<MindMapPlugin> iterator() {
     return this.pluginList.iterator();
   }
