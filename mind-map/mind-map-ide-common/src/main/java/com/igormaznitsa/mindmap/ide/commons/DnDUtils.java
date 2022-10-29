@@ -30,8 +30,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 
@@ -48,7 +46,7 @@ public final class DnDUtils {
   private DnDUtils() {
   }
 
-  public static boolean isFileOrLinkOrText(@Nonnull final DropTargetDragEvent dtde) {
+  public static boolean isFileOrLinkOrText(final DropTargetDragEvent dtde) {
     boolean result = false;
     for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
       if (flavor.isFlavorJavaFileListType() || flavor.isFlavorTextType() ||
@@ -61,8 +59,7 @@ public final class DnDUtils {
     return result;
   }
 
-  @Nonnull
-  public static String removeZeroChars(@Nonnull final String str) {
+  public static String removeZeroChars(final String str) {
     final StringBuilder buffer = new StringBuilder(str.length());
     for (final char c : str.toCharArray()) {
       if (c != 0) {
@@ -72,8 +69,7 @@ public final class DnDUtils {
     return buffer.toString();
   }
 
-  @Nullable
-  public static String extractHtmlLink(final boolean removeZeroChars, @Nullable final String text) {
+  public static String extractHtmlLink(final boolean removeZeroChars, final String text) {
     if (text == null) {
       return null;
     }
@@ -92,8 +88,7 @@ public final class DnDUtils {
     return result;
   }
 
-  @Nullable
-  public static String extractDropLink(@Nonnull final DropTargetDropEvent dtde) throws Exception {
+  public static String extractDropLink(final DropTargetDropEvent dtde) throws Exception {
     String foundHtmlLink = null;
     String foundMozLink = null;
     for (final DataFlavor df : dtde.getCurrentDataFlavors()) {
@@ -123,7 +118,7 @@ public final class DnDUtils {
 
   private static final Pattern EMPTY_OR_WHITE = Pattern.compile("[\\s\\n]");
 
-  public static boolean isUriString(@Nullable final String str) {
+  public static boolean isUriString(final String str) {
     if (str == null) {
       return false;
     }
@@ -138,20 +133,18 @@ public final class DnDUtils {
     }
   }
 
-  @Nullable
-  public static String extractDropNote(@Nonnull final DropTargetDropEvent dtde) throws Exception {
+  public static String extractDropNote(final DropTargetDropEvent dtde) throws Exception {
     String result;
     try {
       result = (String) dtde.getTransferable().getTransferData(DataFlavor.stringFlavor);
-      result = result == null ? null : removeZeroChars(result);
+      result = removeZeroChars(result);
     } catch (NotSerializableException | UnsupportedFlavorException ex) {
       result = null;
     }
     return result;
   }
 
-  @Nullable
-  public static URI extractUrlLinkFromFile(@Nonnull final File file) {
+  public static URI extractUrlLinkFromFile(final File file) {
     URI result = null;
     if (file.isFile()) {
       if (file.getName().endsWith(".url") || (SystemUtils.IS_OS_WINDOWS && file.length() < 1024)) {

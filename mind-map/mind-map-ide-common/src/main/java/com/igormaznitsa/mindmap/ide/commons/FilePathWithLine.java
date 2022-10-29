@@ -18,8 +18,6 @@ package com.igormaznitsa.mindmap.ide.commons;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class FilePathWithLine {
 
@@ -27,7 +25,7 @@ public class FilePathWithLine {
   private final String path;
   private final int line;
 
-  public FilePathWithLine(@Nullable final String filePath) {
+  public FilePathWithLine(final String filePath) {
     if (filePath == null) {
       this.path = null;
       this.line = -1;
@@ -52,7 +50,7 @@ public class FilePathWithLine {
     }
   }
 
-  public static int strToLine(@Nullable final String text) {
+  public static int strToLine(final String text) {
     int parsed = -1;
     if (text != null) {
       try {
@@ -64,7 +62,6 @@ public class FilePathWithLine {
     return parsed;
   }
 
-  @Nonnull
   public String getPathOrEmpty() {
     return this.path == null ? "" : this.path;
   }
@@ -73,7 +70,6 @@ public class FilePathWithLine {
     return this.path == null || this.path.length() == 0;
   }
 
-  @Nullable
   public String getPath() {
     return this.path;
   }
@@ -83,12 +79,12 @@ public class FilePathWithLine {
   }
 
   @Override
-  @Nonnull
   public String toString() {
     if (this.line > 0) {
       return this.getPathOrEmpty() + ':' + this.line;
     } else if (this.getPathOrEmpty().indexOf(':') >= 0) {
-      return PATH_CONTAINS_LINE_NUMBER.matcher(this.getPathOrEmpty()).matches() ? this.getPathOrEmpty() + ":0" : this.getPathOrEmpty();
+      return PATH_CONTAINS_LINE_NUMBER.matcher(this.getPathOrEmpty()).matches() ?
+          this.getPathOrEmpty() + ":0" : this.getPathOrEmpty();
     } else {
       return this.getPathOrEmpty();
     }

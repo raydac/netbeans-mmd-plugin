@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.ide.commons;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
 
 /**
  * Misc functions and flags.
@@ -50,8 +49,7 @@ public final class Misc {
    * @param patternFlags flags to be used
    * @return formed pattern
    */
-  @Nonnull
-  public static Pattern string2pattern(@Nonnull final String text, final int patternFlags) {
+  public static Pattern string2pattern(final String text, final int patternFlags) {
     final StringBuilder result = new StringBuilder();
 
     for (final char c : text.toCharArray()) {

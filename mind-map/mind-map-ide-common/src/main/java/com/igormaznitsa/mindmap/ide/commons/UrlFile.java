@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 
 public final class UrlFile {
@@ -33,11 +31,11 @@ public final class UrlFile {
   private final Map<String, Map<String, String>> sections = new HashMap<>();
   private final int savedPairs;
 
-  public UrlFile(@Nonnull final File file) throws IOException {
+  public UrlFile(final File file) throws IOException {
     this(FileUtils.readFileToString(file, "Cp1252"));
   }
 
-  public UrlFile(@Nonnull final String text) {
+  public UrlFile(final String text) {
     Map<String, String> currentSection = null;
 
     int counter = 0;
@@ -77,13 +75,11 @@ public final class UrlFile {
     return this.savedPairs;
   }
 
-  @Nullable
   public String getURL() {
     return this.getValue("InternetShortcut", "URL");
   }
 
-  @Nullable
-  public String getValue(@Nonnull final String section, @Nonnull final String key) {
+  public String getValue(final String section, final String key) {
     final Map<String, String> sectionMap = this.sections.get(section);
     return sectionMap == null ? null : sectionMap.get(key);
   }

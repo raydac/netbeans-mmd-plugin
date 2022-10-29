@@ -16,9 +16,7 @@
 
 package com.igormaznitsa.mindmap.ide.commons;
 
-import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import java.awt.event.ActionEvent;
-import javax.annotation.Nonnull;
 import javax.swing.Action;
 import javax.swing.JPopupMenu;
 import javax.swing.text.DefaultEditorKit;
@@ -27,9 +25,7 @@ import javax.swing.text.TextAction;
 
 public class SwingUtils {
 
-  @Nonnull
-  @ReturnsOriginal
-  public static JPopupMenu addTextActions(@Nonnull final JPopupMenu menu) {
+  public static JPopupMenu addTextActions(final JPopupMenu menu) {
     final Action cut = new DefaultEditorKit.CutAction();
     cut.putValue(Action.NAME, "Cut");
     menu.add(cut);
@@ -56,7 +52,7 @@ public class SwingUtils {
     }
 
     @Override
-    public void actionPerformed(@Nonnull final ActionEvent e) {
+    public void actionPerformed(final ActionEvent e) {
       final JTextComponent component = getFocusedComponent();
       if (component != null) {
         component.selectAll();
