@@ -397,8 +397,8 @@ public final class MMDEditor extends AbstractTextEditor
   }
 
   @Override
-  public void onComponentElementsLayouted(@Nonnull final MindMapPanel source,
-                                          @Nonnull final Graphics2D g) {
+  public void onComponentElementsLayout(@Nonnull final MindMapPanel source,
+                                        @Nonnull final Graphics2D g) {
     if (this.firstLayouting) {
       this.firstLayouting = false;
       SwingUtilities.invokeLater(new Runnable() {

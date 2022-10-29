@@ -682,7 +682,7 @@ public final class MMDGraphEditor extends CloneableEditor
   }
 
   @Override
-  public void onComponentElementsLayouted(@Nonnull final MindMapPanel source,
+  public void onComponentElementsLayout(@Nonnull final MindMapPanel source,
                                           @Nonnull final Graphics2D g) {
   }
 

@@ -3153,7 +3153,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 //        }
 //
 //        @Override
-//        public void onComponentElementsLayouted(@Nonnull MindMapPanel source, @Nonnull Graphics2D g) {
+//        public void onComponentElementsLayout(@Nonnull MindMapPanel source, @Nonnull Graphics2D g) {
 //        }
 //
 //        @Override
