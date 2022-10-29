@@ -3,60 +3,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.igormaznitsa</groupId>
+    <parent>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>mind-map</artifactId>
+        <version>1.5.3-SNAPSHOT</version>
+    </parent>
+
     <artifactId>mind-map-annotation-processor</artifactId>
-    <version>1.5.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>MMD Annotation processor</name>
-    <description>Processor to generate MMD files based on annotated sources</description>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <developers>
-        <developer>
-            <id>raydac</id>
-            <name>Igor Maznitsa</name>
-            <email>rrg4400@gmail.com</email>
-            <url>http://www.igormaznitsa.com</url>
-            <timezone>+2</timezone>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
-
-    <url>http://www.sciareto.org</url>
-
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>https://github.com/raydac/netbeans-mmd-plugin/issues</url>
-    </issueManagement>
-
-    <scm>
-        <url>https://github.com/raydac/netbeans-mmd-plugin</url>
-        <connection>scm:git:git://github.com/raydac/netbeans-mmd-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:raydac/netbeans-mmd-plugin.git</developerConnection>
-    </scm>
-
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
-
-    <organization>
-        <name>Igor Maznitsa</name>
-        <url>http://www.igormaznitsa.com</url>
-    </organization>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+    <description>Annotation processor to fina and generate annotation source based MMD mind map files</description>
 
     <profiles>
         <profile>
@@ -91,25 +48,6 @@
                                 </manifestEntries>
                             </archive>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.igormaznitsa</groupId>
-                        <artifactId>uber-pom</artifactId>
-                        <configuration>
-                            <remove>
-                                <section>parent</section>
-                                <section>modules</section>
-                                <section>profiles/profile/modules</section>
-                            </remove>
-                            <removeSiblingDuplications>true</removeSiblingDuplications>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>upom</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -169,9 +107,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
                 <configuration>
-                    <release>11</release>
+                    <release>9</release>
+                    <source>9</source>
+                    <target>9</target>
                     <verbose>true</verbose>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>

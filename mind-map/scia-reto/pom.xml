@@ -38,6 +38,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-utils</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-core</artifactId>
       <version>${reactor.project.version}</version>

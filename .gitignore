@@ -4,6 +4,7 @@ target/
 .classpath
 .project
 .factorypath
+.flattened-pom.xml
 resource.syso
 versioninfo.go
 nb-configuration.xml

@@ -61,25 +61,6 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>com.igormaznitsa</groupId>
-            <artifactId>uber-pom</artifactId>
-            <configuration>
-              <remove>
-                <section>parent</section>
-                <section>modules</section>
-                <section>profiles/profile/modules</section>
-              </remove>
-              <removeSiblingDuplications>true</removeSiblingDuplications>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>upom</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
             <executions>
@@ -190,6 +171,14 @@
   </repositories>
 
   <dependencies>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>meta-utils</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-model</artifactId>
