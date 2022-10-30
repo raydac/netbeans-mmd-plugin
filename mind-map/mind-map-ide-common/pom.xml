@@ -8,17 +8,16 @@
   </parent>
 
   <artifactId>mind-map-ide-common</artifactId>
-  <version>${main.version}</version>
-    
+  <packaging>jar</packaging>
+
   <name>MindMap IDE Common</name>
   <description>Aggregator of common code for IDE plugins</description>
-  <packaging>jar</packaging>
-    
+
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-model</artifactId>
-      <version>${mindmap.model.version}</version>
+      <version>1.5.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-version = project.hasProperty('mm_plugin_version') ? project.getProperty('mm_plugin_version') : "1.5.3-SNAPSHOT"
+version = project.getProperty('maven_project_version')
 
 intellij {
     version = "IC-181.5684.4"
@@ -18,15 +18,8 @@ intellij {
     updateSinceUntilBuild = false
 }
 
-def mindMapModelVersion = project.getProperty('mm_model_version')
-def mindMapCommonVersion = project.getProperty('mm_ide_common_version')
-def mindMapPanelVersion = project.getProperty('mm_panel_version')
 def jsoupVersion = project.getProperty('jsoup_version')
 def jsonVersion = project.getProperty('json_version')
-
-logger.warn('MMD Model Version: ' + mindMapModelVersion)
-logger.warn('MMD IDE Common Version: ' + mindMapCommonVersion)
-logger.warn('MMD Panel Version: ' + mindMapPanelVersion)
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -41,9 +34,9 @@ dependencies {
     implementation('org.json:json:' + jsonVersion)
     implementation('org.jsoup:jsoup:' + jsoupVersion)
 
-    implementation('com.igormaznitsa:mind-map-model:' + mindMapModelVersion)
-    implementation('com.igormaznitsa:mind-map-ide-common:' + mindMapCommonVersion)
-    implementation('com.igormaznitsa:mind-map-swing-panel:' + mindMapPanelVersion)
+    implementation('com.igormaznitsa:mind-map-model:' + version)
+    implementation('com.igormaznitsa:mind-map-ide-common:' + version)
+    implementation('com.igormaznitsa:mind-map-swing-panel:' + version)
 }
 
 sourceSets {

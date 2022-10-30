@@ -101,22 +101,19 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>${jsoup.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>${json.version}</version>
         </dependency>
         <dependency>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>mind-map-model</artifactId>
-            <version>${mindmap.model.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>commons-version</artifactId>
-            <version>${iam.commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -141,14 +138,6 @@
                             <Automatic-Module-Name>igormaznitsa.mmd.swing.panel</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

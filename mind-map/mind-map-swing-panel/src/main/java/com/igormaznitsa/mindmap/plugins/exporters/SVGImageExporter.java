@@ -90,7 +90,7 @@ import org.apache.commons.text.StringEscapeUtils;
 public class SVGImageExporter extends AbstractExporter {
 
   protected static final String FONT_CLASS_NAME = "mindMapTitleFont";
-  private static final Map<String, String[]> LOCAL_FONT_MAP = new HashMap<>() {
+  private static final Map<String, String[]> LOCAL_FONT_MAP = new HashMap<String, String[]>() {
     {
       put("dialog", new String[] {"sans-serif", "SansSerif"});
       put("dialoginput", new String[] {"monospace", "Monospace"});

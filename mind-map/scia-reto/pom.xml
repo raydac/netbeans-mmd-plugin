@@ -24,16 +24,7 @@
 
   <properties>
     <app.name>sciareto-${project.version}</app.name>
-    <jung.version>2.1.1</jung.version>
-    <batik.version>1.14</batik.version>
-    <jlatexmath.version>1.0.7</jlatexmath.version>
-    <plantuml.version>1.2022.12</plantuml.version>
-    <rsyntax.version>3.3.0</rsyntax.version>
-    <rsyntax.autocomplete.version>3.2.0</rsyntax.autocomplete.version>
-    <jna.version>5.12.1</jna.version>
     <jre.version>19.0.1+11</jre.version>
-    <reactor.project.version>3.4.24</reactor.project.version>
-    <flatlaf.version>2.6</flatlaf.version>
   </properties>
 
   <dependencies>
@@ -48,22 +39,18 @@
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-core</artifactId>
-      <version>${reactor.project.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jung</groupId>
       <artifactId>jung-graph-impl</artifactId>
-      <version>${jung.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fifesoft</groupId>
       <artifactId>rsyntaxtextarea</artifactId>
-      <version>${rsyntax.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fifesoft</groupId>
       <artifactId>autocomplete</artifactId>
-      <version>${rsyntax.autocomplete.version}</version>
       <exclusions>
         <exclusion>
           <groupId>com.fifesoft</groupId>
@@ -74,52 +61,40 @@
     <dependency>
       <groupId>net.sf.jung</groupId>
       <artifactId>jung-visualization</artifactId>
-      <version>${jung.version}</version>
     </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-ide-common</artifactId>
-      <version>${main.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.igormaznitsa</groupId>
       <artifactId>mind-map-swing-panel</artifactId>
-      <version>${main.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.igormaznitsa</groupId>
-      <artifactId>mind-map-model</artifactId>
-      <version>${mindmap.model.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.15</version>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>${jna.version}</version>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna-platform</artifactId>
-      <version>${jna.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.plantuml</groupId>
       <artifactId>plantuml</artifactId>
-      <version>${plantuml.version}</version>
     </dependency>
     <dependency>
       <groupId>org.scilab.forge</groupId>
       <artifactId>jlatexmath</artifactId>
-      <version>${jlatexmath.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
-      <version>${batik.version}</version>
       <exclusions>
         <exclusion>
           <groupId>xml-apis</groupId>
@@ -130,27 +105,22 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-svggen</artifactId>
-      <version>${batik.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-transcoder</artifactId>
-      <version>${batik.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-codec</artifactId>
-      <version>${batik.version}</version>
     </dependency>
     <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf</artifactId>
-      <version>${flatlaf.version}</version>
     </dependency>
     <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf-intellij-themes</artifactId>
-      <version>${flatlaf.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -160,7 +130,6 @@
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-streams</artifactId>
-      <version>3.3.1</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -188,7 +157,6 @@
           <plugin>
             <groupId>de.perdian.maven.plugins</groupId>
             <artifactId>macosappbundler-maven-plugin</artifactId>
-            <version>1.18.0</version>
             <configuration>
               <plist>
                 <CFBundleIconFile>icon.icns</CFBundleIconFile>
@@ -427,7 +395,6 @@
           <plugin>
             <groupId>com.akathist.maven.plugins.launch4j</groupId>
             <artifactId>launch4j-maven-plugin</artifactId>
-            <version>2.1.2</version>
             <configuration>
               <headerType>gui</headerType>
               <outfile>${project.build.directory}/${app.name}.exe</outfile>
@@ -443,11 +410,11 @@
                 <mutexName>sciaretoeditor</mutexName>
               </singleInstance>
               <versionInfo>
-                <fileVersion>${main.version.raw}.0</fileVersion>
+                <fileVersion>${project.version.raw}.0</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
                 <fileDescription>SciaReto Mind Map editor</fileDescription>
                 <copyright>2016-2022 Igor Maznitsa</copyright>
-                <productVersion>${main.version.raw}.0</productVersion>
+                <productVersion>${project.version.raw}.0</productVersion>
                 <txtProductVersion>${project.version}</txtProductVersion>
                 <productName>${project.name}</productName>
                 <companyName>igormaznitsa.com</companyName>
@@ -735,8 +702,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <release>9</release>
-          <showDeprecation>true</showDeprecation>
-          <showWarnings>true</showWarnings>
+          <source>9</source>
+          <target>9</target>
         </configuration>
       </plugin>
       <plugin>

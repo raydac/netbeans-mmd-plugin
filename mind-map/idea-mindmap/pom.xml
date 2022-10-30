@@ -18,22 +18,32 @@
   </properties>
 
   <dependencies>
-      <dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
           <groupId>com.igormaznitsa</groupId>
           <artifactId>mind-map-ide-common</artifactId>
-          <version>${main.version}</version>
+          <version>${project.version}</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>com.igormaznitsa</groupId>
           <artifactId>mind-map-swing-panel</artifactId>
-          <version>${main.version}</version>
+          <version>${project.version}</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>com.igormaznitsa</groupId>
           <artifactId>mind-map-model</artifactId>
-          <version>${mindmap.model.version}</version>
+          <version>${project.version}</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>    
@@ -121,12 +131,9 @@
                 <argument>build</argument>
 <!--                <argument>-i</argument>-->
                 <argument>-S</argument>
-                <argument>-Pjsoup_version=${jsoup.version}</argument>
-                <argument>-Pjson_version=${json.version}</argument>
-                <argument>-Pmm_plugin_version=${project.version}</argument>
-                <argument>-Pmm_model_version=${mindmap.model.version}</argument>
-                <argument>-Pmm_ide_common_version=${project.version}</argument>
-                <argument>-Pmm_panel_version=${project.version}</argument>
+                <argument>-Pjsoup_version=${org.jsoup:jsoup:jar.version}</argument>
+                <argument>-Pjson_version=${org.json:json:jar.version}</argument>
+                <argument>-Pmaven_project_version=${project.version}</argument>
               </arguments>
             </configuration>
             <goals>
