@@ -22,16 +22,19 @@
           <groupId>com.igormaznitsa</groupId>
           <artifactId>mind-map-ide-common</artifactId>
           <version>${main.version}</version>
+          <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>com.igormaznitsa</groupId>
           <artifactId>mind-map-swing-panel</artifactId>
           <version>${main.version}</version>
+          <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>com.igormaznitsa</groupId>
           <artifactId>mind-map-model</artifactId>
           <version>${mindmap.model.version}</version>
+          <scope>provided</scope>
       </dependency>
   </dependencies>    
 
@@ -112,14 +115,14 @@
             <configuration>
               <executable>${gradle.executable}</executable>
               <arguments>
+                <argument>-q</argument>
+                <argument>dependencies</argument>
                 <argument>clean</argument>
                 <argument>build</argument>
-                <argument>-i</argument>
+<!--                <argument>-i</argument>-->
                 <argument>-S</argument>
                 <argument>-Pjsoup_version=${jsoup.version}</argument>
                 <argument>-Pjson_version=${json.version}</argument>
-                <argument>-Pcommonsio_version=${commons.io.version}</argument>
-                <argument>-Pcommonslang_version=${commons.lang.version}</argument>
                 <argument>-Pmm_plugin_version=${project.version}</argument>
                 <argument>-Pmm_model_version=${mindmap.model.version}</argument>
                 <argument>-Pmm_ide_common_version=${project.version}</argument>
@@ -132,17 +135,8 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>8</source>
-          <target>8</target>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
-
 
   <repositories>
     <repository>
