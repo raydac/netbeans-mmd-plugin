@@ -134,7 +134,7 @@ public class KStreamsTopologyDescriptionParserTest {
     final KStream<String, String> streamTwo = builder.stream("input-topic-two");
     final KStream<String, String> streamOneNewKey = streamOne.selectKey((k, v) -> v.substring(0, 5));
     final KStream<String, String> streamTwoNewKey = streamTwo.selectKey((k, v) -> v.substring(4, 9));
-    streamOneNewKey.join(streamTwoNewKey, (v1, v2) -> v1 + ":" + v2, JoinWindows.of(ofMinutes(5).toMillis())).to("joined-output");
+    streamOneNewKey.join(streamTwoNewKey, (v1, v2) -> v1 + ":" + v2, JoinWindows.of(ofMinutes(5))).to("joined-output");
 
     final Topology topology = builder.build();
     final String text = topology.describe().toString();
