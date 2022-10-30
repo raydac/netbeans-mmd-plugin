@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
-        <version>1.5.3-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>scia-reto-win-launcher</artifactId>
@@ -17,7 +17,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mvn.golang.go.version>1.19.2</mvn.golang.go.version>
-        <mvn.golang.wrapper.version>2.3.10</mvn.golang.wrapper.version>
         <maven.test.skip>true</maven.test.skip>
         <target.name>scia-reto</target.name>
         <final.extension>.exe</final.extension>
@@ -33,7 +32,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
                 <configuration>
                     <followSymLinks>false</followSymLinks>
                     <excludeDefaultDirectories>true</excludeDefaultDirectories>
@@ -49,7 +47,6 @@
             <plugin>
                 <groupId>com.igormaznitsa</groupId>
                 <artifactId>mvn-golang-wrapper</artifactId>
-                <version>${mvn.golang.wrapper.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <strip>true</strip>
