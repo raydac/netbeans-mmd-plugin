@@ -6,25 +6,75 @@ package com.igormaznitsa.mindmap.model.annotations;
  * @see MmdTopic#colorFill()
  * @see MmdTopic#colorText()
  * @see MmdTopic#colorBorder()
- * @since 1.5.3
  */
 public enum MmdColor {
+  /**
+   * Default color
+   */
   DEFAULT(""),
+  /**
+   * Black
+   */
   BLACK("#000000"),
+  /**
+   * Silver
+   */
   SILVER("#C0C0C0"),
+  /**
+   * Gray
+   */
   GRAY("#808080"),
+  /**
+   * White
+   */
   WHITE("#FFFFFF"),
+  /**
+   * Maroon
+   */
   MAROON("#800000"),
+  /**
+   * Red
+   */
   RED("#FF0000"),
+  /**
+   * Purple
+   */
   PURPLE("#800080"),
+  /**
+   * Fuchsia
+   */
   FUCHSIA("#FF00FF"),
+  /**
+   * Green
+   */
   GREEN("#008000"),
+  /**
+   * Lime
+   */
   LIME("#00FF00"),
+  /**
+   * Olive
+   */
   OLIVE("#808000"),
+  /**
+   * Yellow
+   */
   YELLOW("#FFFF00"),
+  /**
+   * Navy
+   */
   NAVY("#000080"),
+  /**
+   * Blue
+   */
   BLUE("#0000FF"),
+  /**
+   * Teal
+   */
   TEAL("#008080"),
+  /**
+   * Aqua
+   */
   AQUA("#00FFFF");
 
   private final String htmlColor;

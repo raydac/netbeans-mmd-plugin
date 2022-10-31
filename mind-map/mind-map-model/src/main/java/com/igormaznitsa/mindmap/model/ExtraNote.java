@@ -16,11 +16,16 @@
 
 package com.igormaznitsa.mindmap.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+/**
+ * Extra topic item contains text, the text can be encrypted.
+ */
 public class ExtraNote extends Extra<String> {
   public static final String ATTR_ENCRYPTED = "extras.note.encrypted";
   public static final String ATTR_PASSWORD_HINT = "extras.note.encrypted.hint";
@@ -29,18 +34,42 @@ public class ExtraNote extends Extra<String> {
   private final boolean encrypted;
   private final String hint;
 
-  public ExtraNote(final String text) {
-    this.text = text;
-    this.encrypted = false;
-    this.hint = null;
+  private ExtraNote(final ExtraNote extraNote) {
+    super();
+    this.text = extraNote.text;
+    this.encrypted = extraNote.encrypted;
+    this.hint = extraNote.hint;
   }
 
+
+  /**
+   * Create note for non-encrypted text
+   *
+   * @param text text, must not be null
+   */
+  public ExtraNote(final String text) {
+    this(text, false, null);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param text      text of note, must not be null
+   * @param encrypted flag shows that text is encrypted if true
+   * @param hint      non-encrypted text hint for encrypted text, can be null if missing
+   */
   public ExtraNote(final String text,
                    final boolean encrypted,
                    final String hint) {
-    this.text = text;
+    super();
+    this.text = requireNonNull(text);
     this.encrypted = encrypted;
     this.hint = hint;
+  }
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    return new ExtraNote(this);
   }
 
   @Override
@@ -48,10 +77,20 @@ public class ExtraNote extends Extra<String> {
     return !this.encrypted;
   }
 
+  /**
+   * Flag shows that text is encrypted
+   *
+   * @return true if text is encrypted, false otherwise
+   */
   public boolean isEncrypted() {
     return this.encrypted;
   }
 
+  /**
+   * Get hint for encrypted text
+   *
+   * @return hint as on-encrypted string, can be null if hint missing
+   */
   public String getHint() {
     return this.hint;
   }
@@ -84,7 +123,7 @@ public class ExtraNote extends Extra<String> {
   }
 
   @Override
-  public boolean containsPattern( final File baseFolder, final Pattern pattern) {
+  public boolean containsPattern(final File baseFolder, final Pattern pattern) {
     return !this.encrypted && pattern.matcher(this.text).find();
   }
 

@@ -21,11 +21,17 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class ExtraTopic extends Extra<String> {
-  public static final String TOPIC_UID_ATTR = "topicLinkUID"; //NOI18N
+  public static final String TOPIC_UID_ATTR = "topicLinkUID";
   private static final long serialVersionUID = -8556885025460722094L;
   private final String topicUID;
 
+  private ExtraTopic(final ExtraTopic extraTopic) {
+    super();
+    this.topicUID = extraTopic.topicUID;
+  }
+
   public ExtraTopic(final String topicUID) {
+    super();
     this.topicUID = topicUID;
   }
 
@@ -56,6 +62,11 @@ public class ExtraTopic extends Extra<String> {
       result = new ExtraTopic(uid);
     }
     return result;
+  }
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    return new ExtraTopic(this);
   }
 
   @Override

@@ -20,6 +20,9 @@ import com.igormaznitsa.mindmap.model.nio.Path;
 import com.igormaznitsa.mindmap.model.nio.PathService;
 import java.io.File;
 
+/**
+ * Service implementation to generate paths based on java.nio.file.Path
+ */
 public class J7PathService implements PathService {
 
   @Override

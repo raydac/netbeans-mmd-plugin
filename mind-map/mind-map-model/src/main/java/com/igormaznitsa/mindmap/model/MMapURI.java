@@ -26,11 +26,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * URI wrapper to be used in bounds of mind map.
+ */
 public class MMapURI implements Serializable {
 
   public static final long serialVersionUID = 27896411234L;
@@ -41,13 +45,25 @@ public class MMapURI implements Serializable {
   private final Properties parameters;
   private final boolean fileUriFlag;
 
+  /**
+   * Constructor.
+   *
+   * @param uri uri as string to be wrapped, must not be null
+   * @throws URISyntaxException thrown if malformed URI format
+   */
   public MMapURI(final String uri) throws URISyntaxException {
     this(new URI(uri));
   }
 
-  public MMapURI(final URI uri) {
+  /**
+   * Constructor.
+   *
+   * @param uri uri to be wrapped, must not be null
+   * @throws URISyntaxException thrown if malformed URI format
+   */
+  public MMapURI(final URI uri) throws URISyntaxException {
     this.fileUriFlag = requireNonNull(uri).getScheme() == null ||
-        uri.getScheme().equalsIgnoreCase("file"); //NOI18N
+        uri.getScheme().equalsIgnoreCase("file");
 
     final URI preparedURI;
 
@@ -55,14 +71,10 @@ public class MMapURI implements Serializable {
     if (queryString != null) {
       this.parameters = ModelUtils.extractQueryPropertiesFromURI(uri);
       if (this.fileUriFlag) {
-        try {
-          final String uriAsString = uri.toString();
-          final int queryStart = uriAsString.lastIndexOf('?');
-          preparedURI =
-              new URI(queryStart >= 0 ? uriAsString.substring(0, queryStart) : uriAsString);
-        } catch (URISyntaxException ex) {
-          throw new Error("Unexpected error", ex);
-        }
+        final String uriAsString = uri.toString();
+        final int queryStart = uriAsString.lastIndexOf('?');
+        preparedURI =
+            new URI(queryStart >= 0 ? uriAsString.substring(0, queryStart) : uriAsString);
       } else {
         preparedURI = uri;
       }
@@ -73,27 +85,40 @@ public class MMapURI implements Serializable {
     this.uri = preparedURI;
   }
 
-  private MMapURI(final URI uri, final boolean isFile,
-                  final Properties properties) {
+  private MMapURI(
+      final URI uri,
+      final boolean isFile,
+      final Properties properties
+  ) {
     this.uri = uri;
     this.fileUriFlag = isFile;
     this.parameters = properties == null ? new Properties() : (Properties) properties.clone();
   }
 
-  public MMapURI(final File nullableBase, final File file,
-                 final Properties nullableParameters) {
+  /**
+   * Create from file.
+   *
+   * @param baseFolder base folder, can be null
+   * @param file       target file, must not be null
+   * @param parameters optional parameters for URI, can be null
+   */
+  public MMapURI(
+      final File baseFolder,
+      final File file,
+      final Properties parameters
+  ) {
     this.fileUriFlag = true;
     this.parameters = new Properties();
-    if (nullableParameters != null && !nullableParameters.isEmpty()) {
-      this.parameters.putAll(nullableParameters);
+    if (parameters != null && !parameters.isEmpty()) {
+      this.parameters.putAll(parameters);
     }
 
     final Path filePath = Paths.toPath(file);
 
-    if (nullableBase == null) {
+    if (baseFolder == null) {
       this.uri = ModelUtils.toURI(filePath);
     } else {
-      final Path basePath = Paths.toPath(nullableBase);
+      final Path basePath = Paths.toPath(baseFolder);
       if (basePath.isAbsolute()) {
         final Path path = filePath.startsWith(basePath) ? basePath.relativize(filePath) : filePath;
         this.uri = ModelUtils.toURI(path);
@@ -114,10 +139,22 @@ public class MMapURI implements Serializable {
     return host;
   }
 
+  /**
+   * Create from file path
+   *
+   * @param baseFolder base folder, can be null
+   * @param filePath   file path, must not be null
+   * @param properties optional properties, can be null
+   * @return created URI link, must not be null
+   * @throws URISyntaxException thrown if errors with URI format
+   */
   @SuppressWarnings("ConstantConditions")
-  public static MMapURI makeFromFilePath(final File base, final String filePath,
-                                         final Properties properties) throws URISyntaxException {
-    return new MMapURI(base, ModelUtils.makeFileForPath(filePath), properties);
+  public static MMapURI makeFromFilePath(
+      final File baseFolder,
+      final String filePath,
+      final Properties properties
+  ) throws URISyntaxException {
+    return new MMapURI(baseFolder, ModelUtils.makeFileForPath(filePath), properties);
   }
 
   @Override
@@ -152,22 +189,34 @@ public class MMapURI implements Serializable {
     }
   }
 
-  public MMapURI replaceBaseInPath(final boolean replaceHost, final URI newBase,
-                                   int currentNumberOfResourceItemsTheLasIsZero)
+  /**
+   * Make URI link with replaced base in path.
+   *
+   * @param replaceHost           if true then host should be replaced
+   * @param newBase               new base for the link
+   * @param numberOfResourceItems number of items to replace , last is zero
+   * @return new URI with replaced base, must not be null
+   * @throws URISyntaxException thrown if problem with URI
+   */
+  public MMapURI replaceBaseInPath(
+      final boolean replaceHost,
+      final URI newBase,
+      int numberOfResourceItems
+  )
       throws URISyntaxException {
-    final String newURIPath = newBase.getPath();
-    final String[] splittedNewPath = newURIPath.split("\\/");
-    final String[] splittedOldPath = this.uri.getPath().split("\\/");
+    final String newUriPath = newBase.getPath();
+    final String[] splitNewPath = newUriPath.split("\\/");
+    final String[] splitOldPath = this.uri.getPath().split("\\/");
 
-    final List<String> resultPath = new ArrayList<>(Arrays.asList(splittedNewPath));
+    final List<String> resultPath = new ArrayList<>(Arrays.asList(splitNewPath));
 
-    currentNumberOfResourceItemsTheLasIsZero = currentNumberOfResourceItemsTheLasIsZero + 1;
+    numberOfResourceItems = numberOfResourceItems + 1;
 
-    int oldPathIndex = splittedOldPath.length - currentNumberOfResourceItemsTheLasIsZero;
+    int oldPathIndex = splitOldPath.length - numberOfResourceItems;
 
-    while (oldPathIndex < splittedOldPath.length) {
+    while (oldPathIndex < splitOldPath.length) {
       if (oldPathIndex >= 0) {
-        resultPath.add(splittedOldPath[oldPathIndex]);
+        resultPath.add(splitOldPath[oldPathIndex]);
       }
       oldPathIndex++;
     }
@@ -192,6 +241,13 @@ public class MMapURI implements Serializable {
     return new MMapURI(newURI, this.fileUriFlag, this.parameters);
   }
 
+  /**
+   * Make new URI with replaced name.
+   *
+   * @param newName new name, must not be null
+   * @return new URI, must not be null
+   * @throws URISyntaxException if problems with URI syntax
+   */
   public MMapURI replaceName(final String newName) throws URISyntaxException {
     final MMapURI result;
     final String normalizedName = ModelUtils.escapeURIPath(newName).replace('\\', '/');
@@ -228,26 +284,36 @@ public class MMapURI implements Serializable {
     return result;
   }
 
+  /**
+   * Convert into URI.
+   *
+   * @return converted URI, must not be null
+   */
   public URI asURI() {
     if (this.fileUriFlag) {
       try {
         return new URI(this.uri.toASCIIString() + (this.parameters.isEmpty() ? "" :
             '?' + ModelUtils.makeQueryStringForURI(this.parameters)));
       } catch (URISyntaxException ex) {
-        throw new Error("Unexpected error during URI convertation"); //NOI18N
+        throw new Error("Unexpected error during URI conversion");
       }
     } else {
       return this.uri;
     }
   }
 
+  /**
+   * Get resource extension
+   *
+   * @return extension of the resource, can't be null, be empty if there is no extension
+   */
   public String getExtension() {
     String text = this.uri.getPath();
     final int lastSlash = text.lastIndexOf('/');
     if (lastSlash >= 0) {
       text = text.substring(lastSlash + 1);
     }
-    String result = ""; //NOI18N
+    String result = "";
     if (!text.isEmpty()) {
       final int dotIndex = text.lastIndexOf('.');
       if (dotIndex >= 0) {
@@ -257,34 +323,58 @@ public class MMapURI implements Serializable {
     return result;
   }
 
+  /**
+   * Convert int pstring.
+   *
+   * @param ascII                if true then convert into ASCII string
+   * @param addPropertiesAsQuery if true then properties will be added as query
+   * @return string created from the URI object, must not be null
+   */
   public String asString(final boolean ascII, final boolean addPropertiesAsQuery) {
     if (this.fileUriFlag) {
       return (ascII ? this.uri.toASCIIString() : this.uri.toString()) +
           (!addPropertiesAsQuery || this.parameters.isEmpty() ? "" :
-              '?' + ModelUtils.makeQueryStringForURI(this.parameters)); //NOI18N
+              '?' + ModelUtils.makeQueryStringForURI(this.parameters));
     } else {
       return ascII ? this.uri.toASCIIString() : this.uri.toString();
     }
   }
 
-  public File asFile(final File base) {
+  /**
+   * Get as file.
+   *
+   * @param baseFolder base folder if presented, can be null
+   * @return file representation, must not be null
+   */
+  public File asFile(final File baseFolder) {
     final File result;
     if (this.uri.isAbsolute()) {
       result = ModelUtils.toFile(this.uri);
     } else {
       try {
-        result = new File(base, URLDecoder.decode(this.uri.getPath(), "UTF-8")); //NOI18N
+        result = new File(baseFolder,
+            URLDecoder.decode(this.uri.getPath(), StandardCharsets.UTF_8.name()));
       } catch (UnsupportedEncodingException ex) {
-        throw new Error("Unexpected error", ex); //NOI18N
+        throw new Error("Unexpected error", ex);
       }
     }
     return result;
   }
 
+  /**
+   * Get URI parameters.
+   *
+   * @return parameters, must be null
+   */
   public Properties getParameters() {
-    return (Properties) this.parameters.clone();
+    return this.parameters;
   }
 
+  /**
+   * Check that URI is absolute one
+   *
+   * @return true if the URI is absolute one, false for relative one
+   */
   public boolean isAbsolute() {
     return this.uri.isAbsolute();
   }

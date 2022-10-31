@@ -31,7 +31,7 @@ public enum MmdEmoticon {
   AX("ax"),
   BABY_BOTTLE("baby_bottle"),
   BALANCE("balance"),
-  BALLON("ballon"),
+  BALLOON("ballon"),
   BAMBOO("bamboo"),
   BANK("bank"),
   BARCODE_2D("barcode_2d"),

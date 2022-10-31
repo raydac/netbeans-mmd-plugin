@@ -16,8 +16,24 @@
 
 package com.igormaznitsa.mindmap.model.logger;
 
+/**
+ * Describes service which providing way to find or create loggers.
+ */
 public interface LoggerService {
+
+  /**
+   * Find or create logger for class.
+   *
+   * @param klazz class to be used as logger identifier, must not be null
+   * @return found or created logger, must not be null
+   */
   Logger getLogger(Class<?> klazz);
 
+  /**
+   * Find or create logger for name.
+   *
+   * @param name name to be used as logger identifier, must not be null
+   * @return found or created logger, must not be null
+   */
   Logger getLogger(String name);
 }

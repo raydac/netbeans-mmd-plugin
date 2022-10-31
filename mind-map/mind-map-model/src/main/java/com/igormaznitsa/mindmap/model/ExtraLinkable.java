@@ -16,7 +16,15 @@
 
 package com.igormaznitsa.mindmap.model;
 
+/**
+ * Interface of an object which can be represented through URI
+ */
 public interface ExtraLinkable {
 
+  /**
+   * Get object URI
+   *
+   * @return uri, must not be null
+   */
   MMapURI getAsURI();
 }

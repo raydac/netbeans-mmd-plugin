@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+/**
+ * Auxiliary topic finder object allows to check topic content for pattern
+ */
 public interface TopicFinder {
   /**
    * Check that topic contains content matches with pattern.
@@ -13,7 +16,6 @@ public interface TopicFinder {
    * @param pattern    pattern to find
    * @param extraTypes types of content
    * @return true if text found, false otherwise
-   * @since 1.4.10
    */
   boolean doesTopicContentMatches(Topic topic,
                                   File baseFolder,

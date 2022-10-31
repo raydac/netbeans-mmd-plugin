@@ -22,8 +22,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.net.URI;
 import java.util.Properties;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.junit.Test;
 
 public class ModelUtilsTest {
@@ -85,19 +85,21 @@ public class ModelUtilsTest {
 
   @Test
   public void testUnescapeMarkdownStr() {
-    assertEquals("Hello\nWorld", ModelUtils.unescapeMarkdownStr("Hello<br>World"));
-    assertEquals("<>\n", ModelUtils.unescapeMarkdownStr("\\<\\><br>"));
-    assertEquals("\\`*_{}[]()#<>+-.!\n", ModelUtils.unescapeMarkdownStr("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\<\\>\\+\\-\\.\\!<br/>"));
-    assertEquals("Hello `<\nWorld>`", ModelUtils.unescapeMarkdownStr("Hello \\`<<br/>World\\>\\`"));
-    assertEquals("", ModelUtils.unescapeMarkdownStr(""));
+    assertEquals("Hello\nWorld", ModelUtils.unescapeMarkdown("Hello<br>World"));
+    assertEquals("<>\n", ModelUtils.unescapeMarkdown("\\<\\><br>"));
+    assertEquals("\\`*_{}[]()#<>+-.!\n",
+        ModelUtils.unescapeMarkdown("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\<\\>\\+\\-\\.\\!<br/>"));
+    assertEquals("Hello `<\nWorld>`", ModelUtils.unescapeMarkdown("Hello \\`<<br/>World\\>\\`"));
+    assertEquals("", ModelUtils.unescapeMarkdown(""));
   }
 
   @Test
   public void testEscapeMarkdownStr() {
-    assertEquals("Hello<br/>World", ModelUtils.escapeMarkdownStr("Hello\nWorld"));
-    assertEquals("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\<\\>\\+\\-\\.\\!<br/>", ModelUtils.escapeMarkdownStr("\\`*_{}[]()#<>+-.!\n"));
-    assertEquals("Hello \\`\\<<br/>World\\>\\`", ModelUtils.escapeMarkdownStr("Hello `<\nWorld>`"));
-    assertEquals("", ModelUtils.escapeMarkdownStr(""));
+    assertEquals("Hello<br/>World", ModelUtils.escapeMarkdown("Hello\nWorld"));
+    assertEquals("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\<\\>\\+\\-\\.\\!<br/>",
+        ModelUtils.escapeMarkdown("\\`*_{}[]()#<>+-.!\n"));
+    assertEquals("Hello \\`\\<<br/>World\\>\\`", ModelUtils.escapeMarkdown("Hello `<\nWorld>`"));
+    assertEquals("", ModelUtils.escapeMarkdown(""));
   }
 
   @Test

@@ -22,6 +22,9 @@ import com.igormaznitsa.mindmap.model.logger.impl.JavaLoggerServiceImpl;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
+/**
+ * Logger factory.
+ */
 public final class LoggerFactory {
   private static final LoggerService LOGGER_SERVICE;
 
@@ -35,10 +38,22 @@ public final class LoggerFactory {
         .info("Detected MindMap Logger Service: " + LOGGER_SERVICE.getClass().getName());
   }
 
+  /**
+   * Find or create logger for class.
+   *
+   * @param klazz class to be used as logger identifier, must not be null
+   * @return found or created logger, must not be null
+   */
   public static Logger getLogger(final Class<?> klazz) {
     return LOGGER_SERVICE.getLogger(requireNonNull(klazz));
   }
 
+  /**
+   * Find or create logger for name.
+   *
+   * @param name name to be used as logger identifier, must not be null
+   * @return found or created logger, must not be null
+   */
   public static Logger getLogger(final String name) {
     return LOGGER_SERVICE.getLogger(requireNonNull(name));
   }

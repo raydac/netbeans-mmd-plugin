@@ -7,8 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation allows to mark source elements to generate MMD topic.
- *
- * @since 1.5.3
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({
@@ -26,7 +24,7 @@ import java.lang.annotation.Target;
 public @interface MmdTopic {
 
   /**
-   * Allows provide UID for the topic to be used as identifier in another topics.
+   * Allows to provide UID for the topic to be used as identifier in another topics.
    *
    * @return any text UID or empty if not provided.
    * @see MmdTopic#jumpTo()
@@ -41,9 +39,9 @@ public @interface MmdTopic {
   MmdEmoticon emoticon() default MmdEmoticon.EMPTY;
 
   /**
-   * Identifier of MMD file which should be parent for the topic.
+   * Identifier of MMD file which should be a parent for the topic.
    *
-   * @return MMD file UID or empty if should select file automatically.
+   * @return MMD file UID or empty one if should select file automatically.
    * @see MmdFile#uid()
    */
   String mmdFileUid() default "";
@@ -80,7 +78,7 @@ public @interface MmdTopic {
   String[] path() default "";
 
   /**
-   * Allows provide jump link to a topic in the same file.
+   * Allows to provide jump link to a topic in the same file.
    *
    * @return target topic UID or topic title text.
    * @see #uid()
@@ -88,7 +86,7 @@ public @interface MmdTopic {
   String jumpTo() default "";
 
   /**
-   * Allows add text note for the topic.
+   * Allows to add text note for the topic.
    *
    * @return text for topic, empty if there is no note
    */

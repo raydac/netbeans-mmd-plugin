@@ -23,6 +23,9 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
+/**
+ * Auxiliary class to create paths.
+ */
 public final class Paths {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Paths.class);
@@ -39,10 +42,26 @@ public final class Paths {
     LOGGER.info("Detected path service : " + PATH_SERVICE.getClass().getName());
   }
 
+  /**
+   * Find or create path for provided file
+   *
+   * @param file file to be used for target path, must not be null
+   * @return found created path, must not be null
+   * @throws java.nio.file.InvalidPathException if a Path object cannot be constructed from the abstract path
+   */
   public static Path toPath(final File file) {
     return PATH_SERVICE.getForFile(file);
   }
 
+  /**
+   * Converts a path string, or a sequence of strings that when joined form a path string, to a Path.
+   * Params:
+   *
+   * @param string the path string or initial part of the path string, must not be null
+   * @param next   additional strings to be joined to form the path string
+   * @return the resulting Path, must not be null
+   * @throws java.nio.file.InvalidPathException if the path string cannot be converted to a Path
+   */
   public static Path get(final String string,
                          final String[] next) {
     return PATH_SERVICE.getForPathItems(string, next);

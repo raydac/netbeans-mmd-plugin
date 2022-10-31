@@ -30,16 +30,38 @@ public final class MindMapLexer {
   private int tokenEnd;
   private TokenType tokenType = TokenType.UNKNOWN_LINE;
 
+  /**
+   * Returns start offset of token
+   *
+   * @return token start offset
+   */
   public int getTokenStartOffset() {
     return this.tokenStart;
   }
 
+  /**
+   * Returns end offset of token
+   *
+   * @return token end offset
+   */
   public int getTokenEndOffset() {
     return this.tokenEnd;
   }
 
-  public void start(final CharSequence buffer, final int startOffset, final int endOffset,
-                    final MindMapLexer.TokenType initialState) {
+  /**
+   * Start next token.
+   *
+   * @param buffer       buffer to be used, must not be null
+   * @param startOffset  start offset
+   * @param endOffset    end offset
+   * @param initialState initial state of the lexer, must not be null
+   */
+  public void start(
+      final CharSequence buffer,
+      final int startOffset,
+      final int endOffset,
+      final MindMapLexer.TokenType initialState
+  ) {
     this.buffer = buffer;
     this.tokenType = initialState;
     this.position.offset = startOffset;
@@ -48,30 +70,61 @@ public final class MindMapLexer {
     this.endOffset = endOffset;
   }
 
+  /**
+   * Set end offset
+   *
+   * @param value value to be used as token end offset
+   */
   public void setBufferEndOffset(final int value) {
     this.endOffset = value;
   }
 
+  /**
+   * Generate char sequence for current buffer state
+   *
+   * @return current buffered char sequence for position, must not be null
+   */
   public CharSequence getTokenSequence() {
     return getBufferSequence().subSequence(this.tokenStart, this.tokenEnd);
   }
 
+  /**
+   * Generate current buffer state as string
+   *
+   * @return string currently presented in buffer, must not be null
+   */
   public String getTokenText() {
     return getTokenSequence().toString();
   }
 
+  /**
+   * Get token type
+   *
+   * @return current token type, can be null if there is no any token
+   */
   public TokenType getTokenType() {
     return this.tokenStart == this.tokenEnd ? null : this.tokenType;
   }
 
+  /**
+   * Generate token position.
+   *
+   * @return created token position object for current state, must not be null
+   */
   public TokenPosition makeTokenPosition() {
     return new TokenPosition(this.tokenStart, this.tokenEnd);
   }
 
+  /**
+   * Reset token type to null
+   */
   public void resetTokenTypeToNull() {
     this.tokenType = null;
   }
 
+  /**
+   * Read next token.
+   */
   public void advance() {
     boolean tokenHasBeenCompleted = this.position.isTokenCompleted();
     this.tokenStart = tokenHasBeenCompleted ? this.position.offset : this.tokenStart;
@@ -305,11 +358,11 @@ public final class MindMapLexer {
 
   private boolean isAllLineFromChars(final char c) {
     boolean detected = false;
-    final int prelimit = this.position.offset - 1;
+    final int preLimit = this.position.offset - 1;
 
     for (int i = this.tokenStart; i < this.position.offset; i++) {
       final char chr = this.buffer.charAt(i);
-      if ((chr == '\r') || (chr == '\n' && i == prelimit)) {
+      if ((chr == '\r') || (chr == '\n' && i == preLimit)) {
         continue;
       }
       if (chr != c) {
@@ -405,20 +458,40 @@ public final class MindMapLexer {
     }
   }
 
+  /**
+   * Get current lexer position.
+   *
+   * @return current lexer position, can't be null
+   */
   public LexerPosition getCurrentPosition() {
     return this.position;
   }
 
+  /**
+   * Restore to lexer position.
+   *
+   * @param position position to be used as restored one, can't be null
+   */
   public void restore(final LexerPosition position) {
     if (position != this.position) {
       this.position.set(position);
     }
   }
 
+  /**
+   * Get internal buffer.
+   *
+   * @return internal char buffer, can't be null
+   */
   public CharSequence getBufferSequence() {
     return this.buffer;
   }
 
+  /**
+   * Get current buffer end offset
+   *
+   * @return current buffer end offset
+   */
   public int getBufferEnd() {
     return this.endOffset;
   }
@@ -462,26 +535,51 @@ public final class MindMapLexer {
       this.state = requireNonNull(state);
     }
 
+    /**
+     * Get offset of position
+     *
+     * @return position offset
+     */
     public int getOffset() {
       return this.offset;
     }
 
+    /**
+     * Check that token completed
+     *
+     * @return true if token completed, false otherwise
+     */
     public boolean isTokenCompleted() {
       return this.tokenCompleted;
     }
 
+    /**
+     * Get token type
+     *
+     * @return token type
+     */
     public TokenType getState() {
       return this.state;
     }
 
+    /**
+     * Set position
+     *
+     * @param position new position, must not be null
+     */
     public void set(final LexerPosition position) {
-      if (position != null && this != position) {
+      if (this != requireNonNull(position)) {
         this.offset = position.offset;
         this.state = position.state;
         this.tokenCompleted = position.tokenCompleted;
       }
     }
 
+    /**
+     * Make copy of position
+     *
+     * @return cloned position, must not be null
+     */
     public LexerPosition makeCopy() {
       return new LexerPosition(this);
     }

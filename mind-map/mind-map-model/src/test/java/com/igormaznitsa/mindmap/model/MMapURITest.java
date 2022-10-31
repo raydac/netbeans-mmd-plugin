@@ -74,7 +74,7 @@ public class MMapURITest {
   }
 
   @Test(expected = NullPointerException.class)
-  public void testCreate_URINull() {
+  public void testCreate_URINull() throws Exception {
     new MMapURI((URI) null);
   }
 

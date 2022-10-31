@@ -16,7 +16,26 @@
 
 package com.igormaznitsa.mindmap.model;
 
+/**
+ * Internal constants
+ */
 public interface Constants {
-  String NEXT_LINE = "\n"; //NOI18N
-  String NEXT_PARAGRAPH = "   \n"; //NOI18N
+
+  /**
+   * Char used as a separator for URI query parameters
+   */
+  char URI_QUERY_PARAMETER_SEPARATOR = '&';
+  /**
+   * Next line as char
+   */
+  char NEXT_LINE_CHAR = '\n';
+
+  /**
+   * Next line char sequence
+   */
+  String NEXT_LINE = "\n";
+  /**
+   * Next paragraph char sequence
+   */
+  String NEXT_PARAGRAPH = "   \n";
 }

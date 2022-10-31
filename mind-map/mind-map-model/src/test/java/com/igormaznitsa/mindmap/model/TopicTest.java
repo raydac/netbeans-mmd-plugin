@@ -16,14 +16,18 @@
 
 package com.igormaznitsa.mindmap.model;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 import org.junit.Test;
 
@@ -55,7 +59,7 @@ public class TopicTest {
   }
 
   @Test
-  public void test() {
+  public void testParse_Russian() {
     final MindMap mm = new MindMap(true);
     final Topic topic = new Topic(mm, null, "авы аыва вы Что то");
     assertTrue(topic
@@ -344,7 +348,7 @@ public class TopicTest {
     final Topic root = new Topic(mm, null, "");
     mm.setRoot(root, false);
     new Topic(mm, root, "#NewTopic");
-    final String packedMap = mm.packToString();
+    final String packedMap = mm.asString();
     final MindMap parsed = new MindMap(new StringReader(packedMap));
     final Topic rootParsed = parsed.getRoot();
 
@@ -372,6 +376,27 @@ public class TopicTest {
     final ExtraNote parsedNote = (ExtraNote) parsedRoot.getExtras().get(Extra.ExtraType.NOTE);
     assertTrue(parsedNote.isEncrypted());
     assertEquals("tip", parsedNote.getHint());
+  }
+
+  @Test
+  public void testIterator() throws Exception {
+    final MindMap mm = new MindMap(true);
+    final Topic root = new Topic(mm, null, "");
+    mm.setRoot(root, false);
+
+    final Topic child1 = new Topic(mm, root, "");
+    final Topic child2 = new Topic(mm, root, "");
+    final Topic child2_1 = new Topic(mm, child2, "");
+    final Topic child3 = new Topic(mm, root, "");
+
+    final Iterator<Topic> iterator = root.iterator();
+    assertSame(child1, iterator.next());
+    assertSame(child2, iterator.next());
+    assertSame(child2_1, iterator.next());
+    assertSame(child3, iterator.next());
+    assertFalse(iterator.hasNext());
+
+    assertArrayEquals(new Topic[] {child1, child2, child2_1, child3}, root.stream().toArray());
   }
 
   @Test

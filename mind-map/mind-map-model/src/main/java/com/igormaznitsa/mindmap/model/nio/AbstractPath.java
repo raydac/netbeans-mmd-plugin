@@ -18,14 +18,31 @@ package com.igormaznitsa.mindmap.model.nio;
 
 import java.io.File;
 
+/**
+ * Abstract path object to be used for mind map purposes.
+ */
 public abstract class AbstractPath implements Path {
 
+  /**
+   * Constructor.
+   */
   protected AbstractPath() {
   }
 
+  /**
+   * File based constructor
+   *
+   * @param file used to create path
+   */
   public AbstractPath(final File file) {
   }
 
+  /**
+   * Constructor to create path based on list of path items
+   *
+   * @param first first path item, must not be null
+   * @param items rest of path items
+   */
   public AbstractPath(final String first,
                       final String... items) {
   }

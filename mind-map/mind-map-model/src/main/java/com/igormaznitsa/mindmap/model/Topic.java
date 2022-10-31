@@ -16,7 +16,7 @@
 
 package com.igormaznitsa.mindmap.model;
 
-import static com.igormaznitsa.mindmap.model.MiscUtils.ensureDoesntHaveNull;
+import static com.igormaznitsa.mindmap.model.MiscUtils.ensureNoNullElement;
 import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.parser.MindMapLexer;
@@ -37,27 +37,26 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+/**
+ * Class describes the main work unit for Mind Map.
+ */
 public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   private static final long serialVersionUID = -4642569244907433215L;
-  private static final AtomicLong LOCALUID_GENERATOR = new AtomicLong();
+  private static final AtomicLong LOCAL_UID_GENERATOR = new AtomicLong();
   private final EnumMap<Extra.ExtraType, Extra<?>> extras =
       new EnumMap<>(Extra.ExtraType.class);
-  private final Map<Extra.ExtraType, Extra<?>> unmodifableExtras =
-      Collections.unmodifiableMap(this.extras);
   private final Map<String, String> attributes =
-      new TreeMap<>(ModelUtils.STRING_COMPARATOR);
-  private final Map<String, String> unmodifableAttributes =
-      Collections.unmodifiableMap(this.attributes);
+      new TreeMap<>(Comparator.naturalOrder());
   private final Map<String, String> codeSnippets =
-      new TreeMap<>(ModelUtils.STRING_COMPARATOR);
-  private final Map<String, String> unmodifableCodeSnippets =
-      Collections.unmodifiableMap(this.codeSnippets);
+      new TreeMap<>(Comparator.naturalOrder());
   private final List<Topic> children = new ArrayList<>();
-  private final List<Topic> unmodifableChildren = Collections.unmodifiableList(this.children);
-  private final transient long localUID = LOCALUID_GENERATOR.getAndIncrement();
+  private final transient long localUID = LOCAL_UID_GENERATOR.getAndIncrement();
   private final MindMap map;
   private Topic parent;
   private volatile String text;
@@ -67,14 +66,13 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
    * Constructor to build topic on base of another topic for another mind map.
    *
    * @param mindMap      mind map to be owner for new topic
-   * @param base         base souce topic
+   * @param base         base source topic
    * @param copyChildren flag to make copy of children, true if to make copy,
    *                     false otherwise
-   * @since 1.2.2
    */
   public Topic(final MindMap mindMap, final Topic base,
                final boolean copyChildren) {
-    this(mindMap, base.text);
+    this(mindMap, null, base.text);
     this.attributes.putAll(base.attributes);
     this.extras.putAll(base.extras);
     this.codeSnippets.putAll(base.codeSnippets);
@@ -88,9 +86,24 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
+  /**
+   * Constructor
+   *
+   * @param map    parent map, must not be null
+   * @param parent parent topic can be null
+   * @param text   topic text, must not be null
+   * @param extras extras for the topic, must not be null
+   */
   public Topic(final MindMap map, final Topic parent, final String text,
                final Extra<?>... extras) {
-    this(map, text, extras);
+    this.map = requireNonNull(map);
+    this.text = requireNonNull(text);
+
+    for (final Extra<?> e : extras) {
+      if (e != null) {
+        this.extras.put(e.getType(), e);
+      }
+    }
     this.parent = parent;
 
     if (parent != null) {
@@ -101,139 +114,122 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
-  private Topic(final MindMap map, final String text,
-                final Extra<?>... extras) {
-    this.map = requireNonNull(map);
-    this.text = requireNonNull(text);
-
-    for (final Extra<?> e : extras) {
-      if (e != null) {
-        this.extras.put(e.getType(), e);
-      }
-    }
-  }
-
   public static Topic parse(final MindMap map, final MindMapLexer lexer,
                             final boolean ignoreErrors) {
-    map.lock();
-    try {
-      Topic topic = null;
-      int depth = 0;
+    Topic topic = null;
+    int depth = 0;
 
-      Extra.ExtraType extraType = null;
+    Extra.ExtraType extraType = null;
 
-      String codeSnippetlanguage = null;
-      StringBuilder codeSnippetBody = null;
+    String codeSnippet = null;
+    StringBuilder codeSnippetBody = null;
 
-      int detectedLevel = -1;
+    int detectedLevel = -1;
 
-      while (true) {
-        final int oldLexerPosition = lexer.getCurrentPosition().getOffset();
-        lexer.advance();
-        final boolean lexerPositionWasNotChanged =
-            oldLexerPosition == lexer.getCurrentPosition().getOffset();
+    while (true) {
+      final int oldLexerPosition = lexer.getCurrentPosition().getOffset();
+      lexer.advance();
+      final boolean lexerPositionWasNotChanged =
+          oldLexerPosition == lexer.getCurrentPosition().getOffset();
 
-        final MindMapLexer.TokenType token = lexer.getTokenType();
-        if (token == null || lexerPositionWasNotChanged) {
-          break;
+      final MindMapLexer.TokenType token = lexer.getTokenType();
+      if (token == null || lexerPositionWasNotChanged) {
+        break;
+      }
+
+      switch (token) {
+        case TOPIC_LEVEL: {
+          final String tokenText = lexer.getTokenText();
+          detectedLevel = ModelUtils.countPrefixChars('#', tokenText);
         }
+        break;
+        case TOPIC_TITLE: {
+          final String tokenText = ModelUtils.removeISOControls(lexer.getTokenText());
+          final String newTopicText = ModelUtils.unescapeMarkdown(tokenText);
 
-        switch (token) {
-          case TOPIC_LEVEL: {
-            final String tokenText = lexer.getTokenText();
-            detectedLevel = ModelUtils.calcCharsOnStart('#', tokenText);
-          }
-          break;
-          case TOPIC_TITLE: {
-            final String tokenText = ModelUtils.removeISOControls(lexer.getTokenText());
-            final String newTopicText = ModelUtils.unescapeMarkdownStr(tokenText);
-
-            if (detectedLevel == depth + 1) {
-              depth = detectedLevel;
+          if (detectedLevel == depth + 1) {
+            depth = detectedLevel;
+            topic = new Topic(map, topic, newTopicText);
+          } else if (detectedLevel == depth) {
+            topic = new Topic(map, topic == null ? null : topic.getParent(), newTopicText);
+          } else if (detectedLevel < depth) {
+            if (topic != null) {
+              topic = topic.findParentForDepth(depth - detectedLevel);
               topic = new Topic(map, topic, newTopicText);
-            } else if (detectedLevel == depth) {
-              topic = new Topic(map, topic == null ? null : topic.getParent(), newTopicText);
-            } else if (detectedLevel < depth) {
-              if (topic != null) {
-                topic = topic.findParentForDepth(depth - detectedLevel);
-                topic = new Topic(map, topic, newTopicText);
-                depth = detectedLevel;
-              }
+              depth = detectedLevel;
             }
+          }
 
-          }
-          break;
-          case EXTRA_TYPE: {
-            final String extraName = lexer.getTokenText().substring(1).trim();
-            try {
-              extraType = Extra.ExtraType.valueOf(extraName);
-            } catch (IllegalArgumentException ex) {
-              extraType = null;
-            }
-          }
-          break;
-          case CODE_SNIPPET_START: {
-            if (topic != null) {
-              codeSnippetlanguage = lexer.getTokenText().substring(3);
-              codeSnippetBody = new StringBuilder();
-            }
-          }
-          break;
-          case CODE_SNIPPET_BODY: {
-            codeSnippetBody.append(lexer.getTokenText());
-          }
-          break;
-          case CODE_SNIPPET_END: {
-            if (topic != null && codeSnippetlanguage != null && codeSnippetBody != null) {
-              topic.codeSnippets.put(codeSnippetlanguage.trim(), codeSnippetBody.toString());
-            }
-            codeSnippetlanguage = null;
-            codeSnippetBody = null;
-          }
-          break;
-          case ATTRIBUTE: {
-            if (topic != null) {
-              final String text = lexer.getTokenText().trim();
-              MindMap.fillMapByAttributes(text, topic.attributes);
-            }
+        }
+        break;
+        case EXTRA_TYPE: {
+          final String extraName = lexer.getTokenText().substring(1).trim();
+          try {
+            extraType = Extra.ExtraType.valueOf(extraName);
+          } catch (IllegalArgumentException ex) {
             extraType = null;
           }
-          break;
-          case EXTRA_TEXT: {
-            if (topic != null && extraType != null) {
-              try {
-                final String text = lexer.getTokenText();
-                final String groupPre =
-                    extraType.preprocessString(text.substring(5, text.length() - 6));
-                if (groupPre != null) {
-                  topic.setExtra(extraType.parseLoaded(groupPre, topic.attributes));
-                } else {
-                  if (!ignoreErrors) {
-                    throw new IllegalStateException("Detected invalid extra data " + extraType);
-                  }
-                }
-              } catch (Exception ex) {
-                throw new Error("Unexpected exception #23241", ex);
-              } finally {
-                extraType = null;
-              }
-            }
+        }
+        break;
+        case CODE_SNIPPET_START: {
+          if (topic != null) {
+            codeSnippet = lexer.getTokenText().substring(3);
+            codeSnippetBody = new StringBuilder();
           }
-          break;
-          case UNKNOWN_LINE: {
-            if (topic != null && extraType != null) {
+        }
+        break;
+        case CODE_SNIPPET_BODY: {
+          codeSnippetBody.append(lexer.getTokenText());
+        }
+        break;
+        case CODE_SNIPPET_END: {
+          if (topic != null && codeSnippet != null && codeSnippetBody != null) {
+            topic.codeSnippets.put(codeSnippet.trim(), codeSnippetBody.toString());
+          }
+          codeSnippet = null;
+          codeSnippetBody = null;
+        }
+        break;
+        case ATTRIBUTE: {
+          if (topic != null) {
+            final String text = lexer.getTokenText().trim();
+            MindMap.fillMapByAttributes(text, topic.attributes);
+          }
+          extraType = null;
+        }
+        break;
+        case EXTRA_TEXT: {
+          if (topic != null && extraType != null) {
+            try {
+              final String text = lexer.getTokenText();
+              final String groupPre =
+                  extraType.preprocessString(text.substring(5, text.length() - 6));
+              if (groupPre != null) {
+                topic.setExtra(extraType.parseLoaded(groupPre, topic.attributes));
+              } else {
+                if (!ignoreErrors) {
+                  throw new IllegalStateException("Detected invalid extra data " + extraType);
+                }
+              }
+            } catch (Exception ex) {
+              throw new Error("Unexpected exception #23241", ex);
+            } finally {
               extraType = null;
             }
           }
-          break;
-          default:
-            break;
         }
+        break;
+        case UNKNOWN_LINE: {
+          if (topic != null && extraType != null) {
+            extraType = null;
+          }
+        }
+        break;
+        default:
+          break;
       }
-      return topic == null ? null : topic.getRoot();
-    } finally {
-      map.unlock();
     }
+    return topic == null ? null : topic.getRoot();
   }
 
   public Topic findRoot() {
@@ -336,34 +332,24 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public Topic findParentForDepth(int depth) {
-    this.map.lock();
-    try {
-      Topic result = this.parent;
-      while (depth > 0 && result != null) {
-        result = result.parent;
-        depth--;
-      }
-      return result;
-    } finally {
-      this.map.unlock();
+    Topic result = this.parent;
+    while (depth > 0 && result != null) {
+      result = result.parent;
+      depth--;
     }
+    return result;
   }
 
   public Topic getRoot() {
-    this.map.lock();
-    try {
-      Topic result = this;
-      while (true) {
-        final Topic prev = result.parent;
-        if (prev == null) {
-          break;
-        }
-        result = prev;
+    Topic result = this;
+    while (true) {
+      final Topic prev = result.parent;
+      if (prev == null) {
+        break;
       }
-      return result;
-    } finally {
-      this.map.unlock();
+      result = prev;
     }
+    return result;
   }
 
   public Topic getFirst() {
@@ -375,7 +361,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public List<Topic> getChildren() {
-    return this.unmodifableChildren;
+    return this.children;
   }
 
   public int getNumberOfExtras() {
@@ -383,45 +369,35 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public Map<Extra.ExtraType, Extra<?>> getExtras() {
-    return this.unmodifableExtras;
+    return this.extras;
   }
 
   public Extra<?>[] extrasToArray() {
-    final Collection<Extra<?>> collection = this.unmodifableExtras.values();
+    final Collection<Extra<?>> collection = this.extras.values();
     return collection.toArray(new Extra<?>[0]);
   }
 
   public Map<String, String> getAttributes() {
-    return this.unmodifableAttributes;
+    return this.attributes;
   }
 
   public Map<String, String> getCodeSnippets() {
-    return this.unmodifableCodeSnippets;
+    return this.codeSnippets;
   }
 
   public boolean setAttribute(final String name, final String value) {
-    this.map.lock();
-    try {
-      if (value == null) {
-        return this.attributes.remove(name) != null;
-      } else {
-        return !value.equals(this.attributes.put(name, value));
-      }
-    } finally {
-      this.map.unlock();
+    if (value == null) {
+      return this.attributes.remove(name) != null;
+    } else {
+      return !value.equals(this.attributes.put(name, value));
     }
   }
 
   public boolean setCodeSnippet(final String language, final String text) {
-    this.map.lock();
-    try {
-      if (text == null) {
-        return this.codeSnippets.remove(language) != null;
-      } else {
-        return !text.equals(this.codeSnippets.put(language, text));
-      }
-    } finally {
-      this.map.unlock();
+    if (text == null) {
+      return this.codeSnippets.remove(language) != null;
+    } else {
+      return !text.equals(this.codeSnippets.put(language, text));
     }
   }
 
@@ -434,14 +410,9 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public void delete() {
-    this.map.lock();
-    try {
-      final Topic theParent = this.parent;
-      if (theParent != null) {
-        theParent.children.remove(this);
-      }
-    } finally {
-      this.map.unlock();
+    final Topic theParent = this.parent;
+    if (theParent != null) {
+      theParent.children.remove(this);
     }
   }
 
@@ -454,12 +425,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public void setText(final String text) {
-    this.map.lock();
-    try {
-      this.text = requireNonNull(text);
-    } finally {
-      this.map.unlock();
-    }
+    this.text = requireNonNull(text);
   }
 
   public boolean isFirstChild(final Topic t) {
@@ -471,50 +437,35 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public boolean removeExtra(final Extra.ExtraType... types) {
-    this.map.lock();
-    try {
-      boolean result = false;
-      for (final Extra.ExtraType e : ensureDoesntHaveNull(types)) {
-        final Extra<?> removed = this.extras.remove(e);
-        if (removed != null) {
-          removed.detachedToTopic(this);
-        }
-        result |= removed != null;
+    boolean result = false;
+    for (final Extra.ExtraType e : ensureNoNullElement(types)) {
+      final Extra<?> removed = this.extras.remove(e);
+      if (removed != null) {
+        removed.detachedToTopic(this);
       }
-      return result;
-    } finally {
-      this.map.unlock();
+      result |= removed != null;
     }
+    return result;
   }
 
   public void setExtra(final Extra<?>... extras) {
-    this.map.lock();
-    try {
-      for (final Extra<?> e : ensureDoesntHaveNull(extras)) {
-        this.extras.put(e.getType(), e);
-        e.attachedToTopic(this);
-      }
-    } finally {
-      this.map.unlock();
+    for (final Extra<?> e : ensureNoNullElement(extras)) {
+      this.extras.put(e.getType(), e);
+      e.attachedToTopic(this);
     }
   }
 
   public boolean makeFirst() {
-    this.map.lock();
-    try {
-      final Topic theParent = this.parent;
-      if (theParent != null) {
-        int thatIndex = theParent.children.indexOf(this);
-        if (thatIndex > 0) {
-          theParent.children.remove(thatIndex);
-          theParent.children.add(0, this);
-          return true;
-        }
+    final Topic theParent = this.parent;
+    if (theParent != null) {
+      int thatIndex = theParent.children.indexOf(this);
+      if (thatIndex > 0) {
+        theParent.children.remove(thatIndex);
+        theParent.children.add(0, this);
+        return true;
       }
-      return false;
-    } finally {
-      this.map.unlock();
     }
+    return false;
   }
 
   public boolean hasAncestor(final Topic topic) {
@@ -529,95 +480,70 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public boolean makeLast() {
-    this.map.lock();
-    try {
-      final Topic theParent = this.parent;
-      if (theParent != null) {
-        int thatIndex = theParent.children.indexOf(this);
-        if (thatIndex >= 0 && thatIndex != theParent.children.size() - 1) {
-          theParent.children.remove(thatIndex);
-          theParent.children.add(this);
-          return true;
-        }
+    final Topic theParent = this.parent;
+    if (theParent != null) {
+      int thatIndex = theParent.children.indexOf(this);
+      if (thatIndex >= 0 && thatIndex != theParent.children.size() - 1) {
+        theParent.children.remove(thatIndex);
+        theParent.children.add(this);
+        return true;
       }
-      return false;
-    } finally {
-      this.map.unlock();
     }
+    return false;
   }
 
   public void moveBefore(final Topic topic) {
-    this.map.lock();
-    try {
-      final Topic theParent = this.parent;
-      if (theParent != null) {
-        int thatIndex = theParent.children.indexOf(topic);
-        final int thisIndex = theParent.children.indexOf(this);
+    final Topic theParent = this.parent;
+    if (theParent != null) {
+      int thatIndex = theParent.children.indexOf(topic);
+      final int thisIndex = theParent.children.indexOf(this);
 
-        if (thatIndex > thisIndex) {
-          thatIndex--;
-        }
-
-        if (thatIndex >= 0 && thisIndex >= 0) {
-          theParent.children.remove(this);
-          theParent.children.add(thatIndex, this);
-        }
+      if (thatIndex > thisIndex) {
+        thatIndex--;
       }
-    } finally {
-      this.map.unlock();
+
+      if (thatIndex >= 0 && thisIndex >= 0) {
+        theParent.children.remove(this);
+        theParent.children.add(thatIndex, this);
+      }
     }
   }
 
   public String findAttributeInAncestors(final String attrName) {
-    this.map.lock();
-    try {
-      String result = null;
-      Topic current = this.parent;
-      while (result == null && current != null) {
-        result = current.getAttribute(attrName);
-        current = current.parent;
-      }
-      return result;
-    } finally {
-      this.map.unlock();
+    String result = null;
+    Topic current = this.parent;
+    while (result == null && current != null) {
+      result = current.getAttribute(attrName);
+      current = current.parent;
     }
+    return result;
   }
 
   public void moveAfter(final Topic topic) {
-    this.map.lock();
-    try {
-      final Topic theParent = this.parent;
-      if (theParent != null) {
-        int thatIndex = theParent.children.indexOf(topic);
-        int thisIndex = theParent.children.indexOf(this);
+    final Topic theParent = this.parent;
+    if (theParent != null) {
+      int thatIndex = theParent.children.indexOf(topic);
+      int thisIndex = theParent.children.indexOf(this);
 
-        if (thatIndex > thisIndex) {
-          thatIndex--;
-        }
-
-        if (thatIndex >= 0 && thisIndex >= 0) {
-          theParent.children.remove(this);
-          theParent.children.add(thatIndex + 1, this);
-        }
+      if (thatIndex > thisIndex) {
+        thatIndex--;
       }
-    } finally {
-      this.map.unlock();
+
+      if (thatIndex >= 0 && thisIndex >= 0) {
+        theParent.children.remove(this);
+        theParent.children.add(thatIndex + 1, this);
+      }
     }
   }
 
   public void write(final Writer out) throws IOException {
-    this.map.lock();
-    try {
-      write(1, out);
-    } finally {
-      this.map.unlock();
-    }
+    write(1, out);
   }
 
   private void write(final int level, final Writer out) throws IOException {
     out.append(NEXT_LINE);
-    ModelUtils.writeChar(out, '#', level);
-    out.append(' ').append(ModelUtils.escapeMarkdownStr(this.text)).append(NEXT_LINE);
+    ModelUtils.repeatChar(out, '#', level);
+    out.append(' ').append(ModelUtils.escapeMarkdown(this.text)).append(NEXT_LINE);
 
     if (!this.attributes.isEmpty() || !this.extras.isEmpty()) {
       final Map<String, String> attributesToWrite = new HashMap<>(this.attributes);
@@ -627,7 +553,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
       if (!attributesToWrite.isEmpty()) {
         out.append("> ").append(MindMap.allAttributesAsString(attributesToWrite)).append(NEXT_LINE)
-            .append(NEXT_LINE); //NOI18N
+            .append(NEXT_LINE);
       }
     }
 
@@ -678,20 +604,15 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   @Override
   public String toString() {
-    return "MindMapTopic('" + this.text + ':' + this.getLocalUid() + "')"; //NOI18N
+    return "MindMapTopic('" + this.text + ':' + this.getLocalUid() + "')";
   }
 
   public long getLocalUid() {
     return this.localUID;
   }
 
-  public boolean hasChildren() {
-    this.map.lock();
-    try {
-      return !this.children.isEmpty();
-    } finally {
-      this.map.unlock();
-    }
+  public boolean isEmpty() {
+    return this.children.isEmpty();
   }
 
   boolean removeAllLinksTo(final Topic topic) {
@@ -736,102 +657,77 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public boolean moveToNewParent(final Topic newParent) {
-    this.map.lock();
-    try {
-      if (newParent == null || this == newParent || this.getParent() == newParent ||
-          this.children.contains(newParent)) {
-        return false;
-      }
-
-      final Topic theParent = this.parent;
-      if (theParent != null) {
-        theParent.children.remove(this);
-      }
-      newParent.children.add(this);
-      this.parent = newParent;
-
-      return true;
-    } finally {
-      this.map.unlock();
+    if (newParent == null || this == newParent || this.getParent() == newParent ||
+        this.children.contains(newParent)) {
+      return false;
     }
+
+    final Topic theParent = this.parent;
+    if (theParent != null) {
+      theParent.children.remove(this);
+    }
+    newParent.children.add(this);
+    this.parent = newParent;
+
+    return true;
   }
 
   public Topic makeChild(final String text, final Topic afterTheTopic) {
-    this.map.lock();
-    try {
-      final Topic result = new Topic(this.map, this, MiscUtils.ensureNotNull(text, "")); //NOI18N
-      if (afterTheTopic != null && this.children.contains(afterTheTopic)) {
-        result.moveAfter(afterTheTopic);
-      }
-      return result;
-    } finally {
-      this.map.unlock();
+    final Topic result = new Topic(this.map, this, MiscUtils.ensureNotNull(text, ""));
+    if (afterTheTopic != null && this.children.contains(afterTheTopic)) {
+      result.moveAfter(afterTheTopic);
     }
+    return result;
   }
 
-  public Topic findNext(final TopicChecker checker) {
-    this.map.lock();
-    try {
-      Topic result = null;
-      Topic current = this.getParent();
-      if (current != null) {
-        final int indexThis = current.children.indexOf(this);
-        if (indexThis >= 0) {
-          for (int i = indexThis + 1; i < current.children.size(); i++) {
-            if (checker == null) {
-              result = current.children.get(i);
-              break;
-            } else if (checker.check(current.children.get(i))) {
-              result = current.children.get(i);
-              break;
-            }
+  public Topic findNext(final Predicate<Topic> checker) {
+    Topic result = null;
+    Topic current = this.getParent();
+    if (current != null) {
+      final int indexThis = current.children.indexOf(this);
+      if (indexThis >= 0) {
+        for (int i = indexThis + 1; i < current.children.size(); i++) {
+          if (checker == null) {
+            result = current.children.get(i);
+            break;
+          } else if (checker.test(current.children.get(i))) {
+            result = current.children.get(i);
+            break;
           }
         }
       }
-
-      return result;
-    } finally {
-      this.map.unlock();
     }
+
+    return result;
   }
 
-  public Topic findPrev(final TopicChecker checker) {
-    this.map.lock();
-    try {
-      Topic result = null;
-      Topic current = this.getParent();
-      if (current != null) {
-        final int indexThis = current.children.indexOf(this);
-        if (indexThis >= 0) {
-          for (int i = indexThis - 1; i >= 0; i--) {
-            if (checker.check(current.children.get(i))) {
-              result = current.children.get(i);
-              break;
-            }
+  public Topic findPrev(final Predicate<Topic> checker) {
+    Topic result = null;
+    Topic current = this.getParent();
+    if (current != null) {
+      final int indexThis = current.children.indexOf(this);
+      if (indexThis >= 0) {
+        for (int i = indexThis - 1; i >= 0; i--) {
+          if (checker.test(current.children.get(i))) {
+            result = current.children.get(i);
+            break;
           }
         }
       }
-
-      return result;
-    } finally {
-      this.map.unlock();
     }
+
+    return result;
   }
 
   public void removeExtras(final Extra<?>... extras) {
-    this.map.lock();
-    try {
-      if (extras == null || extras.length == 0) {
-        this.extras.clear();
-      } else {
-        for (final Extra<?> e : extras) {
-          if (e != null) {
-            this.extras.remove(e.getType());
-          }
+    if (extras == null || extras.length == 0) {
+      this.extras.clear();
+    } else {
+      for (final Extra<?> e : extras) {
+        if (e != null) {
+          this.extras.remove(e.getType());
         }
       }
-    } finally {
-      this.map.unlock();
     }
   }
 
@@ -839,7 +735,6 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
    * Find max length of children chain. It doesn't count the root topic.
    *
    * @return max length of child chain, 0 if no children.
-   * @since 1.4.11
    */
   public int findMaxChildPathLength() {
     int len = 0;
@@ -850,13 +745,20 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return len;
   }
 
-  public Topic findForAttribute(final String attrName, String value) {
-    if (value.equals(this.getAttribute(attrName))) {
+  /**
+   * Find among subtree first topic contains attibute with value
+   *
+   * @param attributeName  name of attribute, must not be null
+   * @param attributeValue value to be checked, must not be null
+   * @return first topic in subtree with such attribute value, null if not found
+   */
+  public Topic findForAttribute(final String attributeName, String attributeValue) {
+    if (attributeValue.equals(this.getAttribute(attributeName))) {
       return this;
     }
     Topic result = null;
     for (final Topic c : this.children) {
-      result = c.findForAttribute(attrName, value);
+      result = c.findForAttribute(attributeName, attributeValue);
       if (result != null) {
         break;
       }
@@ -864,8 +766,13 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return result;
   }
 
+  /**
+   * Make position path to the topic
+   *
+   * @return array of indexes in parents, must not be null
+   */
   public int[] getPositionPath() {
-    final Topic[] path = getPath();
+    final Topic[] path = this.getPath();
     final int[] result = new int[path.length];
 
     Topic current = path[0];
@@ -883,6 +790,11 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return result;
   }
 
+  /**
+   * Collect all ancestors of the topic and build path
+   *
+   * @return path to the topic with all ancestors, must not be null
+   */
   public Topic[] getPath() {
     final List<Topic> list = new ArrayList<>();
     Topic current = this;
@@ -894,85 +806,133 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return list.toArray(new Topic[0]);
   }
 
-  Topic makeCopy(final MindMap newMindMap, final Topic parent) {
-    this.map.lock();
-    try {
-      final Topic result = new Topic(newMindMap, parent, this.text,
-          this.extras.values().toArray(new Extra<?>[0]));
+  /**
+   * Make copy of the topic in the target mind map
+   *
+   * @param targetMindMap target mind map, must not be null
+   * @param parent        parent topic, can be null
+   * @param withChildren  flag shows that subtree must be also copied if true
+   * @return result topic, must not be null
+   */
+  public Topic makeCopy(final MindMap targetMindMap, final Topic parent,
+                        final boolean withChildren) {
+    final Topic newTopic = new Topic(
+        targetMindMap,
+        parent,
+        this.text,
+        this.extras.values().toArray(new Extra<?>[0])
+    );
+    if (withChildren) {
       for (final Topic c : this.children) {
-        c.makeCopy(newMindMap, result);
+        c.makeCopy(targetMindMap, newTopic, withChildren);
       }
-      result.attributes.putAll(this.attributes);
-      result.codeSnippets.putAll(this.codeSnippets);
-
-      return result;
-    } finally {
-      this.map.unlock();
     }
+    newTopic.attributes.putAll(this.attributes);
+    newTopic.codeSnippets.putAll(this.codeSnippets);
+
+    return newTopic;
   }
 
-  public boolean removeExtraFromSubtree(
-      final Extra.ExtraType... type) {
-    boolean result = false;
-
-    this.map.lock();
-    try {
-      for (final Extra.ExtraType t : type) {
-        result |= this.extras.remove(t) != null;
-      }
-      for (final Topic c : this.children) {
-        result |= c.removeExtraFromSubtree(type);
-      }
-      return result;
-    } finally {
-      this.map.unlock();
-    }
+  /**
+   * Make copy of the topic and its subtree in the target mind map
+   *
+   * @param targetMindMap target mind map, must not be null
+   * @param parent        parent topic, can be null
+   * @return result topic, must not be null
+   */
+  public Topic makeCopy(final MindMap targetMindMap, final Topic parent) {
+    return this.makeCopy(targetMindMap, parent, true);
   }
 
-  public boolean removeAttributeFromSubtree(final String... names) {
+  /**
+   * Remove all extras from the topic
+   *
+   * @param includeSubtree if true then remove all extras from all subtree also
+   * @param types          extra types to be removed
+   * @return true if any extra was found and removed, false otherwise
+   */
+  public boolean removeAllExtras(
+      final boolean includeSubtree,
+      final Extra.ExtraType... types) {
     boolean result = false;
 
-    this.map.lock();
-    try {
-      for (final String t : names) {
-        result |= this.attributes.remove(t) != null;
-      }
+    for (final Extra.ExtraType t : types) {
+      result |= this.extras.remove(t) != null;
+    }
+    if (includeSubtree) {
       for (final Topic c : this.children) {
-        result |= c.removeAttributeFromSubtree(names);
+        result |= c.removeAllExtras(includeSubtree, types);
       }
-      return result;
-    } finally {
-      this.map.unlock();
-    }
-  }
-
-  public boolean deleteLinkToFileIfPresented(final File baseFolder,
-                                             final MMapURI file) {
-    boolean result = false;
-    if (this.extras.containsKey(Extra.ExtraType.FILE)) {
-      final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
-      if (fileLink.isSameOrHasParent(baseFolder, file)) {
-        result = this.extras.remove(Extra.ExtraType.FILE) != null;
-      }
-    }
-    for (final Topic c : this.children) {
-      result |= c.deleteLinkToFileIfPresented(baseFolder, file);
     }
     return result;
   }
 
-  public boolean replaceLinkToFileIfPresented(final File baseFolder,
-                                              final MMapURI oldFile,
-                                              final MMapURI newFile) {
+  /**
+   * Remove all attributes from topic
+   *
+   * @param includeSubtree if true then remove all attributes from subtree
+   * @param attributeNames names of attributes to be removed
+   * @return true if any attribute was found and removed
+   */
+  public boolean removeAttributes(
+      final boolean includeSubtree,
+      final String... attributeNames
+  ) {
+    boolean result = false;
+
+    for (final String name : attributeNames) {
+      result |= this.attributes.remove(name) != null;
+    }
+    if (includeSubtree) {
+      for (final Topic c : this.children) {
+        result |= c.removeAttributes(includeSubtree, attributeNames);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Remove file link from the topic if presented
+   *
+   * @param baseFolder base mind map folder, can be null
+   * @param fileUri    file URI to be removed, can't be null
+   * @return true if file was detected and removed, false otherwise
+   */
+  public boolean deleteFileLinkIfPresented(final File baseFolder,
+                                           final MMapURI fileUri) {
+    boolean result = false;
+    if (this.extras.containsKey(Extra.ExtraType.FILE)) {
+      final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
+      if (fileLink.isSameOrHasParent(baseFolder, fileUri)) {
+        result = this.extras.remove(Extra.ExtraType.FILE) != null;
+      }
+    }
+    for (final Topic c : this.children) {
+      result |= c.deleteFileLinkIfPresented(baseFolder, fileUri);
+    }
+    return result;
+  }
+
+  /**
+   * Replace file link in the topic if found
+   *
+   * @param baseFolder base mind map folder, can be null
+   * @param oldFileUri file uri to be replaced, must not be null
+   * @param newFileUri new file uri, must not be null
+   * @return true if file link found and replaced, false otherwise
+   */
+  public boolean replaceFileLinkIfPresented(final File baseFolder,
+                                            final MMapURI oldFileUri,
+                                            final MMapURI newFileUri) {
     boolean result = false;
     if (this.extras.containsKey(Extra.ExtraType.FILE)) {
       final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
       final ExtraFile replacement;
 
-      if (fileLink.isSame(baseFolder, oldFile)) {
-        replacement = new ExtraFile(newFile);
+      if (fileLink.isSame(baseFolder, oldFileUri)) {
+        replacement = new ExtraFile(newFileUri);
       } else {
-        replacement = fileLink.replaceParentPath(baseFolder, oldFile, newFile);
+        replacement = fileLink.replaceParentPath(baseFolder, oldFileUri, newFileUri);
       }
 
       if (replacement != null) {
@@ -983,21 +943,32 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
 
     for (final Topic c : this.children) {
-      result |= c.replaceLinkToFileIfPresented(baseFolder, oldFile, newFile);
+      result |= c.replaceFileLinkIfPresented(baseFolder, oldFileUri, newFileUri);
     }
     return result;
   }
 
-  public boolean doesContainFileLink(final File baseFolder, final MMapURI file) {
+  /**
+   * Check that the topic contains file uri
+   *
+   * @param baseFolder     mind map base folder, can be null
+   * @param fileUri        file uri to check, must not be null
+   * @param includeSubtree check subtree also if true
+   * @return true if file uri detected, false otherwise
+   */
+  public boolean doesContainFileLink(final File baseFolder, final MMapURI fileUri,
+                                     final boolean includeSubtree) {
     if (this.extras.containsKey(Extra.ExtraType.FILE)) {
       final ExtraFile fileLink = (ExtraFile) this.extras.get(Extra.ExtraType.FILE);
-      if (fileLink.isSame(baseFolder, file)) {
+      if (fileLink.isSame(baseFolder, fileUri)) {
         return true;
       }
     }
-    for (final Topic c : this.children) {
-      if (c.doesContainFileLink(baseFolder, file)) {
-        return true;
+    if (includeSubtree) {
+      for (final Topic c : this.children) {
+        if (c.doesContainFileLink(baseFolder, fileUri, includeSubtree)) {
+          return true;
+        }
       }
     }
     return false;
@@ -1005,7 +976,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   @Override
   public Iterator<Topic> iterator() {
-    final Iterator<Topic> iter = this.children.iterator();
+    final Iterator<Topic> childredIterator = this.children.iterator();
 
     return new Iterator<Topic>() {
       Topic childTopic;
@@ -1013,19 +984,19 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
       @Override
       public void remove() {
-        iter.remove();
+        childredIterator.remove();
       }
 
       Iterator<Topic> init() {
-        if (iter.hasNext()) {
-          this.childTopic = iter.next();
+        if (childredIterator.hasNext()) {
+          this.childTopic = childredIterator.next();
         }
         return this;
       }
 
       @Override
       public boolean hasNext() {
-        return iter.hasNext() || this.childTopic != null ||
+        return childredIterator.hasNext() || this.childTopic != null ||
             (this.childIterator != null && this.childIterator.hasNext());
       }
 
@@ -1040,7 +1011,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
           if (this.childIterator.hasNext()) {
             result = this.childIterator.next();
           } else {
-            result = iter.next();
+            result = childredIterator.next();
             this.childIterator = result.iterator();
           }
         } else {
@@ -1056,7 +1027,6 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
    *
    * @param languageNames names of language
    * @return true if code snippet is detected for any language, false otherwise
-   * @since 1.3.1
    */
   public boolean doesContainCodeSnippetForAnyLanguage(
       final String... languageNames) {
@@ -1070,5 +1040,22 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       }
     }
     return result;
+  }
+
+  /**
+   * Get all subtree of the topic as stream
+   *
+   * @return stream of subtree for the topic, must not be null
+   */
+  public Stream<Topic> stream() {
+    return StreamSupport.stream(this.spliterator(), false);
+  }
+
+  /**
+   * Get number of children in the topic
+   * @return number of children
+   */
+  public int size() {
+    return this.children.size();
   }
 }

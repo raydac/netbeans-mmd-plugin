@@ -21,6 +21,9 @@ import com.igormaznitsa.mindmap.model.nio.Path;
 import java.io.File;
 import java.util.Iterator;
 
+/**
+ * Path wrapping a java.nio.file.Path object.
+ */
 public class J7Path extends AbstractPath {
 
   private final java.nio.file.Path nioPath;

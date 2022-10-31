@@ -16,20 +16,47 @@
 
 package com.igormaznitsa.mindmap.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
+/**
+ * Extra item describing some link to URI. IN opposite to ExtraFile it doesn't provide auxiliary info and extension processing.
+ */
 public class ExtraLink extends Extra<MMapURI> implements ExtraLinkable {
   private static final long serialVersionUID = -3343908686571445847L;
   private final MMapURI uri;
 
-  public ExtraLink(final MMapURI uri) {
-    this.uri = uri;
+  private ExtraLink(final ExtraLink extraLink) {
+    super();
+    this.uri = extraLink.uri;
   }
 
-  public ExtraLink(final String text) throws URISyntaxException {
-    this.uri = new MMapURI(text);
+  /**
+   * Constructor.
+   *
+   * @param uri uri to be used as value for the link object, must not be null
+   */
+  public ExtraLink(final MMapURI uri) {
+    this.uri = requireNonNull(uri);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param uri text of URI link, must not be null
+   * @throws URISyntaxException thrown if malformed URI
+   */
+  public ExtraLink(final String uri) throws URISyntaxException {
+    super();
+    this.uri = new MMapURI(requireNonNull(uri));
+  }
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    return new ExtraLink(this);
   }
 
   @Override

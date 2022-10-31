@@ -16,27 +16,66 @@
 
 package com.igormaznitsa.mindmap.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 
+/**
+ * Extra value for topic contains file link.
+ */
 public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
 
   private static final long serialVersionUID = -478916403235887225L;
 
+  /**
+   * File URI
+   */
   private final MMapURI fileUri;
+  /**
+   * Flag shows that file is a MMD one
+   */
   private final boolean mmdFileFlag;
+  /**
+   * Lower cased file extension
+   */
   private final String lowerCasedFileExtension;
+  /**
+   * Internal cache to keep file path string
+   */
   private volatile String cachedString;
 
-  public ExtraFile(final MMapURI file) {
-    this.fileUri = file;
-    this.lowerCasedFileExtension = file.getExtension().toLowerCase(Locale.ENGLISH);
-    this.mmdFileFlag = this.lowerCasedFileExtension.equals("mmd"); //NOI18N
+  private ExtraFile(
+      final ExtraFile extraFile
+  ) {
+    super();
+    this.fileUri = extraFile.fileUri;
+    this.mmdFileFlag = extraFile.mmdFileFlag;
+    this.lowerCasedFileExtension = extraFile.lowerCasedFileExtension;
+    this.cachedString = extraFile.cachedString;
   }
 
+  /**
+   * Constructor
+   *
+   * @param fileUri uri for target file, must not be null
+   */
+  public ExtraFile(final MMapURI fileUri) {
+    super();
+    this.fileUri = requireNonNull(fileUri);
+    this.lowerCasedFileExtension = fileUri.getExtension().toLowerCase(Locale.ENGLISH);
+    this.mmdFileFlag = this.lowerCasedFileExtension.equals("mmd");
+  }
+
+  /**
+   * Constructor
+   *
+   * @param text text representation of file uri
+   * @throws URISyntaxException thrown if uri can't be parsed
+   */
   public ExtraFile(final String text) throws URISyntaxException {
     this(new MMapURI(text));
   }
@@ -46,6 +85,11 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
       return str;
     }
     return str + File.separatorChar;
+  }
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    return new ExtraFile(this);
   }
 
   @Override
@@ -77,10 +121,20 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
 
+  /**
+   * Check that MMD file target
+   *
+   * @return true if target is a MMD, false otherwise
+   */
   public boolean isMMDFile() {
     return this.mmdFileFlag;
   }
 
+  /**
+   * Get lower-cased target file extension
+   *
+   * @return low case target file extension, must not be null
+   */
   public String getLCFileExtension() {
     return this.lowerCasedFileExtension;
   }
@@ -113,10 +167,23 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     return this.fileUri;
   }
 
+  /**
+   * Check that URI is absolute one
+   *
+   * @return true if URI is absolute one, false if relative one
+   */
   public boolean isAbsolute() {
     return this.fileUri.isAbsolute();
   }
 
+  /**
+   * Make version with replaced parent path
+   *
+   * @param baseFolder base folder, can be null
+   * @param oldFolder  old folder URI, must not be null
+   * @param newFolder  new folder URI, must not be null
+   * @return extra file object with replaced parent path or null if old path not base for the file target
+   */
   public ExtraFile replaceParentPath(final File baseFolder,
                                      final MMapURI oldFolder,
                                      final MMapURI newFolder) {
@@ -140,6 +207,13 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
 
+  /**
+   * Check that folder among parents for target file
+   *
+   * @param baseFolder base folder for mind map, can be null
+   * @param folder     folder to check, must not be null
+   * @return true if folder among parents for target file
+   */
   public boolean hasParent(final File baseFolder, final MMapURI folder) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = folder.asFile(baseFolder);
@@ -156,6 +230,13 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
 
+  /**
+   * Check that file is same of parent
+   *
+   * @param baseFolder base folder for mind map file, can be null
+   * @param file       file to check, must not be null
+   * @return true if checked file is same or parent, false otherwise
+   */
   public boolean isSameOrHasParent(final File baseFolder, final MMapURI file) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = file.asFile(baseFolder);
@@ -172,6 +253,13 @@ public class ExtraFile extends Extra<MMapURI> implements ExtraLinkable {
     }
   }
 
+  /**
+   * Check that a file is the same one as the target file
+   *
+   * @param baseFolder base folder for mind map file, can be null
+   * @param file       file to check, must not be null
+   * @return true if the file is the same, false otherwise
+   */
   public boolean isSame(final File baseFolder, final MMapURI file) {
     final File theFile = this.fileUri.asFile(baseFolder);
     final File thatFile = file.asFile(baseFolder);

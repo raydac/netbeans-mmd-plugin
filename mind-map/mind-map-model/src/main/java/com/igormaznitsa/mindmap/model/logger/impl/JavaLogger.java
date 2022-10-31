@@ -20,6 +20,9 @@ import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 
+/**
+ * Base java.util.logging.Logger implementation.
+ */
 public class JavaLogger extends Logger {
 
   private final java.util.logging.Logger wrappedLogger;
@@ -54,6 +57,11 @@ public class JavaLogger extends Logger {
     this.wrappedLogger.log(java.util.logging.Level.WARNING, message, error);
   }
 
+  /**
+   * Get wrapped java.util.logging.Logger for the object.
+   *
+   * @return wrapped logger, must not be null
+   */
   public java.util.logging.Logger getWrappedLogger() {
     return this.wrappedLogger;
   }

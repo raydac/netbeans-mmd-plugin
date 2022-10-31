@@ -18,6 +18,9 @@ package com.igormaznitsa.mindmap.model.parser;
 
 import java.io.Serializable;
 
+/**
+ * Parser token position.
+ */
 public final class TokenPosition implements Serializable {
 
   private static final long serialVersionUID = 4029368174558764315L;
@@ -25,15 +28,36 @@ public final class TokenPosition implements Serializable {
   private final int startOffset;
   private final int endOffset;
 
+  /**
+   * Constructor
+   *
+   * @param startOffset token start offset
+   * @param endOffset   token end offset
+   * @throws IllegalArgumentException if end position is less than start position
+   */
   public TokenPosition(final int startOffset, final int endOffset) {
-    this.startOffset = startOffset;
-    this.endOffset = endOffset;
+    if (endOffset < startOffset) {
+      throw new IllegalArgumentException("End offset is less that start offset");
+    } else {
+      this.startOffset = startOffset;
+      this.endOffset = endOffset;
+    }
   }
 
+  /**
+   * Get start offset
+   *
+   * @return start offset
+   */
   public int getStartOffset() {
     return this.startOffset;
   }
 
+  /**
+   * Get end offset
+   *
+   * @return end offset
+   */
   public int getEndOffset() {
     return this.endOffset;
   }

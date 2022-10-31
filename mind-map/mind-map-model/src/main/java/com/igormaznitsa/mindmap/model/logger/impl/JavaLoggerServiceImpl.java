@@ -23,6 +23,9 @@ import com.igormaznitsa.mindmap.model.logger.LoggerService;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Base implementations working with java.util.logging.Logger
+ */
 public class JavaLoggerServiceImpl implements LoggerService {
 
   private final Map<Class<?>, Logger> cacheForClasses = new HashMap<>();
