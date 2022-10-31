@@ -27,6 +27,7 @@ import com.igormaznitsa.ideamindmap.findtext.FindTextScopeProvider;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
+import com.intellij.openapi.module.Module;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
