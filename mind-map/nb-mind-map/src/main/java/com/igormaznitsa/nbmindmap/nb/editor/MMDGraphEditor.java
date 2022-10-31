@@ -532,7 +532,7 @@ public final class MMDGraphEditor extends CloneableEditor
             topicToCentre(mindMapPanel.getFirstSelected());
           } else if (root != null) {
             mindMapPanel.select(root, false);
-            mindMapPanel.getModel().resetPayload();
+            mindMapPanel.getModel().clearAllPayloads();;
             topicToCentre(root);
           }
         }
@@ -698,7 +698,7 @@ public final class MMDGraphEditor extends CloneableEditor
 
     if (topic != null) {
       // to make it sure that topic is from the same model
-      topic = this.mindMapPanel.getModel().findForPositionPath(topic.getPositionPath());
+      topic = this.mindMapPanel.getModel().findAtPosition(topic.getPositionPath());
       if (topic != null) {
         AbstractElement element = (AbstractElement) topic.getPayload();
 
@@ -731,7 +731,7 @@ public final class MMDGraphEditor extends CloneableEditor
   public void onTopicCollapsatorClick(@Nonnull final MindMapPanel source,
                                       @Nonnull final Topic topic, final boolean beforeAction) {
     if (!beforeAction) {
-      this.mindMapPanel.getModel().resetPayload();
+      this.mindMapPanel.getModel().clearAllPayloads();
       topicToCentre(topic);
     }
   }
@@ -1074,7 +1074,13 @@ public final class MMDGraphEditor extends CloneableEditor
   private void addURItoElement(@Nonnull final URI uri, @Nullable final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();
-      final MMapURI mmapUri = new MMapURI(uri);
+      final MMapURI mmapUri;
+      try {
+        mmapUri = new MMapURI(uri);
+      } catch (URISyntaxException ex){
+        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Malformed URI: "+ uri);
+        return;
+      }
       if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
         if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null,
             BUNDLE.getString("MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"),
@@ -1635,7 +1641,7 @@ public final class MMDGraphEditor extends CloneableEditor
 
   public boolean focusToPath(final boolean enforceVisibility, final int[] positionPath) {
     this.mindMapPanel.removeAllSelection();
-    Topic topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
+    Topic topic = this.mindMapPanel.getModel().findAtPosition(positionPath);
     boolean mapChanged = false;
     if (topic != null) {
       if (enforceVisibility) {
@@ -1645,7 +1651,7 @@ public final class MMDGraphEditor extends CloneableEditor
       }
       if (mapChanged) {
         this.mindMapPanel.doLayout();
-        topic = this.mindMapPanel.getModel().findForPositionPath(positionPath);
+        topic = this.mindMapPanel.getModel().findAtPosition(positionPath);
       }
       this.mindMapPanel.select(topic, false);
     }

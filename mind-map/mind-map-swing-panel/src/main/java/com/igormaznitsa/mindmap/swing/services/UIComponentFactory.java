@@ -46,7 +46,7 @@ public interface UIComponentFactory {
 
   JPanel makePanelWithOptions(HasOptions optionsProcessor);
 
-  JComboBox makeComboBox();
+  JComboBox<?> makeComboBox();
 
   JSpinner makeSpinner();
 

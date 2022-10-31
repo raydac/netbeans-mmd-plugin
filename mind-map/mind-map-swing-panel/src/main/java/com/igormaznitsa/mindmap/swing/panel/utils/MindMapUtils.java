@@ -131,7 +131,7 @@ public final class MindMapUtils {
   public static boolean foldOrUnfoldChildren(final Topic topic, final boolean fold,
                                              final int levelCount) {
     boolean result = false;
-    if (levelCount > 0 && topic.hasChildren()) {
+    if (levelCount > 0 && !topic.isEmpty()) {
       for (final Topic c : topic) {
         result |= foldOrUnfoldChildren(c, fold, levelCount - 1);
       }
@@ -155,7 +155,7 @@ public final class MindMapUtils {
   private static void _removeCollapseAttr(final Topic topic) {
     if (topic != null) {
       topic.setAttribute(ATTR_COLLAPSED.getText(), null);
-      if (topic.hasChildren()) {
+      if (!topic.isEmpty()) {
         for (final Topic ch : topic.getChildren()) {
           _removeCollapseAttr(ch);
         }
@@ -165,7 +165,7 @@ public final class MindMapUtils {
 
   public static void removeCollapseAttrIfNoChildren(final Topic topic) {
     if (topic != null) {
-      if (!topic.hasChildren()) {
+      if (topic.isEmpty()) {
         topic.setAttribute(ATTR_COLLAPSED.getText(), null);
       } else {
         for (final Topic t : topic.getChildren()) {

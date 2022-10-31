@@ -154,7 +154,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
       try (final Writer writer = new OutputStreamWriter(new FileOutputStream(targetFile, false),
           StandardCharsets.UTF_8)) {
-        writer.write(mindMap.packToString());
+        writer.write(mindMap.asString());
         this.messager.printMessage(NOTE,
             MSG_PREFIX + "Mind map file has been written: " + targetFile);
       } catch (IOException ex) {
@@ -178,7 +178,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
         try (final Writer writer = new OutputStreamWriter(targetFile.openOutputStream(),
             StandardCharsets.UTF_8)) {
-          writer.write(mindMap.packToString());
+          writer.write(mindMap.asString());
         }
         this.messager.printMessage(NOTE,
             MSG_PREFIX + "Mind map file has been written: " + targetFile.getName());

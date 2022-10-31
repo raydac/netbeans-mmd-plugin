@@ -53,7 +53,7 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
 
     if (toClone != null) {
 
-      final Boolean cloneSubtree = toClone.hasChildren() ? context.getDialogProvider()
+      final Boolean cloneSubtree = !toClone.isEmpty() ? context.getDialogProvider()
           .msgConfirmYesNoCancel(null, Texts.getString("MindMapPanel.titleCloneTopicRequest"),
               Texts.getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) : Boolean.FALSE;
       if (cloneSubtree == null) {

@@ -79,7 +79,7 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
     try {
       final OutputStream out = fileObject.getOutputStream(lock);
       try {
-        IOUtils.write(map.packToString(), out, "UTF-8"); //NOI18N
+        IOUtils.write(map.asString(), out, "UTF-8"); //NOI18N
       }
       finally {
         IOUtils.closeQuietly(out);

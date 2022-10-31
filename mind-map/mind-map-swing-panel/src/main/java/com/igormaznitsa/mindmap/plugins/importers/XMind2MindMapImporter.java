@@ -502,7 +502,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private MindMap convertJsonSheet(final ZipFile file,
                                    final JSONObject sheet) {
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
+    resultedMap.putAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
     final Topic rootTopic = requireNonNull(resultedMap.getRoot());
     rootTopic.setText("Empty sheet");
@@ -575,7 +575,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private MindMap convertXmlSheet(final XMindStyles styles, final ZipFile file,
                                   final Element sheet) {
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
+    resultedMap.putAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
     final Topic rootTopic = requireNonNull(resultedMap.getRoot());
     rootTopic.setText("Empty sheet");

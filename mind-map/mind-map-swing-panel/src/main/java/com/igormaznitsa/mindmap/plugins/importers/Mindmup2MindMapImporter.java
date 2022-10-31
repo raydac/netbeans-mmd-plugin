@@ -86,7 +86,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       throw new IllegalArgumentException("Can't find formatVersion");
     }
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.setAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
+    resultedMap.putAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
 
     final Topic mindMapRoot = requireNonNull(resultedMap.getRoot());
     final Map<Long, Topic> mapTopicId = new HashMap<>();

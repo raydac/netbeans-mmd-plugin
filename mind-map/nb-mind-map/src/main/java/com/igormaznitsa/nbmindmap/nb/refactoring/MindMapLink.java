@@ -140,7 +140,7 @@ public class MindMapLink {
 
   public synchronized void writeMindMap() throws IOException {
     if (this.model != null) {
-      writeUTF8Text(this.model.packToString());
+      writeUTF8Text(this.model.asString());
     }
   }
 

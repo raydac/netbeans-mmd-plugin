@@ -654,7 +654,7 @@ public final class ExplorerTree extends JScrollPane {
           switch (extension) {
             case "mmd": { //NOI18N
               final MindMap model = new MindMap(true);
-              model.setAttribute("showJumps", "true"); //NOI18N
+              model.putAttribute("showJumps", "true"); //NOI18N
               final Topic root = model.getRoot();
               if (root != null) {
                 root.setText("Root"); //NOI18N

@@ -27,7 +27,6 @@ import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.model.TopicChecker;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
@@ -99,6 +98,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -188,7 +188,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                   final Topic edited = elementUnderEdit.getModel();
                   final int[] topicPosition = edited.getPositionPath();
                   endEdit(true);
-                  final Topic theTopic = model.findForPositionPath(topicPosition);
+                  final Topic theTopic = model.findAtPosition(topicPosition);
                   if (theTopic != null) {
                     makeNewChildAndStartEdit(theTopic, null);
                   }
@@ -235,7 +235,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 if (pathToPrevTopicBeforeEdit != null) {
                   final int[] path = pathToPrevTopicBeforeEdit;
                   pathToPrevTopicBeforeEdit = null;
-                  final Topic topic = model.findForPositionPath(path);
+                  final Topic topic = model.findAtPosition(path);
                   if (topic != null) {
                     select(topic, false);
                   }
@@ -920,7 +920,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private static void drawTopics(final MMGraphics g, final MindMapPanelConfig cfg,
                                  final MindMap map) {
     if (map != null) {
-      if (Boolean.parseBoolean(map.getAttribute(ATTR_SHOW_JUMPS))) {
+      if (Boolean.parseBoolean(map.findAttribute(ATTR_SHOW_JUMPS))) {
         drawJumps(g, map, cfg);
       }
 
@@ -1102,7 +1102,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
     final Topic root = model == null ? null : model.getRoot();
     if (root != null && model != null) {
-      model.resetPayload();
+      model.clearAllPayloads();
       setElementSizesForElementAndChildren(gfx, cfg, root, 0);
       result = true;
     }
@@ -1185,8 +1185,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                                                        final MindMapPanelConfig cfg,
                                                        final boolean expandAll,
                                                        final RenderQuality quality) {
-    final MindMap workMap = new MindMap(model);
-    workMap.resetPayload();
+    final MindMap workMap = model.makeCopy();
+    workMap.clearAllPayloads();
 
     Graphics2D g = graphicsContext;
 
@@ -1223,8 +1223,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                                                    final MindMapPanelConfig cfg,
                                                    final boolean expandAll,
                                                    final RenderQuality quality) {
-    final MindMap workMap = new MindMap(model);
-    workMap.resetPayload();
+    final MindMap workMap = model.makeCopy();
+    workMap.clearAllPayloads();
 
     if (expandAll) {
       MindMapUtils.removeCollapseAttr(workMap);
@@ -1427,11 +1427,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       break;
       case TOPIC: {
         final Topic topic = this.getModel().findTopicForLink((ExtraTopic) extra);
-        builder.append(BUNDLE.getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml3(ModelUtils.makeShortTextVersion(topic == null ? "----" : topic.getText(), 32)));
+        builder.append(BUNDLE.getString("MindMapPanel.tooltipJumpToTopic")).append(StringEscapeUtils.escapeHtml3(ModelUtils.makeEllipsis(topic == null ? "----" : topic.getText(), 32)));
       }
       break;
       case LINK: {
-        builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml3(ModelUtils.makeShortTextVersion(extra.getAsString(), 48)));
+        builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenLink")).append(StringEscapeUtils.escapeHtml3(ModelUtils.makeEllipsis(extra.getAsString(), 48)));
       }
       break;
       case NOTE: {
@@ -1440,7 +1440,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenText")).append("#######");
         } else {
           builder.append(BUNDLE.getString("MindMapPanel.tooltipOpenText")).append(StringEscapeUtils
-                  .escapeHtml3(ModelUtils.makeShortTextVersion(extra.getAsString(), 64)));
+                  .escapeHtml3(ModelUtils.makeEllipsis(extra.getAsString(), 64)));
         }
       }
       break;
@@ -1609,16 +1609,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         final boolean firstLevel = lastSelectedTopic.getClass() == ElementLevelFirst.class;
         final boolean currentLeft = AbstractCollapsableElement.isLeftSidedTopic(lastSelectedTopic.getModel());
 
-        final TopicChecker checker = new TopicChecker() {
-          @Override
-          public boolean check(final Topic topic) {
-            if (!firstLevel) {
-              return true;
-            } else if (currentLeft) {
-              return AbstractCollapsableElement.isLeftSidedTopic(topic);
-            } else {
-              return !AbstractCollapsableElement.isLeftSidedTopic(topic);
-            }
+        final Predicate<Topic> checker = topic -> {
+          if (!firstLevel) {
+            return true;
+          } else if (currentLeft) {
+            return AbstractCollapsableElement.isLeftSidedTopic(topic);
+          } else {
+            return !AbstractCollapsableElement.isLeftSidedTopic(topic);
           }
         };
         final Topic topic = pressedButtonMoveUp ? lastSelectedTopic.getModel().findPrev(checker) : lastSelectedTopic.getModel().findNext(checker);
@@ -1711,13 +1708,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public boolean isShowJumps() {
-    return Boolean.parseBoolean(this.model.getAttribute(ATTR_SHOW_JUMPS));
+    return Boolean.parseBoolean(this.model.findAttribute(ATTR_SHOW_JUMPS));
   }
 
   public void setShowJumps(final boolean flag) {
     if (lockIfNotDisposed()) {
       try {
-        this.model.setAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
+        this.model.putAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
         repaint();
         fireNotificationMindMapChanged(true);
       } finally {
@@ -2066,7 +2063,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               fireNotificationMindMapChanged(true);
             }
 
-            editedTopic = this.model.findForPositionPath(pathToEditedTopic);
+            editedTopic = this.model.findAtPosition(pathToEditedTopic);
             this.focusTo(editedTopic);
           } else {
             if (this.removeEditedTopicForRollback.get()) {
@@ -2256,7 +2253,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       boolean selectionChanged = false;
       for (final int[] posPath : selectedPaths) {
-        final Topic topic = this.model.findForPositionPath(posPath);
+        final Topic topic = this.model.findAtPosition(posPath);
         if (topic == null) {
           selectionChanged = true;
         } else if (!MindMapUtils.isHidden(topic)) {
@@ -2520,7 +2517,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       try {
         super.invalidate();
         if (this.model != null && this.model.getRoot() != null) {
-          this.model.resetPayload();
+          this.model.clearAllPayloads();
         }
       } finally {
         this.unlock();
@@ -2645,7 +2642,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           removeAllSelection();
 
           final int[] path = theTopic.getPositionPath();
-          this.select(this.model.findForPositionPath(path), false);
+          this.select(this.model.findAtPosition(path), false);
         }
       } finally {
         this.unlock();
@@ -2664,7 +2661,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         return false;
       }
 
-      final Topic cloned = this.model.cloneTopic(topic, cloneSubtree);
+      final Topic cloned = this.model.cloneTopicInMap(topic, cloneSubtree);
 
       if (cloned != null) {
         cloned.moveAfter(topic);

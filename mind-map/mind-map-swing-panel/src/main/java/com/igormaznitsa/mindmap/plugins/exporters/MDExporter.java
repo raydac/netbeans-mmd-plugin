@@ -16,7 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import static com.igormaznitsa.mindmap.model.ModelUtils.escapeMarkdownStr;
+import static com.igormaznitsa.mindmap.model.ModelUtils.escapeMarkdown;
 import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.Extra;
@@ -94,12 +94,12 @@ public class MDExporter extends AbstractExporter {
 
     if (level < STARTING_INDEX_FOR_NUMERATION) {
       final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);//NOI18N
-      state.append(headerPrefix).append(' ').append(escapeMarkdownStr(topic.getText()))
+      state.append(headerPrefix).append(' ').append(escapeMarkdown(topic.getText()))
           .nextLine();
     } else {
       final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION + 1);//NOI18N
       state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ')
-          .append(escapeMarkdownStr(topic.getText())).nextLine();
+          .append(escapeMarkdown(topic.getText())).nextLine();
     }
 
     final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
@@ -114,7 +114,7 @@ public class MDExporter extends AbstractExporter {
       if (linkedTopic != null) {
         state.append(prefix).append("*Related to: ")//NOI18N
             .append('[')//NOI18N
-            .append(escapeMarkdownStr(makeLineFromString(linkedTopic.getText())))
+            .append(escapeMarkdown(makeLineFromString(linkedTopic.getText())))
             .append("](")//NOI18N
             .append("#")//NOI18N
             .append(requireNonNull(getTopicUid(linkedTopic)))
@@ -132,7 +132,7 @@ public class MDExporter extends AbstractExporter {
       final MMapURI fileURI = file.getValue();
       state.append(prefix)
           .append("> File: ")//NOI18N
-          .append(escapeMarkdownStr(
+          .append(escapeMarkdown(
               fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString()))
           .nextStringMarker().nextLine();
       extrasPrinted = true;
@@ -144,7 +144,7 @@ public class MDExporter extends AbstractExporter {
       state.append(prefix)
           .append("> Url: ")//NOI18N
           .append('[')//NOI18N
-          .append(escapeMarkdownStr(url))
+          .append(escapeMarkdown(url))
           .append("](")//NOI18N
           .append(ascurl)
           .append(')')//NOI18N

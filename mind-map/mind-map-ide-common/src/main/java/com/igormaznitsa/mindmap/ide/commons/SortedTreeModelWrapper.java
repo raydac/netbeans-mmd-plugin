@@ -21,7 +21,7 @@ package com.igormaznitsa.mindmap.ide.commons;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.MindMapModelEvent;
-import com.igormaznitsa.mindmap.model.MindMapModelEventListener;
+import com.igormaznitsa.mindmap.model.MindMapModelListener;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,7 +35,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-public final class SortedTreeModelWrapper implements TreeModel, MindMapModelEventListener {
+public final class SortedTreeModelWrapper implements TreeModel, MindMapModelListener {
   private final MindMap model;
 
   private final Map<Object, List<Object>> sortedCache = new HashMap<>();
@@ -45,7 +45,7 @@ public final class SortedTreeModelWrapper implements TreeModel, MindMapModelEven
   public SortedTreeModelWrapper(final MindMap model, final Comparator<Object> comparator) {
     this.model = model;
     this.comparator = comparator;
-    this.model.addMindMapModelEventListener(this);
+    this.model.addMindMapModelListener(this);
   }
 
   @Override
@@ -60,18 +60,21 @@ public final class SortedTreeModelWrapper implements TreeModel, MindMapModelEven
 
   @Override
   public int getChildCount(final Object parent) {
-    return this.model.getChildCount((Topic) parent);
+    return ((Topic) parent).size();
   }
 
   @Override
   public boolean isLeaf(final Object node) {
-    return this.model.isLeaf((Topic) node);
+    return ((Topic) node).isEmpty();
   }
 
   @Override
   public void valueForPathChanged(final TreePath path, final Object newValue) {
-    this.model.valueForPathChanged((Topic[]) path.getPath(), (String) newValue);
-    this.sortedCache.clear();
+    final Topic [] topicPath = (Topic[]) path.getPath();
+    if (topicPath.length > 0) {
+      this.model.setTopicTextWithEvent(topicPath[topicPath.length - 1], (String) newValue);
+      this.sortedCache.clear();
+    }
   }
 
   @Override
@@ -97,9 +100,9 @@ public final class SortedTreeModelWrapper implements TreeModel, MindMapModelEven
     List<Object> result = this.sortedCache.get(parent);
     if (result == null) {
       result = new ArrayList<>();
-      final int childCount = model.getChildCount((Topic) parent);
+      final int childCount = ((Topic) parent).size();
       for (int i = 0; i < childCount; i++) {
-        result.add(model.getChild((Topic) parent, i));
+        result.add(((Topic) parent).getChildren().get(i));
       }
       if (this.comparator != null) {
         result.sort(this.comparator);
@@ -127,8 +130,8 @@ public final class SortedTreeModelWrapper implements TreeModel, MindMapModelEven
   }
 
   public void dispose() {
-    clear();
-    this.model.removeMindMapModelEventListener(this);
+    this.clear();
+    this.model.removeMindMapModelListener(this);
   }
 
 }

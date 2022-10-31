@@ -230,7 +230,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
     final FileObject baseFolder = project.getProjectDirectory();
     try {
       final MindMap parsedMap = new MindMap(new StringReader(mindMap.asText("UTF-8"))); //NOI18N
-      return parsedMap.doesContainFileLink(FileUtil.toFile(baseFolder), fileToCheck);
+      return parsedMap.doesContainFile(FileUtil.toFile(baseFolder), fileToCheck);
     }
     catch (IllegalArgumentException ex) {
       // not mind map

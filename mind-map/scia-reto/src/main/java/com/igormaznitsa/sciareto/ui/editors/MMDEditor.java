@@ -210,7 +210,7 @@ public final class MMDEditor extends AbstractTextEditor
     this.mindMapPanel.setModel(Assertions.assertNotNull(map), false);
 
     loadContent(file);
-    this.currentModelState.set(this.mindMapPanel.getModel().packToString());
+    this.currentModelState.set(this.mindMapPanel.getModel().asString());
   }
 
   @Override
@@ -492,14 +492,14 @@ public final class MMDEditor extends AbstractTextEditor
   @Nullable
   @Override
   protected String getContentAsText() {
-    return this.mindMapPanel.getModel().packToString();
+    return this.mindMapPanel.getModel().asString();
   }
 
   @Override
   public void onMindMapModelChanged(@Nonnull final MindMapPanel source,
                                     final boolean addToHistory) {
     if (addToHistory && !this.preventAddUndo.get() && this.currentModelState.get() != null) {
-      final String state = this.currentModelState.getAndSet(source.getModel().packToString());
+      final String state = this.currentModelState.getAndSet(source.getModel().asString());
       backup(state);
       this.undoStorage.addToUndo(state);
       this.undoStorage.clearRedo();
@@ -507,7 +507,7 @@ public final class MMDEditor extends AbstractTextEditor
         this.title.setChanged(true);
       }
     } else {
-      this.currentModelState.set(source.getModel().packToString());
+      this.currentModelState.set(source.getModel().asString());
     }
 
     try {
@@ -851,7 +851,16 @@ public final class MMDEditor extends AbstractTextEditor
   private void addURItoElement(@Nonnull final URI uri, @Nullable final AbstractElement element) {
     if (element != null) {
       final Topic topic = element.getModel();
-      final MMapURI mmapUri = new MMapURI(uri);
+
+      final MMapURI mmapUri;
+      try {
+        mmapUri = new MMapURI(uri);
+      } catch (URISyntaxException ex) {
+        DialogProviderManager.getInstance().getDialogProvider()
+            .msgError(SciaRetoStarter.getApplicationFrame(), "Malformed URI: " + uri);
+        return;
+      }
+
       if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
             .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
@@ -1171,7 +1180,8 @@ public final class MMDEditor extends AbstractTextEditor
                 .format("URI syntax error: %s", dataContainer.getFilePathWithLine()), ex); //NOI18N
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgError(SciaRetoStarter.getApplicationFrame(), String.format(
-                    BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantConvertFilePath"),
+                    BUNDLE.getString(
+                        "MMDGraphEditor.editFileLinkForTopic.errorCantConvertFilePath"),
                     dataContainer.getFilePathWithLine().getPath()));
           }
         }

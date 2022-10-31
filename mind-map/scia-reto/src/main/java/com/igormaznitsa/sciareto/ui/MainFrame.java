@@ -20,7 +20,6 @@ package com.igormaznitsa.sciareto.ui;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
 
-
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
@@ -119,7 +118,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileView;
-
 import org.apache.commons.io.FilenameUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -1924,7 +1922,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
       if (choosenFilter == filerMindMap) {
         final MindMap model = new MindMap(true);
-        model.setAttribute("showJumps", "true"); //NOI18N
+        model.putAttribute("showJumps", "true"); //NOI18N
         final Topic root = model.getRoot();
         if (root != null) {
           root.setText("Root"); //NOI18N

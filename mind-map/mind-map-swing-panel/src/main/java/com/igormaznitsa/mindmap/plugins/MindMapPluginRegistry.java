@@ -208,6 +208,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     return result;
   }
 
+  @SuppressWarnings("unchecked")
   public <T extends MindMapPlugin> List<T> findFor(final Class<T> klazz) {
     synchronized (FIND_CACHE) {
       List<T> result = (List<T>) FIND_CACHE.get(klazz);

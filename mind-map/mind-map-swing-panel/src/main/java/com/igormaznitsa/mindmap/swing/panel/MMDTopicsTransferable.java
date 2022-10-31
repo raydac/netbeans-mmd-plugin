@@ -144,10 +144,8 @@ public class MMDTopicsTransferable implements Transferable {
       result.append(otherIndentString).append("--------------------").append(END_OF_LINE);
     }
     result.append(otherIndentString).append(END_OF_LINE);
-    if (topic.hasChildren()) {
-      for (final Topic c : topic.getChildren()) {
-        result.append(convertTopicToText(c, level + 1));
-      }
+    for (final Topic c : topic.getChildren()) {
+      result.append(convertTopicToText(c, level + 1));
     }
 
     return result.toString();

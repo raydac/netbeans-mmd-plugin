@@ -12,7 +12,7 @@ public class PsiTopicLevel extends ASTWrapperPsiElement implements MMPsiElement 
   public PsiTopicLevel(@Nonnull final ASTNode node) {
     super(node);
     final String text = node.getText();
-    this.level = ModelUtils.calcCharsOnStart('#', text);
+    this.level = ModelUtils.countPrefixChars('#', text);
   }
 
   public int getLevel() {

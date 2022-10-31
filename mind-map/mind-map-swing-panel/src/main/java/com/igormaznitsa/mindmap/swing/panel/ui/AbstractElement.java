@@ -192,7 +192,7 @@ public abstract class AbstractElement {
   }
 
   public boolean hasChildren() {
-    return this.model.hasChildren();
+    return !this.model.isEmpty();
   }
 
   public JTextComponent fillByTextAndFont(final JTextComponent compo) {

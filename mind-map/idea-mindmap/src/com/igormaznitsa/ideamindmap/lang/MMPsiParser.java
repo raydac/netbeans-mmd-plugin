@@ -67,7 +67,7 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
         if (token == MMTokens.TOPIC_LEVEL) {
           final PsiBuilder.Marker levelMarker = builder.mark();
           levelMarker.done(token);
-          final int topicLevel = ModelUtils.calcCharsOnStart('#', builder.getTokenText());
+          final int topicLevel = ModelUtils.countPrefixChars('#', builder.getTokenText());
           if (topicLevel != 1) {
             marker.done(MMTokens.UNKNOWN);
           } else {
@@ -97,7 +97,7 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
           final PsiBuilder.Marker levelMarker = builder.mark();
           levelMarker.done(token);
 
-          final int theTopicLevel = ModelUtils.calcCharsOnStart('#', builder.getTokenText());
+          final int theTopicLevel = ModelUtils.countPrefixChars('#', builder.getTokenText());
           if (theTopicLevel <= 1) {
             marker.done(MMTokens.UNKNOWN);
           } else {

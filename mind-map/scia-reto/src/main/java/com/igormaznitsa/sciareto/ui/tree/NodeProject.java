@@ -131,7 +131,7 @@ public class NodeProject extends NodeFileOrFolder {
       try {
         final MindMap map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
         if (map.deleteAllLinksToFile(baseFolder, fileURI)) {
-          SystemUtils.saveUTFText(file, map.packToString());
+          SystemUtils.saveUTFText(file, map.asString());
           affectedFiles.add(file);
         }
       } catch (IOException ex) {
@@ -183,7 +183,7 @@ public class NodeProject extends NodeFileOrFolder {
       try {
         final MindMap map = new MindMap(new StringReader(FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
         if (map.replaceAllLinksToFile(baseFolder, oldFileURI, newFileURI)) {
-          SystemUtils.saveUTFText(file, map.packToString());
+          SystemUtils.saveUTFText(file, map.asString());
           affectedFiles.add(file);
         }
       } catch (IOException ex) {

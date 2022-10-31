@@ -14,7 +14,7 @@ public class PsiTopic extends ASTWrapperPsiElement implements MMPsiElement {
   public PsiTopic(@Nonnull final ASTNode node) {
     super(node);
     final String text = node.getText();
-    this.level = ModelUtils.calcCharsOnStart('#', text);
+    this.level = ModelUtils.countPrefixChars('#', text);
     this.unescapedText = StringEscapeUtils.unescapeHtml(text.substring(level).trim());
   }
 

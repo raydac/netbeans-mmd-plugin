@@ -15,8 +15,8 @@
  */
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
-import com.igormaznitsa.mindmap.model.ModelUtils;
 import javax.swing.event.ChangeListener;
+import org.apache.commons.lang3.ArrayUtils;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.SafeDeleteRefactoring;
@@ -36,7 +36,7 @@ public class SafeDeleteUI extends AbstractMMDRefactoringUI {
   public SafeDeleteUI (final Lookup lookup, final FileObject[] files) {
     this.files = files;
     this.lookup = lookup;
-    this.refactoring = new SafeDeleteRefactoring(Lookups.fixed(ModelUtils.joinArrays(files, new Object[]{this})));
+    this.refactoring = new SafeDeleteRefactoring(Lookups.fixed(ArrayUtils.add(files, this)));
   }
 
   @Override
