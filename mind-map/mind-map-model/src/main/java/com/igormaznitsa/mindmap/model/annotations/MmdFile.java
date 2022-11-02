@@ -45,4 +45,77 @@ public @interface MmdFile {
    * @see #MACROS_SRC_CLASS_FOLDER
    */
   String path() default MACROS_SRC_CLASS_FOLDER;
+
+  /**
+   * Identifier of an emoticon to be added to the generated mind map topic.
+   *
+   * @return emoticon identifier
+   */
+  MmdEmoticon emoticon() default MmdEmoticon.EMPTY;
+
+  /**
+   * Title for generated root topic.
+   *
+   * @return Text to be used as title for generated topic.
+   */
+  String title() default "";
+
+  /**
+   * File path to be added into the root topic.
+   *
+   * @return if there is any MMD file with such UID then its path in use else just path added if non-empty.
+   * @see MmdFile#uid()
+   */
+  String file() default "";
+
+  /**
+   * Add the source file with line position as file link but only if file attribute is empty.
+   *
+   * @return true if should autogenerate source file line link, false otherwise
+   * @see #file()
+   */
+  boolean anchor() default true;
+
+  /**
+   * Allows to provide jump link from root to a topic in the same file.
+   *
+   * @return target topic UID or topic title text.
+   * @see #uid()
+   */
+  String jumpTo() default "";
+
+  /**
+   * Allows to add text note for the root topic.
+   *
+   * @return text for topic, empty if there is no note
+   */
+  String note() default "";
+
+  /**
+   * URI to be added into the root topic.
+   *
+   * @return URI or empty text if there is no URI
+   */
+  String uri() default "";
+
+  /**
+   * Text color for the root topic.
+   *
+   * @return text color for the topic.
+   */
+  MmdColor colorText() default MmdColor.DEFAULT;
+
+  /**
+   * Background fill color for the root topic.
+   *
+   * @return background fill color for the topic.
+   */
+  MmdColor colorFill() default MmdColor.DEFAULT;
+
+  /**
+   * Border fill color for the root topic.
+   *
+   * @return border fill color for the topic.
+   */
+  MmdColor colorBorder() default MmdColor.DEFAULT;
 }

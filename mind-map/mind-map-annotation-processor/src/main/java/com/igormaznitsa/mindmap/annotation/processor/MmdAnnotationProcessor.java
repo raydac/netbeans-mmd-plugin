@@ -40,7 +40,6 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   public static final String KEY_MMD_FOLDER_CREATE = "mmd.doc.folder.create";
   public static final String KEY_MMD_RELATIVE_PATHS = "mmd.doc.path.relative";
   public static final String KEY_MMD_FILE_OVERWRITE = "mmd.doc.file.overwrite";
-  private static final String MSG_PREFIX = "MMD: ";
   private static final Set<String> SUPPORTED_OPTIONS =
       Set.of(
           KEY_MMD_FORCE_FOLDER,
@@ -84,27 +83,27 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
     if (this.optionDryStart) {
       this.messager.printMessage(WARNING,
-          MSG_PREFIX + "Started in DRY mode");
+          "MMD processor started in DRY mode");
     }
 
     if (processingEnv.getOptions().containsKey(KEY_MMD_FORCE_FOLDER)) {
       this.optionForceFolder = Paths.get(processingEnv.getOptions().get(KEY_MMD_FORCE_FOLDER));
       if (!(Files.isDirectory(this.optionForceFolder) || this.optionDryStart)) {
         this.messager.printMessage(WARNING,
-            MSG_PREFIX + "Folder not-exists: " + this.optionForceFolder);
+            "Folder for MMD not-exists: " + this.optionForceFolder);
         if (Boolean.parseBoolean(
             processingEnv.getOptions().getOrDefault(KEY_MMD_FOLDER_CREATE, "false"))) {
           try {
             this.optionForceFolder = Files.createDirectories(this.optionForceFolder);
             this.messager.printMessage(NOTE,
-                MSG_PREFIX + "Folder created: " + this.optionForceFolder);
+                "Folder for MMD files successfully created: " + this.optionForceFolder);
           } catch (IOException ex) {
             this.messager.printMessage(ERROR,
-                MSG_PREFIX + "Can't create requested target folder " + this.optionForceFolder);
+                "Can't create folder to write MMD files: " + this.optionForceFolder);
           }
         } else {
           this.messager.printMessage(ERROR,
-              MSG_PREFIX + "Can't find folder (use " + KEY_MMD_FOLDER_CREATE +
+              "Can't find folder for MMD files (use " + KEY_MMD_FOLDER_CREATE +
                   " flag to make it): " +
                   this.optionForceFolder);
         }
@@ -112,7 +111,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
       if (this.optionForceFolder != null) {
         this.messager.printMessage(WARNING,
-            String.format(MSG_PREFIX + "Force MMD folder: %s", this.optionForceFolder));
+            String.format("Forced folder to write MMD files: %s", this.optionForceFolder));
       }
     }
 
@@ -123,7 +122,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
         KEY_MMD_FILE_OVERWRITE, "true"));
 
     this.messager.printMessage(NOTE,
-        String.format(MSG_PREFIX + "Prefer generate relative paths: %s",
+        String.format("Prefer generate relative paths for MMD file links: %s",
             this.optionPreferRelativePaths));
   }
 
@@ -166,7 +165,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     }
 
     this.messager.printMessage(
-        NOTE, format(MSG_PREFIX + "Detected %d annotated items", mmdAnnotationList.size()));
+        NOTE, format("Detected %d annotated items to be used for MMD", mmdAnnotationList.size()));
 
     if (!mmdAnnotationList.isEmpty()) {
       MmdFileCreator.builder()

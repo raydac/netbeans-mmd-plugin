@@ -2,6 +2,8 @@ package com.igormaznitsa.mindmap.annotation.processor.creator.elements;
 
 import com.igormaznitsa.mindmap.annotation.processor.MmdAnnotation;
 import com.igormaznitsa.mindmap.model.annotations.MmdFile;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.UUID;
 
 public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
@@ -19,6 +21,15 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     } else {
       this.uid = this.mmdFileAnnotation.uid().trim();
     }
+  }
+
+  public void write(
+      final Path forceFolder,
+      final boolean allowOverwrite,
+      final boolean preferRelativePaths,
+      final boolean dryStart
+  ) throws IOException {
+
   }
 
   public MmdFile getFileAnnotation() {

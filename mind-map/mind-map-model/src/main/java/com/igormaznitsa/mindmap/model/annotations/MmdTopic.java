@@ -32,13 +32,6 @@ public @interface MmdTopic {
   String uid() default "";
 
   /**
-   * Identifier of an emoticon to be added to the generated mind map topic.
-   *
-   * @return emoticon identifier
-   */
-  MmdEmoticon emoticon() default MmdEmoticon.EMPTY;
-
-  /**
    * Identifier of MMD file which should be a parent for the topic.
    *
    * @return MMD file UID or empty one if should select file automatically.
@@ -47,11 +40,26 @@ public @interface MmdTopic {
   String mmdFileUid() default "";
 
   /**
+   * Path to the topic in MMD file
+   *
+   * @return array contains path from root, every path item can be a topic UID or just title text if there is no any topic with such UID.
+   * @see #uid()
+   */
+  String[] path() default "";
+
+  /**
+   * Identifier of an emoticon to be added to the generated mind map topic.
+   *
+   * @return emoticon identifier
+   */
+  MmdEmoticon emoticon() default MmdEmoticon.EMPTY;
+
+  /**
    * Title for generated topic.
    *
    * @return Text to be used as title for generated topic.
    */
-  String value() default "";
+  String title() default "";
 
   /**
    * File path to be added into topic.
@@ -62,20 +70,12 @@ public @interface MmdTopic {
   String file() default "";
 
   /**
-   * Add source file line as file link but only if there is no directly provided file path.
+   * Add the source file with line position as file link but only if file attribute is empty.
    *
    * @return true if should autogenerate source file line link, false otherwise
    * @see #file()
    */
-  boolean asFileLineLink() default true;
-
-  /**
-   * Path to the topic in MMD file
-   *
-   * @return array contains path from root, every path item can be a topic UID or just title text if there is no any topic with such UID.
-   * @see #uid()
-   */
-  String[] path() default "";
+  boolean anchor() default true;
 
   /**
    * Allows to provide jump link to a topic in the same file.
@@ -125,7 +125,7 @@ public @interface MmdTopic {
    *
    * @return true if topic should be collapsed, false otherwise
    */
-  boolean collapsed() default false;
+  boolean collapse() default false;
 
   /**
    * Recommended direction for the topic.

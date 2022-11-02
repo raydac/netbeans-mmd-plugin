@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
@@ -71,7 +70,22 @@ public class MmdFileCreator {
   }
 
   private void writeFiles(final Map<String, MmdAnnotationFileItem> fileMap) {
-
+    fileMap.forEach((k, e) -> {
+      this.builder.getMessager().printMessage(Diagnostic.Kind.NOTE,
+          String.format("Processing MMD file for ID: %s", e.getUid()));
+      try {
+        e.write(
+            this.builder.getForceFolder(),
+            this.builder.isOverwriteAllowed(),
+            this.builder.isPreferRelativePaths(),
+            this.builder.dryStart
+        );
+      } catch (Exception ex) {
+        this.builder.getMessager().printMessage(Diagnostic.Kind.ERROR,
+            String.format("Error during MMD file write with uid '%s': %s", e.getUid(),
+                ex.getMessage()), e.getAnnotation().getElement());
+      }
+    });
   }
 
   private boolean processTopic(
@@ -92,8 +106,8 @@ public class MmdFileCreator {
     private Builder() {
     }
 
-    public Optional<Path> getForceFolder() {
-      return Optional.ofNullable(this.forceFolder);
+    public Path getForceFolder() {
+      return this.forceFolder;
     }
 
     public Builder setForceFolder(final Path forceFolder) {
