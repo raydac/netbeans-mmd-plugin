@@ -1,13 +1,17 @@
 package com.igormaznitsa.mindmap.model.annotations;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
  * Annotation allows provide information about target MMD file to collect data.
+ *
+ * @see MmdFiles
  */
+@Repeatable(MmdFiles.class)
 @Retention(RetentionPolicy.SOURCE)
 @Target({
     ElementType.TYPE

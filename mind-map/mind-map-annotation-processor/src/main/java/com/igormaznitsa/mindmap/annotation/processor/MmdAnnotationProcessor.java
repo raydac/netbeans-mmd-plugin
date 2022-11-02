@@ -6,69 +6,61 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
-import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.annotation.processor.creator.MmdFileCreator;
 import com.igormaznitsa.mindmap.model.annotations.MmdFile;
+import com.igormaznitsa.mindmap.model.annotations.MmdFiles;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
-  public static final String KEY_MMD_PACKAGE = "mmd.doc.package";
-  public static final String KEY_MMD_FOLDER_TARGET = "mmd.doc.folder.target";
+  public static final String KEY_MMD_FORCE_FOLDER = "mmd.doc.force.folder";
+  public static final String KEY_MMD_DRY_START = "mmd.doc.dry.start";
   public static final String KEY_MMD_FOLDER_CREATE = "mmd.doc.folder.create";
   public static final String KEY_MMD_RELATIVE_PATHS = "mmd.doc.path.relative";
   public static final String KEY_MMD_FILE_OVERWRITE = "mmd.doc.file.overwrite";
   private static final String MSG_PREFIX = "MMD: ";
   private static final Set<String> SUPPORTED_OPTIONS =
-      Collections.unmodifiableSet(new HashSet<String>() {{
-        add(KEY_MMD_FOLDER_TARGET);
-        add(KEY_MMD_FOLDER_CREATE);
-        add(KEY_MMD_RELATIVE_PATHS);
-        add(KEY_MMD_FILE_OVERWRITE);
-        add(KEY_MMD_PACKAGE);
-      }});
+      Set.of(
+          KEY_MMD_FORCE_FOLDER,
+          KEY_MMD_FOLDER_CREATE,
+          KEY_MMD_RELATIVE_PATHS,
+          KEY_MMD_FILE_OVERWRITE,
+          KEY_MMD_DRY_START);
   private static final Map<String, Class<? extends Annotation>> ANNOTATIONS =
-      Collections.unmodifiableMap(new HashMap<String, Class<? extends Annotation>>() {{
-        put(MmdTopic.class.getName(), MmdTopic.class);
-        put(MmdFile.class.getName(), MmdFile.class);
-      }});
+      Map.of(
+          MmdTopic.class.getName(), MmdTopic.class,
+          MmdFiles.class.getName(), MmdFiles.class,
+          MmdFile.class.getName(), MmdFile.class
+      );
   private Trees trees;
   private SourcePositions sourcePositions;
-  private Filer filer;
   private Messager messager;
-  private File optionTargetFolder;
+  private Path optionForceFolder;
   private boolean optionPreferRelativePaths;
   private boolean optionFileOverwrite;
-
-  private String optionTargetPackage;
+  private boolean optionDryStart;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -86,34 +78,42 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     this.trees = Trees.instance(processingEnv);
     this.sourcePositions = this.trees.getSourcePositions();
     this.messager = processingEnv.getMessager();
-    this.filer = processingEnv.getFiler();
 
-    this.optionTargetPackage =
-        processingEnv.getOptions().getOrDefault(KEY_MMD_PACKAGE, "mmd").trim();
+    this.optionDryStart = Boolean.parseBoolean(processingEnv.getOptions().getOrDefault(
+        KEY_MMD_DRY_START, "false"));
 
-    if (processingEnv.getOptions().containsKey(KEY_MMD_FOLDER_TARGET)) {
-      this.optionTargetFolder = new File(processingEnv.getOptions().get(KEY_MMD_FOLDER_TARGET));
-      if (!this.optionTargetFolder.isDirectory()) {
-        this.messager.printMessage(NOTE,
-            MSG_PREFIX + "Can't find existing folder: " + this.optionTargetFolder);
+    if (this.optionDryStart) {
+      this.messager.printMessage(WARNING,
+          MSG_PREFIX + "Started in DRY mode");
+    }
+
+    if (processingEnv.getOptions().containsKey(KEY_MMD_FORCE_FOLDER)) {
+      this.optionForceFolder = Paths.get(processingEnv.getOptions().get(KEY_MMD_FORCE_FOLDER));
+      if (!(Files.isDirectory(this.optionForceFolder) || this.optionDryStart)) {
+        this.messager.printMessage(WARNING,
+            MSG_PREFIX + "Folder not-exists: " + this.optionForceFolder);
         if (Boolean.parseBoolean(
             processingEnv.getOptions().getOrDefault(KEY_MMD_FOLDER_CREATE, "false"))) {
-          if (this.optionTargetFolder.mkdirs()) {
+          try {
+            this.optionForceFolder = Files.createDirectories(this.optionForceFolder);
             this.messager.printMessage(NOTE,
-                MSG_PREFIX + "Successfully created target folder : " + this.optionTargetFolder);
-          } else {
+                MSG_PREFIX + "Folder created: " + this.optionForceFolder);
+          } catch (IOException ex) {
             this.messager.printMessage(ERROR,
-                MSG_PREFIX + "Can't create requested target folder " + this.optionTargetFolder);
+                MSG_PREFIX + "Can't create requested target folder " + this.optionForceFolder);
           }
         } else {
           this.messager.printMessage(ERROR,
               MSG_PREFIX + "Can't find folder (use " + KEY_MMD_FOLDER_CREATE +
                   " flag to make it): " +
-                  this.optionTargetFolder);
+                  this.optionForceFolder);
         }
       }
-      this.messager.printMessage(NOTE,
-          String.format(MSG_PREFIX + "Target folder: %s", this.optionTargetFolder));
+
+      if (this.optionForceFolder != null) {
+        this.messager.printMessage(WARNING,
+            String.format(MSG_PREFIX + "Force MMD folder: %s", this.optionForceFolder));
+      }
     }
 
     this.optionPreferRelativePaths = Boolean.parseBoolean(processingEnv.getOptions().getOrDefault(
@@ -123,74 +123,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
         KEY_MMD_FILE_OVERWRITE, "true"));
 
     this.messager.printMessage(NOTE,
-        String.format(MSG_PREFIX + "Target package: %s", this.optionTargetPackage));
-    this.messager.printMessage(NOTE,
         String.format(MSG_PREFIX + "Prefer generate relative paths: %s",
             this.optionPreferRelativePaths));
-  }
-
-  private boolean write(final String name, final MindMap mindMap) {
-    if (this.optionTargetFolder != null) {
-      final String packagePath = optionTargetPackage.replace(".", File.pathSeparator);
-      final File folder = new File(this.optionTargetFolder, packagePath);
-      final File targetFile = new File(folder, name);
-
-      if (!this.optionFileOverwrite && targetFile.isFile()) {
-        this.messager.printMessage(WARNING,
-            MSG_PREFIX + "File " + targetFile + " already exists, overwrite is disabled");
-        return false;
-      }
-
-      if (!this.optionTargetFolder.isDirectory()) {
-        this.messager.printMessage(ERROR,
-            MSG_PREFIX + "Can't find target folder: " + this.optionTargetFolder);
-        return false;
-      }
-
-      if (!folder.isDirectory() && folder.mkdirs()) {
-        this.messager.printMessage(ERROR, MSG_PREFIX + "Can't create folder: " + folder);
-        return false;
-      }
-
-      try (final Writer writer = new OutputStreamWriter(new FileOutputStream(targetFile, false),
-          StandardCharsets.UTF_8)) {
-        writer.write(mindMap.asString());
-        this.messager.printMessage(NOTE,
-            MSG_PREFIX + "Mind map file has been written: " + targetFile);
-      } catch (IOException ex) {
-        this.messager.printMessage(ERROR,
-            MSG_PREFIX + "Can't write mind map file: " + targetFile + ", error: " +
-                ex.getMessage());
-        return false;
-      }
-    } else {
-      try {
-        final FileObject targetFile = this.filer.createResource(StandardLocation.SOURCE_OUTPUT,
-            optionTargetPackage,
-            name);
-
-        if (!this.optionFileOverwrite && targetFile.getLastModified() != 0L) {
-          this.messager.printMessage(WARNING,
-              MSG_PREFIX + "File " + targetFile.getName() +
-                  " already exists, overwrite is disabled");
-          return false;
-        }
-
-        try (final Writer writer = new OutputStreamWriter(targetFile.openOutputStream(),
-            StandardCharsets.UTF_8)) {
-          writer.write(mindMap.asString());
-        }
-        this.messager.printMessage(NOTE,
-            MSG_PREFIX + "Mind map file has been written: " + targetFile.getName());
-      } catch (IOException ex) {
-        final String packageAsPath = this.optionTargetPackage.replace(".", "/") + name;
-        this.messager.printMessage(ERROR,
-            MSG_PREFIX + "Can't write mind map as resource, file: " + packageAsPath + ", error: " +
-                ex.getMessage());
-        return false;
-      }
-    }
-    return true;
   }
 
   @Override
@@ -202,7 +136,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   public boolean process(final Set<? extends TypeElement> annotations,
                          final RoundEnvironment roundEnv) {
 
-    final List<FoundMmdAnnotation> foundMmdAnnotationList = new ArrayList<>();
+    final List<MmdAnnotation> mmdAnnotationList = new ArrayList<>();
 
     for (final TypeElement annotation : annotations) {
       final Set<? extends Element> annotatedElements =
@@ -213,23 +147,36 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       requireNonNull(annotationClass,
           () -> "Unexpectedly annotation class not found for " + annotation.getQualifiedName());
 
-      annotatedElements.forEach(x -> {
-        final Annotation annotationInstance = x.getAnnotation(annotationClass);
-        final UriLine position = findPosition(x);
-        foundMmdAnnotationList.add(
-            new FoundMmdAnnotation(annotationInstance, new File(position.uri),
-                position.line));
+      annotatedElements.forEach(element -> {
+        final Annotation annotationInstance = element.getAnnotation(annotationClass);
+        final UriLine position = findPosition(element);
+
+        if (annotationInstance instanceof MmdFiles) {
+          for (MmdFile mmdFile : ((MmdFiles) annotationInstance).value()) {
+            mmdAnnotationList.add(
+                new MmdAnnotation(element, mmdFile, new File(position.uri).toPath(),
+                    position.line));
+          }
+        } else {
+          mmdAnnotationList.add(
+              new MmdAnnotation(element, annotationInstance, new File(position.uri).toPath(),
+                  position.line));
+        }
       });
     }
 
     this.messager.printMessage(
-        NOTE, format(MSG_PREFIX + "Detected %d annotated items", foundMmdAnnotationList.size()));
+        NOTE, format(MSG_PREFIX + "Detected %d annotated items", mmdAnnotationList.size()));
 
-    if (!foundMmdAnnotationList.isEmpty()) {
-      for (final Map.Entry<String, MindMap> e : new MmdSorter().sort(foundMmdAnnotationList)
-          .entrySet()) {
-        this.write(e.getKey(), e.getValue());
-      }
+    if (!mmdAnnotationList.isEmpty()) {
+      MmdFileCreator.builder()
+          .setMessager(this.messager)
+          .setForceFolder(this.optionForceFolder)
+          .setDryStart(this.optionDryStart)
+          .setOverwriteAllowed(this.optionFileOverwrite)
+          .setPreferRelativePaths(this.optionPreferRelativePaths)
+          .setAnnotations(mmdAnnotationList)
+          .build().process();
     }
 
     return true;
