@@ -10,4 +10,12 @@ public class MmdAnnotationTopicItem extends AbstractMmdAnnotationItem {
       throw new IllegalArgumentException("Expected annotation " + MmdTopic.class.getName());
     }
   }
+
+  public String findClassName() {
+    return this.annotation.getElement().getSimpleName().toString();
+  }
+
+  public MmdTopic getTopicAnnotation() {
+    return (MmdTopic) this.annotation.getAnnotation();
+  }
 }

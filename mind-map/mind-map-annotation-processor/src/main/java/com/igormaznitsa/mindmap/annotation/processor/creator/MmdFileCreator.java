@@ -9,13 +9,15 @@ import com.igormaznitsa.mindmap.model.annotations.MmdFile;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
+import org.apache.commons.lang3.StringUtils;
 
 public class MmdFileCreator {
 
@@ -30,7 +32,7 @@ public class MmdFileCreator {
   }
 
   public void process() {
-    final Map<String, MmdAnnotationFileItem> fileMap = new HashMap<>();
+    final Map<String, MmdAnnotationFileItem> fileMap = new LinkedHashMap<>();
 
     final AtomicBoolean error = new AtomicBoolean();
 
@@ -41,7 +43,7 @@ public class MmdFileCreator {
           if (fileMap.containsKey(x.getUid())) {
             this.builder.getMessager()
                 .printMessage(Diagnostic.Kind.ERROR,
-                    String.format("Found duplicated file for UID: %s",
+                    String.format("Found duplicated MMD file definition for UID: %s",
                         x.getUid()), x.getAnnotation().getElement());
             error.set(true);
           } else {
@@ -92,7 +94,20 @@ public class MmdFileCreator {
       final Map<String, MmdAnnotationFileItem> fileMap,
       final MmdAnnotationTopicItem topic
   ) {
+    findFileForTopic(fileMap, topic);
     return true;
+  }
+
+  private Optional<MmdAnnotationFileItem> findFileForTopic(
+      final Map<String, MmdAnnotationFileItem> fileMap,
+      final MmdAnnotationTopicItem topicItem) {
+    if (StringUtils.isBlank(topicItem.getTopicAnnotation().mmdFileUid())) {
+      final String className = topicItem.getAnnotation().getPath().getFileName().toString();
+      System.out.println("CLASS NAME: " + className);
+      return Optional.empty();
+    } else {
+      return Optional.ofNullable(fileMap.get(topicItem.getTopicAnnotation().mmdFileUid()));
+    }
   }
 
   public static final class Builder {
