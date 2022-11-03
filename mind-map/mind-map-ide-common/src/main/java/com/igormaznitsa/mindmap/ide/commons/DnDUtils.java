@@ -60,6 +60,9 @@ public final class DnDUtils {
   }
 
   public static String removeZeroChars(final String str) {
+    if (str == null) {
+      return null;
+    }
     final StringBuilder buffer = new StringBuilder(str.length());
     for (final char c : str.toCharArray()) {
       if (c != 0) {
@@ -103,8 +106,7 @@ public final class DnDUtils {
       } else if (df.getRepresentationClass() == InputStream.class &&
           df.isMimeTypeEqual(MIME_MOZ_URL)) {
         if (foundMozLink == null) {
-          final InputStream in = ((InputStream) dtde.getTransferable().getTransferData(df));
-          if (in != null) {
+          try (final InputStream in = ((InputStream) dtde.getTransferable().getTransferData(df))) {
             final StringWriter string = new StringWriter();
             IOUtils.copy(in, string, Charset.defaultCharset());
             IOUtils.closeQuietly(in);
