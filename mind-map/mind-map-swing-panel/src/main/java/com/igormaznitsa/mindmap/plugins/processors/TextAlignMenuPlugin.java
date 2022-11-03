@@ -83,7 +83,7 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
   private void setAlignValue(final MindMapPanel panel, final Topic[] topics,
                              final TextAlign align) {
     for (final Topic t : topics) {
-      t.setAttribute("align", align.name().toLowerCase(Locale.ENGLISH));
+      t.putAttribute("align", align.name().toLowerCase(Locale.ENGLISH));
     }
     panel.doNotifyModelChanged(true);
   }

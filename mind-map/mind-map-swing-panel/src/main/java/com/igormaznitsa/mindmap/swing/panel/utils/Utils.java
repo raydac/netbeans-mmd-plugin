@@ -505,7 +505,7 @@ public final class Utils {
   public static void setAttribute(final String name, final String value,
                                   final Topic[] topics) {
     for (final Topic t : topics) {
-      t.setAttribute(name, value);
+      t.putAttribute(name, value);
     }
   }
 

@@ -93,7 +93,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
         }
 
         if (file.isFile()) {
-          topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY,
+          topic.putAttribute(ImageVisualAttributePlugin.ATTR_KEY,
               Utils.rescaleImageAndEncodeAsBase64(file, -1));
           break;
         }
@@ -266,16 +266,16 @@ public class Freemind2MindMapImporter extends AbstractImporter {
       final Color backgroundColorConverted = Utils.html2color(backgroundColor, false);
 
       if (colorConverted != null) {
-        topicToProcess.setAttribute(ATTR_TEXT_COLOR.getText(),
+        topicToProcess.putAttribute(ATTR_TEXT_COLOR.getText(),
             Utils.color2html(colorConverted, false));
       }
 
       if (backgroundColorConverted != null) {
-        topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(),
+        topicToProcess.putAttribute(ATTR_FILL_COLOR.getText(),
             Utils.color2html(backgroundColorConverted, false));
       } else {
         if (colorConverted != null) {
-          topicToProcess.setAttribute(ATTR_FILL_COLOR.getText(),
+          topicToProcess.putAttribute(ATTR_FILL_COLOR.getText(),
               Utils.color2html(Utils.makeContrastColor(colorConverted), false));
         }
       }

@@ -155,16 +155,18 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     }
 
     if (node.getColorBackground() != null) {
-      processing.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
+      processing.putAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
           Utils.color2html(node.getColorBackground(), false));
     }
 
     if (node.getColorBorder() != null) {
-      processing.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(), Utils.color2html(node.getColorBorder(), false));
+      processing.putAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(),
+          Utils.color2html(node.getColorBorder(), false));
     }
 
     if (node.getColorText() != null) {
-      processing.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(), Utils.color2html(node.getColorText(), false));
+      processing.putAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
+          Utils.color2html(node.getColorText(), false));
     }
 
     final ParsedContent.ContentTopic data = node.getContentTopic();
@@ -176,7 +178,7 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       if (imageResourceId != null) {
         final String imageBody = manifest.findResourceImage(imageResourceId);
         if (imageBody != null) {
-          processing.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, imageBody);
+          processing.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, imageBody);
         }
       }
 

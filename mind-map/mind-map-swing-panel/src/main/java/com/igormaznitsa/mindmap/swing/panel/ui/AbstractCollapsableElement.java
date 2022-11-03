@@ -51,9 +51,9 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
 
   public static void makeTopicLeftSided(final Topic topic, final boolean left) {
     if (left) {
-      topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), "true");//NOI18N
+      topic.putAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), "true");//NOI18N
     } else {
-      topic.setAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), null);
+      topic.putAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText(), null);
     }
   }
 

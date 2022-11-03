@@ -114,7 +114,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     final String attachedImage = extractFirstAttachedImageAsBase64(zipFile, topicElement);
     if (attachedImage != null && !attachedImage.isEmpty()) {
-      topicToProcess.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, attachedImage);
+      topicToProcess.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, attachedImage);
     }
 
     final String xlink = topicElement.getAttribute("xlink:href");
@@ -345,25 +345,25 @@ public class XMind2MindMapImporter extends AbstractImporter {
       }
     }
     if (fillColor != null) {
-      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
+      topicToProcess.putAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
           fillColor);
     }
     if (fontColor != null) {
-      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
+      topicToProcess.putAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
           fontColor);
     }
     if (borderLineColor != null) {
-      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(),
+      topicToProcess.putAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(),
           borderLineColor);
     }
     if (textAlign != null) {
-      topicToProcess.setAttribute("align", convertTextAlign(textAlign));
+      topicToProcess.putAttribute("align", convertTextAlign(textAlign));
     }
 
 
     final String attachedImage = extractFirstAttachedImageAsBase64(zipFile, topicElement);
     if (attachedImage != null && !attachedImage.isEmpty()) {
-      topicToProcess.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, attachedImage);
+      topicToProcess.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, attachedImage);
     }
 
     final String xlink = topicElement.has("href") ? topicElement.getString("href") : null;
@@ -729,19 +729,19 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     private void attachTo(final Topic topic) {
       if (this.background != null) {
-        topic.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
+        topic.putAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
             Utils.color2html(this.background, false));
       }
       if (this.foreground != null) {
-        topic.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
+        topic.putAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
             Utils.color2html(this.foreground, false));
       }
       if (this.border != null) {
-        topic.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(),
+        topic.putAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(),
             Utils.color2html(this.border, false));
       }
       if (this.textAlign != null) {
-        topic.setAttribute("align", this.textAlign);
+        topic.putAttribute("align", this.textAlign);
       }
     }
 

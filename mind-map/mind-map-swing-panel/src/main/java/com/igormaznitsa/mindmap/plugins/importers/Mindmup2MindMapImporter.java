@@ -225,7 +225,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
           if (encoded == null) {
             LOGGER.warn("Can't convert image : " + iconUrl);
           } else {
-            topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, encoded);
+            topic.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, encoded);
           }
         } catch (final Exception ex) {
           LOGGER.error("Can't load image : " + iconUrl, ex);
@@ -245,8 +245,8 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
     if (background != null) {
       final Color color = Utils.html2color(background, false);
       if (color != null) {
-        topic.setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(color, false));
-        topic.setAttribute(ATTR_TEXT_COLOR.getText(),
+        topic.putAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(color, false));
+        topic.putAttribute(ATTR_TEXT_COLOR.getText(),
             Utils.color2html(Utils.makeContrastColor(color), false));
       }
     }

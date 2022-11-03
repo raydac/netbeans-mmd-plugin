@@ -16,6 +16,9 @@
 
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
+import static java.util.Arrays.sort;
+import static java.util.Comparator.comparingInt;
+
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -24,6 +27,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.utils.ScalableIcon;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.geom.Rectangle2D;
+import java.util.Map;
 
 public class IconBlock {
 
@@ -51,21 +55,24 @@ public class IconBlock {
   }
 
   public void updateSize(final MMGraphics gfx, final MindMapPanelConfig cfg) {
-    final int numberOfIcons = this.model.getNumberOfExtras();
     this.scale = cfg.getScale();
-    if (numberOfIcons == 0) {
+    if (this.model.isExtrasEmpty()) {
       this.bounds.setRect(0d, 0d, 0d, 0d);
       this.contentPresented = false;
     } else {
       final double scaledIconWidth = ScalableIcon.BASE_WIDTH * this.scale;
       final double scaledIconHeight = ScalableIcon.BASE_HEIGHT * this.scale;
-      this.bounds.setRect(0d, 0d, scaledIconWidth * numberOfIcons, scaledIconHeight);
+
+      final Map<Extra.ExtraType, Extra<?>> extras = this.model.getExtras();
+
+      this.bounds.setRect(0d, 0d, scaledIconWidth * extras.size(), scaledIconHeight);
       this.contentPresented = true;
-      this.currentExtras = new Extra<?>[numberOfIcons];
+      this.currentExtras = new Extra<?>[extras.size()];
       int index = 0;
-      for (final Extra<?> e : this.model.getExtras().values()) {
+      for (final Extra<?> e : extras.values()) {
         this.currentExtras[index++] = e;
       }
+      sort(this.currentExtras, comparingInt(extra -> extra.getType().ordinal()));
     }
   }
 
@@ -74,8 +81,7 @@ public class IconBlock {
   }
 
   public void paint(final MMGraphics gfx) {
-    final int numberOfIcons = this.model.getNumberOfExtras();
-    if (numberOfIcons != 0) {
+    if (!this.model.isExtrasEmpty()) {
       double offsetX = this.bounds.getX();
       final int offsetY = (int) Math.round(this.bounds.getY());
       final double scaledIconWidth = ScalableIcon.BASE_WIDTH * this.scale;

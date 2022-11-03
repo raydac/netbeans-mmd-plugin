@@ -141,7 +141,7 @@ public final class MindMapUtils {
   }
 
   public static boolean setCollapsed(final Topic topic, final boolean fold) {
-    return topic.setAttribute(ATTR_COLLAPSED.getText(), fold ? "true" : null);//NOI18N
+    return topic.putAttribute(ATTR_COLLAPSED.getText(), fold ? "true" : null);//NOI18N
   }
 
   public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map) {
@@ -154,7 +154,7 @@ public final class MindMapUtils {
 
   private static void _removeCollapseAttr(final Topic topic) {
     if (topic != null) {
-      topic.setAttribute(ATTR_COLLAPSED.getText(), null);
+      topic.putAttribute(ATTR_COLLAPSED.getText(), null);
       if (!topic.isEmpty()) {
         for (final Topic ch : topic.getChildren()) {
           _removeCollapseAttr(ch);
@@ -166,7 +166,7 @@ public final class MindMapUtils {
   public static void removeCollapseAttrIfNoChildren(final Topic topic) {
     if (topic != null) {
       if (topic.isEmpty()) {
-        topic.setAttribute(ATTR_COLLAPSED.getText(), null);
+        topic.putAttribute(ATTR_COLLAPSED.getText(), null);
       } else {
         for (final Topic t : topic.getChildren()) {
           removeCollapseAttrIfNoChildren(t);
@@ -176,11 +176,11 @@ public final class MindMapUtils {
   }
 
   public static void copyColorAttributes(final Topic source, final Topic destination) {
-    destination.setAttribute(ATTR_FILL_COLOR.getText(),
+    destination.putAttribute(ATTR_FILL_COLOR.getText(),
         source.getAttribute(ATTR_FILL_COLOR.getText()));
-    destination.setAttribute(ATTR_BORDER_COLOR.getText(),
+    destination.putAttribute(ATTR_BORDER_COLOR.getText(),
         source.getAttribute(ATTR_BORDER_COLOR.getText()));
-    destination.setAttribute(ATTR_TEXT_COLOR.getText(),
+    destination.putAttribute(ATTR_TEXT_COLOR.getText(),
         source.getAttribute(ATTR_TEXT_COLOR.getText()));
   }
 

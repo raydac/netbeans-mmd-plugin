@@ -209,7 +209,7 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
 
     final String encodedImage = loadFirstSuccessfulImage(foundImageURLs);
     if (encodedImage != null) {
-      topicToProcess.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, encodedImage);
+      topicToProcess.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, encodedImage);
     }
 
     if (succesfullDecodedUrl != null) {
@@ -262,9 +262,9 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
     }
 
     if (edgeColor != null) {
-      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
+      topicToProcess.putAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(),
           Utils.color2html(edgeColor, false));
-      topicToProcess.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
+      topicToProcess.putAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(),
           Utils.color2html(Utils.makeContrastColor(edgeColor), false));
     }
 

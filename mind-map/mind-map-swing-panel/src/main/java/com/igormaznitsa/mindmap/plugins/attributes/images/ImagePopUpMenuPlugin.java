@@ -225,9 +225,9 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
       final String imageFilePath,
       final String imageName
   ) {
-    topic.setAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
-    topic.setAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_NAME, imageName);
-    topic.setAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_URI_KEY, imageFilePath);
+    topic.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
+    topic.putAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_NAME, imageName);
+    topic.putAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_URI_KEY, imageFilePath);
   }
 
   private void setAttribute(final PluginContext context,

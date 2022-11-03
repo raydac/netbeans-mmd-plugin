@@ -77,14 +77,14 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
     if (activeTopic != null) {
       final String old = activeTopic.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
       if (!safeObjectEquals(old, value)) {
-        activeTopic.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
+        activeTopic.putAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
         changed = true;
       }
     }
     for (final Topic t : context.getSelectedTopics()) {
       final String old = t.getAttribute(EmoticonVisualAttributePlugin.ATTR_KEY);
       if (!safeObjectEquals(old, value)) {
-        t.setAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
+        t.putAttribute(EmoticonVisualAttributePlugin.ATTR_KEY, value);
         changed = true;
       }
     }

@@ -100,7 +100,7 @@ public abstract class AbstractElement {
 
   public void setTextAlign(final TextAlign textAlign) {
     this.textBlock.setTextAlign(textAlign);
-    this.model.setAttribute("align", this.textBlock.getTextAlign().name()); //NOI18N
+    this.model.putAttribute("align", this.textBlock.getTextAlign().name()); //NOI18N
   }
 
   public void updateElementBounds(final MMGraphics gfx, final MindMapPanelConfig cfg) {
