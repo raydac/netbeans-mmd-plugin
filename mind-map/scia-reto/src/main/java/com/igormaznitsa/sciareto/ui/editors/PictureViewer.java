@@ -56,6 +56,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
+import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -166,6 +167,8 @@ public final class PictureViewer extends AbstractEditor {
     transcoderHints.put(ImageTranscoder.KEY_DOCUMENT_ELEMENT_NAMESPACE_URI,
         SVGConstants.SVG_NAMESPACE_URI);
     transcoderHints.put(ImageTranscoder.KEY_DOCUMENT_ELEMENT, "svg");
+    transcoderHints.put(ImageTranscoder.KEY_DOM_IMPLEMENTATION,
+        SVGDOMImplementation.getDOMImplementation());
 
     final AtomicReference<BufferedImage> imagePointer = new AtomicReference<>();
     try (InputStream in = Files.newInputStream(svgFile.toPath())) {

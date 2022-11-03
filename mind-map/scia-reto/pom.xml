@@ -313,6 +313,7 @@
                     <option>--no-man-pages</option>
                   </options>
                   <addModules>
+                    <module>jdk.xml.dom</module>
                     <module>jdk.localedata</module>
                     <module>jdk.crypto.ec</module>
                     <module>jdk.crypto.cryptoki</module>
@@ -337,6 +338,7 @@
                     <option>--no-man-pages</option>
                   </options>
                   <addModules>
+                    <module>jdk.xml.dom</module>
                     <module>jdk.localedata</module>
                     <module>jdk.crypto.ec</module>
                     <module>jdk.crypto.cryptoki</module>
@@ -361,6 +363,7 @@
                     <option>--no-man-pages</option>
                   </options>
                   <addModules>
+                    <module>jdk.xml.dom</module>
                     <module>jdk.localedata</module>
                     <module>jdk.crypto.ec</module>
                     <module>jdk.crypto.cryptoki</module>
@@ -385,6 +388,7 @@
                     <option>--no-man-pages</option>
                   </options>
                   <addModules>
+                    <module>jdk.xml.dom</module>
                     <module>jdk.localedata</module>
                     <module>jdk.crypto.ec</module>
                     <module>jdk.crypto.cryptoki</module>
