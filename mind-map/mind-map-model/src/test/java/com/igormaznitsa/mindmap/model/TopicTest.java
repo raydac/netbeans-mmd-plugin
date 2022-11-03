@@ -276,8 +276,8 @@ public class TopicTest {
   public void testParse_WriteOneLevelWithExtraAndTwoCodeSnippets() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic root = new Topic(mm, null, "Level1");
-    root.setCodeSnippet("Java", "System.exit();");
-    root.setCodeSnippet("Shell", "exit");
+    root.putCodeSnippet("Java", "System.exit();");
+    root.putCodeSnippet("Shell", "exit");
     root.setExtra(new ExtraLink("http://wwww.igormaznitsa.com"));
     final StringWriter writer = new StringWriter();
     root.write(writer);
@@ -290,7 +290,7 @@ public class TopicTest {
   public void testParse_WriteOneLevelWithExtraAndAttribute() throws Exception {
     final MindMap mm = new MindMap(true);
     final Topic root = new Topic(mm, null, "Level1");
-    root.setAttribute("hello", "wor`ld");
+    root.putAttribute("hello", "wor`ld");
     root.setExtra(new ExtraLink("http://wwww.igormaznitsa.com"));
     final StringWriter writer = new StringWriter();
     root.write(writer);

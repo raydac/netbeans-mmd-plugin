@@ -57,7 +57,7 @@ public class ExtraTopic extends Extra<String> {
             break;
           }
         }
-        topic.setAttribute(TOPIC_UID_ATTR, uid);
+        topic.putAttribute(TOPIC_UID_ATTR, uid);
       }
       result = new ExtraTopic(uid);
     }

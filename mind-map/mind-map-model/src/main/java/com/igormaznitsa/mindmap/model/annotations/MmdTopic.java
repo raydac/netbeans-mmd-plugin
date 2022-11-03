@@ -29,13 +29,13 @@ public @interface MmdTopic {
    * @return any text UID or empty if not provided.
    * @see MmdTopic#jumpTo()
    */
-  String uid() default "";
+  String topicUid() default "";
 
   /**
    * Identifier of MMD file which should be a parent for the topic.
    *
    * @return MMD file UID or empty one if should select file automatically.
-   * @see MmdFile#uid()
+   * @see MmdFile#fileUid()
    */
   String mmdFileUid() default "";
 
@@ -43,7 +43,7 @@ public @interface MmdTopic {
    * Path to the topic in MMD file
    *
    * @return array contains path from root, every path item can be a topic UID or just title text if there is no any topic with such UID.
-   * @see #uid()
+   * @see #topicUid()
    */
   String[] path() default "";
 
@@ -65,7 +65,7 @@ public @interface MmdTopic {
    * File path to be added into topic.
    *
    * @return if there is any MMD file with such UID then its path in use else just path added if non-empty.
-   * @see MmdFile#uid()
+   * @see MmdFile#fileUid()
    */
   String file() default "";
 
@@ -81,7 +81,7 @@ public @interface MmdTopic {
    * Allows to provide jump link to a topic in the same file.
    *
    * @return target topic UID or topic title text.
-   * @see #uid()
+   * @see #topicUid()
    */
   String jumpTo() default "";
 

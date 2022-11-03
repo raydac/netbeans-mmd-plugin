@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -364,17 +363,12 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return this.children;
   }
 
-  public int getNumberOfExtras() {
-    return this.extras.size();
+  public boolean isExtrasEmpty() {
+    return this.extras.isEmpty();
   }
 
   public Map<Extra.ExtraType, Extra<?>> getExtras() {
     return this.extras;
-  }
-
-  public Extra<?>[] extrasToArray() {
-    final Collection<Extra<?>> collection = this.extras.values();
-    return collection.toArray(new Extra<?>[0]);
   }
 
   public Map<String, String> getAttributes() {
@@ -385,7 +379,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     return this.codeSnippets;
   }
 
-  public boolean setAttribute(final String name, final String value) {
+  public boolean putAttribute(final String name, final String value) {
     if (value == null) {
       return this.attributes.remove(name) != null;
     } else {
@@ -393,7 +387,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
-  public boolean setCodeSnippet(final String language, final String text) {
+  public boolean putCodeSnippet(final String language, final String text) {
     if (text == null) {
       return this.codeSnippets.remove(language) != null;
     } else {
@@ -865,6 +859,13 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       }
     }
     return result;
+  }
+
+  /**
+   * Clear all attributes of the topic.
+   */
+  public void clearAttributes() {
+    this.attributes.clear();
   }
 
   /**
