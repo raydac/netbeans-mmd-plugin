@@ -606,7 +606,7 @@ public final class UiUtils {
       final int width = this.image.getWidth(null);
       final int height = this.image.getHeight(null);
 
-      this.setBounds(0,0, width, height);
+      this.setBounds(0, 0, width, height);
       this.setMinimumSize(new Dimension(width, height));
       this.setSize(new Dimension(width, height));
       this.setMaximumSize(new Dimension(width, height));
@@ -616,8 +616,18 @@ public final class UiUtils {
     }
 
     @Override
-    public void paint(final Graphics g) {
-        g.drawImage(this.image, 0, 0, null);
+    public void paint(final Graphics gfx) {
+      final Graphics2D gfx2 = (Graphics2D) gfx;
+
+      gfx2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+      gfx2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      gfx2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+          RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+      gfx2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+          RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+
+      gfx2.drawImage(this.image, 0, 0, null);
     }
 
     @Override
